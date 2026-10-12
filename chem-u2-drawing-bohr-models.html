@@ -1,0 +1,2006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Drawing Bohr Models | Chemistry Unit 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c1424; --bg2:#101b30; --panel:#14203a; --panel2:#1b2a49; --panel3:#223358;
+  --line:#26375a; --line2:#35496f;
+  --text:#e8eef8; --muted:#a3b4d1; --dim:#7488ab;
+  --e:#5fe1ff; --e-glow:rgba(95,225,255,.55); --p:#ff7d66; --n:#aab6cc; --val:#ffd36b;
+  --amber:#f6b93b; --good:#4ade80; --bad:#fb7185;
+  --c-nonmetal:#45c08f; --c-noble:#a084ff; --c-alkali:#ff8f5e; --c-alkaline:#ffcb5c;
+  --c-metalloid:#46c7d8; --c-post:#8ea8cc; --c-halogen:#f477b8;
+  --r-lg:16px; --r-md:12px; --r-sm:8px;
+  --font:"Lexend","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 110px)}
+*,*::before,*::after{box-sizing:inherit}
+body{
+  margin:0; min-height:100vh; color:var(--text); font-family:var(--font);
+  font-size:17px; line-height:1.6; font-weight:300;
+  background:
+    radial-gradient(900px 520px at 85% -8%, #1a2d52 0%, transparent 62%),
+    radial-gradient(700px 420px at -10% 30%, #13233f 0%, transparent 60%),
+    var(--bg);
+  background-attachment:fixed;
+}
+b,strong{font-weight:600}
+h1,h2,h3{font-weight:600;line-height:1.2;margin:0}
+p{margin:.5em 0}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--e);outline-offset:2px;border-radius:6px}
+.small{font-size:14px}
+.muted{color:var(--muted)}
+.hidden{display:none!important}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:sticky; top:0; z-index:40;
+  padding-top:env(safe-area-inset-top,0px);
+  background:rgba(12,20,36,.9); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.topbar-in{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:14px;padding:10px 18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:16px;white-space:nowrap}
+.brand svg{width:30px;height:30px}
+.navtiles{display:flex;gap:6px;overflow-x:auto;padding:4px 2px;flex:1;scrollbar-width:thin}
+.top-actions{display:flex;gap:8px}
+.top-btn{background:var(--panel2);border:1px solid var(--line2);border-radius:999px;padding:6px 14px;font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap}
+.top-btn:hover{background:var(--panel3)}
+
+/* ---------- element tiles ---------- */
+.tile{
+  --c:var(--c-nonmetal);
+  position:relative; flex:0 0 auto; width:46px; height:52px; border-radius:8px;
+  background:var(--panel2);
+  background:color-mix(in srgb, var(--c) 20%, var(--panel));
+  border:1.5px solid var(--c);
+  border-color:color-mix(in srgb, var(--c) 75%, transparent);
+  display:grid; place-items:center; font-weight:700; font-size:19px; line-height:1;
+  color:var(--text); cursor:pointer; padding:0;
+  transition:transform .2s, box-shadow .2s, opacity .2s;
+}
+.tile .z{position:absolute;top:4px;left:5px;font-size:10px;font-weight:500;color:var(--muted)}
+.tile:hover:not(:disabled){transform:translateY(-2px)}
+.tile.current{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--c)}
+.tile:disabled{cursor:not-allowed;opacity:.32;filter:saturate(.3)}
+.tile .ck{position:absolute;right:-5px;bottom:-5px;width:17px;height:17px;border-radius:50%;background:var(--good);color:#06240f;font-size:11px;display:grid;place-items:center;font-weight:700;opacity:0;transform:scale(.4);transition:.25s}
+.tile.done .ck{opacity:1;transform:scale(1)}
+.tile.unlocking{animation:unlockPop .7s cubic-bezier(.2,1.6,.4,1)}
+@keyframes unlockPop{0%{transform:scale(.7)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
+.tile.big{width:74px;height:82px;font-size:32px;border-width:2px;cursor:default}
+.tile.big .z{font-size:13px;top:6px;left:8px}
+.cat-nonmetal{--c:var(--c-nonmetal)} .cat-noble{--c:var(--c-noble)} .cat-alkali{--c:var(--c-alkali)}
+.cat-alkaline{--c:var(--c-alkaline)} .cat-metalloid{--c:var(--c-metalloid)} .cat-post{--c:var(--c-post)} .cat-halogen{--c:var(--c-halogen)}
+
+/* ---------- layout ---------- */
+main{max-width:980px;margin:0 auto;padding:22px 18px 80px}
+.screen{display:none}
+.screen.on{display:block;animation:screenIn .35s ease-out}
+@keyframes screenIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sec-head{display:flex;align-items:center;gap:18px;margin:8px 0 10px}
+.sec-meta{color:var(--muted);font-size:15px;margin:0 0 4px}
+.sec-head h2{font-size:clamp(26px,4vw,36px);letter-spacing:-.01em}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px 24px;margin:18px 0}
+.card h3{font-size:21px;margin:2px 0 10px}
+.tag{display:inline-block;font-size:13px;font-weight:600;color:var(--muted);background:var(--panel2);border-radius:999px;padding:3px 12px;margin-bottom:8px}
+.k-read .tag{color:#c3cffc;background:#25305a}
+.k-try .tag{color:#0b2630;background:var(--e)}
+.k-qc{border:2px solid var(--amber)}
+.k-qc .tag{color:#241703;background:var(--amber)}
+.read-text{max-width:68ch}
+
+.btn{border:0;border-radius:10px;padding:11px 20px;font-weight:600;font-size:16px;cursor:pointer;transition:transform .15s, background .2s, opacity .2s}
+.btn:active:not(:disabled){transform:scale(.97)}
+.btn.primary{background:var(--e);color:#062430}
+.btn.primary:hover:not(:disabled){background:#8eebff}
+.btn.ghost{background:transparent;border:1.5px solid var(--line2);color:var(--text)}
+.btn.ghost:hover:not(:disabled){background:var(--panel2)}
+.btn.amber{background:var(--amber);color:#241703}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.sm{padding:7px 14px;font-size:14px;border-radius:8px}
+.btn-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}
+
+.sec-foot{display:flex;justify-content:space-between;gap:12px;margin-top:22px}
+
+/* word-help chips */
+.chip{display:inline;background:rgba(95,225,255,.1);border:0;border-bottom:1.5px dotted var(--e);color:#bff3ff;padding:0 4px;border-radius:4px;cursor:help;font-weight:400}
+.chip:hover{background:rgba(95,225,255,.2)}
+#pop{position:fixed;z-index:80;max-width:300px;background:var(--panel3);border:1px solid var(--line2);border-radius:12px;padding:12px 14px;box-shadow:0 14px 40px rgba(0,0,0,.45);font-size:15px}
+#pop b{display:block;color:var(--e);margin-bottom:2px;text-transform:capitalize}
+#pop p{margin:0}
+
+/* particle dots + small tables */
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px;vertical-align:-1px}
+.dot.p{background:var(--p)} .dot.n{background:var(--n)} .dot.e{background:var(--e);box-shadow:0 0 8px var(--e-glow)}
+.mini-table{border-collapse:collapse;margin:14px 0 4px;font-size:15px;min-width:300px}
+.mini-table th,.mini-table td{padding:7px 16px 7px 0;border-bottom:1px solid var(--line);text-align:left}
+.mini-table th{color:var(--muted);font-weight:500}
+.table-scroll{overflow-x:auto}
+.rules{display:grid;gap:8px;margin:12px 0}
+.rule{background:var(--panel2);border-radius:10px;padding:10px 14px}
+.rule small{color:var(--muted)}
+
+/* ---------- Bohr SVG ---------- */
+svg.bohr{width:100%;max-width:340px;height:auto;display:block;margin:0 auto;overflow:visible}
+.bohr .ring{fill:none;stroke:var(--line2);stroke-width:2}
+.bohr .ring.outer{stroke:rgba(255,211,107,.55);stroke-width:2.5}
+.bohr .ring-in{animation:ringIn .45s ease-out}
+@keyframes ringIn{from{opacity:0;stroke-width:8}to{opacity:1}}
+.bohr .nucleus{fill:url(#nucGrad);stroke:rgba(255,125,102,.6);stroke-width:1.5}
+.bohr .nt{fill:#fff;font-size:12.5px;font-weight:600;text-anchor:middle;font-family:var(--font)}
+.bohr .e{fill:var(--e);filter:drop-shadow(0 0 4px var(--e-glow));transform-box:view-box;transform-origin:0 0;
+  transition:transform .55s cubic-bezier(.2,.85,.25,1), opacity .35s, fill .3s}
+.bohr .e.val{fill:var(--val);filter:drop-shadow(0 0 5px rgba(255,211,107,.7))}
+.bohr.static .e{transition:none}
+.bohr .zone{fill:rgba(95,225,255,.06);stroke:var(--e);stroke-width:1.5;stroke-dasharray:4 3;cursor:pointer;opacity:.75;transition:fill .2s,opacity .2s}
+.bohr .zone:hover,.bohr .zone:focus{fill:rgba(95,225,255,.22);opacity:1;outline:none}
+.bohr .zone.bad{stroke:var(--bad);fill:rgba(251,113,133,.25)}
+.bohr.pulse .zone{animation:zonePulse 1.6s ease-in-out infinite}
+@keyframes zonePulse{50%{fill:rgba(95,225,255,.2)}}
+.bohr.mode-add .e{pointer-events:none}
+.bohr.mode-erase .zone{pointer-events:none;opacity:.25}
+.bohr.mode-erase .e{cursor:pointer}
+.bohr.mode-erase .e:hover{fill:var(--bad)}
+.bohr .sh{transform-box:view-box;transform-origin:150px 150px}
+.bohr.orbit .sh0{animation:spin 14s linear infinite}
+.bohr.orbit .sh1{animation:spin 24s linear infinite}
+.bohr.orbit .sh2{animation:spin 36s linear infinite}
+.bohr.orbit .sh3{animation:spin 50s linear infinite}
+.bohr.celebrate .sh{animation:spin 1.1s cubic-bezier(.3,0,.2,1) 1}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pin circle{fill:var(--panel3);stroke:var(--amber);stroke-width:2}
+.pin text{fill:var(--text);font-size:14px;font-weight:700;text-anchor:middle;font-family:var(--font)}
+.leader{stroke:var(--amber);stroke-width:1.5;stroke-dasharray:4 4;opacity:.8}
+
+/* ---------- start / hero ---------- */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center;margin:12px 0 6px}
+.hero h1{font-size:clamp(40px,7vw,72px);letter-spacing:-.025em;font-weight:700;line-height:1.02;margin:6px 0 14px}
+.hero .unit{color:var(--muted);margin:0;font-size:16px}
+.hero .lede{font-size:19px;max-width:44ch;color:#d3def0}
+.hero-fig{position:relative}
+.hero-fig svg{max-width:360px}
+.hero-cap{text-align:center;color:var(--muted);margin:4px 0 0;font-size:15px;min-height:1.6em}
+.hero-cap b{color:var(--text)}
+.start-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.start-grid .card{margin:0}
+.start-grid + .start-grid{margin-top:18px}
+.obj{border-left:4px solid var(--e)}
+.std{border-left:4px solid var(--c-noble)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;margin:8px 0 6px}
+.form-grid label{display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--muted);font-weight:500}
+input[type=text],input[type=number],input[type=password],select,.inp{
+  background:var(--bg2);border:1.5px solid var(--line2);border-radius:9px;padding:9px 11px;color:var(--text);font-size:16px;width:100%}
+input:focus,select:focus{border-color:var(--e);outline:none}
+.form-msg{color:var(--bad);min-height:1.4em;font-size:15px;margin:4px 0}
+.welcome{background:var(--panel2);border-radius:12px;padding:14px 16px}
+
+/* goals checklist */
+.goals{list-style:none;margin:6px 0;padding:0;display:grid;gap:8px}
+.goals li{display:flex;gap:10px;align-items:flex-start;font-size:15.5px}
+.box{flex:0 0 22px;width:22px;height:22px;border-radius:6px;border:2px solid var(--line2);display:grid;place-items:center;margin-top:1px;transition:.25s}
+.ok > .box,.mission.ok .mt > .box{background:var(--good);border-color:var(--good)}
+.ok > .box::after,.mission.ok .mt > .box::after{content:"";width:6px;height:11px;border:solid #06240f;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.ok{color:var(--text)}
+.goals li:not(.ok){color:var(--muted)}
+.just-ok > .box{animation:tickPop .6s cubic-bezier(.2,1.7,.4,1)}
+@keyframes tickPop{0%{transform:scale(.5)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
+
+/* unlock checklist */
+.unlock{background:var(--bg2);border-style:dashed}
+.unlock h3{font-size:17px;color:var(--muted);font-weight:500}
+.reqs{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.reqs li{display:flex;gap:10px;align-items:flex-start}
+.reqs li:not(.ok){color:var(--muted)}
+.unlock.all-done{border-color:var(--good);border-style:solid}
+
+/* ---------- quick checks ---------- */
+.qc-q{font-weight:500;font-size:18px;margin:4px 0 12px}
+.opts{display:grid;gap:9px}
+.opts.grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+.opt{display:flex;gap:12px;align-items:center;text-align:left;background:var(--panel2);border:1.5px solid var(--line2);border-radius:11px;padding:10px 14px;cursor:pointer;transition:border-color .2s, background .2s, transform .15s;width:100%}
+.opt:hover:not(:disabled){border-color:var(--e)}
+.opt .L{flex:0 0 30px;height:30px;border-radius:8px;background:var(--panel3);display:grid;place-items:center;font-weight:600}
+.opts.grid .opt{flex-direction:column;align-items:stretch;padding:10px}
+.opts.grid .opt .L{align-self:flex-start}
+.opts.grid .opt svg{max-width:170px;stroke-width:1}
+.opts.grid .ring{stroke-width:3}
+.opt.right{border-color:var(--good);background:rgba(74,222,128,.12)}
+.opt.right .L{background:var(--good);color:#06240f}
+.opt.wrong{border-color:var(--bad);background:rgba(251,113,133,.1);opacity:.75}
+.opt.wrong .L{background:var(--bad);color:#2a0710}
+.opt.picked{border-color:var(--e);background:rgba(95,225,255,.12)}
+.opt.picked .L{background:var(--e);color:#062430}
+.opt:disabled{cursor:default}
+body.show-key .opt[data-key]{box-shadow:0 0 0 2px var(--amber)}
+body.show-key .opt[data-key]::after{content:"key";margin-left:auto;font-size:12px;color:var(--amber);font-weight:600}
+.qc-fb{min-height:1.5em;margin:12px 0 0}
+.qc-fb.good{color:#b9f5cf} .qc-fb.bad{color:#ffc2cd}
+.qc-fig{margin:4px 0 10px}
+.qc-fig svg{max-width:280px;margin:0}
+.shake{animation:shake .45s}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+
+/* ---------- sorter (tap or drag) ---------- */
+.sorter .tray{display:flex;flex-wrap:wrap;gap:8px;min-height:50px;padding:10px;background:var(--bg2);border-radius:12px;border:1px dashed var(--line2)}
+.sorter .tray:empty::after{content:"All sorted";color:var(--good);font-size:14px;padding:6px}
+.token{background:var(--panel3);border:1.5px solid var(--line2);border-radius:9px;padding:8px 14px;font-weight:500;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;transition:transform .15s, border-color .15s, background .2s}
+.token.sel{border-color:var(--e);background:#20456a;transform:translateY(-2px)}
+.token.placed{cursor:default;border-color:var(--good);background:rgba(74,222,128,.14);animation:tickPop .45s}
+.token.el-token{display:inline-flex;gap:8px;align-items:center}
+.token.el-token .sym{font-weight:700;font-size:18px}
+.token.el-token .nm{font-size:13px;color:var(--muted)}
+.ghost-token{position:fixed;z-index:90;pointer-events:none;opacity:.92;transform:translate(-50%,-50%) rotate(-3deg);box-shadow:0 12px 28px rgba(0,0,0,.5)}
+.sorter .bins{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:12px}
+.bin{background:var(--panel2);border:1.5px solid var(--line2);border-radius:12px;padding:10px;min-height:96px;cursor:pointer;transition:border-color .2s, background .2s}
+.bin.hover,.bin:focus-visible{border-color:var(--e);background:#1f3a5e}
+.bin-label{font-size:14px;font-weight:600;color:var(--muted);margin-bottom:6px}
+.bin-drop{display:flex;flex-wrap:wrap;gap:6px}
+.sorter.rows .bins{grid-template-columns:1fr;gap:8px}
+.sorter.rows .bin{display:flex;align-items:center;gap:12px;min-height:54px;padding:8px 10px}
+.sorter.rows .bin-label{margin:0;width:32px;height:32px;border-radius:50%;border:2px solid var(--amber);display:grid;place-items:center;color:var(--text);flex:0 0 32px}
+.sorter.rows .bin-drop:empty::before{content:"Drop a label here";color:var(--dim);font-size:14px}
+.sort-msg{min-height:1.4em;margin:8px 0 0;font-size:15px}
+.label-wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center}
+.label-fig svg{max-width:360px}
+
+/* ---------- element tile explorer ---------- */
+.tile-explore{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center}
+.big-tile{--c:var(--c-alkali);width:190px;height:220px;border-radius:16px;background:color-mix(in srgb,var(--c) 18%,var(--panel));border:2.5px solid var(--c);position:relative;display:grid;grid-template-rows:auto 1fr auto auto;padding:12px;gap:2px}
+.part{background:transparent;border:2px dashed transparent;border-radius:8px;cursor:pointer;padding:2px 6px;transition:border-color .2s, background .2s}
+.part:hover{border-color:rgba(255,255,255,.35)}
+.part.seen{border-color:var(--good)}
+.part.active{background:rgba(255,255,255,.1);border-color:var(--e)}
+.p-z{justify-self:start;font-size:24px;font-weight:600}
+.p-sym{font-size:64px;font-weight:700;line-height:1;justify-self:center;align-self:center}
+.p-name{font-size:18px;justify-self:center}
+.p-mass{font-size:18px;justify-self:center;color:#d5def0}
+.part-info{background:var(--panel2);border-radius:12px;padding:14px 16px;min-height:120px}
+.part-info h4{margin:0 0 4px;color:var(--e);font-size:17px;font-weight:600}
+
+/* notebook tables */
+.notebook{width:100%;border-collapse:collapse;font-size:15px;margin-top:8px}
+.notebook th{color:var(--muted);font-weight:500;text-align:left;padding:6px 8px;border-bottom:1px solid var(--line2)}
+.notebook td{padding:7px 8px;border-bottom:1px solid var(--line)}
+.notebook input{width:76px;text-align:center;padding:7px}
+.notebook input.good{border-color:var(--good);background:rgba(74,222,128,.1)}
+.notebook input.badv{border-color:var(--bad);background:rgba(251,113,133,.1)}
+.mtile{display:inline-grid;grid-template-columns:auto auto;gap:0 8px;align-items:center;background:color-mix(in srgb,var(--c) 18%,var(--panel));border:1.5px solid var(--c);border-radius:8px;padding:4px 9px;font-size:12px;color:var(--muted);line-height:1.25}
+.mtile .s{grid-row:span 2;font-size:20px;font-weight:700;color:var(--text)}
+.fb-line{min-height:1.4em;margin:10px 0 0}
+.fb-line.good{color:#b9f5cf} .fb-line.bad{color:#ffc2cd}
+
+/* ---------- simulators ---------- */
+.sim{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+.sim-el{display:flex;gap:14px;align-items:center;background:var(--panel2);border-radius:12px;padding:12px}
+.sim-el .nm{font-size:20px;font-weight:600}
+.sim-el .ar{color:var(--muted);font-size:15px}
+.sim-el .ar b{color:var(--e);font-size:18px}
+.missions{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:10px}
+.mission{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.mission.ok{border-color:var(--good)}
+.mission .mt{display:flex;gap:10px;align-items:flex-start}
+.mission .mfb{font-size:14px;margin:6px 0 0 32px;min-height:0}
+.mission .btn{margin:8px 0 0 32px}
+.mission.ok .lockin{display:none}
+.counter{font-size:14px;color:var(--muted)}
+
+/* flipchart */
+.flip{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center;background:var(--bg2);border-radius:14px;padding:16px;margin-top:12px}
+.flip-step{color:var(--amber);font-weight:600;font-size:14px;margin:0}
+.flip-text{font-size:18px;min-height:3.4em}
+.flip-left{background:var(--panel2);border-radius:10px;padding:8px 12px;display:inline-block}
+.flip-left b{color:var(--e);font-size:20px}
+.flip-dots{display:flex;gap:6px;margin-top:10px}
+.flip-dots i{width:9px;height:9px;border-radius:50%;background:var(--line2);transition:.3s}
+.flip-dots i.on{background:var(--amber);transform:scale(1.25)}
+
+/* steppers */
+.steppers{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+.stp{background:var(--panel2);border-radius:10px;padding:8px;text-align:center}
+.stp .lab{font-size:13px;color:var(--muted)}
+.stp .row{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:4px}
+.stp button{width:32px;height:32px;border-radius:8px;border:1px solid var(--line2);background:var(--panel3);cursor:pointer;font-size:18px;font-weight:600;line-height:1}
+.stp output{min-width:26px;font-size:20px;font-weight:600}
+.target{display:flex;gap:14px;align-items:center;margin:4px 0 6px}
+.target .t-name{font-size:20px;font-weight:600}
+.progress-pips{display:flex;gap:6px}
+.progress-pips i{width:26px;height:8px;border-radius:4px;background:var(--line2);transition:.3s}
+.progress-pips i.on{background:var(--good)}
+
+/* builder */
+.builder{display:grid;grid-template-columns:1.05fr .95fr;gap:22px;align-items:start}
+.b-fig{background:var(--bg2);border-radius:14px;padding:12px;position:sticky;top:96px}
+.b-fig svg{max-width:420px}
+.b-note{text-align:center;color:var(--muted);font-size:14px;margin:6px 0 0}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.tab{background:var(--panel2);border:1.5px solid var(--line2);border-radius:999px;padding:6px 14px;font-weight:500;cursor:pointer;font-size:15px}
+.tab[aria-selected=true]{border-color:var(--e);background:#1f3a5e}
+.tab.ok::after{content:" ✓";color:var(--good);font-weight:700}
+fieldset{border:1px solid var(--line);border-radius:12px;padding:10px 12px 12px;margin:0 0 10px}
+legend{padding:0 6px;color:var(--muted);font-size:14px;font-weight:500}
+.nuc-in{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.nuc-in label{font-size:14px;color:var(--muted);display:flex;flex-direction:column;gap:3px}
+.seg{display:inline-flex;background:var(--bg2);border-radius:10px;padding:3px;border:1px solid var(--line2)}
+.seg button{border:0;background:transparent;padding:7px 16px;border-radius:8px;cursor:pointer;font-weight:500}
+.seg button[aria-pressed=true]{background:var(--e);color:#062430}
+.inline-stepper{display:inline-flex;align-items:center;gap:8px}
+.inline-stepper button{width:34px;height:34px;border-radius:8px;border:1px solid var(--line2);background:var(--panel3);cursor:pointer;font-size:18px;font-weight:600}
+.inline-stepper output{font-size:20px;font-weight:600;min-width:24px;text-align:center}
+.report{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:7px}
+.report li{display:flex;gap:10px;align-items:flex-start;font-size:15px}
+.report .ic{flex:0 0 22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700}
+.report .y .ic{background:var(--good);color:#06240f}
+.report .x .ic{background:var(--bad);color:#2a0710}
+.report .w .ic{background:var(--line2);color:var(--muted)}
+
+/* placement game */
+.place-prompt{font-size:17px;background:var(--bg2);border-radius:10px;padding:10px 14px;margin:8px 0}
+.place-prompt b{color:var(--e)}
+.num-fig svg{max-width:280px}
+.demo-cap{text-align:center;font-size:16px;min-height:2.8em;margin:6px 0}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:center}
+
+/* periodic table */
+.pt{display:grid;grid-template-columns:repeat(8,minmax(38px,1fr));gap:5px;max-width:460px}
+.pt .gh{text-align:center;font-size:12px;color:var(--muted);font-weight:500}
+.pt .tile{width:auto;height:48px;font-size:17px}
+.pt .tile.same{box-shadow:0 0 0 2px var(--val)}
+.pt .tile.seen::before{content:"";position:absolute;right:4px;top:4px;width:6px;height:6px;border-radius:50%;background:var(--good)}
+.pt-wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:center}
+.pt-info{text-align:center;min-height:3em;margin:4px 0 0}
+.pt-info b.v{color:var(--val)}
+.ans-grid{display:grid;grid-template-columns:repeat(10,minmax(34px,1fr));gap:5px;margin-top:10px}
+.ans-grid .tile{width:auto;height:44px;font-size:16px}
+
+/* final check */
+.fc-dots{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 14px}
+.fc-dots button{width:32px;height:32px;border-radius:8px;border:1.5px solid var(--line2);background:var(--panel2);cursor:pointer;font-size:13px;font-weight:600}
+.fc-dots button.ans{background:#1f3a5e;border-color:var(--e)}
+.fc-dots button.cur{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--amber)}
+.score-big{font-size:64px;font-weight:700;line-height:1;margin:6px 0}
+.score-big.pass{color:var(--good)} .score-big.fail{color:var(--amber)}
+.review-item{border-top:1px solid var(--line);padding:12px 0}
+.review-item .yours{color:#ffc2cd} .review-item .right{color:#b9f5cf}
+.attempts{font-size:15px;color:var(--muted)}
+.lock-note{background:rgba(246,185,59,.1);border:1px solid rgba(246,185,59,.5);border-radius:10px;padding:10px 14px;font-size:15px}
+.review-box{background:var(--bg2);border-radius:12px;padding:12px 16px;margin:10px 0}
+.review-box li{margin:4px 0}
+
+/* results */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:12px 0}
+.stat{background:var(--panel2);border-radius:12px;padding:12px 14px}
+.stat .k{font-size:13px;color:var(--muted)}
+.stat .v{font-size:26px;font-weight:600}
+.who{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 16px;font-size:15px}
+.who span{color:var(--muted);display:block;font-size:13px}
+
+/* overlays */
+.overlay{position:fixed;inset:0;z-index:100;background:rgba(6,11,22,.86);backdrop-filter:blur(6px);display:grid;place-items:center;padding:20px}
+.overlay[hidden]{display:none}
+.modal{background:var(--panel);border:1px solid var(--line2);border-radius:18px;padding:24px;max-width:460px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.modal h3{font-size:22px;margin-bottom:6px}
+.lock-modal{border:2px solid var(--amber);text-align:center}
+.lock-icon{font-size:44px;line-height:1}
+.teacher-tools{display:grid;gap:8px;margin-top:12px}
+.drawer{position:fixed;right:16px;top:76px;z-index:60;width:min(360px,calc(100vw - 32px));background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.55)}
+.drawer[hidden]{display:none}
+.sheetbox{font-size:15px;color:var(--muted);margin:8px 0 0;min-height:1.4em}
+#toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);opacity:0;z-index:120;background:var(--panel3);border:1px solid var(--good);color:var(--text);border-radius:12px;padding:10px 18px;font-weight:500;transition:.35s;pointer-events:none;max-width:90vw;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:820px){
+  .hero,.start-grid,.sim,.builder,.flip,.two-col,.pt-wrap,.label-wrap,.tile-explore{grid-template-columns:1fr}
+  .b-fig{position:static}
+  .brand span{display:none}
+  .form-grid{grid-template-columns:1fr}
+  .big-tile{margin:0 auto}
+  .ans-grid{grid-template-columns:repeat(5,1fr)}
+  .steppers{grid-template-columns:repeat(2,1fr)}
+  .card{padding:18px 16px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .bohr.orbit .sh{animation:none!important}
+}
+@media print{
+  body{background:#fff;color:#000}
+  .topbar,.sec-foot,#toast,.drawer,.overlay,.no-print{display:none!important}
+  .screen{display:none!important}
+  #scr-10{display:block!important}
+  .card,.stat{background:#fff;border:1px solid #999;color:#000}
+  .stat .k,.who span,.muted{color:#333}
+  .goals li:not(.ok){color:#333}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <radialGradient id="nucGrad" cx="40%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#ff9b84"/>
+      <stop offset="55%" stop-color="#d9563f"/>
+      <stop offset="100%" stop-color="#7a2c22"/>
+    </radialGradient>
+  </defs>
+</svg>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="5" fill="#e0654f"/><circle cx="20" cy="20" r="11" fill="none" stroke="#35496f" stroke-width="2"/><circle cx="20" cy="20" r="17" fill="none" stroke="#35496f" stroke-width="2"/><circle cx="20" cy="9" r="2.6" fill="#5fe1ff"/><circle cx="37" cy="20" r="2.6" fill="#5fe1ff"/><circle cx="20" cy="37" r="2.6" fill="#5fe1ff"/></svg>
+      <span>Drawing Bohr Models</span>
+    </div>
+    <nav class="navtiles" id="navTiles" aria-label="Lesson sections"></nav>
+    <div class="top-actions">
+      <button class="top-btn" id="goalsBtn" type="button" aria-expanded="false" aria-controls="goalsDrawer">Goals 0/6</button>
+      <button class="top-btn" id="teacherBtn" type="button">Teacher</button>
+    </div>
+  </div>
+</header>
+
+<main id="app">
+  <!-- START -->
+  <section class="screen" id="scr-0" aria-label="Start">
+    <div class="hero">
+      <div>
+        <p class="unit">Chemistry, Unit 2: Ions, Periodic Trends and Bonding</p>
+        <h1>Drawing Bohr Models</h1>
+        <p class="lede">Count an atom's particles, fill its shells, and draw it the class way. Nine short sections, at your own pace.</p>
+      </div>
+      <div class="hero-fig">
+        <svg id="heroSvg" aria-label="A sodium atom building itself electron by electron"></svg>
+        <p class="hero-cap" id="heroCap"></p>
+      </div>
+    </div>
+
+    <div class="start-grid">
+      <section class="card obj">
+        <span class="tag">Objective</span>
+        <p>I can draw a Bohr model for any of the first 20 elements and use it to find how many valence electrons an atom has.</p>
+      </section>
+      <section class="card std">
+        <span class="tag">Standard</span>
+        <p><b>NGSS HS-PS1-1.</b> Use the periodic table as a model to predict the relative properties of elements based on the patterns of electrons in the outermost energy level of atoms.</p>
+      </section>
+    </div>
+
+    <div class="start-grid">
+      <section class="card" id="startCard">
+        <span class="tag">Before you start</span>
+        <div id="welcomeBack" class="welcome hidden"></div>
+        <div id="startForm">
+          <div class="form-grid">
+            <label>First name<input type="text" id="fFirst" autocomplete="given-name"></label>
+            <label>Last name<input type="text" id="fLast" autocomplete="family-name"></label>
+            <label>Period
+              <select id="fPeriod">
+                <option value="">Choose your period</option>
+                <option>1</option><option>2</option><option>3</option><option>4</option>
+                <option>5</option><option>6</option><option>7</option><option>8</option>
+              </select>
+            </label>
+            <label>Teacher's name<select id="fTeacher"></select></label>
+            <label>Student ID<input type="text" id="fSid" inputmode="numeric" autocomplete="off"></label>
+          </div>
+          <p class="form-msg" id="formMsg" aria-live="polite"></p>
+          <button class="btn primary" id="fStart" type="button">Start the lesson</button>
+        </div>
+      </section>
+      <section class="card">
+        <span class="tag">Your goals</span>
+        <ul class="goals" id="goalsStart"></ul>
+        <p class="small muted">These check themselves off as you finish sections. Your progress saves on this device.</p>
+      </section>
+    </div>
+  </section>
+
+  <section class="screen" id="scr-1"></section>
+  <section class="screen" id="scr-2"></section>
+  <section class="screen" id="scr-3"></section>
+  <section class="screen" id="scr-4"></section>
+  <section class="screen" id="scr-5"></section>
+  <section class="screen" id="scr-6"></section>
+  <section class="screen" id="scr-7"></section>
+  <section class="screen" id="scr-8"></section>
+  <section class="screen" id="scr-9"></section>
+  <section class="screen" id="scr-10"></section>
+</main>
+
+<!-- goals drawer -->
+<aside class="drawer" id="goalsDrawer" hidden aria-label="Your goals">
+  <h3 style="font-size:18px;margin-bottom:10px">Your goals</h3>
+  <ul class="goals" id="goalsDrawerList"></ul>
+  <div class="btn-row"><button class="btn ghost sm" id="goalsClose" type="button">Close</button></div>
+</aside>
+
+<!-- word help popover -->
+<div id="pop" role="dialog" aria-live="polite" hidden><b></b><p></p></div>
+
+<!-- teacher modal -->
+<div class="overlay" id="teacherOv" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="tTitle">
+    <h3 id="tTitle">Teacher view</h3>
+    <div id="tLogin">
+      <p class="muted small">Enter the teacher code.</p>
+      <input type="password" id="tCode" autocomplete="off" aria-label="Teacher code">
+      <p class="form-msg" id="tMsg"></p>
+      <div class="btn-row"><button class="btn primary" id="tGo" type="button">Open teacher view</button><button class="btn ghost" id="tCancel" type="button">Cancel</button></div>
+    </div>
+    <div id="tPanel" class="hidden">
+      <p class="small muted" id="tInfo"></p>
+      <div class="teacher-tools">
+        <button class="btn ghost" id="tUnlock" type="button">Unlock every section</button>
+        <button class="btn ghost" id="tKey" type="button">Show answer key</button>
+        <button class="btn ghost" id="tEndLock" type="button">End lockdown for this check</button>
+        <button class="btn ghost" id="tSend" type="button">Send this student's scores to the sheet</button>
+        <button class="btn ghost" id="tReset" type="button">Reset this device (erase progress)</button>
+        <p class="sheetbox sheetStatus small" aria-live="polite"></p>
+      </div>
+      <div class="btn-row"><button class="btn primary" id="tClose" type="button">Close</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- lockdown -->
+<div class="overlay" id="lockOv" hidden>
+  <div class="modal lock-modal" role="alertdialog" aria-modal="true" aria-labelledby="lockTitle">
+    <div class="lock-icon" aria-hidden="true">🔒</div>
+    <h3 id="lockTitle">Your final check is locked</h3>
+    <p class="muted">You left the page or exited full screen. Ask your teacher to unlock it.</p>
+    <input type="password" id="lockCode" autocomplete="off" aria-label="Teacher unlock code" placeholder="Teacher code">
+    <p class="form-msg" id="lockMsg"></p>
+    <button class="btn amber" id="lockGo" type="button">Unlock</button>
+  </div>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="sheets-config.js"></script>
+<script>
+(() => {
+'use strict';
+
+/* =========================================================
+   SETTINGS
+   ========================================================= */
+const KEY = 'fate_chem_bohr_models_v1';
+const TEACHER_CODE = 'Austin';
+const LESSON = 'Drawing Bohr Models';
+/* Google Sheets + teacher list: same setup as the formative assessments.
+   If sheets-config.js (next to this file on the site) defines TEACHERS or SHEETS_WEBHOOK_URL, those win. */
+const BACKUP_URL = 'https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const BACKUP_TEACHERS = ['Austin', 'Mueller', 'McCue', 'Arce', 'Trimm', 'Garcia'];
+function teacherList() { try { if (typeof TEACHERS !== 'undefined' && Array.isArray(TEACHERS) && TEACHERS.length) return TEACHERS.map(String).filter(Boolean); } catch (e) {} return BACKUP_TEACHERS; }
+function sheetURL() { try { if (typeof SHEETS_WEBHOOK_URL !== 'undefined' && SHEETS_WEBHOOK_URL && String(SHEETS_WEBHOOK_URL).indexOf('PASTE') < 0) return String(SHEETS_WEBHOOK_URL); } catch (e) {} return BACKUP_URL; }
+const PASS_SCORE = 8, FC_LEN = 10;
+const LOCK_ON = /github\.io$/i.test(location.hostname) || new URLSearchParams(location.search).has('lockdown');
+const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const sum = a => a.reduce((x, y) => x + y, 0);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+/* =========================================================
+   ELEMENT DATA (first 20)
+   ========================================================= */
+const EL = [
+  ['H', 'Hydrogen', '1.008', 1, 1, 'nonmetal'], ['He', 'Helium', '4.003', 18, 1, 'noble'],
+  ['Li', 'Lithium', '6.94', 1, 2, 'alkali'], ['Be', 'Beryllium', '9.012', 2, 2, 'alkaline'],
+  ['B', 'Boron', '10.81', 13, 2, 'metalloid'], ['C', 'Carbon', '12.011', 14, 2, 'nonmetal'],
+  ['N', 'Nitrogen', '14.007', 15, 2, 'nonmetal'], ['O', 'Oxygen', '15.999', 16, 2, 'nonmetal'],
+  ['F', 'Fluorine', '18.998', 17, 2, 'halogen'], ['Ne', 'Neon', '20.180', 18, 2, 'noble'],
+  ['Na', 'Sodium', '22.990', 1, 3, 'alkali'], ['Mg', 'Magnesium', '24.305', 2, 3, 'alkaline'],
+  ['Al', 'Aluminum', '26.982', 13, 3, 'post'], ['Si', 'Silicon', '28.086', 14, 3, 'metalloid'],
+  ['P', 'Phosphorus', '30.974', 15, 3, 'nonmetal'], ['S', 'Sulfur', '32.06', 16, 3, 'nonmetal'],
+  ['Cl', 'Chlorine', '35.45', 17, 3, 'halogen'], ['Ar', 'Argon', '39.948', 18, 3, 'noble'],
+  ['K', 'Potassium', '39.098', 1, 4, 'alkali'], ['Ca', 'Calcium', '40.078', 2, 4, 'alkaline']
+].map((a, i) => ({ z: i + 1, sym: a[0], name: a[1], massStr: a[2], mass: parseFloat(a[2]), group: a[3], period: a[4], cat: a[5] }));
+const E = z => EL[z - 1];
+const bySym = s => EL.find(e => e.sym === s);
+const massNum = z => Math.round(E(z).mass);
+const neutrons = z => massNum(z) - z;
+function arr(z) { const caps = [2, 8, 8, 8], out = []; let left = z; for (const c of caps) { if (left <= 0) break; const k = Math.min(c, left); out.push(k); left -= k; } return out; }
+const valence = z => arr(z)[arr(z).length - 1];
+/* Class rule: one at a time top, right, bottom, left; the 5th pairs with the 1st, and so on. */
+function conv(n) { n = Math.max(0, Math.min(8, n)); const b = Math.floor(n / 4), r = n % 4; return [0, 1, 2, 3].map(s => b + (s < r ? 1 : 0)); }
+const norm = s => Array.isArray(s) ? s : conv(s);
+const SIDE = ['top', 'right', 'bottom', 'left'];
+const CAP = [2, 8, 8, 8];
+
+/* =========================================================
+   GLOSSARY (word-help chips)
+   ========================================================= */
+const GLOSS = {
+  nucleus: 'The tiny, dense center of an atom. It holds the protons and neutrons.',
+  proton: 'A particle in the nucleus with a positive (+) charge. The number of protons tells you which element it is.',
+  neutron: 'A particle in the nucleus with no charge.',
+  electron: 'A tiny particle with a negative (−) charge. Electrons are found in shells around the nucleus.',
+  shell: 'One of the circles around the nucleus where electrons are found. Also called an energy level.',
+  'energy level': 'Another name for a shell. Shells closer to the nucleus have lower energy.',
+  'Bohr model': 'A simple drawing of an atom: nucleus in the middle, circles for shells, dots for electrons.',
+  'atomic number': 'The whole number on a periodic table tile. It equals the number of protons.',
+  'atomic mass': 'The decimal number on a periodic table tile. Round it to get the mass number.',
+  'mass number': 'Protons + neutrons. Find it by rounding the atomic mass to the nearest whole number.',
+  neutral: 'Having no overall charge. A neutral atom has the same number of electrons as protons.',
+  'electron arrangement': 'The number of electrons in each shell, written from the inside out, like 2, 8, 1.',
+  'valence electrons': 'The electrons in the outermost shell. They decide how an atom reacts with other atoms.',
+  group: 'A column of the periodic table. Elements in the same group have the same number of valence electrons.'
+};
+const c = (term, label) => `<button type="button" class="chip" data-term="${term}">${label || term}</button>`;
+
+/* =========================================================
+   STATE (saved on this device)
+   ========================================================= */
+const DEF = () => ({
+  v: 1, student: null, cur: 0, reqs: {}, secDone: {}, qc: {}, tasks: {},
+  final: { attempts: [], passed: false, best: 0, current: null, reviewAt: 0 },
+  lockouts: 0, locked: false, lockActive: false, teacherUnlock: false, startedAt: null, completedAt: null
+});
+let S;
+try {
+  const raw = JSON.parse(localStorage.getItem(KEY) || 'null');
+  S = Object.assign(DEF(), raw || {});
+  S.final = Object.assign(DEF().final, S.final || {});
+} catch (e) { S = DEF(); }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* storage blocked: keep going */ } }
+
+/* =========================================================
+   BOHR MODEL RENDERING
+   ========================================================= */
+const R = [48, 78, 106, 134], CX = 150, CY = 150, SIDE_ANG = [-90, 0, 90, 180];
+function ePos(r, side, k, count, gap = 8.8) {
+  let a = SIDE_ANG[side] * Math.PI / 180;
+  if (count === 2) { const off = gap / r; a += (k === 0 ? -off : off); }
+  return [CX + r * Math.cos(a), CY + r * Math.sin(a)];
+}
+const NS = 'http://www.w3.org/2000/svg';
+function svgEl(tag, attrs) { const el = document.createElementNS(NS, tag); for (const k in attrs) el.setAttribute(k, attrs[k]); return el; }
+
+/* Static Bohr model as an SVG string */
+function bohrInner(spec) {
+  const radii = spec.radii || R;
+  const shells = (spec.shells || []).map(norm);
+  const nr = spec.rings != null ? spec.rings : shells.length;
+  let s = '';
+  for (let i = 0; i < nr; i++) s += `<circle class="ring${spec.val && i === nr - 1 ? ' outer' : ''}" cx="150" cy="150" r="${radii[i]}"/>`;
+  if (!spec.noNucleus) {
+    const nrad = spec.nucR || 31;
+    s += `<circle class="nucleus" cx="150" cy="150" r="${nrad}"/>`;
+    const l1 = spec.l1 != null ? spec.l1 : (spec.p == null ? '?' : spec.p + ' p⁺');
+    const l2 = spec.l2 != null ? spec.l2 : (spec.n == null ? '' : spec.n + ' n⁰');
+    s += `<text class="nt" x="150" y="${l2 ? 146 : 154}">${l1}</text>`;
+    if (l2) s += `<text class="nt" x="150" y="163">${l2}</text>`;
+  }
+  shells.forEach((sides, i) => {
+    if (i >= nr) return;
+    const er = spec.er || 6.5;
+    sides.forEach((cnt, sd) => { for (let k = 0; k < cnt; k++) { const [x, y] = ePos(radii[i], sd, k, cnt, er + 2.6); s += `<circle class="e${spec.val && i === nr - 1 ? ' val' : ''}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${er}"/>`; } });
+  });
+  return s;
+}
+function bohrSVG(spec, cls = '') {
+  return `<svg viewBox="0 0 300 300" class="bohr static ${cls}" role="img" aria-label="${esc(spec.aria || 'Bohr model')}">${bohrInner(spec)}</svg>`;
+}
+
+/* Live, animated Bohr model */
+class BohrView {
+  constructor(svg, o = {}) {
+    this.svg = svg; this.o = o;
+    svg.setAttribute('viewBox', '0 0 300 300');
+    svg.classList.add('bohr');
+    svg.innerHTML = '<g class="rings"></g><g class="zones"></g><g class="nuc"><circle class="nucleus" cx="150" cy="150" r="31"></circle><text class="nt" x="150" y="146"></text><text class="nt" x="150" y="163"></text></g><g class="els"><g class="sh sh0"></g><g class="sh sh1"></g><g class="sh sh2"></g><g class="sh sh3"></g></g>';
+    this.ringsG = $('.rings', svg); this.zonesG = $('.zones', svg);
+    this.nt = $$('.nt', svg); this.shG = $$('.sh', svg);
+    this.map = new Map();
+    this.st = { p: null, n: null, shells: [], rings: null, val: false, zones: null };
+    const act = (e) => {
+      const z = e.target.closest && e.target.closest('.zone');
+      if (z && this.o.onZone) { this.o.onZone(+z.dataset.shell, +z.dataset.side, z); return true; }
+      const el = e.target.closest && e.target.closest('.e');
+      if (el && this.o.onElectron) { this.o.onElectron(+el.dataset.shell, +el.dataset.side, el); return true; }
+      return false;
+    };
+    svg.addEventListener('click', act);
+    svg.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && act(e)) e.preventDefault(); });
+  }
+  set(p) { Object.assign(this.st, p); this.draw(); }
+  draw() {
+    const st = this.st, shells = (st.shells || []).map(norm);
+    const nr = st.rings != null ? st.rings : shells.length;
+    // rings
+    while (this.ringsG.children.length < nr) {
+      const i = this.ringsG.children.length;
+      this.ringsG.appendChild(svgEl('circle', { cx: 150, cy: 150, r: R[i], class: 'ring ring-in' }));
+    }
+    while (this.ringsG.children.length > nr) this.ringsG.lastChild.remove();
+    [...this.ringsG.children].forEach((ci, i) => ci.classList.toggle('outer', !!st.val && i === nr - 1));
+    // nucleus labels
+    const l1 = st.l1 != null ? st.l1 : (st.p == null ? '?' : st.p + ' p⁺');
+    const l2 = st.l2 != null ? st.l2 : (st.n == null ? '' : st.n + ' n⁰');
+    this.nt[0].textContent = l1; this.nt[1].textContent = l2;
+    this.nt[0].setAttribute('y', l2 ? 146 : 154);
+    // zones
+    this.zonesG.innerHTML = '';
+    if (st.zones) {
+      const list = st.zones === 'all' ? [...Array(nr).keys()] : st.zones;
+      for (const i of list) {
+        if (i >= nr) continue;
+        for (let s = 0; s < 4; s++) {
+          const [x, y] = ePos(R[i], s, 0, 1);
+          this.zonesG.appendChild(svgEl('circle', { cx: x, cy: y, r: 16, class: 'zone', 'data-shell': i, 'data-side': s, tabindex: 0, role: 'button', 'aria-label': `Shell ${i + 1}, ${SIDE[s]}` }));
+        }
+      }
+    }
+    // electrons (diffed so moves animate)
+    const want = new Map();
+    shells.forEach((sides, i) => { if (i >= nr) return; sides.forEach((cnt, sd) => { for (let k = 0; k < cnt; k++) want.set(`${i}-${sd}-${k}`, ePos(R[i], sd, k, cnt)); }); });
+    for (const [key, el] of this.map) {
+      if (!want.has(key)) {
+        this.map.delete(key);
+        el.style.opacity = '0';
+        el.style.transform = `translate(${el._x}px,${el._y}px) scale(0)`;
+        setTimeout(() => el.remove(), 380);
+      }
+    }
+    const instant = REDUCED || this.o.instant;
+    for (const [key, [x, y]] of want) {
+      const [i, sd] = key.split('-').map(Number);
+      let el = this.map.get(key);
+      if (!el) {
+        el = svgEl('circle', { r: 6.5, cx: 0, cy: 0, class: 'e', 'data-shell': i, 'data-side': sd });
+        if (this.o.erasable) { el.setAttribute('tabindex', '0'); el.setAttribute('role', 'button'); el.setAttribute('aria-label', `Electron, shell ${i + 1}, ${SIDE[sd]}`); }
+        const a = SIDE_ANG[sd] * Math.PI / 180, rr = R[i] + 46;
+        if (!instant) {
+          el.style.transform = `translate(${CX + rr * Math.cos(a)}px,${CY + rr * Math.sin(a)}px) scale(.6)`;
+          el.style.opacity = '0';
+        }
+        this.shG[i].appendChild(el);
+        this.map.set(key, el);
+        if (!instant) el.getBoundingClientRect();
+      }
+      el._x = x; el._y = y;
+      el.style.transform = `translate(${x}px,${y}px)`;
+      el.style.opacity = '1';
+      el.classList.toggle('val', !!st.val && i === nr - 1);
+    }
+  }
+  celebrate() {
+    if (REDUCED) return;
+    this.svg.classList.remove('celebrate'); void this.svg.getBoundingClientRect();
+    this.svg.classList.add('celebrate');
+    setTimeout(() => this.svg.classList.remove('celebrate'), 1200);
+  }
+}
+
+/* small element tile chip */
+const mtile = (z) => { const e = E(z); return `<span class="mtile cat-${e.cat}"><span class="s">${e.sym}</span><span>${e.z}</span><span>${e.massStr}</span></span>`; };
+
+/* =========================================================
+   UI HELPERS
+   ========================================================= */
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('on');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('on'), 2600);
+}
+function shake(el) { if (!el) return; el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); setTimeout(() => el.classList.remove('shake'), 500); }
+const card = (kind, title, body, extra = '') => {
+  const label = { read: 'Read', try: 'Try it', qc: 'Quick check', final: 'Final check' }[kind];
+  const cls = kind === 'final' ? 'qc' : kind;
+  return `<section class="card k-${cls}" ${extra}><span class="tag">${label}</span>${title ? `<h3>${title}</h3>` : ''}${body}</section>`;
+};
+
+/* Quick check (A–D) */
+function makeQC(root, cfg) {
+  const st = S.qc[cfg.id] || (S.qc[cfg.id] = { done: false, first: null, tries: 0 });
+  const opts = cfg.opts.map((o, i) => `<button type="button" class="opt" data-i="${i}" ${i === cfg.ans ? 'data-key="1"' : ''}><span class="L">${'ABCD'[i]}</span><span class="ot">${o}</span></button>`).join('');
+  root.innerHTML = `${cfg.fig ? `<div class="qc-fig">${cfg.fig}</div>` : ''}<p class="qc-q">${cfg.q}</p><div class="opts ${cfg.grid ? 'grid' : ''}">${opts}</div><p class="qc-fb" aria-live="polite"></p>`;
+  const fb = $('.qc-fb', root), btns = $$('.opt', root);
+  const finish = () => {
+    btns.forEach(b => { b.disabled = true; if (+b.dataset.i === cfg.ans) b.classList.add('right'); });
+    fb.className = 'qc-fb good'; fb.innerHTML = `<strong>Correct.</strong> ${cfg.explain}`;
+  };
+  if (st.done) finish();
+  btns.forEach(b => b.addEventListener('click', () => {
+    if (st.done) return;
+    const i = +b.dataset.i; st.tries++;
+    if (i === cfg.ans) {
+      if (st.first === null) st.first = true;
+      st.done = true; finish(); save();
+      cfg.onCorrect && cfg.onCorrect();
+    } else {
+      if (st.first === null) st.first = false;
+      b.classList.add('wrong'); b.disabled = true; shake(b);
+      fb.className = 'qc-fb bad'; fb.innerHTML = `<strong>Not quite.</strong> ${cfg.hint || 'Look back at the Read card and try again.'}`;
+      save();
+    }
+  }));
+}
+
+/* Tap-or-drag sorter */
+function makeSorter(root, cfg) {
+  const doneAlready = !!S.tasks[cfg.id];
+  root.innerHTML = `<div class="sorter ${cfg.layout || ''}"><div class="tray" aria-label="Items to sort"></div><div class="bins">${cfg.bins.map(b => `<div class="bin" data-bin="${b.id}" tabindex="0" role="button" aria-label="${esc(b.aria || b.label)}"><div class="bin-label">${b.label}</div><div class="bin-drop"></div></div>`).join('')}</div><p class="sort-msg" aria-live="polite"></p></div>`;
+  const tray = $('.tray', root), msg = $('.sort-msg', root);
+  const binOf = id => cfg.bins.find(b => b.accepts.includes(id));
+  const toks = shuffle(cfg.tokens).map(t => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'token' + (t.cls ? ' ' + t.cls : ''); b.dataset.id = t.id; b.innerHTML = t.label;
+    tray.appendChild(b); return b;
+  });
+  let sel = null, dragged = false;
+  const place = (tok, binEl, silent) => {
+    $('.bin-drop', binEl).appendChild(tok);
+    tok.classList.remove('sel'); tok.classList.add('placed'); tok.setAttribute('aria-disabled', 'true');
+    if (!silent && !tray.children.length) {
+      msg.innerHTML = `<span style="color:var(--good)">${cfg.doneMsg || 'All sorted. Nice work.'}</span>`;
+      S.tasks[cfg.id] = true; save(); cfg.onDone && cfg.onDone();
+    }
+  };
+  if (doneAlready) {
+    toks.forEach(t => place(t, $(`.bin[data-bin="${binOf(t.dataset.id).id}"]`, root), true));
+    msg.innerHTML = `<span style="color:var(--good)">${cfg.doneMsg || 'All sorted. Nice work.'}</span>`;
+    return;
+  }
+  const attempt = (tok, binEl) => {
+    if (!tok || tok.classList.contains('placed')) return;
+    const b = cfg.bins.find(x => x.id === binEl.dataset.bin);
+    if (b.accepts.includes(tok.dataset.id)) { place(tok, binEl); if (tray.children.length) msg.textContent = ''; }
+    else { shake(tok); shake(binEl); msg.innerHTML = `<span style="color:#ffc2cd">${(cfg.hint && cfg.hint(tok.dataset.id, b.id)) || 'Not there. Try a different spot.'}</span>`; tok.classList.remove('sel'); }
+    sel = null;
+  };
+  toks.forEach(tok => {
+    tok.addEventListener('click', () => {
+      if (dragged) { dragged = false; return; }
+      if (tok.classList.contains('placed')) return;
+      if (sel === tok) { tok.classList.remove('sel'); sel = null; return; }
+      if (sel) sel.classList.remove('sel');
+      sel = tok; tok.classList.add('sel');
+      msg.textContent = 'Now tap where it goes.';
+    });
+    let start = null, ghost = null, over = null;
+    tok.addEventListener('pointerdown', e => {
+      if (tok.classList.contains('placed') || e.button > 0) return;
+      start = { x: e.clientX, y: e.clientY }; dragged = false;
+      try { tok.setPointerCapture(e.pointerId); } catch (_) {}
+    });
+    tok.addEventListener('pointermove', e => {
+      if (!start) return;
+      if (!ghost && Math.hypot(e.clientX - start.x, e.clientY - start.y) > 6) {
+        ghost = tok.cloneNode(true); ghost.classList.add('ghost-token'); document.body.appendChild(ghost);
+        tok.style.opacity = '.35'; dragged = true;
+      }
+      if (ghost) {
+        ghost.style.left = e.clientX + 'px'; ghost.style.top = e.clientY + 'px';
+        const t = document.elementFromPoint(e.clientX, e.clientY);
+        const bin = t && t.closest('.bin');
+        if (over && over !== bin) over.classList.remove('hover');
+        over = bin && root.contains(bin) ? bin : null;
+        if (over) over.classList.add('hover');
+      }
+    });
+    const end = e => {
+      if (!start) return;
+      start = null;
+      if (ghost) {
+        ghost.remove(); ghost = null; tok.style.opacity = '';
+        if (over) { over.classList.remove('hover'); attempt(tok, over); over = null; }
+        setTimeout(() => { dragged = false; }, 50);
+      }
+    };
+    tok.addEventListener('pointerup', end);
+    tok.addEventListener('pointercancel', end);
+  });
+  $$('.bin', root).forEach(binEl => {
+    const go = () => { if (sel) attempt(sel, binEl); };
+    binEl.addEventListener('click', e => { if (e.target.closest('.token:not(.placed)')) return; go(); });
+    binEl.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+  });
+}
+
+/* =========================================================
+   SECTIONS
+   ========================================================= */
+const SECS = [null,
+  { z: 1, title: "What's inside an atom", min: 6 },
+  { z: 2, title: 'Count the particles', min: 8 },
+  { z: 3, title: 'Shells fill from the inside out', min: 8 },
+  { z: 4, title: 'Write the electron arrangement', min: 7 },
+  { z: 5, title: 'Place electrons the class way', min: 6 },
+  { z: 6, title: 'Build a complete Bohr model', min: 10 },
+  { z: 7, title: 'Valence electrons and the periodic table', min: 8 },
+  { z: 8, title: 'Practice: read and fix Bohr models', min: 8 },
+  { z: 9, title: 'Final check', min: 12 }
+];
+const REQS = {
+  1: [['label', 'Label all four parts of the lithium model'], ['qc1', 'Answer the quick check correctly']],
+  2: [['tile', 'Explore all four parts of the element tile'], ['table', 'Fill in the particle table correctly'], ['qc2', 'Answer the quick check correctly']],
+  3: [['m1', 'Mission 1: fill shell 1'], ['m2', 'Mission 2: start shell 3'], ['m3', 'Mission 3: fill shell 3'], ['qc3', 'Answer the quick check correctly']],
+  4: [['steps', 'Step through the phosphorus example'], ['build', 'Build 3 electron arrangements correctly'], ['qc4', 'Answer the quick check correctly']],
+  5: [['watch', 'Watch the placement demo'], ['place1', 'Place all of oxygen\'s electrons'], ['place2', 'Place phosphorus\'s outer shell'], ['qc5', 'Answer the quick check correctly']],
+  6: [['b6', 'Build carbon'], ['b11', 'Build sodium'], ['b17', 'Build chlorine'], ['qc6', 'Answer the quick check correctly']],
+  7: [['explore', 'Tap at least 6 elements on the table'], ['sort', 'Sort the elements by valence electrons'], ['qc7', 'Answer the quick check correctly']],
+  8: [['name', 'Name 4 atoms from their models'], ['fix', 'Find the mistake in all 4 models'], ['qc8', 'Answer the quick check correctly']],
+  9: [['pass', `Score ${PASS_SCORE} or more out of ${FC_LEN} on the final check`]]
+};
+const GOALS = [
+  { t: 'Count protons, neutrons, and electrons using the periodic table', sec: 2 },
+  { t: 'Fill shells from the inside out and write the electron arrangement', sec: 4 },
+  { t: 'Place electrons using the class rule', sec: 5 },
+  { t: 'Draw a complete Bohr model', sec: 6 },
+  { t: 'Find valence electrons from a model or the periodic table', sec: 7 },
+  { t: `Pass the final check (${PASS_SCORE} out of ${FC_LEN})`, sec: 9 }
+];
+
+function frame(n, inner) {
+  const s = SECS[n], e = E(s.z);
+  return `<header class="sec-head"><div class="tile big cat-${e.cat}" aria-hidden="true"><span class="z">${e.z}</span>${e.sym}</div><div><p class="sec-meta">Section ${n} of 9 · about ${s.min} min</p><h2>${s.title}</h2></div></header>
+  ${inner}
+  <section class="card unlock" id="unlock-${n}"><h3>To unlock the next section</h3><ul class="reqs"></ul></section>
+  <nav class="sec-foot"><button class="btn ghost" type="button" data-go="${n - 1}">Back</button><button class="btn primary" type="button" id="next-${n}" data-go="${n + 1}" disabled>${n < 9 ? 'Next section' : 'See your results'}</button></nav>`;
+}
+
+/* ---------------- Section 1 ---------------- */
+function build1(el) {
+  const li = { p: 3, n: 4, shells: [2, 1] };
+  const fig = `<svg viewBox="30 28 246 244" class="bohr static" role="img" aria-label="Lithium Bohr model with four numbered pins">
+    ${bohrInner(li)}
+    <line class="leader" x1="56" y1="58" x2="129" y2="129"/>
+    <line class="leader" x1="246" y1="50" x2="158" y2="70"/>
+    <line class="leader" x1="56" y1="242" x2="95" y2="205"/>
+    <line class="leader" x1="248" y1="234" x2="167" y2="148"/>
+    <g class="pin"><circle cx="50" cy="52" r="13"/><text x="50" y="57">1</text></g>
+    <g class="pin"><circle cx="254" cy="46" r="13"/><text x="254" y="51">2</text></g>
+    <g class="pin"><circle cx="50" cy="248" r="13"/><text x="50" y="253">3</text></g>
+    <g class="pin"><circle cx="254" cy="240" r="13"/><text x="254" y="245">4</text></g>
+  </svg>`;
+  el.innerHTML = frame(1,
+    card('read', 'Atoms have parts', `<div class="read-text">
+      <p>Everything around you is made of atoms. Each atom has a tiny center called the ${c('nucleus')}. The nucleus holds ${c('proton', 'protons')}, which have a positive charge, and ${c('neutron', 'neutrons')}, which have no charge.</p>
+      <p>Around the nucleus are ${c('electron', 'electrons')}, which have a negative charge. Electrons are found in ${c('shell', 'shells')}, also called ${c('energy level', 'energy levels')}.</p>
+      <p>A ${c('Bohr model')} is a simple drawing of an atom: the nucleus in the middle, circles for the shells, and dots for the electrons. It is not drawn to scale. If the nucleus were the size of a marble, the whole atom would be about the size of a football stadium.</p></div>
+      <div class="table-scroll"><table class="mini-table"><thead><tr><th>Particle</th><th>Charge</th><th>Where it is</th></tr></thead><tbody>
+      <tr><td><span class="dot p"></span>Proton</td><td>+1</td><td>Nucleus</td></tr>
+      <tr><td><span class="dot n"></span>Neutron</td><td>0</td><td>Nucleus</td></tr>
+      <tr><td><span class="dot e"></span>Electron</td><td>−1</td><td>Shells</td></tr></tbody></table></div>`) +
+    card('try', 'Label the model', `<p class="muted">This is a lithium atom. Drag each label to its number, or tap a label and then tap a number.</p>
+      <div class="label-wrap"><div class="label-fig">${fig}</div><div id="s1sort"></div></div>`) +
+    card('qc', '', '<div id="qc1"></div>'));
+  makeSorter($('#s1sort', el), {
+    id: 's1label', layout: 'rows',
+    tokens: [{ id: 'nuc', label: 'Nucleus' }, { id: 'el', label: 'Electron' }, { id: 'sh', label: 'Shell (energy level)' }, { id: 'pc', label: 'Number of protons' }],
+    bins: [{ id: '1', label: '1', aria: 'Pin 1', accepts: ['nuc'] }, { id: '2', label: '2', aria: 'Pin 2', accepts: ['el'] }, { id: '3', label: '3', aria: 'Pin 3', accepts: ['sh'] }, { id: '4', label: '4', aria: 'Pin 4', accepts: ['pc'] }],
+    hint: (t) => ({ nuc: 'The nucleus is the center circle.', el: 'Electrons are the small glowing dots.', sh: 'A shell is one of the big circles.', pc: '“3 p⁺” means 3 protons.' }[t]),
+    doneMsg: 'All four labeled.',
+    onDone: () => done(1, 'label')
+  });
+  makeQC($('#qc1', el), {
+    id: 'qc1', q: 'Where are electrons found in a Bohr model?',
+    opts: ['Inside the nucleus with the protons', 'On the circles (shells) around the nucleus', 'Spread evenly through the whole atom', 'Only in the shell closest to the nucleus'],
+    ans: 1, explain: 'Electrons sit in shells around the nucleus. Protons and neutrons are the particles packed into the nucleus.',
+    hint: 'Look at the table: where are electrons found?',
+    onCorrect: () => done(1, 'qc1')
+  });
+}
+
+/* ---------------- Section 2 ---------------- */
+function build2(el) {
+  el.innerHTML = frame(2,
+    card('read', 'Use the periodic table to count', `<div class="read-text">
+      <p>Each tile on the periodic table gives you what you need to count an atom's particles.</p></div>
+      <div class="rules">
+        <div class="rule"><span class="dot p"></span><b>Protons</b> = ${c('atomic number')}</div>
+        <div class="rule"><span class="dot e"></span><b>Electrons</b> = protons <small>(in a ${c('neutral')} atom)</small></div>
+        <div class="rule"><span class="dot n"></span><b>Neutrons</b> = ${c('mass number')} − atomic number</div>
+      </div>
+      <p class="read-text">To get the mass number, round the ${c('atomic mass')} to the nearest whole number. For sodium, 22.990 rounds to 23, so sodium has 23 − 11 = 12 neutrons.</p>`) +
+    card('try', 'Read an element tile', `<p class="muted">Tap each part of the sodium tile to see what it tells you.</p>
+      <div class="tile-explore">
+        <div class="big-tile">
+          <button type="button" class="part p-z" data-part="z">11</button>
+          <button type="button" class="part p-sym" data-part="sym">Na</button>
+          <button type="button" class="part p-name" data-part="name">Sodium</button>
+          <button type="button" class="part p-mass" data-part="mass">22.990</button>
+        </div>
+        <div><div class="part-info" id="partInfo" aria-live="polite"><p class="muted">Pick a part of the tile.</p></div><p class="counter" id="partCount"></p></div>
+      </div>`) +
+    card('try', 'Particle table', `<p class="muted">Fill in your lab notebook. Use each tile to count the particles in one neutral atom.</p>
+      <div class="table-scroll"><table class="notebook" id="ptable"><thead><tr><th>Element</th><th>Protons</th><th>Neutrons</th><th>Electrons</th></tr></thead><tbody></tbody></table></div>
+      <div class="btn-row"><button type="button" class="btn primary" id="ptCheck">Check my table</button></div>
+      <p class="fb-line" id="ptFb" aria-live="polite"></p>`) +
+    card('qc', '', '<div id="qc2"></div>'));
+
+  const INFO = {
+    z: ['Atomic number: 11', 'Sodium has 11 protons. Every sodium atom has 11. A neutral sodium atom also has 11 electrons.'],
+    sym: ['Symbol: Na', 'A one- or two-letter code. The first letter is always a capital. Na comes from natrium, the Latin name.'],
+    name: ['Name: Sodium', 'The name of the element.'],
+    mass: ['Atomic mass: 22.990', 'Round it to get the mass number: 23. Then neutrons = 23 − 11 = 12.']
+  };
+  const seen = new Set(S.tasks.s2parts || []);
+  const upd = () => { $('#partCount', el).textContent = `${seen.size} of 4 parts explored`; $$('.part', el).forEach(p => p.classList.toggle('seen', seen.has(p.dataset.part))); };
+  $$('.part', el).forEach(p => p.addEventListener('click', () => {
+    $$('.part', el).forEach(x => x.classList.remove('active')); p.classList.add('active');
+    const [h, t] = INFO[p.dataset.part];
+    $('#partInfo', el).innerHTML = `<h4>${h}</h4><p>${t}</p>`;
+    seen.add(p.dataset.part); S.tasks.s2parts = [...seen]; save(); upd();
+    if (seen.size === 4) done(2, 'tile');
+  }));
+  upd();
+
+  const ZS = [8, 12, 13, 17];
+  const tb = $('#ptable tbody', el);
+  tb.innerHTML = ZS.map(z => `<tr data-z="${z}"><td>${mtile(z)} <span class="small muted">${E(z).name}</span></td>
+    ${['p', 'n', 'e'].map(k => `<td><input type="number" inputmode="numeric" min="0" data-k="${k}" aria-label="${E(z).name} ${{ p: 'protons', n: 'neutrons', e: 'electrons' }[k]}"></td>`).join('')}</tr>`).join('');
+  const fill = () => ZS.forEach(z => { const row = $(`tr[data-z="${z}"]`, tb); $('[data-k=p]', row).value = z; $('[data-k=n]', row).value = neutrons(z); $('[data-k=e]', row).value = z; $$('input', row).forEach(i => i.classList.add('good')); });
+  if (S.tasks.s2table) fill();
+  $('#ptCheck', el).addEventListener('click', () => {
+    let wrong = { p: 0, n: 0, e: 0 }, blank = 0;
+    ZS.forEach(z => {
+      const row = $(`tr[data-z="${z}"]`, tb), want = { p: z, n: neutrons(z), e: z };
+      $$('input', row).forEach(i => {
+        const k = i.dataset.k;
+        i.classList.remove('good', 'badv');
+        if (i.value.trim() === '') { blank++; return; }
+        if (+i.value === want[k]) i.classList.add('good'); else { i.classList.add('badv'); wrong[k]++; }
+      });
+    });
+    const fb = $('#ptFb', el);
+    if (!blank && !wrong.p && !wrong.n && !wrong.e) {
+      fb.className = 'fb-line good'; fb.textContent = 'Every box is correct. Notice chlorine: 35.45 rounds to 35, so it has 18 neutrons.';
+      S.tasks.s2table = true; save(); done(2, 'table'); return;
+    }
+    const tips = [];
+    if (blank) tips.push(`Fill in all ${blank} empty box${blank > 1 ? 'es' : ''}.`);
+    if (wrong.p) tips.push('Protons = the atomic number (the whole number).');
+    if (wrong.n) tips.push('Neutrons: round the atomic mass first, then subtract the atomic number.');
+    if (wrong.e) tips.push('In a neutral atom, electrons = protons.');
+    fb.className = 'fb-line bad'; fb.textContent = tips.join(' ');
+  });
+  makeQC($('#qc2', el), {
+    id: 'qc2', q: 'Fluorine has atomic number 9 and atomic mass 18.998. How many neutrons does a fluorine atom have?',
+    opts: ['9', '10', '19', '28'], ans: 1,
+    explain: '18.998 rounds to 19. Then 19 − 9 = 10 neutrons.',
+    hint: 'Round the atomic mass, then subtract the atomic number.',
+    onCorrect: () => done(2, 'qc2')
+  });
+}
+
+/* ---------------- Section 3 ---------------- */
+function build3(el) {
+  el.innerHTML = frame(3,
+    card('read', 'Inner shells fill first', `<div class="read-text">
+      <p>Electrons fill the shell closest to the nucleus first, because that shell has the lowest energy. When a shell is full, the next electron starts a new shell farther out.</p>
+      <p>Think of a bookshelf you fill from the bottom shelf up. You don't start a new shelf until the one below it is full.</p></div>
+      <div class="table-scroll"><table class="mini-table"><thead><tr><th>Shell</th><th>Holds up to</th></tr></thead><tbody>
+      <tr><td>Shell 1</td><td>2 electrons</td></tr><tr><td>Shell 2</td><td>8 electrons</td></tr>
+      <tr><td>Shell 3</td><td>8 electrons*</td></tr><tr><td>Shell 4</td><td>the rest (K and Ca)</td></tr></tbody></table></div>
+      <p class="small muted">*For the first 20 elements, which are the ones you'll draw.</p>`) +
+    card('try', 'Electron filler', `<p class="muted">Each time you add an electron, the atom also gains a proton, so it becomes the next element. Use the missions to explore.</p>
+      <div class="sim">
+        <div><svg id="s3svg"></svg></div>
+        <div>
+          <div class="sim-el" id="s3el"></div>
+          <div class="btn-row"><button type="button" class="btn ghost" id="s3minus">− Remove</button><button type="button" class="btn primary" id="s3plus">+ Add electron</button></div>
+          <ul class="missions" id="s3m"></ul>
+        </div>
+      </div>
+      <h4 style="margin:18px 0 0;font-weight:500;color:var(--muted)">Lab notebook</h4>
+      <div class="table-scroll"><table class="notebook" id="s3nb"><thead><tr><th>Mission</th><th>Element</th><th>Arrangement</th></tr></thead><tbody></tbody></table></div>`) +
+    card('qc', '', '<div id="qc3"></div>'));
+
+  let z = 1;
+  const view = new BohrView($('#s3svg', el));
+  const M = [
+    { id: 'm1', t: 'Fill shell 1 completely. Which element is that?', z: 2, hint: zz => zz < 2 ? 'Shell 1 still has room.' : 'Too far. That element already started shell 2.' },
+    { id: 'm2', t: 'Find the first element that has an electron in shell 3.', z: 11, hint: zz => zz < 11 ? 'There is no electron in shell 3 yet.' : 'Go back. Find the very first one to use shell 3.' },
+    { id: 'm3', t: 'Find the element that fills shell 3 with 8 electrons. It is the last one before shell 4 starts.', z: 18, hint: zz => zz < 18 ? 'Shell 3 is not full yet.' : 'Too far. Shell 4 has already started.' }
+  ];
+  const draw = () => {
+    const e = E(z);
+    view.set({ p: z, n: neutrons(z), shells: arr(z) });
+    $('#s3el', el).innerHTML = `<div class="tile big cat-${e.cat}"><span class="z">${z}</span>${e.sym}</div><div><div class="nm">${e.name}</div><div class="ar">Arrangement <b>${arr(z).join(', ')}</b></div><div class="ar">${z} electron${z > 1 ? 's' : ''}</div></div>`;
+    $('#s3minus', el).disabled = z <= 1; $('#s3plus', el).disabled = z >= 20;
+    $$('.lockin', el).forEach(b => b.textContent = `Lock in ${e.name}`);
+  };
+  const nb = () => {
+    $('#s3nb tbody', el).innerHTML = M.map((m, i) => S.reqs['3.' + m.id] ? `<tr><td>${i + 1}</td><td>${E(m.z).name}</td><td>${arr(m.z).join(', ')}</td></tr>` : `<tr><td>${i + 1}</td><td class="muted">—</td><td class="muted">—</td></tr>`).join('');
+  };
+  $('#s3m', el).innerHTML = M.map((m, i) => `<li class="mission ${S.reqs['3.' + m.id] ? 'ok' : ''}" data-m="${i}"><div class="mt"><span class="box"></span><span><b>Mission ${i + 1}.</b> ${m.t}</span></div><button type="button" class="btn sm ghost lockin" ${S.reqs['3.' + m.id] ? 'disabled' : ''}>Lock in</button><p class="mfb" aria-live="polite" ${S.reqs['3.' + m.id] ? 'style="color:var(--good)"' : ''}>${S.reqs['3.' + m.id] ? `Done: ${E(m.z).name}, ${arr(m.z).join(', ')}.` : ''}</p></li>`).join('');
+  $$('.mission', el).forEach(li => {
+    const m = M[+li.dataset.m];
+    $('.lockin', li).addEventListener('click', () => {
+      const fb = $('.mfb', li);
+      if (z === m.z) { li.classList.add('ok', 'just-ok'); $('.lockin', li).disabled = true; fb.style.color = 'var(--good)'; fb.textContent = `Yes: ${E(z).name}, ${arr(z).join(', ')}.`; view.celebrate(); done(3, m.id); nb(); }
+      else { fb.style.color = '#ffc2cd'; fb.textContent = m.hint(z); shake(li); }
+    });
+  });
+  $('#s3plus', el).addEventListener('click', () => { if (z < 20) { z++; draw(); } });
+  $('#s3minus', el).addEventListener('click', () => { if (z > 1) { z--; draw(); } });
+  draw(); nb();
+  makeQC($('#qc3', el), {
+    id: 'qc3', q: 'Aluminum has 13 electrons. How are they arranged in shells?',
+    opts: ['2, 8, 3', '8, 5', '2, 11', '3, 8, 2'], ans: 0,
+    explain: 'Shell 1 takes 2, shell 2 takes 8, and the last 3 go into shell 3.',
+    hint: 'Start with the shell closest to the nucleus. It only holds 2.',
+    onCorrect: () => done(3, 'qc3')
+  });
+}
+
+/* ---------------- Section 4 ---------------- */
+function build4(el) {
+  el.innerHTML = frame(4,
+    card('read', 'A shortcut for shells', `<div class="read-text">
+      <p>Chemists write an ${c('electron arrangement')}: the number of electrons in each shell, from the inside out, separated by commas. Sulfur's is 2, 8, 6.</p>
+      <p>Step through the example to see how phosphorus gets its arrangement.</p></div>
+      <div class="flip">
+        <div><svg id="s4demo"></svg></div>
+        <div><p class="flip-step" id="s4step"></p><p class="flip-text" id="s4text"></p>
+          <div class="flip-left">Electrons left to place: <b id="s4left"></b></div>
+          <div class="flip-dots" id="s4dots"></div>
+          <div class="btn-row"><button type="button" class="btn ghost sm" id="s4back">Back</button><button type="button" class="btn primary sm" id="s4next">Next step</button></div>
+        </div>
+      </div>`) +
+    card('try', 'Arrangement builder', `<p class="muted">Set the number of electrons in each shell for the element shown, then check. Get 3 right to finish.</p>
+      <div class="sim">
+        <div><svg id="s4svg"></svg></div>
+        <div>
+          <div class="target" id="s4target"></div>
+          <div class="steppers" id="s4stp"></div>
+          <div class="btn-row"><button type="button" class="btn primary" id="s4check">Check</button><div class="progress-pips" id="s4pips" aria-label="Correct so far"><i></i><i></i><i></i></div></div>
+          <p class="fb-line" id="s4fb" aria-live="polite"></p>
+        </div>
+      </div>`) +
+    card('qc', '', '<div id="qc4"></div>'));
+
+  // worked example
+  const STEPS = [
+    { t: 'Find the number of electrons. Phosphorus has atomic number 15, so a neutral atom has 15 electrons.', sh: [], left: 15 },
+    { t: 'Fill shell 1. It holds 2. 15 − 2 = 13 left.', sh: [2], left: 13 },
+    { t: 'Fill shell 2. It holds up to 8. 13 − 8 = 5 left.', sh: [2, 8], left: 5 },
+    { t: 'Put the last 5 in shell 3. Nothing is left over.', sh: [2, 8, 5], left: 0 },
+    { t: 'Write the shells from the inside out: <b style="color:var(--e)">2, 8, 5</b>.', sh: [2, 8, 5], left: 0 }
+  ];
+  const demo = new BohrView($('#s4demo', el));
+  let step = 0;
+  $('#s4dots', el).innerHTML = STEPS.map(() => '<i></i>').join('');
+  const showStep = () => {
+    const s = STEPS[step];
+    demo.set({ p: 15, n: 16, shells: s.sh });
+    $('#s4step', el).textContent = `Step ${step + 1} of ${STEPS.length}`;
+    $('#s4text', el).innerHTML = s.t; $('#s4left', el).textContent = s.left;
+    $$('#s4dots i', el).forEach((d, i) => d.classList.toggle('on', i === step));
+    $('#s4back', el).disabled = step === 0; $('#s4next', el).disabled = step === STEPS.length - 1;
+    if (step === STEPS.length - 1) done(4, 'steps');
+  };
+  $('#s4next', el).addEventListener('click', () => { if (step < STEPS.length - 1) { step++; showStep(); } });
+  $('#s4back', el).addEventListener('click', () => { if (step > 0) { step--; showStep(); } });
+  showStep();
+
+  // builder
+  const POOL = shuffle(['N', 'Mg', 'Si', 'S', 'K', 'Ca', 'F', 'Al']).map(s => bySym(s).z);
+  let ti = 0, right = S.tasks.s4right || 0, counts = [0, 0, 0, 0];
+  const view = new BohrView($('#s4svg', el));
+  $('#s4stp', el).innerHTML = [0, 1, 2, 3].map(i => `<div class="stp"><div class="lab">Shell ${i + 1}</div><div class="row"><button type="button" data-i="${i}" data-d="-1" aria-label="Remove an electron from shell ${i + 1}">−</button><output id="s4o${i}">0</output><button type="button" data-i="${i}" data-d="1" aria-label="Add an electron to shell ${i + 1}">+</button></div></div>`).join('');
+  const pips = () => $$('#s4pips i', el).forEach((p, i) => p.classList.toggle('on', i < right));
+  const drawB = () => {
+    const z = POOL[ti % POOL.length];
+    let last = -1; counts.forEach((v, i) => { if (v > 0) last = i; });
+    view.set({ p: z, n: neutrons(z), shells: counts.slice(0, last + 1), rings: last + 1 });
+    counts.forEach((v, i) => $('#s4o' + i, el).textContent = v);
+  };
+  const newTarget = () => {
+    const z = POOL[ti % POOL.length], e = E(z);
+    counts = [0, 0, 0, 0];
+    $('#s4target', el).innerHTML = `<div class="tile big cat-${e.cat}"><span class="z">${z}</span>${e.sym}</div><div><div class="t-name">${e.name}</div><div class="muted small">${z} electrons</div></div>`;
+    $('#s4fb', el).textContent = '';
+    drawB();
+  };
+  $$('#s4stp button', el).forEach(b => b.addEventListener('click', () => {
+    const i = +b.dataset.i; counts[i] = Math.max(0, Math.min(8, counts[i] + +b.dataset.d)); drawB();
+  }));
+  $('#s4check', el).addEventListener('click', () => {
+    const z = POOL[ti % POOL.length], e = E(z), want = arr(z), fb = $('#s4fb', el);
+    const total = sum(counts);
+    let msg = '';
+    for (let i = 0; i < 4 && !msg; i++) if (counts[i] > CAP[i] && i < 3) msg = `Shell ${i + 1} holds only ${CAP[i]} electrons.`;
+    if (!msg) for (let i = 1; i < 4 && !msg; i++) if (counts[i] > 0 && counts[i - 1] < CAP[i - 1]) msg = `Fill shell ${i} before you start shell ${i + 1}.`;
+    if (!msg && total !== z) msg = `You placed ${total} electron${total === 1 ? '' : 's'}. ${e.name} has ${z}.`;
+    if (!msg && counts.join() !== [...want, 0, 0, 0, 0].slice(0, 4).join()) msg = 'Check each shell again from the inside out.';
+    if (msg) { fb.className = 'fb-line bad'; fb.textContent = msg; shake($('#s4stp', el)); return; }
+    right++; S.tasks.s4right = right; save(); pips(); view.celebrate();
+    fb.className = 'fb-line good'; fb.textContent = `Correct: ${e.name} is ${want.join(', ')}.`;
+    if (right >= 3) done(4, 'build');
+    setTimeout(() => { ti++; newTarget(); }, 1300);
+  });
+  pips(); newTarget();
+
+  makeQC($('#qc4', el), {
+    id: 'qc4', q: 'Calcium has 20 electrons. Which electron arrangement is correct?',
+    opts: ['2, 8, 10', '2, 8, 8, 2', '2, 18', '2, 8, 9, 1'], ans: 1,
+    explain: 'For the first 20 elements, shell 3 holds 8. The last 2 electrons start shell 4.',
+    hint: 'Shell 1 holds 2, shell 2 holds 8, and shell 3 holds 8 for these elements.',
+    onCorrect: () => done(4, 'qc4')
+  });
+}
+
+/* ---------------- Section 5 ---------------- */
+function build5(el) {
+  // numbered positions figure
+  let num = '<svg viewBox="0 0 300 300" class="bohr static" role="img" aria-label="Electron positions numbered 1 to 8 around one shell"><circle class="ring" cx="150" cy="150" r="104"/><circle class="nucleus" cx="150" cy="150" r="30"/>';
+  for (let i = 0; i < 8; i++) {
+    const side = i % 4, k = i < 4 ? 0 : 1, r = 104, off = 13 / r;
+    const a = SIDE_ANG[side] * Math.PI / 180 + (k === 0 ? -off : off);
+    const x = CX + r * Math.cos(a), y = CY + r * Math.sin(a);
+    num += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="11" fill="${i < 4 ? 'var(--e)' : 'var(--val)'}"/><text x="${x.toFixed(1)}" y="${(y + 4.5).toFixed(1)}" text-anchor="middle" font-size="13" font-weight="700" fill="#062430" font-family="Lexend, sans-serif">${i + 1}</text>`;
+  }
+  num += '</svg>';
+
+  el.innerHTML = frame(5,
+    card('read', 'Our class rule', `<div class="two-col">
+      <div class="read-text">
+        <p>Everyone in class places electrons the same way, so all our drawings match. In <b>every shell</b>:</p>
+        <ol>
+          <li>Place electrons one at a time: <b>top, right, bottom, left</b>.</li>
+          <li>Starting with the 5th electron, pair up: the 5th joins the 1st on top, then the right, the bottom, and the left.</li>
+        </ol>
+        <p class="small muted">Shell 1 only holds 2, so its electrons go top, then right.</p>
+      </div>
+      <div class="num-fig">${num}</div></div>`) +
+    card('try', 'Watch it', `<p class="muted">Watch neon's shell 2 fill up. Look for the moment the 5th electron arrives.</p>
+      <div class="two-col"><div><svg id="s5demo"></svg></div><div><p class="demo-cap" id="s5cap">Press play.</p><div class="btn-row" style="justify-content:center"><button type="button" class="btn primary" id="s5play">Play</button></div></div></div>`) +
+    card('try', 'Where does the next electron go?', `<p class="muted">Tap the spot on the glowing shell where the next electron belongs.</p>
+      <div class="sim">
+        <div><svg id="s5svg"></svg></div>
+        <div><div class="tabs" id="s5tabs" role="tablist"></div><p class="place-prompt" id="s5prompt" aria-live="polite"></p><p class="fb-line" id="s5fb" aria-live="polite"></p><div class="btn-row"><button type="button" class="btn ghost sm" id="s5again">Start this round over</button></div></div>
+      </div>`) +
+    card('qc', '', '<div id="qc5"></div>'));
+
+  // demo
+  const demo = new BohrView($('#s5demo', el));
+  const CAPS = ['Electron 1 goes on top.', 'Electron 2 goes on the right.', 'Electron 3 goes on the bottom.', 'Electron 4 goes on the left. Every side has one now.', 'Electron 5 pairs up with electron 1 on top.', 'Electron 6 pairs up on the right.', 'Electron 7 pairs up on the bottom.', 'Electron 8 pairs up on the left. Shell 2 is full.'];
+  demo.set({ p: 10, n: 10, shells: [2], rings: 2 });
+  let timer = null;
+  $('#s5play', el).addEventListener('click', () => {
+    clearInterval(timer); let k = 0;
+    demo.set({ shells: [2, 0], rings: 2 });
+    $('#s5cap', el).textContent = 'Shell 1 is already full (top, then right).';
+    $('#s5play', el).textContent = 'Replay';
+    timer = setInterval(() => {
+      k++; demo.set({ shells: [2, k] }); $('#s5cap', el).innerHTML = `<b>${CAPS[k - 1]}</b>`;
+      if (k >= 8) { clearInterval(timer); done(5, 'watch'); }
+    }, REDUCED ? 300 : 1100);
+  });
+
+  // placement game
+  const ROUNDS = [{ z: 8, targets: [2, 6], pre: 0, req: 'place1' }, { z: 15, targets: [2, 8, 5], pre: 2, req: 'place2' }];
+  const view = new BohrView($('#s5svg', el), { onZone: onZone });
+  view.svg.classList.add('pulse');
+  let r = 0, counts = [], active = 0, finished = false;
+  $('#s5tabs', el).innerHTML = ROUNDS.map((R0, i) => `<button type="button" class="tab ${S.reqs['5.' + R0.req] ? 'ok' : ''}" role="tab" data-r="${i}">Round ${i + 1}: ${E(R0.z).name}</button>`).join('');
+  $$('#s5tabs .tab', el).forEach(b => b.addEventListener('click', () => startRound(+b.dataset.r)));
+  function startRound(k) {
+    r = k; const R0 = ROUNDS[k]; finished = false;
+    counts = R0.targets.map((t, i) => i < R0.pre ? t : 0); active = R0.pre;
+    $$('#s5tabs .tab', el).forEach((b, i) => b.setAttribute('aria-selected', i === k));
+    $('#s5fb', el).textContent = '';
+    render();
+  }
+  function render() {
+    const R0 = ROUNDS[r];
+    view.set({ p: R0.z, n: neutrons(R0.z), shells: counts.slice(0, active + 1), rings: active + 1, zones: finished ? null : [active] });
+    const placed = sum(counts) - (R0.pre ? sum(R0.targets.slice(0, R0.pre)) : 0);
+    const toPlace = sum(R0.targets) - (R0.pre ? sum(R0.targets.slice(0, R0.pre)) : 0);
+    $('#s5prompt', el).innerHTML = finished
+      ? `<b>${E(R0.z).name} done.</b> ${R0.pre ? 'Shell 3 has a pair on top and single electrons on the other three sides.' : 'Shell 2 has pairs on the top and right, and single electrons on the bottom and left.'}`
+      : `${E(R0.z).name}: electron <b>${placed + 1}</b> of ${toPlace}. It goes in <b>shell ${active + 1}</b>.`;
+  }
+  function onZone(i, s, zEl) {
+    if (finished || i !== active) return;
+    const cnt = counts[i], expect = cnt < 4 ? cnt : cnt - 4;
+    if (s !== expect) {
+      zEl.classList.add('bad'); setTimeout(() => zEl.classList.remove('bad'), 600);
+      $('#s5fb', el).className = 'fb-line bad';
+      $('#s5fb', el).textContent = cnt < 4 ? `Not there. Go around: top, right, bottom, left. This is electron ${cnt + 1} in this shell.` : `Every side has one already, so start pairing. Pairs go in the same order: top, right, bottom, left.`;
+      return;
+    }
+    $('#s5fb', el).textContent = '';
+    counts[i]++;
+    const R0 = ROUNDS[r];
+    if (counts[i] >= R0.targets[i]) {
+      if (i + 1 < R0.targets.length) active++;
+      else { finished = true; done(5, R0.req); $$('#s5tabs .tab', el)[r].classList.add('ok'); view.celebrate(); $('#s5fb', el).className = 'fb-line good'; $('#s5fb', el).textContent = r === 0 ? 'Round 1 complete. Try round 2.' : 'Both rounds complete.'; if (r === 0) setTimeout(() => { if (r === 0) startRound(1); }, 1800); }
+    }
+    render();
+  }
+  $('#s5again', el).addEventListener('click', () => startRound(r));
+  startRound(S.reqs['5.place1'] && !S.reqs['5.place2'] ? 1 : 0);
+
+  const one = (sides) => bohrSVG({ radii: [104], shells: [sides], l1: '', l2: '', nucR: 34, er: 13, aria: 'One shell with six electrons' });
+  makeQC($('#qc5', el), {
+    id: 'qc5', q: 'Which drawing follows the class rule for 6 electrons in one shell?',
+    opts: [one([2, 2, 2, 0]), one([1, 2, 1, 2]), one([2, 2, 1, 1]), one([2, 1, 2, 1])], ans: 2, grid: true,
+    explain: 'Electrons 1–4 go top, right, bottom, left. Electron 5 pairs on top and electron 6 pairs on the right.',
+    hint: 'After one on every side, pairing starts at the top, then the right.',
+    onCorrect: () => done(5, 'qc5')
+  });
+}
+
+/* ---------------- Section 6 ---------------- */
+function build6(el) {
+  const MIS = [6, 11, 17];
+  el.innerHTML = frame(6,
+    card('read', 'What a complete model needs', `<div class="read-text">
+      <p>A complete Bohr model has four things. The builder checks each one.</p>
+      <ol><li>A nucleus labeled with the number of protons (p⁺) and neutrons (n⁰).</li>
+      <li>The right number of shells.</li>
+      <li>The right number of electrons in each shell.</li>
+      <li>Electrons placed with the class rule: top, right, bottom, left, then pair up.</li></ol></div>`) +
+    card('try', 'Bohr model builder', `<p class="muted">Build each element. Use the periodic table tile for the numbers you need.</p>
+      <div class="tabs" id="s6tabs" role="tablist"></div>
+      <div class="builder">
+        <div class="b-fig"><svg id="s6svg"></svg><p class="b-note" id="s6note" aria-live="polite"></p></div>
+        <div>
+          <div class="target" id="s6target"></div>
+          <fieldset><legend>Nucleus</legend><div class="nuc-in">
+            <label>Protons<input type="number" id="s6p" min="0" max="40" inputmode="numeric"></label>
+            <label>Neutrons<input type="number" id="s6n" min="0" max="40" inputmode="numeric"></label></div></fieldset>
+          <fieldset><legend>Shells</legend><div class="inline-stepper"><button type="button" id="s6sm" aria-label="Remove a shell">−</button><output id="s6sc">1</output><button type="button" id="s6sp" aria-label="Add a shell">+</button></div></fieldset>
+          <fieldset><legend>Electrons</legend>
+            <div class="seg" role="group" aria-label="Electron tool"><button type="button" data-tool="add" aria-pressed="true">Add</button><button type="button" data-tool="erase" aria-pressed="false">Erase</button></div>
+            <button type="button" class="btn ghost sm" id="s6clear" style="margin-left:6px">Clear electrons</button>
+            <p class="small muted" style="margin:8px 0 0">Add: tap a dashed spot on a shell. Each spot holds up to 2. Erase: tap an electron.</p>
+          </fieldset>
+          <button type="button" class="btn primary" id="s6check">Check my model</button>
+          <ul class="report" id="s6rep" aria-live="polite"></ul>
+        </div>
+      </div>`) +
+    card('qc', '', '<div id="qc6"></div>'));
+
+  let mi = MIS.findIndex(z => !S.reqs['6.b' + z]); if (mi < 0) mi = 0;
+  let tool = 'add', st;
+  const note = t => { $('#s6note', el).textContent = t; };
+  const view = new BohrView($('#s6svg', el), {
+    erasable: true,
+    onZone: (i, s) => {
+      if (tool !== 'add') return;
+      if (st.sides[i][s] >= 2) { note('That spot already has a pair. Pick another spot.'); return; }
+      st.sides[i][s]++; note(''); draw();
+    },
+    onElectron: (i, s) => { if (tool !== 'erase') return; st.sides[i][s] = Math.max(0, st.sides[i][s] - 1); draw(); }
+  });
+  const svg = view.svg;
+  function draw() {
+    const pL = st.p === '' ? '?' : st.p, nL = st.n === '' ? '?' : st.n;
+    view.set({ l1: `${pL} p⁺`, l2: `${nL} n⁰`, shells: st.sides.slice(0, st.shells), rings: st.shells, zones: 'all' });
+    svg.classList.toggle('mode-add', tool === 'add'); svg.classList.toggle('mode-erase', tool === 'erase');
+    $('#s6sc', el).textContent = st.shells;
+    $('#s6sm', el).disabled = st.shells <= 0; $('#s6sp', el).disabled = st.shells >= 4;
+    const tot = sum(st.sides.slice(0, st.shells).map(sum));
+    if (!$('#s6note', el).textContent || /electrons? placed/.test($('#s6note', el).textContent)) note(`${tot} electron${tot === 1 ? '' : 's'} placed`);
+  }
+  function tabs() {
+    $('#s6tabs', el).innerHTML = MIS.map((z, i) => `<button type="button" class="tab ${S.reqs['6.b' + z] ? 'ok' : ''}" role="tab" aria-selected="${i === mi}" data-i="${i}">${E(z).name}</button>`).join('');
+    $$('#s6tabs .tab', el).forEach(b => b.addEventListener('click', () => { mi = +b.dataset.i; reset(); }));
+  }
+  function reset() {
+    const z = MIS[mi], e = E(z);
+    st = { p: '', n: '', shells: 1, sides: [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]] };
+    $('#s6p', el).value = ''; $('#s6n', el).value = '';
+    $('#s6target', el).innerHTML = `${mtile(z)}<div><div class="t-name">Build ${e.name.toLowerCase()}</div><div class="muted small">Atomic number ${z}, atomic mass ${e.massStr}</div></div>`;
+    $('#s6rep', el).innerHTML = '';
+    tabs(); note(''); draw();
+  }
+  $('#s6p', el).addEventListener('input', e => { st.p = e.target.value.trim(); draw(); });
+  $('#s6n', el).addEventListener('input', e => { st.n = e.target.value.trim(); draw(); });
+  $('#s6sp', el).addEventListener('click', () => { if (st.shells < 4) { st.shells++; draw(); } });
+  $('#s6sm', el).addEventListener('click', () => { if (st.shells > 0) { st.shells--; st.sides[st.shells] = [0, 0, 0, 0]; draw(); } });
+  $$('.seg button', el).forEach(b => b.addEventListener('click', () => {
+    tool = b.dataset.tool; $$('.seg button', el).forEach(x => x.setAttribute('aria-pressed', x === b)); note(tool === 'add' ? 'Add mode: tap a dashed spot.' : 'Erase mode: tap an electron to remove it.'); draw();
+  }));
+  $('#s6clear', el).addEventListener('click', () => { st.sides = st.sides.map(() => [0, 0, 0, 0]); note(''); draw(); });
+  $('#s6check', el).addEventListener('click', () => {
+    const z = MIS[mi], e = E(z), want = arr(z), items = [];
+    const p = st.p === '' ? NaN : +st.p, n = st.n === '' ? NaN : +st.n;
+    const pOk = p === z, nOk = n === neutrons(z);
+    items.push(pOk && nOk ? ['y', `Nucleus: ${z} p⁺ and ${neutrons(z)} n⁰.`]
+      : ['x', !pOk ? 'Nucleus: protons should equal the atomic number.' : `Nucleus: neutrons = mass number − atomic number. Round ${e.massStr} first.`]);
+    const shOk = st.shells === want.length;
+    items.push(shOk ? ['y', `Shells: ${want.length}.`] : ['x', `Shells: ${e.name} needs ${want.length === 1 ? '1 shell' : want.length + ' shells'}. You have ${st.shells}.`]);
+    const tot = st.sides.map(sum);
+    const totalE = sum(tot.slice(0, st.shells));
+    let cntOk = shOk && want.every((v, i) => tot[i] === v);
+    if (cntOk) items.push(['y', `Electrons per shell: ${want.join(', ')}.`]);
+    else {
+      let m;
+      if (totalE !== z) m = `Electrons: you placed ${totalE}. A neutral ${e.name.toLowerCase()} atom has ${z}.`;
+      else { const i = want.findIndex((v, k) => tot[k] !== v); m = i >= 0 && i < st.shells ? `Electrons: shell ${i + 1} should have ${want[i]}. It has ${tot[i]}.` : 'Electrons: fill each shell before the next one.'; }
+      items.push(['x', m]);
+    }
+    if (cntOk) {
+      const bad = want.findIndex((v, i) => st.sides[i].join() !== conv(v).join());
+      items.push(bad < 0 ? ['y', 'Placement follows the class rule.'] : ['x', `Placement: in shell ${bad + 1}, go top, right, bottom, left before pairing.`]);
+    } else items.push(['w', 'Placement: checked once the electron counts are right.']);
+    $('#s6rep', el).innerHTML = items.map(([k, t]) => `<li class="${k}"><span class="ic">${k === 'y' ? '✓' : k === 'x' ? '✗' : '·'}</span><span>${t}</span></li>`).join('');
+    if (items.every(([k]) => k === 'y')) {
+      view.celebrate(); note(`${e.name} is complete.`);
+      done(6, 'b' + z); tabs();
+      const next = MIS.findIndex(zz => !S.reqs['6.b' + zz]);
+      if (next >= 0) setTimeout(() => { mi = next; reset(); }, 2200);
+    } else shake($('#s6rep', el));
+  });
+  reset();
+
+  makeQC($('#qc6', el), {
+    id: 'qc6', q: 'A Bohr model shows 2 electrons in shell 1, 8 in shell 2, and 3 in shell 3. Which element is it?',
+    opts: ['Boron', 'Aluminum', 'Sodium', 'Lithium'], ans: 1,
+    explain: '2 + 8 + 3 = 13 electrons, so 13 protons. Atomic number 13 is aluminum.',
+    hint: 'Add up all the electrons. That total is the atomic number.',
+    onCorrect: () => done(6, 'qc6')
+  });
+}
+
+/* ---------------- Section 7 ---------------- */
+function build7(el) {
+  const GROUPS = [1, 2, 13, 14, 15, 16, 17, 18];
+  el.innerHTML = frame(7,
+    card('read', 'The outer shell matters most', `<div class="read-text">
+      <p>The electrons in the outermost shell are called ${c('valence electrons')}. They are the electrons that meet other atoms, so they decide how an element reacts.</p>
+      <p>Here's the pattern: elements in the same column, or ${c('group')}, have the same number of valence electrons.</p></div>
+      <div class="table-scroll"><table class="mini-table"><thead><tr><th>Group</th>${GROUPS.map(g => `<th>${g}</th>`).join('')}</tr></thead>
+      <tbody><tr><td>Valence electrons</td>${[1, 2, 3, 4, 5, 6, 7, '8*'].map(v => `<td>${v}</td>`).join('')}</tr></tbody></table></div>
+      <p class="small muted">*Helium is in group 18 but has only 2. Its one shell is full.</p>`) +
+    card('try', 'Explore the pattern', `<p class="muted">Tap elements to see their Bohr models. Valence electrons glow yellow, and the other elements in the same group light up.</p>
+      <div class="pt-wrap"><div><div class="pt" id="s7pt"></div><p class="counter" id="s7count"></p></div><div><svg id="s7svg"></svg><p class="pt-info" id="s7info" aria-live="polite">Tap an element.</p></div></div>`) +
+    card('try', 'Sort by valence electrons', '<p class="muted">Drag each element to its number of valence electrons, or tap an element and then tap a box.</p><div id="s7sort"></div>') +
+    card('qc', '', '<div id="qc7"></div>'));
+
+  const pt = $('#s7pt', el);
+  let html = GROUPS.map(g => `<div class="gh">${g}</div>`).join('');
+  html += EL.map(e => `<button type="button" class="tile cat-${e.cat}" data-z="${e.z}" style="grid-column:${GROUPS.indexOf(e.group) + 1};grid-row:${e.period + 1}" aria-label="${e.name}"><span class="z">${e.z}</span>${e.sym}</button>`).join('');
+  pt.innerHTML = html;
+  const view = new BohrView($('#s7svg', el));
+  const seen = new Set(S.tasks.s7seen || []);
+  const cnt = () => { $('#s7count', el).textContent = `${seen.size} element${seen.size === 1 ? '' : 's'} explored${seen.size < 6 ? ' (explore at least 6)' : ''}`; $$('.tile', pt).forEach(t => t.classList.toggle('seen', seen.has(+t.dataset.z))); };
+  $$('.tile', pt).forEach(t => t.addEventListener('click', () => {
+    const z = +t.dataset.z, e = E(z), v = valence(z);
+    view.set({ p: z, n: neutrons(z), shells: arr(z), val: true });
+    $$('.tile', pt).forEach(x => x.classList.toggle('same', E(+x.dataset.z).group === e.group));
+    $$('.tile', pt).forEach(x => x.classList.toggle('current', x === t));
+    $('#s7info', el).innerHTML = `<b>${e.name}</b>, group ${e.group}: ${arr(z).join(', ')}<br><b class="v">${v}</b> valence electron${v > 1 ? 's' : ''}`;
+    seen.add(z); S.tasks.s7seen = [...seen]; save(); cnt();
+    if (seen.size >= 6) done(7, 'explore');
+  }));
+  cnt();
+  view.set({ p: 11, n: 12, shells: arr(11), val: true });
+
+  const tok = s => { const e = bySym(s); return { id: s, label: `<span class="sym">${s}</span><span class="nm">${e.name}</span>`, cls: 'el-token' }; };
+  makeSorter($('#s7sort', el), {
+    id: 's7sort',
+    tokens: ['Na', 'K', 'Mg', 'Be', 'O', 'S', 'F', 'Cl'].map(tok),
+    bins: [{ id: 'v1', label: '1 valence electron', accepts: ['Na', 'K'] }, { id: 'v2', label: '2 valence electrons', accepts: ['Mg', 'Be'] }, { id: 'v6', label: '6 valence electrons', accepts: ['O', 'S'] }, { id: 'v7', label: '7 valence electrons', accepts: ['F', 'Cl'] }],
+    hint: (s) => { const e = bySym(s); return `${e.name} is in group ${e.group}. Check the pattern table or tap it on the periodic table above.`; },
+    onDone: () => done(7, 'sort')
+  });
+  makeQC($('#qc7', el), {
+    id: 'qc7', q: 'Which element has the same number of valence electrons as oxygen?',
+    opts: ['Nitrogen', 'Sulfur', 'Neon', 'Fluorine'], ans: 1,
+    explain: 'Sulfur is in the same group as oxygen (group 16), so both have 6 valence electrons.',
+    hint: 'Look for the element in the same column as oxygen.',
+    onCorrect: () => done(7, 'qc7')
+  });
+}
+
+/* ---------------- Section 8 ---------------- */
+function build8(el) {
+  el.innerHTML = frame(8,
+    card('read', 'Read a model backwards', `<div class="read-text">
+      <p>To name an atom from its Bohr model, add up all of its electrons. In a ${c('neutral')} atom, that total equals the number of protons, which is the atomic number. Then find that atomic number on the periodic table.</p>
+      <p>When you check a drawing, look for these common mistakes:</p>
+      <ul><li>More than 2 electrons in shell 1</li><li>Starting a new shell before the one inside it is full</li><li>A different number of electrons than protons</li><li>Neutrons found without rounding the atomic mass first</li><li>Pairing up before every side has one electron</li></ul></div>`) +
+    card('try', 'Name that atom', `<p class="muted">The nucleus is hidden. Count the electrons, then tap the matching element below.</p>
+      <div class="sim"><div><svg id="s8svg"></svg></div>
+      <div><p class="place-prompt" id="s8prompt">Which element is this?</p><div class="progress-pips" id="s8pips" aria-label="Correct so far"><i></i><i></i><i></i><i></i></div><p class="fb-line" id="s8fb" aria-live="polite"></p></div></div>
+      <div class="ans-grid" id="s8grid"></div>`) +
+    card('try', 'Spot the mistake', `<p class="muted">Each model has one mistake. Pick what's wrong.</p><div class="tabs" id="s8tabs" role="tablist"></div><div id="s8det"></div>`) +
+    card('qc', '', '<div id="qc8"></div>'));
+
+  // name that atom
+  const pool = shuffle([...Array(18).keys()].map(i => i + 3));
+  let pi = 0, right = S.tasks.s8right || 0, misses = 0;
+  const view = new BohrView($('#s8svg', el));
+  const pips = () => $$('#s8pips i', el).forEach((p, i) => p.classList.toggle('on', i < right));
+  const show = () => { const z = pool[pi % pool.length]; misses = 0; view.set({ l1: '?', l2: '', shells: arr(z) }); $('#s8fb', el).textContent = ''; };
+  $('#s8grid', el).innerHTML = EL.map(e => `<button type="button" class="tile cat-${e.cat}" data-z="${e.z}" aria-label="${e.name}"><span class="z">${e.z}</span>${e.sym}</button>`).join('');
+  $$('#s8grid .tile', el).forEach(t => t.addEventListener('click', () => {
+    const z = pool[pi % pool.length], fb = $('#s8fb', el);
+    if (+t.dataset.z === z) {
+      right++; S.tasks.s8right = right; save(); pips(); view.celebrate();
+      fb.className = 'fb-line good'; fb.textContent = `Yes: ${E(z).name}. ${arr(z).join(' + ')} = ${z} electrons.`;
+      if (right >= 4) done(8, 'name');
+      setTimeout(() => { pi++; show(); }, 1500);
+    } else {
+      misses++; shake(t);
+      fb.className = 'fb-line bad';
+      fb.textContent = misses < 2 ? 'Not that one. Count every electron, shell by shell.' : `Count by shell: ${arr(z).join(' + ')}. What's the total?`;
+    }
+  }));
+  pips(); show();
+
+  // spot the mistake
+  const DET = [
+    { id: 'det1', z: 12, spec: { p: 12, n: 12, shells: [4, 8] }, opts: ['Shell 1 holds only 2 electrons', 'The nucleus needs more protons', 'Shell 2 is missing electrons', 'Magnesium needs 4 shells'], ans: 0, explain: 'Shell 1 holds only 2. Magnesium should be 2, 8, 2.' },
+    { id: 'det2', z: 11, spec: { p: 11, n: 12, shells: [2, 8, 2] }, opts: ['Neutrons should be 11', 'It has 12 electrons, but sodium has only 11 protons', 'Shell 2 should have 9 electrons', 'The electrons in shell 3 should be paired'], ans: 1, explain: 'A neutral atom has as many electrons as protons. Sodium is 2, 8, 1.' },
+    { id: 'det3', z: 8, spec: { p: 8, n: 8, shells: [2, [2, 2, 2, 0]] }, opts: ['Oxygen needs 3 shells', 'Shell 2 should have 8 electrons', 'Neutrons should be 16', 'Shell 2 paired up before every side had one electron'], ans: 3, explain: 'The left side is empty. Six electrons go top, right, bottom, left, then pair on top and right.' },
+    { id: 'det4', z: 17, spec: { p: 17, n: 17, shells: [2, 8, 7] }, opts: ['Shell 3 should have 8 electrons', 'Protons should be 35', 'Neutrons should be 18 (35 − 17)', 'Chlorine should have 2 shells'], ans: 2, explain: '35.45 rounds to 35, and 35 − 17 = 18 neutrons.' }
+  ];
+  let di = DET.findIndex(d => !(S.qc[d.id] && S.qc[d.id].done)); if (di < 0) di = 0;
+  const detTabs = () => {
+    $('#s8tabs', el).innerHTML = DET.map((d, i) => `<button type="button" class="tab ${S.qc[d.id] && S.qc[d.id].done ? 'ok' : ''}" role="tab" aria-selected="${i === di}" data-i="${i}">Model ${i + 1}</button>`).join('');
+    $$('#s8tabs .tab', el).forEach(b => b.addEventListener('click', () => { di = +b.dataset.i; showDet(); }));
+  };
+  const showDet = () => {
+    const d = DET[di], e = E(d.z);
+    detTabs();
+    makeQC($('#s8det', el), {
+      id: d.id, q: `This is supposed to be <b>${e.name.toLowerCase()}</b> (atomic number ${d.z}, atomic mass ${e.massStr}). What's wrong?`,
+      fig: bohrSVG(Object.assign({ aria: `Student drawing of ${e.name}` }, d.spec)),
+      opts: d.opts, ans: d.ans, explain: d.explain, hint: 'Compare each part of the drawing to the tile numbers.',
+      onCorrect: () => {
+        detTabs();
+        if (DET.every(x => S.qc[x.id] && S.qc[x.id].done)) done(8, 'fix');
+        else { const nx = DET.findIndex(x => !(S.qc[x.id] && S.qc[x.id].done)); setTimeout(() => { di = nx; showDet(); }, 1800); }
+      }
+    });
+  };
+  showDet();
+
+  makeQC($('#qc8', el), {
+    id: 'qc8', q: 'An atom has 3 shells and 4 electrons in its outer shell. Which element is it?',
+    opts: ['Carbon', 'Sulfur', 'Silicon', 'Beryllium'], ans: 2,
+    explain: 'Three shells with 4 in the outer one is 2, 8, 4 = 14 electrons. Atomic number 14 is silicon.',
+    hint: 'Fill shells 1 and 2 completely, then add the 4. What is the total?',
+    onCorrect: () => done(8, 'qc8')
+  });
+}
+
+/* =========================================================
+   SECTION 9: FINAL CHECK
+   ========================================================= */
+const BANK = [
+  { id: 'f1', q: 'How many protons does a nitrogen atom (atomic number 7) have?', o: ['7', '14', '3', '5'], a: 0, x: 'Protons always equal the atomic number.' },
+  { id: 'f2', q: 'Magnesium has atomic number 12 and atomic mass 24.305. How many neutrons does it have?', o: ['12', '24', '36', '13'], a: 0, x: '24.305 rounds to 24. Then 24 − 12 = 12 neutrons.' },
+  { id: 'f3', q: 'Potassium has atomic number 19 and atomic mass 39.098. How many neutrons does it have?', o: ['19', '20', '39', '58'], a: 1, x: '39.098 rounds to 39. Then 39 − 19 = 20 neutrons.' },
+  { id: 'f4', q: 'Phosphorus has atomic number 15 and atomic mass 30.974. How many neutrons does it have?', o: ['15', '16', '30', '31'], a: 1, x: '30.974 rounds to 31. Then 31 − 15 = 16 neutrons.' },
+  { id: 'f5', q: 'A neutral atom has 16 protons. How many electrons does it have?', o: ['8', '32', '16', '6'], a: 2, x: 'In a neutral atom, electrons equal protons.' },
+  { id: 'f6', q: 'What is the most electrons shell 1 can hold?', o: ['1', '2', '8', '18'], a: 1, x: 'Shell 1 holds up to 2 electrons.' },
+  { id: 'f7', q: 'Which electron arrangement is correct for sodium (11 electrons)?', o: ['2, 9', '2, 8, 1', '8, 2, 1', '2, 8, 2'], a: 1, x: 'Shell 1 gets 2, shell 2 gets 8, and the last 1 goes to shell 3.' },
+  { id: 'f8', q: 'Which electron arrangement is correct for silicon (14 electrons)?', o: ['2, 8, 4', '2, 12', '4, 8, 2', '2, 6, 6'], a: 0, x: '2 + 8 + 4 = 14, filling from the inside out.' },
+  { id: 'f9', q: 'Which electron arrangement is correct for argon (18 electrons)?', o: ['2, 16', '2, 8, 8', '2, 8, 6, 2', '8, 8, 2'], a: 1, x: 'Shell 3 holds 8 for these elements, so argon is 2, 8, 8.' },
+  { id: 'f10', q: 'Which electron arrangement is correct for potassium (19 electrons)?', o: ['2, 8, 9', '2, 17', '2, 8, 8, 1', '1, 8, 8, 2'], a: 2, x: 'After 2, 8, 8, the 19th electron starts shell 4.' },
+  { id: 'f11', q: 'Which element does this Bohr model show?', fig: { l1: '?', l2: '', shells: [2, 1], aria: 'Bohr model with 2 and 1 electrons' }, o: ['Helium', 'Lithium', 'Beryllium', 'Hydrogen'], a: 1, x: '2 + 1 = 3 electrons, so atomic number 3: lithium.' },
+  { id: 'f12', q: 'Which element does this Bohr model show?', fig: { l1: '?', l2: '', shells: [2, 8, 6], aria: 'Bohr model with 2, 8 and 6 electrons' }, o: ['Oxygen', 'Chlorine', 'Silicon', 'Sulfur'], a: 3, x: '2 + 8 + 6 = 16 electrons, so atomic number 16: sulfur.' },
+  { id: 'f13', q: 'Which element does this Bohr model show?', fig: { l1: '?', l2: '', shells: [2, 8, 8, 2], aria: 'Bohr model with 2, 8, 8 and 2 electrons' }, o: ['Argon', 'Magnesium', 'Calcium', 'Potassium'], a: 2, x: '2 + 8 + 8 + 2 = 20 electrons, so atomic number 20: calcium.' },
+  { id: 'f14', q: 'Which element does this Bohr model show?', fig: { l1: '?', l2: '', shells: [2, 5], aria: 'Bohr model with 2 and 5 electrons' }, o: ['Boron', 'Nitrogen', 'Phosphorus', 'Neon'], a: 1, x: '2 + 5 = 7 electrons, so atomic number 7: nitrogen.' },
+  { id: 'f15', q: 'Chlorine\'s electron arrangement is 2, 8, 7. How many valence electrons does it have?', o: ['2', '8', '7', '17'], a: 2, x: 'Valence electrons are in the outer shell: 7.' },
+  { id: 'f16', q: 'How many valence electrons does this atom have?', fig: { p: 13, n: 14, shells: [2, 8, 3], aria: 'Bohr model of aluminum' }, o: ['3', '13', '2', '8'], a: 0, x: 'Count only the outer shell: 3 electrons.' },
+  { id: 'f17', q: 'Which element has the same number of valence electrons as sodium?', o: ['Magnesium', 'Neon', 'Potassium', 'Chlorine'], a: 2, x: 'Potassium is in group 1 with sodium, so both have 1 valence electron.' },
+  { id: 'f18', q: 'Which element has the same number of valence electrons as fluorine?', o: ['Oxygen', 'Chlorine', 'Neon', 'Sodium'], a: 1, x: 'Chlorine is in group 17 with fluorine, so both have 7.' },
+  { id: 'f19', q: 'Elements in the same group of the periodic table have the same number of…', o: ['protons', 'neutrons', 'valence electrons', 'shells'], a: 2, x: 'Each column (group) shares the same number of valence electrons.' },
+  { id: 'f20', q: 'Using the class rule, where does the 5th electron in a shell go?', o: ['Next to the 1st electron, on top', 'On the left', 'On the bottom', 'In a new shell'], a: 0, x: 'After one on every side, the 5th pairs with the 1st on top.' },
+  { id: 'f21', q: 'Using the class rule, where does the 3rd electron in a shell go?', o: ['Top', 'Right', 'Bottom', 'Left'], a: 2, x: 'Top, right, bottom, left: the 3rd goes on the bottom.', fixed: true },
+  { id: 'f22', q: 'Which drawing follows the class rule for 3 electrons in a shell?', grid: true, o: [[1, 1, 1, 0], [2, 1, 0, 0], [1, 0, 1, 1], [0, 1, 1, 1]].map(s => ({ radii: [104], shells: [s], l1: '', l2: '', nucR: 34, er: 13, aria: 'One shell with three electrons' })), a: 0, x: 'Top, right, bottom. No pairing until every side has one.' },
+  { id: 'f23', q: 'A student wrote neon\'s arrangement as 2, 6, 2. What is wrong?', o: ['Shell 2 must be full (8) before shell 3 starts', 'Shell 1 should have 6', 'Neon should have 20 electrons', 'Nothing is wrong'], a: 0, x: 'Neon\'s 10 electrons fit in two shells: 2, 8.', fixed: true },
+  { id: 'f24', q: 'Magnesium\'s atomic mass is 24.305. What is wrong with this model?', fig: { p: 12, n: 13, shells: [2, 8, 2], aria: 'Bohr model labeled 12 protons and 13 neutrons' }, o: ['Neutrons should be 12', 'Shell 3 should have 8', 'Protons should be 24', 'Nothing is wrong'], a: 0, x: '24.305 rounds to 24, and 24 − 12 = 12 neutrons.', fixed: true },
+  { id: 'f25', q: 'Which particle is NOT found in the nucleus?', o: ['Proton', 'Neutron', 'Electron', 'All of them are in the nucleus'], a: 2, x: 'Electrons are in the shells around the nucleus.', fixed: true },
+  { id: 'f26', q: 'Which part of a periodic table tile tells you the number of protons?', o: ['Atomic mass', 'Atomic number', 'Symbol', 'Name'], a: 1, x: 'The atomic number equals the number of protons.' },
+  { id: 'f27', q: 'How many shells does a Bohr model of aluminum (13 electrons) have?', o: ['2', '3', '4', '13'], a: 1, x: '2, 8, 3 uses three shells.' },
+  { id: 'f28', q: 'In what order do electrons fill the shells?', o: ['Outermost shell first', 'Any shell, in any order', 'The shell closest to the nucleus first', 'The biggest shell first'], a: 2, x: 'Shells closest to the nucleus have the lowest energy and fill first.' }
+];
+const QB = Object.fromEntries(BANK.map(q => [q.id, q]));
+const optHTML = (o, small) => typeof o === 'object' ? (small ? `<span style="display:inline-block;width:84px;vertical-align:middle">${bohrSVG(o)}</span>` : bohrSVG(o)) : o;
+
+const REVIEW_HTML = `<div class="two-col"><div class="review-box"><ul>
+  <li><b>Protons</b> = atomic number. <b>Electrons</b> = protons in a neutral atom.</li>
+  <li><b>Neutrons</b> = rounded atomic mass − atomic number.</li>
+  <li>Shells fill from the inside out: 2, then 8, then 8, then the rest.</li>
+  <li>Write the arrangement inside to out, like 2, 8, 5.</li>
+  <li>Class rule: top, right, bottom, left. The 5th electron pairs with the 1st.</li>
+  <li><b>Valence electrons</b> are in the outer shell. Same group, same number.</li></ul></div>
+  <div>${bohrSVG({ p: 15, n: 16, shells: [2, 8, 5], val: true, aria: 'Phosphorus Bohr model with valence electrons highlighted' })}<p class="pt-info">Phosphorus: 15 p⁺ and 16 n⁰, arranged 2, 8, 5.<br><b class="v">5</b> valence electrons.</p></div></div>`;
+
+function build9(el) { el.innerHTML = frame(9, '<div id="fc"></div>'); }
+
+function renderFinal() {
+  const box = $('#fc'), F = S.final;
+  if (F.current) return renderFCQ();
+  const fails = F.attempts.filter(a => !a.pass).length;
+  const hist = F.attempts.length ? `<p class="attempts">Attempts so far: ${F.attempts.map((a, i) => `#${i + 1}: ${a.score}/${FC_LEN}`).join(', ')}</p>` : '';
+  const lockNote = LOCK_ON ? '<p class="lock-note">This check opens in full screen. If you leave the page or exit full screen, it locks, and your teacher will need to unlock it.</p>' : '';
+  if (F.passed) {
+    box.innerHTML = card('final', 'You passed the final check', `<div class="score-big pass">${F.best}/${FC_LEN}</div><p>That's your best score. Your results page is unlocked.</p>${hist}
+      <div class="btn-row"><button type="button" class="btn primary" data-go="10">See your results</button><button type="button" class="btn ghost" id="fcStart">Practice with new questions</button></div>`);
+    $('#fcStart').addEventListener('click', startAttempt);
+    return;
+  }
+  if (fails >= 3 && fails % 3 === 0 && F.reviewAt < fails) {
+    box.innerHTML = card('read', 'Quick review before your next try', `<p class="muted">You've tried ${fails} times. Read these key ideas, then start a new check.</p>${REVIEW_HTML}
+      <div class="btn-row"><button type="button" class="btn primary" id="fcReviewed">I reviewed this. Start a new check</button></div>`);
+    $('#fcReviewed').addEventListener('click', () => { F.reviewAt = fails; save(); startAttempt(); });
+    return;
+  }
+  box.innerHTML = card('final', fails ? 'Try again with new questions' : 'Ready for the final check?', `<p>${FC_LEN} questions picked at random from a bigger bank. Score ${PASS_SCORE} or more to pass. Each retake gives you different questions.</p>${lockNote}${hist}
+    <div class="btn-row"><button type="button" class="btn amber" id="fcStart">Start the final check</button></div>`);
+  $('#fcStart').addEventListener('click', startAttempt);
+}
+function startAttempt() {
+  const F = S.final;
+  const last = F.attempts.length ? F.attempts[F.attempts.length - 1].ids : [];
+  let ids = shuffle(BANK.map(q => q.id).filter(id => !last.includes(id)));
+  if (ids.length < FC_LEN) ids = ids.concat(shuffle(last));
+  ids = ids.slice(0, FC_LEN);
+  F.current = { qs: ids.map(id => ({ id, order: QB[id].fixed ? [0, 1, 2, 3] : shuffle([0, 1, 2, 3]) })), ans: {}, idx: 0, startedAt: Date.now() };
+  save(); startLockdown(); renderFinal();
+  $('#scr-9').scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });
+}
+function renderFCQ() {
+  const cur = S.final.current, qd = cur.qs[cur.idx], q = QB[qd.id], box = $('#fc');
+  const allAns = cur.qs.every(x => cur.ans[x.id] != null);
+  const unanswered = cur.qs.map((x, i) => cur.ans[x.id] == null ? i + 1 : null).filter(Boolean);
+  box.innerHTML = `<section class="card k-qc"><span class="tag">Final check</span>
+    <div class="fc-dots">${cur.qs.map((x, i) => `<button type="button" class="${cur.ans[x.id] != null ? 'ans' : ''} ${i === cur.idx ? 'cur' : ''}" data-j="${i}" aria-label="Question ${i + 1}${cur.ans[x.id] != null ? ', answered' : ''}">${i + 1}</button>`).join('')}</div>
+    <p class="sec-meta">Question ${cur.idx + 1} of ${FC_LEN}</p>
+    ${q.fig ? `<div class="qc-fig">${bohrSVG(q.fig)}</div>` : ''}
+    <p class="qc-q">${q.q}</p>
+    <div class="opts ${q.grid ? 'grid' : ''}">${qd.order.map((oi, pos) => `<button type="button" class="opt ${cur.ans[qd.id] === oi ? 'picked' : ''}" data-oi="${oi}" ${oi === q.a ? 'data-key="1"' : ''}><span class="L">${'ABCD'[pos]}</span><span class="ot">${optHTML(q.o[oi])}</span></button>`).join('')}</div>
+    <div class="btn-row" style="justify-content:space-between;margin-top:18px"><button type="button" class="btn ghost" id="fcPrev" ${cur.idx === 0 ? 'disabled' : ''}>Back</button>
+    ${cur.idx < FC_LEN - 1 ? '<button type="button" class="btn primary" id="fcNext">Next</button>' : `<button type="button" class="btn amber" id="fcSubmit" ${allAns ? '' : 'disabled'}>Submit check</button>`}</div>
+    ${cur.idx === FC_LEN - 1 && !allAns ? `<p class="small muted">Answer every question to submit. Still open: ${unanswered.join(', ')}.</p>` : ''}
+  </section>`;
+  $$('.opt', box).forEach(b => b.addEventListener('click', () => { cur.ans[qd.id] = +b.dataset.oi; save(); renderFCQ(); }));
+  $$('.fc-dots button', box).forEach(b => b.addEventListener('click', () => { cur.idx = +b.dataset.j; save(); renderFCQ(); }));
+  const prev = $('#fcPrev', box), next = $('#fcNext', box), sub = $('#fcSubmit', box);
+  prev && prev.addEventListener('click', () => { cur.idx--; save(); renderFCQ(); });
+  next && next.addEventListener('click', () => { cur.idx++; save(); renderFCQ(); });
+  sub && sub.addEventListener('click', gradeAttempt);
+}
+function gradeAttempt() {
+  const F = S.final, cur = F.current;
+  let score = 0; const missed = [];
+  cur.qs.forEach(x => { const q = QB[x.id]; if (cur.ans[x.id] === q.a) score++; else missed.push(x); });
+  const pass = score >= PASS_SCORE, prevBest = F.best, wasPassed = F.passed;
+  F.attempts.push({ score, pass, at: new Date().toISOString(), ids: cur.qs.map(x => x.id), pts: cur.qs.map(x => cur.ans[x.id] === QB[x.id].a ? 1 : 0) });
+  F.best = Math.max(F.best, score);
+  const autoSend = pass && (!wasPassed || score > prevBest);
+  if (pass) F.passed = true;
+  F.current = null; save(); endLockdown();
+  if (pass) done(9, 'pass');
+  const box = $('#fc');
+  const review = missed.map(x => { const q = QB[x.id]; return `<div class="review-item"><p style="margin:0 0 4px"><b>${q.q}</b></p><p class="yours" style="margin:0">Your answer: ${optHTML(q.o[cur.ans[x.id]], true)}</p><p class="right" style="margin:0">Correct answer: ${optHTML(q.o[q.a], true)}</p><p class="small muted" style="margin:4px 0 0">${q.x}</p></div>`; }).join('');
+  const failsNow = F.attempts.filter(a => !a.pass).length;
+  box.innerHTML = card('final', pass ? 'You passed' : 'Not yet', `<div class="score-big ${pass ? 'pass' : 'fail'}">${score}/${FC_LEN}</div>
+    <p>${pass ? (missed.length ? 'Nice work. Look over the one you missed below.' : 'Perfect score.') : `You need ${PASS_SCORE} to pass. Look over what you missed, then try again with new questions.${failsNow % 3 === 0 ? ' You\'ll see a quick review first.' : ''}`}</p>
+    ${missed.length ? `<h4 style="margin:14px 0 0;font-weight:500;color:var(--muted)">What you missed</h4>${review}` : ''}
+    <div class="btn-row">${pass ? '<button type="button" class="btn primary" data-go="10">See your results</button>' : '<button type="button" class="btn amber" id="fcAgain">Try again</button>'}</div>
+    ${pass ? '<p class="sheetbox sheetStatus" aria-live="polite"></p>' : ''}`);
+  const again = $('#fcAgain'); again && again.addEventListener('click', renderFinal);
+  if (autoSend) sendScores();
+  $('#scr-9').scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });
+}
+
+/* =========================================================
+   RESULTS
+   ========================================================= */
+const QC_IDS = ['qc1', 'qc2', 'qc3', 'qc4', 'qc5', 'qc6', 'qc7', 'qc8'];
+function stats() {
+  const F = S.final;
+  return {
+    firstTry: QC_IDS.filter(id => S.qc[id] && S.qc[id].first === true).length,
+    secs: [1, 2, 3, 4, 5, 6, 7, 8, 9].filter(n => S.secDone[n]).length,
+    best: F.best, attempts: F.attempts.length, passed: F.passed
+  };
+}
+function renderResults() {
+  const el = $('#scr-10'), st = S.student || {}, k = stats();
+  el.innerHTML = `<header class="sec-head"><div class="tile big cat-noble" aria-hidden="true"><span class="z">10</span>Ne</div><div><p class="sec-meta">Results</p><h2>${k.passed ? 'Lesson complete' : 'Your results so far'}</h2></div></header>
+  <section class="card"><span class="tag">Student</span>
+    <div class="who"><div><span>Name</span>${esc((st.first || '') + ' ' + (st.last || ''))}</div><div><span>Period</span>${esc(st.period || '')}</div><div><span>Teacher</span>${esc(st.teacher || '')}</div><div><span>Student ID</span>${esc(st.sid || '')}</div></div>
+    <div class="stats">
+      <div class="stat"><div class="k">Final check (best)</div><div class="v">${k.best}/${FC_LEN}</div></div>
+      <div class="stat"><div class="k">Status</div><div class="v" style="color:${k.passed ? 'var(--good)' : 'var(--amber)'}">${k.passed ? 'Passed' : 'Not yet'}</div></div>
+      <div class="stat"><div class="k">Final check attempts</div><div class="v">${k.attempts}</div></div>
+      <div class="stat"><div class="k">Quick checks right on first try</div><div class="v">${k.firstTry}/8</div></div>
+      <div class="stat"><div class="k">Sections finished</div><div class="v">${k.secs}/9</div></div>
+      <div class="stat"><div class="k">Times locked</div><div class="v">${S.lockouts}</div></div>
+    </div>
+    <p class="small muted">${S.completedAt ? 'Completed ' + new Date(S.completedAt).toLocaleString() : ''}</p>
+  </section>
+  <section class="card"><span class="tag">Your goals</span><ul class="goals" id="goalsResults"></ul></section>
+  <div class="btn-row no-print"><button type="button" class="btn primary" id="sendBtn">Send my scores to my teacher</button><button type="button" class="btn ghost" id="csvBtn">Download CSV</button><button type="button" class="btn ghost" id="printBtn">Print results</button><button type="button" class="btn ghost" data-go="9">Back to the final check</button></div>
+  <p class="sheetbox sheetStatus no-print" aria-live="polite">${S.sentAt ? `Sent to your teacher ${new Date(S.sentAt).toLocaleString()}.` : ''}</p>`;
+  renderGoalsInto($('#goalsResults'));
+  $('#csvBtn').addEventListener('click', downloadCSV);
+  $('#sendBtn').addEventListener('click', sendScores);
+  $('#printBtn').addEventListener('click', () => window.print());
+}
+function downloadCSV() {
+  const st = S.student || {}, k = stats();
+  const H = ['Student ID', 'Last Name', 'First Name', 'Period', 'Teacher', 'Activity', 'Lesson Score (quick checks right on first try)', 'Lesson Total', 'Final Check Score (best)', 'Final Check Total', 'Final Check Passed', 'Final Check Attempts', 'Sections Completed (of 9)', 'Times Locked', 'Date'];
+  const row = [st.sid, st.last, st.first, st.period, st.teacher, LESSON, k.firstTry, 8, k.best, FC_LEN, k.passed ? 'Yes' : 'No', k.attempts, k.secs, S.lockouts, new Date().toLocaleString()];
+  const q = v => { const s = String(v == null ? '' : v); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+  const csv = H.map(q).join(',') + '\r\n' + row.map(q).join(',') + '\r\n';
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `BohrModels_${(st.last || 'student').replace(/\W+/g, '')}_${(st.first || '').replace(/\W+/g, '')}.csv`;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+
+/* =========================================================
+   GOOGLE SHEETS (two rows: the lesson and the final check)
+   ========================================================= */
+function sheetBodies() {
+  const st = S.student || {}, F = S.final;
+  const base = { studentId: st.sid || '', firstName: st.first || '', lastName: st.last || '', period: st.period || '', teacher: st.teacher || '', locks: String(S.lockouts), when: new Date().toString() };
+  const qcPts = QC_IDS.map(id => S.qc[id] && S.qc[id].first === true ? 1 : 0);
+  const lesson = Object.assign({}, base, {
+    activity: `${LESSON}: Lesson`, score: String(sum(qcPts)), total: String(QC_IDS.length),
+    qlabels: QC_IDS.map((_, i) => 'QC' + (i + 1)).join('|'), qpoints: qcPts.join('|'), qmax: QC_IDS.map(() => 1).join('|')
+  });
+  let best = null; F.attempts.forEach(a => { if (!best || a.score >= best.score) best = a; });
+  const fin = Object.assign({}, base, { activity: `${LESSON}: Final Check`, score: String(F.best), total: String(FC_LEN) },
+    best && best.pts ? { qlabels: best.pts.map((_, i) => 'Q' + (i + 1)).join('|'), qpoints: best.pts.join('|'), qmax: best.pts.map(() => 1).join('|') }
+                     : { qlabels: 'Final Check', qpoints: String(F.best), qmax: String(FC_LEN) });
+  return [lesson, fin];
+}
+function sendScores() {
+  const msg = t => $$('.sheetStatus').forEach(e => { e.textContent = t; });
+  if (!S.student) { msg('Sign in on the start page first.'); return; }
+  const url = sheetURL();
+  if (!url) { msg("This lesson isn't connected to your teacher's gradebook sheet yet."); return; }
+  msg('Sending...');
+  Promise.all(sheetBodies().map(b => fetch(url, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(b) })))
+    .then(() => { S.sentAt = new Date().toISOString(); save(); msg('Sent! Your teacher will see your scores.'); })
+    .catch(() => msg("Couldn't send. Check your internet connection and try again."));
+}
+
+/* =========================================================
+   PROGRESS: requirements, sections, goals, nav
+   ========================================================= */
+function renderReqs(n, justId) {
+  const box = $('#unlock-' + n); if (!box) return;
+  $('.reqs', box).innerHTML = REQS[n].map(([id, t]) => `<li class="${S.reqs[n + '.' + id] ? 'ok' : ''} ${id === justId ? 'just-ok' : ''}"><span class="box"></span><span>${t}</span></li>`).join('');
+  box.classList.toggle('all-done', !!S.secDone[n]);
+}
+function updateNext(n) { const b = $('#next-' + n); if (b) b.disabled = !(S.secDone[n] || S.teacherUnlock); }
+function done(n, id) {
+  const k = n + '.' + id;
+  if (S.reqs[k]) return;
+  S.reqs[k] = true; save();
+  renderReqs(n, id);
+  if (REQS[n].every(([r]) => S.reqs[n + '.' + r])) completeSection(n);
+}
+function completeSection(n) {
+  if (S.secDone[n]) return;
+  S.secDone[n] = true;
+  if (n === 9 && !S.completedAt) S.completedAt = new Date().toISOString();
+  save(); renderReqs(n); updateNext(n);
+  renderNav(n + 1);
+  const gi = GOALS.findIndex(g => g.sec === n);
+  renderGoals(gi);
+  setTimeout(() => toast(gi >= 0 ? `Goal reached: ${GOALS[gi].t}` : (n < 9 ? `Section ${n + 1} unlocked` : 'Results unlocked')), 250);
+}
+function accessible(n) {
+  if (n === 0) return true;
+  if (!S.student) return false;
+  if (S.teacherUnlock) return true;
+  if (n === 1) return true;
+  if (n <= 9) return !!S.secDone[n - 1];
+  if (n === 10) return !!S.secDone[9];
+  return false;
+}
+function renderNav(popN) {
+  const nav = $('#navTiles');
+  nav.innerHTML = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => {
+    const e = E(n), title = n <= 9 ? `Section ${n}: ${SECS[n].title}` : 'Results';
+    return `<button type="button" class="tile cat-${e.cat} ${S.cur === n ? 'current' : ''} ${(n <= 9 && S.secDone[n]) ? 'done' : ''} ${n === popN && !REDUCED ? 'unlocking' : ''}" data-go="${n}" ${accessible(n) ? '' : 'disabled'} title="${esc(title)}" aria-label="${esc(title)}${accessible(n) ? '' : ' (locked)'}"><span class="z">${e.z}</span>${e.sym}<span class="ck" aria-hidden="true">✓</span></button>`;
+  }).join('');
+}
+function renderGoalsInto(ul, justIdx) {
+  if (!ul) return;
+  ul.innerHTML = GOALS.map((g, i) => `<li class="${S.secDone[g.sec] ? 'ok' : ''} ${i === justIdx ? 'just-ok' : ''}"><span class="box"></span><span>${g.t}</span></li>`).join('');
+}
+function renderGoals(justIdx) {
+  renderGoalsInto($('#goalsStart'), justIdx);
+  renderGoalsInto($('#goalsDrawerList'), justIdx);
+  renderGoalsInto($('#goalsResults'), justIdx);
+  const n = GOALS.filter(g => S.secDone[g.sec]).length;
+  $('#goalsBtn').textContent = `Goals ${n}/${GOALS.length}`;
+}
+
+function go(n) {
+  if (n < 0 || n > 10) return;
+  if (S.final.current && n !== 9) { toast('Submit your final check first.'); return; }
+  if (!accessible(n)) { toast(S.student ? 'Finish the section before this one to unlock it.' : 'Fill in your name and info to start.'); return; }
+  S.cur = n; save();
+  $$('.screen').forEach(s => s.classList.toggle('on', s.id === 'scr-' + n));
+  if (n === 9) renderFinal();
+  if (n === 10) renderResults();
+  if (n === 0) startHero(); else heroRun++;
+  renderNav();
+  window.scrollTo({ top: 0, behavior: 'auto' });
+}
+
+/* =========================================================
+   HERO (start screen)
+   ========================================================= */
+let heroView = null, heroRun = 0;
+function startHero() {
+  const svg = $('#heroSvg');
+  if (!heroView) heroView = new BohrView(svg);
+  const id = ++heroRun, Z = 11;
+  svg.classList.remove('orbit');
+  heroView.set({ p: 11, n: 12, shells: [], rings: 3 });
+  const cap = k => { $('#heroCap').innerHTML = `<b>Sodium</b> &nbsp;${k ? arr(k).join(', ') : ''}`; };
+  if (REDUCED) { heroView.set({ shells: arr(Z) }); cap(Z); return; }
+  cap(0);
+  let k = 0;
+  const step = () => {
+    if (id !== heroRun) return;
+    k++; heroView.set({ shells: arr(k) }); cap(k);
+    if (k < Z) setTimeout(step, k < 2 ? 450 : 280);
+    else setTimeout(() => { if (id === heroRun) svg.classList.add('orbit'); }, 800);
+  };
+  setTimeout(step, 600);
+}
+
+/* =========================================================
+   LOCKDOWN (final check only, when opened from GitHub Pages)
+   ========================================================= */
+let fsExiting = false;
+function reqFS() {
+  const d = document.documentElement, f = d.requestFullscreen || d.webkitRequestFullscreen;
+  if (f && !document.fullscreenElement) { try { const p = f.call(d); if (p && p.catch) p.catch(() => {}); } catch (e) {} }
+}
+function exitFS() {
+  if (!document.fullscreenElement) return;
+  const f = document.exitFullscreen || document.webkitExitFullscreen;
+  fsExiting = true;
+  try { const p = f.call(document); if (p && p.then) p.then(() => { fsExiting = false; }, () => { fsExiting = false; }); else fsExiting = false; } catch (e) { fsExiting = false; }
+}
+function startLockdown() { if (!LOCK_ON) return; S.lockActive = true; S.locked = false; save(); reqFS(); }
+function endLockdown() { S.lockActive = false; S.locked = false; save(); $('#lockOv').hidden = true; exitFS(); }
+function lockNow() { if (!S.lockActive || S.locked) return; S.locked = true; S.lockouts++; save(); showLock(); }
+function showLock() { $('#lockOv').hidden = false; $('#lockCode').value = ''; $('#lockMsg').textContent = ''; setTimeout(() => $('#lockCode').focus(), 60); }
+document.addEventListener('visibilitychange', () => { if (document.hidden) lockNow(); });
+window.addEventListener('blur', () => { setTimeout(() => { if (!document.hasFocus()) lockNow(); }, 150); });
+document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && !fsExiting) lockNow(); });
+function tryUnlock() {
+  if ($('#lockCode').value.trim() === TEACHER_CODE) { S.locked = false; save(); $('#lockOv').hidden = true; reqFS(); toast('Unlocked'); }
+  else { $('#lockMsg').textContent = 'That code is not correct.'; shake($('#lockCode')); }
+}
+$('#lockGo').addEventListener('click', tryUnlock);
+$('#lockCode').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+
+/* =========================================================
+   TEACHER VIEW
+   ========================================================= */
+const tOv = $('#teacherOv');
+function teacherInfo() {
+  const st = S.student;
+  $('#tInfo').textContent = `${st ? `Student: ${st.first} ${st.last}, period ${st.period}. ` : 'No student signed in. '}Final check attempts: ${S.final.attempts.length}. Best: ${S.final.best}/${FC_LEN}. Times locked: ${S.lockouts}.`;
+  $('#tKey').textContent = document.body.classList.contains('show-key') ? 'Hide answer key' : 'Show answer key';
+  $('#tUnlock').textContent = S.teacherUnlock ? 'Every section is unlocked' : 'Unlock every section';
+  $('#tUnlock').disabled = !!S.teacherUnlock;
+  $('#tEndLock').disabled = !S.lockActive;
+}
+$('#teacherBtn').addEventListener('click', () => {
+  tOv.hidden = false; $('#tLogin').classList.remove('hidden'); $('#tPanel').classList.add('hidden');
+  $('#tCode').value = ''; $('#tMsg').textContent = ''; setTimeout(() => $('#tCode').focus(), 50);
+});
+const tLogin = () => {
+  if ($('#tCode').value.trim() === TEACHER_CODE) { $('#tLogin').classList.add('hidden'); $('#tPanel').classList.remove('hidden'); teacherInfo(); }
+  else { $('#tMsg').textContent = 'That code is not correct.'; shake($('#tCode')); }
+};
+$('#tGo').addEventListener('click', tLogin);
+$('#tCode').addEventListener('keydown', e => { if (e.key === 'Enter') tLogin(); });
+$('#tCancel').addEventListener('click', () => { tOv.hidden = true; });
+$('#tClose').addEventListener('click', () => { tOv.hidden = true; });
+$('#tUnlock').addEventListener('click', () => {
+  if (!S.student) { toast('Have the student sign in first.'); return; }
+  S.teacherUnlock = true; save(); renderNav(); for (let n = 1; n <= 9; n++) updateNext(n); teacherInfo(); toast('Every section is unlocked');
+});
+$('#tKey').addEventListener('click', () => { document.body.classList.toggle('show-key'); teacherInfo(); });
+$('#tSend').addEventListener('click', sendScores);
+$('#tEndLock').addEventListener('click', () => { endLockdown(); teacherInfo(); toast('Lockdown ended for this check'); });
+$('#tReset').addEventListener('click', () => {
+  if (!confirm('Erase all progress for this lesson on this device?')) return;
+  try { localStorage.removeItem(KEY); } catch (e) {}
+  S = DEF(); location.reload();
+});
+
+/* =========================================================
+   GLOBAL EVENTS
+   ========================================================= */
+const pop = $('#pop');
+document.addEventListener('click', e => {
+  const g = e.target.closest('[data-go]');
+  if (g && !g.disabled) { go(+g.dataset.go); return; }
+  const ch = e.target.closest('.chip');
+  if (ch) {
+    const t = ch.dataset.term;
+    $('b', pop).textContent = t; $('p', pop).textContent = GLOSS[t] || '';
+    pop.hidden = false;
+    const r = ch.getBoundingClientRect(), w = Math.min(300, window.innerWidth - 24);
+    pop.style.left = Math.max(12, Math.min(r.left, window.innerWidth - w - 12)) + 'px';
+    const below = r.bottom + 8, ph = pop.offsetHeight;
+    pop.style.top = (below + ph > window.innerHeight - 10 ? Math.max(10, r.top - ph - 8) : below) + 'px';
+    return;
+  }
+  if (!e.target.closest('#pop')) pop.hidden = true;
+  const dr = $('#goalsDrawer');
+  if (!dr.hidden && !e.target.closest('#goalsDrawer') && !e.target.closest('#goalsBtn')) { dr.hidden = true; $('#goalsBtn').setAttribute('aria-expanded', 'false'); }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { pop.hidden = true; $('#goalsDrawer').hidden = true; if (!tOv.hidden) tOv.hidden = true; } });
+window.addEventListener('scroll', () => { pop.hidden = true; }, { passive: true });
+$('#goalsBtn').addEventListener('click', () => { const d = $('#goalsDrawer'); d.hidden = !d.hidden; $('#goalsBtn').setAttribute('aria-expanded', String(!d.hidden)); });
+$('#goalsClose').addEventListener('click', () => { $('#goalsDrawer').hidden = true; $('#goalsBtn').setAttribute('aria-expanded', 'false'); });
+$('.brand').style.cursor = 'pointer';
+$('.brand').addEventListener('click', () => go(0));
+
+/* start form */
+function renderStart() {
+  const wb = $('#welcomeBack'), form = $('#startForm');
+  if (S.student) {
+    wb.classList.remove('hidden'); form.classList.add('hidden');
+    wb.innerHTML = `<p style="margin-top:0">Welcome back, <b>${esc(S.student.first)}</b> (period ${esc(S.student.period)}, ${esc(S.student.teacher)}). Your progress is saved on this device.</p><div class="btn-row"><button type="button" class="btn primary" id="wbGo">Continue</button><button type="button" class="btn ghost" id="wbNew">Not you? Start fresh</button></div>`;
+    $('#wbGo').addEventListener('click', () => {
+      let n = S.cur > 0 && accessible(S.cur) ? S.cur : 1;
+      if (S.cur === 0) { for (let k = 1; k <= 9; k++) if (accessible(k)) n = k; }
+      go(n);
+    });
+    $('#wbNew').addEventListener('click', () => {
+      if (!confirm('Start fresh? This erases the saved progress on this device.')) return;
+      try { localStorage.removeItem(KEY); } catch (e) {}
+      location.reload();
+    });
+  } else { wb.classList.add('hidden'); form.classList.remove('hidden'); }
+}
+$('#fStart').addEventListener('click', () => {
+  const v = id => $(id).value.trim();
+  const st = { first: v('#fFirst'), last: v('#fLast'), period: v('#fPeriod'), teacher: v('#fTeacher'), sid: v('#fSid') };
+  const missing = [['first', 'first name'], ['last', 'last name'], ['period', 'period'], ['teacher', 'teacher'], ['sid', 'student ID']].filter(([k]) => !st[k]).map(([, l]) => l);
+  if (missing.length) { $('#formMsg').textContent = `Add your ${missing.join(', ')}.`; return; }
+  S.student = st; S.startedAt = new Date().toISOString(); save();
+  renderStart(); go(1);
+});
+
+/* =========================================================
+   INIT
+   ========================================================= */
+$('#fTeacher').innerHTML = '<option value="">Choose your teacher</option>' + teacherList().map(t => `<option>${esc(t)}</option>`).join('');
+const BUILD = [null, build1, build2, build3, build4, build5, build6, build7, build8, build9];
+for (let n = 1; n <= 9; n++) {
+  try { BUILD[n]($('#scr-' + n)); } catch (err) { console.error('Section ' + n, err); }
+  renderReqs(n); updateNext(n);
+}
+renderGoals(); renderStart();
+if (S.lockActive && S.final.current) { if (!S.locked) { S.locked = true; S.lockouts++; save(); } }
+let startAt = 0;
+if (S.student) { startAt = S.final.current ? 9 : (accessible(S.cur) ? S.cur : 0); }
+go(startAt);
+if (S.locked && S.lockActive) showLock();
+})();
+</script>
+</body></html>
