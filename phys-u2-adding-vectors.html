@@ -1,0 +1,1958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adding Vectors with Components | Physics Unit 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1626; --panel:#142136; --panel2:#1a2a44; --line:#2a3d5f; --line2:#3a5580;
+  --text:#e8eef8; --muted:#a3b4cf; --dim:#7488a9;
+  --x:#ff7d6e; --y:#45c8f0; --a:#b996ff; --b:#5fe3a9; --r:#ffd35c; --amber:#f5a524;
+  --ok:#4ade80; --bad:#fb7185; --radius:14px;
+  --font:'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+html,body{margin:0}
+body{
+  background-color:var(--bg);
+  background-image:linear-gradient(rgba(110,150,210,.065) 1px,transparent 1px),linear-gradient(90deg,rgba(110,150,210,.065) 1px,transparent 1px);
+  background-size:32px 32px;
+  color:var(--text); font-family:var(--font); font-size:17px; line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{line-height:1.2; margin:0 0 .5em; font-weight:600}
+h1{font-size:clamp(30px,5vw,46px); font-weight:700; letter-spacing:-.01em}
+h2{font-size:clamp(24px,3.4vw,32px)}
+h3{font-size:20px}
+h4{font-size:16px}
+p{margin:0 0 .8em}
+sub{font-size:.72em}
+a{color:var(--y)}
+.num,.nb,input.ans,.readout{font-variant-numeric:tabular-nums}
+.cx{color:var(--x); font-weight:600} .cy{color:var(--y); font-weight:600}
+.ca{color:var(--a); font-weight:600} .cb{color:var(--b); font-weight:600} .cr{color:var(--r); font-weight:600}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky; top:0; z-index:20; background:rgba(13,22,38,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:1120px; margin:0 auto; display:flex; align-items:center; gap:14px; padding:8px 16px}
+.brand{font-weight:600; font-size:15px; white-space:nowrap}
+.brand span{display:block; font-weight:400; font-size:12px; color:var(--muted)}
+.navtiles{display:flex; gap:6px; overflow-x:auto; flex:1; padding:4px 2px; scrollbar-width:thin}
+.progress{height:4px; background:var(--panel2)}
+.progress div{height:100%; width:0; background:var(--r); transition:width .5s ease}
+
+.tile{flex:0 0 auto; width:46px; height:52px; border-radius:6px; border:1.5px solid var(--line2); background:var(--panel); color:var(--text);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; cursor:pointer; font-family:var(--font); padding:0}
+.tile .z{position:absolute; top:2px; left:4px; font-size:9px; color:var(--muted)}
+.tile .sym{font-size:19px; font-weight:700; line-height:1}
+.tile .nm{font-size:8px; color:var(--muted); margin-top:3px}
+.tile.cur{background:var(--r); border-color:var(--r); color:#231a00}
+.tile.cur .z,.tile.cur .nm{color:#5a4600}
+.tile.done::after{content:'✓'; position:absolute; top:1px; right:4px; font-size:10px; font-weight:700; color:var(--ok)}
+.tile.cur.done::after{color:#1d6b35}
+.tile.locked{opacity:.4; cursor:not-allowed}
+.tile.ne{border-style:dashed}
+
+/* ---------- layout ---------- */
+main{max-width:1000px; margin:0 auto; padding:24px 18px 80px}
+.sechead{display:flex; gap:18px; align-items:center; margin:12px 0 8px}
+.badge{flex:0 0 auto; width:94px; height:94px; border-radius:10px; border:2px solid var(--r); background:var(--panel);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative}
+.badge .z{position:absolute; top:4px; left:7px; font-size:12px; color:var(--muted)}
+.badge .sym{font-size:38px; font-weight:700; line-height:1; color:var(--r)}
+.badge .nm{font-size:11px; color:var(--muted); margin-top:6px}
+.meta{color:var(--muted); font-size:15px; margin-bottom:4px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:22px 24px; margin:18px 0}
+.card.qc{border:2px solid var(--amber)}
+.tag{display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; padding:3px 11px 3px 8px; border-radius:999px; margin-bottom:12px}
+.tag svg{width:15px; height:15px}
+.tag.read{background:rgba(69,200,240,.14); color:var(--y)}
+.tag.try{background:rgba(95,227,169,.14); color:var(--b)}
+.tag.qc{background:rgba(245,165,36,.16); color:var(--amber)}
+.split{display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); gap:22px; align-items:start}
+@media (max-width:780px){ .split{grid-template-columns:1fr} }
+.fig{background:#0a1322; border:1px solid var(--line); border-radius:12px; width:100%; height:auto; display:block; touch-action:none; user-select:none; -webkit-user-select:none}
+.fig text{font-family:var(--font)}
+.handle{cursor:grab}
+.handle:focus{outline:none}
+.handle:focus-visible{stroke:#fff; stroke-width:3}
+.caption{font-size:15px; color:var(--muted); margin-top:8px; min-height:3em}
+.formula{display:inline-block; background:var(--bg); border:1px solid var(--line2); border-radius:10px; padding:8px 16px; font-size:19px; margin:4px 0 10px}
+.formula + .formula{margin-left:10px}
+.callout{background:var(--panel2); border-radius:10px; padding:12px 16px; margin:10px 0; font-size:16px}
+.callout b{color:var(--r)}
+ul.tight{margin:0 0 .8em; padding-left:1.2em} ul.tight li{margin:.25em 0}
+
+/* ---------- buttons & inputs ---------- */
+.btn{font:inherit; font-weight:600; font-size:15px; border-radius:10px; padding:10px 18px; cursor:pointer; border:1.5px solid transparent; transition:transform .08s ease}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--r); color:#231a00}
+.btn.primary:disabled{background:var(--line); color:var(--dim); cursor:not-allowed}
+.btn.ghost{background:transparent; border-color:var(--line2); color:var(--text)}
+.btn.ghost:hover{border-color:var(--muted)}
+.btn.small{padding:6px 12px; font-size:14px}
+.btn:disabled{opacity:.7}
+.btnrow{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:12px}
+:focus-visible{outline:3px solid var(--r); outline-offset:2px}
+input.ans, select.ans{width:112px; background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:7px 10px; font:inherit; font-size:16px}
+select.ans{width:auto}
+input.ans.ok, select.ans.ok{border-color:var(--ok); background:rgba(74,222,128,.08)}
+input.ans.no, select.ans.no{border-color:var(--bad)}
+input.ans:disabled, select.ans:disabled{opacity:.45}
+.field{display:flex; flex-direction:column; gap:4px; font-size:14px; color:var(--muted)}
+.field input,.field select{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px}
+.formgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; margin:12px 0}
+.numrow{display:flex; flex-wrap:wrap; align-items:center; gap:8px 10px; margin:10px 0 4px}
+.numrow label{min-width:150px}
+.inwrap{display:inline-flex; align-items:center; gap:6px}
+.unit{color:var(--muted); font-size:15px}
+
+/* ---------- feedback ---------- */
+.fb{margin-top:10px; padding:10px 14px; border-radius:10px; font-size:15px}
+.fb.ok{background:rgba(74,222,128,.12); color:#cdf8dc}
+.fb.no{background:rgba(251,113,133,.12); color:#ffd3db}
+.fb.info{background:var(--panel2); color:var(--text)}
+.how{margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,.12); color:var(--text)}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes pop{0%{transform:scale(.85)}60%{transform:scale(1.06)}100%{transform:scale(1)}}
+.shake{animation:shake .35s}
+
+/* ---------- multiple choice ---------- */
+.mcq{margin:6px 0 22px}
+.mcq:last-child{margin-bottom:4px}
+.mcq .q{font-weight:500; margin-bottom:10px}
+.opts{display:grid; gap:8px}
+.opt{display:flex; gap:12px; align-items:center; text-align:left; background:var(--panel2); border:1.5px solid var(--line); color:var(--text); border-radius:10px; padding:9px 14px; font:inherit; font-size:16px; cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--line2)}
+.opt .L{flex:0 0 28px; height:28px; border-radius:50%; display:grid; place-items:center; background:var(--bg); font-weight:600; font-size:14px}
+.opt.right{border-color:var(--ok); background:rgba(74,222,128,.12)}
+.opt.right .L{background:var(--ok); color:#06210f}
+.opt.wrong{border-color:var(--bad); background:rgba(251,113,133,.08); opacity:.8}
+.opt:disabled{cursor:default}
+
+/* ---------- sorter ---------- */
+.chips{display:flex; flex-wrap:wrap; gap:8px; min-height:52px; padding:10px; border-radius:12px; background:var(--bg); border:1px solid var(--line)}
+.chips:empty::before{content:'All sorted.'; color:var(--muted); font-size:14px; padding:4px}
+.chip{background:var(--panel2); border:1.5px solid var(--line2); color:var(--text); border-radius:999px; padding:6px 14px; font:inherit; font-size:15px; cursor:grab}
+.chip.sel{border-color:var(--r); box-shadow:0 0 0 3px rgba(255,211,92,.25)}
+.chip.placed{cursor:default; border-color:rgba(74,222,128,.6); animation:pop .3s; pointer-events:none}
+.bins{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; margin-top:12px}
+.bin{border:2px dashed var(--line2); border-radius:12px; padding:10px; min-height:110px; cursor:pointer; transition:border-color .15s, background .15s}
+.bin h4{margin:0 0 8px; font-size:16px}
+.bin.over,.bin.ready{border-color:var(--r); background:rgba(255,211,92,.05)}
+.binchips{display:flex; flex-wrap:wrap; gap:6px}
+
+/* ---------- missions, readouts, tables ---------- */
+.missions{background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:12px 16px; margin-top:12px}
+.missions h4{margin-bottom:6px}
+.missions ol{margin:0; padding-left:1.3em}
+.missions li{margin:4px 0; color:var(--muted)}
+.missions li.cur{color:var(--text); font-weight:500}
+.missions li.done{color:var(--ok); text-decoration:line-through; text-decoration-color:rgba(74,222,128,.5)}
+.readout{display:grid; grid-template-columns:auto 1fr; gap:4px 14px; background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:12px 16px; font-size:16px}
+.readout dt{color:var(--muted)} .readout dd{margin:0; font-weight:600}
+table.nb{border-collapse:collapse; width:100%; margin:8px 0}
+table.nb th,table.nb td{border:1px solid var(--line2); padding:7px 10px; text-align:center}
+table.nb th{background:var(--panel2); font-weight:600; font-size:14px}
+table.nb td:first-child{text-align:left; font-size:15px}
+table.nb input.ans{width:90px}
+.cellwrap{display:inline-flex; gap:4px; align-items:center}
+.cellbtn{background:var(--panel2); border:1.5px solid var(--line2); color:var(--text); border-radius:8px; width:34px; height:36px; font:inherit; cursor:pointer}
+.cellbtn:disabled{opacity:.35; cursor:default}
+.steps-row{display:grid; grid-template-columns:minmax(150px,auto) 1fr; gap:10px 12px; align-items:center; margin:12px 0}
+.slider{display:flex; align-items:center; gap:12px; margin:8px 0}
+.slider input{flex:1; accent-color:var(--r)}
+.slider label{min-width:72px}
+.stepbox{background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:14px 16px; min-height:120px}
+.stepbox .k{color:var(--muted); font-size:14px; margin-bottom:4px}
+.wide{overflow-x:auto}
+
+/* ---------- unlock checklist ---------- */
+.unlock{border:1.5px dashed var(--line2); border-radius:var(--radius); padding:18px 22px; margin:30px 0 12px; background:rgba(20,33,54,.75)}
+.unlock h3{font-size:18px}
+.unlock ul{margin:0; padding:0}
+.unlock li{list-style:none; display:flex; gap:10px; align-items:flex-start; padding:5px 0; color:var(--muted)}
+.unlock li .box{width:22px; height:22px; border-radius:6px; border:2px solid var(--line2); flex:0 0 22px; display:grid; place-items:center; font-size:13px; font-weight:700; margin-top:2px}
+.unlock li.done{color:var(--text)}
+.unlock li.done .box{background:var(--ok); border-color:var(--ok); color:#06210f; animation:pop .3s}
+.secnav{display:flex; justify-content:space-between; gap:10px; margin-top:16px; flex-wrap:wrap}
+
+/* ---------- start page ---------- */
+.hero{display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr); gap:26px; align-items:center; margin:10px 0 18px}
+@media (max-width:780px){ .hero{grid-template-columns:1fr} }
+.hero .kicker{color:var(--muted); font-size:16px; margin-bottom:8px}
+.hero p.lead{font-size:19px; color:var(--muted); max-width:34em}
+.twocards{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+@media (max-width:700px){ .twocards{grid-template-columns:1fr} }
+.twocards .card{margin:0}
+.goals li{list-style:none; display:flex; gap:10px; padding:4px 0; color:var(--muted)}
+.goals ul{margin:0; padding:0}
+.goals li .box{width:22px; height:22px; border-radius:50%; border:2px solid var(--line2); flex:0 0 22px; display:grid; place-items:center; font-size:12px; font-weight:700; margin-top:2px}
+.goals li.done{color:var(--text)} .goals li.done .box{background:var(--ok); border-color:var(--ok); color:#06210f}
+.linkbtn{background:none; border:none; color:var(--muted); font:inherit; font-size:14px; text-decoration:underline; cursor:pointer; padding:4px}
+
+/* ---------- final check ---------- */
+.dots{display:flex; gap:6px; margin:4px 0 14px; flex-wrap:wrap}
+.dots span{width:28px; height:28px; border-radius:50%; border:2px solid var(--line2); display:grid; place-items:center; font-size:12px; color:var(--muted)}
+.dots span.cur{border-color:var(--r); color:var(--r)}
+.dots span.ans{background:var(--line2); color:var(--text)}
+.dots span.ok{background:var(--ok); border-color:var(--ok); color:#06210f}
+.dots span.no{background:var(--bad); border-color:var(--bad); color:#3a0611}
+.bigscore{font-size:54px; font-weight:700; line-height:1; color:var(--r)}
+.reviewlist{margin:14px 0 0; padding:0; list-style:none}
+.reviewlist li{border-top:1px solid var(--line); padding:10px 0; font-size:15px}
+.reviewlist .yes{color:var(--ok); font-weight:600} .reviewlist .nope{color:var(--bad); font-weight:600}
+
+/* ---------- results ---------- */
+table.res{border-collapse:collapse; width:100%; margin:6px 0 4px}
+table.res th,table.res td{text-align:left; padding:8px 10px; border-bottom:1px solid var(--line)}
+table.res th{color:var(--muted); font-weight:400; width:44%}
+
+/* ---------- overlays ---------- */
+.overlay{position:fixed; inset:0; background:rgba(4,9,18,.9); z-index:100; display:none; align-items:center; justify-content:center; padding:20px}
+.overlay.show{display:flex}
+.modal{background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:26px; max-width:560px; width:100%; max-height:92vh; overflow:auto}
+.modal.wide{max-width:980px}
+.lockicon{width:56px; height:56px; border-radius:14px; background:rgba(251,113,133,.15); display:grid; place-items:center; margin-bottom:12px}
+
+/* ---------- calculator ---------- */
+.calc{position:fixed; right:16px; bottom:16px; z-index:60; width:300px; background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:14px; box-shadow:0 18px 50px rgba(0,0,0,.45)}
+.calc header{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:14px; color:var(--muted)}
+.calc input{width:100%; background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:8px 10px; font:inherit; font-size:17px; text-align:right}
+.calc .out{text-align:right; font-size:22px; font-weight:600; min-height:32px; margin:6px 2px; font-variant-numeric:tabular-nums; color:var(--r)}
+.calc .keys{display:grid; grid-template-columns:repeat(5,1fr); gap:6px}
+.calc .keys button{background:var(--panel2); border:1px solid var(--line); color:var(--text); border-radius:8px; padding:9px 0; font:inherit; font-size:15px; cursor:pointer}
+.calc .keys button.fn{color:var(--y)}
+.calc .keys button.eq{background:var(--r); color:#231a00; font-weight:700}
+@media (max-width:520px){ .calc{left:10px; right:10px; width:auto; bottom:10px} }
+
+@media (prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important} }
+
+@media print{
+  body{background:#fff; color:#000; font-size:13px}
+  .topbar,.calc,.overlay,.noprint,.unlock,.secnav{display:none !important}
+  main{padding:0; max-width:none}
+  .card{background:#fff; border:1px solid #999; color:#000}
+  .badge{border-color:#000; background:#fff} .badge .sym{color:#000}
+  .muted,.meta,table.res th{color:#333}
+  table.res th,table.res td{border-color:#bbb}
+  .bigscore{color:#000}
+}
+</style>
+</head>
+<body>
+<header class="topbar noprint" id="topbar" hidden>
+  <div class="topbar-inner">
+    <div class="brand">Adding vectors<span id="whoami"></span></div>
+    <nav class="navtiles" id="navtiles" aria-label="Lesson sections"></nav>
+    <button class="btn ghost small" id="calcBtn" type="button" aria-expanded="false">Calculator</button>
+  </div>
+  <div class="progress" aria-hidden="true"><div id="progbar"></div></div>
+</header>
+
+<main id="main">
+  <!-- ================= START PAGE ================= -->
+  <section id="start" class="page">
+    <div class="hero">
+      <div>
+        <div class="kicker">Physics · Unit 2: 2D Kinematics · Self-taught lesson</div>
+        <h1>Adding Vectors with Components</h1>
+        <p class="lead">Break every arrow into an x-part and a y-part, add the parts, then rebuild the answer as a right triangle.</p>
+      </div>
+      <div id="heroFig"></div>
+    </div>
+
+    <div class="twocards">
+      <div class="card">
+        <h3>Objective</h3>
+        <p>I can break vectors into x- and y-components, add the components to find the resultant, and use the Pythagorean theorem and inverse tangent to find the resultant's length and angle.</p>
+      </div>
+      <div class="card">
+        <h3>Standards</h3>
+        <p class="small" style="margin-bottom:.5em"><b>CA CCSS Math N-VM.B.4b</b> Given two vectors in magnitude and direction form, determine the magnitude and direction of their sum.</p>
+        <p class="small" style="margin-bottom:.5em"><b>CA CCSS Math G-SRT.C.8</b> Use trig ratios and the Pythagorean theorem to solve right triangles.</p>
+        <p class="small" style="margin:0"><b>NGSS SEP 5</b> Using mathematics and computational thinking (supports motion analysis in HS-PS2-1).</p>
+      </div>
+    </div>
+
+    <div class="card goals" id="goalsCard">
+      <h3>Goals</h3>
+      <p class="small muted">These check themselves off as you finish sections.</p>
+      <ul id="goalsList"></ul>
+    </div>
+
+    <div class="card" id="signin">
+      <h3 id="signinTitle">Sign in to start</h3>
+      <div id="resumeBox" hidden>
+        <p id="resumeText"></p>
+        <div class="btnrow">
+          <button class="btn primary" id="resumeBtn" type="button">Continue the lesson</button>
+          <button class="linkbtn" id="notMeBtn" type="button">Not you? Ask your teacher to reset this device.</button>
+        </div>
+      </div>
+      <form id="startForm" autocomplete="off" novalidate>
+        <div class="formgrid">
+          <label class="field">First name<input id="fFirst" required></label>
+          <label class="field">Last name<input id="fLast" required></label>
+          <label class="field">Student ID<input id="fId" inputmode="numeric" required></label>
+          <label class="field">Period<select id="fPeriod" required></select></label>
+          <label class="field">Teacher<select id="fTeacher" required></select></label>
+        </div>
+        <p class="small muted">You'll need about 90 minutes. A calculator in degree mode is built into the top bar. Your progress saves on this device.</p>
+        <div class="fb no" id="formErr" hidden></div>
+        <div class="btnrow"><button class="btn primary" type="submit">Start the lesson</button></div>
+      </form>
+    </div>
+    <p style="text-align:center"><button class="linkbtn" id="teacherLink" type="button">Teacher view</button></p>
+  </section>
+
+  <div id="sections"></div>
+</main>
+
+<!-- ================= LOCK SCREEN ================= -->
+<div class="overlay" id="lockOv" role="dialog" aria-modal="true" aria-labelledby="lockTitle">
+  <div class="modal">
+    <div class="lockicon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fb7185" stroke-width="2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+    <h2 id="lockTitle">Lesson locked</h2>
+    <p id="lockMsg">You left the lesson page or exited full screen. Raise your hand so your teacher can unlock it. Your work is saved.</p>
+    <div class="btnrow">
+      <input class="ans" id="lockCode" type="password" placeholder="Teacher code" style="width:200px" autocomplete="off">
+      <button class="btn primary" id="lockBtn" type="button">Unlock</button>
+    </div>
+    <div class="fb no" id="lockErr" hidden>That code didn't work. Only your teacher can unlock the lesson.</div>
+  </div>
+</div>
+
+<!-- ================= FULL-SCREEN GATE ================= -->
+<div class="overlay" id="gateOv" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+  <div class="modal">
+    <h2 id="gateTitle">This lesson runs in full screen</h2>
+    <p>Stay on this page until you finish. If you leave the page or exit full screen, the lesson locks and your teacher has to unlock it.</p>
+    <div class="btnrow"><button class="btn primary" id="gateBtn" type="button">Enter full screen and continue</button></div>
+  </div>
+</div>
+
+<!-- ================= TEACHER VIEW ================= -->
+<div class="overlay" id="teachOv" role="dialog" aria-modal="true" aria-labelledby="teachTitle">
+  <div class="modal" id="teachModal">
+    <div id="teachLogin">
+      <h2 id="teachTitle">Teacher view</h2>
+      <p class="muted">Enter the teacher code.</p>
+      <div class="btnrow">
+        <input class="ans" id="teachCode" type="password" placeholder="Teacher code" style="width:200px" autocomplete="off">
+        <button class="btn primary" id="teachGo" type="button">Open</button>
+        <button class="btn ghost" id="teachCancel" type="button">Close</button>
+      </div>
+      <div class="fb no" id="teachErr" hidden>That code didn't work.</div>
+    </div>
+    <div id="teachPanel" hidden></div>
+  </div>
+</div>
+
+<!-- ================= CALCULATOR ================= -->
+<div class="calc noprint" id="calc" hidden role="dialog" aria-label="Calculator in degree mode">
+  <header><span>Calculator · degree mode</span><button class="linkbtn" id="calcClose" type="button">Close</button></header>
+  <input id="calcIn" aria-label="Calculation" placeholder="e.g. 20*cos(30)" autocomplete="off" spellcheck="false">
+  <div class="out" id="calcOut" aria-live="polite"></div>
+  <div class="keys" id="calcKeys"></div>
+</div>
+<script src="sheets-config.js"></script>
+<script>
+(function(){
+'use strict';
+
+/* =====================================================================
+   SETTINGS — the only part of this file you should need to change
+   ===================================================================== */
+const LESSON_ID   = 'phys-u2-adding-vectors';
+const LESSON_NAME = 'Adding Vectors with Components';
+const TEACHER_CODE = 'Austin';                 // unlocks lock screen + teacher view
+/* Google Sheets + teacher list: same setup as the formative assessments and the Bohr model lesson.
+   If sheets-config.js (next to this file on the site) defines TEACHERS or SHEETS_WEBHOOK_URL, those win. */
+const BACKUP_URL = 'https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const BACKUP_TEACHERS = ['Austin', 'Mueller', 'McCue', 'Arce', 'Trimm', 'Garcia'];
+function teacherList() { try { if (typeof TEACHERS !== 'undefined' && Array.isArray(TEACHERS) && TEACHERS.length) return TEACHERS.map(String).filter(Boolean); } catch (e) {} return BACKUP_TEACHERS; }
+function sheetURL() { try { if (typeof SHEETS_WEBHOOK_URL !== 'undefined' && SHEETS_WEBHOOK_URL && String(SHEETS_WEBHOOK_URL).indexOf('PASTE') < 0) return String(SHEETS_WEBHOOK_URL); } catch (e) {} return BACKUP_URL; }
+const PERIODS = ['1','2','3','4','5','6','7','8'];
+const PASS_SCORE = 8;                          // out of 10 on the final check
+/* ===================================================================== */
+
+const STORE = 'vecAdd_state_v1', RECS = 'vecAdd_records_v1';
+const NS = 'http://www.w3.org/2000/svg';
+const COL = {x:'#ff7d6e', y:'#45c8f0', a:'#b996ff', b:'#5fe3a9', r:'#ffd35c', amber:'#f5a524',
+             grid:'#1b2a44', axis:'#5d7399', text:'#e8eef8', muted:'#a3b4cf', bg:'#0a1322', ok:'#4ade80'};
+const RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const $ = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+function h(tag, attrs={}, html){
+  const e=document.createElement(tag);
+  for(const k in attrs){
+    if(k==='class') e.className=attrs[k];
+    else if(k.startsWith('on') && typeof attrs[k]==='function') e.addEventListener(k.slice(2), attrs[k]);
+    else if(attrs[k]!==false && attrs[k]!=null) e.setAttribute(k, attrs[k]===true?'':attrs[k]);
+  }
+  if(html!=null) e.innerHTML=html;
+  return e;
+}
+function sv(tag, attrs={}, parent){
+  const e=document.createElementNS(NS,tag);
+  for(const k in attrs) if(attrs[k]!=null) e.setAttribute(k, attrs[k]);
+  if(parent) parent.appendChild(e);
+  return e;
+}
+const rad=d=>d*Math.PI/180, deg=r=>r*180/Math.PI;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+function fmt(v,d=1){ let s=(Math.round(v*Math.pow(10,d))/Math.pow(10,d)).toFixed(d); if(/^-0\.?0*$/.test(s)) s=s.slice(1); return s.replace('-','−'); }
+function parseNum(str){
+  if(str==null) return NaN;
+  const s=String(str).trim().replace(/[−–—]/g,'-').replace(/,/g,'').replace(/\s+/g,'');
+  const m=s.match(/^[+-]?(\d+\.?\d*|\.\d+)/);
+  return m?parseFloat(m[0]):NaN;
+}
+function near(v, ans, kind){
+  if(isNaN(v)) return false;
+  if(kind==='angle') return Math.abs(v-ans)<=0.6;
+  return Math.abs(v-ans) <= Math.max(0.15, Math.abs(ans)*0.015);
+}
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function tween(ms, fn){
+  return new Promise(res=>{
+    if(RM || ms<=0){ fn(1); res(); return; }
+    const t0=performance.now();
+    function step(now){ const t=Math.min(1,(now-t0)/ms); fn(ease(t)); if(t<1) requestAnimationFrame(step); else res(); }
+    requestAnimationFrame(step);
+  });
+}
+const wait=ms=>new Promise(r=>setTimeout(r, RM?0:ms));
+function quad(x,y){ if(x>0&&y>0) return 'I'; if(x<0&&y>0) return 'II'; if(x<0&&y<0) return 'III'; if(x>0&&y<0) return 'IV'; return null; }
+function stdAngle(x,y){ let a=deg(Math.atan2(y,x)); if(a<0) a+=360; return a; }
+function compass(th){
+  th=((th%360)+360)%360; const t=Math.round(th*10)/10;
+  const ax={0:'straight east',90:'straight north',180:'straight west',270:'straight south'};
+  if(ax[t]!==undefined) return {h:ax[t], v:null};
+  const f=n=>(Math.round(n*10)/10).toString();
+  if(t<90)  return {h:`${f(t)}° north of east`,  v:`${f(90-t)}° east of north`};
+  if(t<180) return {h:`${f(180-t)}° north of west`, v:`${f(t-90)}° west of north`};
+  if(t<270) return {h:`${f(t-180)}° south of west`, v:`${f(270-t)}° west of south`};
+  return {h:`${f(360-t)}° south of east`, v:`${f(t-270)}° east of south`};
+}
+// colored symbols
+const V = {
+  Ax:'<span class="cx">A<sub>x</sub></span>', Ay:'<span class="cy">A<sub>y</sub></span>',
+  Bx:'<span class="cx">B<sub>x</sub></span>', By:'<span class="cy">B<sub>y</sub></span>',
+  Rx:'<span class="cx">R<sub>x</sub></span>', Ry:'<span class="cy">R<sub>y</sub></span>',
+  vx:'<span class="cx">v<sub>x</sub></span>', vy:'<span class="cy">v<sub>y</sub></span>',
+  A:'<span class="ca">A</span>', B:'<span class="cb">B</span>', R:'<span class="cr">R</span>',
+  tref:'θ<sub>ref</sub>'
+};
+
+/* ---------------- state ---------------- */
+function freshState(){
+  return {lesson:LESSON_ID, student:null, startedAt:null, sec:0, unlocked:0, reqs:{}, first:{}, solved:{}, misc:{},
+    final:{attempts:0, fails:0, best:0, passed:false, cur:null, history:[], reviewed:false},
+    leaves:0, locked:false, completedAt:null, sent:false, preview:false};
+}
+function load(){ try{ const s=JSON.parse(localStorage.getItem(STORE)); return (s && s.lesson===LESSON_ID)?s:null; }catch(e){ return null; } }
+let S = load() || freshState();
+function save(){ try{ localStorage.setItem(STORE, JSON.stringify(S)); }catch(e){} }
+
+const ITEMS = new Set();          // ids that count toward the assignment score
+const reg = id => { ITEMS.add(id); return id; };
+function attempt(id, ok){ if(!(id in S.first)) S.first[id]=ok; if(ok) S.solved[id]=true; save(); }
+function assignScore(){ let c=0; ITEMS.forEach(id=>{ if(S.first[id]===true) c++; }); const t=ITEMS.size; return {c, t, pct:t?Math.round(100*c/t):0}; }
+
+let onReqChange = ()=>{};
+function reqDone(id){ if(S.reqs[id]) return; S.reqs[id]=true; save(); onReqChange(id); }
+function allSolved(ids){ return ids.every(i=>S.solved[i]); }
+
+/* ---------------- SVG helpers ---------------- */
+function arrow(g, x1,y1,x2,y2, color, o={}){
+  const w=o.w||3, hl=o.head||12, hw=o.hw||6.5;
+  const dx=x2-x1, dy=y2-y1, L=Math.hypot(dx,dy);
+  const grp=sv('g',{opacity:o.op!=null?o.op:null},g);
+  if(L<0.5) return grp;
+  const ux=dx/L, uy=dy/L, hh=Math.min(hl, L*0.55);
+  const bx=x2-ux*hh, by=y2-uy*hh;
+  sv('line',{x1,y1,x2:bx,y2:by,stroke:color,'stroke-width':w,'stroke-linecap':o.dash?'butt':'round','stroke-dasharray':o.dash||null},grp);
+  const k=hh/hl;
+  sv('polygon',{points:`${x2},${y2} ${bx-uy*hw*k},${by+ux*hw*k} ${bx+uy*hw*k},${by-ux*hw*k}`,fill:color},grp);
+  return grp;
+}
+function label(g, x, y, txt, color, o={}){
+  const t=sv('text',{x,y,fill:color||COL.text,'font-size':o.size||15,'font-weight':o.weight||600,'text-anchor':o.anchor||'middle',
+    'dominant-baseline':'middle','paint-order':'stroke',stroke:COL.bg,'stroke-width':o.halo==null?5:o.halo,'stroke-linejoin':'round'},g);
+  t.innerHTML=txt;
+  return t;
+}
+function arcPath(cx,cy,r,a0,a1){
+  const p=a=>[cx+r*Math.cos(rad(a)), cy-r*Math.sin(rad(a))];
+  const [x0,y0]=p(a0),[x1,y1]=p(a1); const large=Math.abs(a1-a0)>180?1:0; const sweep=a1>a0?0:1;
+  return `M${x0},${y0} A${r},${r} 0 ${large} ${sweep} ${x1},${y1}`;
+}
+function niceStep(span){ const raw=span/8; const p=Math.pow(10,Math.floor(Math.log10(raw))); const m=raw/p; return (m<1.5?1:m<3.5?2:m<7.5?5:10)*p; }
+
+function plane(o){
+  const pad=o.pad??24;
+  const xmin=o.xmin,xmax=o.xmax,ymin=o.ymin,ymax=o.ymax;
+  const s=o.scale || ((o.w||440)-2*pad)/(xmax-xmin);
+  const W=(xmax-xmin)*s+2*pad, H=(ymax-ymin)*s+2*pad;
+  const svg=sv('svg',{viewBox:`0 0 ${W} ${H}`,class:'fig',role:'img','aria-label':o.label||'Coordinate grid'});
+  const X=x=>pad+(x-xmin)*s, Y=y=>pad+(ymax-y)*s;
+  const gGrid=sv('g',{},svg), gDraw=sv('g',{},svg), gTop=sv('g',{},svg);
+  const step=o.grid||1;
+  if(o.grid!==0){
+    for(let x=Math.ceil(xmin/step)*step; x<=xmax+1e-9; x+=step) sv('line',{x1:X(x),y1:Y(ymin),x2:X(x),y2:Y(ymax),stroke:COL.grid,'stroke-width':1},gGrid);
+    for(let y=Math.ceil(ymin/step)*step; y<=ymax+1e-9; y+=step) sv('line',{x1:X(xmin),y1:Y(y),x2:X(xmax),y2:Y(y),stroke:COL.grid,'stroke-width':1},gGrid);
+  }
+  if(xmin<=0&&xmax>=0) sv('line',{x1:X(0),y1:Y(ymin),x2:X(0),y2:Y(ymax),stroke:COL.axis,'stroke-width':1.6},gGrid);
+  if(ymin<=0&&ymax>=0) sv('line',{x1:X(xmin),y1:Y(0),x2:X(xmax),y2:Y(0),stroke:COL.axis,'stroke-width':1.6},gGrid);
+  if(o.ticks){
+    const ts=o.ticks;
+    for(let x=Math.ceil(xmin/ts)*ts; x<=xmax; x+=ts) if(Math.abs(x)>1e-9 && x>xmin && x<xmax) label(gGrid,X(x),Y(0)+13,String(+x.toFixed(2)).replace('-','−'),COL.muted,{size:11,weight:400,halo:3});
+    for(let y=Math.ceil(ymin/ts)*ts; y<=ymax; y+=ts) if(Math.abs(y)>1e-9 && y>ymin && y<ymax) label(gGrid,X(0)-5,Y(y),String(+y.toFixed(2)).replace('-','−'),COL.muted,{size:11,weight:400,anchor:'end',halo:3});
+  }
+  if(o.names!==false){
+    if(ymin<=0&&ymax>=0) label(gGrid,X(xmax)-4,Y(0)-11,'+x',COL.muted,{size:13,anchor:'end',halo:3});
+    if(xmin<=0&&xmax>=0) label(gGrid,X(0)+8,Y(ymax)+10,'+y',COL.muted,{size:13,anchor:'start',halo:3});
+  }
+  function toData(e){
+    const pt=svg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY;
+    const p=pt.matrixTransform(svg.getScreenCTM().inverse());
+    return {x:(p.x-pad)/s+xmin, y:ymax-(p.y-pad)/s};
+  }
+  return {svg,X,Y,s,W,H,gGrid,gDraw,gTop,toData};
+}
+function autoPlane(points, o={}){
+  let xs=[0,...points.map(p=>p[0])], ys=[0,...points.map(p=>p[1])];
+  let x0=Math.min(...xs), x1=Math.max(...xs), y0=Math.min(...ys), y1=Math.max(...ys);
+  const span=Math.max(x1-x0, y1-y0, 1); const m=span*0.16;
+  x0-=m; x1+=m; y0-=m; y1+=m;
+  const room=span*0.24; x0=Math.min(x0,-room); x1=Math.max(x1,room); y0=Math.min(y0,-room); y1=Math.max(y1,room);
+  // make the window square so tall or wide vectors don't stretch the figure
+  const sx=x1-x0, sy=y1-y0;
+  if(sx<sy){ const d=(sy-sx)/2; x0-=d; x1+=d; } else if(sy<sx){ const d=(sx-sy)/2; y0-=d; y1+=d; }
+  const step=niceStep(Math.max(x1-x0,y1-y0));
+  return plane(Object.assign({xmin:Math.floor(x0/step)*step, xmax:Math.ceil(x1/step)*step, ymin:Math.floor(y0/step)*step, ymax:Math.ceil(y1/step)*step, grid:step, w:o.w||420}, o));
+}
+function rightMark(g, P, cx, cy, dx, dy, size){
+  // small square at corner (cx,cy) in data coords; dx,dy are signs pointing into the triangle
+  const s=size/P.s;
+  sv('path',{d:`M${P.X(cx+dx*s)},${P.Y(cy)} L${P.X(cx+dx*s)},${P.Y(cy+dy*s)} L${P.X(cx)},${P.Y(cy+dy*s)}`,fill:'none',stroke:COL.muted,'stroke-width':1.3},g);
+}
+// drag handles on a plane. handles: [{get:()=>[x,y], set:(x,y)=>{}, el}]
+function svgDrag(P, handles, maxDist){
+  let act=null;
+  P.svg.addEventListener('pointerdown',e=>{
+    const d=P.toData(e); let best=null, bd=1e9;
+    handles.forEach(hd=>{ const [hx,hy]=hd.get(); const dd=Math.hypot(hx-d.x,hy-d.y); if(dd<bd){bd=dd; best=hd;} });
+    if(!best || (maxDist && bd>maxDist)) return;
+    act=best; try{ P.svg.setPointerCapture(e.pointerId); }catch(_){}
+    act.set(d.x,d.y); e.preventDefault();
+  });
+  P.svg.addEventListener('pointermove',e=>{ if(!act) return; const d=P.toData(e); act.set(d.x,d.y); });
+  const end=()=>{ act=null; };
+  P.svg.addEventListener('pointerup',end); P.svg.addEventListener('pointercancel',end);
+  handles.forEach(hd=>{
+    if(!hd.el) return;
+    hd.el.addEventListener('keydown',e=>{
+      const [x,y]=hd.get(); const st=hd.step||1; let nx=x, ny=y;
+      if(e.key==='ArrowLeft') nx-=st; else if(e.key==='ArrowRight') nx+=st; else if(e.key==='ArrowUp') ny+=st; else if(e.key==='ArrowDown') ny-=st; else return;
+      e.preventDefault(); hd.set(nx,ny);
+    });
+  });
+}
+
+/* ---------------- UI components ---------------- */
+const ICON = {
+  read:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H2z"/><path d="M22 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8z"/></svg>',
+  try:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V5a2 2 0 0 1 4 0v6"/><path d="M13 10a2 2 0 0 1 4 0v2a2 2 0 0 1 3 1v2a7 7 0 0 1-7 7h-1a7 7 0 0 1-6-3l-2.5-4a2 2 0 0 1 3.4-2L9 15"/></svg>',
+  qc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg>'
+};
+function card(parent, kind, title){
+  const names={read:'Read', try:'Try it', qc:'Quick check'};
+  const c=h('div',{class:'card'+(kind==='qc'?' qc':'')});
+  c.innerHTML=`<span class="tag ${kind}">${ICON[kind]}${names[kind]}</span>${title?`<h3>${title}</h3>`:''}`;
+  parent.appendChild(c); return c;
+}
+
+function mcq(parent, o){
+  reg(o.id);
+  const w=h('div',{class:'mcq'}); w.innerHTML=`<div class="q">${o.q}</div>`;
+  const opts=h('div',{class:'opts'}), fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'});
+  const btns=o.opts.map((t,i)=>{
+    const b=h('button',{class:'opt',type:'button'},`<span class="L">${'ABCD'[i]}</span><span>${t}</span>`);
+    b.addEventListener('click',()=>{
+      if(w.dataset.done) return;
+      const ok=i===o.ans; attempt(o.id, ok);
+      if(ok){ solvedUI(); o.onSolved && o.onSolved(); }
+      else {
+        b.classList.add('wrong','shake'); b.disabled=true; setTimeout(()=>b.classList.remove('shake'),400);
+        fb.className='fb no'; fb.innerHTML='<b>Not quite.</b> '+((o.wrong&&o.wrong[i])||'Look back at the reading and try again.'); fb.hidden=false;
+      }
+    });
+    opts.appendChild(b); return b;
+  });
+  function solvedUI(){
+    w.dataset.done=1; btns.forEach(x=>x.disabled=true); btns[o.ans].classList.add('right');
+    fb.className='fb ok'; fb.innerHTML='<b>Correct.</b> '+(o.why||''); fb.hidden=false;
+  }
+  w.append(opts, fb); parent.appendChild(w);
+  if(S.solved[o.id]) solvedUI();
+  return w;
+}
+function qcGroup(parent, qs, reqId){
+  const ids=qs.map(q=>q.id);
+  qs.forEach(q=>{ q.onSolved=()=>{ if(allSolved(ids)) reqDone(reqId); }; mcq(parent,q); });
+}
+
+function numq(parent, o){
+  const counts=o.counts!==false; if(counts) reg(o.id);
+  const wrap=h('div',{class:'numq'});
+  const row=h('div',{class:'numrow'});
+  row.innerHTML=`<label for="in-${o.id}">${o.label}</label><span class="inwrap"><input class="ans" id="in-${o.id}" type="text" autocomplete="off" spellcheck="false" placeholder="?"><span class="unit">${o.unit||''}</span></span><button class="btn small ghost" type="button">Check</button>`;
+  const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'});
+  const inp=$('input',row), btn=$('button',row); let tries=0;
+  function solvedUI(v){
+    wrap.dataset.done=1; inp.value=fmt(v, o.dp??1).replace('−','-'); inp.classList.remove('no'); inp.classList.add('ok'); inp.readOnly=true; btn.disabled=true;
+    if(o.why){ fb.className='fb ok'; fb.innerHTML='<b>Correct.</b> '+o.why; fb.hidden=false; } else fb.hidden=true;
+  }
+  function go(){
+    if(wrap.dataset.done) return;
+    const v=parseNum(inp.value);
+    if(isNaN(v)){ fb.className='fb no'; fb.innerHTML='Type a number first.'; fb.hidden=false; return; }
+    const ok=o.check?o.check(v):near(v,o.ans,o.kind);
+    if(counts) attempt(o.id, ok); else if(ok){ S.solved[o.id]=true; save(); }
+    if(ok){ S.misc['v_'+o.id]=v; save(); solvedUI(v); o.onSolved && o.onSolved(v); }
+    else{
+      tries++; inp.classList.add('no'); inp.classList.remove('shake'); void inp.offsetWidth; inp.classList.add('shake');
+      let msg=o.hint||'Check your work and try again.';
+      if(o.ans!=null && o.kind!=='angle' && near(-v,o.ans) && Math.abs(o.ans)>0.2) msg='Right size, wrong sign. Which way does it point along that axis?';
+      else if(o.signHint && o.ans!=null && near(Math.abs(v),Math.abs(o.ans)) ) msg=o.signHint;
+      fb.className='fb no'; fb.innerHTML='<b>Not yet.</b> '+msg+(tries>=2&&o.how?`<div class="how"><b>Here's how:</b> ${o.how}</div>`:''); fb.hidden=false;
+    }
+  }
+  btn.addEventListener('click',go);
+  inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); go(); } });
+  inp.addEventListener('input',()=>inp.classList.remove('no'));
+  wrap.append(row, fb); parent.appendChild(wrap);
+  if(S.solved[o.id]) solvedUI(S.misc['v_'+o.id]!=null?S.misc['v_'+o.id]:o.ans);
+  return wrap;
+}
+
+function sorter(parent, o){
+  const key='sort_'+o.id; const st=S.misc[key]||(S.misc[key]={});
+  const w=h('div',{class:'sorter'});
+  w.innerHTML=`<p class="small muted" style="margin-bottom:8px">Tap an item, then tap the box it belongs in. You can also drag.</p>`;
+  const tray=h('div',{class:'chips'}); const bins=h('div',{class:'bins'}); const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'});
+  let sel=null; const binEls={};
+  o.bins.forEach(b=>{
+    const be=h('div',{class:'bin',tabindex:0,role:'button','aria-label':'Put the selected item in '+b.label});
+    be.innerHTML=`<h4>${b.html||b.label}</h4><div class="binchips"></div>`;
+    be.addEventListener('click',()=>{ if(sel!=null) place(sel,b.k); });
+    be.addEventListener('keydown',e=>{ if((e.key==='Enter'||e.key===' ')&&sel!=null){ e.preventDefault(); place(sel,b.k); } });
+    be.addEventListener('dragover',e=>{ e.preventDefault(); be.classList.add('over'); });
+    be.addEventListener('dragleave',()=>be.classList.remove('over'));
+    be.addEventListener('drop',e=>{ e.preventDefault(); be.classList.remove('over'); const i=+e.dataTransfer.getData('text/plain'); if(!isNaN(i)) place(i,b.k); });
+    bins.appendChild(be); binEls[b.k]=be;
+  });
+  const chips=[];
+  const order=S.misc[key+'_order']||(S.misc[key+'_order']=shuffle(o.items.map((_,i)=>i)));
+  order.forEach(i=>{
+    const it=o.items[i];
+    const c=h('button',{class:'chip',type:'button',draggable:'true'},it.html||it.t);
+    c.addEventListener('click',()=>{ if(c.classList.contains('placed')) return; chips.forEach(x=>x&&x.classList.remove('sel')); sel=i; c.classList.add('sel'); Object.values(binEls).forEach(b=>b.classList.add('ready')); });
+    c.addEventListener('dragstart',e=>{ if(c.classList.contains('placed')){ e.preventDefault(); return; } sel=i; e.dataTransfer.setData('text/plain',String(i)); });
+    chips[i]=c; tray.appendChild(c);
+  });
+  function settle(i,k){ const c=chips[i]; c.classList.remove('sel'); c.classList.add('placed'); c.draggable=false; c.disabled=true; $('.binchips',binEls[k]).appendChild(c); }
+  function place(i,k){
+    Object.values(binEls).forEach(b=>b.classList.remove('ready'));
+    const it=o.items[i], c=chips[i]; sel=null;
+    if(it.k===k){ st[i]=k; save(); settle(i,k); fb.hidden=true; check(); }
+    else{
+      c.classList.remove('sel','shake'); void c.offsetWidth; c.classList.add('shake');
+      fb.className='fb no'; fb.innerHTML='<b>Not that box.</b> '+(it.why||'Think about it again.'); fb.hidden=false;
+    }
+  }
+  function check(){ if(Object.keys(st).length===o.items.length){ fb.className='fb ok'; fb.innerHTML='<b>All sorted.</b> '+(o.doneMsg||''); fb.hidden=false; o.onDone&&o.onDone(); } }
+  Object.keys(st).forEach(i=>settle(+i, st[i]));
+  w.append(tray,bins,fb); parent.appendChild(w);
+  if(Object.keys(st).length===o.items.length){ fb.className='fb ok'; fb.innerHTML='<b>All sorted.</b> '+(o.doneMsg||''); fb.hidden=false; }
+  return w;
+}
+
+function missionBox(parent, key, list, reqId){
+  const box=h('div',{class:'missions'}); parent.appendChild(box);
+  let idx=S.misc[key]||0; let last='';
+  function render(){
+    box.innerHTML='<h4>Missions</h4><ol>'+list.map((m,i)=>`<li class="${i<idx?'done':i===idx?'cur':''}">${m.text}</li>`).join('')+'</ol>'
+      +(last?`<div class="fb ok">${last}</div>`:'')+(idx>=list.length&&!last?'<div class="fb ok">All missions complete.</div>':'');
+  }
+  render();
+  return function test(state){
+    if(idx>=list.length) return;
+    if(list[idx].test(state)){
+      last=list[idx].done||'Mission complete.'; idx++; S.misc[key]=idx; save(); render();
+      if(idx>=list.length) reqDone(reqId);
+    }
+  };
+}
+
+function stepper(parent, steps, onStep, reqId){
+  const box=h('div',{class:'stepbox'}); const nav=h('div',{class:'btnrow'});
+  const back=h('button',{class:'btn ghost small',type:'button'},'Back'); const next=h('button',{class:'btn primary small',type:'button'},'Next step');
+  nav.append(back,next); parent.append(box,nav);
+  let k=0;
+  function show(){
+    box.innerHTML=`<div class="k">Step ${k+1} of ${steps.length}</div>${steps[k]}`;
+    back.disabled=k===0; next.disabled=k===steps.length-1; next.textContent=k===steps.length-1?'Done':'Next step';
+    onStep&&onStep(k);
+    if(k===steps.length-1 && reqId) reqDone(reqId);
+  }
+  back.addEventListener('click',()=>{ if(k>0){k--; show();} });
+  next.addEventListener('click',()=>{ if(k<steps.length-1){k++; show();} });
+  show();
+  return {show:i=>{k=i; show();}};
+}
+
+/* =====================================================================
+   SECTION CONTENT
+   ===================================================================== */
+const SECS=[];
+
+/* ---------- shared drawing: tip-to-tail scene (hero + section 6) ---------- */
+function tipToTailScene(P, A, B){
+  const g=P.gDraw;
+  return function draw(st){
+    g.innerHTML='';
+    const R=[A[0]+B[0], A[1]+B[1]];
+    const X=P.X, Y=P.Y;
+    // x components along the x-axis (just below it)
+    if(st.cx>0){
+      const yy=-0.55;
+      const t1=Math.min(1,st.cx*2), t2=Math.max(0,st.cx*2-1);
+      arrow(g,X(0),Y(yy),X(A[0]*t1),Y(yy),COL.x,{w:3.5});
+      if(t2>0) arrow(g,X(A[0]),Y(yy-0.5),X(A[0]+B[0]*t2),Y(yy-0.5),COL.x,{w:3.5,dash:'7 4'});
+      if(st.cx>=1){ label(g,X(A[0]/2),Y(yy)+13,`A<tspan font-size="10" dy="3">x</tspan><tspan dy="-3"> = ${A[0]}</tspan>`,COL.x,{size:13}); label(g,X(A[0]+B[0]/2),Y(yy-0.5)+13,`B<tspan font-size="10" dy="3">x</tspan><tspan dy="-3"> = ${String(B[0]).replace('-','−')}</tspan>`,COL.x,{size:13}); }
+    }
+    if(st.cy>0){
+      const xx=-0.55;
+      const t1=Math.min(1,st.cy*2), t2=Math.max(0,st.cy*2-1);
+      arrow(g,X(xx),Y(0),X(xx),Y(A[1]*t1),COL.y,{w:3.5});
+      if(t2>0) arrow(g,X(xx-0.5),Y(A[1]),X(xx-0.5),Y(A[1]+B[1]*t2),COL.y,{w:3.5,dash:'7 4'});
+      if(st.cy>=1){ label(g,X(xx)-8,Y(A[1]/2),`A<tspan font-size="10" dy="3">y</tspan><tspan dy="-3"> = ${A[1]}</tspan>`,COL.y,{size:13,anchor:'end'}); label(g,X(xx-0.5)-8,Y(A[1]+B[1]/2),`B<tspan font-size="10" dy="3">y</tspan><tspan dy="-3"> = ${B[1]}</tspan>`,COL.y,{size:13,anchor:'end'}); }
+    }
+    if(st.r>0) arrow(g,X(0),Y(0),X(R[0]*st.r),Y(R[1]*st.r),COL.r,{w:4.5});
+    if(st.a>0) arrow(g,X(0),Y(0),X(A[0]*st.a),Y(A[1]*st.a),COL.a,{w:4});
+    if(st.b>0){
+      const ox=A[0]*st.slide, oy=A[1]*st.slide;
+      arrow(g,X(ox),Y(oy),X(ox+B[0]*st.b),Y(oy+B[1]*st.b),COL.b,{w:4});
+    }
+    if(st.a>=1) label(g,X(A[0]*0.55)+4,Y(A[1]*0.55)+16,'A',COL.a,{size:17});
+    if(st.b>=1&&st.slide>=1) label(g,X(A[0]+B[0]*0.5)+16,Y(A[1]+B[1]*0.5),'B',COL.b,{size:17});
+    if(st.r>=1) label(g,X(R[0]*0.45)-14,Y(R[1]*0.45)-6,'R',COL.r,{size:17});
+  };
+}
+async function playTipToTail(draw, cap, steps){
+  const st={a:0,b:0,slide:0,r:0,cx:0,cy:0};
+  const say=t=>{ if(cap) cap.innerHTML=t; };
+  draw(st);
+  say(steps[0]); await tween(800,t=>{st.a=t; draw(st);}); await wait(350);
+  say(steps[1]); await tween(700,t=>{st.b=t; draw(st);}); await wait(300);
+  say(steps[2]); await tween(1000,t=>{st.slide=t; draw(st);}); await wait(350);
+  say(steps[3]); await tween(800,t=>{st.r=t; draw(st);}); await wait(450);
+  if(steps[4]){ say(steps[4]); await tween(1300,t=>{st.cx=t; draw(st);}); await wait(500); }
+  if(steps[5]){ say(steps[5]); await tween(1300,t=>{st.cy=t; draw(st);}); }
+}
+
+/* ===================== SECTION 1: scalars & vectors ===================== */
+SECS.push({z:1, sym:'H', name:'Hydrogen', title:'Scalars and vectors', min:8,
+ reqs:[{id:'s1-sort',text:'Sort all 10 quantities into scalar or vector'},{id:'s1-qc',text:'Answer both quick check questions correctly'}],
+ build(body, sec){
+  const c1=card(body,'read','A number, or a number with a direction?');
+  c1.insertAdjacentHTML('beforeend',`<div class="split"><div>
+    <p>Some quantities only need a number and a unit. Others also need a direction.</p>
+    <p>A <b>scalar</b> has only a size. Physicists call the size the <b>magnitude</b>. Examples: 12 kg, 45 s, 25 °C, 3 m.</p>
+    <p>A <b>vector</b> has a magnitude <b>and</b> a direction. Examples: 30 m/s north, 15 N to the left, 9.8 m/s² down.</p>
+    <p>We draw a vector as an arrow. The <b>length</b> of the arrow shows the magnitude. The <b>arrowhead</b> shows the direction. The starting end is the <b>tail</b> and the pointed end is the <b>tip</b>.</p>
+    </div><div class="s1fig"></div></div>
+    <div class="callout">Two arrows can have the same length but different directions. They are <b>different vectors</b>: walking 5 m east and walking 5 m north take you to different places.</div>`);
+  const P=plane({xmin:-1.5,xmax:7,ymin:-1.5,ymax:6.5,w:380,label:'Two 5 meter vectors, one pointing east and one pointing north'});
+  $('.s1fig',c1).appendChild(P.svg);
+  function draw(t){
+    const g=P.gDraw; g.innerHTML='';
+    arrow(g,P.X(0),P.Y(0),P.X(5*t),P.Y(0),COL.a,{w:4.5});
+    arrow(g,P.X(0),P.Y(0),P.X(0),P.Y(5*t),COL.b,{w:4.5});
+    sv('circle',{cx:P.X(0),cy:P.Y(0),r:5,fill:COL.text},g);
+    if(t>=1){
+      label(g,P.X(2.5),P.Y(0)+20,'5 m east',COL.a,{size:15});
+      label(g,P.X(0)+12,P.Y(3),'5 m north',COL.b,{size:15,anchor:'start'});
+      label(g,P.X(0)-10,P.Y(0)+20,'tail',COL.muted,{size:13,weight:400,anchor:'end'});
+      label(g,P.X(5),P.Y(0)-16,'tip',COL.muted,{size:13,weight:400});
+      label(g,P.X(0)-12,P.Y(5),'tip',COL.muted,{size:13,weight:400,anchor:'end'});
+    }
+  }
+  draw(0); let played=false;
+  sec.onShow=()=>{ if(!played){ played=true; tween(1100,draw); } };
+
+  const c2=card(body,'try','Scalar or vector?');
+  c2.insertAdjacentHTML('beforeend','<p>Ask yourself: does this quantity tell me <b>which way</b>?</p>');
+  sorter(c2,{id:'s1', bins:[{k:'s',label:'Scalar',html:'Scalar <span class="muted small">(size only)</span>'},{k:'v',label:'Vector',html:'Vector <span class="muted small">(size + direction)</span>'}],
+    items:[
+      {t:'12 kg',k:'s',why:'12 kg has no direction. Mass is a scalar.'},
+      {t:'30 m/s north',k:'v',why:'"North" is a direction, so this is a vector.'},
+      {t:'45 seconds',k:'s',why:'Time has no direction. It is a scalar.'},
+      {t:'9.8 m/s² downward',k:'v',why:'"Downward" is a direction, so this is a vector.'},
+      {t:'60 km/h on a speedometer',k:'s',why:'A speedometer shows speed only, with no direction. Speed is a scalar.'},
+      {t:'200 m east',k:'v',why:'"East" is a direction, so this is a vector.'},
+      {t:'25 °C',k:'s',why:'Temperature has no direction. It is a scalar.'},
+      {t:'15 N pushing left',k:'v',why:'"Left" is a direction, so this force is a vector.'},
+      {t:'3 m walked in total',k:'s',why:'Total distance walked has no direction. It is a scalar.'},
+      {t:'4 m/s at 30°',k:'v',why:'The angle gives the direction, so this is a vector.'}
+    ], doneMsg:'If you can answer "which way?", it is a vector.', onDone:()=>reqDone('s1-sort')});
+
+  const c3=card(body,'qc');
+  qcGroup(c3,[
+    {id:'s1q1', q:'Which of these is a vector?', opts:['18 m','18 m/s','18 m/s west','18 seconds'], ans:2,
+      why:'Only "18 m/s west" includes a direction.', wrong:{0:'18 m tells you how far, but not which way.',1:'18 m/s is a speed. No direction is given.',3:'Time never has a direction.'}},
+    {id:'s1q2', q:'When you draw a vector as an arrow, what does the <b>length</b> of the arrow show?', opts:['The direction','The magnitude (size)','The time it took','Where it started'], ans:1,
+      why:'Length shows magnitude. The arrowhead shows direction.', wrong:{0:'Direction comes from which way the arrowhead points, not from the length.',2:'An arrow\'s length is not a time.',3:'The tail shows where it starts. The length shows the size.'}}
+  ],'s1-qc');
+ }
+});
+
+/* ===================== SECTION 2: direction & angles ===================== */
+SECS.push({z:2, sym:'He', name:'Helium', title:'Describing direction with angles', min:9,
+ reqs:[{id:'s2-dial',text:'Complete all 4 angle dial missions'},{id:'s2-qc',text:'Answer both quick check questions correctly'}],
+ build(body){
+  const c1=card(body,'read','Measure from the +x axis');
+  c1.insertAdjacentHTML('beforeend',`
+    <p>To describe a vector's direction, put its tail at the origin of an x–y grid. Then measure the angle <b>counterclockwise from the +x axis</b>. This is called the <b>standard angle</b>.</p>
+    <p>East (+x) is 0°. North (+y) is 90°. West (−x) is 180°. South (−y) is 270°. The axes split the grid into four <b>quadrants</b>: I (0° to 90°), II (90° to 180°), III (180° to 270°), and IV (270° to 360°).</p>
+    <p>Many problems use compass words instead. Read them as "start pointing the first way, then turn toward the second way."</p>
+    <div class="wide"><table class="nb">
+      <tr><th>Compass words</th><th>Start at</th><th>Turn</th><th>Standard angle</th></tr>
+      <tr><td>30° north of east</td><td>east, 0°</td><td>30° toward north</td><td>0° + 30° = <b>30°</b></td></tr>
+      <tr><td>30° west of north</td><td>north, 90°</td><td>30° toward west</td><td>90° + 30° = <b>120°</b></td></tr>
+      <tr><td>40° south of west</td><td>west, 180°</td><td>40° toward south</td><td>180° + 40° = <b>220°</b></td></tr>
+      <tr><td>25° south of east</td><td>east, 360°</td><td>25° toward south</td><td>360° − 25° = <b>335°</b></td></tr>
+    </table></div>`);
+
+  const c2=card(body,'try','The angle dial');
+  c2.insertAdjacentHTML('beforeend','<p>Drag the tip of the arrow around the circle. You can also click the dial, then use the arrow keys.</p>');
+  const sp=h('div',{class:'split'}); c2.appendChild(sp);
+  const left=h('div'), right=h('div'); sp.append(left,right);
+  const W=380, cx=190, cy=190, R=122;
+  const svg=sv('svg',{viewBox:`0 0 ${W} ${W}`,class:'fig',role:'img','aria-label':'Angle dial'}); left.appendChild(svg);
+  sv('circle',{cx,cy,r:R,fill:'none',stroke:COL.grid,'stroke-width':2},svg);
+  sv('line',{x1:cx-R-8,y1:cy,x2:cx+R+8,y2:cy,stroke:COL.axis,'stroke-width':1.5},svg);
+  sv('line',{x1:cx,y1:cy-R-8,x2:cx,y2:cy+R+8,stroke:COL.axis,'stroke-width':1.5},svg);
+  for(let a=0;a<360;a+=15){ const big=a%45===0; const r0=R-(big?9:5); sv('line',{x1:cx+r0*Math.cos(rad(a)),y1:cy-r0*Math.sin(rad(a)),x2:cx+R*Math.cos(rad(a)),y2:cy-R*Math.sin(rad(a)),stroke:COL.axis,'stroke-width':big?2:1},svg); }
+  [[0,'0°'],[90,'90°'],[180,'180°'],[270,'270°']].forEach(([a,t])=>{ const rr=R+20; const side=a===0||a===180; label(svg,cx+(side?R+24:rr)*Math.cos(rad(a)),cy-rr*Math.sin(rad(a))+(side?-13:0),t,COL.muted,{size:13,weight:500,halo:0}); });
+  [[0,'E'],[90,'N'],[180,'W'],[270,'S']].forEach(([a,t])=>{ const rr=R+46; label(svg,cx+rr*Math.cos(rad(a)),cy-rr*Math.sin(rad(a)),t,COL.text,{size:15,halo:0}); });
+  [[45,'I'],[135,'II'],[225,'III'],[315,'IV']].forEach(([a,t])=>label(svg,cx+70*Math.cos(rad(a)),cy-70*Math.sin(rad(a)),t,'#40557a',{size:22,weight:700,halo:0}));
+  const gArc=sv('g',{},svg), gVec=sv('g',{},svg);
+  const hnd=sv('circle',{r:12,fill:'rgba(185,150,255,.28)',stroke:COL.a,'stroke-width':2,tabindex:0,class:'handle','aria-label':'Arrow tip. Use left and right arrow keys to rotate.'},svg);
+  const ro=h('dl',{class:'readout'}); right.appendChild(ro);
+  let th=S.misc.dial??30;
+  const test=missionBox(right,'s2m',[
+    {text:'Point the vector straight north.', test:s=>s.th===90, done:'North is 90°, a quarter turn counterclockwise from east.'},
+    {text:'Point the vector at 225°.', test:s=>s.th===225, done:'225° is in quadrant III. That is 45° south of west.'},
+    {text:'Point the vector 40° north of west.', test:s=>s.th===140, done:'Start at west (180°) and turn 40° toward north: 180° − 40° = 140°.'},
+    {text:'Point the vector 20° east of south.', test:s=>s.th===290, done:'Start at south (270°) and turn 20° toward east: 270° + 20° = 290°. Same as 70° south of east.'}
+  ],'s2-dial');
+  function draw(){
+    gArc.innerHTML=''; gVec.innerHTML='';
+    if(th>0) sv('path',{d:arcPath(cx,cy,34,0,th),fill:'none',stroke:COL.amber,'stroke-width':2.5},gArc);
+    const tx=cx+R*Math.cos(rad(th)), ty=cy-R*Math.sin(rad(th));
+    arrow(gVec,cx,cy,tx,ty,COL.a,{w:4.5,head:16,hw:8});
+    sv('circle',{cx,cy,r:4,fill:COL.text},gVec);
+    if(th>0){ const m=th/2; label(gArc,cx+52*Math.cos(rad(m)),cy-52*Math.sin(rad(m)),'θ',COL.amber,{size:15}); }
+    hnd.setAttribute('cx',tx); hnd.setAttribute('cy',ty);
+    const q=th%90===0?'on an axis':'quadrant '+(th<90?'I':th<180?'II':th<270?'III':'IV');
+    const c=compass(th);
+    ro.innerHTML=`<dt>Standard angle</dt><dd>${th}°</dd><dt>Where</dt><dd>${q}</dd><dt>Compass</dt><dd>${c.h}${c.v?`<br><span class="muted small">same as ${c.v}</span>`:''}</dd>`;
+    S.misc.dial=th; save(); test({th});
+  }
+  function fromEvent(e){ const pt=svg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; const p=pt.matrixTransform(svg.getScreenCTM().inverse()); let a=deg(Math.atan2(cy-p.y,p.x-cx)); if(a<0) a+=360; th=(Math.round(a/5)*5)%360; draw(); }
+  let drag=false;
+  svg.addEventListener('pointerdown',e=>{ drag=true; try{svg.setPointerCapture(e.pointerId);}catch(_){} fromEvent(e); hnd.focus({preventScroll:true}); e.preventDefault(); });
+  svg.addEventListener('pointermove',e=>{ if(drag) fromEvent(e); });
+  svg.addEventListener('pointerup',()=>drag=false); svg.addEventListener('pointercancel',()=>drag=false);
+  hnd.addEventListener('keydown',e=>{ if(['ArrowLeft','ArrowUp'].includes(e.key)){ th=(th+5)%360; } else if(['ArrowRight','ArrowDown'].includes(e.key)){ th=(th+355)%360; } else return; e.preventDefault(); draw(); });
+  draw();
+
+  const c3=card(body,'qc');
+  qcGroup(c3,[
+    {id:'s2q1', q:'A vector points <b>60° north of east</b>. What is its standard angle?', opts:['30°','60°','120°','300°'], ans:1,
+      why:'Start at east (0°) and turn 60° toward north: 0° + 60° = 60°.', wrong:{0:'30° would be 30° north of east. Start at east and turn the full 60°.',2:'120° is 60° north of <i>west</i>. Start at east, not west.',3:'300° is in quadrant IV, pointing south of east.'}},
+    {id:'s2q2', q:'A vector has a standard angle of <b>200°</b>. Which quadrant is it in?', opts:['I','II','III','IV'], ans:2,
+      why:'Quadrant III runs from 180° to 270°, so 200° is in quadrant III (20° south of west).', wrong:{0:'Quadrant I is 0° to 90°.',1:'Quadrant II is 90° to 180°. 200° is past 180°.',3:'Quadrant IV is 270° to 360°.'}}
+  ],'s2-qc');
+ }
+});
+
+/* ===================== SECTION 3: components ===================== */
+SECS.push({z:3, sym:'Li', name:'Lithium', title:'Components: a vector\'s two shadows', min:9,
+ reqs:[{id:'s3-anim',text:'Drop the shadows on the example vector'},{id:'s3-explore',text:'Complete all 4 component explorer missions'},{id:'s3-qc',text:'Answer both quick check questions correctly'}],
+ build(body){
+  const c1=card(body,'read','Every vector is an x-part plus a y-part');
+  c1.insertAdjacentHTML('beforeend',`<div class="split"><div>
+    <p>Any vector can be replaced by two vectors that are perpendicular to each other: one along the x-axis and one along the y-axis. These are its <b>components</b>.</p>
+    <p>The <b>x-component</b> (${V.Ax}) is how far the vector goes left or right. The <b>y-component</b> (${V.Ay}) is how far it goes up or down.</p>
+    <p>Picture a light shining straight down on the vector. Its shadow on the x-axis is ${V.Ax}. A light shining from the side makes a shadow on the y-axis, ${V.Ay}.</p>
+    <p>Walking 5 m at 37° puts you in the same spot as walking 4 m east and then 3 m north. The vector and its two components make a <b>right triangle</b>. The components are the two legs. The vector is the hypotenuse, the longest side.</p>
+    </div><div><div class="s3fig"></div><div class="caption s3cap">Press the button to drop the shadows.</div>
+    <div class="btnrow"><button class="btn primary small s3play" type="button">Drop the shadows</button></div></div></div>`);
+  const P=plane({xmin:-1.5,xmax:6,ymin:-1.5,ymax:4.8,w:400,ticks:1,label:'Vector of length 5 with x-component 4 and y-component 3'});
+  $('.s3fig',c1).appendChild(P.svg);
+  const cap=$('.s3cap',c1);
+  function draw(st){
+    const g=P.gDraw, X=P.X, Y=P.Y; g.innerHTML='';
+    if(st.rays>0){ [0.35,0.65,1].forEach(f=>{ sv('line',{x1:X(4*f),y1:Y(3*f),x2:X(4*f),y2:Y(0),stroke:'#ffffff','stroke-opacity':0.25*st.rays,'stroke-dasharray':'3 4'},g); }); }
+    if(st.xs>0) arrow(g,X(0),Y(0),X(4*st.xs),Y(0),COL.x,{w:5});
+    if(st.ys>0){ const xo=4*st.slide; arrow(g,X(xo),Y(0),X(xo),Y(3*st.ys),COL.y,{w:5}); }
+    if(st.slide>=1) rightMark(g,P,4,0,-1,1,11);
+    arrow(g,X(0),Y(0),X(4),Y(3),COL.a,{w:4.5});
+    label(g,X(1.5),Y(2.05),'A = 5',COL.a,{size:15,anchor:'end'});
+    if(st.xs>=1) label(g,X(2),Y(0)+16,`A<tspan font-size="11" dy="3">x</tspan><tspan dy="-3"> = 4</tspan>`,COL.x,{size:15});
+    if(st.ys>=1){ const xo=4*st.slide; label(g,X(xo)+(st.slide>0.5?10:-10),Y(1.5),`A<tspan font-size="11" dy="3">y</tspan><tspan dy="-3"> = 3</tspan>`,COL.y,{size:15,anchor:st.slide>0.5?'start':'end'}); }
+  }
+  draw({rays:0,xs:0,ys:0,slide:0});
+  let busy=false;
+  $('.s3play',c1).addEventListener('click',async()=>{
+    if(busy) return; busy=true; const st={rays:0,xs:0,ys:0,slide:0};
+    cap.textContent='Light from above: the shadow on the x-axis is the x-component.';
+    await tween(400,t=>{st.rays=t; draw(st);}); await tween(900,t=>{st.xs=t; draw(st);}); await wait(500);
+    st.rays=0; cap.textContent='Light from the side: the shadow on the y-axis is the y-component.';
+    await tween(900,t=>{st.ys=t; draw(st);}); await wait(500);
+    cap.textContent='Slide the y-component over to the tip. The two components and the vector form a right triangle: 4 right, then 3 up, ends at the same tip.';
+    await tween(1000,t=>{st.slide=t; draw(st);});
+    busy=false; $('.s3play',c1).textContent='Replay'; reqDone('s3-anim');
+  });
+
+  const c2=card(body,'try','Component explorer');
+  c2.insertAdjacentHTML('beforeend','<p>Drag the tip of the purple vector. The coral arrow is its x-component and the blue arrow is its y-component. The tip snaps to whole numbers.</p>');
+  const sp=h('div',{class:'split'}); c2.appendChild(sp);
+  const left=h('div'), right=h('div'); sp.append(left,right);
+  const Q=plane({xmin:-9,xmax:9,ymin:-9,ymax:9,w:440,ticks:3,label:'Component explorer grid'});
+  left.appendChild(Q.svg);
+  const hnd=sv('circle',{r:12,fill:'rgba(185,150,255,.28)',stroke:COL.a,'stroke-width':2,tabindex:0,class:'handle','aria-label':'Vector tip. Use arrow keys to move.'},Q.gTop);
+  const ro=h('dl',{class:'readout'}); right.appendChild(ro);
+  let p=S.misc.expl||[2,6];
+  const test=missionBox(right,'s3m',[
+    {text:`Make ${V.Ax} = 4 and ${V.Ay} = 3.`, test:s=>s.x===4&&s.y===3, done:'A = 5.0. Legs of 3 and 4 make a hypotenuse of 5.'},
+    {text:`Make ${V.Ax} = −6 and ${V.Ay} = 8. Check the length.`, test:s=>s.x===-6&&s.y===8, done:'A = 10.0. A negative x-component just means the vector points left.'},
+    {text:`Make a vector with ${V.Ax} = 0 (but not zero length).`, test:s=>s.x===0&&s.y!==0, done:'With no x-component, the vector points straight up or down.'},
+    {text:`Make ${V.Ax} = 5 and ${V.Ay} = −5.`, test:s=>s.x===5&&s.y===-5, done:'Down and to the right: quadrant IV, at 315°.'}
+  ],'s3-explore');
+  function draw2(){
+    const g=Q.gDraw, X=Q.X, Y=Q.Y; g.innerHTML=''; const [x,y]=p;
+    if(x!==0) arrow(g,X(0),Y(0),X(x),Y(0),COL.x,{w:4});
+    if(y!==0) arrow(g,X(x),Y(0),X(x),Y(y),COL.y,{w:4});
+    if(x!==0&&y!==0) rightMark(g,Q,x,0,-Math.sign(x),Math.sign(y),10);
+    if(x!==0||y!==0) arrow(g,X(0),Y(0),X(x),Y(y),COL.a,{w:4.5});
+    sv('circle',{cx:X(0),cy:Y(0),r:4,fill:COL.text},g);
+    hnd.setAttribute('cx',X(x)); hnd.setAttribute('cy',Y(y));
+    const mag=Math.hypot(x,y);
+    ro.innerHTML=`<dt><span class="cx">A<sub>x</sub></span></dt><dd>${fmt(x,0)}</dd><dt><span class="cy">A<sub>y</sub></span></dt><dd>${fmt(y,0)}</dd><dt><span class="ca">A</span> (length)</dt><dd>${fmt(mag)}</dd><dt>Standard angle</dt><dd>${mag?fmt(stdAngle(x,y))+'°':'none'}</dd>`;
+    S.misc.expl=p; save(); test({x,y});
+  }
+  svgDrag(Q,[{el:hnd,get:()=>p,set:(x,y)=>{ const nx=clamp(Math.round(x),-9,9), ny=clamp(Math.round(y),-9,9); if(nx!==p[0]||ny!==p[1]){ p=[nx,ny]; draw2(); } }}]);
+  draw2();
+
+  const c3=card(body,'qc');
+  qcGroup(c3,[
+    {id:'s3q1', q:'A vector and its x- and y-components make what shape?', opts:['A square','A right triangle, with the vector as the hypotenuse','A circle','A triangle with three equal sides'], ans:1,
+      why:'The components meet at 90°, so they are the legs of a right triangle and the vector is the hypotenuse.', wrong:{0:'There are only three sides: two components and the vector.',2:'The components are straight lines that meet at a right angle.',3:'The components are perpendicular, so one angle is 90°.'}},
+    {id:'s3q2', q:`A vector has ${V.Ax} = 6 m and ${V.Ay} = 8 m. Which statement is true?`, opts:['The vector is longer than either component','The vector is shorter than 6 m','The vector is exactly 14 m long','The vector is the same length as its y-component'], ans:0,
+      why:'The vector is the hypotenuse, the longest side. (It is 10 m long.)', wrong:{1:'The vector is the hypotenuse, so it is longer than both legs.',2:'You can\'t just add the legs. Walking 6 m then 8 m at a right angle puts you less than 14 m from the start.',3:'The hypotenuse is always longer than either leg.'}}
+  ],'s3-qc');
+ }
+});
+
+/* ---------- component triangle figure (sections 4 & 5) ---------- */
+function compFig(mag, th, unit, sym){
+  const x=mag*Math.cos(rad(th)), y=mag*Math.sin(rad(th));
+  const P=autoPlane([[x,y],[x,0]],{w:360,names:true,label:`Vector of ${mag} ${unit} at ${th} degrees`});
+  const g=P.gDraw, X=P.X, Y=P.Y;
+  let lx='?', ly='?';
+  function draw(){
+    g.innerHTML='';
+    arrow(g,X(0),Y(0),X(x),Y(0),COL.x,{w:3.5,dash:'8 5'});
+    arrow(g,X(x),Y(0),X(x),Y(y),COL.y,{w:3.5,dash:'8 5'});
+    rightMark(g,P,x,0,-Math.sign(x)||1,Math.sign(y)||1,10);
+    sv('path',{d:arcPath(X(0),Y(0),26,0,th),fill:'none',stroke:COL.amber,'stroke-width':2},g);
+    arrow(g,X(0),Y(0),X(x),Y(y),COL.a,{w:4.5});
+    const m=th/2; label(g,X(0)+44*Math.cos(rad(m)),Y(0)-44*Math.sin(rad(m)),th+'°',COL.amber,{size:13});
+    { const mx=X(x*0.6), my=Y(y*0.6), fx=X(x), fy=Y(0); let dx=X(x/2)-fx, dy=Y(y/2)-fy; const L=Math.hypot(dx,dy)||1; dx/=L; dy/=L;
+      label(g,mx+dx*20,my+dy*20,`${sym} = ${fmt(mag)} ${unit}`,COL.a,{size:13,anchor:dx<0?'end':'start'}); }
+    label(g,X(x/2),Y(0)+(y>=0?16:-16),`${sym}<tspan font-size="10" dy="3">x</tspan><tspan dy="-3"> = ${lx}</tspan>`,COL.x,{size:13});
+    label(g,X(x)+(x>=0?8:-8),Y(y/2),`${sym}<tspan font-size="10" dy="3">y</tspan><tspan dy="-3"> = ${ly}</tspan>`,COL.y,{size:13,anchor:x>=0?'start':'end'});
+  }
+  draw();
+  return {svg:P.svg, set(a,b){ if(a!=null) lx=fmt(a); if(b!=null) ly=fmt(b); draw(); }};
+}
+function compProblem(parent, o){ // o: id, mag, th, unit, sym, story
+  const x=o.mag*Math.cos(rad(o.th)), y=o.mag*Math.sin(rad(o.th));
+  const box=h('div',{class:'split',style:'margin:14px 0 22px'}); parent.appendChild(box);
+  const left=h('div'), right=h('div'); box.append(left,right);
+  const F=compFig(o.mag,o.th,o.unit,o.sym); left.appendChild(F.svg);
+  right.insertAdjacentHTML('beforeend',`<p>${o.story}</p>`);
+  const sx=`<span class="cx">${o.sym}<sub>x</sub></span>`, sy=`<span class="cy">${o.sym}<sub>y</sub></span>`;
+  const ids=[o.id+'x',o.id+'y'];
+  const done=()=>{ if(allSolved(ids)) o.onSolved&&o.onSolved(); };
+  numq(right,{id:ids[0], label:`${sx} =`, ans:x, unit:o.unit, hint:o.hintX||`x is adjacent to the ${o.th}° angle, so use cosine: ${sx} = ${o.sym} cos θ.`,
+    how:`${sx} = ${fmt(o.mag)} × cos ${o.th}° = ${fmt(o.mag)} × ${fmt(Math.cos(rad(o.th)),3)} = ${fmt(x)} ${o.unit}`, onSolved:v=>{F.set(v,null); done();}});
+  numq(right,{id:ids[1], label:`${sy} =`, ans:y, unit:o.unit, hint:o.hintY||`y is opposite the ${o.th}° angle, so use sine: ${sy} = ${o.sym} sin θ.`,
+    how:`${sy} = ${fmt(o.mag)} × sin ${o.th}° = ${fmt(o.mag)} × ${fmt(Math.sin(rad(o.th)),3)} = ${fmt(y)} ${o.unit}`, onSolved:v=>{F.set(null,v); done();}});
+  if(S.solved[ids[0]]) F.set(S.misc['v_'+ids[0]]??x,null);
+  if(S.solved[ids[1]]) F.set(null,S.misc['v_'+ids[1]]??y);
+  return ids;
+}
+
+/* ===================== SECTION 4: SOH CAH TOA ===================== */
+SECS.push({z:4, sym:'Be', name:'Beryllium', title:'Finding components with SOH CAH TOA', min:11,
+ reqs:[{id:'s4-ex',text:'Step all the way through the worked example'},{id:'s4-prac',text:'Solve all 3 component problems'},{id:'s4-qc',text:'Answer all 3 quick check questions correctly'}],
+ build(body){
+  const c1=card(body,'read','Cosine for x, sine for y');
+  c1.insertAdjacentHTML('beforeend',`<div class="split"><div>
+    <p>Usually you aren't handed the components. You get the <b>magnitude</b> and the <b>angle</b>, and you calculate the components with right-triangle trig.</p>
+    <p>Remember <b>SOH CAH TOA</b>: sin θ = opposite ÷ hypotenuse, cos θ = adjacent ÷ hypotenuse, tan θ = opposite ÷ adjacent.</p>
+    <p>When θ is measured from the x-axis, the x-component is the side <b>adjacent</b> to θ and the y-component is the side <b>opposite</b> θ. So:</p>
+    <div class="formula">${V.Ax} = A cos θ</div><div class="formula">${V.Ay} = A sin θ</div>
+    </div><div class="s4fig"></div></div>
+    <div class="callout"><b>Degree mode!</b> Check your calculator: cos(60) should equal 0.5. If you get −0.952, it is in radian mode. The calculator in the top bar is always in degrees.</div>`);
+  const tx=8*Math.cos(rad(35)), ty=8*Math.sin(rad(35));
+  const P=plane({xmin:-0.8,xmax:10.8,ymin:-1.2,ymax:5.6,w:400,grid:0,names:false,label:'Right triangle showing the adjacent and opposite sides'});
+  $('.s4fig',c1).appendChild(P.svg);
+  { const g=P.gDraw, X=P.X, Y=P.Y;
+    sv('line',{x1:X(0),y1:Y(0),x2:X(tx),y2:Y(0),stroke:COL.x,'stroke-width':5,'stroke-linecap':'round'},g);
+    sv('line',{x1:X(tx),y1:Y(0),x2:X(tx),y2:Y(ty),stroke:COL.y,'stroke-width':5,'stroke-linecap':'round'},g);
+    rightMark(g,P,tx,0,-1,1,12);
+    arrow(g,X(0),Y(0),X(tx),Y(ty),COL.a,{w:4.5});
+    sv('path',{d:arcPath(X(0),Y(0),34,0,35),fill:'none',stroke:COL.amber,'stroke-width':2.5},g);
+    label(g,X(0)+50,Y(0)-14,'θ',COL.amber,{size:16});
+    label(g,X(tx/2),Y(0)+18,'adjacent → x-component',COL.x,{size:13});
+    label(g,X(tx)+8,Y(ty/2)-9,'opposite',COL.y,{size:13,anchor:'start'});
+    label(g,X(tx)+8,Y(ty/2)+9,'→ y-component',COL.y,{size:13,anchor:'start'});
+    label(g,X(tx*0.42)-24,Y(ty*0.42)-14,'hypotenuse = A',COL.a,{size:13,anchor:'end'}); }
+
+  const c2=card(body,'read','Worked example: a soccer kick');
+  c2.insertAdjacentHTML('beforeend','<p>A soccer ball is kicked at <b>20 m/s at 30°</b> above the ground. Find the horizontal and vertical components of its velocity.</p>');
+  const sp=h('div',{class:'split'}); c2.appendChild(sp); const L=h('div'), Rt=h('div'); sp.append(L,Rt);
+  const vx=20*Math.cos(rad(30)), vy=10;
+  const E=plane({xmin:-2,xmax:20,ymin:-3,ymax:12,w:420,grid:2,ticks:4,label:'Soccer ball velocity vector'});
+  L.appendChild(E.svg);
+  function drawEx(k){
+    const g=E.gDraw, X=E.X, Y=E.Y; g.innerHTML='';
+    if(k>=1) arrow(g,X(0),Y(0),X(vx),Y(0),COL.x,{w:4});
+    if(k>=2) arrow(g,X(vx),Y(0),X(vx),Y(vy),COL.y,{w:4});
+    if(k>=2) rightMark(g,E,vx,0,-1,1,10);
+    arrow(g,X(0),Y(0),X(vx),Y(vy),COL.a,{w:4.5});
+    sv('path',{d:arcPath(X(0),Y(0),30,0,30),fill:'none',stroke:COL.amber,'stroke-width':2},g);
+    label(g,X(0)+46,Y(0)-11,'30°',COL.amber,{size:13});
+    label(g,X(vx*0.45)-6,Y(vy*0.45)-16,'20 m/s',COL.a,{size:14,anchor:'end'});
+    if(k>=1) label(g,X(vx/2),Y(0)+17,`v<tspan font-size="10" dy="3">x</tspan><tspan dy="-3"> = 17.3 m/s</tspan>`,COL.x,{size:14});
+    if(k>=2) label(g,X(vx)+8,Y(vy/2),`v<tspan font-size="10" dy="3">y</tspan><tspan dy="-3"> = 10.0 m/s</tspan>`,COL.y,{size:14,anchor:'start'});
+    if(k>=3) label(g,X(9),Y(11),'√(17.3² + 10.0²) = 20.0 ✓',COL.ok,{size:14});
+  }
+  stepper(Rt,[
+    `<p><b>Sketch it.</b> Draw the velocity from the origin at 30°. It is the hypotenuse of the triangle: 20 m/s.</p>`,
+    `<p><b>x-component.</b> The x side is next to the 30° angle, so it is <b>adjacent</b>. Adjacent means cosine.</p><p class="num">${V.vx} = 20 cos 30° = 20 × 0.866 = <b>17.3 m/s</b></p>`,
+    `<p><b>y-component.</b> The y side is across from the 30° angle, so it is <b>opposite</b>. Opposite means sine.</p><p class="num">${V.vy} = 20 sin 30° = 20 × 0.500 = <b>10.0 m/s</b></p>`,
+    `<p><b>Check.</b> The hypotenuse should be the longest side, and the Pythagorean theorem should give back 20.</p><p class="num">√(17.3² + 10.0²) = √(299 + 100) = <b>20.0 m/s ✓</b></p>`
+  ], drawEx, 's4-ex');
+
+  const c3=card(body,'try','Your turn: find the components');
+  c3.insertAdjacentHTML('beforeend','<p>Round answers to one decimal place. The labels on each drawing fill in as you solve.</p>');
+  const probs=[
+    {id:'s4p1', mag:10, th:53, unit:'m', sym:'A', story:'A hiker walks <b>10.0 m at 53°</b>.'},
+    {id:'s4p2', mag:25, th:40, unit:'m/s', sym:'v', story:'A drone flies at <b>25.0 m/s at 40°</b>.'},
+    {id:'s4p3', mag:12, th:75, unit:'N', sym:'F', story:'A rope pulls a sled with <b>12.0 N at 75°</b>.'}
+  ];
+  let allIds=[];
+  probs.forEach(pb=>{ pb.onSolved=()=>{ if(allSolved(allIds)) reqDone('s4-prac'); }; allIds=allIds.concat(compProblem(c3,pb)); });
+
+  const c4=card(body,'qc');
+  qcGroup(c4,[
+    {id:'s4q1', q:'The angle θ is measured from the x-axis. Which expression gives the <b>x-component</b>?', opts:['A sin θ','A cos θ','A tan θ','A ÷ θ'], ans:1,
+      why:'x is adjacent to θ, and cos θ = adjacent ÷ hypotenuse, so A<sub>x</sub> = A cos θ.', wrong:{0:'A sin θ gives the side opposite θ, which is the y-component.',2:'Tangent compares the two legs. It doesn\'t use the hypotenuse.',3:'Never divide by an angle.'}},
+    {id:'s4q2', q:'A vector is <b>50 m at 30°</b>. What is its y-component?', opts:['25.0 m','43.3 m','28.9 m','86.6 m'], ans:0,
+      why:'A<sub>y</sub> = 50 sin 30° = 50 × 0.5 = 25.0 m.', wrong:{1:'43.3 m is 50 cos 30°, the x-component.',2:'28.9 m is 50 tan 30°. Use sine for the opposite side.',3:'86.6 m is longer than the vector itself. A component can\'t be longer than the hypotenuse.'}},
+    {id:'s4q3', q:'Your calculator says cos(60) = −0.952. What is wrong?', opts:['The calculator is in radian mode','You should use sine instead','The answer just needs to be made positive','Nothing, that is correct'], ans:0,
+      why:'In degree mode, cos(60) = 0.5. Switch to degree mode (or use the built-in calculator).', wrong:{1:'Which function you need depends on the triangle. The real problem is the mode.',2:'Making it positive still gives the wrong number.',3:'cos(60°) is exactly 0.5.'}}
+  ],'s4-qc');
+ }
+});
+
+/* ---------- inline cell input (tables) ---------- */
+function cellInput(td, o, fbEl){
+  reg(o.id);
+  let inp, btn;
+  if(o.select){
+    td.innerHTML=`<span class="cellwrap"><select class="ans" aria-label="${o.aria}"><option value="">choose</option>${o.select.map(v=>`<option>${v}</option>`).join('')}</select></span>`;
+    inp=$('select',td);
+  } else {
+    td.innerHTML=`<span class="cellwrap"><input class="ans" type="text" autocomplete="off" spellcheck="false" placeholder="?" aria-label="${o.aria}"><button class="cellbtn" type="button" aria-label="Check ${o.aria}">✓</button></span>`;
+    inp=$('input',td); btn=$('button',td);
+  }
+  let tries=0;
+  function solvedUI(v){ const td0=inp.closest('td'); if(td0) td0.style.background=''; inp.classList.remove('no'); inp.classList.add('ok'); inp.disabled=false; if(o.select){ inp.value=v; inp.disabled=true; } else { inp.value=fmt(v,1).replace('−','-'); inp.readOnly=true; btn.disabled=true; } }
+  function go(){
+    if(S.solved[o.id]) return;
+    const v=o.select?inp.value:parseNum(inp.value);
+    if(o.select? !v : isNaN(v)){ fbEl.className='fb no'; fbEl.innerHTML='Enter an answer in the highlighted box first.'; fbEl.hidden=false; return; }
+    const ok=o.check(v); attempt(o.id, ok);
+    if(ok){ S.misc['v_'+o.id]=v; save(); solvedUI(v); fbEl.className='fb ok'; fbEl.innerHTML='<b>Correct.</b> '+(o.why?(typeof o.why==='function'?o.why(v):o.why):''); fbEl.hidden=false; o.onSolved&&o.onSolved(v); }
+    else{
+      tries++; inp.classList.add('no'); inp.classList.remove('shake'); void inp.offsetWidth; inp.classList.add('shake');
+      let msg=typeof o.hint==='function'?o.hint(v):o.hint;
+      if(!o.select && o.ans!=null && o.kind!=='angle' && near(-v,o.ans()) && Math.abs(o.ans())>0.2) msg='Right size, wrong sign. Which way does it point along that axis?';
+      const how=typeof o.how==='function'?o.how():o.how;
+      fbEl.className='fb no'; fbEl.innerHTML='<b>Not yet.</b> '+msg+(tries>=2&&how?`<div class="how"><b>Here's how:</b> ${how}</div>`:''); fbEl.hidden=false;
+    }
+  }
+  if(o.select) inp.addEventListener('change',go);
+  else { btn.addEventListener('click',go); inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); go(); } }); inp.addEventListener('input',()=>inp.classList.remove('no')); }
+  if(S.solved[o.id]) solvedUI(S.misc['v_'+o.id]);
+  return {
+    setEnabled(b){ if(S.solved[o.id]) return; inp.disabled=!b; if(btn) btn.disabled=!b; if(b) inp.closest('td').style.background='rgba(255,211,92,.06)'; else inp.closest('td').style.background=''; },
+    focus(){ inp.focus({preventScroll:true}); }
+  };
+}
+
+/* ===================== SECTION 5: signs ===================== */
+SECS.push({z:5, sym:'B', name:'Boron', title:'Signs: left, right, up, down', min:10,
+ reqs:[{id:'s5-sort',text:'Sort all 8 vectors by the signs of their components'},{id:'s5-prac',text:'Solve both negative-component problems'},{id:'s5-qc',text:'Answer both quick check questions correctly'}],
+ build(body){
+  const c1=card(body,'read','Components can be negative');
+  c1.insertAdjacentHTML('beforeend',`<div class="split"><div>
+    <p>The sign of a component tells which way it points along its axis: <b>right is +x, left is −x, up is +y, down is −y.</b></p>
+    <p>So the quadrant a vector points into decides the signs of its components. The grid shows the sign pattern (x, y) for each quadrant.</p>
+    <p>Good news: if you use the <b>standard angle</b> (counterclockwise from +x, 0° to 360°), A cos θ and A sin θ give the right signs automatically.</p>
+    <p class="num">Example: 30 m at 150°<br>${V.Ax} = 30 cos 150° = <b>−26.0 m</b> (left)<br>${V.Ay} = 30 sin 150° = <b>+15.0 m</b> (up)</p>
+    </div><div class="s5fig"></div></div>
+    <div class="callout">If a problem uses compass words like "40° south of west," change it to a standard angle first (180° + 40° = 220°). Then always <b>check your signs against your sketch</b>: an arrow pointing up and to the left must have a negative x and a positive y.</div>`);
+  const P=plane({xmin:-7,xmax:7,ymin:-7,ymax:7,w:400,label:'Quadrant sign pattern'});
+  $('.s5fig',c1).appendChild(P.svg);
+  { const g=P.gDraw, X=P.X, Y=P.Y;
+    [[4,3,'I','(+, +)'],[-4,3,'II','(−, +)'],[-4,-3,'III','(−, −)'],[4,-3,'IV','(+, −)']].forEach(([x,y,n,sg])=>{
+      arrow(g,X(0),Y(0),X(x),Y(y),COL.a,{w:3.5});
+      label(g,X(x*1.25),Y(y*1.75),sg,COL.text,{size:17});
+      label(g,X(x*1.25),Y(y*1.75)+(y>0?-20:20),'Quadrant '+n,COL.muted,{size:12,weight:400});
+    });
+    label(g,X(6.3),Y(0)+14,'+',COL.x,{size:16}); label(g,X(-6.3),Y(0)+14,'−',COL.x,{size:18});
+    label(g,X(0)-14,Y(6.3),'+',COL.y,{size:16}); label(g,X(0)-14,Y(-6.3),'−',COL.y,{size:18}); }
+
+  const c2=card(body,'try','Sort by signs');
+  c2.insertAdjacentHTML('beforeend','<p>Picture each vector. Which way does it point left or right? Up or down? Convert compass words to a standard angle if it helps.</p>');
+  sorter(c2,{id:'s5', bins:[{k:'I',label:'(+, +)',html:'(+, +)'},{k:'II',label:'(−, +)',html:'(−, +)'},{k:'III',label:'(−, −)',html:'(−, −)'},{k:'IV',label:'(+, −)',html:'(+, −)'}],
+    items:[
+      {t:'12 m at 45°',k:'I',why:'45° is between 0° and 90°: right and up.'},
+      {t:'8 m/s, 20° north of east',k:'I',why:'East then a bit north: right and up.'},
+      {t:'15 m at 120°',k:'II',why:'120° is between 90° and 180°: left and up.'},
+      {t:'5 m/s, 10° west of north',k:'II',why:'Mostly north, tilted west: left and up (100°).'},
+      {t:'9 m at 250°',k:'III',why:'250° is between 180° and 270°: left and down.'},
+      {t:'6 N, 40° south of west',k:'III',why:'West then south: left and down (220°).'},
+      {t:'20 m at 300°',k:'IV',why:'300° is between 270° and 360°: right and down.'},
+      {t:'7 m/s, 30° south of east',k:'IV',why:'East then south: right and down (330°).'}
+    ], doneMsg:'The quadrant tells you the signs before you calculate anything.', onDone:()=>reqDone('s5-sort')});
+
+  const c3=card(body,'try','Your turn: components with signs');
+  c3.insertAdjacentHTML('beforeend','<p>Use the standard angle in cos and sin. Include a minus sign when a component points left or down. Round to one decimal.</p>');
+  let ids=[];
+  [{id:'s5p1', mag:24, th:160, unit:'m', sym:'A', story:'A boat moves <b>24.0 m at 160°</b>.'},
+   {id:'s5p2', mag:18, th:240, unit:'m/s', sym:'v', story:'A puck slides at <b>18.0 m/s at 240°</b>.'}
+  ].forEach(pb=>{ pb.onSolved=()=>{ if(allSolved(ids)) reqDone('s5-prac'); }; ids=ids.concat(compProblem(c3,pb)); });
+
+  const c4=card(body,'qc');
+  qcGroup(c4,[
+    {id:'s5q1', q:'A vector points <b>40° south of west</b>. What are the signs of its components (x, y)?', opts:['(+, +)','(−, +)','(−, −)','(+, −)'], ans:2,
+      why:'West is left (−x) and south is down (−y). It is at 220°, in quadrant III.', wrong:{0:'West means left, so x is negative.',1:'South means down, so y is negative.',3:'West means left, so x is negative.'}},
+    {id:'s5q2', q:'A vector is <b>10 m at 300°</b>. What are its components?', opts:[`${V.Ax} = 5.0 m, ${V.Ay} = 8.7 m`,`${V.Ax} = 5.0 m, ${V.Ay} = −8.7 m`,`${V.Ax} = −5.0 m, ${V.Ay} = −8.7 m`,`${V.Ax} = −8.7 m, ${V.Ay} = 5.0 m`], ans:1,
+      why:'10 cos 300° = 5.0 and 10 sin 300° = −8.7. At 300° the vector points right and down.', wrong:{0:'300° is in quadrant IV, so the vector points down: y must be negative.',2:'In quadrant IV the vector points right, so x is positive.',3:'Check which is cos and which is sin: x uses cos 300° = 0.5.'}}
+  ],'s5-qc');
+ }
+});
+
+/* ===================== SECTION 6: adding with components ===================== */
+SECS.push({z:6, sym:'C', name:'Carbon', title:'Adding vectors: add the x\'s, add the y\'s', min:10,
+ reqs:[{id:'s6-anim',text:'Watch the tip-to-tail animation to the end'},{id:'s6-sand',text:'Complete all 3 vector adder missions'},{id:'s6-tab',text:'Fill in both component tables'},{id:'s6-qc',text:'Answer both quick check questions correctly'}],
+ build(body){
+  const c1=card(body,'read','Tip-to-tail, then split into columns');
+  c1.insertAdjacentHTML('beforeend',`<div class="split"><div>
+    <p>To add vectors, place them <b>tip-to-tail</b>: start the second vector where the first one ends. The <b>resultant</b> ${V.R} is the single arrow from the first tail to the last tip. It shows where you end up.</p>
+    <p>Measuring that arrow with a ruler is slow and not very accurate. Components make it exact. Because x and y are perpendicular, moving sideways never changes how high you are. So you can add the x's and the y's separately:</p>
+    <div class="formula">${V.Rx} = ${V.Ax} + ${V.Bx}</div><div class="formula">${V.Ry} = ${V.Ay} + ${V.By}</div>
+    <p>Keep your work in a <b>component table</b>: one row per vector, one column for x and one for y. Add down each column to get the row for ${V.R}.</p>
+    </div><div><div class="s6fig"></div><div class="caption s6cap" aria-live="polite">Press play to watch two vectors add.</div>
+    <div class="btnrow"><button class="btn primary small s6play" type="button">Play</button></div></div></div>`);
+  const A=[6,2], B=[-2,5];
+  const P=plane({xmin:-4.6,xmax:8,ymin:-2.6,ymax:8,w:420,ticks:2,label:'Tip-to-tail addition of A and B'});
+  $('.s6fig',c1).appendChild(P.svg);
+  const draw=tipToTailScene(P,A,B);
+  draw({a:1,b:1,slide:1,r:0,cx:0,cy:0});
+  let busy=false; const cap=$('.s6cap',c1);
+  $('.s6play',c1).addEventListener('click',async()=>{
+    if(busy) return; busy=true;
+    await playTipToTail(draw,cap,[
+      `Draw ${V.A} = (6, 2) from the origin.`,
+      `Draw ${V.B} = (−2, 5). Right now its tail is at the origin too.`,
+      `Slide ${V.B} so its tail sits on the tip of ${V.A}. That's tip-to-tail.`,
+      `The resultant ${V.R} runs from the first tail to the last tip.`,
+      `Line up the x-components: ${V.Ax} + ${V.Bx} = 6 + (−2) = 4. That is ${V.Rx}.`,
+      `Line up the y-components: ${V.Ay} + ${V.By} = 2 + 5 = 7. That is ${V.Ry}. So ${V.R} = (4, 7).`
+    ]);
+    busy=false; $('.s6play',c1).textContent='Replay'; reqDone('s6-anim');
+  });
+
+  const c2=card(body,'try','The vector adder');
+  c2.insertAdjacentHTML('beforeend',`<p>Drag the tip of ${V.A} (purple) or the tip of ${V.B} (green). ${V.B} always starts at the tip of ${V.A}. The gold arrow is the resultant.</p>`);
+  const sp=h('div',{class:'split'}); c2.appendChild(sp); const L=h('div'), Rt=h('div'); sp.append(L,Rt);
+  const Q=plane({xmin:-10,xmax:10,ymin:-10,ymax:10,w:440,ticks:5,label:'Vector adder grid'});
+  L.appendChild(Q.svg);
+  const hA=sv('circle',{r:12,fill:'rgba(185,150,255,.28)',stroke:COL.a,'stroke-width':2,tabindex:0,class:'handle','aria-label':'Tip of vector A. Use arrow keys to move.'},Q.gTop);
+  const hB=sv('circle',{r:12,fill:'rgba(95,227,169,.25)',stroke:COL.b,'stroke-width':2,tabindex:0,class:'handle','aria-label':'Tip of vector B. Use arrow keys to move.'},Q.gTop);
+  const tbl=h('table',{class:'nb'}); Rt.appendChild(tbl);
+  const showC=h('label',{class:'small',style:'display:flex;gap:8px;align-items:center;margin:6px 0'},`<input type="checkbox"> Show the components of ${V.R}`); Rt.appendChild(showC);
+  let a=S.misc.addA||[5,2], b=S.misc.addB||[1,4];
+  const test=missionBox(Rt,'s6m',[
+    {text:`Make ${V.R} point straight up (${V.Rx} = 0, ${V.Ry} > 0) while ${V.A} and ${V.B} both lean sideways.`, test:s=>s.R[0]===0&&s.R[1]>0&&s.a[0]!==0&&s.b[0]!==0, done:`The x-components cancel, so all of ${V.R} is vertical.`},
+    {text:`Make ${V.A} and ${V.B} cancel so ${V.R} = 0.`, test:s=>s.R[0]===0&&s.R[1]===0&&(s.a[0]!==0||s.a[1]!==0), done:`${V.B} is the exact opposite of ${V.A}: same length, opposite direction.`},
+    {text:`Make ${V.Rx} = 8 and ${V.Ry} = 6 using an ${V.A} that points down (${V.Ay} < 0).`, test:s=>s.R[0]===8&&s.R[1]===6&&s.a[1]<0, done:`${V.By} had to make up for the negative ${V.Ay}. The columns always add.`}
+  ],'s6-sand');
+  function draw2(){
+    const g=Q.gDraw, X=Q.X, Y=Q.Y; g.innerHTML='';
+    const R=[a[0]+b[0],a[1]+b[1]];
+    if($('input',showC).checked){
+      if(R[0]) arrow(g,X(0),Y(0),X(R[0]),Y(0),COL.x,{w:3.5,dash:'7 4'});
+      if(R[1]) arrow(g,X(R[0]),Y(0),X(R[0]),Y(R[1]),COL.y,{w:3.5,dash:'7 4'});
+    }
+    if(R[0]||R[1]) arrow(g,X(0),Y(0),X(R[0]),Y(R[1]),COL.r,{w:4.5});
+    if(a[0]||a[1]) arrow(g,X(0),Y(0),X(a[0]),Y(a[1]),COL.a,{w:4});
+    if(b[0]||b[1]) arrow(g,X(a[0]),Y(a[1]),X(R[0]),Y(R[1]),COL.b,{w:4});
+    sv('circle',{cx:X(0),cy:Y(0),r:4,fill:COL.text},g);
+    hA.setAttribute('cx',X(a[0])); hA.setAttribute('cy',Y(a[1]));
+    hB.setAttribute('cx',X(R[0])); hB.setAttribute('cy',Y(R[1]));
+    const f=v=>fmt(v,0);
+    tbl.innerHTML=`<tr><th>Vector</th><th>x</th><th>y</th></tr>
+      <tr><td><span class="ca">A</span></td><td>${f(a[0])}</td><td>${f(a[1])}</td></tr>
+      <tr><td><span class="cb">B</span></td><td>${f(b[0])}</td><td>${f(b[1])}</td></tr>
+      <tr><td><span class="cr">R = A + B</span></td><td><b>${f(R[0])}</b></td><td><b>${f(R[1])}</b></td></tr>
+      <tr><td class="muted">length of R</td><td colspan="2">${fmt(Math.hypot(R[0],R[1]))}</td></tr>`;
+    S.misc.addA=a; S.misc.addB=b; save(); test({a,b,R});
+  }
+  $('input',showC).addEventListener('change',draw2);
+  svgDrag(Q,[
+    {el:hA,get:()=>a,set:(x,y)=>{ let nx=clamp(Math.round(x),-9,9), ny=clamp(Math.round(y),-9,9);
+      // keep B's tip on the grid
+      nx=clamp(nx,-9-b[0],9-b[0]); ny=clamp(ny,-9-b[1],9-b[1]);
+      if(nx!==a[0]||ny!==a[1]){ a=[nx,ny]; draw2(); } }},
+    {el:hB,get:()=>[a[0]+b[0],a[1]+b[1]],set:(x,y)=>{ const tx=clamp(Math.round(x),-9,9), ty=clamp(Math.round(y),-9,9); const nb=[tx-a[0],ty-a[1]]; if(nb[0]!==b[0]||nb[1]!==b[1]){ b=nb; draw2(); } }}
+  ],3.5);
+  draw2();
+
+  const c3=card(body,'try','Fill in the component tables');
+  c3.insertAdjacentHTML('beforeend',`<p>The components of ${V.A} and ${V.B} are given. Add down each column to find ${V.R}. Watch the negative signs.</p>`);
+  const tabs=[{id:'s6t1',A:[4.0,3.0],B:[2.0,-7.0],u:'m'},{id:'s6t2',A:[-5.2,3.0],B:[8.0,6.5],u:'m/s'}];
+  const tids=[];
+  tabs.forEach((t,ti)=>{
+    const wrap=h('div',{class:'wide',style:'margin:14px 0 6px'});
+    wrap.innerHTML=`<p style="margin-bottom:4px"><b>Table ${ti+1}</b> <span class="muted">(${t.u})</span></p><table class="nb"><tr><th>Vector</th><th>x-component</th><th>y-component</th></tr>
+      <tr><td><span class="ca">A</span></td><td>${fmt(t.A[0])}</td><td>${fmt(t.A[1])}</td></tr>
+      <tr><td><span class="cb">B</span></td><td>${fmt(t.B[0])}</td><td>${fmt(t.B[1])}</td></tr>
+      <tr><td><span class="cr">R = A + B</span></td><td class="cx-cell"></td><td class="cy-cell"></td></tr></table>`;
+    c3.appendChild(wrap); const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'}); c3.appendChild(fb);
+    const rx=t.A[0]+t.B[0], ry=t.A[1]+t.B[1];
+    const done=()=>{ if(allSolved(tids)) reqDone('s6-tab'); };
+    tids.push(t.id+'x', t.id+'y');
+    cellInput($('.cx-cell',wrap),{id:t.id+'x',aria:'R x-component',ans:()=>rx,check:v=>near(v,rx),hint:'Add the x column: R<sub>x</sub> = A<sub>x</sub> + B<sub>x</sub>.',how:`${fmt(t.A[0])} + (${fmt(t.B[0])}) = ${fmt(rx)}`,onSolved:done},fb).setEnabled(true);
+    cellInput($('.cy-cell',wrap),{id:t.id+'y',aria:'R y-component',ans:()=>ry,check:v=>near(v,ry),hint:'Add the y column: R<sub>y</sub> = A<sub>y</sub> + B<sub>y</sub>. Adding a negative number makes the total smaller.',how:`${fmt(t.A[1])} + (${fmt(t.B[1])}) = ${fmt(ry)}`,onSolved:done},fb).setEnabled(true);
+  });
+
+  const c4=card(body,'qc');
+  qcGroup(c4,[
+    {id:'s6q1', q:`${V.A} = (3, 4) and ${V.B} = (−7, 2). What is ${V.R} = ${V.A} + ${V.B}?`, opts:['(−4, 6)','(10, 6)','(4, −6)','(−21, 8)'], ans:0,
+      why:'x: 3 + (−7) = −4. y: 4 + 2 = 6. So R = (−4, 6).', wrong:{1:'Adding −7 is the same as subtracting 7: 3 + (−7) = −4.',2:'Right sizes, but both signs are flipped. Add each column: 3 + (−7) and 4 + 2.',3:'Add the components, don\'t multiply them.'}},
+    {id:'s6q2', q:'Why can you add the x-components and y-components separately?', opts:['Because x and y are perpendicular, so motion along x doesn\'t change y','Because the two vectors always have the same length','Because vectors are really scalars','Because the angle is always 45°'], ans:0,
+      why:'Perpendicular directions are independent. Sideways motion never changes height.', wrong:{1:'This works for vectors of any lengths.',2:'Vectors have direction. That\'s why we split them into x and y.',3:'This works at any angle.'}}
+  ],'s6-qc');
+ }
+});
+
+/* ===================== SECTION 7: resultant length ===================== */
+SECS.push({z:7, sym:'N', name:'Nitrogen', title:'The resultant\'s length: triangle sides', min:9,
+ reqs:[{id:'s7-explore',text:'Build at least 3 different triangles with the square explorer'},{id:'s7-prac',text:'Solve all 3 triangle side problems'},{id:'s7-qc',text:'Answer both quick check questions correctly'}],
+ build(body){
+  const c1=card(body,'read','The Pythagorean theorem finds R');
+  c1.insertAdjacentHTML('beforeend',`
+    <p>${V.Rx} and ${V.Ry} are the two legs of a right triangle. The resultant ${V.R} is the hypotenuse. So the Pythagorean theorem gives its length:</p>
+    <div class="formula">${V.R} = √( ${V.Rx}² + ${V.Ry}² )</div>
+    <p>Signs don't matter here: a negative number squared is positive. A magnitude is never negative.</p>
+    <p class="num"><b>Example:</b> ${V.Rx} = 6.0 m and ${V.Ry} = −4.0 m<br>${V.R} = √(6.0² + (−4.0)²) = √(36 + 16) = √52 = <b>7.2 m</b></p>
+    <div class="callout"><b>Sense check:</b> R is always longer than either leg but shorter than the two legs added together. Here, 7.2 is more than 6.0 and less than 10.0. ✓</div>
+    <p>You can also run it backwards. If you know the hypotenuse and one leg, the missing leg is √(R² − leg²).</p>`);
+
+  const c2=card(body,'try','The square explorer');
+  c2.insertAdjacentHTML('beforeend',`<p>Each side of the triangle has a square built on it. Move the sliders and watch: the two small squares always add up to the big one.</p>`);
+  const sp=h('div',{class:'split'}); c2.appendChild(sp); const L=h('div'), Rt=h('div'); sp.append(L,Rt);
+  const svg=sv('svg',{viewBox:'0 0 420 420',class:'fig',role:'img','aria-label':'Squares on the sides of a right triangle'}); L.appendChild(svg);
+  const gq=sv('g',{},svg);
+  Rt.innerHTML=`<div class="slider"><label for="s7a"><span class="cx">R<sub>x</sub></span> = <b class="s7av"></b></label><input id="s7a" type="range" min="1" max="9" step="1"></div>
+    <div class="slider"><label for="s7b"><span class="cy">R<sub>y</sub></span> = <b class="s7bv"></b></label><input id="s7b" type="range" min="1" max="9" step="1"></div>
+    <dl class="readout s7ro"></dl><p class="small muted s7count" style="margin-top:8px"></p>`;
+  const ia=$('#s7a',Rt), ib=$('#s7b',Rt);
+  let cur=[4,3]; ia.value=4; ib.value=3;
+  const seen=new Set(S.misc.s7seen||[]);
+  function drawSq(a,b){
+    gq.innerHTML='';
+    const xmin=-b, xmax=a+b, ymin=-a, ymax=a+b; const W=xmax-xmin, H=ymax-ymin; const s=360/Math.max(W,H);
+    const ox=30+(360-W*s)/2, oy=30+(360-H*s)/2;
+    const X=x=>ox+(x-xmin)*s, Y=y=>oy+(ymax-y)*s;
+    const poly=(pts,fill,stroke)=>sv('polygon',{points:pts.map(p=>X(p[0])+','+Y(p[1])).join(' '),fill,stroke,'stroke-width':1.5},gq);
+    poly([[0,0],[a,0],[a,-a],[0,-a]],'rgba(255,125,110,.18)',COL.x);
+    poly([[a,0],[a+b,0],[a+b,b],[a,b]],'rgba(69,200,240,.18)',COL.y);
+    poly([[0,0],[a,b],[a-b,b+a],[-b,a]],'rgba(255,211,92,.14)',COL.r);
+    sv('line',{x1:X(0),y1:Y(0),x2:X(a),y2:Y(0),stroke:COL.x,'stroke-width':4},gq);
+    sv('line',{x1:X(a),y1:Y(0),x2:X(a),y2:Y(b),stroke:COL.y,'stroke-width':4},gq);
+    sv('line',{x1:X(0),y1:Y(0),x2:X(a),y2:Y(b),stroke:COL.r,'stroke-width':4},gq);
+    const ra=Math.round(a), rb=Math.round(b);
+    label(gq,X(a/2),Y(-a/2),`${ra*ra}`,COL.x,{size:Math.max(12,Math.min(22,a*s/3))});
+    label(gq,X(a+b/2),Y(b/2),`${rb*rb}`,COL.y,{size:Math.max(12,Math.min(22,b*s/3))});
+    label(gq,X((a-b)/2),Y((a+b)/2),`${ra*ra+rb*rb}`,COL.r,{size:Math.max(13,Math.min(24,Math.hypot(a,b)*s/3))});
+  }
+  function update(animate){
+    const a=+ia.value, b=+ib.value; $('.s7av',Rt).textContent=a; $('.s7bv',Rt).textContent=b;
+    const from=cur.slice(); cur=[a,b];
+    if(animate) tween(260,t=>drawSq(lerp(from[0],a,t),lerp(from[1],b,t))); else drawSq(a,b);
+    const R=Math.hypot(a,b);
+    $('.s7ro',Rt).innerHTML=`<dt>R<sub>x</sub>² + R<sub>y</sub>²</dt><dd>${a}² + ${b}² = ${a*a} + ${b*b} = ${a*a+b*b}</dd><dt>R</dt><dd>√${a*a+b*b} = ${fmt(R)}</dd>`;
+    if(!(a===4&&b===3)) seen.add(a+','+b);
+    S.misc.s7seen=[...seen]; save();
+    $('.s7count',Rt).textContent=seen.size>=3?'Explored. Notice R is always the longest side.':`Triangles tried: ${seen.size} of 3`;
+    if(seen.size>=3) reqDone('s7-explore');
+  }
+  ia.addEventListener('input',()=>update(true)); ib.addEventListener('input',()=>update(true));
+  update(false);
+
+  const c3=card(body,'try','Your turn: triangle sides');
+  c3.insertAdjacentHTML('beforeend','<p>Round to one decimal place.</p>');
+  const pids=['s7p1','s7p2','s7p3']; const done=()=>{ if(allSolved(pids)) reqDone('s7-prac'); };
+  c3.insertAdjacentHTML('beforeend',`<p style="margin:12px 0 0"><b>1.</b> ${V.Rx} = 9.0 m and ${V.Ry} = 12.0 m. Find the length of ${V.R}.</p>`);
+  numq(c3,{id:'s7p1',label:`${V.R} =`,ans:15,unit:'m',hint:'R = √(R<sub>x</sub>² + R<sub>y</sub>²). Square each leg, add, then take the square root.',how:'√(9.0² + 12.0²) = √(81 + 144) = √225 = 15.0 m',onSolved:done});
+  c3.insertAdjacentHTML('beforeend',`<p style="margin:16px 0 0"><b>2.</b> ${V.Rx} = −7.5 m/s and ${V.Ry} = 4.0 m/s. Find the length of ${V.R}.</p>`);
+  numq(c3,{id:'s7p2',label:`${V.R} =`,ans:8.5,unit:'m/s',check:v=>near(v,8.5),hint:'Square the −7.5 first: (−7.5)² is positive. A length is never negative.',how:'√((−7.5)² + 4.0²) = √(56.25 + 16) = √72.25 = 8.5 m/s',onSolved:done});
+  c3.insertAdjacentHTML('beforeend',`<p style="margin:16px 0 0"><b>3.</b> A resultant is 13.0 m long and ${V.Rx} = 5.0 m. How long is the other leg, ${V.Ry}? (Give its size.)</p>`);
+  numq(c3,{id:'s7p3',label:`size of ${V.Ry} =`,ans:12,unit:'m',check:v=>near(Math.abs(v),12),hint:'Run the Pythagorean theorem backwards: leg = √(R² − other leg²).',how:'√(13.0² − 5.0²) = √(169 − 25) = √144 = 12.0 m',onSolved:done});
+
+  const c4=card(body,'qc');
+  qcGroup(c4,[
+    {id:'s7q1', q:`${V.Rx} = −8 m and ${V.Ry} = 6 m. How long is ${V.R}?`, opts:['−10 m','10 m','14 m','2 m'], ans:1,
+      why:'√((−8)² + 6²) = √(64 + 36) = √100 = 10 m.', wrong:{0:'A length is never negative. (−8)² = +64.',2:'14 is what you get by adding the legs. Use the Pythagorean theorem instead.',3:'Don\'t add the signed components. Square, add, then square root.'}},
+    {id:'s7q2', q:`${V.Rx} = 5 m and ${V.Ry} = 12 m. A classmate says ${V.R} = 17 m. What mistake did they make?`, opts:['They added the legs instead of using the Pythagorean theorem','They forgot to square root','They used the wrong signs','No mistake, 17 m is right'], ans:0,
+      why:'5 + 12 = 17, but R = √(25 + 144) = √169 = 13 m.', wrong:{1:'Forgetting the square root would give 169, not 17.',2:'Both components are positive here, so signs are not the issue.',3:'Check it: √(5² + 12²) = 13 m, not 17 m.'}}
+  ],'s7-qc');
+ }
+});
+
+/* ---------- full vector diagram (section 8 + missions) ---------- */
+function fromRef(tref, q){ return q==='I'?tref : q==='II'?180-tref : q==='III'?180+tref : 360-tref; }
+function vecFig(prob, w){
+  const A=[prob.A.m*Math.cos(rad(prob.A.a)), prob.A.m*Math.sin(rad(prob.A.a))];
+  const B=[prob.B.m*Math.cos(rad(prob.B.a)), prob.B.m*Math.sin(rad(prob.B.a))];
+  const R=[A[0]+B[0],A[1]+B[1]];
+  const P=autoPlane([A,R,[A[0],0],[R[0],0],[A[0]+B[0],A[1]]],{w:w||420,label:'Vector diagram for this problem'});
+  const g=P.gDraw, X=P.X, Y=P.Y;
+  const q=quad(R[0],R[1]), th=stdAngle(R[0],R[1]), tr=deg(Math.atan(Math.abs(R[1])/Math.abs(R[0])));
+  const sub=(s,c,v)=>`${s}<tspan font-size="10" dy="3">${c}</tspan><tspan dy="-3"> = ${v}</tspan>`;
+  function render(lv, vals){
+    g.innerHTML=''; vals=vals||{};
+    const dim=lv>=5?0.3:1;
+    if(lv>=1) arrow(g,X(0),Y(0),X(A[0]),Y(0),COL.x,{w:3,dash:'7 4',op:dim});
+    if(lv>=2) arrow(g,X(A[0]),Y(0),X(A[0]),Y(A[1]),COL.y,{w:3,dash:'7 4',op:dim});
+    if(lv>=3) arrow(g,X(A[0]),Y(A[1]),X(R[0]),Y(A[1]),COL.x,{w:3,dash:'7 4',op:dim});
+    if(lv>=4) arrow(g,X(R[0]),Y(A[1]),X(R[0]),Y(R[1]),COL.y,{w:3,dash:'7 4',op:dim});
+    if(lv>=5) arrow(g,X(0),Y(0),X(R[0]),Y(0),COL.x,{w:4.5});
+    if(lv>=6){ arrow(g,X(R[0]),Y(0),X(R[0]),Y(R[1]),COL.y,{w:4.5}); rightMark(g,P,R[0],0,-Math.sign(R[0]),Math.sign(R[1]),10); }
+    arrow(g,X(0),Y(0),X(A[0]),Y(A[1]),COL.a,{w:4,op:lv>=7?0.5:1});
+    arrow(g,X(A[0]),Y(A[1]),X(R[0]),Y(R[1]),COL.b,{w:4,op:lv>=7?0.5:1});
+    if(lv>=7) arrow(g,X(0),Y(0),X(R[0]),Y(R[1]),COL.r,{w:5});
+    sv('circle',{cx:X(0),cy:Y(0),r:4,fill:COL.text},g);
+    // names
+    { const m=[A[0]/2,A[1]/2]; const n=[-A[1],A[0]]; const L=Math.hypot(n[0],n[1])||1; label(g,X(m[0])+n[0]/L*16,Y(m[1])-n[1]/L*16,'A',COL.a,{size:16}); }
+    { const m=[A[0]+B[0]/2,A[1]+B[1]/2]; const n=[-B[1],B[0]]; const L=Math.hypot(n[0],n[1])||1; label(g,X(m[0])+n[0]/L*16,Y(m[1])-n[1]/L*16,'B',COL.b,{size:16}); }
+    if(lv>=5) label(g,X(R[0]/2),Y(0)+(R[1]>=0?16:-16),sub('R','x',vals.Rx??''),COL.x,{size:13});
+    if(lv>=6) label(g,X(R[0])+(R[0]>=0?8:-8),Y(R[1]/2),sub('R','y',vals.Ry??''),COL.y,{size:13,anchor:R[0]>=0?'start':'end'});
+    if(lv>=7){ const mx=X(R[0]*0.5), my=Y(R[1]*0.5), fx=X(R[0]), fy=Y(0); let dx=mx-fx, dy=my-fy; const L=Math.hypot(dx,dy)||1; dx/=L; dy/=L;
+      label(g,mx+dx*22,my+dy*22,`R = ${vals.R??''}`,COL.r,{size:14,anchor:dx<0?'end':'start'}); }
+    if(lv>=8){ let a0,a1; if(q==='I'){a0=0;a1=th;} else if(q==='II'){a0=th;a1=180;} else if(q==='III'){a0=180;a1=th;} else {a0=th;a1=360;}
+      const rr=34; sv('path',{d:arcPath(X(0),Y(0),rr,a0,a1),fill:'none',stroke:COL.amber,'stroke-width':2.5},g);
+      const m=(a0+a1)/2; label(g,X(0)+(rr+22)*Math.cos(rad(m)),Y(0)-(rr+22)*Math.sin(rad(m)),`${vals.tref??''}°`,COL.amber,{size:13}); }
+    if(lv>=10 && q!=='I'){ sv('path',{d:arcPath(X(0),Y(0),20,0,th),fill:'none',stroke:'#ffffff','stroke-opacity':.55,'stroke-width':1.5,'stroke-dasharray':'3 3'},g); }
+    if(lv>=11){ const a0=deg(Math.atan2(-R[1],-R[0])), a1=deg(Math.atan2(-R[1],0)); let d=a1-a0; while(d>180) d-=360; while(d<=-180) d+=360;
+      const s0=d>=0?a0:a0+d, s1=d>=0?a0+d:a0; const rr=30;
+      sv('path',{d:arcPath(X(R[0]),Y(R[1]),rr,s0,s1),fill:'none',stroke:COL.amber,'stroke-width':2.5},g);
+      label(g,X(R[0])+(R[0]>=0?10:-10),Y(R[1])+(R[1]>=0?34:-34),`${vals.tip??''}°`,COL.amber,{size:13,anchor:R[0]>=0?'start':'end'}); }
+  }
+  return {svg:P.svg, A,B,R,q,th,tr,render};
+}
+
+function missionTable(parent, prob, reqId){
+  const F=vecFig(prob);
+  const {A,B,R,q,th,tr}=F; const u=prob.unit;
+  const vals=S.misc['mv_'+prob.id]||(S.misc['mv_'+prob.id]={});
+  const sp=h('div',{class:'split',style:'margin-top:10px'}); parent.appendChild(sp);
+  const L=h('div'), Rt=h('div'); sp.append(L,Rt); L.appendChild(F.svg);
+  Rt.innerHTML=`<p>${prob.story}</p>
+    <div class="wide"><table class="nb"><tr><th>Vector</th><th>x (${u})</th><th>y (${u})</th></tr>
+    <tr><td><span class="ca">A</span> <span class="small muted">${fmt(prob.A.m)} ${u} at ${prob.A.a}°</span></td><td data-k="Ax"></td><td data-k="Ay"></td></tr>
+    <tr><td><span class="cb">B</span> <span class="small muted">${fmt(prob.B.m)} ${u} at ${prob.B.a}°</span></td><td data-k="Bx"></td><td data-k="By"></td></tr>
+    <tr><td><span class="cr">R = A + B</span></td><td data-k="Rx"></td><td data-k="Ry"></td></tr></table></div>
+    <div class="wide"><table class="nb"><tr><th>Triangle part</th><th>Your answer</th></tr>
+    <tr><td>Length of <span class="cr">R</span> (${u})</td><td data-k="R"></td></tr>
+    <tr><td>θ<sub>ref</sub> = tan⁻¹(|R<sub>y</sub>| ÷ |R<sub>x</sub>|) (°)</td><td data-k="tref"></td></tr>
+    <tr><td>Quadrant R points into</td><td data-k="quad"></td></tr>
+    <tr><td>Direction of R: standard angle (°)</td><td data-k="th"></td></tr>
+    <tr><td>Other acute angle, at R's tip (°)</td><td data-k="tip"></td></tr></table></div>`;
+  const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'}); Rt.appendChild(fb);
+  const c=(k)=>$(`td[data-k="${k}"]`,Rt);
+  const chainN=(v,ex,ch)=>near(v,ex)||(ch!=null&&!isNaN(ch)&&Math.abs(v-ch)<=Math.max(0.11,Math.abs(ch)*0.012));
+  const chainA=(v,ex,ch)=>near(v,ex,'angle')||(ch!=null&&!isNaN(ch)&&near(v,ch,'angle'));
+  const cells=[
+    {k:'Ax',aria:'A x-component',ans:()=>A[0],check:v=>near(v,A[0]),hint:`A<sub>x</sub> = A cos θ, with θ = ${prob.A.a}°.`,how:()=>`A<sub>x</sub> = ${fmt(prob.A.m)} × cos ${prob.A.a}° = ${fmt(A[0])}`},
+    {k:'Ay',aria:'A y-component',ans:()=>A[1],check:v=>near(v,A[1]),hint:`A<sub>y</sub> = A sin θ, with θ = ${prob.A.a}°.`,how:()=>`A<sub>y</sub> = ${fmt(prob.A.m)} × sin ${prob.A.a}° = ${fmt(A[1])}`},
+    {k:'Bx',aria:'B x-component',ans:()=>B[0],check:v=>near(v,B[0]),hint:`B<sub>x</sub> = B cos θ, with θ = ${prob.B.a}°. Check the sign against the picture.`,how:()=>`B<sub>x</sub> = ${fmt(prob.B.m)} × cos ${prob.B.a}° = ${fmt(B[0])}`},
+    {k:'By',aria:'B y-component',ans:()=>B[1],check:v=>near(v,B[1]),hint:`B<sub>y</sub> = B sin θ, with θ = ${prob.B.a}°.`,how:()=>`B<sub>y</sub> = ${fmt(prob.B.m)} × sin ${prob.B.a}° = ${fmt(B[1])}`},
+    {k:'Rx',aria:'R x-component',ans:()=>R[0],check:v=>chainN(v,R[0],vals.Ax+vals.Bx),hint:'Add the x column: R<sub>x</sub> = A<sub>x</sub> + B<sub>x</sub>. Keep the signs.',how:()=>`R<sub>x</sub> = ${fmt(vals.Ax)} + (${fmt(vals.Bx)}) = ${fmt(vals.Ax+vals.Bx)}`},
+    {k:'Ry',aria:'R y-component',ans:()=>R[1],check:v=>chainN(v,R[1],vals.Ay+vals.By),hint:'Add the y column: R<sub>y</sub> = A<sub>y</sub> + B<sub>y</sub>. Keep the signs.',how:()=>`R<sub>y</sub> = ${fmt(vals.Ay)} + (${fmt(vals.By)}) = ${fmt(vals.Ay+vals.By)}`},
+    {k:'R',aria:'length of R',ans:()=>Math.hypot(R[0],R[1]),check:v=>chainN(v,Math.hypot(R[0],R[1]),Math.hypot(vals.Rx,vals.Ry)),hint:'R = √(R<sub>x</sub>² + R<sub>y</sub>²). Squares are always positive.',how:()=>`√(${fmt(vals.Rx)}² + ${fmt(vals.Ry)}²) = √${fmt(vals.Rx*vals.Rx+vals.Ry*vals.Ry)} = ${fmt(Math.hypot(vals.Rx,vals.Ry))}`},
+    {k:'tref',aria:'reference angle',kind:'angle',ans:()=>tr,check:v=>chainA(v,tr,deg(Math.atan(Math.abs(vals.Ry)/Math.abs(vals.Rx)))),hint:'θref = tan⁻¹(|R<sub>y</sub>| ÷ |R<sub>x</sub>|). Use the sizes with no minus signs. Opposite (y) goes on top.',how:()=>`tan⁻¹(${fmt(Math.abs(vals.Ry))} ÷ ${fmt(Math.abs(vals.Rx))}) = ${fmt(deg(Math.atan(Math.abs(vals.Ry)/Math.abs(vals.Rx))))}°`},
+    {k:'quad',aria:'quadrant',select:['I','II','III','IV'],check:v=>v===q,hint:'Look at the signs of R<sub>x</sub> and R<sub>y</sub>. (+,+) is I, (−,+) is II, (−,−) is III, (+,−) is IV.',how:()=>`R<sub>x</sub> is ${R[0]>0?'positive':'negative'} and R<sub>y</sub> is ${R[1]>0?'positive':'negative'}, so quadrant ${q}.`},
+    {k:'th',aria:'standard angle of R',kind:'angle',ans:()=>th,check:v=>chainA(v,th,fromRef(vals.tref,q)),hint:q==='I'?'In quadrant I the standard angle equals θref.':q==='II'?'In quadrant II: θ = 180° − θref.':q==='III'?'In quadrant III: θ = 180° + θref.':'In quadrant IV: θ = 360° − θref.',how:()=>`Quadrant ${q}: ${q==='I'?`θ = θref = ${fmt(vals.tref)}°`:q==='II'?`180° − ${fmt(vals.tref)}° = ${fmt(180-vals.tref)}°`:q==='III'?`180° + ${fmt(vals.tref)}° = ${fmt(180+vals.tref)}°`:`360° − ${fmt(vals.tref)}° = ${fmt(360-vals.tref)}°`}`},
+    {k:'tip',aria:'angle at the tip of R',kind:'angle',ans:()=>90-tr,check:v=>chainA(v,90-tr,90-vals.tref),hint:'A triangle\'s angles add to 180°, and one is 90°. So the tip angle = 90° − θref.',how:()=>`90° − ${fmt(vals.tref)}° = ${fmt(90-vals.tref)}°`}
+  ];
+  const ui={};
+  cells.forEach(cl=>{
+    cl.id=prob.id+'_'+cl.k;
+    cl.onSolved=v=>{ vals[cl.k]=v; save(); refresh(true); };
+    ui[cl.k]=cellInput(c(cl.k),cl,fb);
+  });
+  function shown(){ const o={}; ['Rx','Ry','R','tref','tip'].forEach(k=>{ if(vals[k]!=null) o[k]=fmt(vals[k]); }); return o; }
+  function refresh(focusNext){
+    let lv=0; for(const cl of cells){ if(S.solved[cl.id]) lv++; else break; }
+    cells.forEach((cl,i)=>ui[cl.k].setEnabled(i===lv));
+    F.render(lv, shown());
+    if(lv>=cells.length){ reqDone(reqId); fb.className='fb ok'; fb.innerHTML=`<b>Solved.</b> R = ${fmt(vals.R)} ${u} at ${fmt(vals.th)}° (${compass(vals.th).h}).`; fb.hidden=false; }
+    else if(focusNext) setTimeout(()=>ui[cells[lv].k].focus(),50);
+  }
+  refresh(false);
+}
+
+/* ===================== SECTION 8: direction & triangle angles ===================== */
+SECS.push({z:8, sym:'O', name:'Oxygen', title:'The resultant\'s direction: triangle angles', min:12,
+ reqs:[{id:'s8-ex',text:'Step all the way through the worked example'},{id:'s8-m1',text:'Solve mission 1 (the boat)'},{id:'s8-m2',text:'Solve mission 2 (the hiker)'},{id:'s8-qc',text:'Answer all 3 quick check questions correctly'}],
+ build(body){
+  const c1=card(body,'read','Inverse tangent gives the angle');
+  c1.insertAdjacentHTML('beforeend',`<div class="split"><div>
+    <p>Now find which way ${V.R} points. In the right triangle, ${V.Ry} is <b>opposite</b> the angle at the tail and ${V.Rx} is <b>adjacent</b> to it. Tangent uses opposite over adjacent, so:</p>
+    <div class="formula">θ<sub>ref</sub> = tan⁻¹( |${V.Ry}| ÷ |${V.Rx}| )</div>
+    <p>Use the sizes (no minus signs). You get the angle inside the triangle, measured from the x-axis. Then use the quadrant to turn it into a direction.</p>
+    <p>The triangle's other angles: the corner where the legs meet is 90°. All three add to 180°, so the angle at R's tip is <b>90° − θ<sub>ref</sub></b>.</p>
+    </div><div class="s8fig"></div></div>
+    <div class="wide"><table class="nb">
+      <tr><th>Signs of (${V.Rx}, ${V.Ry})</th><th>Quadrant</th><th>Standard angle θ</th><th>In compass words</th></tr>
+      <tr><td>(+, +)</td><td>I</td><td>θ = θ<sub>ref</sub></td><td>θ<sub>ref</sub> north of east</td></tr>
+      <tr><td>(−, +)</td><td>II</td><td>θ = 180° − θ<sub>ref</sub></td><td>θ<sub>ref</sub> north of west</td></tr>
+      <tr><td>(−, −)</td><td>III</td><td>θ = 180° + θ<sub>ref</sub></td><td>θ<sub>ref</sub> south of west</td></tr>
+      <tr><td>(+, −)</td><td>IV</td><td>θ = 360° − θ<sub>ref</sub></td><td>θ<sub>ref</sub> south of east</td></tr>
+    </table></div>`);
+  { const P=plane({xmin:-1,xmax:11.4,ymin:-1.4,ymax:6.6,w:380,grid:0,names:false,label:'Right triangle showing the reference angle and the tip angle'});
+    $('.s8fig',c1).appendChild(P.svg); const g=P.gDraw, X=P.X, Y=P.Y; const a=7, b=5;
+    sv('line',{x1:X(0),y1:Y(0),x2:X(a),y2:Y(0),stroke:COL.x,'stroke-width':5,'stroke-linecap':'round'},g);
+    sv('line',{x1:X(a),y1:Y(0),x2:X(a),y2:Y(b),stroke:COL.y,'stroke-width':5,'stroke-linecap':'round'},g);
+    rightMark(g,P,a,0,-1,1,13); arrow(g,X(0),Y(0),X(a),Y(b),COL.r,{w:5});
+    const t=deg(Math.atan(b/a));
+    sv('path',{d:arcPath(X(0),Y(0),40,0,t),fill:'none',stroke:COL.amber,'stroke-width':2.5},g);
+    label(g,X(0)+62,Y(0)-14,'θref',COL.amber,{size:14});
+    sv('path',{d:arcPath(X(a),Y(b),34,180+t,270),fill:'none',stroke:COL.amber,'stroke-width':2.5},g);
+    label(g,X(a)-8,Y(b)+100,'90° − θref',COL.amber,{size:13,anchor:'end'});
+    label(g,X(a)+14,Y(0)-14,'90°',COL.muted,{size:13,anchor:'start'});
+    label(g,X(a/2),Y(0)+18,'Rx: adjacent',COL.x,{size:13});
+    label(g,X(a)+10,Y(b/2),'Ry: opposite',COL.y,{size:13,anchor:'start'});
+    label(g,X(a*0.4)-10,Y(b*0.4)-16,'R',COL.r,{size:16,anchor:'end'}); }
+
+  const c2=card(body,'read','Worked example: the whole method');
+  c2.insertAdjacentHTML('beforeend','<p>A drone flies <b>8.0 km at 30°</b>, then <b>5.0 km at 135°</b>. Find its total displacement: how far, and which way.</p>');
+  const sp=h('div',{class:'split'}); c2.appendChild(sp); const L=h('div'), Rt=h('div'); sp.append(L,Rt);
+  const F=vecFig({A:{m:8,a:30},B:{m:5,a:135}},400); L.appendChild(F.svg);
+  const wv={Rx:'3.4',Ry:'7.5',R:'8.2',tref:'65.6',tip:'24.4'};
+  const lv=[2,4,6,7,11];
+  stepper(Rt,[
+    `<p><b>Components of A</b> (8.0 km at 30°)</p><p class="num">${V.Ax} = 8.0 cos 30° = <b>6.9 km</b><br>${V.Ay} = 8.0 sin 30° = <b>4.0 km</b></p>`,
+    `<p><b>Components of B</b> (5.0 km at 135°)</p><p class="num">${V.Bx} = 5.0 cos 135° = <b>−3.5 km</b> (left)<br>${V.By} = 5.0 sin 135° = <b>3.5 km</b></p>`,
+    `<p><b>Add the columns.</b></p><p class="num">${V.Rx} = 6.9 + (−3.5) = <b>3.4 km</b><br>${V.Ry} = 4.0 + 3.5 = <b>7.5 km</b></p>`,
+    `<p><b>Length of R</b> (Pythagorean theorem)</p><p class="num">${V.R} = √(3.4² + 7.5²) = √67.8 = <b>8.2 km</b></p>`,
+    `<p><b>Angles.</b> θ<sub>ref</sub> = tan⁻¹(7.5 ÷ 3.4) = <b>65.6°</b>. Both components are positive, so R is in quadrant I: it points <b>65.6° north of east</b>.</p><p>The angle at R's tip is 90° − 65.6° = <b>24.4°</b>. Check: 65.6° + 24.4° + 90° = 180° ✓</p>`
+  ], k=>F.render(lv[k],wv), 's8-ex');
+
+  const c3=card(body,'try','Mission 1: the boat');
+  c3.insertAdjacentHTML('beforeend','<p>Work through the table one box at a time. The diagram builds as you go. Round each answer to one decimal and use your rounded answers in the next step.</p>');
+  missionTable(c3,{id:'s8m1',A:{m:10,a:30},B:{m:6,a:120},unit:'m',story:'A boat travels <b>10.0 m at 30°</b>, then <b>6.0 m at 120°</b>. Find the resultant and the angles of its triangle.'},'s8-m1');
+  const c4=card(body,'try','Mission 2: the hiker');
+  missionTable(c4,{id:'s8m2',A:{m:20,a:135},B:{m:8,a:30},unit:'m',story:'A hiker walks <b>20.0 m at 135°</b>, then <b>8.0 m at 30°</b>. Find the resultant and the angles of its triangle. (This one ends up in a different quadrant.)'},'s8-m2');
+
+  const c5=card(body,'qc');
+  qcGroup(c5,[
+    {id:'s8q1', q:`${V.Rx} = −4.0 m and ${V.Ry} = 4.0 m. What is the standard angle of ${V.R}?`, opts:['45°','135°','225°','315°'], ans:1,
+      why:'θref = tan⁻¹(4 ÷ 4) = 45°. (−, +) is quadrant II, so θ = 180° − 45° = 135°.', wrong:{0:'45° is θref. R points left and up, so it is in quadrant II.',2:'225° is quadrant III, where both components are negative. Here R<sub>y</sub> is positive.',3:'315° is quadrant IV, where x is positive. Here R<sub>x</sub> is negative.'}},
+    {id:'s8q2', q:`${V.Rx} = 12 m and ${V.Ry} = 5 m. What are the two acute angles of the triangle?`, opts:['22.6° and 67.4°','45° and 45°','22.6° and 77.4°','67.4° and 112.6°'], ans:0,
+      why:'θref = tan⁻¹(5 ÷ 12) = 22.6°. The other is 90° − 22.6° = 67.4°.', wrong:{1:'The legs are different lengths, so the angles can\'t be equal.',2:'The two acute angles must add to 90°.',3:'112.6° is not acute. The two acute angles add to 90°.'}},
+    {id:'s8q3', q:'The angle tan⁻¹(|R<sub>y</sub>| ÷ |R<sub>x</sub>|) is measured from which line?', opts:['The x-axis','The y-axis','Due north','The tip of R'], ans:0,
+      why:'R<sub>y</sub> is opposite and R<sub>x</sub> is adjacent, so the angle sits at the tail, between R and the x-axis.', wrong:{1:'If you wanted the angle from the y-axis, you would flip the fraction.',2:'North is the y-axis. This angle is measured from the x-axis.',3:'The angle at the tip is 90° minus this one.'}}
+  ],'s8-qc');
+ }
+});
+
+/* ===================== SECTION 9: final check ===================== */
+const FBANK=[
+ {id:'f1',t:'mc',q:'Which of these is a vector?',opts:['25 m/s east','25 m/s','25 seconds','25 kg'],ans:0,why:'Only "25 m/s east" includes a direction.'},
+ {id:'f2',t:'mc',q:'What is the standard angle for <b>30° west of north</b>?',opts:['30°','60°','120°','300°'],ans:2,why:'Start at north (90°) and turn 30° toward west: 90° + 30° = 120°.'},
+ {id:'f3',t:'mc',q:'A vector points at <b>230°</b>. What are the signs of its components (x, y)?',opts:['(+, +)','(−, +)','(−, −)','(+, −)'],ans:2,why:'230° is between 180° and 270°, quadrant III: left and down.'},
+ {id:'f4',t:'mc',q:'θ is measured from the x-axis. Which expression gives the <b>y-component</b>?',opts:['A cos θ','A sin θ','A tan θ','A ÷ sin θ'],ans:1,why:'y is opposite θ, so A<sub>y</sub> = A sin θ.'},
+ {id:'f5',t:'mc',q:'A resultant has R<sub>x</sub> = −6 and R<sub>y</sub> = +2. Which quadrant does it point into?',opts:['I','II','III','IV'],ans:1,why:'Left and up (−, +) is quadrant II.'},
+ {id:'f6',t:'mc',q:'A = (2, −5) and B = (−6, 1). What is R = A + B?',opts:['(−4, −4)','(8, −6)','(−4, 6)','(−12, −5)'],ans:0,why:'x: 2 + (−6) = −4. y: −5 + 1 = −4.'},
+ {id:'f7',t:'mc',q:'Your calculator says sin(30) = −0.988. What should you do?',opts:['Switch the calculator to degree mode','Use cosine instead','Make the answer positive','Round it to −1.0'],ans:0,why:'In degree mode sin(30) = 0.5. The calculator was in radian mode.'},
+ {id:'f8',t:'mc',q:'A vector is 10 m at exactly 90°. What are its components (x, y)?',opts:['(10, 0)','(0, 10)','(7.1, 7.1)','(0, −10)'],ans:1,why:'90° points straight up: cos 90° = 0 and sin 90° = 1.'},
+ {id:'f9',t:'mc',q:'A = 7 m east and B = 7 m west. How long is R = A + B?',opts:['14 m','7 m','0 m','9.9 m'],ans:2,why:'They point in opposite directions and cancel: 7 + (−7) = 0.'},
+ {id:'f10',t:'mc',q:'R<sub>x</sub> = 6.0 m and R<sub>y</sub> = 8.0 m. How long is R?',opts:['14.0 m','2.0 m','10.0 m','48.0 m'],ans:2,why:'√(36 + 64) = √100 = 10.0 m.'},
+ {id:'f11',t:'mc',q:'The angle tan⁻¹(|R<sub>y</sub>| ÷ |R<sub>x</sub>|) is measured from which line?',opts:['The x-axis','The y-axis','Due north','The tip of R'],ans:0,why:'R<sub>y</sub> is opposite and R<sub>x</sub> is adjacent, so the angle is between R and the x-axis.'},
+ {id:'n1',t:'num',q:'A = 40.0 m at 25°. Find A<sub>x</sub>.',ans:40*Math.cos(rad(25)),unit:'m',why:'40.0 cos 25° = 36.3 m'},
+ {id:'n2',t:'num',q:'A = 40.0 m at 25°. Find A<sub>y</sub>.',ans:40*Math.sin(rad(25)),unit:'m',why:'40.0 sin 25° = 16.9 m'},
+ {id:'n3',t:'num',q:'v = 15.0 m/s at 210°. Find v<sub>x</sub>. Include the sign.',ans:15*Math.cos(rad(210)),unit:'m/s',why:'15.0 cos 210° = −13.0 m/s (it points left).'},
+ {id:'n4',t:'num',q:'F = 22.0 N at 300°. Find F<sub>y</sub>. Include the sign.',ans:22*Math.sin(rad(300)),unit:'N',why:'22.0 sin 300° = −19.1 N (it points down).'},
+ {id:'n5',t:'num',q:'R<sub>x</sub> = 9.0 m and R<sub>y</sub> = 4.0 m. Find the length of R.',ans:Math.hypot(9,4),unit:'m',why:'√(81 + 16) = √97 = 9.8 m'},
+ {id:'n6',t:'num',q:'R<sub>x</sub> = −5.0 m and R<sub>y</sub> = 12.0 m. Find the length of R.',ans:13,unit:'m',why:'√(25 + 144) = √169 = 13.0 m'},
+ {id:'n7',t:'num',q:'R<sub>x</sub> = 10.0 m and R<sub>y</sub> = 4.0 m. Find θ<sub>ref</sub> = tan⁻¹(|R<sub>y</sub>| ÷ |R<sub>x</sub>|).',ans:deg(Math.atan(0.4)),unit:'°',kind:'angle',why:'tan⁻¹(4.0 ÷ 10.0) = 21.8°'},
+ {id:'n8',t:'num',q:'R<sub>x</sub> = −3.0 m and R<sub>y</sub> = 7.0 m. Find the standard angle of R (counterclockwise from +x).',ans:180-deg(Math.atan(7/3)),unit:'°',kind:'angle',why:'θref = tan⁻¹(7 ÷ 3) = 66.8°. Quadrant II: 180° − 66.8° = 113.2°'},
+ {id:'n9',t:'num',q:'R<sub>x</sub> = 4.0 m and R<sub>y</sub> = −9.0 m. Find the standard angle of R (counterclockwise from +x).',ans:360-deg(Math.atan(9/4)),unit:'°',kind:'angle',why:'θref = tan⁻¹(9 ÷ 4) = 66.0°. Quadrant IV: 360° − 66.0° = 294.0°'},
+ {id:'n10',t:'num',q:'A = (3.5, 2.0) m and B = (1.5, 6.0) m. Find the length of R = A + B.',ans:Math.hypot(5,8),unit:'m',why:'R = (5.0, 8.0), so R = √(25 + 64) = √89 = 9.4 m'},
+ {id:'n11',t:'num',q:'A right triangle has a hypotenuse of 17.0 m and one leg of 8.0 m. How long is the other leg?',ans:15,unit:'m',abs:true,why:'√(17.0² − 8.0²) = √(289 − 64) = √225 = 15.0 m'},
+ {id:'n12',t:'num',q:'A right triangle has legs of 9.0 m and 12.0 m. Find the smaller acute angle.',ans:deg(Math.atan(9/12)),unit:'°',kind:'angle',why:'The smaller angle is opposite the shorter leg: tan⁻¹(9 ÷ 12) = 36.9°'},
+ {id:'n13',t:'num',q:'A = 20.0 m at 60° and B = 10.0 m at 0°. Find R<sub>x</sub>.',ans:20,unit:'m',why:'A<sub>x</sub> = 20.0 cos 60° = 10.0 and B<sub>x</sub> = 10.0, so R<sub>x</sub> = 20.0 m'},
+ {id:'n14',t:'num',q:'A = 5.0 m at 90° and B = 12.0 m at 180°. Find the length of R.',ans:13,unit:'m',why:'R = (−12.0, 5.0), so R = √(144 + 25) = 13.0 m'},
+ {id:'n15',t:'num',q:'A = 8.0 m at 0° and B = 6.0 m at 90°. Find the standard angle of R.',ans:deg(Math.atan(6/8)),unit:'°',kind:'angle',why:'R = (8.0, 6.0): tan⁻¹(6 ÷ 8) = 36.9°, quadrant I'},
+ {id:'n16',t:'num',q:'R<sub>x</sub> = 12.0 m and R<sub>y</sub> = 5.0 m. Find the triangle\'s angle at R\'s tip (between R and R<sub>y</sub>).',ans:90-deg(Math.atan(5/12)),unit:'°',kind:'angle',why:'θref = tan⁻¹(5 ÷ 12) = 22.6°, so the tip angle is 90° − 22.6° = 67.4°'}
+];
+const FB=Object.fromEntries(FBANK.map(q=>[q.id,q]));
+function gradeQ(q,a){
+  if(a==null||a==='') return false;
+  if(q.t==='mc') return a===q.ans;
+  const v=parseNum(a); if(isNaN(v)) return false;
+  return q.abs?near(Math.abs(v),q.ans,q.kind):near(v,q.ans,q.kind);
+}
+function newAttempt(){
+  const prev=new Set((S.final.cur&&S.final.cur.ids)||[]);
+  const pick=(pool,n)=>{ const fresh=shuffle(pool.filter(q=>!prev.has(q.id))); const old=shuffle(pool.filter(q=>prev.has(q.id))); return fresh.concat(old).slice(0,n).map(q=>q.id); };
+  const ids=shuffle(pick(FBANK.filter(q=>q.t==='mc'),4).concat(pick(FBANK.filter(q=>q.t==='num'),6)));
+  S.final.cur={ids, answers:{}, idx:0, submitted:false, score:null}; save();
+}
+
+SECS.push({z:9, sym:'F', name:'Fluorine', title:'Final check', min:10,
+ reqs:[{id:'final-pass',text:`Score ${PASS_SCORE} out of 10 or better on the final check`}],
+ build(body, sec){
+  const wrap=h('div'); body.appendChild(wrap);
+  sec.onShow=()=>render();
+  function reviewNeeded(){ return S.final.fails>=3 && S.final.reviewedAt!==S.final.fails && !S.final.passed; }
+  function render(){
+    const F=S.final, cur=F.cur; wrap.innerHTML='';
+    if(cur && !cur.submitted) return renderQ();
+    if(cur && cur.submitted) return renderScore();
+    const c=card(wrap,'read','Show what you know');
+    c.insertAdjacentHTML('beforeend',`<p>You'll get <b>10 questions</b> picked at random: some multiple choice and some where you calculate a number. You need <b>${PASS_SCORE} out of 10</b> to pass.</p>
+      <p>You won't see right or wrong until you submit. If you don't pass, you'll get a new set of questions. Use the calculator in the top bar and round to one decimal place.</p>`);
+    const b=h('button',{class:'btn primary',type:'button'},'Start the final check'); b.addEventListener('click',()=>{ newAttempt(); render(); });
+    const row=h('div',{class:'btnrow'}); row.appendChild(b); c.appendChild(row);
+  }
+  function renderQ(){
+    const cur=S.final.cur; const i=cur.idx; const q=FB[cur.ids[i]];
+    const c=card(wrap,'qc',`Question ${i+1} of 10`);
+    const dots=h('div',{class:'dots','aria-hidden':'true'}); cur.ids.forEach((id,j)=>{ const d=h('span',{class:(j===i?'cur ':'')+(cur.answers[id]!=null&&cur.answers[id]!==''?'ans':'')},String(j+1)); d.style.cursor='pointer'; d.addEventListener('click',()=>{ cur.idx=j; save(); render(); }); dots.appendChild(d); });
+    c.appendChild(dots);
+    c.insertAdjacentHTML('beforeend',`<p style="font-weight:500">${q.q}</p>`);
+    if(q.t==='mc'){
+      const opts=h('div',{class:'opts'});
+      q.opts.forEach((t,k)=>{ const b=h('button',{class:'opt'+(cur.answers[q.id]===k?' right':''),type:'button','aria-pressed':cur.answers[q.id]===k?'true':'false'},`<span class="L">${'ABCD'[k]}</span><span>${t}</span>`);
+        b.addEventListener('click',()=>{ cur.answers[q.id]=k; save(); render(); }); opts.appendChild(b); });
+      c.appendChild(opts);
+    } else {
+      const row=h('div',{class:'numrow'}); row.innerHTML=`<label for="fin">Your answer</label><span class="inwrap"><input class="ans" id="fin" type="text" autocomplete="off" spellcheck="false" placeholder="?"><span class="unit">${q.unit}</span></span>`;
+      c.appendChild(row); const inp=$('input',row); inp.value=cur.answers[q.id]??'';
+      inp.addEventListener('input',()=>{ cur.answers[q.id]=inp.value.trim(); save(); const d=dots.children[i]; d.classList.toggle('ans',inp.value.trim()!==''); });
+      inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); nextB.click(); } });
+      setTimeout(()=>inp.focus({preventScroll:true}),30);
+    }
+    const msg=h('div',{class:'fb no',hidden:true}); c.appendChild(msg);
+    const nav=h('div',{class:'btnrow'});
+    const back=h('button',{class:'btn ghost',type:'button'},'Back'); back.disabled=i===0;
+    back.addEventListener('click',()=>{ cur.idx=Math.max(0,i-1); save(); render(); });
+    const last=i===9; const nextB=h('button',{class:'btn primary',type:'button'},last?'Submit the final check':'Next');
+    nextB.addEventListener('click',()=>{
+      if(!last){ cur.idx=i+1; save(); render(); return; }
+      const missing=cur.ids.map((id,j)=>(cur.answers[id]==null||cur.answers[id]==='')?j+1:null).filter(Boolean);
+      if(missing.length){ msg.innerHTML='Answer every question before you submit. Still blank: '+missing.join(', ')+'.'; msg.hidden=false; return; }
+      submit();
+    });
+    nav.append(back,nextB); c.appendChild(nav);
+  }
+  function submit(){
+    const F=S.final, cur=F.cur;
+    const pts=cur.ids.map(id=>gradeQ(FB[id],cur.answers[id])?1:0); const score=pts.reduce((x,y)=>x+y,0);
+    cur.submitted=true; cur.score=score; F.attempts++; F.best=Math.max(F.best,score); F.history.push({score,at:Date.now(),pts});
+    if(score>=PASS_SCORE){
+      F.passed=true; if(!S.completedAt) S.completedAt=Date.now(); save();
+      reqDone('final-pass'); disarm(); saveRecord(); sendSheet();
+    } else { F.fails++; save(); }
+    render(); window.scrollTo({top:0,behavior:RM?'auto':'smooth'});
+  }
+  function renderScore(){
+    const F=S.final, cur=F.cur, pass=cur.score>=PASS_SCORE;
+    const c=card(wrap,'qc',pass?'You passed the final check':'Not quite there yet');
+    c.insertAdjacentHTML('beforeend',`<div class="bigscore">${cur.score}/10</div><p class="muted" style="margin-top:6px">${pass?`Best score: ${F.best}/10. Your results are ready.`:`You need ${PASS_SCORE} out of 10. Look over what you missed, then try a new set of questions.`}</p>${pass?`<p class="fb info sheetStatus" aria-live="polite">${sendMsg()}</p>`:''}`);
+    const ul=h('ul',{class:'reviewlist'});
+    cur.ids.forEach((id,j)=>{ const q=FB[id], a=cur.answers[id], ok=gradeQ(q,a);
+      const yours=q.t==='mc'?q.opts[a]:`${a} ${q.unit}`;
+      const right=q.t==='mc'?q.opts[q.ans]:`${fmt(q.ans)} ${q.unit}`;
+      ul.insertAdjacentHTML('beforeend',`<li><span class="${ok?'yes':'nope'}">${ok?'✓':'✗'} ${j+1}.</span> ${q.q}<br><span class="muted">Your answer:</span> ${yours}${ok?'':` <span class="muted">· Correct:</span> ${right}`}<br><span class="muted small">${q.why}</span></li>`); });
+    c.appendChild(ul);
+    const row=h('div',{class:'btnrow'});
+    if(pass){ const b=h('button',{class:'btn primary',type:'button'},'See your results'); b.addEventListener('click',()=>go(9)); row.appendChild(b); }
+    else if(reviewNeeded()){
+      c.appendChild(row);
+      const r=card(wrap,'read','Quick review before your next try');
+      r.insertAdjacentHTML('beforeend',`<p>You've tried ${F.fails} times. Here is the whole method on one card. Read it, then go again.</p>
+        <ol class="tight">
+          <li><b>Standard angle:</b> measure counterclockwise from +x. "30° west of north" = 90° + 30° = 120°.</li>
+          <li><b>Components:</b> A<sub>x</sub> = A cos θ and A<sub>y</sub> = A sin θ, calculator in degree mode. Left and down are negative.</li>
+          <li><b>Add the columns:</b> R<sub>x</sub> = A<sub>x</sub> + B<sub>x</sub> and R<sub>y</sub> = A<sub>y</sub> + B<sub>y</sub>.</li>
+          <li><b>Length:</b> R = √(R<sub>x</sub>² + R<sub>y</sub>²). Missing leg = √(R² − leg²).</li>
+          <li><b>Angle:</b> θ<sub>ref</sub> = tan⁻¹(|R<sub>y</sub>| ÷ |R<sub>x</sub>|), then use the quadrant: I θ, II 180° − θ, III 180° + θ, IV 360° − θ. Tip angle = 90° − θ<sub>ref</sub>.</li>
+        </ol>
+        <p class="small muted">Want more practice first? Sections 4 (Be), 6 (C), and 8 (O) have the worked examples.</p>`);
+      const rb=h('button',{class:'btn primary',type:'button'},'I reviewed it. Give me a new set');
+      rb.addEventListener('click',()=>{ F.reviewedAt=F.fails; newAttempt(); save(); render(); });
+      const rr=h('div',{class:'btnrow'}); rr.appendChild(rb); r.appendChild(rr); return;
+    } else { const b=h('button',{class:'btn primary',type:'button'},'Try a new set of questions'); b.addEventListener('click',()=>{ newAttempt(); render(); }); row.appendChild(b); }
+    c.appendChild(row);
+  }
+ }
+});
+
+/* ===================== RESULTS (Ne) ===================== */
+SECS.push({z:10, sym:'Ne', name:'Neon', title:'Your results', results:true, reqs:[],
+ build(body, sec){
+  const wrap=h('div'); body.appendChild(wrap);
+  sec.onShow=()=>render();
+  function render(){
+    wrap.innerHTML='';
+    if(!S.final.passed && !S.preview){ const c=card(wrap,'read','Almost there'); c.insertAdjacentHTML('beforeend','<p>Pass the final check to see your results.</p>'); return; }
+    const st=S.student||{}; const a=assignScore(); const mins=S.startedAt?Math.round(((S.completedAt||Date.now())-S.startedAt)/60000):0;
+    const c=h('div',{class:'card'}); wrap.appendChild(c);
+    c.innerHTML=`<h3>${st.first||''} ${st.last||''}</h3><p class="muted">${LESSON_NAME} · Physics Unit 2</p>
+      <table class="res">
+        <tr><th>Student ID</th><td>${st.id||''}</td></tr>
+        <tr><th>Period</th><td>${st.period||''}</td></tr>
+        <tr><th>Teacher</th><td>${st.teacher||''}</td></tr>
+        <tr><th>Lesson score (practice and quick checks right on the first try)</th><td><b>${a.c} of ${a.t}</b> <span class="muted">(${a.pct}%)</span></td></tr>
+        <tr><th>Final check (best score)</th><td><b>${S.final.best}/10</b> <span class="muted">(${S.final.best*10}%)</span></td></tr>
+        <tr><th>Final check tries</th><td>${S.final.attempts}</td></tr>
+        <tr><th>Times the lesson locked</th><td>${S.leaves}</td></tr>
+        <tr><th>Time in lesson</th><td>about ${mins} min</td></tr>
+        <tr><th>Finished</th><td>${S.completedAt?new Date(S.completedAt).toLocaleString():''}</td></tr>
+      </table>
+      <div class="btnrow noprint">
+        <button class="btn primary" type="button" id="csvBtn">Download CSV</button>
+        <button class="btn ghost" type="button" id="printBtn">Print</button>
+        <button class="btn ghost" type="button" id="sendBtn">Send my scores to my teacher</button>
+      </div>
+      <div class="fb info noprint sheetStatus" aria-live="polite">${sendMsg()}</div>`;
+    $('#csvBtn',c).addEventListener('click',()=>downloadCSV([recordFromState()],`Vectors_${(st.last||'student').replace(/\W+/g,'')}_${(st.first||'').replace(/\W+/g,'')}_P${st.period||''}.csv`));
+    $('#printBtn',c).addEventListener('click',()=>window.print());
+    $('#sendBtn',c).addEventListener('click',()=>sendSheet());
+    const g=h('div',{class:'card goals'}); g.innerHTML='<h3>Goals</h3><ul></ul>'; wrap.appendChild(g); renderGoals($('ul',g));
+  }
+ }
+});
+
+/* ===================== records, CSV, Google Sheets ===================== */
+const CSV_HEAD=['Student ID','Last Name','First Name','Period','Teacher','Activity','Lesson Score (practice + quick checks right on first try)','Lesson Total','Final Check Score (best)','Final Check Total','Final Check Passed','Final Check Attempts','Sections Completed (of 9)','Times Locked','Date'];
+function recordFromState(){
+  const st=S.student||{}, a=assignScore();
+  let secs=0; for(let i=0;i<9;i++) if(secDone(i)) secs++;
+  return [st.id||'',st.last||'',st.first||'',st.period||'',st.teacher||'',LESSON_NAME,a.c,a.t,S.final.best,10,S.final.passed?'Yes':'No',S.final.attempts,secs,S.leaves,new Date(S.completedAt||Date.now()).toLocaleString()];
+}
+function csvText(rows){ const esc=v=>{ v=String(v??''); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }; return [CSV_HEAD,...rows].map(r=>r.map(esc).join(',')).join('\r\n')+'\r\n'; }
+function downloadCSV(rows, name){
+  const blob=new Blob([csvText(rows)],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500);
+}
+function loadRecs(){ try{ const r=JSON.parse(localStorage.getItem(RECS))||[]; return r.filter(x=>Array.isArray(x)&&x.length===CSV_HEAD.length); }catch(e){ return []; } }
+function saveRecord(){
+  if(S.preview) return;
+  const recs=loadRecs(); const row=recordFromState();
+  const i=recs.findIndex(r=>r[0]===row[0]&&r[1]===row[1]&&r[2]===row[2]);
+  if(i>=0) recs[i]=row; else recs.push(row);
+  try{ localStorage.setItem(RECS,JSON.stringify(recs)); }catch(e){}
+}
+/* Two rows, same as the Bohr model lesson: one for the lesson, one for the final check */
+const SEC_LABELS=['S1 Scalars/vectors','S2 Angles','S3 Components','S4 SOH CAH TOA','S5 Signs','S6 Adding','S7 Length','S8 Direction'];
+function sheetBodies(){
+  const st=S.student||{}, F=S.final;
+  const base={studentId:st.id||'', firstName:st.first||'', lastName:st.last||'', period:st.period||'', teacher:st.teacher||'', locks:String(S.leaves), when:new Date().toString()};
+  const pts=SEC_LABELS.map(()=>0), max=SEC_LABELS.map(()=>0);
+  ITEMS.forEach(id=>{ const m=id.match(/^s(\d)/); if(!m) return; const n=+m[1]-1; max[n]++; if(S.first[id]===true) pts[n]++; });
+  const a=assignScore();
+  const lesson=Object.assign({},base,{activity:`${LESSON_NAME}: Lesson`, score:String(a.c), total:String(a.t), qlabels:SEC_LABELS.join('|'), qpoints:pts.join('|'), qmax:max.join('|')});
+  let best=null; F.history.forEach(x=>{ if(!best||x.score>=best.score) best=x; });
+  const fin=Object.assign({},base,{activity:`${LESSON_NAME}: Final Check`, score:String(F.best), total:'10'},
+    best&&best.pts?{qlabels:best.pts.map((_,i)=>'Q'+(i+1)).join('|'), qpoints:best.pts.join('|'), qmax:best.pts.map(()=>1).join('|')}
+                  :{qlabels:'Final Check', qpoints:String(F.best), qmax:'10'});
+  return [lesson,fin];
+}
+function sendMsg(){
+  if(S.preview) return 'Preview mode: scores are not sent.';
+  if(S.sentAt) return `Sent to your teacher ${new Date(S.sentAt).toLocaleString()}.`;
+  return S.final.passed?'Sending your scores to your teacher...':'';
+}
+function sendSheet(){
+  const msg=t=>$$('.sheetStatus').forEach(e=>{ e.textContent=t; });
+  if(S.preview){ msg('Preview mode: scores are not sent.'); return; }
+  if(!S.student){ msg('Sign in on the start page first.'); return; }
+  const url=sheetURL();
+  if(!url){ msg("This lesson isn't connected to your teacher's gradebook sheet yet. Download the CSV instead."); return; }
+  msg('Sending...');
+  Promise.all(sheetBodies().map(b=>fetch(url,{method:'POST',mode:'no-cors',body:new URLSearchParams(b)})))
+    .then(()=>{ S.sent=true; S.sentAt=new Date().toISOString(); save(); msg('Sent! Your teacher will see your scores.'); })
+    .catch(()=>msg("Couldn't send. Check your internet connection and try again, or download the CSV."));
+}
+
+/* ===================== goals ===================== */
+const GOALS=[
+  {t:'I can tell a vector from a scalar and describe its direction with an angle.',secs:[0,1]},
+  {t:'I can break a vector into x- and y-components, with the right signs.',secs:[2,3,4]},
+  {t:'I can add vectors by adding their x- and y-components.',secs:[5]},
+  {t:'I can find the resultant\'s length and angle, plus the triangle\'s other side and angle.',secs:[6,7]}
+];
+function secDone(i){ const r=SECS[i].reqs; return r.length>0 && r.every(q=>S.reqs[q.id]); }
+function renderGoals(ul){ ul.innerHTML=GOALS.map(g=>{ const d=g.secs.every(secDone); return `<li class="${d?'done':''}"><span class="box">${d?'✓':''}</span><span>${g.t}</span></li>`; }).join(''); }
+
+/* ===================== navigation ===================== */
+const tilesEl=$('#navtiles'), secsEl=$('#sections');
+function canOpen(i){ if(S.preview) return true; if(i===9) return S.final.passed; return i<=S.unlocked; }
+function buildAll(){
+  SECS.forEach((s,i)=>{
+    const t=h('button',{class:'tile'+(i===9?' ne':''),type:'button','aria-label':`${s.results?'Results':'Section '+(i+1)}: ${s.title}`},`<span class="z">${s.z}</span><span class="sym">${s.sym}</span><span class="nm">${s.name}</span>`);
+    t.addEventListener('click',()=>{ if(canOpen(i)) go(i); }); tilesEl.appendChild(t); s.tile=t;
+    const sec=h('section',{class:'page',id:'sec'+i,hidden:true});
+    sec.innerHTML=`<div class="sechead"><div class="badge" aria-hidden="true"><span class="z">${s.z}</span><span class="sym">${s.sym}</span><span class="nm">${s.name}</span></div><div><div class="meta">${s.results?'Results':`Section ${i+1} of 9 · about ${s.min} min`}</div><h2>${s.title}</h2></div></div>`;
+    const body=h('div'); sec.appendChild(body); secsEl.appendChild(sec); s.el=sec;
+    s.build(body,s);
+    if(s.reqs.length){
+      const u=h('div',{class:'unlock'}); u.innerHTML=`<h3>${i<8?'To unlock the next section':'To finish the lesson'}</h3><ul>${s.reqs.map(r=>`<li data-req="${r.id}"><span class="box"></span><span>${r.text}</span></li>`).join('')}</ul>`;
+      sec.appendChild(u); s.unlockEl=u;
+    }
+    const nav=h('div',{class:'secnav noprint'});
+    const back=h('button',{class:'btn ghost',type:'button'},i===0?'Back to start':'Back'); back.addEventListener('click',()=>i===0?showStart():go(i-1));
+    nav.appendChild(back);
+    if(i<9){ const nx=h('button',{class:'btn primary',type:'button'},i===8?'See your results':`Next: ${SECS[i+1].title}`); nx.addEventListener('click',()=>go(i+1)); nav.appendChild(nx); s.nextBtn=nx; }
+    sec.appendChild(nav);
+  });
+}
+function refreshAll(){
+  let u=0; while(u<8 && secDone(u)) u++; if(u>S.unlocked){ S.unlocked=u; save(); }
+  let tot=0, dn=0;
+  SECS.forEach((s,i)=>{
+    if(!s.tile) return;
+    s.reqs.forEach(r=>{ tot++; if(S.reqs[r.id]) dn++; });
+    if(s.unlockEl) $$('li',s.unlockEl).forEach(li=>{ const d=!!S.reqs[li.dataset.req]; li.classList.toggle('done',d); $('.box',li).textContent=d?'✓':''; });
+    if(s.nextBtn) s.nextBtn.disabled=!(S.preview || (i<8?secDone(i):S.final.passed));
+    s.tile.classList.toggle('done', i<9 ? secDone(i) : S.final.passed);
+    s.tile.classList.toggle('locked', !canOpen(i));
+    s.tile.classList.toggle('cur', !s.el.hidden);
+  });
+  $('#progbar').style.width=(tot?Math.round(100*dn/tot):0)+'%';
+  renderGoals($('#goalsList'));
+}
+onReqChange=()=>refreshAll();
+function go(i){
+  if(!canOpen(i)) return;
+  $('#start').hidden=true; $('#topbar').hidden=false;
+  SECS.forEach((s,j)=>{ s.el.hidden=j!==i; s.tile.classList.toggle('cur',j===i); });
+  S.sec=i; save(); refreshAll();
+  $('#whoami').textContent=S.student?`${S.student.first} ${S.student.last}`:'';
+  window.scrollTo(0,0);
+  SECS[i].tile.scrollIntoView({block:'nearest',inline:'center'});
+  SECS[i].onShow && SECS[i].onShow();
+}
+function showStart(){
+  SECS.forEach(s=>s.el.hidden=true); $('#start').hidden=false; $('#topbar').hidden=true; renderStart(); window.scrollTo(0,0);
+}
+
+/* ===================== start page ===================== */
+function renderStart(){
+  renderGoals($('#goalsList'));
+  const has=!!S.student;
+  $('#resumeBox').hidden=!has; $('#startForm').hidden=has;
+  $('#signinTitle').textContent=has?'Welcome back':'Sign in to start';
+  if(has) $('#resumeText').innerHTML=`Signed in as <b>${S.student.first} ${S.student.last}</b>, period ${S.student.period}.`;
+}
+function fillSelects(){
+  $('#fPeriod').innerHTML='<option value="">Choose your period</option>'+PERIODS.map(p=>`<option>${p}</option>`).join('');
+  $('#fTeacher').innerHTML='<option value="">Choose your teacher</option>'+teacherList().map(t=>`<option>${t}</option>`).join('');
+}
+$('#startForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const v={first:$('#fFirst').value.trim(), last:$('#fLast').value.trim(), id:$('#fId').value.trim(), period:$('#fPeriod').value, teacher:$('#fTeacher').value};
+  const miss=[]; if(!v.first) miss.push('first name'); if(!v.last) miss.push('last name'); if(!v.id) miss.push('student ID'); if(!v.period) miss.push('period'); if(!v.teacher) miss.push('teacher');
+  if(miss.length){ $('#formErr').textContent='Fill in your '+miss.join(', ')+'.'; $('#formErr').hidden=false; return; }
+  S.student=v; S.startedAt=Date.now(); save(); arm(); go(0);
+});
+$('#resumeBtn').addEventListener('click',()=>{ arm(); go(Math.min(S.sec||0, S.final.passed?9:S.unlocked)); });
+$('#notMeBtn').addEventListener('click',()=>openTeacher());
+
+/* ===================== lockdown ===================== */
+const LOCKDOWN = /github\.io$/i.test(location.hostname) || /[?&]lockdown=on/i.test(location.search);
+let armed=false, teacherOpen=false;
+const fsOK=()=>!!(document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen);
+const inFS=()=>!!(document.fullscreenElement||document.webkitFullscreenElement);
+function enterFS(){ const d=document.documentElement; try{ const p=(d.requestFullscreen||d.webkitRequestFullscreen).call(d); return (p&&p.then)?p.catch(()=>{}):Promise.resolve(); }catch(e){ return Promise.resolve(); } }
+function arm(){ if(!LOCKDOWN||S.preview||S.completedAt) return; enterFS().then(()=>setTimeout(()=>{ armed=true; },500)); }
+function disarm(){ armed=false; }
+function trip(reason){
+  if(!armed||S.locked||S.completedAt||S.preview||teacherOpen) return;
+  armed=false; S.leaves++; S.locked=true; save(); showLock(reason);
+}
+function showLock(reason){ $('#lockMsg').textContent=`The lesson locked because you ${reason||'left the lesson page'}. Raise your hand so your teacher can unlock it. Your work is saved.`; $('#lockErr').hidden=true; $('#lockCode').value=''; $('#lockOv').classList.add('show'); setTimeout(()=>$('#lockCode').focus(),50); }
+$('#lockBtn').addEventListener('click',()=>{
+  if($('#lockCode').value.trim().toLowerCase()===TEACHER_CODE.toLowerCase()){ S.locked=false; save(); $('#lockOv').classList.remove('show'); arm(); }
+  else $('#lockErr').hidden=false;
+});
+$('#lockCode').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#lockBtn').click(); });
+$('#gateBtn').addEventListener('click',()=>{ $('#gateOv').classList.remove('show'); arm(); });
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) trip('left the lesson page'); });
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>{ if(!inFS()&&fsOK()) trip('exited full screen'); }));
+window.addEventListener('blur',()=>setTimeout(()=>{ if(!document.hasFocus()) trip('switched to another window'); },300));
+
+/* ===================== teacher view ===================== */
+function openTeacher(){
+  teacherOpen=true; $('#teachLogin').hidden=false; $('#teachPanel').hidden=true; $('#teachErr').hidden=true; $('#teachCode').value='';
+  $('#teachModal').classList.remove('wide'); $('#teachOv').classList.add('show'); setTimeout(()=>$('#teachCode').focus(),50);
+}
+function closeTeacher(){ $('#teachOv').classList.remove('show'); teacherOpen=false; }
+$('#teacherLink').addEventListener('click',openTeacher);
+$('#teachCancel').addEventListener('click',closeTeacher);
+$('#teachCode').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#teachGo').click(); });
+$('#teachGo').addEventListener('click',()=>{
+  if($('#teachCode').value.trim().toLowerCase()!==TEACHER_CODE.toLowerCase()){ $('#teachErr').hidden=false; return; }
+  $('#teachLogin').hidden=true; $('#teachPanel').hidden=false; $('#teachModal').classList.add('wide'); renderTeacher();
+});
+function renderTeacher(){
+  const recs=loadRecs(); const p=$('#teachPanel');
+  const rows=recs.map(r=>`<tr><td>${r[1]}, ${r[2]}</td><td>${r[0]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[6]}/${r[7]}</td><td>${r[8]}/10</td><td>${r[11]}</td><td>${r[13]}</td><td>${r[14]}</td></tr>`).join('');
+  p.innerHTML=`<h2>Teacher view</h2>
+    <h3 style="margin-top:14px">Results saved on this device (${recs.length})</h3>
+    <div class="wide">${recs.length?`<table class="nb"><tr><th>Student</th><th>ID</th><th>Period</th><th>Teacher</th><th>Lesson</th><th>Final</th><th>Tries</th><th>Locked</th><th>Date</th></tr>${rows}</table>`:'<p class="muted">No finished lessons on this device yet. Each student\'s results page also has its own CSV download.</p>'}</div>
+    <div class="btnrow">
+      <button class="btn primary" type="button" id="tCsv" ${recs.length?'':'disabled'}>Download these results (CSV)</button>
+      <button class="btn ghost" type="button" id="tClear" ${recs.length?'':'disabled'}>Clear saved results</button>
+    </div>
+    <h3 style="margin-top:22px">This device</h3>
+    <p class="small muted">Student signed in: ${S.student?`${S.student.first} ${S.student.last} (period ${S.student.period})`:'nobody'}. Lockdown is ${LOCKDOWN?'on (opened from GitHub)':'off (only on when opened from GitHub)'}. Scores go to the same Google Sheet as the Bohr model lesson.</p>
+    <div class="btnrow">
+      ${S.locked?'<button class="btn primary" type="button" id="tUnlock">Unlock the lesson</button>':''}
+      ${S.student&&!S.preview?'<button class="btn ghost" type="button" id="tSend">Send this student\'s scores to the sheet</button>':''}
+      <button class="btn ghost" type="button" id="tPreview">${S.preview?'Turn off preview mode':'Preview: open every section'}</button>
+      <button class="btn ghost" type="button" id="tReset">Reset this device's lesson</button>
+      <button class="btn ghost" type="button" id="tClose">Close</button>
+    </div>
+    <p class="fb info sheetStatus" aria-live="polite" style="min-height:1em"></p>
+    <div class="fb info" id="tMsg" hidden></div>`;
+  const msg=t=>{ $('#tMsg').textContent=t; $('#tMsg').hidden=false; };
+  $('#tCsv').addEventListener('click',()=>downloadCSV(recs,`Vectors_results_${new Date().toISOString().slice(0,10)}.csv`));
+  $('#tClear').addEventListener('click',()=>{ if(confirm('Delete the saved results list on this device? Students\' own lesson progress is not affected.')){ localStorage.removeItem(RECS); renderTeacher(); } });
+  if($('#tUnlock')) $('#tUnlock').addEventListener('click',()=>{ S.locked=false; save(); $('#lockOv').classList.remove('show'); closeTeacher(); arm(); });
+  $('#tPreview').addEventListener('click',()=>{
+    S.preview=!S.preview;
+    if(S.preview && !S.student){ S.student={first:'Teacher',last:'Preview',id:'0',period:'-',teacher:teacherList()[0]||''}; S.startedAt=Date.now(); }
+    save(); closeTeacher(); disarm(); $('#lockOv').classList.remove('show'); refreshAll(); if(S.preview) go(0); else location.reload();
+  });
+  $('#tReset').addEventListener('click',()=>{ if(confirm('Erase all lesson progress on this device and return to the sign-in page?')){ try{ localStorage.removeItem(STORE); }catch(e){} location.reload(); } });
+  $('#tClose').addEventListener('click',closeTeacher);
+  if($('#tSend')) $('#tSend').addEventListener('click',()=>sendSheet());
+}
+
+/* ===================== calculator ===================== */
+(function(){
+  const keys=[['sin','sin(','fn'],['cos','cos(','fn'],['tan','tan(','fn'],['tan⁻¹','tan⁻¹(','fn'],['√','√(','fn'],
+    ['7','7'],['8','8'],['9','9'],['(','('],[')',')'],
+    ['4','4'],['5','5'],['6','6'],['×','×'],['÷','÷'],
+    ['1','1'],['2','2'],['3','3'],['+','+'],['−','−'],
+    ['0','0'],['.','.'],['x²','^2'],['C','C'],['=','=','eq']];
+  const kEl=$('#calcKeys'), inp=$('#calcIn'), out=$('#calcOut'); let ans=0;
+  keys.forEach(([t,v,c])=>{ const b=h('button',{type:'button',class:c||''},t); b.addEventListener('click',()=>{
+    if(v==='C'){ inp.value=''; out.textContent=''; }
+    else if(v==='='){ calc(); }
+    else { const s=inp.selectionStart??inp.value.length; inp.value=inp.value.slice(0,s)+v+inp.value.slice(inp.selectionEnd??s); inp.focus(); const p=s+v.length; inp.setSelectionRange(p,p); }
+  }); kEl.appendChild(b); });
+  function calc(){
+    let e=inp.value;
+    e=e.replace(/tan⁻¹|tan\^-1|tan-1|arctan|atan/gi,'AT').replace(/arcsin|asin/gi,'AS').replace(/arccos|acos/gi,'AC')
+       .replace(/sin/gi,'S').replace(/cos/gi,'C').replace(/tan/gi,'T').replace(/√|sqrt/gi,'Q').replace(/π|pi/gi,'PI').replace(/ans/gi,'ANS')
+       .replace(/×/g,'*').replace(/÷/g,'/').replace(/[−–]/g,'-').replace(/²/g,'^2').replace(/\^/g,'**');
+    e=e.replace(/(\d|\))\s*(?=[A-Z(])/g,'$1*');
+    const tokens=e.match(/[A-Z]+/g)||[]; const okT=['S','C','T','AT','AS','AC','Q','PI','ANS'];
+    if(!/^[0-9+\-*/().\sA-Z]*$/.test(e) || tokens.some(t=>!okT.includes(t))){ out.textContent='Check the expression'; return; }
+    try{
+      const f=new Function('S','C','T','AT','AS','AC','Q','PI','ANS','"use strict";return ('+e+');');
+      const r=f(x=>Math.sin(rad(x)),x=>Math.cos(rad(x)),x=>Math.tan(rad(x)),x=>deg(Math.atan(x)),x=>deg(Math.asin(x)),x=>deg(Math.acos(x)),Math.sqrt,Math.PI,ans);
+      if(typeof r!=='number'||!isFinite(r)){ out.textContent='Not a number'; return; }
+      ans=r; out.textContent=String(+r.toFixed(5)).replace('-','−');
+    }catch(err){ out.textContent='Check the expression'; }
+  }
+  inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); calc(); } });
+  $('#calcBtn').addEventListener('click',()=>{ const c=$('#calc'); c.hidden=!c.hidden; $('#calcBtn').setAttribute('aria-expanded',String(!c.hidden)); if(!c.hidden) inp.focus(); });
+  $('#calcClose').addEventListener('click',()=>{ $('#calc').hidden=true; $('#calcBtn').setAttribute('aria-expanded','false'); });
+})();
+
+/* ===================== hero + init ===================== */
+function hero(){
+  const P=plane({xmin:-3.2,xmax:8.6,ymin:-2.6,ymax:7.4,w:420,ticks:0,label:'Two vectors added tip to tail with their components'});
+  $('#heroFig').appendChild(P.svg);
+  const draw=tipToTailScene(P,[5,2],[2,4]);
+  playTipToTail(draw,null,['','','','','x','y']);
+}
+fillSelects();
+buildAll();
+refreshAll();
+hero();
+showStart();
+if(S.student){
+  if(S.preview){ /* preview: no lockdown */ }
+  else if(LOCKDOWN && S.locked && !S.completedAt) showLock('left the lesson page');
+  else if(LOCKDOWN && !S.completedAt) { /* resume button arms full screen */ }
+}
+})();
+</script>
+</body>
+</html>
