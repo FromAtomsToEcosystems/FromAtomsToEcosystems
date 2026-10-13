@@ -1,0 +1,2536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cell Membrane and Transport | Biology</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b1624; --bg2:#0f1d2f; --panel:#13233a; --panel2:#1a2d4a; --panel3:#213759;
+  --line:#25395a; --line2:#34496e;
+  --text:#e8eef8; --muted:#a3b4d1; --dim:#7488ab;
+  --e:#5fe1ff; --e-glow:rgba(95,225,255,.5);
+  --head:#ffab91; --tail:#f3d27e; --prot:#6a58d6; --prot-l:#b8acff;
+  --sol:#f477b8; --o2:#8ef0c0; --glc:#ffc857; --na:#ff7448; --k:#d6b6ff; --cl:#86e3a8; --water:#5fe1ff;
+  --amber:#f6b93b; --good:#4ade80; --bad:#fb7185;
+  --c-mem:#ff8f6b; --c-pas:#45c08f; --c-wat:#46c7d8; --c-act:#f6b93b; --c-fin:#a084ff; --c-res:#4ade80;
+  --out-bg:rgba(95,225,255,.07); --in-bg:rgba(244,119,184,.07);
+  --r-lg:16px; --r-md:12px; --r-sm:8px;
+  --font:"Lexend","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 110px)}
+*,*::before,*::after{box-sizing:inherit}
+body{
+  margin:0; min-height:100vh; color:var(--text); font-family:var(--font);
+  font-size:17px; line-height:1.6; font-weight:300;
+  background:
+    radial-gradient(900px 520px at 85% -8%, #15334d 0%, transparent 62%),
+    radial-gradient(700px 420px at -10% 30%, #13233f 0%, transparent 60%),
+    var(--bg);
+  background-attachment:fixed;
+  -webkit-user-select:none; user-select:none; -webkit-touch-callout:none;
+}
+input,select,textarea{-webkit-user-select:text;user-select:text}
+b,strong{font-weight:600}
+h1,h2,h3,h4{font-weight:600;line-height:1.2;margin:0}
+p{margin:.5em 0}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--e);outline-offset:2px;border-radius:6px}
+.small{font-size:14px}
+.muted{color:var(--muted)}
+.hidden{display:none!important}
+sub,sup{line-height:0}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky;top:0;z-index:40;padding-top:env(safe-area-inset-top,0px);background:rgba(11,22,36,.9);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar-in{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:14px;padding:10px 18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:16px;white-space:nowrap}
+.brand svg{width:32px;height:32px}
+.navtiles{display:flex;gap:6px;overflow-x:auto;padding:4px 2px;flex:1;scrollbar-width:thin}
+.top-actions{display:flex;gap:8px}
+.top-btn{background:var(--panel2);border:1px solid var(--line2);border-radius:999px;padding:6px 14px;font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap}
+.top-btn:hover{background:var(--panel3)}
+
+/* ---------- section tiles (a "periodic table" of membrane transport) ---------- */
+.tile{
+  --c:var(--c-mem);
+  position:relative;flex:0 0 auto;width:46px;height:52px;border-radius:8px;
+  background:var(--panel2);background:color-mix(in srgb,var(--c) 20%,var(--panel));
+  border:1.5px solid var(--c);border-color:color-mix(in srgb,var(--c) 75%,transparent);
+  display:grid;place-items:center;font-weight:700;font-size:19px;line-height:1;
+  color:var(--text);cursor:pointer;padding:0;
+  transition:transform .2s,box-shadow .2s,opacity .2s;
+}
+.tile .z{position:absolute;top:4px;left:5px;font-size:10px;font-weight:500;color:var(--muted)}
+.tile:hover:not(:disabled){transform:translateY(-2px)}
+.tile.current{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--c)}
+.tile:disabled{cursor:not-allowed;opacity:.32;filter:saturate(.3)}
+.tile .ck{position:absolute;right:-5px;bottom:-5px;width:17px;height:17px;border-radius:50%;background:var(--good);color:#06240f;font-size:11px;display:grid;place-items:center;font-weight:700;opacity:0;transform:scale(.4);transition:.25s}
+.tile.done .ck{opacity:1;transform:scale(1)}
+.tile.unlocking{animation:unlockPop .7s cubic-bezier(.2,1.6,.4,1)}
+@keyframes unlockPop{0%{transform:scale(.7)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
+.tile.big{width:82px;height:90px;font-size:32px;border-width:2px;cursor:default;grid-template-rows:1fr auto;padding:16px 4px 6px}
+.tile.big .z{font-size:13px;top:6px;left:8px}
+.tile.big .nm{font-size:9.5px;font-weight:500;color:var(--muted);text-align:center;line-height:1.1}
+.cat-mem{--c:var(--c-mem)} .cat-pas{--c:var(--c-pas)} .cat-wat{--c:var(--c-wat)}
+.cat-act{--c:var(--c-act)} .cat-fin{--c:var(--c-fin)} .cat-res{--c:var(--c-res)}
+
+/* ---------- layout ---------- */
+main{max-width:980px;margin:0 auto;padding:22px 18px 80px}
+.screen{display:none}
+.screen.on{display:block;animation:screenIn .35s ease-out}
+@keyframes screenIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sec-head{display:flex;align-items:center;gap:18px;margin:8px 0 10px}
+.sec-meta{color:var(--muted);font-size:15px;margin:0 0 4px}
+.sec-head h2{font-size:clamp(26px,4vw,36px);letter-spacing:-.01em}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px 24px;margin:18px 0}
+.card h3{font-size:21px;margin:2px 0 10px}
+.tag{display:inline-block;font-size:13px;font-weight:600;color:var(--muted);background:var(--panel2);border-radius:999px;padding:3px 12px;margin-bottom:8px}
+.k-read .tag{color:#c3cffc;background:#25305a}
+.k-try .tag{color:#0b2630;background:var(--e)}
+.k-data .tag{color:#2a0b1e;background:var(--sol)}
+.k-qc{border:2px solid var(--amber)}
+.k-qc .tag{color:#241703;background:var(--amber)}
+.read-text{max-width:68ch}
+.read-text ul,.read-text ol{padding-left:22px}
+.read-text li{margin:4px 0}
+
+.btn{border:0;border-radius:10px;padding:11px 20px;font-weight:600;font-size:16px;cursor:pointer;transition:transform .15s,background .2s,opacity .2s}
+.btn:active:not(:disabled){transform:scale(.97)}
+.btn.primary{background:var(--e);color:#062430}
+.btn.primary:hover:not(:disabled){background:#8eebff}
+.btn.ghost{background:transparent;border:1.5px solid var(--line2);color:var(--text)}
+.btn.ghost:hover:not(:disabled){background:var(--panel2)}
+.btn.amber{background:var(--amber);color:#241703}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.sm{padding:7px 14px;font-size:14px;border-radius:8px}
+.btn-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}
+.sec-foot{display:flex;justify-content:space-between;gap:12px;margin-top:22px}
+
+/* word-help chips */
+.chip{display:inline;background:rgba(95,225,255,.1);border:0;border-bottom:1.5px dotted var(--e);color:#bff3ff;padding:0 4px;border-radius:4px;cursor:help;font-weight:400}
+.chip:hover{background:rgba(95,225,255,.2)}
+#pop{position:fixed;z-index:80;max-width:300px;background:var(--panel3);border:1px solid var(--line2);border-radius:12px;padding:12px 14px;box-shadow:0 14px 40px rgba(0,0,0,.45);font-size:15px}
+#pop b{display:block;color:var(--e);margin-bottom:2px;text-transform:capitalize}
+#pop p{margin:0}
+
+/* small tables + key-idea rows */
+.mini-table{border-collapse:collapse;margin:14px 0 4px;font-size:15px;min-width:300px}
+.mini-table th,.mini-table td{padding:7px 16px 7px 0;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.mini-table th{color:var(--muted);font-weight:500}
+.table-scroll{overflow-x:auto}
+.rules{display:grid;gap:8px;margin:12px 0}
+.rule{background:var(--panel2);border-radius:10px;padding:10px 14px}
+.rule small{color:var(--muted)}
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px;vertical-align:-1px}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+.vs > div{background:var(--panel2);border-radius:12px;padding:12px 14px;border-top:4px solid var(--c-pas)}
+.vs > div.act{border-top-color:var(--c-act)}
+.vs h4{font-size:17px;margin-bottom:6px}
+.vs ul{margin:0;padding-left:20px;font-size:15.5px}
+
+/* ---------- figures ---------- */
+svg.fig{width:100%;height:auto;display:block;margin:0 auto;overflow:visible}
+.figbox{background:var(--bg2);border-radius:14px;padding:12px}
+.fig-cap{text-align:center;color:var(--muted);font-size:14px;margin:6px 0 0}
+.ph{fill:var(--head);stroke:rgba(0,0,0,.3);stroke-width:1}
+.pt{fill:none;stroke:var(--tail);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
+.prot rect,.prot path{fill:var(--prot);stroke:var(--prot-l);stroke-width:1.5}
+.prot.aqua rect{fill:#245d7a;stroke:var(--e)}
+.prot.pump path{stroke:var(--amber);stroke-width:2.2}
+.atp-t{fill:var(--amber);font-size:10px;font-weight:700;text-anchor:middle;font-family:var(--font)}
+.out-bg{fill:var(--out-bg)} .in-bg{fill:var(--in-bg)}
+.side-lab{fill:var(--muted);font-size:12px;font-family:var(--font);font-weight:500}
+.fig-lab{fill:var(--text);font-size:12px;font-family:var(--font);font-weight:500}
+.fig-lab.m{fill:var(--muted)}
+.mol circle,.mol polygon{stroke:rgba(0,0,0,.4);stroke-width:1}
+.m-o2 circle{fill:var(--o2)}
+.m-co2 circle{fill:var(--o2)} .m-co2 circle.c{fill:#55637d}
+.m-glc polygon{fill:var(--glc)}
+.m-na circle{fill:var(--na)} .m-k circle{fill:var(--k)} .m-cl circle{fill:var(--cl)}
+.m-h2o circle{fill:var(--water);stroke:none;opacity:.8}
+.m-sol circle{fill:var(--sol)}
+.mol text{font-size:7.5px;font-weight:700;fill:#1c1024;text-anchor:middle;font-family:var(--font)}
+.mover{transform-box:view-box;transform-origin:0 0;transition:transform .9s cubic-bezier(.3,.8,.3,1),opacity .4s}
+.static .mover{transition:none}
+.pin circle{fill:var(--panel3);stroke:var(--amber);stroke-width:2}
+.pin text{fill:var(--text);font-size:14px;font-weight:700;text-anchor:middle;font-family:var(--font)}
+.leader{stroke:var(--amber);stroke-width:1.5;stroke-dasharray:4 4;opacity:.85}
+.cyto{fill:#1d3354;stroke:none}
+.memb-h{fill:none;stroke:var(--head);stroke-width:6;stroke-linecap:round;stroke-dasharray:0 9}
+.memb-t{fill:none;stroke:var(--tail);stroke-width:5;opacity:.35}
+.nuc{fill:#3a2f6e;stroke:#8f7fe6;stroke-width:2}
+.arrow-w{stroke:var(--water);stroke-width:3;fill:none;stroke-linecap:round}
+.arrow-w-h{fill:var(--water)}
+.celebrate-glow{animation:glow 1.1s ease-out}
+@keyframes glow{0%{filter:drop-shadow(0 0 0 rgba(74,222,128,0))}40%{filter:drop-shadow(0 0 14px rgba(74,222,128,.75))}100%{filter:drop-shadow(0 0 0 rgba(74,222,128,0))}}
+
+/* ---------- start / hero ---------- */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center;margin:12px 0 6px}
+.hero h1{font-size:clamp(40px,7vw,70px);letter-spacing:-.025em;font-weight:700;line-height:1.02;margin:6px 0 14px}
+.hero .unit{color:var(--muted);margin:0;font-size:16px}
+.hero .lede{font-size:19px;max-width:44ch;color:#d3def0}
+.hero-fig svg{max-width:400px}
+.hero-cap{text-align:center;color:var(--muted);margin:6px 0 0;font-size:15px;min-height:1.6em}
+.hero-cap b{color:var(--text)}
+.start-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.start-grid .card{margin:0}
+.start-grid + .start-grid{margin-top:18px}
+.obj{border-left:4px solid var(--e)}
+.std{border-left:4px solid var(--c-fin)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;margin:8px 0 6px}
+.form-grid label{display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--muted);font-weight:500}
+input[type=text],input[type=number],input[type=password],select,.inp{background:var(--bg2);border:1.5px solid var(--line2);border-radius:9px;padding:9px 11px;color:var(--text);font-size:16px;width:100%}
+input:focus,select:focus{border-color:var(--e);outline:none}
+.form-msg{color:var(--bad);min-height:1.4em;font-size:15px;margin:4px 0}
+.welcome{background:var(--panel2);border-radius:12px;padding:14px 16px}
+
+/* goals checklist */
+.goals{list-style:none;margin:6px 0;padding:0;display:grid;gap:8px}
+.goals li{display:flex;gap:10px;align-items:flex-start;font-size:15.5px}
+.box{flex:0 0 22px;width:22px;height:22px;border-radius:6px;border:2px solid var(--line2);display:grid;place-items:center;margin-top:1px;transition:.25s}
+.ok > .box,.mission.ok .mt > .box{background:var(--good);border-color:var(--good)}
+.ok > .box::after,.mission.ok .mt > .box::after{content:"";width:6px;height:11px;border:solid #06240f;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.ok{color:var(--text)}
+.goals li:not(.ok){color:var(--muted)}
+.just-ok > .box{animation:tickPop .6s cubic-bezier(.2,1.7,.4,1)}
+@keyframes tickPop{0%{transform:scale(.5)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
+
+/* unlock checklist */
+.unlock{background:var(--bg2);border-style:dashed}
+.unlock h3{font-size:17px;color:var(--muted);font-weight:500}
+.reqs{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.reqs li{display:flex;gap:10px;align-items:flex-start}
+.reqs li:not(.ok){color:var(--muted)}
+.unlock.all-done{border-color:var(--good);border-style:solid}
+
+/* ---------- quick checks ---------- */
+.qc-q{font-weight:500;font-size:18px;margin:4px 0 12px}
+.opts{display:grid;gap:9px}
+.opts.row3{grid-template-columns:repeat(3,1fr)}
+.opt{display:flex;gap:12px;align-items:center;text-align:left;background:var(--panel2);border:1.5px solid var(--line2);border-radius:11px;padding:10px 14px;cursor:pointer;transition:border-color .2s,background .2s,transform .15s;width:100%}
+.opt:hover:not(:disabled){border-color:var(--e)}
+.opt .L{flex:0 0 30px;height:30px;border-radius:8px;background:var(--panel3);display:grid;place-items:center;font-weight:600}
+.opt.right{border-color:var(--good);background:rgba(74,222,128,.12)}
+.opt.right .L{background:var(--good);color:#06240f}
+.opt.wrong{border-color:var(--bad);background:rgba(251,113,133,.1);opacity:.75}
+.opt.wrong .L{background:var(--bad);color:#2a0710}
+.opt.picked{border-color:var(--e);background:rgba(95,225,255,.12)}
+.opt.picked .L{background:var(--e);color:#062430}
+.opt:disabled{cursor:default}
+body.show-key .opt[data-key]{box-shadow:0 0 0 2px var(--amber)}
+body.show-key .opt[data-key]::after{content:"key";margin-left:auto;font-size:12px;color:var(--amber);font-weight:600}
+.qc-fb{min-height:1.5em;margin:12px 0 0}
+.qc-fb.good{color:#b9f5cf} .qc-fb.bad{color:#ffc2cd}
+.qc-fig{margin:4px 0 10px}
+.qc-fig svg{max-width:340px;margin:0}
+.shake{animation:shake .45s}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+
+/* ---------- sorter (tap or drag) ---------- */
+.sorter .tray{display:flex;flex-wrap:wrap;gap:8px;min-height:50px;padding:10px;background:var(--bg2);border-radius:12px;border:1px dashed var(--line2)}
+.sorter .tray:empty::after{content:"All sorted";color:var(--good);font-size:14px;padding:6px}
+.token{background:var(--panel3);border:1.5px solid var(--line2);border-radius:9px;padding:8px 14px;font-weight:500;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;transition:transform .15s,border-color .15s,background .2s;text-align:left;font-size:15.5px;line-height:1.35}
+.token.sel{border-color:var(--e);background:#20456a;transform:translateY(-2px)}
+.token.placed{cursor:default;border-color:var(--good);background:rgba(74,222,128,.14);animation:tickPop .45s}
+.ghost-token{position:fixed;z-index:90;pointer-events:none;opacity:.92;transform:translate(-50%,-50%) rotate(-3deg);box-shadow:0 12px 28px rgba(0,0,0,.5);max-width:260px}
+.sorter .bins{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:12px}
+.bin{background:var(--panel2);border:1.5px solid var(--line2);border-radius:12px;padding:10px;min-height:96px;cursor:pointer;transition:border-color .2s,background .2s}
+.bin.hover,.bin:focus-visible{border-color:var(--e);background:#1f3a5e}
+.bin-label{font-size:14px;font-weight:600;color:var(--muted);margin-bottom:6px}
+.bin-drop{display:flex;flex-wrap:wrap;gap:6px}
+.sorter.rows .bins{grid-template-columns:1fr;gap:8px}
+.sorter.rows .bin{display:flex;align-items:center;gap:12px;min-height:54px;padding:8px 10px}
+.sorter.rows .bin-label{margin:0;width:32px;height:32px;border-radius:50%;border:2px solid var(--amber);display:grid;place-items:center;color:var(--text);flex:0 0 32px}
+.sorter.rows .bin-drop:empty::before{content:"Drop a label here";color:var(--dim);font-size:14px}
+.sort-msg{min-height:1.4em;margin:8px 0 0;font-size:15px}
+.label-wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center}
+.label-fig svg{max-width:380px}
+
+/* ---------- explorer hotspots ---------- */
+.hot{cursor:pointer}
+.hot .hb{fill:rgba(255,255,255,0);stroke:rgba(255,255,255,.28);stroke-width:1.5;stroke-dasharray:5 4;transition:fill .2s,stroke .2s}
+.hot:hover .hb,.hot:focus .hb{stroke:var(--e);fill:rgba(95,225,255,.08)}
+.hot:focus{outline:none}
+.hot.seen .hb{stroke:var(--good);stroke-dasharray:none}
+.hot.active .hb{stroke:var(--e);fill:rgba(95,225,255,.14);stroke-dasharray:none}
+.explore{display:grid;grid-template-columns:1.4fr 1fr;gap:22px;align-items:center}
+#s2build{max-width:560px}
+.part-info{background:var(--panel2);border-radius:12px;padding:14px 16px;min-height:150px}
+.part-info h4{margin:0 0 4px;color:var(--e);font-size:17px;font-weight:600}
+.counter{font-size:14px;color:var(--muted)}
+
+/* bilayer builder */
+.plb{cursor:pointer}
+.plb .flip{transform-box:view-box;transform-origin:0 0;transition:transform .45s cubic-bezier(.3,1.4,.5,1)}
+.plb.down .flip{transform:rotate(180deg)}
+.plb:hover .ph{stroke:#fff;stroke-width:1.5}
+.plb:focus{outline:none}
+.plb:focus .ph{stroke:var(--e);stroke-width:2.5}
+.core-band{fill:rgba(243,210,126,.0);transition:fill .6s}
+.formed .core-band{fill:rgba(243,210,126,.12)}
+.formed .waterdots{opacity:1}
+.waterdots{opacity:.35;transition:opacity .6s}
+
+/* notebook tables + report */
+.notebook{width:100%;border-collapse:collapse;font-size:15px;margin-top:8px}
+.notebook th{color:var(--muted);font-weight:500;text-align:left;padding:6px 8px;border-bottom:1px solid var(--line2)}
+.notebook td{padding:7px 8px;border-bottom:1px solid var(--line)}
+.notebook td.y{color:#b9f5cf} .notebook td.n{color:#ffc2cd}
+.fb-line{min-height:1.4em;margin:10px 0 0}
+.fb-line.good{color:#b9f5cf} .fb-line.bad{color:#ffc2cd}
+.report{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:7px}
+.report li{display:flex;gap:10px;align-items:flex-start;font-size:15px}
+.report .ic{flex:0 0 22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700}
+.report .y .ic{background:var(--good);color:#06240f}
+.report .x .ic{background:var(--bad);color:#2a0710}
+.report .w .ic{background:var(--line2);color:var(--muted)}
+
+/* ---------- simulators ---------- */
+.sim{display:grid;grid-template-columns:1.15fr .85fr;gap:22px;align-items:start}
+.sim.even{grid-template-columns:1fr 1fr}
+canvas.cv{width:100%;height:auto;aspect-ratio:560/320;display:block;border-radius:12px;background:var(--bg2);touch-action:pan-y}
+.missions{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:10px}
+.mission{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.mission.ok{border-color:var(--good)}
+.mission .mt{display:flex;gap:10px;align-items:flex-start}
+.mission .mfb{font-size:14px;margin:6px 0 0 32px;min-height:0}
+.mission .btn{margin:8px 0 0 32px}
+.mission.ok .lockin{display:none}
+.counts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.cnt{background:var(--panel2);border-radius:10px;padding:8px 12px}
+.cnt .k{font-size:13px;color:var(--muted)}
+.cnt .v{font-size:24px;font-weight:600;line-height:1.2}
+.cnt.out{border-left:4px solid var(--e)} .cnt.in{border-left:4px solid var(--sol)}
+.steppers{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:10px 0}
+.stp{background:var(--panel2);border-radius:10px;padding:8px;text-align:center}
+.stp .lab{font-size:13px;color:var(--muted)}
+.stp .row{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:4px}
+.stp button{width:34px;height:34px;border-radius:8px;border:1px solid var(--line2);background:var(--panel3);cursor:pointer;font-size:18px;font-weight:600;line-height:1}
+.stp button:disabled{opacity:.35;cursor:not-allowed}
+.stp output{min-width:30px;font-size:20px;font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px;color:var(--muted);margin:8px 0 0}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend svg{width:22px;height:18px}
+.timer{font-size:14px;color:var(--muted)}
+.graph{width:100%;max-width:420px;height:auto;display:block}
+.graph .ax{stroke:var(--line2);stroke-width:1}
+.graph .gl{stroke:var(--line);stroke-width:1}
+.graph text{fill:var(--muted);font-size:10px;font-family:var(--font)}
+.graph .lo{fill:none;stroke:var(--e);stroke-width:2.2}
+.graph .li{fill:none;stroke:var(--sol);stroke-width:2.2}
+.graph .lp{fill:none;stroke:var(--glc);stroke-width:2.4}
+.graph .pt-dot{fill:var(--glc);stroke:var(--bg);stroke-width:1.5}
+.graph .zero{stroke:var(--muted);stroke-dasharray:4 4}
+.seg{display:inline-flex;background:var(--bg2);border-radius:10px;padding:3px;border:1px solid var(--line2);flex-wrap:wrap}
+.seg button{border:0;background:transparent;padding:7px 14px;border-radius:8px;cursor:pointer;font-weight:500}
+.seg button[aria-pressed=true]{background:var(--e);color:#062430}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.tab{background:var(--panel2);border:1.5px solid var(--line2);border-radius:999px;padding:6px 14px;font-weight:500;cursor:pointer;font-size:15px}
+.tab[aria-selected=true]{border-color:var(--e);background:#1f3a5e}
+.tab.ok::after{content:" ✓";color:var(--good);font-weight:700}
+.place-prompt{font-size:17px;background:var(--bg2);border-radius:10px;padding:10px 14px;margin:8px 0}
+.place-prompt b{color:var(--e)}
+.progress-pips{display:flex;gap:6px}
+.progress-pips i{width:26px;height:8px;border-radius:4px;background:var(--line2);transition:.3s}
+.progress-pips i.on{background:var(--good)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:center}
+.readout{background:var(--bg2);border-radius:12px;padding:12px 14px;margin:10px 0;font-size:16px}
+.readout .big{font-size:22px;font-weight:600}
+.readout .hypo{color:var(--e)} .readout .hyper{color:var(--sol)} .readout .iso{color:var(--good)}
+input[type=range]{width:100%;accent-color:var(--e);margin:6px 0}
+.ticks{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted)}
+.atp-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0}
+.atp-pips{display:flex;gap:5px}
+.atp-pips i{width:20px;height:26px;border-radius:5px;border:1.5px solid var(--amber);background:transparent;transition:background .3s}
+.atp-pips i.on{background:var(--amber);box-shadow:0 0 8px rgba(246,185,59,.5)}
+.ion-table{width:100%;border-collapse:collapse;font-size:15px;margin:8px 0}
+.ion-table th,.ion-table td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:center}
+.ion-table th{color:var(--muted);font-weight:500}
+.ion-table td:first-child,.ion-table th:first-child{text-align:left}
+
+/* flipchart */
+.flip{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:center;background:var(--bg2);border-radius:14px;padding:16px;margin-top:12px}
+.flip-step{color:var(--amber);font-weight:600;font-size:14px;margin:0}
+.flip-text{font-size:17.5px;min-height:5.2em}
+.flip-dots{display:flex;gap:6px;margin-top:10px}
+.flip-dots i{width:9px;height:9px;border-radius:50%;background:var(--line2);transition:.3s}
+.flip-dots i.on{background:var(--amber);transform:scale(1.25)}
+
+/* final check */
+.fc-dots{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 14px}
+.fc-dots button{width:32px;height:32px;border-radius:8px;border:1.5px solid var(--line2);background:var(--panel2);cursor:pointer;font-size:13px;font-weight:600}
+.fc-dots button.ans{background:#1f3a5e;border-color:var(--e)}
+.fc-dots button.cur{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--amber)}
+.score-big{font-size:64px;font-weight:700;line-height:1;margin:6px 0}
+.score-big.pass{color:var(--good)} .score-big.fail{color:var(--amber)}
+.review-item{border-top:1px solid var(--line);padding:12px 0}
+.review-item .yours{color:#ffc2cd} .review-item .right{color:#b9f5cf}
+.attempts{font-size:15px;color:var(--muted)}
+.lock-note{background:rgba(246,185,59,.1);border:1px solid rgba(246,185,59,.5);border-radius:10px;padding:10px 14px;font-size:15px}
+.review-box{background:var(--bg2);border-radius:12px;padding:12px 16px;margin:10px 0}
+.review-box li{margin:4px 0}
+
+/* results */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:12px 0}
+.stat{background:var(--panel2);border-radius:12px;padding:12px 14px}
+.stat .k{font-size:13px;color:var(--muted)}
+.stat .v{font-size:26px;font-weight:600}
+.who{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 16px;font-size:15px}
+.who span{color:var(--muted);display:block;font-size:13px}
+
+/* overlays */
+.overlay{position:fixed;inset:0;z-index:100;background:rgba(6,11,22,.86);backdrop-filter:blur(6px);display:grid;place-items:center;padding:20px}
+.overlay[hidden]{display:none}
+.modal{background:var(--panel);border:1px solid var(--line2);border-radius:18px;padding:24px;max-width:460px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.modal h3{font-size:22px;margin-bottom:6px}
+.lock-modal{border:2px solid var(--amber);text-align:center}
+.lock-icon{font-size:44px;line-height:1}
+.teacher-tools{display:grid;gap:8px;margin-top:12px}
+.drawer{position:fixed;right:16px;top:76px;z-index:60;width:min(380px,calc(100vw - 32px));background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.55)}
+.drawer[hidden]{display:none}
+.sheetbox{font-size:15px;color:var(--muted);margin:8px 0 0;min-height:1.4em}
+#toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);opacity:0;z-index:120;background:var(--panel3);border:1px solid var(--good);color:var(--text);border-radius:12px;padding:10px 18px;font-weight:500;transition:.35s;pointer-events:none;max-width:90vw;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:820px){
+  .hero,.start-grid,.sim,.sim.even,.flip,.two-col,.label-wrap,.explore,.vs{grid-template-columns:1fr}
+  .brand span{display:none}
+  .form-grid{grid-template-columns:1fr}
+  .opts.row3{grid-template-columns:1fr}
+  .card{padding:18px 16px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+}
+@media print{
+  body{background:#fff;color:#000}
+  .topbar,.sec-foot,#toast,.drawer,.overlay,.no-print{display:none!important}
+  .screen{display:none!important}
+  #scr-10{display:block!important}
+  .card,.stat{background:#fff;border:1px solid #999;color:#000}
+  .stat .k,.who span,.muted{color:#333}
+  .goals li:not(.ok){color:#333}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><ellipse cx="20" cy="20" rx="17" ry="14" fill="#1d3354"/><ellipse cx="20" cy="20" rx="17" ry="14" fill="none" stroke="#ffab91" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="0 5.2"/><ellipse cx="20" cy="20" rx="13" ry="10.2" fill="none" stroke="#ffab91" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="0 5.2"/><circle cx="23" cy="19" r="4.5" fill="#6a58d6"/><circle cx="34" cy="7" r="2.6" fill="#5fe1ff"/></svg>
+      <span>Cell Membrane and Transport</span>
+    </div>
+    <nav class="navtiles" id="navTiles" aria-label="Lesson sections"></nav>
+    <div class="top-actions">
+      <button class="top-btn" id="goalsBtn" type="button" aria-expanded="false" aria-controls="goalsDrawer">Goals 0/7</button>
+      <button class="top-btn" id="teacherBtn" type="button">Teacher</button>
+    </div>
+  </div>
+</header>
+
+<main id="app">
+  <!-- START -->
+  <section class="screen" id="scr-0" aria-label="Start">
+    <div class="hero">
+      <div>
+        <p class="unit">Biology: Cell Structure and Function</p>
+        <h1>Cell Membrane and Transport</h1>
+        <p class="lede">See how a cell decides what gets in and what gets out. Build a membrane, run diffusion and osmosis labs, and power a protein pump. Nine short sections, at your own pace.</p>
+      </div>
+      <div class="hero-fig">
+        <svg id="heroSvg" class="fig" viewBox="0 0 400 290" role="img" aria-label="A cell membrane with molecules crossing it"></svg>
+        <p class="hero-cap" id="heroCap"></p>
+      </div>
+    </div>
+
+    <div class="start-grid">
+      <section class="card obj">
+        <span class="tag">Objective</span>
+        <p>I can explain how the cell membrane maintains homeostasis by controlling what enters and leaves the cell, and I can compare passive transport (simple diffusion, facilitated diffusion, and osmosis) with active transport.</p>
+      </section>
+      <section class="card std">
+        <span class="tag">Standard</span>
+        <p><b>NGSS HS-LS1-3.</b> Plan and conduct an investigation to provide evidence that feedback mechanisms maintain homeostasis.</p>
+      </section>
+    </div>
+
+    <div class="start-grid">
+      <section class="card" id="startCard">
+        <span class="tag">Before you start</span>
+        <div id="welcomeBack" class="welcome hidden"></div>
+        <div id="startForm">
+          <div class="form-grid">
+            <label>First name<input type="text" id="fFirst" autocomplete="given-name"></label>
+            <label>Last name<input type="text" id="fLast" autocomplete="family-name"></label>
+            <label>Period
+              <select id="fPeriod">
+                <option value="">Choose your period</option>
+                <option>1</option><option>2</option><option>3</option><option>4</option>
+                <option>5</option><option>6</option><option>7</option><option>8</option>
+              </select>
+            </label>
+            <label>Teacher's name<select id="fTeacher"></select></label>
+            <label>Student ID<input type="text" id="fSid" inputmode="numeric" autocomplete="off"></label>
+          </div>
+          <p class="form-msg" id="formMsg" aria-live="polite"></p>
+          <button class="btn primary" id="fStart" type="button">Start the lesson</button>
+        </div>
+      </section>
+      <section class="card">
+        <span class="tag">Your goals</span>
+        <ul class="goals" id="goalsStart"></ul>
+        <p class="small muted">These check themselves off as you finish sections. Your progress saves on this device.</p>
+      </section>
+    </div>
+  </section>
+
+  <section class="screen" id="scr-1"></section>
+  <section class="screen" id="scr-2"></section>
+  <section class="screen" id="scr-3"></section>
+  <section class="screen" id="scr-4"></section>
+  <section class="screen" id="scr-5"></section>
+  <section class="screen" id="scr-6"></section>
+  <section class="screen" id="scr-7"></section>
+  <section class="screen" id="scr-8"></section>
+  <section class="screen" id="scr-9"></section>
+  <section class="screen" id="scr-10"></section>
+</main>
+
+<!-- goals drawer -->
+<aside class="drawer" id="goalsDrawer" hidden aria-label="Your goals">
+  <h3 style="font-size:18px;margin-bottom:10px">Your goals</h3>
+  <ul class="goals" id="goalsDrawerList"></ul>
+  <div class="btn-row"><button class="btn ghost sm" id="goalsClose" type="button">Close</button></div>
+</aside>
+
+<!-- word help popover -->
+<div id="pop" role="dialog" aria-live="polite" hidden><b></b><p></p></div>
+
+<!-- teacher modal -->
+<div class="overlay" id="teacherOv" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="tTitle">
+    <h3 id="tTitle">Teacher view</h3>
+    <div id="tLogin">
+      <p class="muted small">Enter the teacher code.</p>
+      <input type="password" id="tCode" autocomplete="off" aria-label="Teacher code">
+      <p class="form-msg" id="tMsg"></p>
+      <div class="btn-row"><button class="btn primary" id="tGo" type="button">Open teacher view</button><button class="btn ghost" id="tCancel" type="button">Cancel</button></div>
+    </div>
+    <div id="tPanel" class="hidden">
+      <p class="small muted" id="tInfo"></p>
+      <div class="teacher-tools">
+        <button class="btn ghost" id="tUnlock" type="button">Unlock every section</button>
+        <button class="btn ghost" id="tKey" type="button">Show answer key</button>
+        <button class="btn ghost" id="tEndLock" type="button">End lockdown for this check</button>
+        <button class="btn ghost" id="tSend" type="button">Send this student's scores to the sheet</button>
+        <button class="btn ghost" id="tReset" type="button">Reset this device (erase progress)</button>
+        <p class="sheetbox sheetStatus small" aria-live="polite"></p>
+      </div>
+      <div class="btn-row"><button class="btn primary" id="tClose" type="button">Close</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- lockdown -->
+<div class="overlay" id="lockOv" hidden>
+  <div class="modal lock-modal" role="alertdialog" aria-modal="true" aria-labelledby="lockTitle">
+    <div class="lock-icon" aria-hidden="true">🔒</div>
+    <h3 id="lockTitle">Your final check is locked</h3>
+    <p class="muted">You left the page or exited full screen. Ask your teacher to unlock it.</p>
+    <input type="password" id="lockCode" autocomplete="off" aria-label="Teacher unlock code" placeholder="Teacher code">
+    <p class="form-msg" id="lockMsg"></p>
+    <button class="btn amber" id="lockGo" type="button">Unlock</button>
+  </div>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="sheets-config.js"></script>
+<script>
+(() => {
+'use strict';
+
+/* =========================================================
+   SETTINGS
+   ========================================================= */
+const KEY = 'fate_bio_cell_transport_v1';
+const TEACHER_CODE = 'Austin';
+const LESSON = 'Cell Membrane and Transport';
+/* Google Sheets + teacher list: same setup as the formative assessments.
+   If sheets-config.js (next to this file on the site) defines TEACHERS or SHEETS_WEBHOOK_URL, those win. */
+const BACKUP_URL = 'https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const BACKUP_TEACHERS = ['Austin', 'Mueller', 'McCue', 'Arce', 'Trimm', 'Garcia'];
+function teacherList() { try { if (typeof TEACHERS !== 'undefined' && Array.isArray(TEACHERS) && TEACHERS.length) return TEACHERS.map(String).filter(Boolean); } catch (e) {} return BACKUP_TEACHERS; }
+function sheetURL() { try { if (typeof SHEETS_WEBHOOK_URL !== 'undefined' && SHEETS_WEBHOOK_URL && String(SHEETS_WEBHOOK_URL).indexOf('PASTE') < 0) return String(SHEETS_WEBHOOK_URL); } catch (e) {} return BACKUP_URL; }
+const PASS_SCORE = 8, FC_LEN = 10;
+const LOCK_ON = /github\.io$/i.test(location.hostname) || new URLSearchParams(location.search).has('lockdown');
+const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const sum = a => a.reduce((x, y) => x + y, 0);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const f1 = v => (+v).toFixed(1);
+/* seeded random, so figures look the same every time they draw */
+function rng(seed) { let s = seed >>> 0 || 1; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+
+/* =========================================================
+   SECTION TILES (a "periodic table" of membrane transport)
+   ========================================================= */
+const TILES = [null,
+  { sym: 'Cm', name: 'Cell membrane', cat: 'mem' },
+  { sym: 'Pb', name: 'Bilayer', cat: 'mem' },
+  { sym: 'Pr', name: 'Proteins', cat: 'mem' },
+  { sym: 'Sd', name: 'Simple diffusion', cat: 'pas' },
+  { sym: 'Fd', name: 'Facilitated', cat: 'pas' },
+  { sym: 'Os', name: 'Osmosis', cat: 'wat' },
+  { sym: 'Tn', name: 'Tonicity', cat: 'wat' },
+  { sym: 'At', name: 'Active transport', cat: 'act' },
+  { sym: 'Fc', name: 'Final check', cat: 'fin' },
+  { sym: 'Rs', name: 'Results', cat: 'res' }
+];
+
+/* =========================================================
+   GLOSSARY (word-help chips)
+   ========================================================= */
+const GLOSS = {
+  'cell membrane': 'The thin, flexible layer around every cell. It controls what enters and leaves. Also called the plasma membrane.',
+  'selectively permeable': 'Lets some substances cross but not others. The cell membrane is selectively permeable.',
+  homeostasis: 'Keeping conditions inside the body or a cell stable (water, salt, sugar, temperature) even when the outside changes.',
+  cytoplasm: 'The watery, gel-like fluid inside the cell membrane.',
+  phospholipid: 'The main building block of the cell membrane: a water-loving head attached to two water-fearing tails.',
+  hydrophilic: '"Water-loving." Hydrophilic parts are attracted to water.',
+  hydrophobic: '"Water-fearing." Hydrophobic parts avoid water, like oil.',
+  'phospholipid bilayer': 'Two layers of phospholipids with their heads facing the water on both sides and their tails tucked in the middle.',
+  'channel protein': 'A protein that makes a tunnel through the membrane so a specific substance, like an ion, can pass.',
+  'carrier protein': 'A protein that grabs a specific molecule, like glucose, and changes shape to move it across the membrane.',
+  'protein pump': 'A carrier protein that uses energy (ATP) to move substances from low to high concentration.',
+  concentration: 'How much of a substance is packed into a space. More particles in the same space means a higher concentration.',
+  'concentration gradient': 'A difference in concentration between two places. Particles move "down" the gradient from high to low.',
+  diffusion: 'The movement of particles from an area of high concentration to an area of low concentration.',
+  equilibrium: 'When the concentration is the same everywhere. Particles keep moving, but there is no net change.',
+  'passive transport': 'Movement across the membrane that does not use the cell\'s energy. Particles go from high to low concentration.',
+  'simple diffusion': 'Passive transport straight through the phospholipid bilayer, with no protein. Works for small, nonpolar molecules like O₂ and CO₂.',
+  'facilitated diffusion': 'Passive transport through a channel or carrier protein. Still high to low, still no energy.',
+  osmosis: 'The diffusion of water across a selectively permeable membrane.',
+  aquaporin: 'A channel protein made just for water. Most water crosses the membrane through aquaporins.',
+  solute: 'The substance that is dissolved, like salt or sugar.',
+  solvent: 'The substance that does the dissolving. In cells, the solvent is water.',
+  solution: 'A mixture of a solute dissolved in a solvent, like salt water.',
+  hypotonic: 'A solution with LESS solute than the cell. Water moves into the cell.',
+  hypertonic: 'A solution with MORE solute than the cell. Water moves out of the cell.',
+  isotonic: 'A solution with the SAME solute concentration as the cell. Water moves in and out equally.',
+  turgid: 'Firm and full of water. Healthy plant cells in a hypotonic solution are turgid.',
+  plasmolysis: 'When a plant cell loses water and its membrane pulls away from the cell wall.',
+  lysis: 'When a cell bursts. Animal cells can burst in a very hypotonic solution because they have no cell wall.',
+  'active transport': 'Movement across the membrane from low to high concentration. It needs energy (ATP) and a protein pump.',
+  ATP: 'The molecule cells use for energy. The cell makes ATP during cellular respiration.',
+  'sodium-potassium pump': 'A protein pump that uses 1 ATP to move 3 Na⁺ out of the cell and 2 K⁺ into the cell, both against their gradients.'
+};
+const c = (term, label) => `<button type="button" class="chip" data-term="${term}">${label || term}</button>`;
+
+/* =========================================================
+   STATE (saved on this device)
+   ========================================================= */
+const DEF = () => ({
+  v: 1, student: null, cur: 0, reqs: {}, secDone: {}, qc: {}, tasks: {},
+  final: { attempts: [], passed: false, best: 0, current: null, reviewAt: 0 },
+  lockouts: 0, locked: false, lockActive: false, teacherUnlock: false, startedAt: null, completedAt: null
+});
+let S;
+try {
+  const raw = JSON.parse(localStorage.getItem(KEY) || 'null');
+  S = Object.assign(DEF(), raw || {});
+  S.final = Object.assign(DEF().final, S.final || {});
+} catch (e) { S = DEF(); }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* storage blocked: keep going */ } }
+
+/* =========================================================
+   DRAWING (SVG strings)
+   ========================================================= */
+const NS = 'http://www.w3.org/2000/svg';
+function svgEl(tag, attrs) { const el = document.createElementNS(NS, tag); for (const k in attrs) el.setAttribute(k, attrs[k]); return el; }
+const HEX = r => [0, 1, 2, 3, 4, 5].map(i => { const a = Math.PI / 3 * i + Math.PI / 6; return f1(r * Math.cos(a)) + ',' + f1(r * Math.sin(a)); }).join(' ');
+
+/* a molecule drawn around (0,0) */
+function molInner(kind) {
+  switch (kind) {
+    case 'o2': return '<circle cx="-4" r="5.5"/><circle cx="4" r="5.5"/>';
+    case 'co2': return '<circle cx="-8.5" r="4.8"/><circle cx="8.5" r="4.8"/><circle class="c" r="5.6"/>';
+    case 'glc': return `<polygon points="${HEX(9.5)}"/>`;
+    case 'na': return '<circle r="9.5"/><text y="2.8">Na⁺</text>';
+    case 'k': return '<circle r="9.5"/><text y="2.8">K⁺</text>';
+    case 'cl': return '<circle r="9.5"/><text y="2.8">Cl⁻</text>';
+    case 'h2o': return '<circle r="3.4"/>';
+    case 'sol': return '<circle r="5"/>';
+  }
+  return '';
+}
+const mol = (kind, x, y, s = 1) => `<g class="mol m-${kind}" transform="translate(${f1(x)},${f1(y)})${s !== 1 ? ` scale(${s})` : ''}">${molInner(kind)}</g>`;
+/* a molecule that can be moved with CSS transforms */
+const mover = (kind, x, y, id = '', s = 1) => `<g class="mover" ${id ? `id="${id}"` : ''} style="transform:translate(${f1(x)}px,${f1(y)}px)"><g class="mol m-${kind}"${s !== 1 ? ` transform="scale(${s})"` : ''}>${molInner(kind)}</g></g>`;
+const moveTo = (el, x, y) => { if (el) el.style.transform = `translate(${f1(x)}px,${f1(y)}px)`; };
+const legendIcon = kind => `<svg viewBox="-12 -10 24 20" aria-hidden="true">${mol(kind, 0, 0, kind === 'o2' || kind === 'co2' ? .9 : .8)}</svg>`;
+
+/* two zig-zag fatty acid tails from y1 to y2 */
+function tails(x, y1, y2) {
+  const n = 4, h = (y2 - y1) / n;
+  const d = dx => { let s = `M${f1(x + dx)},${f1(y1)}`; for (let i = 1; i <= n; i++) s += `L${f1(x + dx + (i % 2 ? 1.6 : -1.6))},${f1(y1 + h * i)}`; return s; };
+  return `<path class="pt" d="${d(-2.7)} ${d(2.7)}"/>`;
+}
+/* a horizontal phospholipid bilayer: outside on top, inside on the bottom */
+function bilayer({ x0 = 0, x1 = 400, mid = 130, r = 6.5, sp = 16, gaps = [] } = {}) {
+  let t = '', h = '';
+  const top = mid - 21, bot = mid + 21;
+  for (let x = x0 + sp / 2; x < x1; x += sp) {
+    if (gaps.some(([a, b]) => x > a - r && x < b + r)) continue;
+    t += tails(x, top + r - 1, mid - 1.5) + tails(x, bot - r + 1, mid + 1.5);
+    h += `<circle class="ph" cx="${f1(x)}" cy="${top}" r="${r}"/><circle class="ph" cx="${f1(x)}" cy="${bot}" r="${r}"/>`;
+  }
+  return `<g class="bil">${t}${h}</g>`;
+}
+/* membrane proteins */
+function protein(kind, cx, mid, open = 'out') {
+  if (kind === 'channel' || kind === 'aqua') return `<g class="prot ${kind}"><rect x="${cx - 24}" y="${mid - 38}" width="18" height="76" rx="9"/><rect x="${cx + 6}" y="${mid - 38}" width="18" height="76" rx="9"/></g>`;
+  const sg = open === 'out' ? 1 : -1;
+  const P = (dx, dy) => `${f1(cx + dx)},${f1(mid + dy * sg)}`;
+  const d = `M${P(-26, 30)} Q${P(-26, 40)} ${P(-16, 40)} L${P(16, 40)} Q${P(26, 40)} ${P(26, 30)} L${P(26, -30)} Q${P(26, -40)} ${P(16, -40)} L${P(12, -40)} L${P(10, -15)} Q${P(0, -4)} ${P(-10, -15)} L${P(-12, -40)} L${P(-16, -40)} Q${P(-26, -40)} ${P(-26, -30)} Z`;
+  return `<g class="prot ${kind}"><path d="${d}"/>${kind === 'pump' ? `<text class="atp-t" x="${cx}" y="${f1(mid + 24 * sg + 3)}">pump</text>` : ''}</g>`;
+}
+/* a horizontal membrane scene */
+function membraneScene(o = {}) {
+  const W = o.w || 400, H = o.h || 260, mid = o.mid || 130, prots = o.prots || [];
+  let s = `<rect class="out-bg" x="0" y="0" width="${W}" height="${mid - 28}" rx="10"/><rect class="in-bg" x="0" y="${mid + 28}" width="${W}" height="${H - mid - 28}" rx="10"/>`;
+  s += bilayer({ x1: W, mid, gaps: prots.map(p => [p.x - 26, p.x + 26]) });
+  prots.forEach(p => { s += `<g class="pslot" data-x="${p.x}">${protein(p.kind, p.x, mid, p.open)}</g>`; });
+  if (o.labels !== false) {
+    const lo = o.labOut || [10, 18], li = o.labIn || [10, H - 8];
+    s += `<text class="side-lab" x="${lo[0]}" y="${lo[1]}" ${o.labAnchor ? `text-anchor="${o.labAnchor}"` : ''}>Outside the cell</text><text class="side-lab" x="${li[0]}" y="${li[1]}" ${o.labAnchor ? `text-anchor="${o.labAnchor}"` : ''}>Inside the cell (cytoplasm)</text>`;
+  }
+  return s;
+}
+const pin = (n, x, y) => `<g class="pin"><circle cx="${x}" cy="${y}" r="13"/><text x="${x}" y="${y + 5}">${n}</text></g>`;
+const leader = (x1, y1, x2, y2) => `<line class="leader" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
+
+/* U-tube (osmosis). sL/sR = solute particles, hL/hR = water level y (lower y = higher water) */
+const UT = { top: 30, base: 128, l: [60, 150], r: [210, 300], bot: 245, floor: 285, memX: 180 };
+function utubeWaterPath(side, h) {
+  const { bot, floor } = UT;
+  return side === 'L'
+    ? `M60,${f1(h)} L150,${f1(h)} L150,${bot} L180,${bot} L180,${floor} L83,${floor} Q60,${floor} 60,${floor - 23} Z`
+    : `M300,${f1(h)} L210,${f1(h)} L210,${bot} L180,${bot} L180,${floor} L277,${floor} Q300,${floor} 300,${floor - 23} Z`;
+}
+const UT_DOTS = (() => { const r = rng(7); return [...Array(14)].map(() => [r(), r()]); })();
+const UT_WATER = (() => { const r = rng(21); return [...Array(18)].map(() => [r(), r()]); })();
+function utubeDots(side, n, h, cls = 'm-sol', list = UT_DOTS) {
+  const x0 = side === 'L' ? 70 : 220, top = h + 12, span = Math.max(10, UT.bot - 8 - top);
+  let s = '';
+  for (let i = 0; i < n && i < list.length; i++) { const [u, v] = list[i]; s += `<g class="mol ${cls}" transform="translate(${f1(x0 + u * 70)},${f1(top + v * span)})">${molInner(cls === 'm-sol' ? 'sol' : 'h2o')}</g>`; }
+  return s;
+}
+function utubeStatic(sL, sR, hL = UT.base, hR = UT.base, cap = true) {
+  return `<svg viewBox="0 0 360 ${cap ? 318 : 300}" class="fig static" role="img" aria-label="U-tube with ${sL} solute particles on the left and ${sR} on the right, separated by a membrane">
+    <path d="${utubeWaterPath('L', hL)}" fill="rgba(95,225,255,.18)"/><path d="${utubeWaterPath('R', hR)}" fill="rgba(95,225,255,.18)"/>
+    ${utubeDots('L', 6, hL, 'm-h2o', UT_WATER)}${utubeDots('R', 6, hR, 'm-h2o', UT_WATER)}
+    ${utubeDots('L', sL, hL)}${utubeDots('R', sR, hR)}
+    <path d="M60,30 L60,262 Q60,285 83,285 L277,285 Q300,285 300,262 L300,30 M150,30 L150,245 L210,245 L210,30" fill="none" stroke="#9fb3d9" stroke-width="3" stroke-linejoin="round"/>
+    <line x1="180" y1="245" x2="180" y2="285" stroke="var(--head)" stroke-width="4" stroke-dasharray="3 3"/>
+    <text class="fig-lab" x="105" y="22" text-anchor="middle">Left side</text><text class="fig-lab" x="255" y="22" text-anchor="middle">Right side</text>
+    ${cap ? '<text class="fig-lab m" x="180" y="308" text-anchor="middle">Membrane: water can cross, solute cannot</text>' : ''}
+  </svg>`;
+}
+
+/* cell in a beaker, for "which way will water move?" */
+const BK_OUT = (() => { const r = rng(99), pts = []; while (pts.length < 46) { const x = 30 + r() * 240, y = 30 + r() * 150; if (Math.hypot(x - 150, y - 105) > 66) pts.push([x, y]); } return pts; })();
+const BK_IN = (() => { const r = rng(5), pts = []; while (pts.length < 16) { const x = 100 + r() * 100, y = 55 + r() * 100; if (Math.hypot(x - 150, y - 105) < 46 && !(Math.abs(y - 105) < 15 && Math.abs(x - 150) < 56)) pts.push([x, y]); } return pts; })();
+const pctDots = (p, per, max) => Math.min(max, Math.round(p * per));
+function beakerCell(inP, outP, extra = '') {
+  const nO = pctDots(outP, 4.4, 46), nI = pctDots(inP, 1.3, 16);
+  return `<svg viewBox="0 0 300 228" class="fig static" role="img" aria-label="A cell with ${inP}% solute inside, in a beaker of ${outP}% solute">
+    <path d="M18,14 L18,190 Q18,206 34,206 L266,206 Q282,206 282,190 L282,14" fill="rgba(95,225,255,.10)" stroke="#9fb3d9" stroke-width="3"/>
+    ${BK_OUT.slice(0, nO).map(([x, y]) => mol('sol', x, y)).join('')}
+    <circle cx="150" cy="105" r="58" class="cyto" style="fill:#203a5f"/>
+    <circle cx="150" cy="105" r="58" class="memb-h" style="stroke-width:5;stroke-dasharray:0 8"/>
+    ${BK_IN.slice(0, nI).map(([x, y]) => mol('sol', x, y)).join('')}
+    <rect x="24" y="20" width="128" height="22" rx="11" fill="rgba(11,22,36,.82)"/><text class="fig-lab" x="88" y="35" text-anchor="middle">Outside: ${outP}% solute</text>
+    <rect x="94" y="94" width="112" height="22" rx="11" fill="rgba(11,22,36,.82)"/><text class="fig-lab" x="150" y="109" text-anchor="middle">Inside: ${inP}% solute</text>
+    ${extra}
+  </svg>`;
+}
+
+/* small line graph */
+function lineGraph(o) {
+  // o: { w, h, x:[min,max], y:[min,max], xt:[], yt:[], xl, yl, series:[{cls, pts:[[x,y]], dots}], zero }
+  const W = o.w || 300, H = o.h || 170, L = 40, R = 10, T = 10, B = 36;
+  const X = v => L + (v - o.x[0]) / (o.x[1] - o.x[0]) * (W - L - R);
+  const Y = v => T + (1 - (v - o.y[0]) / (o.y[1] - o.y[0])) * (H - T - B);
+  let s = `<svg viewBox="0 0 ${W} ${H}" class="graph" role="img" aria-label="${esc(o.aria || 'Line graph')}">`;
+  (o.yt || []).forEach(v => { s += `<line class="gl" x1="${L}" x2="${W - R}" y1="${f1(Y(v))}" y2="${f1(Y(v))}"/><text x="${L - 6}" y="${f1(Y(v) + 3.5)}" text-anchor="end">${v}</text>`; });
+  (o.xt || []).forEach(v => { s += `<text x="${f1(X(v))}" y="${H - B + 14}" text-anchor="middle">${v}</text>`; });
+  if (o.zero) s += `<line class="zero" x1="${L}" x2="${W - R}" y1="${f1(Y(0))}" y2="${f1(Y(0))}"/>`;
+  s += `<line class="ax" x1="${L}" x2="${L}" y1="${T}" y2="${H - B}"/><line class="ax" x1="${L}" x2="${W - R}" y1="${H - B}" y2="${H - B}"/>`;
+  s += `<text x="${(L + W - R) / 2}" y="${H - 4}" text-anchor="middle">${o.xl || ''}</text><text x="12" y="${(T + H - B) / 2}" text-anchor="middle" transform="rotate(-90 12 ${(T + H - B) / 2})">${o.yl || ''}</text>`;
+  (o.series || []).forEach(se => {
+    if (se.pts.length > 1) s += `<polyline class="${se.cls}" points="${se.pts.map(([a, b]) => f1(X(a)) + ',' + f1(Y(b))).join(' ')}"/>`;
+    if (se.dots) se.pts.forEach(([a, b]) => { s += `<circle class="pt-dot" cx="${f1(X(a))}" cy="${f1(Y(b))}" r="3.6"/>`; });
+  });
+  return s + '</svg>';
+}
+
+/* =========================================================
+   UI HELPERS
+   ========================================================= */
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('on');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('on'), 2600);
+}
+function shake(el) { if (!el) return; el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); setTimeout(() => el.classList.remove('shake'), 500); }
+function glow(el) { if (!el || REDUCED) return; el.classList.remove('celebrate-glow'); void el.getBoundingClientRect(); el.classList.add('celebrate-glow'); setTimeout(() => el.classList.remove('celebrate-glow'), 1200); }
+const card = (kind, title, body, extra = '') => {
+  const label = { read: 'Read', try: 'Try it', qc: 'Quick check', final: 'Final check', data: 'Read the data' }[kind];
+  const cls = kind === 'final' ? 'qc' : kind;
+  return `<section class="card k-${cls}" ${extra}><span class="tag">${label}</span>${title ? `<h3>${title}</h3>` : ''}${body}</section>`;
+};
+const tileHTML = (n, cls = '') => { const t = TILES[n]; return `<div class="tile big cat-${t.cat} ${cls}" aria-hidden="true"><span class="z">${n}</span>${t.sym}<span class="nm">${t.name}</span></div>`; };
+
+/* Quick check (A–D) */
+function makeQC(root, cfg) {
+  const st = S.qc[cfg.id] || (S.qc[cfg.id] = { done: false, first: null, tries: 0 });
+  if (!cfg.fixed && !(st.order && st.order.length === cfg.opts.length)) { st.order = shuffle(cfg.opts.map((_, i) => i)); save(); }
+  const order = cfg.fixed ? cfg.opts.map((_, i) => i) : st.order;
+  const opts = order.map((i, pos) => `<button type="button" class="opt" data-i="${i}" ${i === cfg.ans ? 'data-key="1"' : ''}><span class="L">${'ABCD'[pos]}</span><span class="ot">${cfg.opts[i]}</span></button>`).join('');
+  root.innerHTML = `${cfg.fig ? `<div class="qc-fig">${cfg.fig}</div>` : ''}<p class="qc-q">${cfg.q}</p><div class="opts">${opts}</div><p class="qc-fb" aria-live="polite"></p>`;
+  const fb = $('.qc-fb', root), btns = $$('.opt', root);
+  const finish = () => {
+    btns.forEach(b => { b.disabled = true; if (+b.dataset.i === cfg.ans) b.classList.add('right'); });
+    fb.className = 'qc-fb good'; fb.innerHTML = `<strong>Correct.</strong> ${cfg.explain}`;
+  };
+  if (st.done) finish();
+  btns.forEach(b => b.addEventListener('click', () => {
+    if (st.done) return;
+    const i = +b.dataset.i; st.tries++;
+    if (i === cfg.ans) {
+      if (st.first === null) st.first = true;
+      st.done = true; finish(); save();
+      cfg.onCorrect && cfg.onCorrect();
+    } else {
+      if (st.first === null) st.first = false;
+      b.classList.add('wrong'); b.disabled = true; shake(b);
+      fb.className = 'qc-fb bad'; fb.innerHTML = `<strong>Not quite.</strong> ${(cfg.hints && cfg.hints[i]) || cfg.hint || 'Look back at the Read card and try again.'}`;
+      save();
+    }
+  }));
+}
+
+/* Tap-or-drag sorter */
+function makeSorter(root, cfg) {
+  const doneAlready = !!S.tasks[cfg.id];
+  root.innerHTML = `<div class="sorter ${cfg.layout || ''}"><div class="tray" aria-label="Items to sort"></div><div class="bins">${cfg.bins.map(b => `<div class="bin" data-bin="${b.id}" tabindex="0" role="button" aria-label="${esc(b.aria || b.label)}"><div class="bin-label">${b.label}</div><div class="bin-drop"></div></div>`).join('')}</div><p class="sort-msg" aria-live="polite"></p></div>`;
+  const tray = $('.tray', root), msg = $('.sort-msg', root);
+  const binOf = id => cfg.bins.find(b => b.accepts.includes(id));
+  const toks = shuffle(cfg.tokens).map(t => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'token' + (t.cls ? ' ' + t.cls : ''); b.dataset.id = t.id; b.innerHTML = t.label;
+    tray.appendChild(b); return b;
+  });
+  let sel = null, dragged = false;
+  const place = (tok, binEl, silent) => {
+    $('.bin-drop', binEl).appendChild(tok);
+    tok.classList.remove('sel'); tok.classList.add('placed'); tok.setAttribute('aria-disabled', 'true');
+    if (!silent && !tray.children.length) {
+      msg.innerHTML = `<span style="color:var(--good)">${cfg.doneMsg || 'All sorted. Nice work.'}</span>`;
+      S.tasks[cfg.id] = true; save(); cfg.onDone && cfg.onDone();
+    }
+  };
+  if (doneAlready) {
+    toks.forEach(t => place(t, $(`.bin[data-bin="${binOf(t.dataset.id).id}"]`, root), true));
+    msg.innerHTML = `<span style="color:var(--good)">${cfg.doneMsg || 'All sorted. Nice work.'}</span>`;
+    return;
+  }
+  const attempt = (tok, binEl) => {
+    if (!tok || tok.classList.contains('placed')) return;
+    const b = cfg.bins.find(x => x.id === binEl.dataset.bin);
+    if (b.accepts.includes(tok.dataset.id)) { place(tok, binEl); if (tray.children.length) msg.textContent = ''; }
+    else { shake(tok); shake(binEl); msg.innerHTML = `<span style="color:#ffc2cd">${(cfg.hint && cfg.hint(tok.dataset.id, b.id)) || 'Not there. Try a different spot.'}</span>`; tok.classList.remove('sel'); }
+    sel = null;
+  };
+  toks.forEach(tok => {
+    tok.addEventListener('click', () => {
+      if (dragged) { dragged = false; return; }
+      if (tok.classList.contains('placed')) return;
+      if (sel === tok) { tok.classList.remove('sel'); sel = null; return; }
+      if (sel) sel.classList.remove('sel');
+      sel = tok; tok.classList.add('sel');
+      msg.textContent = 'Now tap where it goes.';
+    });
+    let start = null, ghost = null, over = null;
+    tok.addEventListener('pointerdown', e => {
+      if (tok.classList.contains('placed') || e.button > 0) return;
+      start = { x: e.clientX, y: e.clientY }; dragged = false;
+      try { tok.setPointerCapture(e.pointerId); } catch (_) {}
+    });
+    tok.addEventListener('pointermove', e => {
+      if (!start) return;
+      if (!ghost && Math.hypot(e.clientX - start.x, e.clientY - start.y) > 6) {
+        ghost = tok.cloneNode(true); ghost.classList.add('ghost-token'); document.body.appendChild(ghost);
+        tok.style.opacity = '.35'; dragged = true;
+      }
+      if (ghost) {
+        ghost.style.left = e.clientX + 'px'; ghost.style.top = e.clientY + 'px';
+        const t = document.elementFromPoint(e.clientX, e.clientY);
+        const bin = t && t.closest('.bin');
+        if (over && over !== bin) over.classList.remove('hover');
+        over = bin && root.contains(bin) ? bin : null;
+        if (over) over.classList.add('hover');
+      }
+    });
+    const end = () => {
+      if (!start) return;
+      start = null;
+      if (ghost) {
+        ghost.remove(); ghost = null; tok.style.opacity = '';
+        if (over) { over.classList.remove('hover'); attempt(tok, over); over = null; }
+        setTimeout(() => { dragged = false; }, 50);
+      }
+    };
+    tok.addEventListener('pointerup', end);
+    tok.addEventListener('pointercancel', end);
+  });
+  $$('.bin', root).forEach(binEl => {
+    const go = () => { if (sel) attempt(sel, binEl); };
+    binEl.addEventListener('click', e => { if (e.target.closest('.token:not(.placed)')) return; go(); });
+    binEl.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+  });
+}
+
+/* Missions with a "Lock in" button. Each check() returns [ok, message]. */
+function makeMissions(root, sec, list, onLock) {
+  root.innerHTML = list.map((m, i) => {
+    const d = !!S.reqs[sec + '.' + m.id];
+    return `<li class="mission ${d ? 'ok' : ''}" data-m="${i}"><div class="mt"><span class="box"></span><span><b>Mission ${i + 1}.</b> ${m.t}</span></div><button type="button" class="btn sm ghost lockin" ${d ? 'disabled' : ''}>${m.btn || 'Lock in'}</button><p class="mfb" aria-live="polite" ${d ? 'style="color:var(--good)"' : ''}>${d ? (S.tasks['mfb.' + sec + '.' + m.id] || 'Done.') : ''}</p></li>`;
+  }).join('');
+  $$('.mission', root).forEach(li => {
+    const m = list[+li.dataset.m];
+    $('.lockin', li).addEventListener('click', () => {
+      const fb = $('.mfb', li), [ok, text] = m.check();
+      if (ok) {
+        li.classList.add('ok', 'just-ok'); $('.lockin', li).disabled = true;
+        fb.style.color = 'var(--good)'; fb.innerHTML = text;
+        S.tasks['mfb.' + sec + '.' + m.id] = text; save();
+        done(sec, m.id); onLock && onLock(m);
+      } else { fb.style.color = '#ffc2cd'; fb.innerHTML = text; shake(li); }
+    });
+  });
+}
+
+/* Steppers: [{id, label, min, max, step, val}] */
+function makeSteppers(root, list, onChange) {
+  root.innerHTML = list.map(s => `<div class="stp"><div class="lab">${s.label}</div><div class="row"><button type="button" data-id="${s.id}" data-d="-1" aria-label="Less: ${esc(s.label)}">−</button><output id="${s.id}">${s.val}</output><button type="button" data-id="${s.id}" data-d="1" aria-label="More: ${esc(s.label)}">+</button></div></div>`).join('');
+  const vals = Object.fromEntries(list.map(s => [s.id, s.val]));
+  const upd = () => list.forEach(s => {
+    $('#' + s.id, root).textContent = vals[s.id];
+    $(`button[data-id="${s.id}"][data-d="-1"]`, root).disabled = vals[s.id] <= s.min;
+    $(`button[data-id="${s.id}"][data-d="1"]`, root).disabled = vals[s.id] >= s.max;
+  });
+  $$('button', root).forEach(b => b.addEventListener('click', () => {
+    const s = list.find(x => x.id === b.dataset.id);
+    vals[s.id] = clamp(vals[s.id] + (+b.dataset.d) * (s.step || 1), s.min, s.max);
+    upd(); onChange && onChange(vals, s.id);
+  }));
+  upd();
+  return { vals, set: (id, v) => { vals[id] = v; upd(); } };
+}
+
+/* =========================================================
+   PARTICLE SIMULATOR (canvas). Membrane runs top to bottom:
+   outside the cell on the left, inside on the right.
+   ========================================================= */
+const SIMS = [];
+function cssColors() {
+  const cs = getComputedStyle(document.documentElement), g = n => cs.getPropertyValue(n).trim();
+  return { head: g('--head'), tail: g('--tail'), prot: g('--prot'), protL: g('--prot-l'), o2: g('--o2'), glc: g('--glc'), na: g('--na'), k: g('--k'), sol: g('--sol'), water: g('--water'), muted: g('--muted'), amber: g('--amber'), outBg: 'rgba(95,225,255,.07)', inBg: 'rgba(244,119,184,.07)', text: g('--text') };
+}
+function rrect(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+function drawMolCv(ctx, kind, x, y, C) {
+  ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(0,0,0,.45)';
+  if (kind === 'o2') { ctx.fillStyle = C.o2; [-3.5, 3.5].forEach(dx => { ctx.beginPath(); ctx.arc(x + dx, y, 4.6, 0, 7); ctx.fill(); ctx.stroke(); }); return; }
+  if (kind === 'glc') { ctx.fillStyle = C.glc; ctx.beginPath(); for (let i = 0; i < 6; i++) { const a = Math.PI / 3 * i + Math.PI / 6; ctx[i ? 'lineTo' : 'moveTo'](x + 7.5 * Math.cos(a), y + 7.5 * Math.sin(a)); } ctx.closePath(); ctx.fill(); ctx.stroke(); return; }
+  if (kind === 'na' || kind === 'k') {
+    ctx.fillStyle = C[kind]; ctx.beginPath(); ctx.arc(x, y, 8, 0, 7); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#1c1024'; ctx.font = '700 7.5px Lexend, system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(kind === 'na' ? 'Na⁺' : 'K⁺', x, y + .5); ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; return;
+  }
+  ctx.fillStyle = C.sol; ctx.beginPath(); ctx.arc(x, y, 5, 0, 7); ctx.fill();
+}
+class PSim {
+  constructor(cv, o) {
+    this.cv = cv; this.o = o; this.W = 560; this.H = 320; this.mx = 280; this.mw = 44;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    cv.width = this.W * dpr; cv.height = this.H * dpr;
+    this.ctx = cv.getContext('2d'); this.ctx.scale(dpr, dpr);
+    this.ps = []; this.running = false; this.looping = false; this.t = 0; this.last = 0;
+    this.C = cssColors(); this.loop = this.loop.bind(this);
+    SIMS.push(this);
+  }
+  get L() { return this.mx - this.mw / 2; }
+  get R() { return this.mx + this.mw / 2; }
+  side(p) { return p.x < this.mx ? 'out' : 'in'; }
+  count(kind, side) { return this.ps.filter(p => p.kind === kind && this.side(p) === side).length; }
+  clear() { this.ps = []; this.t = 0; }
+  add(kind, side, n) {
+    const m = 12;
+    for (let i = 0; i < n; i++) {
+      const x = side === 'out' ? m + Math.random() * (this.L - 2 * m) : this.R + m + Math.random() * (this.W - this.R - 2 * m);
+      const y = m + Math.random() * (this.H - 2 * m), a = Math.random() * Math.PI * 2, sp = this.o.speed || 1.6;
+      this.ps.push({ kind, x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, path: null, cross: null });
+    }
+  }
+  step(dt, walk) {
+    const sp = this.o.speed || 1.6, rad = 8, L = this.L - rad, R = this.R + rad;
+    for (const p of this.ps) {
+      if (p.path) { this.follow(p, dt); continue; }
+      if (!walk) continue;
+      const a = Math.atan2(p.vy, p.vx) + (Math.random() - .5) * .9 * Math.min(dt, 2);
+      p.vx = Math.cos(a) * sp; p.vy = Math.sin(a) * sp;
+      let nx = p.x + p.vx * dt, ny = p.y + p.vy * dt;
+      if (ny < rad) { ny = rad; p.vy = Math.abs(p.vy); }
+      if (ny > this.H - rad) { ny = this.H - rad; p.vy = -Math.abs(p.vy); }
+      if (nx < rad) { nx = rad; p.vx = Math.abs(p.vx); }
+      if (nx > this.W - rad) { nx = this.W - rad; p.vx = -Math.abs(p.vx); }
+      if (p.cross) {
+        ny = clamp(ny, p.cross.y1, p.cross.y2); nx = p.x + p.cross.dir * sp * dt; p.vx = p.cross.dir * sp;
+        if ((p.cross.dir > 0 && nx >= R) || (p.cross.dir < 0 && nx <= L)) { const d = p.cross.dir; p.cross = null; this.o.onCrossed && this.o.onCrossed(p, d); }
+      } else {
+        const wasOut = p.x <= L, wasIn = p.x >= R;
+        if ((wasOut && nx > L) || (wasIn && nx < R)) {
+          const dir = wasOut ? 1 : -1, g = this.o.gate ? this.o.gate(p, ny, dir, this) : null;
+          if (g) { p.cross = g === true ? { dir, y1: ny, y2: ny } : { dir, y1: g.y1, y2: g.y2 }; ny = clamp(ny, p.cross.y1, p.cross.y2); }
+          else { nx = wasOut ? L : R; p.vx = -p.vx; }
+        } else if (!wasOut && !wasIn && !p.cross) { nx = p.x < this.mx ? L - 1 : R + 1; }
+      }
+      p.x = nx; p.y = ny;
+    }
+  }
+  follow(p, dt) {
+    const tgt = p.path[0], sp = 3.2 * dt, dx = tgt.x - p.x, dy = tgt.y - p.y, d = Math.hypot(dx, dy);
+    if (d <= sp) { p.x = tgt.x; p.y = tgt.y; p.path.shift(); if (!p.path.length) { p.path = null; const a = Math.random() * Math.PI * 2; p.vx = Math.cos(a) * 1.6; p.vy = Math.sin(a) * 1.6; } }
+    else { p.x += dx / d * sp; p.y += dy / d * sp; }
+  }
+  start() { this.running = true; this.kick(); this.o.onState && this.o.onState(this); }
+  pause() { this.running = false; this.o.onState && this.o.onState(this); }
+  kick() { if (this.looping) return; this.looping = true; this.last = performance.now(); requestAnimationFrame(this.loop); }
+  loop(now) {
+    const busy = this.ps.some(p => p.path);
+    if (!this.running && !busy) { this.looping = false; this.draw(); return; }
+    const dt = Math.min(3, (now - this.last) / 16.67); this.last = now;
+    if (this.running) this.t += dt / 60;
+    this.step(dt, this.running);
+    this.draw();
+    this.o.onTick && this.o.onTick(this);
+    requestAnimationFrame(this.loop);
+  }
+  draw() {
+    const c = this.ctx, C = this.C, W = this.W, H = this.H;
+    c.clearRect(0, 0, W, H);
+    c.fillStyle = C.outBg; c.fillRect(0, 0, this.L, H);
+    c.fillStyle = C.inBg; c.fillRect(this.R, 0, W - this.R, H);
+    const gaps = this.o.gaps ? this.o.gaps(this) : [], r = 5.5, sp = 14;
+    for (let y = sp / 2; y < H; y += sp) {
+      if (gaps.some(([a, b]) => y > a - r && y < b + r)) continue;
+      c.strokeStyle = C.tail; c.globalAlpha = .8; c.lineWidth = 1.4; c.beginPath();
+      [[this.L + r, this.mx - 1.5], [this.R - r, this.mx + 1.5]].forEach(([x1, x2]) => { c.moveTo(x1, y - 2.4); c.lineTo(x2, y - 2.4); c.moveTo(x1, y + 2.4); c.lineTo(x2, y + 2.4); });
+      c.stroke(); c.globalAlpha = 1;
+      c.fillStyle = C.head; c.beginPath(); c.arc(this.L + r, y, r, 0, 7); c.fill(); c.beginPath(); c.arc(this.R - r, y, r, 0, 7); c.fill();
+    }
+    this.o.drawExtra && this.o.drawExtra(c, this);
+    for (const p of this.ps) drawMolCv(c, p.kind, p.x, p.y, C);
+    c.fillStyle = C.muted; c.font = '500 13px Lexend, system-ui, sans-serif';
+    c.fillText('Outside the cell', 12, 20); c.textAlign = 'right'; c.fillText('Inside the cell', W - 12, 20); c.textAlign = 'left';
+  }
+  /* a channel drawn across the vertical membrane, with a pore from y1 to y2 */
+  channel(y1, y2, opts = {}) {
+    const c = this.ctx, C = this.C, x = this.L - 6, w = this.mw + 12;
+    c.fillStyle = opts.fill || C.prot; c.strokeStyle = opts.stroke || C.protL; c.lineWidth = 1.5;
+    rrect(c, x, y1 - 17, w, 15, 7); c.fill(); c.stroke();
+    rrect(c, x, y2 + 2, w, 15, 7); c.fill(); c.stroke();
+    if (opts.closed) { c.fillStyle = opts.stroke || C.protL; c.fillRect(this.mx - 3, y1 - 2, 6, y2 - y1 + 4); }
+  }
+}
+
+/* =========================================================
+   SECTIONS
+   ========================================================= */
+const SECS = [null,
+  { title: 'The cell membrane keeps balance', min: 6 },
+  { title: 'The phospholipid bilayer', min: 8 },
+  { title: 'Proteins: doors in the membrane', min: 8 },
+  { title: 'Passive transport: simple diffusion', min: 8 },
+  { title: 'Facilitated diffusion', min: 8 },
+  { title: 'Osmosis: how water moves', min: 9 },
+  { title: 'Hypotonic, hypertonic, and isotonic', min: 12 },
+  { title: 'Active transport', min: 10 },
+  { title: 'Final check', min: 12 }
+];
+const REQS = {
+  1: [['label', 'Label all four parts of the cell'], ['sort', 'Sort what comes in and what goes out'], ['qc1', 'Answer the quick check correctly']],
+  2: [['explore', 'Explore all four parts of the phospholipid diagram'], ['build', 'Build a phospholipid bilayer'], ['qc2', 'Answer the quick check correctly']],
+  3: [['label', 'Label the membrane model'], ['test', 'Predict and test all six substances'], ['qc3', 'Answer the quick check correctly']],
+  4: [['m1', 'Mission 1: move oxygen into the cell'], ['m2', 'Mission 2: reach equilibrium'], ['m3', 'Mission 3: move oxygen out of the cell'], ['qc4', 'Answer the quick check correctly']],
+  5: [['steps', 'Step through the carrier protein example'], ['g1', 'Mission 1: run it with no transport proteins'], ['g2', 'Mission 2: get 10 glucose into the cell'], ['g3', 'Mission 3: time it with 1 protein and with 4 proteins'], ['qc5', 'Answer the quick check correctly']],
+  6: [['o1', 'Mission 1: make the right side rise'], ['o2', 'Mission 2: keep the water levels even'], ['o3', 'Mission 3: make the left side rise'], ['which', 'Predict which way water moves 4 times'], ['qc6', 'Answer the quick check correctly']],
+  7: [['rbc', 'Finish the 3 red blood cell missions'], ['plant', 'Finish the 2 plant cell missions'], ['sort', 'Sort the 6 situations'], ['data', 'Answer both potato lab questions'], ['qc7', 'Answer the quick check correctly']],
+  8: [['steps', 'Step through the sodium-potassium pump'], ['p1', 'Mission 1: run the pump'], ['p2', 'Mission 2: build up both gradients'], ['p3', 'Mission 3: open the leak channel'], ['sort', 'Sort passive and active transport'], ['qc8', 'Answer the quick check correctly']],
+  9: [['pass', `Score ${PASS_SCORE} or more out of ${FC_LEN} on the final check`]]
+};
+const GOALS = [
+  { t: 'Explain how the cell membrane helps a cell maintain homeostasis', sec: 1 },
+  { t: 'Describe the phospholipid bilayer and its protein channels', sec: 3 },
+  { t: 'Explain simple diffusion and facilitated diffusion', sec: 5 },
+  { t: 'Predict which way water moves by osmosis', sec: 6 },
+  { t: 'Predict what happens to cells in hypotonic, hypertonic, and isotonic solutions', sec: 7 },
+  { t: 'Explain why active transport needs energy and a protein pump', sec: 8 },
+  { t: `Pass the final check (${PASS_SCORE} out of ${FC_LEN})`, sec: 9 }
+];
+
+function frame(n, inner) {
+  const s = SECS[n];
+  return `<header class="sec-head">${tileHTML(n)}<div><p class="sec-meta">Section ${n} of 9 · about ${s.min} min</p><h2>${s.title}</h2></div></header>
+  ${inner}
+  <section class="card unlock" id="unlock-${n}"><h3>To unlock the next section</h3><ul class="reqs"></ul></section>
+  <nav class="sec-foot"><button class="btn ghost" type="button" data-go="${n - 1}">Back</button><button class="btn primary" type="button" id="next-${n}" data-go="${n + 1}" disabled>${n < 9 ? 'Next section' : 'See your results'}</button></nav>`;
+}
+
+/* ---------------- Section 1: the cell membrane and homeostasis ---------------- */
+function build1(el) {
+  const fig = `<svg viewBox="0 0 320 262" class="fig static" role="img" aria-label="A cell with four numbered pins">
+    <rect class="out-bg" x="0" y="0" width="320" height="262" rx="14"/>
+    ${mol('o2', 30, 104)}${mol('glc', 236, 24)}${mol('o2', 246, 246)}${mol('co2', 30, 156)}${mol('glc', 306, 182)}
+    <ellipse class="cyto" cx="160" cy="134" rx="110" ry="86"/>
+    <ellipse class="memb-t" cx="160" cy="134" rx="106" ry="82"/>
+    <ellipse class="memb-h" cx="160" cy="134" rx="110" ry="86"/>
+    <ellipse class="memb-h" cx="160" cy="134" rx="102" ry="78"/>
+    <ellipse class="nuc" cx="188" cy="122" rx="30" ry="25"/>
+    ${mol('glc', 116, 112, .8)}${mol('o2', 150, 186, .8)}
+    ${leader(36, 38, 75, 78)}${leader(36, 228, 104, 166)}${leader(296, 38, 300, 136)}${leader(286, 228, 206, 140)}
+    ${pin(1, 26, 28)}${pin(2, 26, 238)}${pin(3, 296, 26)}${pin(4, 294, 238)}
+  </svg>`;
+  el.innerHTML = frame(1,
+    card('read', 'Every cell has a border', `<div class="read-text">
+      <p>Every cell is wrapped in a ${c('cell membrane')}. It is the border between the cell and everything around it.</p>
+      <p>The membrane is ${c('selectively permeable')}: it lets some substances cross and keeps others out. Think of the front office at school. Students with a pass get through, and everyone else waits.</p>
+      <p>Why does that matter? A cell has to keep its inside steady: the right amount of water, salt, sugar, and oxygen. Keeping conditions stable is called ${c('homeostasis')}. By controlling what moves in and out, the membrane helps the cell maintain homeostasis even when the world outside changes.</p></div>
+      <div class="table-scroll"><table class="mini-table"><thead><tr><th>A cell needs to bring in</th><th>A cell needs to get rid of</th></tr></thead><tbody>
+      <tr><td>Oxygen (O₂)</td><td>Carbon dioxide (CO₂)</td></tr>
+      <tr><td>Glucose (sugar for energy)</td><td>Wastes, like urea</td></tr>
+      <tr><td>Water</td><td>Extra water or salt</td></tr></tbody></table></div>`) +
+    card('try', 'Label the cell', `<p class="muted">Drag each label to its number, or tap a label and then tap a number.</p>
+      <div class="label-wrap"><div class="label-fig">${fig}</div><div id="s1label"></div></div>`) +
+    card('try', 'In or out?', `<p class="muted">To keep homeostasis, the membrane has to let the right things in and the right things out. Sort each one.</p><div id="s1sort"></div>`) +
+    card('qc', '', '<div id="qc1"></div>'));
+
+  makeSorter($('#s1label', el), {
+    id: 's1label', layout: 'rows',
+    tokens: [{ id: 'mem', label: 'Cell membrane' }, { id: 'cyto', label: 'Cytoplasm (inside the cell)' }, { id: 'out', label: 'Outside the cell' }, { id: 'nuc', label: 'Nucleus' }],
+    bins: [{ id: '1', label: '1', aria: 'Pin 1', accepts: ['mem'] }, { id: '2', label: '2', aria: 'Pin 2', accepts: ['cyto'] }, { id: '3', label: '3', aria: 'Pin 3', accepts: ['out'] }, { id: '4', label: '4', aria: 'Pin 4', accepts: ['nuc'] }],
+    hint: t => ({ mem: 'The membrane is the dotted border around the whole cell.', cyto: 'The cytoplasm is the watery fluid that fills the cell.', out: 'Outside the cell is everything beyond the membrane.', nuc: 'The nucleus is the purple oval inside the cell.' }[t]),
+    doneMsg: 'All four labeled.',
+    onDone: () => done(1, 'label')
+  });
+  makeSorter($('#s1sort', el), {
+    id: 's1sort',
+    tokens: [
+      { id: 'o2', label: 'Oxygen (O₂) for making energy' }, { id: 'glc', label: 'Glucose (sugar) for fuel' }, { id: 'aa', label: 'Amino acids for building proteins' },
+      { id: 'co2', label: 'Carbon dioxide (CO₂)' }, { id: 'urea', label: 'Urea and other wastes' }, { id: 'salt', label: 'Extra salt the cell does not need' }
+    ],
+    bins: [{ id: 'in', label: 'Needs to come IN', accepts: ['o2', 'glc', 'aa'] }, { id: 'out', label: 'Needs to go OUT', accepts: ['co2', 'urea', 'salt'] }],
+    hint: (t, b) => b === 'in' ? 'Would the cell want to keep this? It is a waste or an extra.' : 'The cell uses this to make energy or build things.',
+    doneMsg: 'All sorted. That two-way traffic is how the membrane keeps conditions inside stable.',
+    onDone: () => done(1, 'sort')
+  });
+  makeQC($('#qc1', el), {
+    id: 'qc1', q: 'A cell keeps about the same amount of water and salt inside, even when the fluid around it changes. Which statement best explains how?',
+    opts: ['The cell membrane is selectively permeable, so it controls what enters and leaves.', 'The cell membrane lets every substance move in and out freely.', 'The cell membrane blocks every substance from crossing.', 'The nucleus pumps extra water straight out of the cell.'],
+    ans: 0, explain: 'Because the membrane controls what crosses, the cell can keep its inside stable. That is homeostasis.',
+    hints: [null, 'If everything crossed freely, the inside would just match the outside.', 'If nothing could cross, the cell could not get oxygen or glucose.', 'Think about which part of the cell is the border.'],
+    onCorrect: () => done(1, 'qc1')
+  });
+}
+
+/* ---------------- Section 2: the phospholipid bilayer ---------------- */
+function build2(el) {
+  const r = rng(3);
+  const wTop = [...Array(11)].map(() => mol('h2o', 175 + r() * 190, 28 + r() * 80)).join('');
+  const wBot = [...Array(8)].map(() => mol('h2o', 175 + r() * 190, 188 + r() * 60)).join('');
+  const bigTails = (() => {
+    const z = (x, kink) => { let s = `M${x},106`; for (let i = 1; i <= 12; i++) { const y = 106 + i * 11; const dx = (i % 2 ? 5 : -5) + (kink && i >= 6 ? (i - 5) * 3 : 0); s += ` L${x + dx},${y}`; } return s; };
+    return `<path class="pt" style="stroke-width:3" d="${z(64, false)} ${z(86, true)}"/>`;
+  })();
+  const fig = `<svg viewBox="0 0 380 270" class="fig" role="img" aria-label="A single phospholipid and a section of the bilayer, with four parts to explore">
+    <rect class="out-bg" x="168" y="18" width="208" height="100" rx="10"/><rect class="in-bg" x="168" y="182" width="208" height="76" rx="10"/>
+    ${bilayer({ x0: 168, x1: 376, mid: 150 })}
+    <g>${wTop}${wBot}</g>
+    <text class="fig-lab m" x="272" y="14" text-anchor="middle">a piece of the bilayer</text>
+    <line x1="75" y1="92" x2="75" y2="106" stroke="var(--tail)" stroke-width="5"/>
+    ${bigTails}
+    <circle class="ph" cx="75" cy="64" r="28"/><text x="75" y="70" text-anchor="middle" font-size="17" font-weight="700" fill="#3a1a12" font-family="Lexend, sans-serif">P</text>
+    <text class="fig-lab m" x="75" y="262" text-anchor="middle">one phospholipid</text>
+    <g class="hot" data-part="head" tabindex="0" role="button" aria-label="Phosphate head"><rect class="hb" x="38" y="28" width="74" height="72" rx="14"/></g>
+    <g class="hot" data-part="tails" tabindex="0" role="button" aria-label="Fatty acid tails"><rect class="hb" x="46" y="102" width="62" height="146" rx="12"/></g>
+    <g class="hot" data-part="core" tabindex="0" role="button" aria-label="Middle of the bilayer"><rect class="hb" x="166" y="135" width="212" height="30" rx="8"/></g>
+    <g class="hot" data-part="water" tabindex="0" role="button" aria-label="Water on both sides"><rect class="hb" x="166" y="20" width="212" height="96" rx="10"/><rect class="hb" x="166" y="184" width="212" height="72" rx="10"/></g>
+  </svg>`;
+  el.innerHTML = frame(2,
+    card('read', 'Heads love water, tails avoid it', `<div class="read-text">
+      <p>The cell membrane is made mostly of ${c('phospholipid', 'phospholipids')}. Each one has two parts:</p>
+      <ul><li>A phosphate <b>head</b> that is ${c('hydrophilic')}: water-loving.</li><li>Two fatty acid <b>tails</b> that are ${c('hydrophobic')}: water-fearing.</li></ul>
+      <p>There is water on both sides of the membrane: the fluid outside the cell and the cytoplasm inside. So the phospholipids line up in two layers, called a ${c('phospholipid bilayer')}. The heads face the water on both sides, and the tails hide together in the middle.</p>
+      <p>That oily middle is what makes the membrane selective. Small, nonpolar molecules like oxygen (O₂) and carbon dioxide (CO₂) slip right through. Ions and big molecules like glucose get blocked.</p></div>`) +
+    card('try', 'Explore the parts', `<p class="muted">Tap each dashed part of the diagram to see what it does.</p>
+      <div class="explore"><div class="figbox">${fig}</div>
+      <div><div class="part-info" id="s2info" aria-live="polite"><p class="muted">Pick a part of the diagram.</p></div><p class="counter" id="s2count"></p></div></div>`) +
+    card('try', 'Build the bilayer', `<p class="muted">These phospholipids are pointing every which way. Tap a phospholipid to flip it. Arrange both layers the way they sit in a real membrane, then check.</p>
+      <div class="figbox"><svg id="s2build" viewBox="0 0 420 250" class="fig" role="group" aria-label="Bilayer builder"></svg></div>
+      <div class="btn-row"><button type="button" class="btn primary" id="s2check">Check my bilayer</button></div>
+      <ul class="report" id="s2rep" aria-live="polite"></ul>`) +
+    card('qc', '', '<div id="qc2"></div>'));
+
+  // explorer
+  const INFO = {
+    head: ['Phosphate head', 'The head is <b>hydrophilic</b>, which means water-loving. Heads are attracted to water, so they always face the watery fluid.'],
+    tails: ['Fatty acid tails', 'The two tails are <b>hydrophobic</b>, which means water-fearing. Like oil in water, they avoid water and tuck away from it.'],
+    core: ['The oily middle', 'In the bilayer, the tails meet in the middle. This hydrophobic layer lets small, nonpolar molecules like O₂ and CO₂ through, but blocks ions and large molecules like glucose.'],
+    water: ['Water on both sides', 'There is watery fluid outside the cell and watery cytoplasm inside. The heads face the water on both sides, so the phospholipids form two layers: a bilayer.']
+  };
+  const seen = new Set(S.tasks.s2parts || []);
+  const upd = () => { $('#s2count', el).textContent = `${seen.size} of 4 parts explored`; $$('.hot', el).forEach(h => h.classList.toggle('seen', seen.has(h.dataset.part))); };
+  const pick = h => {
+    $$('.hot', el).forEach(x => x.classList.remove('active')); h.classList.add('active');
+    const [t, d] = INFO[h.dataset.part];
+    $('#s2info', el).innerHTML = `<h4>${t}</h4><p>${d}</p>`;
+    seen.add(h.dataset.part); S.tasks.s2parts = [...seen]; save(); upd();
+    if (seen.size === 4) done(2, 'explore');
+  };
+  $$('.hot', el).forEach(h => { h.addEventListener('click', () => pick(h)); h.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(h); } }); });
+  upd();
+
+  // bilayer builder
+  const svg = $('#s2build', el), N = 8, XS = [...Array(N)].map((_, i) => 38 + i * 49.1);
+  const rw = rng(11);
+  const wd = (y0, y1, n, avoid) => { let s = '', k = 0; while (k < n) { const x = 14 + rw() * 392, y = y0 + rw() * (y1 - y0); if (avoid(x, y)) continue; s += mol('h2o', x, y); k++; } return s; };
+  let st = S.tasks.s2build ? { t: Array(N).fill(false), b: Array(N).fill(true) } : null;
+  if (!st) {
+    const mk = want => { const a = [...Array(N)].map(() => Math.random() < .5); let wrong = a.filter(v => v !== want).length; while (wrong < 3) { const i = Math.floor(Math.random() * N); if (a[i] === want) { a[i] = !want; wrong++; } } return a; };
+    st = { t: mk(false), b: mk(true) }; // true = head points down
+  }
+  svg.innerHTML = `<rect class="out-bg" x="0" y="0" width="420" height="58" rx="10"/><rect class="in-bg" x="0" y="192" width="420" height="58" rx="10"/>
+    <g class="waterdots">${wd(10, 52, 14, (x, y) => x > 220 && y < 28)}${wd(198, 244, 14, (x, y) => x > 170 && y > 228)}</g>
+    <rect class="core-band" x="16" y="106" width="388" height="38" rx="8"/>
+    <text class="side-lab" x="410" y="18" text-anchor="end">Water outside the cell</text><text class="side-lab" x="410" y="244" text-anchor="end">Water inside the cell (cytoplasm)</text>
+    ${['t', 'b'].map(row => XS.map((x, i) => `<g class="plb ${st[row][i] ? 'down' : ''}" data-row="${row}" data-i="${i}" transform="translate(${f1(x)},${row === 't' ? 100 : 150})" tabindex="0" role="button" aria-label="${row === 't' ? 'Top' : 'Bottom'} layer, phospholipid ${i + 1}"><rect x="-16" y="-31" width="32" height="62" rx="8" fill="transparent"/><g class="flip">${tails(0, -14, 22).replace('class="pt"', 'class="pt" style="stroke-width:2"')}<circle class="ph" cy="-21" r="7.5"/></g></g>`).join('')).join('')}`;
+  if (S.tasks.s2build) svg.classList.add('formed');
+  const flip = g => {
+    if (S.tasks.s2build) return;
+    const row = g.dataset.row, i = +g.dataset.i; st[row][i] = !st[row][i];
+    g.classList.toggle('down', st[row][i]);
+  };
+  $$('.plb', svg).forEach(g => { g.addEventListener('click', () => flip(g)); g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(g); } }); });
+  $('#s2check', el).addEventListener('click', () => {
+    const tw = st.t.filter(v => v).length, bw = st.b.filter(v => !v).length, items = [];
+    items.push(tw === 0 ? ['y', 'Top layer: every head faces the water outside the cell.'] : ['x', `Top layer: ${tw} head${tw > 1 ? 's point' : ' points'} into the middle. Heads are hydrophilic, so they should face the water outside.`]);
+    items.push(bw === 0 ? ['y', 'Bottom layer: every head faces the cytoplasm.'] : ['x', `Bottom layer: ${bw} head${bw > 1 ? 's point' : ' points'} into the middle. These heads should face the water inside the cell.`]);
+    items.push(tw === 0 && bw === 0 ? ['y', 'Tails: they meet in the middle, away from water.'] : ['w', 'Tails: checked once both layers are right.']);
+    $('#s2rep', el).innerHTML = items.map(([k, t]) => `<li class="${k}"><span class="ic">${k === 'y' ? '✓' : k === 'x' ? '✗' : '·'}</span><span>${t}</span></li>`).join('');
+    if (tw === 0 && bw === 0) { svg.classList.add('formed'); glow(svg); S.tasks.s2build = true; save(); done(2, 'build'); }
+    else shake($('#s2rep', el));
+  });
+  if (S.tasks.s2build) $('#s2rep', el).innerHTML = '<li class="y"><span class="ic">✓</span><span>Bilayer built: heads face the water, tails meet in the middle.</span></li>';
+
+  makeQC($('#qc2', el), {
+    id: 'qc2', q: 'Why do the phospholipid tails point toward the middle of the bilayer?',
+    opts: ['The tails are hydrophobic, so they stay away from the water on both sides.', 'The tails are hydrophilic, so they reach toward the water.', 'The tails carry glucose across the membrane.', 'The tails need to stay close to the nucleus.'],
+    ans: 0, explain: 'Water is on both sides of the membrane, so the water-fearing tails tuck into the middle while the water-loving heads face out.',
+    hints: [null, 'Hydrophilic means water-loving. Which part is that?', 'Glucose is blocked by the tails. It needs a protein.', 'The membrane is the cell\'s outer border, far from the nucleus.'],
+    onCorrect: () => done(2, 'qc2')
+  });
+}
+
+/* ---------------- Section 3: membrane proteins ---------------- */
+function build3(el) {
+  const labFig = `<svg viewBox="0 0 400 262" class="fig static" role="img" aria-label="A membrane model with four numbered pins">
+    ${membraneScene({ w: 400, h: 262, mid: 130, prots: [{ kind: 'channel', x: 130 }, { kind: 'carrier', x: 290, open: 'out' }], labOut: [10, 92], labIn: [10, 200] })}
+    ${leader(205, 39, 200, 101)}${leader(225, 223, 232, 132)}${leader(48, 34, 124, 91)}${leader(360, 34, 300, 89)}
+    ${pin(1, 205, 26)}${pin(2, 225, 236)}${pin(3, 40, 26)}${pin(4, 368, 26)}
+  </svg>`;
+  el.innerHTML = frame(3,
+    card('read', 'Doors in the wall', `<div class="read-text">
+      <p>The oily middle of the bilayer blocks ions and large molecules, but cells still need them. So proteins are stuck through the membrane, like doors in a wall.</p></div>
+      <div class="rules">
+        <div class="rule"><b>Channel proteins</b> make a tunnel through the membrane. Ions such as Na⁺, K⁺, and Cl⁻ pass through channels. ${c('aquaporin', 'Aquaporins')} are channels made just for water.</div>
+        <div class="rule"><b>Carrier proteins</b> grab a specific molecule, like glucose, then change shape to move it to the other side.</div>
+        <div class="rule"><b>Each protein is specific.</b> It only lets certain substances through. That is another way the membrane stays selectively permeable.</div>
+      </div>`) +
+    card('try', 'Label the membrane model', `<p class="muted">Drag each label to its number, or tap a label and then tap a number.</p>
+      <div class="label-wrap"><div class="label-fig figbox">${labFig}</div><div id="s3label"></div></div>`) +
+    card('try', 'Predict, then test', `<p class="muted">Pick a substance. Predict whether it can slip straight through the bilayer or needs a protein. Then test it.</p>
+      <div class="sim">
+        <div class="figbox"><svg id="s3svg" viewBox="0 0 400 280" class="fig" role="img" aria-label="Membrane test chamber"></svg></div>
+        <div>
+          <div class="tabs" id="s3tabs" role="tablist"></div>
+          <p class="place-prompt" id="s3prompt"></p>
+          <div class="seg" role="group" aria-label="Your prediction" id="s3pred"><button type="button" data-p="thru" aria-pressed="false">Through the bilayer</button><button type="button" data-p="prot" aria-pressed="false">Needs a protein</button></div>
+          <div class="btn-row"><button type="button" class="btn primary" id="s3test" disabled>Test it</button></div>
+          <p class="fb-line" id="s3fb" aria-live="polite"></p>
+        </div>
+      </div>
+      <h4 style="margin:18px 0 0;font-weight:500;color:var(--muted)">Lab notebook</h4>
+      <div class="table-scroll"><table class="notebook" id="s3nb"><thead><tr><th>Substance</th><th>You predicted</th><th>What happened</th></tr></thead><tbody></tbody></table></div>`) +
+    card('qc', '', '<div id="qc3"></div>'));
+
+  makeSorter($('#s3label', el), {
+    id: 's3label', layout: 'rows',
+    tokens: [{ id: 'head', label: 'Phospholipid head' }, { id: 'tails', label: 'Fatty acid tails' }, { id: 'chan', label: 'Channel protein' }, { id: 'carr', label: 'Carrier protein' }],
+    bins: [{ id: '1', label: '1', aria: 'Pin 1', accepts: ['head'] }, { id: '2', label: '2', aria: 'Pin 2', accepts: ['tails'] }, { id: '3', label: '3', aria: 'Pin 3', accepts: ['chan'] }, { id: '4', label: '4', aria: 'Pin 4', accepts: ['carr'] }],
+    hint: t => ({ head: 'Heads are the round circles on the outer edges.', tails: 'Tails are the wavy lines in the middle.', chan: 'A channel is a tunnel: two pieces with a gap between them.', carr: 'A carrier is one protein with a pocket that holds a molecule.' }[t]),
+    doneMsg: 'All four labeled.',
+    onDone: () => done(3, 'label')
+  });
+
+  const SUBS = [
+    { id: 'o2', name: 'Oxygen (O₂)', thru: true, why: 'O₂ is small and nonpolar, so it slips right between the tails.' },
+    { id: 'co2', name: 'Carbon dioxide (CO₂)', thru: true, why: 'CO₂ is small and nonpolar, so it slips right through the bilayer.' },
+    { id: 'glc', name: 'Glucose', thru: false, prot: 'carrier', why: 'Glucose is too big and polar for the oily middle. A carrier protein moves it across.' },
+    { id: 'na', name: 'Sodium ion (Na⁺)', thru: false, prot: 'channel', why: 'Na⁺ has an electric charge, so the hydrophobic tails block it. It goes through a channel protein.' },
+    { id: 'k', name: 'Potassium ion (K⁺)', thru: false, prot: 'channel', why: 'K⁺ is charged, so the tails block it. It needs a channel protein.' },
+    { id: 'cl', name: 'Chloride ion (Cl⁻)', thru: false, prot: 'channel', why: 'Cl⁻ is charged, so the tails block it. It needs a channel protein.' }
+  ];
+  const svg = $('#s3svg', el), MID = 140, CHX = 70, CAX = 330, START = [200, 34];
+  svg.innerHTML = membraneScene({ w: 400, h: 280, mid: MID, prots: [{ kind: 'channel', x: CHX }, { kind: 'carrier', x: CAX, open: 'out' }], labOut: [392, 18], labIn: [392, 272], labAnchor: 'end' }) + '<g id="s3mv"></g>';
+  const tests = S.tasks.s3tests || (S.tasks.s3tests = {});
+  let cur = SUBS.findIndex(s => !tests[s.id]); if (cur < 0) cur = 0;
+  let pred = null, busy = false, timers = [];
+  const nb = () => {
+    $('#s3nb tbody', el).innerHTML = SUBS.map(s => { const t = tests[s.id]; return t ? `<tr><td>${s.name}</td><td>${t.pred === 'thru' ? 'Through the bilayer' : 'Needs a protein'}</td><td class="${t.ok ? 'y' : 'n'}">${s.thru ? 'Went straight through the bilayer' : `Blocked, then used a ${s.prot} protein`}</td></tr>` : `<tr><td>${s.name}</td><td class="muted">—</td><td class="muted">—</td></tr>`; }).join('');
+  };
+  const tabs = () => {
+    $('#s3tabs', el).innerHTML = SUBS.map((s, i) => `<button type="button" class="tab ${tests[s.id] ? 'ok' : ''}" role="tab" aria-selected="${i === cur}" data-i="${i}">${s.name.replace(/ \(.*\)/, '')}</button>`).join('');
+    $$('#s3tabs .tab', el).forEach(b => b.addEventListener('click', () => { if (busy) return; cur = +b.dataset.i; show(); }));
+  };
+  const place = (x, y, instant) => {
+    const m = $('#s3mv .mover', svg); if (!m) return;
+    if (instant) { m.style.transition = 'none'; moveTo(m, x, y); void m.getBoundingClientRect(); m.style.transition = ''; }
+    else moveTo(m, x, y);
+  };
+  const setCarrier = open => { const slot = $(`.pslot[data-x="${CAX}"]`, svg); if (slot) slot.innerHTML = protein('carrier', CAX, MID, open); };
+  const show = () => {
+    timers.forEach(clearTimeout); timers = []; busy = false;
+    const s = SUBS[cur]; pred = null;
+    $('#s3mv', svg).innerHTML = mover(s.id, START[0], START[1], '', 1.5);
+    setCarrier('out');
+    $('#s3prompt', el).innerHTML = `<b>${s.name}</b>: can it cross the bilayer on its own?`;
+    $$('#s3pred button', el).forEach(b => b.setAttribute('aria-pressed', 'false'));
+    $('#s3test', el).disabled = true; $('#s3fb', el).textContent = '';
+    tabs();
+  };
+  $$('#s3pred button', el).forEach(b => b.addEventListener('click', () => {
+    if (busy) return; pred = b.dataset.p;
+    $$('#s3pred button', el).forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    $('#s3test', el).disabled = false;
+  }));
+  const later = (ms, fn) => timers.push(setTimeout(fn, REDUCED ? 30 : ms));
+  $('#s3test', el).addEventListener('click', () => {
+    if (busy || !pred) return;
+    const s = SUBS[cur], m = $('#s3mv .mover', svg); busy = true; $('#s3test', el).disabled = true;
+    place(START[0], START[1], true);
+    const finish = () => {
+      const ok = (pred === 'thru') === s.thru;
+      tests[s.id] = { pred, ok }; S.tasks.s3tests = tests; save();
+      $('#s3fb', el).className = 'fb-line ' + (ok ? 'good' : 'bad');
+      $('#s3fb', el).innerHTML = `${ok ? '<b>Your prediction matched.</b>' : '<b>Not what you predicted.</b>'} ${s.why}`;
+      nb(); tabs(); busy = false;
+      if (SUBS.every(x => tests[x.id])) done(3, 'test');
+      else { const nx = SUBS.findIndex(x => !tests[x.id]); later(2600, () => { if (!busy) { cur = nx; show(); } }); }
+    };
+    if (s.thru) {
+      m.style.transitionDuration = '1.6s'; later(40, () => place(200, 252)); later(1750, finish);
+    } else {
+      const px = s.prot === 'carrier' ? CAX : CHX;
+      m.style.transitionDuration = '.6s'; later(40, () => place(200, 96));
+      later(700, () => { m.style.transitionDuration = '.35s'; place(200, 62); $('#s3fb', el).className = 'fb-line bad'; $('#s3fb', el).textContent = 'Blocked by the tails!'; });
+      later(1150, () => { m.style.transitionDuration = '.8s'; place(px, 52); });
+      if (s.prot === 'carrier') {
+        later(2050, () => { m.style.transitionDuration = '.5s'; place(px, MID - 16); });
+        later(2650, () => { setCarrier('in'); place(px, MID + 16); });
+        later(3200, () => { m.style.transitionDuration = '.7s'; place(px, 252); });
+        later(3700, () => setCarrier('out'));
+        later(4000, finish);
+      } else {
+        later(2050, () => { m.style.transitionDuration = '1.1s'; place(px, 252); });
+        later(3250, finish);
+      }
+    }
+  });
+  show(); nb();
+
+  makeQC($('#qc3', el), {
+    id: 'qc3', q: 'A potassium ion (K⁺) needs to get into a nerve cell. How can it cross the membrane?',
+    opts: ['Through a channel protein, because the charged ion is blocked by the hydrophobic tails', 'Straight through the phospholipid tails, because it is small', 'It cannot cross the membrane at all', 'Through the nucleus of the cell'],
+    ans: 0, explain: 'Ions have a charge, so the oily middle of the bilayer blocks them. A channel protein gives them a path.',
+    hints: [null, 'Being small is not enough. What does the charge do?', 'Cells do take in K⁺. What gives it a way in?', 'The nucleus is inside the cell. Think about the border.'],
+    onCorrect: () => done(3, 'qc3')
+  });
+}
+
+/* ---------------- Section 4: simple diffusion ---------------- */
+function build4(el) {
+  el.innerHTML = frame(4,
+    card('read', 'From crowded to spread out', `<div class="read-text">
+      <p>Particles are always moving and bumping around. When they are crowded in one place, more of them wander out of the crowd than into it. So particles spread from high ${c('concentration')} to low concentration. That is ${c('diffusion')}.</p>
+      <p>A difference in concentration is called a ${c('concentration gradient')}. Moving from high to low is moving <i>down</i> the gradient, like a ball rolling downhill. It takes no energy from the cell, so diffusion is a kind of ${c('passive transport')}.</p>
+      <p>Diffusion keeps going until the concentration is the same everywhere, called ${c('equilibrium')}. Particles still move at equilibrium, but just as many go each way, so nothing changes overall.</p>
+      <p>${c('simple diffusion', 'Simple diffusion')} is diffusion straight through the phospholipid bilayer, with no protein. In your lungs, O₂ is high in the air sacs and low in the blood, so O₂ diffuses into the blood. CO₂ is high in the blood, so it diffuses out.</p></div>
+      <div class="rules">
+        <div class="rule"><b>Direction:</b> high concentration → low concentration</div>
+        <div class="rule"><b>Energy:</b> none needed (passive)</div>
+        <div class="rule"><b>Path:</b> straight through the bilayer <small>(only small, nonpolar molecules like O₂ and CO₂)</small></div>
+      </div>`) +
+    card('try', 'Diffusion simulator', `<p class="muted">Set how much oxygen starts on each side, then press Run. Use the missions to explore.</p>
+      <canvas class="cv" id="s4cv" role="img" aria-label="Oxygen molecules moving across a cell membrane"></canvas>
+      <div class="legend"><span>${legendIcon('o2')}Oxygen (O₂)</span></div>
+      <div class="sim even" style="margin-top:12px">
+        <div>
+          <div class="steppers" id="s4stp"></div>
+          <div class="btn-row"><button type="button" class="btn primary" id="s4run">Run</button><button type="button" class="btn ghost" id="s4reset">Reset</button><span class="timer" id="s4time">0 s</span></div>
+          <div class="counts"><div class="cnt out"><div class="k">Oxygen outside</div><div class="v" id="s4co">0</div></div><div class="cnt in"><div class="k">Oxygen inside</div><div class="v" id="s4ci">0</div></div></div>
+          <div id="s4graph"></div>
+          <div class="legend"><span><svg viewBox="0 0 22 18"><line x1="1" y1="9" x2="21" y2="9" stroke="var(--e)" stroke-width="3"/></svg>Outside</span><span><svg viewBox="0 0 22 18"><line x1="1" y1="9" x2="21" y2="9" stroke="var(--sol)" stroke-width="3"/></svg>Inside</span></div>
+        </div>
+        <div><ul class="missions" id="s4m" style="margin-top:0"></ul></div>
+      </div>
+      <h4 style="margin:18px 0 0;font-weight:500;color:var(--muted)">Lab notebook</h4>
+      <div class="table-scroll"><table class="notebook" id="s4nb"><thead><tr><th>Mission</th><th>Start (outside, inside)</th><th>End (outside, inside)</th><th>Net movement</th></tr></thead><tbody></tbody></table></div>`) +
+    card('qc', '', '<div id="qc4"></div>'));
+
+  let start = { out: 30, in: 5 }, samples = [], lastSample = -1;
+  const sim = new PSim($('#s4cv', el), {
+    speed: 2.1,
+    gate: () => Math.random() < .75,
+    onTick: s => {
+      $('#s4co', el).textContent = s.count('o2', 'out'); $('#s4ci', el).textContent = s.count('o2', 'in');
+      $('#s4time', el).textContent = Math.floor(s.t) + ' s';
+      if (s.t - lastSample >= .5) { lastSample = s.t; samples.push([s.t, s.count('o2', 'out'), s.count('o2', 'in')]); graph(); }
+    },
+    onState: s => { $('#s4run', el).textContent = s.running ? 'Pause' : (s.t > 0 ? 'Resume' : 'Run'); }
+  });
+  const graph = () => {
+    const tmax = Math.max(30, Math.ceil((samples.length ? samples[samples.length - 1][0] : 0) / 10) * 10);
+    $('#s4graph', el).innerHTML = lineGraph({ w: 320, h: 170, x: [0, tmax], y: [0, 40], xt: [0, tmax / 2, tmax], yt: [0, 10, 20, 30, 40], xl: 'Time (s)', yl: 'O₂ molecules', aria: 'Oxygen on each side over time', series: [{ cls: 'lo', pts: samples.map(s => [s[0], s[1]]) }, { cls: 'li', pts: samples.map(s => [s[0], s[2]]) }] });
+  };
+  const reset = () => {
+    sim.pause(); sim.clear(); sim.add('o2', 'out', start.out); sim.add('o2', 'in', start.in);
+    samples = [[0, start.out, start.in]]; lastSample = 0; graph();
+    $('#s4co', el).textContent = start.out; $('#s4ci', el).textContent = start.in; $('#s4time', el).textContent = '0 s';
+    sim.draw(); sim.o.onState(sim);
+  };
+  makeSteppers($('#s4stp', el), [{ id: 's4so', label: 'Oxygen outside', min: 0, max: 40, step: 5, val: 30 }, { id: 's4si', label: 'Oxygen inside', min: 0, max: 40, step: 5, val: 5 }],
+    v => { start = { out: v.s4so, in: v.s4si }; reset(); });
+  $('#s4run', el).addEventListener('click', () => { sim.running ? sim.pause() : sim.start(); });
+  $('#s4reset', el).addEventListener('click', reset);
+  reset();
+
+  const NB = S.tasks.s4nb || (S.tasks.s4nb = {});
+  const nb = () => {
+    $('#s4nb tbody', el).innerHTML = ['m1', 'm2', 'm3'].map((id, i) => { const r = NB[id]; return r ? `<tr><td>${i + 1}</td><td>${r.so}, ${r.si}</td><td>${r.eo}, ${r.ei}</td><td>${r.net}</td></tr>` : `<tr><td>${i + 1}</td><td class="muted">—</td><td class="muted">—</td><td class="muted">—</td></tr>`; }).join('');
+  };
+  const rec = (id, net) => { NB[id] = { so: start.out, si: start.in, eo: sim.count('o2', 'out'), ei: sim.count('o2', 'in'), net }; S.tasks.s4nb = NB; save(); nb(); };
+  makeMissions($('#s4m', el), 4, [
+    { id: 'm1', t: 'Set up the sim so oxygen will move <b>into</b> the cell. Run it, then lock in.', check: () => {
+      const i = sim.count('o2', 'in');
+      if (start.out - start.in < 10) return [false, 'First set it up: put at least 10 more oxygen molecules outside than inside.'];
+      if (sim.t < 4) return [false, 'Press Run and watch for a few seconds first.'];
+      if (i <= start.in) return [false, 'Keep it running and watch the inside count.'];
+      rec('m1', 'Into the cell');
+      return [true, `Oxygen moved in: the inside went from ${start.in} to ${i}. High → low, no energy needed.`];
+    } },
+    { id: 'm2', t: 'Run the sim until the two sides reach <b>equilibrium</b> (about the same count on each side).', check: () => {
+      const o = sim.count('o2', 'out'), i = sim.count('o2', 'in');
+      if (sim.t < 5) return [false, 'Run the sim for a while first.'];
+      if (o + i < 10) return [false, 'Add more oxygen so you can see the pattern.'];
+      if (Math.abs(o - i) > 4) return [false, 'Not even yet. Keep it running until the two counts are about the same.'];
+      rec('m2', 'About equal both ways');
+      return [true, `Equilibrium: ${o} outside and ${i} inside. Molecules keep crossing, but just as many go each way.`];
+    } },
+    { id: 'm3', t: 'Set up the sim so oxygen will move <b>out of</b> the cell. Run it, then lock in.', check: () => {
+      const i = sim.count('o2', 'in');
+      if (start.in - start.out < 10) return [false, 'Set it up with at least 10 more oxygen molecules inside than outside.'];
+      if (sim.t < 4) return [false, 'Press Run and watch for a few seconds first.'];
+      if (i >= start.in) return [false, 'Keep it running and watch the inside count.'];
+      rec('m3', 'Out of the cell');
+      return [true, `Oxygen moved out: the inside went from ${start.in} to ${i}. Diffusion always goes from high to low.`];
+    } }
+  ]);
+  nb();
+
+  makeQC($('#qc4', el), {
+    id: 'qc4', q: 'There is more oxygen outside a lung cell than inside it. What will happen?',
+    opts: ['Oxygen diffuses into the cell without using energy', 'Oxygen diffuses out of the cell without using energy', 'The cell uses ATP to pump oxygen in', 'Nothing, because oxygen cannot cross the membrane'],
+    ans: 0, explain: 'Oxygen moves down its gradient, from high (outside) to low (inside). It is small and nonpolar, so it slips through the bilayer with no energy.',
+    hints: [null, 'Diffusion goes from high to low. Where is oxygen high?', 'Moving from high to low does not need energy.', 'O₂ is small and nonpolar. Can it pass the tails?'],
+    onCorrect: () => done(4, 'qc4')
+  });
+}
+
+/* flipchart helper: steps = [{t, apply()}] */
+function makeFlip(root, sec, steps, reqId) {
+  let step = 0;
+  $('.flip-dots', root).innerHTML = steps.map(() => '<i></i>').join('');
+  const show = () => {
+    const s = steps[step];
+    s.apply();
+    $('.flip-step', root).textContent = `Step ${step + 1} of ${steps.length}`;
+    $('.flip-text', root).innerHTML = s.t;
+    $$('.flip-dots i', root).forEach((d, i) => d.classList.toggle('on', i === step));
+    $('.fl-back', root).disabled = step === 0; $('.fl-next', root).disabled = step === steps.length - 1;
+    if (step === steps.length - 1) done(sec, reqId);
+  };
+  $('.fl-next', root).addEventListener('click', () => { if (step < steps.length - 1) { step++; show(); } });
+  $('.fl-back', root).addEventListener('click', () => { if (step > 0) { step--; show(); } });
+  show();
+}
+const flipHTML = (svgId, viewBox, label, extra = '') => `<div class="flip">
+  <div><svg id="${svgId}" viewBox="${viewBox}" class="fig" role="img" aria-label="${label}"></svg></div>
+  <div><p class="flip-step"></p><p class="flip-text"></p>${extra}<div class="flip-dots"></div>
+    <div class="btn-row"><button type="button" class="btn ghost sm fl-back">Back</button><button type="button" class="btn primary sm fl-next">Next step</button></div></div></div>`;
+
+/* ---------------- Section 5: facilitated diffusion ---------------- */
+function build5(el) {
+  el.innerHTML = frame(5,
+    card('read', 'Same direction, different path', `<div class="read-text">
+      <p>Some substances cannot slip through the oily middle of the bilayer: ions, because they have a charge, and big polar molecules like glucose. They still diffuse from high to low, but they need a protein to get across. This is ${c('facilitated diffusion')}. (To facilitate means "to make easier.")</p>
+      <p>The protein can be a ${c('channel protein')} (a tunnel) or a ${c('carrier protein')} (it changes shape). Either way, the cell spends no energy, because the substance is still moving down its gradient. Facilitated diffusion is passive transport.</p></div>
+      <div class="vs">
+        <div><h4>Simple diffusion</h4><ul><li>High → low</li><li>No energy</li><li>Straight through the bilayer</li><li>O₂, CO₂</li></ul></div>
+        <div><h4>Facilitated diffusion</h4><ul><li>High → low</li><li>No energy</li><li>Through a channel or carrier protein</li><li>Glucose, ions (Na⁺, K⁺, Cl⁻), water through aquaporins</li></ul></div>
+      </div>
+      <h4 style="margin:16px 0 0;font-weight:500">Watch a carrier protein work</h4>
+      ${flipHTML('s5demo', '0 0 400 260', 'A carrier protein moving glucose into a cell')}`) +
+    card('try', 'Glucose gateway', `<p class="muted">Glucose starts outside the cell. Choose how many transport proteins are in the membrane, then press Run.</p>
+      <canvas class="cv" id="s5cv" role="img" aria-label="Glucose molecules and transport proteins in a membrane"></canvas>
+      <div class="legend"><span>${legendIcon('glc')}Glucose</span><span><svg viewBox="0 0 22 18"><rect x="2" y="1" width="18" height="6" rx="3" fill="var(--prot)" stroke="var(--prot-l)"/><rect x="2" y="11" width="18" height="6" rx="3" fill="var(--prot)" stroke="var(--prot-l)"/></svg>Transport protein</span></div>
+      <div class="sim even" style="margin-top:12px">
+        <div>
+          <div class="steppers" id="s5stp" style="grid-template-columns:1fr"></div>
+          <div class="btn-row"><button type="button" class="btn primary" id="s5run">Run</button><button type="button" class="btn ghost" id="s5reset">Reset</button><span class="timer" id="s5time">0 s</span></div>
+          <div class="counts"><div class="cnt out"><div class="k">Glucose outside</div><div class="v" id="s5co">30</div></div><div class="cnt in"><div class="k">Glucose inside</div><div class="v" id="s5ci">0</div></div></div>
+          <h4 style="margin:14px 0 0;font-weight:500;color:var(--muted)">Timing table</h4>
+          <table class="notebook" id="s5tt"><thead><tr><th>Transport proteins</th><th>Seconds to get 10 glucose inside</th></tr></thead><tbody></tbody></table>
+        </div>
+        <div><ul class="missions" id="s5m" style="margin-top:0"></ul></div>
+      </div>`) +
+    card('qc', '', '<div id="qc5"></div>'));
+
+  // carrier demo
+  const MID = 130, svg = $('#s5demo', el);
+  const bg = [[60, 40], [112, 72], [300, 38], [344, 78], [150, 28], [262, 70]].map(([x, y]) => mol('glc', x, y)).join('') + mol('glc', 330, 222);
+  svg.innerHTML = membraneScene({ w: 400, h: 260, mid: MID, prots: [{ kind: 'carrier', x: 200, open: 'out' }], labOut: [392, 18], labIn: [392, 252], labAnchor: 'end' }) + bg +
+    `<g id="s5arrow" style="opacity:0;transition:opacity .5s"><line x1="28" y1="40" x2="28" y2="206" stroke="var(--good)" stroke-width="4" stroke-linecap="round"/><polygon points="18,200 38,200 28,220" fill="var(--good)"/><text class="fig-lab" x="40" y="44">high</text><text class="fig-lab" x="40" y="214">low</text></g>` +
+    mover('glc', 200, 40, 's5g');
+  const setC = open => { $(`.pslot`, svg).innerHTML = protein('carrier', 200, MID, open); };
+  const G = $('#s5g', svg), A = $('#s5arrow', svg);
+  makeFlip(el, 5, [
+    { t: 'Glucose is crowded outside the cell and scarce inside. It is too big and polar to slip through the tails.', apply: () => { setC('out'); moveTo(G, 200, 40); A.style.opacity = 0; } },
+    { t: 'A glucose molecule fits into the carrier protein\'s pocket, like a key in a lock.', apply: () => { setC('out'); moveTo(G, 200, MID - 18); A.style.opacity = 0; } },
+    { t: 'The carrier changes shape. Now the pocket opens to the inside of the cell.', apply: () => { setC('in'); moveTo(G, 200, MID + 18); A.style.opacity = 0; } },
+    { t: 'The glucose is released inside. The carrier changes back, ready for the next one.', apply: () => { setC('out'); moveTo(G, 250, 212); A.style.opacity = 0; } },
+    { t: '<b>No ATP was used.</b> Glucose moved from high to low concentration, so this is passive transport: facilitated diffusion.', apply: () => { setC('out'); moveTo(G, 250, 212); A.style.opacity = 1; } }
+  ], 'steps');
+
+  // gateway sim
+  let n = 0, reached = false;
+  const times = S.tasks.s5times || (S.tasks.s5times = {});
+  const pores = s => [...Array(n)].map((_, k) => s.H * (k + 1) / (n + 1));
+  const sim = new PSim($('#s5cv', el), {
+    speed: 1.9,
+    gate: (p, ny, dir, s) => { for (const y of pores(s)) if (Math.abs(ny - y) < 16) return { y1: y - 4, y2: y + 4 }; return null; },
+    gaps: s => pores(s).map(y => [y - 24, y + 24]),
+    drawExtra: (cx, s) => pores(s).forEach(y => s.channel(y - 7, y + 7)),
+    onTick: s => {
+      const i = s.count('glc', 'in');
+      $('#s5co', el).textContent = s.count('glc', 'out'); $('#s5ci', el).textContent = i;
+      $('#s5time', el).textContent = Math.floor(s.t) + ' s';
+      if (!reached && n > 0 && i >= 10) { reached = true; times[n] = Math.round(s.t * 10) / 10; S.tasks.s5times = times; save(); tt(); }
+    },
+    onState: s => { $('#s5run', el).textContent = s.running ? 'Pause' : (s.t > 0 ? 'Resume' : 'Run'); }
+  });
+  const tt = () => { $('#s5tt tbody', el).innerHTML = [1, 2, 3, 4].map(k => `<tr><td>${k}</td><td>${times[k] != null ? times[k] + ' s' : '<span class="muted">—</span>'}</td></tr>`).join(''); };
+  const reset = () => {
+    sim.pause(); sim.clear(); sim.add('glc', 'out', 30); reached = false;
+    $('#s5co', el).textContent = 30; $('#s5ci', el).textContent = 0; $('#s5time', el).textContent = '0 s';
+    sim.draw(); sim.o.onState(sim);
+  };
+  makeSteppers($('#s5stp', el), [{ id: 's5n', label: 'Transport proteins in the membrane', min: 0, max: 4, step: 1, val: 0 }], v => { n = v.s5n; reset(); });
+  $('#s5run', el).addEventListener('click', () => { sim.running ? sim.pause() : sim.start(); });
+  $('#s5reset', el).addEventListener('click', reset);
+  reset(); tt();
+
+  makeMissions($('#s5m', el), 5, [
+    { id: 'g1', t: 'Run it with <b>0</b> transport proteins for at least 5 seconds. Can glucose get in?', check: () => {
+      if (n !== 0) return [false, 'Set the transport proteins to 0 first.'];
+      if (sim.t < 5) return [false, 'Run it for at least 5 seconds.'];
+      return [true, 'Not one glucose got in. The oily middle of the bilayer blocks it.'];
+    } },
+    { id: 'g2', t: 'Add transport proteins and get at least <b>10 glucose</b> into the cell.', check: () => {
+      const i = sim.count('glc', 'in');
+      if (n === 0) return [false, 'Add at least one transport protein.'];
+      if (i < 10) return [false, `${i} inside so far. Keep it running.`];
+      return [true, 'Glucose moved in through the proteins: high → low, with no ATP. That is facilitated diffusion.'];
+    } },
+    { id: 'g3', t: 'Time it: get 10 glucose inside with <b>1</b> protein, then again with <b>4</b>. Your times fill the table.', check: () => {
+      if (times[1] == null || times[4] == null) return [false, `Still need: ${[times[1] == null ? '1 protein' : '', times[4] == null ? '4 proteins' : ''].filter(Boolean).join(' and ')}. Change the number, press Run, and wait for 10 inside.`];
+      return [true, `1 protein took ${times[1]} s and 4 proteins took ${times[4]} s. More proteins means more doors, so glucose gets in faster.`];
+    } }
+  ]);
+
+  makeQC($('#qc5', el), {
+    id: 'qc5', q: 'How are simple diffusion and facilitated diffusion alike?',
+    opts: ['Both move substances from high to low concentration without using energy', 'Both need ATP to work', 'Both need a channel or carrier protein', 'Both move substances from low to high concentration'],
+    ans: 0, explain: 'Both are passive transport. The only difference is that facilitated diffusion uses a protein.',
+    hints: [null, 'Neither one moves against the gradient, so neither needs energy.', 'Only one of them uses a protein. Which?', 'Diffusion of any kind runs downhill.'],
+    onCorrect: () => done(5, 'qc5')
+  });
+}
+
+/* ---------------- Section 6: osmosis ---------------- */
+function build6(el) {
+  el.innerHTML = frame(6,
+    card('read', 'Water follows solute', `<div class="read-text">
+      <p>${c('osmosis', 'Osmosis')} is the diffusion of water across a selectively permeable membrane. Like all diffusion, it is passive: no energy needed.</p>
+      <p>In a ${c('solution')}, the ${c('solute')} is what is dissolved (like salt or sugar) and the ${c('solvent')} is what does the dissolving (water). The more solute a solution has, the less of it is water.</p>
+      <p>So water moves from where there is <b>less solute</b> (more water) to where there is <b>more solute</b> (less water). The solute usually can't cross the membrane, so water is what moves.</p>
+      <p>Most water crosses through ${c('aquaporin', 'aquaporins')}, channel proteins made just for water.</p></div>
+      <div class="rules"><div class="rule" style="border-left:4px solid var(--e)"><b>Shortcut:</b> water moves toward the side with <b>more solute</b>.</div></div>`) +
+    card('try', 'U-tube osmosis lab', `<p class="muted">The membrane in the middle lets water through but not solute. Add solute to each side, then run osmosis.</p>
+      <div class="sim even">
+        <div class="figbox"><svg id="s6svg" viewBox="0 0 360 318" class="fig" role="img" aria-label="U-tube osmosis model"></svg></div>
+        <div>
+          <div class="steppers" id="s6stp"></div>
+          <div class="btn-row"><button type="button" class="btn primary" id="s6run">Run osmosis</button><button type="button" class="btn ghost" id="s6reset">Reset levels</button></div>
+          <p class="readout" id="s6out" aria-live="polite">Set the solute, then run osmosis.</p>
+          <ul class="missions" id="s6m"></ul>
+        </div>
+      </div>`) +
+    card('try', 'Which way will water move?', `<p class="muted">Look at the solute inside the cell and in the beaker. Pick where the water goes. Get 4 right.</p>
+      <div class="two-col"><div class="figbox" id="s6wfig"></div>
+      <div><p class="place-prompt">Which way will water move?</p>
+        <div class="opts" id="s6wopts"><button type="button" class="opt" data-a="in"><span class="L">A</span><span>Into the cell</span></button><button type="button" class="opt" data-a="out"><span class="L">B</span><span>Out of the cell</span></button><button type="button" class="opt" data-a="none"><span class="L">C</span><span>No net movement</span></button></div>
+        <div class="btn-row"><div class="progress-pips" id="s6pips" aria-label="Correct so far"><i></i><i></i><i></i><i></i></div></div>
+        <p class="fb-line" id="s6wfb" aria-live="polite"></p></div></div>`) +
+    card('qc', '', '<div id="qc6"></div>'));
+
+  // U-tube
+  const svg = $('#s6svg', el);
+  svg.innerHTML = `<path id="s6wl" fill="rgba(95,225,255,.18)"/><path id="s6wr" fill="rgba(95,225,255,.18)"/><g id="s6dots"></g>
+    <path d="M60,30 L60,262 Q60,285 83,285 L277,285 Q300,285 300,262 L300,30 M150,30 L150,245 L210,245 L210,30" fill="none" stroke="#9fb3d9" stroke-width="3" stroke-linejoin="round"/>
+    <line x1="180" y1="245" x2="180" y2="285" stroke="var(--head)" stroke-width="4" stroke-dasharray="3 3"/>
+    <g id="s6arr" style="opacity:0;transition:opacity .4s"></g>
+    <line x1="52" x2="64" y1="${UT.base}" y2="${UT.base}" stroke="var(--muted)" stroke-width="2"/><line x1="296" x2="308" y1="${UT.base}" y2="${UT.base}" stroke="var(--muted)" stroke-width="2"/>
+    <text class="fig-lab m" x="46" y="${UT.base + 4}" text-anchor="end">start</text>
+    <text class="fig-lab" x="105" y="22" text-anchor="middle">Left side</text><text class="fig-lab" x="255" y="22" text-anchor="middle">Right side</text>
+    <text class="fig-lab m" x="180" y="308" text-anchor="middle">Membrane: water can cross, solute cannot</text>`;
+  let sL = 2, sR = 8, hL = UT.base, hR = UT.base, ran = false, anim = null;
+  const draw = () => {
+    $('#s6wl', svg).setAttribute('d', utubeWaterPath('L', hL)); $('#s6wr', svg).setAttribute('d', utubeWaterPath('R', hR));
+    $('#s6dots', svg).innerHTML = utubeDots('L', 8, hL, 'm-h2o', UT_WATER) + utubeDots('R', 8, hR, 'm-h2o', UT_WATER) + utubeDots('L', sL, hL) + utubeDots('R', sR, hR);
+  };
+  const arrow = dir => {
+    const g = $('#s6arr', svg);
+    if (!dir) { g.style.opacity = 0; return; }
+    const head = (x, d) => `<polygon points="${x},265 ${x - 9 * d},259 ${x - 9 * d},271" fill="var(--water)"/>`;
+    g.innerHTML = dir === 'both'
+      ? `<line x1="160" y1="265" x2="200" y2="265" class="arrow-w"/>${head(204, 1)}${head(156, -1)}`
+      : `<line x1="${dir > 0 ? 156 : 204}" y1="265" x2="${dir > 0 ? 198 : 162}" y2="265" class="arrow-w"/>${head(dir > 0 ? 206 : 154, dir)}`;
+    g.style.opacity = 1;
+  };
+  const resetLv = () => { cancelAnimationFrame(anim); hL = hR = UT.base; ran = false; arrow(0); draw(); $('#s6out', el).textContent = 'Set the solute, then run osmosis.'; };
+  makeSteppers($('#s6stp', el), [{ id: 's6l', label: 'Solute on the left', min: 0, max: 12, step: 1, val: 2 }, { id: 's6r', label: 'Solute on the right', min: 0, max: 12, step: 1, val: 8 }],
+    v => { sL = v.s6l; sR = v.s6r; resetLv(); });
+  $('#s6reset', el).addEventListener('click', resetLv);
+  $('#s6run', el).addEventListener('click', () => {
+    cancelAnimationFrame(anim);
+    const shift = clamp((sR - sL) * 5.5, -58, 58), fromL = hL, fromR = hR, toL = UT.base + shift, toR = UT.base - shift, t0 = performance.now(), dur = REDUCED ? 10 : 2200;
+    arrow(sR === sL ? 'both' : (sR > sL ? 1 : -1));
+    $('#s6run', el).disabled = true;
+    const tick = now => {
+      const k = clamp((now - t0) / dur, 0, 1), e = 1 - Math.pow(1 - k, 3);
+      hL = fromL + (toL - fromL) * e; hR = fromR + (toR - fromR) * e; draw();
+      if (k < 1) anim = requestAnimationFrame(tick);
+      else {
+        ran = true; $('#s6run', el).disabled = false;
+        const o = $('#s6out', el);
+        if (sR === sL) o.innerHTML = 'Same solute on both sides, so water moved both ways equally. <b>No net change.</b>';
+        else { const to = sR > sL ? 'right' : 'left', from = sR > sL ? 'left' : 'right'; o.innerHTML = `Water moved from the ${from} side to the ${to} side, toward more solute. <b>The ${to} side rose.</b>`; }
+      }
+    };
+    anim = requestAnimationFrame(tick);
+  });
+  draw();
+  makeMissions($('#s6m', el), 6, [
+    { id: 'o1', t: 'Make the water rise on the <b>right</b> side.', check: () => {
+      if (!ran) return [false, 'Set the solute, then press Run osmosis.'];
+      if (sR <= sL) return [false, 'The right side needs more solute than the left.'];
+      return [true, 'Water moved toward the right, where there was more solute, so the right side rose.'];
+    } },
+    { id: 'o2', t: 'Put solute on both sides, but keep the water levels <b>even</b>.', check: () => {
+      if (sL !== sR || sL === 0) return [false, 'Put the same amount of solute (more than 0) on both sides, then run it.'];
+      if (!ran) return [false, 'Press Run osmosis.'];
+      return [true, 'Equal solute means water crosses both ways at the same rate. The levels stay even.'];
+    } },
+    { id: 'o3', t: 'Put solute on both sides, then make the <b>left</b> side rise.', check: () => {
+      if (sR === 0 || sL <= sR) return [false, 'Put solute on both sides, with more on the left.'];
+      if (!ran) return [false, 'Press Run osmosis.'];
+      return [true, 'Even with solute on both sides, water moved toward the side with more: the left.'];
+    } }
+  ]);
+
+  // which way will water move?
+  const POOL = shuffle([[2, 8], [5, 1], [3, 3], [10, 0], [1, 6], [4, 4], [6, 2], [1, 5]]);
+  let wi = 0, right = S.tasks.s6right || 0, misses = 0, waiting = false;
+  const pips = () => $$('#s6pips i', el).forEach((p, i) => p.classList.toggle('on', i < right));
+  const ans = ([i, o]) => i > o ? 'in' : o > i ? 'out' : 'none';
+  const showW = () => {
+    const sc = POOL[wi % POOL.length]; misses = 0; waiting = false;
+    $('#s6wfig', el).innerHTML = beakerCell(sc[0], sc[1]);
+    $$('#s6wopts .opt', el).forEach(b => { b.disabled = false; b.classList.remove('right', 'wrong'); });
+    $('#s6wfb', el).textContent = '';
+  };
+  $$('#s6wopts .opt', el).forEach(b => b.addEventListener('click', () => {
+    if (waiting) return;
+    const sc = POOL[wi % POOL.length], a = ans(sc), fb = $('#s6wfb', el);
+    if (b.dataset.a === a) {
+      b.classList.add('right'); waiting = true;
+      right++; S.tasks.s6right = right; save(); pips();
+      fb.className = 'fb-line good';
+      fb.textContent = a === 'none' ? `Yes. ${sc[0]}% inside and ${sc[1]}% outside: water moves in and out equally.` : `Yes. There is more solute ${a === 'in' ? 'inside' : 'outside'} (${Math.max(...sc)}%), so water moves ${a === 'in' ? 'into' : 'out of'} the cell.`;
+      if (right >= 4) done(6, 'which');
+      setTimeout(() => { wi++; showW(); }, 1700);
+    } else {
+      misses++; b.classList.add('wrong'); b.disabled = true; shake(b);
+      fb.className = 'fb-line bad';
+      fb.textContent = misses < 2 ? 'Not that one. Which side has more solute? Water moves toward it.' : `Compare: ${sc[0]}% inside vs ${sc[1]}% outside. ${sc[0] === sc[1] ? 'They are equal.' : `More solute is ${sc[0] > sc[1] ? 'inside' : 'outside'}.`}`;
+    }
+  }));
+  pips(); showW();
+
+  makeQC($('#qc6', el), {
+    id: 'qc6', fig: utubeStatic(3, 9), q: 'The membrane in this U-tube lets water through but not solute. What will happen?',
+    opts: ['Water moves to the right side, and the right side rises', 'Water moves to the left side, and the left side rises', 'Solute moves to the left side until both sides are equal', 'Nothing happens, because water needs energy to move'],
+    ans: 0, explain: 'The right side has more solute, so water moves toward it by osmosis and the right side rises.',
+    hints: [null, 'Water moves toward more solute. Which side has more?', 'The solute cannot cross this membrane. Only water can.', 'Osmosis is passive. No energy needed.'],
+    onCorrect: () => done(6, 'qc6')
+  });
+}
+
+/* ---------------- Section 7: tonicity ---------------- */
+const TON_VALS = [0, 0.3, 0.6, 0.9, 1.5, 3, 5], CELL_IN = 0.9;
+const tonOf = v => v < CELL_IN ? 'hypo' : v > CELL_IN ? 'hyper' : 'iso';
+const BK7 = (() => { const r = rng(42), pts = []; while (pts.length < 46) { const x = 40 + r() * 240, y = 66 + r() * 190; if (((x - 160) / 100) ** 2 + ((y - 158) / 76) ** 2 > 1) pts.push([x, y]); } return pts; })();
+function crenate(cx, cy, R, amp, n) {
+  let d = '';
+  for (let i = 0; i <= n * 8; i++) { const a = i / (n * 8) * Math.PI * 2, r = R + amp * Math.max(0, Math.sin(a * n)) ** 2 - amp * .3; d += (i ? 'L' : 'M') + f1(cx + r * Math.cos(a)) + ',' + f1(cy + r * Math.sin(a)); }
+  return d + 'Z';
+}
+function cellSVG(kind, v) {
+  const cx = 160, cy = 158, t = tonOf(v);
+  let s = '';
+  if (kind === 'rbc') {
+    if (v === 0) {
+      for (let i = 0; i < 7; i++) { const a0 = i / 7 * Math.PI * 2 + .2, a1 = a0 + .55, R = 70; s += `<path d="M${f1(cx + R * Math.cos(a0))},${f1(cy + R * Math.sin(a0))} A${R},${R} 0 0 1 ${f1(cx + R * Math.cos(a1))},${f1(cy + R * Math.sin(a1))}" fill="none" stroke="#ff8f8f" stroke-width="4" stroke-linecap="round"/>`; }
+      s += `<circle cx="${cx}" cy="${cy}" r="60" fill="#d94a55" opacity=".18"/>${[[-30, -20], [24, -28], [-12, 30], [34, 16], [-38, 10]].map(([dx, dy]) => `<circle cx="${cx + dx}" cy="${cy + dy}" r="4" fill="#ff8f8f" opacity=".7"/>`).join('')}<text class="fig-lab" x="${cx}" y="${cy + 5}" text-anchor="middle">burst (lysis)</text>`;
+    } else if (t === 'hypo') {
+      const R = v === .3 ? 66 : 60;
+      s += `<circle cx="${cx}" cy="${cy}" r="${R}" fill="#d94a55" stroke="#ff9a9a" stroke-width="2.5"/><circle cx="${cx}" cy="${cy}" r="${R * .35}" fill="#e2606a"/>`;
+    } else if (t === 'iso') {
+      s += `<circle cx="${cx}" cy="${cy}" r="50" fill="#d94a55" stroke="#ff9a9a" stroke-width="2.5"/><circle cx="${cx}" cy="${cy}" r="21" fill="#f08a92"/>`;
+    } else {
+      const R = v === 1.5 ? 44 : v === 3 ? 38 : 33, amp = v === 1.5 ? 4 : v === 3 ? 6 : 7;
+      s += `<path d="${crenate(cx, cy, R, amp, v === 1.5 ? 11 : 13)}" fill="#c43c48" stroke="#ff9a9a" stroke-width="2"/>`;
+    }
+  } else {
+    const W = 170, H = 116, x0 = cx - W / 2, y0 = cy - H / 2;
+    let iw, ih, rx, vw, vh;
+    if (t === 'hypo') { iw = W - 10; ih = H - 10; rx = 12; vw = iw - 40; vh = ih - 34; }
+    else if (t === 'iso') { iw = W - 20; ih = H - 20; rx = 16; vw = iw - 54; vh = ih - 44; }
+    else if (v === 1.5) { iw = 116; ih = 74; rx = 30; vw = 62; vh = 30; }
+    else { iw = 88; ih = 56; rx = 26; vw = 40; vh = 18; }
+    s += `<rect x="${x0}" y="${y0}" width="${W}" height="${H}" rx="14" fill="rgba(69,192,143,.08)" stroke="#6fd08c" stroke-width="7"/>`;
+    s += `<rect x="${f1(cx - iw / 2)}" y="${f1(cy - ih / 2)}" width="${iw}" height="${ih}" rx="${rx}" fill="#2a5a40" stroke="var(--head)" stroke-width="2.5" stroke-dasharray="${t === 'hypo' ? 'none' : '5 3'}"/>`;
+    s += `<rect x="${f1(cx - vw / 2)}" y="${f1(cy - vh / 2)}" width="${vw}" height="${vh}" rx="${Math.min(vh / 2, 14)}" fill="rgba(95,225,255,.35)" stroke="rgba(95,225,255,.7)" stroke-width="1.5"/>`;
+    const cp = [[-.42, -.36], [.4, -.36], [-.42, .36], [.4, .36], [0, -.4], [0, .4]];
+    cp.forEach(([a, b]) => { s += `<ellipse cx="${f1(cx + a * iw)}" cy="${f1(cy + b * ih)}" rx="6" ry="3.6" fill="#6fd08c" opacity=".9"/>`; });
+    if (t === 'hyper') s += `<rect x="${cx - 118}" y="${y0 - 26}" width="236" height="22" rx="11" fill="rgba(11,22,36,.85)"/><text class="fig-lab" x="${cx}" y="${y0 - 11}" text-anchor="middle">membrane pulled away from the wall</text>`;
+  }
+  return s;
+}
+function waterArrows(t, kind) {
+  const R = kind === 'plant' ? [100, 76] : [92, 92], cx = 160, cy = 158;
+  const pts = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+  let s = '';
+  pts.forEach(([dx, dy]) => {
+    const ox = cx + dx * (R[0] + 22), oy = cy + dy * (R[1] + 22), ix = cx + dx * R[0], iy = cy + dy * R[1];
+    const [x1, y1, x2, y2] = t === 'hypo' ? [ox, oy, ix, iy] : [ix, iy, ox, oy];
+    const ang = Math.atan2(y2 - y1, x2 - x1), hd = (x, y, a) => `<polygon points="${f1(x)},${f1(y)} ${f1(x - 9 * Math.cos(a) + 5 * Math.sin(a))},${f1(y - 9 * Math.sin(a) - 5 * Math.cos(a))} ${f1(x - 9 * Math.cos(a) - 5 * Math.sin(a))},${f1(y - 9 * Math.sin(a) + 5 * Math.cos(a))}" class="arrow-w-h"/>`;
+    s += `<line x1="${f1(x1)}" y1="${f1(y1)}" x2="${f1(x2)}" y2="${f1(y2)}" class="arrow-w"/>` + hd(x2, y2, ang);
+    if (t === 'iso') s += hd(x1, y1, ang + Math.PI);
+  });
+  return s;
+}
+function build7(el) {
+  const potato = [[0, 18], [0.1, 12], [0.2, 6], [0.3, 1], [0.4, -4], [0.6, -13], [0.8, -19], [1.0, -23]];
+  el.innerHTML = frame(7,
+    card('read', 'Compare the outside to the inside', `<div class="read-text">
+      <p>These three words compare the solution <b>outside</b> a cell with the <b>inside</b> of the cell. Then osmosis tells you which way water goes.</p></div>
+      <div class="table-scroll"><table class="mini-table"><thead><tr><th>Solution</th><th>Solute outside vs. inside</th><th>Water moves</th><th>Animal cell</th><th>Plant cell</th></tr></thead><tbody>
+      <tr><td><b style="color:var(--e)">${c('hypotonic', 'Hypotonic')}</b></td><td>Less outside</td><td>Into the cell</td><td>Swells, may burst (${c('lysis')})</td><td>${c('turgid', 'Turgid')} (firm): the healthy state</td></tr>
+      <tr><td><b style="color:var(--good)">${c('isotonic', 'Isotonic')}</b></td><td>The same</td><td>In and out equally</td><td>Stays normal</td><td>Limp (flaccid)</td></tr>
+      <tr><td><b style="color:var(--sol)">${c('hypertonic', 'Hypertonic')}</b></td><td>More outside</td><td>Out of the cell</td><td>Shrivels</td><td>${c('plasmolysis', 'Plasmolysis')}: membrane pulls away from the wall; the plant wilts</td></tr>
+      </tbody></table></div>
+      <div class="rules">
+        <div class="rule">Hyp<b>o</b>tonic: water rushes in and the cell swells up like an <b>O</b>.</div>
+        <div class="rule">Hyp<b>er</b>tonic: the outside has more solute, like sup<b>er</b> salty water. Water leaves.</div>
+        <div class="rule"><b>Iso</b> means equal. No net change.</div>
+      </div>
+      <p class="read-text small muted">Plant cells don't burst in hypotonic water because the cell wall pushes back. That push, called turgor pressure, is why a watered plant stands up straight.</p>`) +
+    card('try', 'Cell in a beaker', `<p class="muted">Pick a cell and change how salty the beaker is. The inside of each cell is 0.9% salt.</p>
+      <div class="sim even">
+        <div class="figbox"><svg id="s7svg" viewBox="0 0 320 280" class="fig" role="img" aria-label="A cell in a beaker of salt water"></svg></div>
+        <div>
+          <div class="seg" role="group" aria-label="Choose a cell" id="s7kind"><button type="button" data-k="rbc" aria-pressed="true">Red blood cell</button><button type="button" data-k="plant" aria-pressed="false">Plant cell</button></div>
+          <label class="small muted" style="display:block;margin-top:12px" for="s7range">Salt in the beaker: <b id="s7pct" style="color:var(--text)"></b></label>
+          <input type="range" id="s7range" min="0" max="${TON_VALS.length - 1}" step="1" value="3">
+          <div class="ticks">${TON_VALS.map(v => `<span>${v}%</span>`).join('')}</div>
+          <div class="readout" id="s7out" aria-live="polite"></div>
+          <ul class="missions" id="s7m"></ul>
+        </div>
+      </div>`) +
+    card('try', 'Sort the situations', `<p class="muted">Is the solution outside the cells hypotonic, isotonic, or hypertonic? Drag or tap to sort.</p><div id="s7sort"></div>`) +
+    card('data', 'Potato core lab', `<div class="read-text"><p>A class cut equal-sized cores from one potato, weighed them, and soaked them in sugar (sucrose) solutions for 24 hours. Then they weighed them again. A positive change means the core gained mass.</p></div>
+      <div class="two-col">
+        <div class="table-scroll"><table class="mini-table"><thead><tr><th>Sucrose (M)</th><th>Change in mass (%)</th></tr></thead><tbody>${potato.map(([x, y]) => `<tr><td>${x.toFixed(1)}</td><td>${y > 0 ? '+' : ''}${y}</td></tr>`).join('')}</tbody></table></div>
+        <div>${lineGraph({ w: 320, h: 200, x: [0, 1], y: [-30, 20], xt: [0, .2, .4, .6, .8, 1], yt: [-30, -20, -10, 0, 10, 20], xl: 'Sucrose concentration (M)', yl: 'Change in mass (%)', zero: true, aria: 'Percent change in potato mass falls as sucrose concentration rises, crossing zero near 0.3 M', series: [{ cls: 'lp', pts: potato, dots: true }] })}</div>
+      </div>
+      <div id="s7d1" style="margin-top:14px"></div><div id="s7d2" style="margin-top:18px"></div>`) +
+    card('qc', '', '<div id="qc7"></div>'));
+
+  const svg = $('#s7svg', el);
+  let kind = 'rbc', vi = 3;
+  const v = () => TON_VALS[vi];
+  const draw = () => {
+    const val = v(), t = tonOf(val), n = Math.min(BK7.length, Math.round(val * 9));
+    svg.innerHTML = `<path d="M30,40 L30,250 Q30,266 46,266 L274,266 Q290,266 290,250 L290,40" fill="none" stroke="#9fb3d9" stroke-width="3"/>
+      <path d="M32,58 L288,58 L288,250 Q288,264 274,264 L46,264 Q32,264 32,250 Z" fill="rgba(95,225,255,.10)"/>
+      ${BK7.slice(0, n).map(([x, y]) => mol('sol', x, y, .85)).join('')}
+      <g style="animation:screenIn .35s ease-out">${cellSVG(kind, val)}</g>
+      <g opacity=".95">${waterArrows(t, kind)}</g>
+      <text class="fig-lab" x="40" y="30">Beaker: ${val}% salt</text><text class="fig-lab m" x="282" y="30" text-anchor="end">Cell: 0.9% salt</text>`;
+    $('#s7pct', el).textContent = val + '%';
+    const name = { hypo: 'Hypotonic', iso: 'Isotonic', hyper: 'Hypertonic' }[t];
+    const cmp = { hypo: 'less solute than', iso: 'the same solute as', hyper: 'more solute than' }[t];
+    const mv = { hypo: 'Water moves <b>into</b> the cell.', iso: 'Water moves in and out <b>equally</b>.', hyper: 'Water moves <b>out of</b> the cell.' }[t];
+    const res = kind === 'rbc'
+      ? { hypo: val === 0 ? 'The red blood cell swells until it bursts (lysis).' : 'The red blood cell swells.', iso: 'The red blood cell keeps its normal shape.', hyper: 'The red blood cell shrivels.' }[t]
+      : { hypo: 'The plant cell fills up and presses against its wall: turgid.', iso: 'The plant cell is limp (flaccid), with no extra push on the wall.', hyper: 'The membrane pulls away from the wall: plasmolysis.' }[t];
+    $('#s7out', el).innerHTML = `<div class="big ${t}">${name}</div>The beaker has ${cmp} the cell. ${mv} ${res}`;
+  };
+  $('#s7range', el).addEventListener('input', e => { vi = +e.target.value; draw(); });
+  $$('#s7kind button', el).forEach(b => b.addEventListener('click', () => { kind = b.dataset.k; $$('#s7kind button', el).forEach(x => x.setAttribute('aria-pressed', String(x === b))); draw(); }));
+  draw();
+  const after = () => {
+    if (['t1', 't2', 't3'].every(id => S.reqs['7.' + id])) done(7, 'rbc');
+    if (['t4', 't5'].every(id => S.reqs['7.' + id])) done(7, 'plant');
+  };
+  const needRBC = () => kind !== 'rbc' ? [false, 'Switch to the red blood cell first.'] : null;
+  const needPlant = () => kind !== 'plant' ? [false, 'Switch to the plant cell first.'] : null;
+  makeMissions($('#s7m', el), 7, [
+    { id: 't1', t: 'Make the red blood cell <b>swell</b>.', check: () => needRBC() || (v() < CELL_IN ? [true, `${v()}% salt is hypotonic to the cell (0.9%). Water moved in, so the cell swelled${v() === 0 ? ' and burst' : ''}.`] : [false, 'Water has to move into the cell. Does that need more or less salt in the beaker?']) },
+    { id: 't2', t: 'Make the red blood cell <b>shrivel</b>.', check: () => needRBC() || (v() > CELL_IN ? [true, `${v()}% salt is hypertonic to the cell. Water moved out, so the cell shriveled.`] : [false, 'Water has to leave the cell. Make the beaker saltier than the cell.']) },
+    { id: 't3', t: 'Find the beaker where the red blood cell <b>stays the same</b>.', check: () => needRBC() || (v() === CELL_IN ? [true, '0.9% salt is isotonic: water moves in and out equally. That is why IV saline at the hospital is 0.9% salt.'] : [false, 'Match the salt in the beaker to the salt inside the cell.']) },
+    { id: 't4', t: 'Switch to the plant cell. Make it <b>turgid</b> (firm and full).', check: () => needPlant() || (v() < CELL_IN ? [true, 'Hypotonic: water moved in and pushed the membrane against the wall. That is why watered plants stand up straight.'] : [false, 'Water has to move into the plant cell. Which kind of solution does that?']) },
+    { id: 't5', t: 'Make the plant cell <b>plasmolyze</b> (membrane pulls away from the wall).', check: () => needPlant() || (v() > CELL_IN ? [true, 'Hypertonic: water left the cell, so the membrane pulled away from the wall. That is why plants wilt in salty soil.'] : [false, 'Water has to leave the plant cell. Make the beaker saltier.']) }
+  ], after);
+  after();
+
+  makeSorter($('#s7sort', el), {
+    id: 's7sort',
+    tokens: [
+      { id: 'h1', label: 'A red blood cell dropped into distilled water' }, { id: 'h2', label: 'Wilted celery placed in a glass of tap water' },
+      { id: 'i1', label: 'A red blood cell in 0.9% saline (same as blood)' }, { id: 'i2', label: 'Eye cells bathed in contact lens solution matched to tears' },
+      { id: 'r1', label: 'A slug sprinkled with table salt' }, { id: 'r2', label: 'Carrot sticks soaking in very salty water' }
+    ],
+    bins: [{ id: 'hypo', label: 'Hypotonic (water moves in)', accepts: ['h1', 'h2'] }, { id: 'iso', label: 'Isotonic (no net movement)', accepts: ['i1', 'i2'] }, { id: 'hyper', label: 'Hypertonic (water moves out)', accepts: ['r1', 'r2'] }],
+    hint: () => 'Compare the solute outside with the inside of the cell. More outside means hypertonic. Less outside means hypotonic.',
+    doneMsg: 'All sorted.',
+    onDone: () => done(7, 'sort')
+  });
+  const dataDone = () => { if (S.qc.d1 && S.qc.d1.done && S.qc.d2 && S.qc.d2.done) done(7, 'data'); };
+  makeQC($('#s7d1', el), {
+    id: 'd1', q: 'In which solution did the potato cores gain the most mass, and why?',
+    opts: ['0.0 M (pure water). It is hypotonic, so water moved into the potato cells.', '1.0 M. It is hypertonic, so water moved into the potato cells.', '0.0 M (pure water). It is hypertonic, so water moved out of the potato cells.', '0.4 M. It is isotonic, so water stayed put.'],
+    ans: 0, explain: 'Pure water has less solute than the potato cells, so it is hypotonic. Water moved in, and the cores gained 18%.',
+    hint: 'Find the biggest positive number in the table. Then ask: does that solution have more or less solute than the cells?',
+    onCorrect: dataDone
+  });
+  makeQC($('#s7d2', el), {
+    id: 'd2', q: 'Which sugar concentration is closest to isotonic with the potato cells?',
+    opts: ['0.0 M', '0.3 M', '0.6 M', '1.0 M'], fixed: true,
+    ans: 1, explain: 'At 0.3 M the mass barely changed (+1%), so water moved in and out about equally. The line crosses zero just above 0.3 M.',
+    hint: 'Isotonic means no net water movement. Where is the change in mass closest to 0?',
+    onCorrect: dataDone
+  });
+  dataDone();
+
+  makeQC($('#qc7', el), {
+    id: 'qc7', q: 'A red blood cell is 0.9% salt inside. It is placed in a 5% salt solution. What happens?',
+    opts: ['Water moves out of the cell, and it shrivels', 'Water moves into the cell, and it swells', 'Salt moves into the cell, and nothing else changes', 'Water moves in and out equally, and it stays the same'],
+    ans: 0, explain: '5% is hypertonic to the cell (more solute outside), so water leaves by osmosis and the cell shrivels.',
+    hints: [null, 'Water moves toward more solute. Where is there more?', 'The membrane keeps most salt from crossing. Water is what moves.', 'That only happens when the solute is the same on both sides.'],
+    onCorrect: () => done(7, 'qc7')
+  });
+}
+
+/* ---------------- Section 8: active transport ---------------- */
+function build8(el) {
+  el.innerHTML = frame(8,
+    card('read', 'Pushing uphill', `<div class="read-text">
+      <p>Passive transport always runs downhill, from high to low. But sometimes a cell needs to move a substance from <b>low</b> concentration to <b>high</b> concentration, against its gradient. That is ${c('active transport')}, like pushing a ball uphill.</p>
+      <p>Pushing uphill takes energy. Active transport uses ${c('ATP')}, the cell's energy molecule, and a ${c('protein pump')}: a carrier protein that uses ATP to change shape and move its cargo.</p>
+      <p>Example: the ${c('sodium-potassium pump')}. Each time it runs, it uses 1 ATP to move 3 Na⁺ out of the cell and 2 K⁺ into the cell. Both move from low to high. Your nerve and muscle cells depend on this pump.</p>
+      <p>Another example: root hair cells pump minerals in from the soil, even though the soil has fewer minerals than the root.</p></div>
+      <div class="vs">
+        <div><h4>Passive transport</h4><ul><li>High → low</li><li>No energy</li><li>No protein (simple diffusion), or a channel or carrier (facilitated diffusion, osmosis)</li></ul></div>
+        <div class="act"><h4>Active transport</h4><ul><li>Low → high</li><li>Needs energy: ATP</li><li>Always uses a protein pump</li></ul></div>
+      </div>
+      <h4 style="margin:16px 0 0;font-weight:500">Watch the sodium-potassium pump</h4>
+      ${flipHTML('s8demo', '0 0 400 280', 'The sodium-potassium pump', '<table class="ion-table" id="s8dt"></table>')}`) +
+    card('try', 'Pump it', `<p class="muted">Run the pump and watch the ions. Each pump cycle costs 1 ATP. The leak channel lets K⁺ through when it's open.</p>
+      <canvas class="cv" id="s8cv" role="img" aria-label="Sodium and potassium ions, a protein pump, and a leak channel"></canvas>
+      <div class="legend"><span>${legendIcon('na')}Sodium ion (Na⁺)</span><span>${legendIcon('k')}Potassium ion (K⁺)</span></div>
+      <div class="sim even" style="margin-top:12px">
+        <div>
+          <div class="atp-row"><span class="small muted">ATP</span><div class="atp-pips" id="s8pips"></div></div>
+          <div class="btn-row"><button type="button" class="btn amber" id="s8pump">Run the pump (1 ATP)</button><button type="button" class="btn ghost" id="s8atp">Make ATP</button></div>
+          <div class="btn-row"><button type="button" class="btn ghost" id="s8leak">Open the K⁺ leak channel</button><button type="button" class="btn ghost sm" id="s8reset">Reset</button></div>
+          <p class="fb-line" id="s8fb" aria-live="polite"></p>
+          <table class="ion-table"><thead><tr><th>Ion</th><th>Outside</th><th>Inside</th></tr></thead><tbody id="s8tb"></tbody></table>
+        </div>
+        <div><ul class="missions" id="s8m" style="margin-top:0"></ul></div>
+      </div>`) +
+    card('try', 'Passive or active?', `<p class="muted">Ask two questions: does it use ATP, and is it moving from low to high? Sort each one.</p><div id="s8sort"></div>`) +
+    card('qc', '', '<div id="qc8"></div>'));
+
+  // pump demo
+  const MID = 140, svg = $('#s8demo', el);
+  const stat = [['na', 40, 40], ['na', 92, 74], ['na', 130, 30], ['na', 300, 34], ['na', 352, 72], ['k', 360, 28], ['k', 60, 222], ['k', 112, 252], ['k', 300, 244], ['k', 352, 212], ['na', 40, 252]];
+  svg.innerHTML = membraneScene({ w: 400, h: 280, mid: MID, prots: [{ kind: 'pump', x: 200, open: 'in' }], labOut: [392, 14], labIn: [392, 276], labAnchor: 'end' }) +
+    stat.map(([k, x, y]) => mol(k, x, y)).join('') +
+    mover('na', 150, 218, 's8n0') + mover('na', 250, 212, 's8n1') + mover('na', 196, 250, 's8n2') + mover('k', 110, 52, 's8k0') + mover('k', 290, 62, 's8k1') +
+    `<g class="mover" id="s8atpm" style="transform:translate(350px,250px)"><rect x="-29" y="-11" width="58" height="22" rx="7" fill="var(--amber)"/><text id="s8atpt" x="0" y="4" text-anchor="middle" font-size="11" font-weight="700" fill="#241703" font-family="Lexend, sans-serif">ATP</text></g>`;
+  const NA = [0, 1, 2].map(i => $('#s8n' + i, svg)), K = [0, 1].map(i => $('#s8k' + i, svg)), AT = $('#s8atpm', svg);
+  const setP = open => { $('.pslot', svg).innerHTML = protein('pump', 200, MID, open); };
+  const pos = (els, pts) => els.forEach((e, i) => moveTo(e, pts[i][0], pts[i][1]));
+  const naIn = [[150, 218], [250, 212], [196, 250]], naPk = [[190, MID + 28], [210, MID + 28], [200, MID + 46]], naOut = [[170, 62], [204, 46], [236, 66]];
+  const kOut = [[110, 52], [290, 62]], kPk = [[190, MID - 28], [210, MID - 28]], kIn = [[176, 222], [226, 232]];
+  const atp = (x, y, txt, op) => { moveTo(AT, x, y); $('#s8atpt', svg).textContent = txt; AT.style.opacity = op; };
+  const dt = (no, ni, ko, ki) => { $('#s8dt', el).innerHTML = `<thead><tr><th></th><th>Outside</th><th>Inside</th></tr></thead><tbody><tr><td>Na⁺</td><td>${no}</td><td>${ni}</td></tr><tr><td>K⁺</td><td>${ko}</td><td>${ki}</td></tr></tbody>`; };
+  makeFlip(el.querySelector('.k-read'), 8, [
+    { t: 'Inside the cell, Na⁺ is low and K⁺ is high. Outside, Na⁺ is high and K⁺ is low. The pump is open to the inside.', apply: () => { setP('in'); pos(NA, naIn); pos(K, kOut); atp(350, 250, 'ATP', 1); dt(5, 4, 3, 4); } },
+    { t: 'Three Na⁺ from inside the cell bind to the pump.', apply: () => { setP('in'); pos(NA, naPk); pos(K, kOut); atp(350, 250, 'ATP', 1); dt(5, 4, 3, 4); } },
+    { t: '<b>ATP gives the pump energy.</b> ATP breaks down into ADP and phosphate, and the pump gets the push it needs.', apply: () => { setP('in'); pos(NA, naPk); pos(K, kOut); atp(246, MID + 50, 'ATP', 1); dt(5, 4, 3, 4); } },
+    { t: 'The pump changes shape and releases the 3 Na⁺ outside, where Na⁺ is already high. Low → high.', apply: () => { setP('out'); pos(NA, naOut); pos(K, kOut); atp(350, 250, 'ADP + P', .4); dt(8, 1, 3, 4); } },
+    { t: 'Two K⁺ from outside the cell bind to the pump.', apply: () => { setP('out'); pos(NA, naOut); pos(K, kPk); atp(350, 250, 'ADP + P', .4); dt(8, 1, 3, 4); } },
+    { t: 'The pump changes back and releases the 2 K⁺ inside, where K⁺ is already high. <b>Both ions moved low → high, using 1 ATP.</b>', apply: () => { setP('in'); pos(NA, naOut); pos(K, kIn); atp(350, 250, 'ADP + P', .4); dt(8, 1, 1, 6); } }
+  ], 'steps');
+
+  // pump game
+  const PY = 228, LY = 80;
+  let atpN = 1, pumps = S.tasks.s8pumps || 0, leak = false, leakNet = 0, busy = false;
+  const sim = new PSim($('#s8cv', el), {
+    speed: 2.1,
+    gate: (p, ny) => leak && p.kind === 'k' && Math.abs(ny - LY) < 34 ? { y1: LY - 5, y2: LY + 5 } : null,
+    onCrossed: (p, dir) => { if (p.kind === 'k') leakNet += dir < 0 ? 1 : -1; },
+    gaps: () => [[PY - 32, PY + 32], [LY - 24, LY + 24]],
+    drawExtra: (cx, s) => {
+      cx.save();
+      if (busy) { cx.shadowColor = 'rgba(246,185,59,.8)'; cx.shadowBlur = 16; }
+      cx.fillStyle = s.C.prot; cx.strokeStyle = s.C.amber; cx.lineWidth = 2.4;
+      rrect(cx, s.L - 9, PY - 28, s.mw + 18, 56, 12); cx.fill(); cx.stroke(); cx.restore();
+      cx.fillStyle = s.C.amber; cx.font = '700 11px Lexend, system-ui, sans-serif'; cx.textAlign = 'center'; cx.fillText('pump', s.mx, PY + 4); cx.textAlign = 'left';
+      s.channel(LY - 7, LY + 7, { closed: !leak, fill: '#3f3590' });
+      cx.fillStyle = s.C.muted; cx.font = '500 11px Lexend, system-ui, sans-serif'; cx.textAlign = 'right';
+      cx.fillText(leak ? 'leak channel (open)' : 'leak channel (closed)', s.L - 14, LY + 4); cx.textAlign = 'left';
+    },
+    onTick: () => tb()
+  });
+  const cnt = () => ({ no: sim.count('na', 'out'), ni: sim.count('na', 'in'), ko: sim.count('k', 'out'), ki: sim.count('k', 'in') });
+  const tb = () => { const n = cnt(); $('#s8tb', el).innerHTML = `<tr><td>Na⁺</td><td>${n.no}</td><td>${n.ni}</td></tr><tr><td>K⁺</td><td>${n.ko}</td><td>${n.ki}</td></tr>`; };
+  const pipsA = () => { $('#s8pips', el).innerHTML = [...Array(6)].map((_, i) => `<i class="${i < atpN ? 'on' : ''}"></i>`).join(''); };
+  const fb = (t, good) => { const f = $('#s8fb', el); f.className = 'fb-line ' + (good ? 'good' : 'bad'); f.innerHTML = t; };
+  const reset = () => {
+    sim.clear(); sim.add('na', 'out', 6); sim.add('na', 'in', 6); sim.add('k', 'out', 6); sim.add('k', 'in', 6);
+    atpN = 1; leak = false; leakNet = 0; busy = false;
+    $('#s8leak', el).textContent = 'Open the K⁺ leak channel'; $('#s8pump', el).disabled = false;
+    pipsA(); tb(); sim.draw(); $('#s8fb', el).textContent = '';
+  };
+  const nearest = (kind, side, k) => sim.ps.filter(p => p.kind === kind && !p.path && sim.side(p) === side && !p.cross).sort((a, b) => Math.hypot(a.x - sim.mx, a.y - PY) - Math.hypot(b.x - sim.mx, b.y - PY)).slice(0, k);
+  $('#s8pump', el).addEventListener('click', () => {
+    if (busy) return;
+    if (atpN < 1) { fb('No ATP left. The pump can\'t push ions uphill without energy. Press "Make ATP."'); shake($('#s8pips', el)); return; }
+    const na = nearest('na', 'in', 3), k = nearest('k', 'out', 2);
+    if (na.length < 3) { fb('There aren\'t 3 Na⁺ inside the cell left to pump.'); return; }
+    if (k.length < 2) { fb('There aren\'t 2 K⁺ outside the cell left to pump.'); return; }
+    atpN--; pipsA(); busy = true; $('#s8pump', el).disabled = true;
+    fb('Pumping: 3 Na⁺ out…', true);
+    na.forEach((p, i) => { const y = PY - 12 + i * 12; p.path = [{ x: sim.R + 14, y }, { x: sim.L - 14, y }, { x: sim.L - 50 - Math.random() * 120, y: PY - 50 + Math.random() * 80 }]; });
+    sim.kick();
+    setTimeout(() => {
+      fb('…and 2 K⁺ in.', true);
+      k.forEach((p, i) => { const y = PY - 8 + i * 16; p.path = [{ x: sim.L - 14, y }, { x: sim.R + 14, y }, { x: sim.R + 50 + Math.random() * 120, y: PY - 50 + Math.random() * 80 }]; });
+      sim.kick();
+    }, REDUCED ? 50 : 1500);
+    setTimeout(() => {
+      busy = false; $('#s8pump', el).disabled = false; pumps++; S.tasks.s8pumps = pumps; save();
+      fb(`Pump cycle done: 3 Na⁺ out and 2 K⁺ in, using 1 ATP.${atpN === 0 ? ' You are out of ATP.' : ''}`, true);
+    }, REDUCED ? 100 : 3000);
+  });
+  $('#s8atp', el).addEventListener('click', () => {
+    if (atpN >= 6) { fb('The ATP supply is full.', true); return; }
+    atpN = Math.min(6, atpN + 2); pipsA(); fb('Cellular respiration made 2 more ATP.', true);
+  });
+  $('#s8leak', el).addEventListener('click', () => {
+    leak = !leak; leakNet = 0;
+    $('#s8leak', el).textContent = leak ? 'Close the K⁺ leak channel' : 'Open the K⁺ leak channel';
+    fb(leak ? 'Leak channel open. Watch which way K⁺ goes.' : 'Leak channel closed.', true);
+    sim.draw();
+  });
+  $('#s8reset', el).addEventListener('click', reset);
+  reset();
+  SHOW[8] = () => sim.start();
+
+  makeMissions($('#s8m', el), 8, [
+    { id: 'p1', t: 'Run the pump once. Watch where the Na⁺ and K⁺ go.', check: () => pumps >= 1
+      ? [true, '3 Na⁺ went out and 2 K⁺ came in, using 1 ATP. Each moved to the side where it was already high.']
+      : [false, 'Press "Run the pump" first.'] },
+    { id: 'p2', t: 'Build up both gradients: get at least <b>12 Na⁺ outside</b> and <b>10 K⁺ inside</b>.', check: () => {
+      const n = cnt();
+      if (n.no >= 12 && n.ki >= 10) return [true, 'Na⁺ is now high outside and K⁺ is high inside. Every push uphill cost ATP.'];
+      return [false, atpN === 0 && !busy ? 'You are out of ATP. Make more to keep the pump running.' : `Not yet: ${n.no} Na⁺ outside and ${n.ki} K⁺ inside. Keep pumping.`];
+    } },
+    { id: 'p3', t: 'Now stop pumping and open the K⁺ leak channel. Watch until at least 2 K⁺ leak out.', check: () => {
+      const n = cnt();
+      if (!leak) return [false, 'Open the leak channel first.'];
+      if (n.ki - n.ko < 3 && leakNet < 2) return [false, 'K⁺ is about the same on both sides, so there\'s no gradient to flow down. Finish Mission 2 first.'];
+      if (leakNet < 2) return [false, 'Keep watching the leak channel.'];
+      return [true, 'K⁺ flowed out through the channel, from high to low, with no ATP. That is passive transport, the opposite of what the pump does.'];
+    } }
+  ]);
+
+  makeSorter($('#s8sort', el), {
+    id: 's8sort',
+    tokens: [
+      { id: 'a1', label: 'Oxygen diffuses from the blood into a muscle cell' }, { id: 'a2', label: 'Glucose enters a cell through a carrier protein, high → low' },
+      { id: 'a3', label: 'Water enters a cell through aquaporins' }, { id: 'a4', label: 'CO₂ leaves a cell where it is more concentrated' },
+      { id: 'b1', label: 'The sodium-potassium pump moves Na⁺ out of a nerve cell' }, { id: 'b2', label: 'Root cells take in minerals from soil that has fewer minerals' },
+      { id: 'b3', label: 'A protein uses ATP to move ions from low to high' }, { id: 'b4', label: 'Stomach cells pump H⁺ into the already acidic stomach' }
+    ],
+    bins: [{ id: 'pas', label: 'Passive transport (no energy, high → low)', accepts: ['a1', 'a2', 'a3', 'a4'] }, { id: 'act', label: 'Active transport (uses ATP, low → high)', accepts: ['b1', 'b2', 'b3', 'b4'] }],
+    hint: (t, b) => b === 'act' ? 'Does this one use ATP or move from low to high? If not, it is passive.' : 'This one moves something from low to high, so it needs energy.',
+    doneMsg: 'All sorted.',
+    onDone: () => done(8, 'sort')
+  });
+
+  makeQC($('#qc8', el), {
+    id: 'qc8', q: 'Which statement describes active transport?',
+    opts: ['It moves substances from low to high concentration, using ATP and a protein pump.', 'It moves substances from high to low concentration with no energy.', 'It moves only water across the membrane.', 'It moves small molecules straight through the phospholipid tails.'],
+    ans: 0, explain: 'Active transport works against the concentration gradient, so it needs energy (ATP) and a protein pump.',
+    hints: [null, 'That describes passive transport.', 'Moving water across a membrane is osmosis.', 'That describes simple diffusion.'],
+    onCorrect: () => done(8, 'qc8')
+  });
+}
+
+/* =========================================================
+   SECTION 9: FINAL CHECK
+   ========================================================= */
+const BANK = [
+  { id: 'f1', q: 'What is the main job of the cell membrane?', o: ['It controls what enters and leaves the cell', 'It stores the cell\'s DNA', 'It makes energy from glucose', 'It builds proteins'], a: 0, x: 'The membrane is the cell\'s border. It decides what gets in and out.' },
+  { id: 'f2', q: 'The cell membrane is "selectively permeable." What does that mean?', o: ['Some substances can cross it, and others cannot', 'Every substance can cross it', 'No substance can cross it', 'Only water can cross it'], a: 0, x: 'Selectively permeable means the membrane picks what crosses.' },
+  { id: 'f3', q: 'How does the cell membrane help a cell maintain homeostasis?', o: ['It controls what moves in and out, which keeps conditions inside stable', 'It keeps the cell at the same temperature as the room', 'It makes the inside of the cell match the outside', 'It stops the cell from ever taking in water'], a: 0, x: 'By controlling traffic in and out, the membrane keeps the inside stable.' },
+  { id: 'f4', q: 'Which part of a phospholipid is hydrophobic (water-fearing)?', o: ['The fatty acid tails', 'The phosphate head', 'The whole phospholipid', 'Neither part'], a: 0, x: 'The tails avoid water. The heads are hydrophilic.' },
+  { id: 'f5', q: 'In the phospholipid bilayer, where do the tails point?', o: ['Toward each other, in the middle of the membrane', 'Out toward the water on both sides', 'Into the nucleus', 'Only toward the outside of the cell'], a: 0, x: 'The hydrophobic tails hide in the middle, away from water.' },
+  { id: 'f6', q: 'Which substance can pass straight through the phospholipid bilayer without a protein?', o: ['Oxygen (O₂)', 'Glucose', 'Sodium ion (Na⁺)', 'Potassium ion (K⁺)'], a: 0, x: 'O₂ is small and nonpolar, so it slips between the tails.' },
+  { id: 'f7', q: 'Why can\'t a Na⁺ ion pass straight through the bilayer?', o: ['It has a charge, so the hydrophobic tails block it', 'It is too small', 'It is a gas', 'It is hydrophobic'], a: 0, x: 'Charged ions are blocked by the oily middle. They need a channel protein.' },
+  { id: 'f8', q: 'What does a channel protein do?', o: ['It makes a tunnel that lets specific substances cross the membrane', 'It makes ATP for the cell', 'It breaks down glucose', 'It stores the cell\'s water'], a: 0, x: 'Channels are tunnels for specific ions or for water.' },
+  { id: 'f9', q: 'In diffusion, particles move from…', o: ['high concentration to low concentration', 'low concentration to high concentration', 'the membrane to the nucleus', 'outside the cell to inside, never the other way'], a: 0, x: 'Diffusion runs down the gradient: high to low.' },
+  { id: 'f10', q: 'What is true of ALL passive transport?', o: ['It does not use energy from the cell', 'It always uses a protein pump', 'It moves substances from low to high', 'It only moves water'], a: 0, x: 'Passive transport runs high to low and uses no ATP.' },
+  { id: 'f11', q: 'The two sides of a membrane reach equilibrium. What are the particles doing?', o: ['They keep moving, but there is no net change', 'They all stop moving', 'They all move to one side', 'They break apart'], a: 0, x: 'At equilibrium, particles keep crossing, but just as many go each way.' },
+  { id: 'f12', q: 'Glucose enters a cell through a carrier protein, moving from high to low concentration. What kind of transport is this?', o: ['Facilitated diffusion', 'Simple diffusion', 'Active transport', 'Osmosis'], a: 0, x: 'High to low, with a protein and no energy, is facilitated diffusion.' },
+  { id: 'f13', q: 'How is facilitated diffusion different from simple diffusion?', o: ['Facilitated diffusion uses a transport protein', 'Facilitated diffusion uses ATP', 'Facilitated diffusion moves substances from low to high', 'There is no difference'], a: 0, x: 'Both are passive. Facilitated diffusion just uses a protein.' },
+  { id: 'f14', q: 'Osmosis is the diffusion of…', o: ['water across a selectively permeable membrane', 'salt across a membrane', 'glucose through a carrier protein', 'ions through a protein pump'], a: 0, x: 'Osmosis is water diffusing across a membrane.' },
+  { id: 'f15', q: 'This U-tube\'s membrane lets water through but not solute. Which side\'s water level will rise?', fig: () => utubeStatic(2, 8), o: ['The right side, because water moves toward more solute', 'The left side, because water moves toward less solute', 'Neither side, because the solute will cross until both sides are equal', 'Both sides rise the same amount'], a: 0, x: 'The right side has more solute, so water moves there and that side rises.' },
+  { id: 'f16', q: 'Compared with the cell, the solution in the beaker is…', fig: () => beakerCell(1, 5), o: ['hypertonic', 'hypotonic', 'isotonic', 'impermeable'], a: 0, x: 'The beaker has more solute (5%) than the cell (1%), so it is hypertonic.' },
+  { id: 'f17', q: 'Which way will water move?', fig: () => beakerCell(3, 0), o: ['Into the cell', 'Out of the cell', 'No net movement', 'Water cannot cross the membrane'], a: 0, x: 'There is more solute inside the cell, so water moves in.', fixed: true },
+  { id: 'f18', q: 'Which way will water move?', fig: () => beakerCell(2, 6), o: ['Into the cell', 'Out of the cell', 'No net movement', 'Water cannot cross the membrane'], a: 1, x: 'There is more solute outside the cell, so water moves out.', fixed: true },
+  { id: 'f19', q: 'A red blood cell is placed in distilled (pure) water. What happens?', o: ['Water moves in, and the cell swells and may burst', 'Water moves out, and the cell shrivels', 'Nothing changes', 'Salt moves into the cell'], a: 0, x: 'Pure water is hypotonic to the cell, so water rushes in.' },
+  { id: 'f20', q: 'A red blood cell is placed in very salty water. What happens?', o: ['Water moves out, and the cell shrivels', 'Water moves in, and the cell bursts', 'The cell stays the same', 'Salt and water both stay put'], a: 0, x: 'Very salty water is hypertonic, so water leaves the cell.' },
+  { id: 'f21', q: 'A plant cell is placed in a hypotonic solution. What happens?', o: ['It fills with water and becomes firm (turgid); the cell wall keeps it from bursting', 'It bursts', 'It shrivels, and its membrane pulls away from the wall', 'Nothing, because plant cells don\'t take in water'], a: 0, x: 'Water moves in, and the wall pushes back. That firm state is called turgor.' },
+  { id: 'f22', q: 'Salt sprinkled on a slug makes it lose water. Compared with the slug\'s cells, the salt is…', o: ['hypertonic', 'hypotonic', 'isotonic', 'permeable'], a: 0, x: 'More solute outside the cells means hypertonic, so water leaves.' },
+  { id: 'f23', q: 'A cell is placed in an isotonic solution. What happens?', o: ['Water moves in and out at the same rate, so the cell stays the same size', 'The cell swells', 'The cell shrivels', 'Water stops moving completely'], a: 0, x: 'Isotonic means equal solute, so there is no net water movement.' },
+  { id: 'f24', q: 'Wilted lettuce becomes crisp after soaking in fresh water. Why?', o: ['The fresh water is hypotonic, so water moved into the lettuce cells', 'The fresh water is hypertonic, so water moved out of the cells', 'The lettuce used ATP to pump water in', 'Salt moved out of the lettuce cells'], a: 0, x: 'Fresh water has less solute than the cells, so water moves in by osmosis.' },
+  { id: 'f25', q: 'Hospital IV fluids are made isotonic to blood. Why?', o: ['So red blood cells don\'t swell or shrivel', 'So the blood becomes saltier', 'So water moves into every cell', 'So cells can make more ATP'], a: 0, x: 'Isotonic fluid causes no net water movement, so cells keep their shape.' },
+  { id: 'f26', q: 'A plant cell\'s membrane pulls away from its cell wall. What kind of solution is the cell in?', o: ['Hypertonic', 'Hypotonic', 'Isotonic', 'Pure water'], a: 0, x: 'Plasmolysis happens when water leaves the cell in a hypertonic solution.' },
+  { id: 'f27', q: 'Active transport moves substances…', o: ['from low concentration to high concentration', 'from high concentration to low concentration', 'straight through the phospholipid tails', 'without any proteins'], a: 0, x: 'Active transport moves against the gradient: low to high.' },
+  { id: 'f28', q: 'What does active transport need that passive transport does not?', o: ['Energy (ATP)', 'Water', 'A cell membrane', 'Particles that move'], a: 0, x: 'Moving uphill takes energy, so active transport uses ATP.' },
+  { id: 'f29', q: 'The sodium-potassium pump moves Na⁺ out of a cell, where Na⁺ is already higher. What kind of transport is this?', o: ['Active transport', 'Simple diffusion', 'Facilitated diffusion', 'Osmosis'], a: 0, x: 'Moving from low to high with a pump and ATP is active transport.' },
+  { id: 'f30', q: 'Root hair cells take in minerals from soil that has fewer minerals than the root. How?', o: ['Active transport, using ATP and protein pumps', 'Simple diffusion through the bilayer', 'Osmosis', 'Facilitated diffusion, with no energy'], a: 0, x: 'Moving minerals from low (soil) to high (root) needs active transport.' },
+  { id: 'f31', q: 'Which process does NOT use a membrane protein?', o: ['Simple diffusion', 'Facilitated diffusion', 'Active transport', 'Water moving through aquaporins'], a: 0, x: 'Simple diffusion goes straight through the bilayer.' },
+  { id: 'f32', q: 'Potato cores lost mass after soaking in a 0.8 M sugar solution. Why?', o: ['The solution was hypertonic, so water left the potato cells', 'The solution was hypotonic, so water entered the potato cells', 'The potato used ATP to pump sugar out', 'The solution was isotonic'], a: 0, x: 'More solute outside the cells means water leaves by osmosis.' }
+];
+const QB = Object.fromEntries(BANK.map(q => [q.id, q]));
+
+const REVIEW_HTML = `<div class="two-col"><div class="review-box"><ul>
+  <li>The <b>cell membrane</b> is selectively permeable. Controlling what crosses keeps the inside stable: <b>homeostasis</b>.</li>
+  <li><b>Phospholipid bilayer:</b> hydrophilic heads face the water on both sides; hydrophobic tails hide in the middle.</li>
+  <li><b>Passive transport</b> (no energy, high → low): simple diffusion through the bilayer, facilitated diffusion through a protein, and osmosis (water).</li>
+  <li><b>Osmosis:</b> water moves toward more solute. Hypotonic: water in. Hypertonic: water out. Isotonic: no net change.</li>
+  <li><b>Active transport</b> (low → high) needs ATP and a protein pump.</li></ul></div>
+  <div class="figbox"><svg viewBox="0 0 400 260" class="fig static" role="img" aria-label="Membrane with a channel and a pump">${membraneScene({ w: 400, h: 260, mid: 130, prots: [{ kind: 'channel', x: 90 }, { kind: 'pump', x: 310, open: 'out' }], labOut: [200, 18], labIn: [200, 252], labAnchor: 'middle' })}${mol('o2', 200, 50)}${mol('o2', 200, 210)}<text class="fig-lab" x="90" y="76" text-anchor="middle">channel</text><text class="fig-lab" x="310" y="76" text-anchor="middle">pump (ATP)</text></svg></div></div>`;
+
+function build9(el) { el.innerHTML = frame(9, '<div id="fc"></div>'); }
+
+function renderFinal() {
+  const box = $('#fc'), F = S.final;
+  if (F.current) return renderFCQ();
+  const fails = F.attempts.filter(a => !a.pass).length;
+  const hist = F.attempts.length ? `<p class="attempts">Attempts so far: ${F.attempts.map((a, i) => `#${i + 1}: ${a.score}/${FC_LEN}`).join(', ')}</p>` : '';
+  const lockNote = LOCK_ON ? '<p class="lock-note">This check opens in full screen. If you leave the page or exit full screen, it locks, and your teacher will need to unlock it.</p>' : '';
+  if (F.passed) {
+    box.innerHTML = card('final', 'You passed the final check', `<div class="score-big pass">${F.best}/${FC_LEN}</div><p>That's your best score. Your results page is unlocked.</p>${hist}
+      <div class="btn-row"><button type="button" class="btn primary" data-go="10">See your results</button><button type="button" class="btn ghost" id="fcStart">Practice with new questions</button></div>`);
+    $('#fcStart').addEventListener('click', startAttempt);
+    return;
+  }
+  if (fails >= 3 && fails % 3 === 0 && F.reviewAt < fails) {
+    box.innerHTML = card('read', 'Quick review before your next try', `<p class="muted">You've tried ${fails} times. Read these key ideas, then start a new check.</p>${REVIEW_HTML}
+      <div class="btn-row"><button type="button" class="btn primary" id="fcReviewed">I reviewed this. Start a new check</button></div>`);
+    $('#fcReviewed').addEventListener('click', () => { F.reviewAt = fails; save(); startAttempt(); });
+    return;
+  }
+  box.innerHTML = card('final', fails ? 'Try again with new questions' : 'Ready for the final check?', `<p>${FC_LEN} questions picked at random from a bigger bank. Score ${PASS_SCORE} or more to pass. Each retake gives you different questions.</p>${lockNote}${hist}
+    <div class="btn-row"><button type="button" class="btn amber" id="fcStart">Start the final check</button></div>`);
+  $('#fcStart').addEventListener('click', startAttempt);
+}
+function startAttempt() {
+  const F = S.final;
+  const last = F.attempts.length ? F.attempts[F.attempts.length - 1].ids : [];
+  let ids = shuffle(BANK.map(q => q.id).filter(id => !last.includes(id)));
+  if (ids.length < FC_LEN) ids = ids.concat(shuffle(last));
+  ids = ids.slice(0, FC_LEN);
+  F.current = { qs: ids.map(id => ({ id, order: QB[id].fixed ? [0, 1, 2, 3] : shuffle([0, 1, 2, 3]) })), ans: {}, idx: 0, startedAt: Date.now() };
+  save(); startLockdown(); renderFinal();
+  $('#scr-9').scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });
+}
+function renderFCQ() {
+  const cur = S.final.current, qd = cur.qs[cur.idx], q = QB[qd.id], box = $('#fc');
+  const allAns = cur.qs.every(x => cur.ans[x.id] != null);
+  const unanswered = cur.qs.map((x, i) => cur.ans[x.id] == null ? i + 1 : null).filter(Boolean);
+  box.innerHTML = `<section class="card k-qc"><span class="tag">Final check</span>
+    <div class="fc-dots">${cur.qs.map((x, i) => `<button type="button" class="${cur.ans[x.id] != null ? 'ans' : ''} ${i === cur.idx ? 'cur' : ''}" data-j="${i}" aria-label="Question ${i + 1}${cur.ans[x.id] != null ? ', answered' : ''}">${i + 1}</button>`).join('')}</div>
+    <p class="sec-meta">Question ${cur.idx + 1} of ${FC_LEN}</p>
+    ${q.fig ? `<div class="qc-fig">${q.fig()}</div>` : ''}
+    <p class="qc-q">${q.q}</p>
+    <div class="opts">${qd.order.map((oi, pos) => `<button type="button" class="opt ${cur.ans[qd.id] === oi ? 'picked' : ''}" data-oi="${oi}" ${oi === q.a ? 'data-key="1"' : ''}><span class="L">${'ABCD'[pos]}</span><span class="ot">${q.o[oi]}</span></button>`).join('')}</div>
+    <div class="btn-row" style="justify-content:space-between;margin-top:18px"><button type="button" class="btn ghost" id="fcPrev" ${cur.idx === 0 ? 'disabled' : ''}>Back</button>
+    ${cur.idx < FC_LEN - 1 ? '<button type="button" class="btn primary" id="fcNext">Next</button>' : `<button type="button" class="btn amber" id="fcSubmit" ${allAns ? '' : 'disabled'}>Submit check</button>`}</div>
+    ${cur.idx === FC_LEN - 1 && !allAns ? `<p class="small muted">Answer every question to submit. Still open: ${unanswered.join(', ')}.</p>` : ''}
+  </section>`;
+  $$('.opt', box).forEach(b => b.addEventListener('click', () => { cur.ans[qd.id] = +b.dataset.oi; save(); renderFCQ(); }));
+  $$('.fc-dots button', box).forEach(b => b.addEventListener('click', () => { cur.idx = +b.dataset.j; save(); renderFCQ(); }));
+  const prev = $('#fcPrev', box), next = $('#fcNext', box), sub = $('#fcSubmit', box);
+  prev && prev.addEventListener('click', () => { cur.idx--; save(); renderFCQ(); });
+  next && next.addEventListener('click', () => { cur.idx++; save(); renderFCQ(); });
+  sub && sub.addEventListener('click', gradeAttempt);
+}
+function gradeAttempt() {
+  const F = S.final, cur = F.current;
+  let score = 0; const missed = [];
+  cur.qs.forEach(x => { const q = QB[x.id]; if (cur.ans[x.id] === q.a) score++; else missed.push(x); });
+  const pass = score >= PASS_SCORE, prevBest = F.best, wasPassed = F.passed;
+  F.attempts.push({ score, pass, at: new Date().toISOString(), ids: cur.qs.map(x => x.id), pts: cur.qs.map(x => cur.ans[x.id] === QB[x.id].a ? 1 : 0) });
+  F.best = Math.max(F.best, score);
+  const autoSend = pass && (!wasPassed || score > prevBest);
+  if (pass) F.passed = true;
+  F.current = null; save(); endLockdown();
+  if (pass) done(9, 'pass');
+  const box = $('#fc');
+  const review = missed.map(x => { const q = QB[x.id]; return `<div class="review-item"><p style="margin:0 0 4px"><b>${q.q}</b></p><p class="yours" style="margin:0">Your answer: ${q.o[cur.ans[x.id]]}</p><p class="right" style="margin:0">Correct answer: ${q.o[q.a]}</p><p class="small muted" style="margin:4px 0 0">${q.x}</p></div>`; }).join('');
+  const failsNow = F.attempts.filter(a => !a.pass).length;
+  box.innerHTML = card('final', pass ? 'You passed' : 'Not yet', `<div class="score-big ${pass ? 'pass' : 'fail'}">${score}/${FC_LEN}</div>
+    <p>${pass ? (missed.length ? 'Nice work. Look over what you missed below.' : 'Perfect score.') : `You need ${PASS_SCORE} to pass. Look over what you missed, then try again with new questions.${failsNow % 3 === 0 ? ' You\'ll see a quick review first.' : ''}`}</p>
+    ${missed.length ? `<h4 style="margin:14px 0 0;font-weight:500;color:var(--muted)">What you missed</h4>${review}` : ''}
+    <div class="btn-row">${pass ? '<button type="button" class="btn primary" data-go="10">See your results</button>' : '<button type="button" class="btn amber" id="fcAgain">Try again</button>'}</div>
+    ${pass ? '<p class="sheetbox sheetStatus" aria-live="polite"></p>' : ''}`);
+  const again = $('#fcAgain'); again && again.addEventListener('click', renderFinal);
+  if (autoSend) sendScores();
+  $('#scr-9').scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });
+}
+
+/* =========================================================
+   RESULTS
+   ========================================================= */
+const QC_IDS = ['qc1', 'qc2', 'qc3', 'qc4', 'qc5', 'qc6', 'qc7', 'qc8'];
+function stats() {
+  const F = S.final;
+  return {
+    firstTry: QC_IDS.filter(id => S.qc[id] && S.qc[id].first === true).length,
+    secs: [1, 2, 3, 4, 5, 6, 7, 8, 9].filter(n => S.secDone[n]).length,
+    best: F.best, attempts: F.attempts.length, passed: F.passed
+  };
+}
+function renderResults() {
+  const el = $('#scr-10'), st = S.student || {}, k = stats();
+  el.innerHTML = `<header class="sec-head">${tileHTML(10)}<div><p class="sec-meta">Results</p><h2>${k.passed ? 'Lesson complete' : 'Your results so far'}</h2></div></header>
+  <section class="card"><span class="tag">Student</span>
+    <div class="who"><div><span>Name</span>${esc((st.first || '') + ' ' + (st.last || ''))}</div><div><span>Period</span>${esc(st.period || '')}</div><div><span>Teacher</span>${esc(st.teacher || '')}</div><div><span>Student ID</span>${esc(st.sid || '')}</div></div>
+    <div class="stats">
+      <div class="stat"><div class="k">Final check (best)</div><div class="v">${k.best}/${FC_LEN}</div></div>
+      <div class="stat"><div class="k">Status</div><div class="v" style="color:${k.passed ? 'var(--good)' : 'var(--amber)'}">${k.passed ? 'Passed' : 'Not yet'}</div></div>
+      <div class="stat"><div class="k">Final check attempts</div><div class="v">${k.attempts}</div></div>
+      <div class="stat"><div class="k">Quick checks right on first try</div><div class="v">${k.firstTry}/8</div></div>
+      <div class="stat"><div class="k">Sections finished</div><div class="v">${k.secs}/9</div></div>
+      <div class="stat"><div class="k">Times locked</div><div class="v">${S.lockouts}</div></div>
+    </div>
+    <p class="small muted">${S.completedAt ? 'Completed ' + new Date(S.completedAt).toLocaleString() : ''}</p>
+  </section>
+  <section class="card"><span class="tag">Your goals</span><ul class="goals" id="goalsResults"></ul></section>
+  <div class="btn-row no-print"><button type="button" class="btn primary" id="sendBtn">Send my scores to my teacher</button><button type="button" class="btn ghost" id="csvBtn">Download CSV</button><button type="button" class="btn ghost" id="printBtn">Print results</button><button type="button" class="btn ghost" data-go="9">Back to the final check</button></div>
+  <p class="sheetbox sheetStatus no-print" aria-live="polite">${S.sentAt ? `Sent to your teacher ${new Date(S.sentAt).toLocaleString()}.` : ''}</p>`;
+  renderGoalsInto($('#goalsResults'));
+  $('#csvBtn').addEventListener('click', downloadCSV);
+  $('#sendBtn').addEventListener('click', sendScores);
+  $('#printBtn').addEventListener('click', () => window.print());
+}
+function downloadCSV() {
+  const st = S.student || {}, k = stats();
+  const H = ['Student ID', 'Last Name', 'First Name', 'Period', 'Teacher', 'Activity', 'Lesson Score (quick checks right on first try)', 'Lesson Total', 'Final Check Score (best)', 'Final Check Total', 'Final Check Passed', 'Final Check Attempts', 'Sections Completed (of 9)', 'Times Locked', 'Date'];
+  const row = [st.sid, st.last, st.first, st.period, st.teacher, LESSON, k.firstTry, 8, k.best, FC_LEN, k.passed ? 'Yes' : 'No', k.attempts, k.secs, S.lockouts, new Date().toLocaleString()];
+  const q = v => { const s = String(v == null ? '' : v); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+  const csv = H.map(q).join(',') + '\r\n' + row.map(q).join(',') + '\r\n';
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `CellTransport_${(st.last || 'student').replace(/\W+/g, '')}_${(st.first || '').replace(/\W+/g, '')}.csv`;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+
+/* =========================================================
+   GOOGLE SHEETS (two rows: the lesson and the final check)
+   ========================================================= */
+function sheetBodies() {
+  const st = S.student || {}, F = S.final;
+  const base = { studentId: st.sid || '', firstName: st.first || '', lastName: st.last || '', period: st.period || '', teacher: st.teacher || '', locks: String(S.lockouts), when: new Date().toString() };
+  const qcPts = QC_IDS.map(id => S.qc[id] && S.qc[id].first === true ? 1 : 0);
+  const lesson = Object.assign({}, base, {
+    activity: `${LESSON}: Lesson`, score: String(sum(qcPts)), total: String(QC_IDS.length),
+    qlabels: QC_IDS.map((_, i) => 'QC' + (i + 1)).join('|'), qpoints: qcPts.join('|'), qmax: QC_IDS.map(() => 1).join('|')
+  });
+  let best = null; F.attempts.forEach(a => { if (!best || a.score >= best.score) best = a; });
+  const fin = Object.assign({}, base, { activity: `${LESSON}: Final Check`, score: String(F.best), total: String(FC_LEN) },
+    best && best.pts ? { qlabels: best.pts.map((_, i) => 'Q' + (i + 1)).join('|'), qpoints: best.pts.join('|'), qmax: best.pts.map(() => 1).join('|') }
+                     : { qlabels: 'Final Check', qpoints: String(F.best), qmax: String(FC_LEN) });
+  return [lesson, fin];
+}
+function sendScores() {
+  const msg = t => $$('.sheetStatus').forEach(e => { e.textContent = t; });
+  if (!S.student) { msg('Sign in on the start page first.'); return; }
+  const url = sheetURL();
+  if (!url) { msg("This lesson isn't connected to your teacher's gradebook sheet yet."); return; }
+  msg('Sending...');
+  Promise.all(sheetBodies().map(b => fetch(url, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(b) })))
+    .then(() => { S.sentAt = new Date().toISOString(); save(); msg('Sent! Your teacher will see your scores.'); })
+    .catch(() => msg("Couldn't send. Check your internet connection and try again."));
+}
+
+/* =========================================================
+   PROGRESS: requirements, sections, goals, nav
+   ========================================================= */
+const SHOW = {};
+function renderReqs(n, justId) {
+  const box = $('#unlock-' + n); if (!box) return;
+  $('.reqs', box).innerHTML = REQS[n].map(([id, t]) => `<li class="${S.reqs[n + '.' + id] ? 'ok' : ''} ${id === justId ? 'just-ok' : ''}"><span class="box"></span><span>${t}</span></li>`).join('');
+  box.classList.toggle('all-done', !!S.secDone[n]);
+}
+function updateNext(n) { const b = $('#next-' + n); if (b) b.disabled = !(S.secDone[n] || S.teacherUnlock); }
+function done(n, id) {
+  const k = n + '.' + id;
+  if (S.reqs[k]) return;
+  S.reqs[k] = true; save();
+  if (!REQS[n].some(([r]) => r === id)) return;
+  renderReqs(n, id);
+  if (REQS[n].every(([r]) => S.reqs[n + '.' + r])) completeSection(n);
+}
+function completeSection(n) {
+  if (S.secDone[n]) return;
+  S.secDone[n] = true;
+  if (n === 9 && !S.completedAt) S.completedAt = new Date().toISOString();
+  save(); renderReqs(n); updateNext(n);
+  renderNav(n + 1);
+  const gi = GOALS.findIndex(g => g.sec === n);
+  renderGoals(gi);
+  setTimeout(() => toast(gi >= 0 ? `Goal reached: ${GOALS[gi].t}` : (n < 9 ? `Section ${n + 1} unlocked` : 'Results unlocked')), 250);
+}
+function accessible(n) {
+  if (n === 0) return true;
+  if (!S.student) return false;
+  if (S.teacherUnlock) return true;
+  if (n === 1) return true;
+  if (n <= 9) return !!S.secDone[n - 1];
+  if (n === 10) return !!S.secDone[9];
+  return false;
+}
+function renderNav(popN) {
+  const nav = $('#navTiles');
+  nav.innerHTML = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => {
+    const t = TILES[n], title = n <= 9 ? `Section ${n}: ${SECS[n].title}` : 'Results';
+    return `<button type="button" class="tile cat-${t.cat} ${S.cur === n ? 'current' : ''} ${(n <= 9 && S.secDone[n]) ? 'done' : ''} ${n === popN && !REDUCED ? 'unlocking' : ''}" data-go="${n}" ${accessible(n) ? '' : 'disabled'} title="${esc(title)}" aria-label="${esc(title)}${accessible(n) ? '' : ' (locked)'}"><span class="z">${n}</span>${t.sym}<span class="ck" aria-hidden="true">✓</span></button>`;
+  }).join('');
+}
+function renderGoalsInto(ul, justIdx) {
+  if (!ul) return;
+  ul.innerHTML = GOALS.map((g, i) => `<li class="${S.secDone[g.sec] ? 'ok' : ''} ${i === justIdx ? 'just-ok' : ''}"><span class="box"></span><span>${g.t}</span></li>`).join('');
+}
+function renderGoals(justIdx) {
+  renderGoalsInto($('#goalsStart'), justIdx);
+  renderGoalsInto($('#goalsDrawerList'), justIdx);
+  renderGoalsInto($('#goalsResults'), justIdx);
+  const n = GOALS.filter(g => S.secDone[g.sec]).length;
+  $('#goalsBtn').textContent = `Goals ${n}/${GOALS.length}`;
+}
+
+function go(n) {
+  if (n < 0 || n > 10) return;
+  if (S.final.current && n !== 9) { toast('Submit your final check first.'); return; }
+  if (!accessible(n)) { toast(S.student ? 'Finish the section before this one to unlock it.' : 'Fill in your name and info to start.'); return; }
+  S.cur = n; save();
+  SIMS.forEach(s => s.pause());
+  $$('.screen').forEach(s => s.classList.toggle('on', s.id === 'scr-' + n));
+  if (n === 9) renderFinal();
+  if (n === 10) renderResults();
+  if (n === 0) startHero(); else heroRun++;
+  if (SHOW[n]) SHOW[n]();
+  renderNav();
+  window.scrollTo({ top: 0, behavior: 'auto' });
+}
+
+/* =========================================================
+   HERO (start screen): molecules crossing a membrane
+   ========================================================= */
+let heroRun = 0, heroBuilt = false;
+function startHero() {
+  const svg = $('#heroSvg'), MID = 148, CHX = 78, PX = 322;
+  if (!heroBuilt) {
+    heroBuilt = true;
+    svg.innerHTML = membraneScene({ w: 400, h: 290, mid: MID, prots: [{ kind: 'channel', x: CHX }, { kind: 'pump', x: PX, open: 'in' }], labels: false }) +
+      mol('o2', 168, 40) + mol('o2', 228, 70) + mol('o2', 196, 92) + mol('o2', 140, 246) +
+      mol('k', 30, 40) + mol('k', 118, 62) + mol('k', 36, 252) +
+      mol('na', 352, 34) + mol('na', 280, 58) + mol('na', 372, 86) + mol('na', 268, 250) +
+      `<g id="hAtp" class="mover" style="transform:translate(${PX + 46}px,${MID + 56}px);opacity:0"><rect x="-17" y="-10" width="34" height="20" rx="6" fill="var(--amber)"/><text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="700" fill="#241703" font-family="Lexend, sans-serif">ATP</text></g>` +
+      mover('o2', 200, 30, 'hO2') + mover('k', 64, 30, 'hK') + mover('na', 352, 252, 'hNa');
+  }
+  const id = ++heroRun, cap = t => { $('#heroCap').innerHTML = t; };
+  const O = $('#hO2'), K = $('#hK'), N = $('#hNa'), A = $('#hAtp');
+  const setPump = open => { const s = $(`#heroSvg .pslot[data-x="${PX}"]`); if (s) s.innerHTML = protein('pump', PX, MID, open); };
+  const jump = (el, x, y) => { el.style.transition = 'none'; moveTo(el, x, y); void el.getBoundingClientRect(); el.style.transition = ''; };
+  const dur = (el, s) => { el.style.transitionDuration = s; };
+  if (REDUCED) { cap('The cell membrane controls what gets in and what gets out.'); return; }
+  const T = (ms, fn) => setTimeout(() => { if (id === heroRun) fn(); }, ms);
+  const cycle = () => {
+    if (id !== heroRun) return;
+    jump(O, 200, 30); jump(K, 64, 30); jump(N, 352, 252); setPump('in'); A.style.opacity = 0;
+    [O, K, N].forEach(e => { e.style.opacity = 1; });
+    cap('<b>Oxygen</b> slips straight through the bilayer.');
+    T(300, () => { dur(O, '2s'); moveTo(O, 200, 262); });
+    T(2600, () => { cap('<b>Ions</b> need a protein channel to get through.'); dur(K, '.9s'); moveTo(K, CHX, 74); });
+    T(3600, () => { dur(K, '1.4s'); moveTo(K, CHX, 262); });
+    T(5400, () => { cap('<b>Pumps</b> spend ATP to push ions from low to high.'); dur(N, '.9s'); moveTo(N, PX, MID + 26); A.style.opacity = 1; jump(A, PX + 46, MID + 56); });
+    T(6500, () => { dur(A, '.5s'); moveTo(A, PX + 22, MID + 50); });
+    T(7100, () => { setPump('out'); A.style.opacity = 0; dur(N, '.5s'); moveTo(N, PX, MID - 26); });
+    T(7700, () => { dur(N, '1s'); moveTo(N, PX + 6, 30); });
+    T(9600, () => { [O, K, N].forEach(e => { e.style.opacity = 0; }); });
+    T(10200, cycle);
+  };
+  cycle();
+}
+
+/* =========================================================
+   LOCKDOWN (final check only, when opened from GitHub Pages)
+   ========================================================= */
+let fsExiting = false;
+function reqFS() {
+  const d = document.documentElement, f = d.requestFullscreen || d.webkitRequestFullscreen;
+  if (f && !document.fullscreenElement) { try { const p = f.call(d); if (p && p.catch) p.catch(() => {}); } catch (e) {} }
+}
+function exitFS() {
+  if (!document.fullscreenElement) return;
+  const f = document.exitFullscreen || document.webkitExitFullscreen;
+  fsExiting = true;
+  try { const p = f.call(document); if (p && p.then) p.then(() => { fsExiting = false; }, () => { fsExiting = false; }); else fsExiting = false; } catch (e) { fsExiting = false; }
+}
+function startLockdown() { if (!LOCK_ON) return; S.lockActive = true; S.locked = false; save(); reqFS(); }
+function endLockdown() { S.lockActive = false; S.locked = false; save(); $('#lockOv').hidden = true; exitFS(); }
+function lockNow() { if (!S.lockActive || S.locked) return; S.locked = true; S.lockouts++; save(); showLock(); }
+function showLock() { $('#lockOv').hidden = false; $('#lockCode').value = ''; $('#lockMsg').textContent = ''; setTimeout(() => $('#lockCode').focus(), 60); }
+document.addEventListener('visibilitychange', () => { if (document.hidden) lockNow(); });
+window.addEventListener('blur', () => { setTimeout(() => { if (!document.hasFocus()) lockNow(); }, 150); });
+document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && !fsExiting) lockNow(); });
+function tryUnlock() {
+  if ($('#lockCode').value.trim() === TEACHER_CODE) { S.locked = false; save(); $('#lockOv').hidden = true; reqFS(); toast('Unlocked'); }
+  else { $('#lockMsg').textContent = 'That code is not correct.'; shake($('#lockCode')); }
+}
+$('#lockGo').addEventListener('click', tryUnlock);
+$('#lockCode').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+
+/* =========================================================
+   NO COPY, CUT, PASTE, RIGHT-CLICK, OR TEXT SELECTION
+   ========================================================= */
+const inField = t => !!(t && t.closest && t.closest('input, select, textarea'));
+['copy', 'cut', 'paste'].forEach(ev => document.addEventListener(ev, e => { e.preventDefault(); toast('Copy and paste are turned off in this lesson.'); }, true));
+document.addEventListener('contextmenu', e => e.preventDefault(), true);
+document.addEventListener('selectstart', e => { if (!inField(e.target)) e.preventDefault(); }, true);
+document.addEventListener('dragstart', e => e.preventDefault(), true);
+document.addEventListener('drop', e => e.preventDefault(), true);
+document.addEventListener('keydown', e => {
+  const k = (e.key || '').toLowerCase(), mod = e.ctrlKey || e.metaKey;
+  if (mod && ['c', 'x', 'v', 'p', 's', 'u'].includes(k)) { e.preventDefault(); if (k === 'c' || k === 'x' || k === 'v') toast('Copy and paste are turned off in this lesson.'); return; }
+  if (mod && k === 'a' && !inField(e.target)) { e.preventDefault(); return; }
+  if (k === 'f12' || (mod && e.shiftKey && ['i', 'j', 'c'].includes(k))) e.preventDefault();
+}, true);
+
+/* =========================================================
+   TEACHER VIEW
+   ========================================================= */
+const tOv = $('#teacherOv');
+function teacherInfo() {
+  const st = S.student;
+  $('#tInfo').textContent = `${st ? `Student: ${st.first} ${st.last}, period ${st.period}. ` : 'No student signed in. '}Final check attempts: ${S.final.attempts.length}. Best: ${S.final.best}/${FC_LEN}. Times locked: ${S.lockouts}.`;
+  $('#tKey').textContent = document.body.classList.contains('show-key') ? 'Hide answer key' : 'Show answer key';
+  $('#tUnlock').textContent = S.teacherUnlock ? 'Every section is unlocked' : 'Unlock every section';
+  $('#tUnlock').disabled = !!S.teacherUnlock;
+  $('#tEndLock').disabled = !S.lockActive;
+}
+$('#teacherBtn').addEventListener('click', () => {
+  tOv.hidden = false; $('#tLogin').classList.remove('hidden'); $('#tPanel').classList.add('hidden');
+  $('#tCode').value = ''; $('#tMsg').textContent = ''; setTimeout(() => $('#tCode').focus(), 50);
+});
+const tLogin = () => {
+  if ($('#tCode').value.trim() === TEACHER_CODE) { $('#tLogin').classList.add('hidden'); $('#tPanel').classList.remove('hidden'); teacherInfo(); }
+  else { $('#tMsg').textContent = 'That code is not correct.'; shake($('#tCode')); }
+};
+$('#tGo').addEventListener('click', tLogin);
+$('#tCode').addEventListener('keydown', e => { if (e.key === 'Enter') tLogin(); });
+$('#tCancel').addEventListener('click', () => { tOv.hidden = true; });
+$('#tClose').addEventListener('click', () => { tOv.hidden = true; });
+$('#tUnlock').addEventListener('click', () => {
+  if (!S.student) { toast('Have the student sign in first.'); return; }
+  S.teacherUnlock = true; save(); renderNav(); for (let n = 1; n <= 9; n++) updateNext(n); teacherInfo(); toast('Every section is unlocked');
+});
+$('#tKey').addEventListener('click', () => { document.body.classList.toggle('show-key'); teacherInfo(); });
+$('#tSend').addEventListener('click', sendScores);
+$('#tEndLock').addEventListener('click', () => { endLockdown(); teacherInfo(); toast('Lockdown ended for this check'); });
+$('#tReset').addEventListener('click', () => {
+  if (!confirm('Erase all progress for this lesson on this device?')) return;
+  try { localStorage.removeItem(KEY); } catch (e) {}
+  S = DEF(); location.reload();
+});
+
+/* =========================================================
+   GLOBAL EVENTS
+   ========================================================= */
+const pop = $('#pop');
+document.addEventListener('click', e => {
+  const g = e.target.closest('[data-go]');
+  if (g && !g.disabled) { go(+g.dataset.go); return; }
+  const ch = e.target.closest('.chip');
+  if (ch) {
+    const t = ch.dataset.term;
+    $('b', pop).textContent = t; $('p', pop).textContent = GLOSS[t] || '';
+    pop.hidden = false;
+    const r = ch.getBoundingClientRect(), w = Math.min(300, window.innerWidth - 24);
+    pop.style.left = Math.max(12, Math.min(r.left, window.innerWidth - w - 12)) + 'px';
+    const below = r.bottom + 8, ph = pop.offsetHeight;
+    pop.style.top = (below + ph > window.innerHeight - 10 ? Math.max(10, r.top - ph - 8) : below) + 'px';
+    return;
+  }
+  if (!e.target.closest('#pop')) pop.hidden = true;
+  const dr = $('#goalsDrawer');
+  if (!dr.hidden && !e.target.closest('#goalsDrawer') && !e.target.closest('#goalsBtn')) { dr.hidden = true; $('#goalsBtn').setAttribute('aria-expanded', 'false'); }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { pop.hidden = true; $('#goalsDrawer').hidden = true; if (!tOv.hidden) tOv.hidden = true; } });
+window.addEventListener('scroll', () => { pop.hidden = true; }, { passive: true });
+$('#goalsBtn').addEventListener('click', () => { const d = $('#goalsDrawer'); d.hidden = !d.hidden; $('#goalsBtn').setAttribute('aria-expanded', String(!d.hidden)); });
+$('#goalsClose').addEventListener('click', () => { $('#goalsDrawer').hidden = true; $('#goalsBtn').setAttribute('aria-expanded', 'false'); });
+$('.brand').style.cursor = 'pointer';
+$('.brand').addEventListener('click', () => go(0));
+
+/* start form */
+function renderStart() {
+  const wb = $('#welcomeBack'), form = $('#startForm');
+  if (S.student) {
+    wb.classList.remove('hidden'); form.classList.add('hidden');
+    wb.innerHTML = `<p style="margin-top:0">Welcome back, <b>${esc(S.student.first)}</b> (period ${esc(S.student.period)}, ${esc(S.student.teacher)}). Your progress is saved on this device.</p><div class="btn-row"><button type="button" class="btn primary" id="wbGo">Continue</button><button type="button" class="btn ghost" id="wbNew">Not you? Start fresh</button></div>`;
+    $('#wbGo').addEventListener('click', () => {
+      let n = S.cur > 0 && accessible(S.cur) ? S.cur : 1;
+      if (S.cur === 0) { for (let k = 1; k <= 9; k++) if (accessible(k)) n = k; }
+      go(n);
+    });
+    $('#wbNew').addEventListener('click', () => {
+      if (!confirm('Start fresh? This erases the saved progress on this device.')) return;
+      try { localStorage.removeItem(KEY); } catch (e) {}
+      location.reload();
+    });
+  } else { wb.classList.add('hidden'); form.classList.remove('hidden'); }
+}
+$('#fStart').addEventListener('click', () => {
+  const v = id => $(id).value.trim();
+  const st = { first: v('#fFirst'), last: v('#fLast'), period: v('#fPeriod'), teacher: v('#fTeacher'), sid: v('#fSid') };
+  const missing = [['first', 'first name'], ['last', 'last name'], ['period', 'period'], ['teacher', 'teacher'], ['sid', 'student ID']].filter(([k]) => !st[k]).map(([, l]) => l);
+  if (missing.length) { $('#formMsg').textContent = `Add your ${missing.join(', ')}.`; return; }
+  S.student = st; S.startedAt = new Date().toISOString(); save();
+  renderStart(); go(1);
+});
+
+/* =========================================================
+   INIT
+   ========================================================= */
+$('#fTeacher').innerHTML = '<option value="">Choose your teacher</option>' + teacherList().map(t => `<option>${esc(t)}</option>`).join('');
+const BUILD = [null, build1, build2, build3, build4, build5, build6, build7, build8, build9];
+for (let n = 1; n <= 9; n++) {
+  try { BUILD[n]($('#scr-' + n)); } catch (err) { console.error('Section ' + n, err); }
+  renderReqs(n); updateNext(n);
+}
+renderGoals(); renderStart();
+if (S.lockActive && S.final.current) { if (!S.locked) { S.locked = true; S.lockouts++; save(); } }
+let startAt = 0;
+if (S.student) { startAt = S.final.current ? 9 : (accessible(S.cur) ? S.cur : 0); }
+go(startAt);
+if (S.locked && S.lockActive) showLock();
+})();
+</script>
+</body></html>
