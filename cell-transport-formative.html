@@ -42,6 +42,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .namebox select{font:inherit;padding:8px 10px;border:1.5px solid #8ea4bc;border-radius:4px;background:#fff}
 .namebox .fld.pd input{width:80px}
 .namebox .err{color:var(--bad);font-size:.88rem;margin-top:8px;display:none}
+.namebox .fld input[type=password]{width:200px}
 .sheetbox{font-size:.9rem;color:var(--muted);margin-top:6px}
 .lockinfo{background:#fff8e1;border:1px solid #e6cf7a;border-radius:4px;padding:8px 12px;font-size:.92rem;margin:12px 0}
 
@@ -287,7 +288,7 @@ function lockdownOn(){if(!LOCKDOWN)return;lockActive=true;enterFS();}
 function lockdownOff(){lockActive=false;exitFS();}
 function lockNow(){
  if(!lockActive||locked)return;
- locked=true;lockCount++;
+ locked=true;lockCount++;saveState();
  $("#lock").hidden=false;$("#lockcode").value="";$("#lockerr").hidden=true;
  setTimeout(()=>{const i=$("#lockcode");if(i)i.focus();},60);
 }
@@ -614,7 +615,7 @@ function dragCard(e,id){dragId=id;try{e.dataTransfer.setData("text/plain",id);e.
 function dropTo(b){const id=dragId;dragId=null;if(!id)return;place(id,b);selCard=null;rerenderQ();}
 function place(id,b){const a=ans[2]||{};if(b)a[id]=b;else delete a[id];ans[2]=a;}
 function setCER(k,v){const a=ans[3]||{c:"",e:"",r:""};a[k]=v;ans[3]=a;refreshChips();}
-function refreshChips(){const c=$("#chips");if(c)c.innerHTML=chipsHTML();}
+function refreshChips(){const c=$("#chips");if(c)c.innerHTML=chipsHTML();saveState();}
 
 /* =========================================================
   NAVIGATION / SCREENS
@@ -648,7 +649,9 @@ function startTest(){
 function chipsHTML(){
  return QS.map((q,i)=>`<button class="chip ${i===cur?"cur":""} ${isAnswered(i)?"done":""} ${flagged.has(i)?"flag":""}" onclick="go(${i})" aria-label="Question ${i+1}${isAnswered(i)?", answered":""}${flagged.has(i)?", flagged":""}">${i+1}</button>`).join("");
 }
-function teacherList(){return (typeof TEACHERS!=="undefined"&&Array.isArray(TEACHERS))?TEACHERS.map(String).filter(Boolean):[];}
+const BACKUP_URL="https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec",BACKUP_TEACHERS=["Austin","Mueller","McCue","Arce","Trimm","Garcia"];
+function teacherList(){try{if(typeof TEACHERS!=="undefined"&&Array.isArray(TEACHERS)&&TEACHERS.length)return TEACHERS.map(String).filter(Boolean);}catch(e){}return BACKUP_TEACHERS;}
+function sheetURL(){try{if(typeof SHEETS_WEBHOOK_URL!=="undefined"&&SHEETS_WEBHOOK_URL&&String(SHEETS_WEBHOOK_URL).indexOf("PASTE")<0)return String(SHEETS_WEBHOOK_URL);}catch(e){}return BACKUP_URL;}
 function introHTML(){
  return `<div class="screen">
  <h2>Cell Transport: Which Way, and How?</h2>
@@ -724,14 +727,14 @@ function detailHTML(i){
   return `<div class="part ${ok?"ok":"no"}">\u201C${c.text}\u201D<br><b>You put it in:</b> ${a[c.id]?TYPE_NAME[a[c.id]]:"(not sorted)"}.${ok?"":` <span class="fix"><b>Correct:</b></span> ${TYPE_NAME[c.type]}.`}<br><span class="cap">${c.why}</span></div>`;}).join("");
  return "";
 }
-function toggleSelf(k){selfChecks[k]=!selfChecks[k];$("#cerscore").textContent=score(3);$("#totalscore").textContent=total();}
-function sheetsReady(){return typeof SHEETS_WEBHOOK_URL!=="undefined"&&SHEETS_WEBHOOK_URL&&String(SHEETS_WEBHOOK_URL).indexOf("PASTE")<0;}
+function toggleSelf(k){selfChecks[k]=!selfChecks[k];saveState();$("#cerscore").textContent=score(3);$("#totalscore").textContent=total();}
+function sheetsReady(){return !!sheetURL();}
 function sendToSheet(){
  const st=$("#sheetStatus");
  if(!sheetsReady()){if(st)st.textContent="This activity isn't connected to your teacher's gradebook sheet yet.";return;}
  const body=new URLSearchParams({studentId:student.id,firstName:student.first,lastName:student.last,period:student.period,teacher:student.teacher,activity:SHEETS_ACTIVITY_NAME,score:String(total()),total:String(MAX_TOTAL),locks:String(lockCount),qlabels:QS.map((q,i)=>"Q"+(i+1)+(q.t==="cer"?" CER":"")).join("|"),qpoints:QS.map((q,i)=>score(i)).join("|"),qmax:QS.map(q=>q.pts).join("|"),when:new Date().toString()});
  if(st)st.textContent="Sending...";
- fetch(SHEETS_WEBHOOK_URL,{method:"POST",mode:"no-cors",body:body})
+ fetch(sheetURL(),{method:"POST",mode:"no-cors",body:body})
   .then(()=>{if(st)st.textContent="Sent! Your teacher will see your score.";})
   .catch(()=>{if(st)st.textContent="Couldn't send. Check your internet connection and try again.";});
 }
@@ -768,7 +771,69 @@ function resultsHTML(){
   <div class="checks">${cq.checks.map((c,k)=>`<label><input type="checkbox" ${selfChecks[k]?"checked":""} onchange="toggleSelf(${k})"> ${c}</label>`).join("")}</div>
   ${cerRevised?`<p style="margin-top:10px"><b>You have used your one revision for this response.</b></p>`:`<p class="noprint" style="margin-top:10px"><button class="btn ghost" onclick="reviseCER()">Revise your answer (one chance)</button></p>`}
  </div>`;
+ h+=`<p class="noprint" style="margin-top:22px"><button class="btn ghost" style="font-size:.85rem;padding:6px 14px" onclick="teacherReset()">Teacher: clear this device for a new attempt</button></p>`;
  return h+`</div>`;
+}
+
+/* =========================================================
+  AUTO-SAVE (answers are kept on this device until the page is reset)
+  ========================================================= */
+const SAVE_KEY="fate_save_"+ACTIVITY.replace(/\W+/g,"_");
+const SAVE_HOURS=24;
+let resumeTo=null;
+function saveState(){
+ if(screen==="intro"||screen==="resume")return;
+ try{localStorage.setItem(SAVE_KEY,JSON.stringify({v:1,t:Date.now(),screen,cur,tab,ans,flagged:[...flagged],student,selfChecks,cerRevised,lockCount,fsize}));}catch(e){}
+}
+function loadState(){try{const s=localStorage.getItem(SAVE_KEY);return s?JSON.parse(s):null;}catch(e){return null;}}
+function clearState(){try{localStorage.removeItem(SAVE_KEY);}catch(e){}}
+function restoreSaved(){
+ const d=loadState();
+ if(!d||!d.v||Date.now()-d.t>SAVE_HOURS*3600*1000||!d.screen||d.screen==="intro"){if(d)clearState();return;}
+ cur=d.cur||0;tab=d.tab||QS[cur].tab;ans=d.ans||{};flagged=new Set(d.flagged||[]);student=d.student||student;
+ selfChecks=d.selfChecks||selfChecks;cerRevised=!!d.cerRevised;lockCount=d.lockCount||0;
+ if(d.fsize){fsize=d.fsize;document.documentElement.style.setProperty("--fs",fsize+"px");}
+ if(d.screen==="results"){screen="results";}
+ else{resumeTo=d.screen;screen="resume";}
+}
+function resumeHTML(){
+ const done=QS.filter((q,i)=>isAnswered(i)).length;
+ return `<div class="screen">
+ <h2>Welcome back, ${esc(student.first)}</h2>
+ <p>Your answers were saved. You have finished <b>${done} of ${QS.length}</b> questions.</p>
+ ${LOCKDOWN?`<p>Because you left the page, your teacher needs to enter the code to let you continue.</p>
+ <div class="namebox"><div class="fld"><label for="rescode">Teacher code</label><input id="rescode" type="password" autocomplete="off" onkeydown="if(event.key==='Enter')resumeTest()"></div>
+ <div class="err" id="reserr">That code isn't right. Ask your teacher to enter it.</div></div>`:""}
+ <button class="btn" onclick="resumeTest()">Continue where you left off</button>
+ <p class="cap" style="margin-top:16px">Not ${esc(student.first)} ${esc(student.last)}? <button class="btn ghost" style="font-size:.85rem;padding:4px 12px" onclick="startOver()">Start over</button></p>
+</div>`;
+}
+function codeOK(){
+ if(!LOCKDOWN)return true;
+ const i=$("#rescode"),ok=i&&i.value.trim()===TEACHER_CODE;
+ if(!ok){const e=$("#reserr");if(e)e.style.display="block";if(i)i.value="";}
+ return ok;
+}
+function resumeTest(){
+ if(!codeOK())return;
+ if(LOCKDOWN)lockCount++;
+ const to=resumeTo||"test";resumeTo=null;
+ lockdownOn();
+ if(to==="review"){screen="review";render();}
+ else if(to==="reviseCER"){cur=QS.findIndex(q=>q.t==="cer");tab=QS[cur].tab;screen="reviseCER";render();}
+ else go(Math.min(cur,QS.length-1));
+}
+function startOver(){
+ if(!codeOK())return;
+ clearState();
+ screen="intro";cur=0;tab="passage";ans={};flagged=new Set();student={id:"",first:"",last:"",period:"",teacher:""};
+ selfChecks=[false,false,false];cerRevised=false;lockCount=0;resumeTo=null;render();
+}
+function teacherReset(){
+ const c=window.prompt("Teacher code:");
+ if(c===null)return;
+ if(c.trim()!==TEACHER_CODE){alert("That code isn't right.");return;}
+ clearState();location.reload();
 }
 
 /* =========================================================
@@ -777,10 +842,12 @@ function resultsHTML(){
 function render(keepScroll){
  const root=$("#root");let sy=0,qy=0;
  if(keepScroll){const s=$("#stim"),q=$("#qp");if(s)sy=s.scrollTop;if(q)qy=q.scrollTop;}
- root.innerHTML=screen==="intro"?introHTML():screen==="test"?testHTML():screen==="reviseCER"?reviseCERHTML():screen==="review"?reviewHTML():resultsHTML();
+ root.innerHTML=screen==="intro"?introHTML():screen==="resume"?resumeHTML():screen==="test"?testHTML():screen==="reviseCER"?reviseCERHTML():screen==="review"?reviewHTML():resultsHTML();
  if(keepScroll){const s=$("#stim"),q=$("#qp");if(s)s.scrollTop=sy;if(q)q.scrollTop=qy;}
  root.style.overflow=(screen==="test"||screen==="reviseCER")?"hidden":"auto";
+ saveState();
 }
+restoreSaved();
 render();
 </script>
 </body>
