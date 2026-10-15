@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Periodic Trends: Cornell Notes</title>
+<style>
+:root{--ink:#1d2b36;--muted:#5a6a75;--line:#9fb0bd;--soft:#eef3f8;--accent:#2f5d9b;--key:#c0392b;--cue:#f6f8fb}
+*{box-sizing:border-box}
+body{margin:0;background:#e7ecf1;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:15px;line-height:1.55}
+button{font:inherit;cursor:pointer}
+.bar{position:sticky;top:0;z-index:5;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;padding:10px;background:var(--accent);color:#fff}
+.bar button{background:#fff;color:var(--accent);border:0;border-radius:6px;padding:7px 14px;font-weight:700}
+.bar button.on{background:var(--key);color:#fff}
+.bar span{font-size:13px;opacity:.9}
+.bar .saved{font-weight:700;opacity:1;min-width:110px;text-align:left}
+.page{width:8.5in;max-width:100%;min-height:11in;margin:18px auto;background:#fff;padding:.5in .55in;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+.head{display:grid;grid-template-columns:1fr auto;gap:6px 18px;border-bottom:3px solid var(--accent);padding-bottom:8px;margin-bottom:10px}
+.head h1{margin:0;font-size:22px;color:var(--accent)}
+.head .sub{font-size:13px;color:var(--muted)}
+.who{display:grid;grid-template-columns:auto 1fr;gap:4px 8px;font-size:13px;align-items:end;min-width:250px}
+.who input{border:0;border-bottom:1px solid var(--ink);font:inherit;padding:1px 4px;width:100%}
+.eq{background:var(--soft);border-left:5px solid var(--accent);padding:6px 12px;margin:0 0 10px;font-size:14px}
+.cornell{display:grid;grid-template-columns:24% 76%;border:2px solid var(--ink)}
+.cue,.notes{padding:9px 12px;border-top:1px solid var(--line)}
+.cornell > :nth-child(1),.cornell > :nth-child(2){border-top:0}
+.cue{background:var(--cue);border-right:2px solid var(--ink);font-weight:700;font-size:14px;color:var(--accent)}
+.cue small{display:block;font-weight:400;color:var(--muted);font-size:12px;margin-top:4px}
+.where{display:flex;align-items:center;gap:6px;margin-bottom:5px;font-size:11.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.3px}
+.tile{text-transform:none;display:inline-grid;place-items:center;width:30px;height:32px;border-radius:5px;border:1.5px solid var(--accent);background:#fff;color:var(--accent);font-size:14px;font-weight:800;line-height:1;position:relative;padding-top:6px}
+.tile i{position:absolute;top:2px;left:4px;font-size:8px;font-style:normal;font-weight:600}
+.colhead{background:var(--accent)!important;color:#fff!important;font-weight:700;font-size:13px;letter-spacing:.4px;text-transform:uppercase;padding:5px 12px}
+.notes p{margin:0 0 6px}
+.notes ul,.notes ol{margin:2px 0 6px;padding-left:20px}
+.notes li{margin:2px 0}
+.ex{border-top:1px dashed var(--line);margin-top:6px;padding-top:5px}
+.ex b:first-child{color:var(--accent)}
+input.b{font:inherit;border:0;border-bottom:1.5px solid var(--ink);background:transparent;padding:0 3px;text-align:center;color:var(--ink);min-width:3ch}
+input.b:focus{outline:2px solid #f2b705;outline-offset:1px}
+body.key input.b{color:var(--key);font-weight:700}
+table.t{border-collapse:collapse;width:100%;font-size:13.5px;margin:4px 0}
+table.t th,table.t td{border:1px solid var(--line);padding:3px 6px;text-align:center}
+table.t th{background:var(--soft)}
+.models{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:6px}
+.model{border:1px solid var(--line);border-radius:6px;padding:4px;text-align:center}
+.model b{font-size:13px}
+.model svg{width:100%;max-width:230px;height:auto;display:block;margin:0 auto}
+.slot{cursor:pointer}
+.mini{font-size:11px;padding:2px 8px;border:1px solid var(--line);background:#fff;border-radius:10px;color:var(--muted)}
+.rule{display:flex;gap:12px;align-items:center}
+.rule svg{flex:0 0 112px}
+.checks{list-style:none;padding-left:0!important}
+.checks li::before{content:"☐ ";color:var(--accent)}
+.summary{border:2px solid var(--ink);border-top:0;padding:8px 12px}
+.summary h3{margin:0 0 4px;font-size:14px;color:var(--accent);text-transform:uppercase;letter-spacing:.4px}
+.summary textarea{width:100%;min-height:96px;border:0;resize:vertical;font:inherit;line-height:24px;padding:0 2px;
+ background:repeating-linear-gradient(transparent 0 23px,#9fb0bd 23px 24px)}
+.foot{font-size:11px;color:var(--muted);text-align:right;margin-top:6px}
+@media screen and (max-width:760px){.cornell{grid-template-columns:1fr}.cue{border-right:0}.models{grid-template-columns:1fr}.page{padding:16px}.rule{flex-direction:column;align-items:flex-start}}
+@media print{
+ @page{size:letter;margin:.4in}
+ body{background:#fff;font-size:12.5px;line-height:1.45}
+ .cue,.notes{padding:6px 10px}
+ .notes p{margin:0 0 4px}
+ .head{padding-bottom:5px;margin-bottom:7px}
+ .models{grid-template-columns:repeat(2,210px);justify-content:center;margin-top:3px}
+ .model{padding:2px}
+ .model svg{max-width:122px}
+ .summary textarea{min-height:150px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .bar,.noprint{display:none!important}
+ .page{box-shadow:none;margin:0;padding:0;width:auto;min-height:0}
+ .page + .page{break-before:page}
+ .cue,.colhead,table.t th,.eq{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+.tmap{display:grid;grid-template-columns:repeat(8,24px);gap:3px;flex:0 0 auto;margin:4px 0}
+.tmap span{height:20px;border:1px solid var(--line);border-radius:2px;background:#fff}
+.tmap span.x{visibility:hidden}
+.mapwrap{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.trow{display:grid;grid-template-columns:auto 1fr 1fr;gap:0}
+</style>
+</head>
+<body>
+<div class="bar noprint">
+ <button onclick="window.print()">Print</button>
+ <button id="keybtn" onclick="toggleKey()">Teacher: answer key</button>
+ <button onclick="startOver()">Start over</button>
+ <span class="saved" id="saved" aria-live="polite"></span>
+ <span>Type in the blanks, or print and write. Your work saves on this device.</span>
+</div>
+
+<!-- ================= PAGE 1 ================= -->
+<div class="page">
+ <div class="head">
+  <div><h1>Periodic Trends</h1><div class="sub">Chemistry · Unit 2: Ions, Periodic Trends, and Bonding · Cornell Notes</div></div>
+  <div class="who"><label for="nm">Name</label><input id="nm" data-save="name"><label for="pd">Period</label><input id="pd" data-save="period"><label for="dt">Date</label><input id="dt" data-save="date"></div>
+ </div>
+ <div class="eq"><b>Essential question:</b> How can I predict atomic radius, ionization energy, and electronegativity from an element's place on the periodic table?</div>
+ <div class="cornell" id="p1"></div>
+</div>
+
+<!-- ================= PAGE 2 ================= -->
+<div class="page">
+ <div class="head">
+  <div><h1>Periodic Trends (continued)</h1><div class="sub">Electronegativity, the radius shortcut, and ranking</div></div>
+  <div class="who"><label for="nm2">Name</label><input id="nm2" data-save="name2"></div>
+ </div>
+ <div class="cornell" id="p2"></div>
+ <div class="summary">
+  <h3>Summary</h3>
+  <p style="margin:0 0 4px;font-size:13px;color:var(--muted)">In 2–3 sentences: How does atomic radius change across a period and down a group, and how can you use it to predict ionization energy and electronegativity?</p>
+  <textarea aria-label="Summary" data-save="summary"></textarea>
+ </div>
+ <div class="foot">From Atoms To Ecosystems</div>
+</div>
+
+<script>
+const TEACHER_CODE="Austin";
+const KEY="fate_chem_u2_trends_cornell_v1";
+/* {{answer}} becomes a blank. {{answer|alt}}: the first answer shows in the key. */
+const T=(z,sym,sec)=>`<div class="where"><span class="tile"><i>${z}</i>${sym}</span>Section ${sec}</div>`;
+const TR=(a,b)=>`<table class="t"><tr><th></th><th>Across a period (left → right)</th><th>Down a group (top → bottom)</th></tr><tr><td><b>Trend</b></td><td>${a}</td><td>${b}</td></tr></table>`;
+const MAP=`<div class="tmap" aria-label="Blank outline of the main-group periodic table">${Array.from({length:32},(_, i)=>`<span class="${i>0&&i<7?'x':''}"></span>`).join('')}</div>`;
+const P1=[
+ {head:true},
+ {where:T(1,"H",1),cue:"What is a periodic trend?",notes:`
+  <p>A periodic trend is a {{pattern}} in a property that repeats in every row of the periodic table.</p>
+  <p>A {{period}} is a row (left to right). A {{group}} is a column (top to bottom).</p>
+  <p class="ex"><b>Example:</b> Sodium and chlorine are in the same {{period}}, so going from Na to Cl is moving {{across}} the table.</p>`},
+ {where:T(2,"He",2),cue:"What is atomic radius? How does it change?",notes:`
+  <p>Atomic radius is the distance from the {{nucleus}} to the {{outer}} electrons. It is measured in {{picometers|pm}}.</p>
+  ${TR('{{decreases|gets smaller}}','{{increases|gets larger}}')}
+  <p class="ex"><b>Example:</b> Which is larger, lithium or fluorine? {{lithium|Li}}</p>`},
+ {where:T(3,"Li",3),cue:"Why does atomic radius change?",notes:`
+  <p><b>Down a group:</b> each atom has one more {{shell}}, so the outer electrons are {{farther}} from the nucleus. Inner electrons also {{shield|block}} some of the nucleus's pull.</p>
+  <p><b>Across a period:</b> the number of shells stays the {{same}}, but each atom has one more {{proton}}. The stronger pull draws the electrons {{in|closer}}.</p>
+  <p class="ex"><b>Example:</b> Potassium is larger than sodium because it has more {{shells}}.</p>`},
+ {where:T(4,"Be",4),cue:"What is ionization energy? How does it change?",notes:`
+  <p>Ionization energy is the energy needed to {{remove}} one outer electron from an atom.</p>
+  ${TR('{{increases|gets higher}}','{{decreases|gets lower}}')}
+  <p>Smaller atoms hold their outer electrons {{tighter|more tightly}}, so they are harder to remove.</p>
+  <p class="ex"><b>Example:</b> Which has the higher ionization energy, sodium or chlorine? {{chlorine|Cl}}</p>`}
+];
+const P2=[
+ {head:true},
+ {where:T(5,"B",5),cue:"What is electronegativity? How does it change?",notes:`
+  <p>Electronegativity is how strongly an atom {{pulls}} on {{shared}} electrons in a bond. The highest is {{fluorine|F}}. {{Noble gases|noble gas}} are left out because they rarely bond.</p>
+  ${TR('{{increases|gets higher}}','{{decreases|gets lower}}')}
+  <p class="ex"><b>Example:</b> In a bond between H and Cl, the shared electrons stay closer to {{chlorine|Cl}}.</p>`},
+ {where:T(6,"C",6),cue:"How can atomic radius predict the other two trends?",cueSmall:"The shortcut",notes:`
+  <p>The <b>smaller</b> atom has the {{higher}} ionization energy and the {{higher}} electronegativity. Learn the radius trend, then {{flip}} it.</p>
+  <div class="mapwrap">${MAP}<div><p style="margin:0">Draw arrows on the table.<br>Largest radius corner: {{bottom left}}<br>Highest IE and EN corner: {{top right}}</p></div></div>
+  <p class="ex"><b>Example:</b> Magnesium vs. sulfur: larger radius {{Mg|magnesium}}, higher ionization energy {{S|sulfur}}, higher electronegativity {{S|sulfur}}</p>`},
+ {where:T(7,"N",7),cue:"How do I rank elements by a trend?",notes:`
+  <ol><li>Find each element's {{period}} and {{group}}.</li>
+  <li>Rank by atomic radius: lower and farther {{left}} means larger.</li>
+  <li>For ionization energy or electronegativity, {{flip}} the radius order.</li></ol>
+  <p class="ex"><b>Example:</b> Rank F, Br, Cl from highest to lowest electronegativity: {{F, Cl, Br|F,Cl,Br}}</p>`}
+];
+let blankId=0;const BLANKS=[];
+function blanksIn(html){
+ return html.replace(/\{\{([^}]+)\}\}/g,(m,a)=>{
+  const alts=a.split("|"),id="b"+(blankId++);BLANKS.push({id,ans:alts[0]});
+  const w=Math.max(4,alts[0].length+2);
+  return `<input class="b" id="${id}" style="width:${w}ch" aria-label="Blank" autocomplete="off">`;
+ });
+}
+function build(el,rows){
+ document.getElementById(el).innerHTML=rows.map(r=>r.head
+  ?`<div class="cue colhead">Questions / Cues</div><div class="notes colhead">Notes</div>`
+  :`<div class="cue">${r.where||""}${r.cue}${r.cueSmall?`<small>${r.cueSmall}</small>`:""}</div><div class="notes">${blanksIn(r.notes)}</div>`).join("");
+}
+build("p1",P1);build("p2",P2);
+
+/* ---------- saving on this device ---------- */
+let saveTimer;
+function save(){
+ if(keyOn)return;
+ const data={blanks:{},fields:{}};
+ BLANKS.forEach(b=>{data.blanks[b.id]=document.getElementById(b.id).value;});
+ document.querySelectorAll("[data-save]").forEach(el=>{data.fields[el.dataset.save]=el.value;});
+ try{localStorage.setItem(KEY,JSON.stringify(data));const s=document.getElementById("saved");s.textContent="Saved ✓";clearTimeout(saveTimer);saveTimer=setTimeout(()=>{s.textContent="";},1800);}catch(e){}
+}
+function load(){
+ let data=null;try{data=JSON.parse(localStorage.getItem(KEY)||"null");}catch(e){}
+ if(!data)return;
+ BLANKS.forEach(b=>{if(data.blanks&&data.blanks[b.id]!=null)document.getElementById(b.id).value=data.blanks[b.id];});
+ document.querySelectorAll("[data-save]").forEach(el=>{if(data.fields&&data.fields[el.dataset.save]!=null)el.value=data.fields[el.dataset.save];});
+}
+function startOver(){if(keyOn)return;if(!confirm("Erase your notes on this device and start over?"))return;try{localStorage.removeItem(KEY);}catch(e){}location.reload();}
+document.addEventListener("input",e=>{if(e.target.matches("input.b,[data-save]"))save();});
+load();
+
+/* ---------- teacher answer key ---------- */
+let keyOn=false;const savedVals={};
+function toggleKey(){
+ if(!keyOn){const c=window.prompt("Teacher code:");if(c===null)return;if(c.trim()!==TEACHER_CODE){alert("That code isn't right.");return;}}
+ keyOn=!keyOn;document.body.classList.toggle("key",keyOn);
+ const btn=document.getElementById("keybtn");btn.textContent=keyOn?"Hide answer key":"Teacher: answer key";btn.classList.toggle("on",keyOn);
+ BLANKS.forEach(b=>{const el=document.getElementById(b.id);if(keyOn){savedVals[b.id]=el.value;el.value=b.ans;el.readOnly=true;}else{el.value=savedVals[b.id]||"";el.readOnly=false;}});
+}
+</script>
+</body>
+</html>
