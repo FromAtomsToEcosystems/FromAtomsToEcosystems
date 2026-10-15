@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lab: Exploring Osmosis | Biology Unit 2</title>
+<style>
+:root{--bg:#0b1220;--bg2:#0f1a2e;--panel:#152238;--panel2:#1c2c47;--line:#2a3b5e;--line2:#3a4f78;--text:#e8eef9;--muted:#a9bad6;--e:#5fe1ff;--amber:#f6b93b;--good:#4ade80;--bad:#f87171;--pink:#ff8fd0;--font:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;background:radial-gradient(1200px 600px at 10% -10%,#16264a 0,transparent 60%),var(--bg);color:var(--text);font-family:var(--font);font-size:16px;line-height:1.55;min-height:100%}
+button{font:inherit;cursor:pointer}
+input,textarea,select{font:inherit;color:var(--text)}
+.topbar{position:sticky;top:0;z-index:20;background:rgba(11,18,32,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:env(safe-area-inset-top,0px) 0 0}
+.top-in{max-width:1000px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:8px;font-weight:700}
+.brand svg{width:28px;height:28px}
+.pills{display:flex;gap:6px;flex-wrap:wrap;flex:1}
+.pill{background:var(--panel2);border:1.5px solid var(--line2);color:var(--muted);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:700;position:relative}
+.pill.cur{border-color:var(--e);color:var(--text)}
+.pill.ok{border-color:var(--good);color:var(--good)}
+.pill:disabled{opacity:.4;cursor:default}
+.top-btn{background:transparent;border:1.5px solid var(--line2);color:var(--text);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:700}
+main{max-width:1000px;margin:0 auto;padding:20px 16px 80px}
+h1{font-size:clamp(32px,5vw,50px);line-height:1.05;margin:4px 0 10px;letter-spacing:-.5px}
+h2{font-size:26px;margin:0 0 6px}
+h3{margin:0 0 6px;font-size:18px}
+.unit{color:var(--muted);margin:0;font-size:14px}
+.lede{color:var(--muted);font-size:18px;max-width:60ch}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px 20px;margin:14px 0;animation:rise .45s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}}
+.tag{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;border-radius:999px;padding:3px 10px;background:var(--panel2);color:var(--e);margin-bottom:8px}
+.tag.amber{color:#241703;background:var(--amber)} .tag.green{color:#06240f;background:var(--good)}
+.muted{color:var(--muted)} .small{font-size:14px}
+.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:20px;align-items:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+label.f{display:grid;gap:4px;font-size:13px;color:var(--muted)}
+.f input,.f select,textarea,input.txt{background:var(--bg2);border:1.5px solid var(--line2);border-radius:10px;padding:9px 11px;width:100%}
+textarea{min-height:78px;resize:vertical;line-height:1.5}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--e)}
+.btn{border:0;border-radius:12px;padding:10px 18px;font-weight:800}
+.btn.primary{background:var(--e);color:#0c1424} .btn.ghost{background:transparent;border:1.5px solid var(--line2);color:var(--text)} .btn.amber{background:var(--amber);color:#241703}
+.btn:disabled{opacity:.45;cursor:default}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.msg{min-height:22px;font-weight:600;margin:8px 0 0} .msg.good{color:var(--good)} .msg.bad{color:var(--bad)}
+.sec-head{display:flex;gap:14px;align-items:center;margin:6px 0 4px}
+.num{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-weight:900;font-size:24px;background:var(--panel2);border:2px solid var(--e);color:var(--e)}
+.gq{border-left:5px solid var(--amber);background:var(--panel2);border-radius:0 14px 14px 0;padding:12px 16px;font-size:17px}
+.hyp{display:grid;gap:12px}
+.hyp-row{background:var(--panel2);border-radius:14px;padding:12px 14px;display:grid;gap:8px}
+.choices{display:flex;gap:8px;flex-wrap:wrap}
+.ch{background:var(--bg2);border:2px solid var(--line2);border-radius:999px;padding:6px 14px;color:var(--text);font-weight:700}
+.ch[aria-pressed=true]{border-color:var(--e);background:rgba(95,225,255,.15)}
+.steps{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.step{display:flex;gap:12px;align-items:flex-start;background:var(--panel2);border-radius:12px;padding:10px 12px;cursor:pointer;border:1.5px solid transparent}
+.step.ok{border-color:rgba(74,222,128,.5)}
+.step .box{flex:0 0 24px;height:24px;border-radius:7px;border:2px solid var(--line2);display:grid;place-items:center;font-weight:900;color:#06240f;margin-top:1px}
+.step.ok .box{background:var(--good);border-color:var(--good)}
+.step .day{font-size:12px;font-weight:800;color:var(--amber);text-transform:uppercase;letter-spacing:.3px}
+.mats{columns:2;margin:0;padding-left:20px}
+table.data{border-collapse:collapse;width:100%;font-size:15px}
+table.data th,table.data td{border:1px solid var(--line2);padding:8px;text-align:center}
+table.data th{background:var(--panel2)}
+table.data td input{width:90px;text-align:center;background:var(--bg2);border:1.5px solid var(--line2);border-radius:8px;padding:6px}
+.tbl-wrap{overflow-x:auto}
+.chg{font-weight:800} .chg.up{color:var(--good)} .chg.down{color:var(--bad)}
+svg.graph{width:100%;background:#fff;border-radius:12px;display:block}
+.gchecks{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:4px;font-size:14px}
+.gchecks li::before{content:"○ ";color:var(--muted)} .gchecks li.ok::before{content:"✓ ";color:var(--good)} .gchecks li.ok{color:var(--good)}
+.sel-row{display:grid;grid-template-columns:220px 1fr 24px;gap:10px;align-items:center;margin:6px 0}
+.sel-row select{background:var(--bg2);border:1.5px solid var(--line2);border-radius:10px;padding:8px}
+.mk.y{color:var(--good);font-weight:900} .mk.x{color:var(--amber);font-weight:900}
+.prompt{font-weight:700;margin:12px 0 4px}
+.errs{display:grid;gap:10px}
+.err{display:grid;grid-template-columns:1fr 1fr;gap:10px;background:var(--panel2);border-radius:12px;padding:10px}
+.warn{color:var(--amber);font-size:14px;min-height:18px}
+.osm svg{width:100%;max-width:640px;display:block;margin:0 auto}
+.wdot{fill:#7dd3fc}.pdot{fill:#fbbf24}
+.inflow{animation:inflow 2.4s linear infinite}.outflow{animation:outflow 2.4s linear infinite}
+@keyframes inflow{0%{transform:translate(0,0);opacity:0}15%{opacity:1}100%{transform:translate(var(--dx),var(--dy));opacity:0}}
+@keyframes outflow{0%{transform:translate(0,0);opacity:0}15%{opacity:1}100%{transform:translate(var(--dx),var(--dy));opacity:0}}
+.bear{transition:transform 1s ease}
+.sum-list{list-style:none;padding:0;display:grid;gap:6px}
+.sum-list li{background:var(--panel2);border-radius:10px;padding:8px 12px;display:flex;justify-content:space-between;gap:10px}
+.overlay{position:fixed;inset:0;background:rgba(3,7,15,.75);display:grid;place-items:center;z-index:100;padding:16px}
+.overlay[hidden]{display:none}
+.modal{background:var(--panel);border:1px solid var(--line2);border-radius:18px;padding:20px;max-width:640px;width:100%;max-height:85vh;overflow:auto}
+.hidden{display:none!important}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--panel2);border:1px solid var(--good);color:var(--text);padding:10px 16px;border-radius:12px;opacity:0;transition:.3s;z-index:200;pointer-events:none}
+#toast.on{opacity:1;transform:translateX(-50%)}
+.bank{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:6px 0 4px}
+.bank-l{font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;margin-right:2px}
+.bank-l b{color:var(--e)}
+.wchip{font-size:12.5px;padding:3px 10px;border-radius:999px;border:1.5px dashed var(--line2);color:var(--muted);transition:all .25s}
+.wchip.used{border-style:solid;border-color:var(--good);color:#06240f;background:var(--good)}
+.wchip.pop{animation:wpop .45s ease} @keyframes wpop{50%{transform:scale(1.18)}}
+#report{display:none}
+@media (max-width:760px){.hero,.grid2,.err{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr 1fr}.sel-row{grid-template-columns:1fr 24px}.sel-row span{grid-column:1/-1}.mats{columns:1}}
+@media print{
+ @page{size:letter;margin:.5in}
+ body{background:#fff;color:#000;font-size:12px}
+ .topbar,main,#toast,.overlay{display:none!important}
+ #report{display:block}
+ #report h1{font-size:22px;margin:0 0 4px} #report h2{font-size:15px;margin:14px 0 4px;border-bottom:1.5px solid #333}
+ #report table{border-collapse:collapse;width:100%} #report td,#report th{border:1px solid #777;padding:4px 6px;text-align:center}
+ #report .ans{white-space:pre-wrap;border:1px solid #bbb;padding:6px;border-radius:4px;margin:2px 0 6px;min-height:20px}
+ #report svg.graph{border:1px solid #999;max-width:6in}
+ .pb{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="top-in">
+  <div class="brand"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M14 4h12M16 4v10L6 32a4 4 0 0 0 3.5 6h21A4 4 0 0 0 34 32L24 14V4" fill="none" stroke="#5fe1ff" stroke-width="2.5" stroke-linejoin="round"/><circle cx="17" cy="29" r="2.5" fill="#ff8fd0"/><circle cx="24" cy="25" r="2" fill="#f6b93b"/></svg>Lab: Exploring Osmosis</div>
+  <nav class="pills" id="pills" aria-label="Lab sections"></nav>
+  <button class="top-btn" id="teacherBtn" type="button">Teacher</button>
+</div></header>
+<main id="app"></main>
+<div id="report" aria-hidden="true"></div>
+<div class="overlay" id="tOv" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="tTitle"><h3 id="tTitle">Teacher view</h3>
+  <div id="tLogin"><p class="muted small">Enter the teacher code.</p><input type="password" id="tCode" class="txt" autocomplete="off" aria-label="Teacher code"><p class="msg bad" id="tMsg"></p><div class="btn-row"><button class="btn primary" id="tGo" type="button">Open</button><button class="btn ghost" id="tCancel" type="button">Cancel</button></div></div>
+  <div id="tPanel" class="hidden"><div id="tKey"></div><div class="btn-row"><button class="btn ghost" id="tReset" type="button">Reset this device</button><button class="btn primary" id="tClose" type="button">Close</button></div></div>
+</div></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="sheets-config.js"></script>
+<script>
+(() => {
+const ACTIVITY = 'Lab: Exploring Osmosis';
+const TEACHER_CODE = 'Austin';
+const KEY = 'fate_bio_u2_osmosis_lab_v1';
+const BACKUP_URL = 'https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const BACKUP_TEACHERS = ['Austin', 'Mueller', 'McCue', 'Arce', 'Trimm', 'Garcia'];
+const teacherList = () => { try { if (typeof TEACHERS !== 'undefined' && Array.isArray(TEACHERS) && TEACHERS.length) return TEACHERS.map(String); } catch (e) {} return BACKUP_TEACHERS; };
+const sheetURL = () => { try { if (typeof SHEETS_WEBHOOK_URL !== 'undefined' && SHEETS_WEBHOOK_URL && String(SHEETS_WEBHOOK_URL).indexOf('PASTE') < 0) return String(SHEETS_WEBHOOK_URL); } catch (e) {} return BACKUP_URL; };
+const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const toast = t => { const el = $('#toast'); el.textContent = t; el.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('on'), 2200); };
+
+const SECTIONS = [['hyp', 'Hypotheses'], ['proc', 'Procedure'], ['data', 'Data'], ['graph', 'Graph'], ['an', 'Analysis'], ['con', 'Conclusion']];
+const WATERS = [['tap', 'Tap water'], ['dist', 'Distilled water'], ['salt', 'Salt water']];
+const PRED = [['grow', 'Gets bigger'], ['shrink', 'Gets smaller'], ['same', 'Stays the same']];
+const STEPS = [
+  ['Day 1', 'Gather your materials.'],
+  ['Day 1', 'Label one cup "Tap Water Bear" and the other "Distilled Water Bear."'],
+  ['Day 1', 'Find the mass of each gummy bear on the digital scale (on wax paper or foil). Record both in the Data section.'],
+  ['Day 1', 'Put one bear in each cup. Add tap water to the tap cup and the same amount of distilled water to the distilled cup. Leave them for 24 hours.'],
+  ['Day 2', 'Lift each bear out gently with a plastic fork or spoon, find its mass on wax paper or foil, and record it.'],
+  ['Day 2', 'Put each bear back in its own cup. Stir the same amount of salt into each cup. Leave them for 24 hours.'],
+  ['Day 3', 'Lift each bear out gently, find its mass on wax paper or foil, and record it.'],
+  ['Day 3', 'Throw away the bears and clean up your lab area.']
+];
+const MATS = ['2 clear plastic cups', '2 gummy bears', '2 plastic forks or spoons', 'Wax paper or aluminum foil', 'Distilled water', 'Tap water', 'Salt', 'Digital scale'];
+const DEF = () => ({ student: { first: '', last: '', period: '', teacher: '', sid: '' }, cur: -1, done: {}, hyp: {}, steps: {}, data: {}, graph: {}, an: {}, con: {}, sentAt: null });
+let L; try { L = Object.assign(DEF(), JSON.parse(localStorage.getItem(KEY) || 'null') || {}); } catch (e) { L = DEF(); }
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(L)); } catch (e) {} };
+const num = v => { const x = parseFloat(v); return isFinite(x) ? x : null; };
+
+/* ---------- completion rules ---------- */
+const COMPLETE = {
+  hyp: () => WATERS.every(([k]) => L.hyp[k] && L.hyp[k].p && (L.hyp[k].why || '').trim().length >= 8),
+  proc: () => STEPS.every((s, i) => L.steps[i]),
+  data: () => ['t1', 't2', 't3', 'd1', 'd2', 'd3'].every(k => num(L.data[k]) != null),
+  graph: () => ['title', 'x', 'y', 'k1', 'k2'].every(k => (L.graph[k] || '').trim()) && ['t1', 'd1'].every(k => num(L.data[k]) != null),
+  an: () => L.an.iv && L.an.dv && ['ctrl', 'exp', 'const', 'g1', 'g2', 'g3', 'g4', 'e1', 's1', 'e2', 's2', 'e3', 's3'].every(k => (L.an[k] || '').trim().length >= 3),
+  con: () => L.con.support && ['why', 'explain', 'app'].every(k => (L.con[k] || '').trim().length >= 8)
+};
+const doneCount = () => SECTIONS.filter(([k]) => COMPLETE[k]()).length;
+
+
+/* ---------- word banks: key terms for each written response (chips light up when used) ---------- */
+const W = (w, re) => ({ w, re: re || new RegExp(w.replace(/\s+/g, '\\s+'), 'i') });
+const OSM = W('osmosis', /osmo/i), WAT = W('water'), MEM = W('membrane', /membran/i), DIS = W('dissolved particles', /dissolved|particle|solute/i), CONC = W('concentration', /concentrat/i);
+const BANKS = {
+  tap: [OSM, WAT, W('moves into', /move[sd]?\s+(in|into)|enter/i), DIS, CONC, W('swell', /swell|grow|bigger|increase/i)],
+  dist: [OSM, W('distilled water', /distill/i), W('no dissolved particles', /no\s+(dissolved|particle|mineral|salt)|pure/i), W('moves into', /move[sd]?\s+(in|into)|enter/i), CONC, W('swell', /swell|grow|bigger|increase/i)],
+  salt: [OSM, W('salt'), DIS, W('moves out of', /move[sd]?\s+out|leave|exit/i), CONC, W('shrink', /shrink|smaller|decrease|lose/i)],
+  ctrl: [W('control group', /control/i), W('tap water', /tap/i), W('compare', /compar/i), W('normal conditions', /normal|regular|ordinary|everyday/i)],
+  exp: [W('experimental group', /experimental/i), W('distilled water', /distill/i), W('salt water', /salt/i), W('independent variable', /independent|variable|changed/i)],
+  const: [W('same amount of water', /same\s+(amount|volume)\s+of\s+water|amount\s+of\s+water/i), W('same amount of salt', /amount\s+of\s+salt|same\s+salt/i), W('24 hours', /24|time/i), W('same scale', /scale/i), W('same type of gummy bear', /(type|size|brand|kind)\s+of\s+(gummy|bear)|same\s+(gummy|bear)/i), W('same cups', /cup/i)],
+  g1: [W('mass'), W('increased', /increas|gain|went up|grew|bigger/i), W('grams', /\bg\b|gram/i), W('water moved into', /move[sd]?\s+(in|into)|absorb|took in/i), OSM, W('data numbers', /\d/)],
+  g2: [W('mass'), W('decreased', /decreas|lost|lose|went down|shrank|smaller/i), W('grams', /\bg\b|gram/i), W('salt water', /salt/i), W('water moved out', /move[sd]?\s+out|left|leave/i), OSM],
+  g3: [W('distilled water', /distill/i), W('tap water', /tap/i), W('greater change', /great|more|larger|bigger/i), W('change in mass', /mass|gram|\bg\b/i), W('data numbers', /\d/)],
+  g4: [OSM, DIS, W('minerals', /mineral/i), CONC, W('high to low', /high(er)?\s+(to|concentration)|low(er)?\s+(to|concentration)|more water|less water/i), MEM],
+  err: [W('measurement', /measur/i), W('scale', /scale|tare|zero/i), W('extra water', /extra\s+water|wet|drip|blot|dry/i), W('broke apart', /broke|break|piece|fell apart/i), W('same amount', /same\s+amount|unequal|different\s+amount/i), W('graduated cylinder', /cylinder|measuring\s+(cup|spoon)/i)],
+  why: [W('supports', /support/i), W('hypothesis', /hypothes/i), W('data'), W('mass'), W('increased', /increas|gain|grew/i), W('decreased', /decreas|lost|shrank/i)],
+  explain: [OSM, WAT, CONC, DIS, W('salt'), W('distilled', /distill/i), MEM, W('swell / shrink', /swell|shrink|grew|shrank/i)],
+  app: [OSM, W('cells', /cell/i), W('salt'), W('shrink / swell', /shrink|swell|burst|wilt/i), W('real-world example', /pickle|road|slug|plant|soil|fish|iv\b|drink|ocean|sea|cucumber|raisin|grape|potato/i)]
+};
+const bankOf = k => BANKS[k] || BANKS[/^[es]\d$/.test(k) ? 'err' : ''] || [];
+const bankHTML = (k, text) => { const b = bankOf(k); if (!b.length) return ''; const used = b.filter(x => x.re.test(text || '')).length;
+  return `<div class="bank" data-bank="${k}"><span class="bank-l">Word bank <b>${used}/${b.length}</b></span>${b.map(x => `<span class="wchip ${x.re.test(text || '') ? 'used' : ''}">${x.w}</span>`).join('')}</div>`; };
+function updBank(k, text, root) { const el = $(`.bank[data-bank="${k}"]`, root || document); if (!el) return; const b = bankOf(k); const chips = $$('.wchip', el);
+  let used = 0; b.forEach((x, i) => { const on = x.re.test(text || ''); if (on) used++; if (on && !chips[i].classList.contains('used')) { chips[i].classList.add('used', 'pop'); setTimeout(() => chips[i].classList.remove('pop'), 500); } else if (!on) chips[i].classList.remove('used'); });
+  $('.bank-l b', el).textContent = `${used}/${b.length}`; }
+
+/* ---------- osmosis picture ---------- */
+function osmosisSVG() {
+  const beaker = (x, label, salt, dir) => {
+    let s = `<g transform="translate(${x} 20)"><path d="M10 20 V150 a14 14 0 0 0 14 14 H156 a14 14 0 0 0 14 -14 V20" fill="rgba(125,211,252,.12)" stroke="#93c5fd" stroke-width="3"/>`;
+    s += `<g class="bear" style="transform-origin:90px 105px;transform:scale(${dir === 'in' ? 1.12 : dir === 'out' ? 0.86 : 1})"><circle cx="72" cy="78" r="10" fill="#f472b6"/><circle cx="108" cy="78" r="10" fill="#f472b6"/><ellipse cx="90" cy="96" rx="24" ry="20" fill="#f472b6"/><ellipse cx="90" cy="128" rx="28" ry="24" fill="#f472b6"/></g>`;
+    for (let i = 0; i < salt; i++) s += `<circle cx="${22 + (i * 37) % 140}" cy="${40 + (i * 53) % 110}" r="3.5" class="pdot"/>`;
+    for (let i = 0; i < 5; i++) { const sx = i % 2 ? 30 : 150, sy = 50 + i * 20, tx = 90 - sx, ty = 105 - sy;
+      s += dir === 'out' ? `<circle cx="90" cy="110" r="4" class="wdot outflow" style="--dx:${-tx * 0.9}px;--dy:${-ty * 0.6}px;animation-delay:${i * 0.45}s"/>` : `<circle cx="${sx}" cy="${sy}" r="4" class="wdot inflow" style="--dx:${tx * 0.8}px;--dy:${ty * 0.8}px;animation-delay:${i * 0.45}s"/>`; }
+    return s + `<text x="90" y="186" text-anchor="middle" font-size="14" font-weight="700" fill="#e8eef9">${label}</text></g>`;
+  };
+  return `<svg viewBox="0 0 640 220" role="img" aria-label="Three cups. In distilled water, water moves into the gummy bear and it swells. In tap water, water also moves in, a little less. In salt water, water moves out of the bear and it shrinks. Blue dots are water moving; yellow dots are dissolved particles.">
+    ${beaker(10, 'Distilled water', 0, 'in')}${beaker(225, 'Tap water', 3, 'in')}${beaker(440, 'Salt water', 14, 'out')}</svg>`;
+}
+
+/* ---------- graph ---------- */
+function graphSVG() {
+  const t = ['t1', 't2', 't3'].map(k => num(L.data[k])), d = ['d1', 'd2', 'd3'].map(k => num(L.data[k]));
+  const vals = t.concat(d).filter(v => v != null);
+  const W = 640, H = 380, x0 = 80, x1 = 600, y0 = 310, y1 = 50;
+  let lo = vals.length ? Math.min(...vals) : 0, hi = vals.length ? Math.max(...vals) : 5;
+  lo = Math.max(0, Math.floor(lo - 0.5)); hi = Math.ceil(hi + 0.5); if (hi - lo < 2) hi = lo + 2;
+  const step = (hi - lo) / 5, X = i => x0 + i * (x1 - x0) / 2, Y = v => y0 - (v - lo) / (hi - lo) * (y0 - y1);
+  const g = L.graph;
+  let s = `<svg class="graph" viewBox="0 0 ${W} ${H}" role="img" aria-label="Line graph of gummy bear mass over three days for the tap water bear and the distilled water bear.">`;
+  s += `<text x="${W / 2}" y="28" text-anchor="middle" font-size="18" font-weight="700" fill="#111">${esc(g.title || 'Title?')}</text>`;
+  for (let i = 0; i <= 5; i++) { const v = lo + i * step; s += `<line x1="${x0}" x2="${x1}" y1="${Y(v)}" y2="${Y(v)}" stroke="#e2e8f0"/><text x="${x0 - 8}" y="${Y(v) + 4}" text-anchor="end" font-size="12" fill="#333">${(Math.round(v * 10) / 10)}</text>`; }
+  ['Day 1', 'Day 2', 'Day 3'].forEach((l, i) => { s += `<line x1="${X(i)}" x2="${X(i)}" y1="${y0}" y2="${y0 + 5}" stroke="#333"/><text x="${X(i)}" y="${y0 + 22}" text-anchor="middle" font-size="13" fill="#333">${l}</text>`; });
+  s += `<line x1="${x0}" x2="${x1}" y1="${y0}" y2="${y0}" stroke="#333" stroke-width="1.5"/><line x1="${x0}" x2="${x0}" y1="${y1 - 10}" y2="${y0}" stroke="#333" stroke-width="1.5"/>`;
+  s += `<text x="${(x0 + x1) / 2}" y="${H - 18}" text-anchor="middle" font-size="14" font-weight="700" fill="#111">${esc(g.x || 'x-axis label?')}</text>`;
+  s += `<text x="22" y="${(y0 + y1) / 2}" text-anchor="middle" font-size="14" font-weight="700" fill="#111" transform="rotate(-90 22 ${(y0 + y1) / 2})">${esc(g.y || 'y-axis label?')}</text>`;
+  const line = (arr, col, dash) => { const pts = arr.map((v, i) => v == null ? null : [X(i), Y(v)]).filter(Boolean); if (!pts.length) return '';
+    return `<polyline fill="none" stroke="${col}" stroke-width="3.5" ${dash ? 'stroke-dasharray="8 6"' : ''} points="${pts.map(p => p.join(',')).join(' ')}"/>` + pts.map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="6" fill="${col}"/>`).join(''); };
+  s += line(t, '#2563eb', false) + line(d, '#db2777', true);
+  const k1 = g.k1 || 'Tap water bear', k2 = g.k2 || 'Distilled water bear';
+  s += `<rect x="${x1 - 210}" y="${y1 - 4}" width="210" height="50" fill="#fff" stroke="#cbd5e1"/><line x1="${x1 - 200}" x2="${x1 - 172}" y1="${y1 + 12}" y2="${y1 + 12}" stroke="#2563eb" stroke-width="3.5"/><text x="${x1 - 166}" y="${y1 + 16}" font-size="12" fill="#111">${esc(k1)}</text>`;
+  s += `<line x1="${x1 - 200}" x2="${x1 - 172}" y1="${y1 + 32}" y2="${y1 + 32}" stroke="#db2777" stroke-width="3.5" stroke-dasharray="8 6"/><text x="${x1 - 166}" y="${y1 + 36}" font-size="12" fill="#111">${esc(k2)}</text>`;
+  return s + '</svg>';
+}
+
+/* ---------- screens ---------- */
+function pills() {
+  $('#pills').innerHTML = (L.cur < 0 ? '' : SECTIONS.map(([k, l], i) => `<button type="button" class="pill ${i === L.cur ? 'cur' : ''} ${COMPLETE[k]() ? 'ok' : ''}" data-i="${i}">${COMPLETE[k]() ? '✓ ' : ''}${i + 1}. ${l}</button>`).join('') + `<button type="button" class="pill ${L.cur === 6 ? 'cur' : ''}" data-i="6">Submit</button>`);
+  $$('#pills .pill').forEach(b => b.addEventListener('click', () => go(+b.dataset.i)));
+}
+function go(i) { L.cur = i; save(); render(); window.scrollTo(0, 0); }
+const head = (n, t, sub) => `<div class="sec-head"><div class="num">${n}</div><div><p class="unit">Section ${n} of 6${sub ? ' · ' + sub : ''}</p><h2>${t}</h2></div></div>`;
+const foot = (i) => `<div class="btn-row"><button type="button" class="btn ghost" id="back">${i === 0 ? 'Back to start' : 'Back'}</button><button type="button" class="btn primary" id="saveBtn">Save section</button><button type="button" class="btn amber" id="nextBtn">${i < 5 ? 'Save and go to next' : 'Save and go to submit'}</button></div><p class="msg" id="saveMsg" aria-live="polite"></p>`;
+function render() {
+  pills();
+  const app = $('#app');
+  if (L.cur < 0) app.innerHTML = startHTML();
+  else if (L.cur === 6) app.innerHTML = submitHTML();
+  else app.innerHTML = [hypHTML, procHTML, dataHTML, graphHTML, anHTML, conHTML][L.cur]();
+  wire();
+}
+function startHTML() {
+  const s = L.student, has = s.first && s.last;
+  return `<div class="hero"><div><p class="unit">Biology, Unit 2: Cell Transport · Lab</p><h1>Exploring Osmosis</h1><p class="lede">Use gummy bears as model cells to see how water moves in and out. Record everything here over three days. Your work saves on this device after each section.</p></div>
+    <div class="osm">${osmosisSVG()}</div></div>
+    <div class="card"><span class="tag amber">Guiding question</span><p class="gq">How will the size of a cell (a gummy bear) change in different types of water?</p>
+    <p><b>Purpose:</b> To investigate how water moves into and out of a gummy bear in tap water, distilled water, and salt water.</p>
+    <p class="small muted"><b>Background:</b> In <b>osmosis</b>, water moves across a membrane from where there is more water (fewer dissolved particles) to where there is less water (more dissolved particles). A gummy bear is mostly sugar and gelatin, so it can act like a cell.</p></div>
+    <div class="card"><span class="tag">Student information</span>
+      <div class="form-grid">
+        <label class="f">First name<input id="fFirst" value="${esc(s.first)}" autocomplete="given-name"></label>
+        <label class="f">Last name<input id="fLast" value="${esc(s.last)}" autocomplete="family-name"></label>
+        <label class="f">Period<select id="fPeriod"><option value="">Choose</option>${[1, 2, 3, 4, 5, 6, 7, 8].map(p => `<option ${String(p) === s.period ? 'selected' : ''}>${p}</option>`).join('')}</select></label>
+        <label class="f">Teacher<select id="fTeacher"><option value="">Choose</option>${teacherList().map(t => `<option ${t === s.teacher ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select></label>
+        <label class="f">Student ID<input id="fSid" value="${esc(s.sid)}" inputmode="numeric" autocomplete="off"></label>
+      </div>
+      <label class="f" style="margin-top:10px">Lab partner(s) (optional)<input id="fPart" value="${esc(s.partners || '')}" autocomplete="off"></label>
+      <p class="msg bad" id="startMsg"></p>
+      <div class="btn-row"><button type="button" class="btn primary" id="startBtn">${has ? 'Continue the lab' : 'Start the lab'}</button>${has ? `<span class="small muted">${doneCount()} of 6 sections complete</span>` : ''}</div></div>`;
+}
+function hypHTML() {
+  return head(1, 'Hypotheses', 'Day 1, before you start') + `<div class="card"><span class="tag">Predict</span><p>For each type of water, predict what will happen to the size of the gummy bear, and explain why.</p>
+    <div class="hyp">${WATERS.map(([k, l]) => { const h = L.hyp[k] || {}; return `<div class="hyp-row" data-k="${k}"><b>${l}: the gummy bear will…</b><div class="choices">${PRED.map(([v, t]) => `<button type="button" class="ch" data-v="${v}" aria-pressed="${h.p === v}">${t}</button>`).join('')}</div>
+      <label class="f">because…<textarea data-f="why" placeholder="I think this because...">${esc(h.why || '')}</textarea></label>${bankHTML(k, h.why)}</div>`; }).join('')}</div>${foot(0)}</div>`;
+}
+function procHTML() {
+  return head(2, 'Materials and procedure', 'Days 1 to 3') + `<div class="card"><span class="tag">Materials</span><ul class="mats">${MATS.map(m => `<li>${m}</li>`).join('')}</ul></div>
+    <div class="card"><span class="tag">Procedure</span><p class="muted small">Tap each step when you finish it. Record masses in the Data section as you go.</p>
+    <ul class="steps">${STEPS.map(([d, t], i) => `<li class="step ${L.steps[i] ? 'ok' : ''}" data-i="${i}" tabindex="0" role="checkbox" aria-checked="${!!L.steps[i]}"><span class="box">${L.steps[i] ? '✓' : ''}</span><span><span class="day">${d} · Step ${i + 1}</span><br>${t}</span></li>`).join('')}</ul>${foot(1)}</div>`;
+}
+function dataHTML() {
+  const D = L.data, cell = k => `<td><input data-k="${k}" inputmode="decimal" value="${esc(D[k] || '')}" aria-label="${k}"></td>`;
+  const ch = (a, b) => { const x = num(D[a]), y = num(D[b]); if (x == null || y == null) return '—'; const c = Math.round((y - x) * 100) / 100, p = x ? Math.round((y - x) / x * 1000) / 10 : 0; return `<span class="chg ${c > 0 ? 'up' : c < 0 ? 'down' : ''}">${c > 0 ? '+' : ''}${c} g (${p > 0 ? '+' : ''}${p}%)</span>`; };
+  return head(3, 'Results: data table', 'record on Days 1, 2, and 3') + `<div class="card"><span class="tag">Data</span><p class="muted small">Enter each mass in grams, to the decimal place your scale shows.</p>
+    <div class="grid2"><label class="f">Tap water bear color<input data-k="tColor" value="${esc(D.tColor || '')}"></label><label class="f">Distilled water bear color<input data-k="dColor" value="${esc(D.dColor || '')}"></label></div>
+    <div class="tbl-wrap" style="margin-top:12px"><table class="data"><thead><tr><th>Mass (grams)</th><th>Day 1<br><span class="small muted">before soaking</span></th><th>Day 2<br><span class="small muted">after 24 h in water</span></th><th>Day 3<br><span class="small muted">after 24 h in salt water</span></th></tr></thead>
+    <tbody><tr><th>Tap water bear</th>${cell('t1')}${cell('t2')}${cell('t3')}</tr><tr><th>Distilled water bear</th>${cell('d1')}${cell('d2')}${cell('d3')}</tr></tbody></table></div>
+    <h3 style="margin-top:16px">Change in mass (calculated for you)</h3>
+    <div class="tbl-wrap"><table class="data"><thead><tr><th></th><th>Day 1 → Day 2 (in water)</th><th>Day 2 → Day 3 (in salt water)</th></tr></thead>
+    <tbody id="chgBody"><tr><th>Tap water bear</th><td>${ch('t1', 't2')}</td><td>${ch('t2', 't3')}</td></tr><tr><th>Distilled water bear</th><td>${ch('d1', 'd2')}</td><td>${ch('d2', 'd3')}</td></tr></tbody></table></div>${foot(2)}</div>`;
+}
+function graphChecks() {
+  const g = L.graph;
+  return [[(g.title || '').trim().length > 5, 'Title that tells what the graph shows'], [/day/i.test(g.x || ''), 'X-axis label (time in days)'], [/mass/i.test(g.y || '') && /\(?\s*(g|grams?)\s*\)?/i.test(g.y || ''), 'Y-axis label with units, like "Mass (g)"'], [(g.k1 || '').trim() && (g.k2 || '').trim(), 'Key names each line'], [['t1', 't2', 't3', 'd1', 'd2', 'd3'].every(k => num(L.data[k]) != null), 'All six masses entered in the Data section']];
+}
+function graphHTML() {
+  const g = L.graph;
+  return head(4, 'Graph', 'after Day 3') + `<div class="card"><span class="tag">Make the line graph</span><p>Your graph is drawn from your data. Add a title, axis labels with units, and a key.</p>
+    <div class="grid2"><label class="f">Graph title<input data-g="title" value="${esc(g.title || '')}" placeholder="e.g. Change in Gummy Bear Mass..."></label><label class="f">X-axis label<input data-g="x" value="${esc(g.x || '')}"></label>
+    <label class="f">Y-axis label (with units)<input data-g="y" value="${esc(g.y || '')}"></label><div class="grid2"><label class="f">Key: line 1<input data-g="k1" value="${esc(g.k1 || '')}" placeholder="Tap water bear"></label><label class="f">Key: line 2<input data-g="k2" value="${esc(g.k2 || '')}" placeholder="Distilled water bear"></label></div></div>
+    <div id="gbox" style="margin-top:14px">${graphSVG()}</div><ul class="gchecks" id="gchecks">${graphChecks().map(([ok, t]) => `<li class="${ok ? 'ok' : ''}">${t}</li>`).join('')}</ul>${foot(3)}</div>`;
+}
+const AN_SEL = { iv: ['Type of water the bear soaks in', 'Mass of the gummy bear', 'Size of the cups', 'Color of the gummy bear'], dv: ['Type of water the bear soaks in', 'Mass of the gummy bear', 'Amount of salt', 'Time of day'] };
+function anHTML() {
+  const A = L.an, ta = (k, ph) => `<textarea data-a="${k}" placeholder="${ph}">${esc(A[k] || '')}</textarea>${bankHTML(k, A[k])}`;
+  const sel = (k, lab) => `<label class="sel-row"><span><b>${lab}</b></span><select data-a="${k}"><option value="">Choose…</option>${AN_SEL[k].map(o => `<option ${A[k] === o ? 'selected' : ''}>${o}</option>`).join('')}</select><span class="mk" id="mk-${k}"></span></label>`;
+  return head(5, 'Analysis') + `<div class="card"><span class="tag">a. Experimental set-up</span><p class="muted small">Do not rewrite the procedure. Name the parts of the experiment.</p>
+    ${sel('iv', 'Independent variable')}${sel('dv', 'Dependent variable')}<p class="small" id="ivdvFb" aria-live="polite"></p>
+    <p class="prompt">Control group</p>${ta('ctrl', 'Which bear or condition is the comparison, and why?')}
+    <p class="prompt">Experimental group</p>${ta('exp', 'Which bear or condition is being tested?')}
+    <p class="prompt">Constants (list at least three)</p>${ta('const', 'What did you keep the same for both bears?')}</div>
+    <div class="card"><span class="tag">b. What does your graph show?</span><div id="miniG">${graphSVG()}</div>
+    <p class="prompt">What happened after Day 1 (in tap and distilled water)?</p>${ta('g1', 'Use numbers from your data.')}
+    <p class="prompt">What happened after Day 2 (in salt water)?</p>${ta('g2', 'Use numbers from your data.')}
+    <p class="prompt">Which caused a greater change in size overall: tap water or distilled water?</p>${ta('g3', 'Compare the changes in mass.')}
+    <p class="prompt">Why do you think that is?</p>${ta('g4', 'Use the word osmosis and think about dissolved particles.')}</div>
+    <div class="card"><span class="tag">c. Error analysis</span><p class="muted small">List three ways your data may not be completely accurate, and a specific fix for each.</p>
+    <div class="errs">${[1, 2, 3].map(i => `<div class="err"><label class="f">Error ${i}${ta('e' + i, 'What could have made the data inaccurate?')}</label><label class="f">How to prevent it${ta('s' + i, 'A specific fix for next time')}</label></div>`).join('')}</div>${foot(4)}</div>`;
+}
+function conHTML() {
+  const C = L.con, ta = (k, ph) => `<textarea data-c="${k}" placeholder="${ph}">${esc(C[k] || '')}</textarea>${bankHTML(k, C[k])}`;
+  return head(6, 'Conclusion') + `<div class="card"><span class="tag">a. Hypothesis</span><p>Does your data <b>support</b> your hypotheses? Never say "right" or "wrong." Say whether the data supports them and why.</p>
+    <div class="choices" id="supp">${[['all', 'Supports all of them'], ['some', 'Supports some of them'], ['none', 'Does not support them']].map(([v, t]) => `<button type="button" class="ch" data-v="${v}" aria-pressed="${C.support === v}">${t}</button>`).join('')}</div>
+    <p class="prompt">Explain using your data</p>${ta('why', 'My data (supports / does not support) my hypothesis because...')}<p class="warn" id="rwWarn"></p></div>
+    <div class="card"><span class="tag">b. Explanation</span><p class="prompt">Give a possible explanation for why the results turned out the way they did.</p>${ta('explain', 'Use osmosis: where was there more water, and where were there more dissolved particles?')}</div>
+    <div class="card"><span class="tag">c. Real-world application</span><p class="prompt">What did you learn about osmosis from this investigation? Connect it to the real world.</p>${ta('app', 'For example: salting roads, pickles, a plant cell in salty soil, IV fluids...')}${foot(5)}</div>`;
+}
+function submitHTML() {
+  const n = doneCount();
+  return `<div class="sec-head"><div class="num">✓</div><div><p class="unit">Finish</p><h2>Submit your lab</h2></div></div>
+    <div class="card"><span class="tag ${n === 6 ? 'green' : ''}">${n} of 6 sections complete</span>
+    <ul class="sum-list">${SECTIONS.map(([k, l], i) => `<li><span>${i + 1}. ${l}</span><b style="color:${COMPLETE[k]() ? 'var(--good)' : 'var(--amber)'}">${COMPLETE[k]() ? 'Complete' : 'Not finished'}</b></li>`).join('')}</ul>
+    <p class="small muted">Send your completion to your teacher, then print or save your lab as a PDF to turn in on Google Classroom.</p>
+    <div class="btn-row"><button type="button" class="btn primary" id="sendBtn">Send to my teacher</button><button type="button" class="btn amber" id="printBtn">Print or save as PDF</button><button type="button" class="btn ghost" id="csvBtn">Download CSV</button></div>
+    <p class="msg" id="sendMsg" aria-live="polite">${L.sentAt ? `Sent to your teacher ${new Date(L.sentAt).toLocaleString()}.` : ''}</p></div>`;
+}
+
+/* ---------- wiring ---------- */
+function wire() {
+  if (L.cur < 0) {
+    $('#startBtn').addEventListener('click', () => {
+      const v = id => $(id).value.trim(), s = { first: v('#fFirst'), last: v('#fLast'), period: v('#fPeriod'), teacher: v('#fTeacher'), sid: v('#fSid'), partners: v('#fPart') };
+      const miss = [['first', 'first name'], ['last', 'last name'], ['period', 'period'], ['teacher', 'teacher'], ['sid', 'student ID']].filter(([k]) => !s[k]).map(x => x[1]);
+      if (miss.length) { $('#startMsg').textContent = `Add your ${miss.join(', ')}.`; return; }
+      L.student = s; const first = SECTIONS.findIndex(([k]) => !COMPLETE[k]()); go(first < 0 ? 6 : first);
+    });
+    return;
+  }
+  if (L.cur === 6) {
+    $('#sendBtn').addEventListener('click', send); $('#printBtn').addEventListener('click', printReport); $('#csvBtn').addEventListener('click', csv);
+    return;
+  }
+  const key = SECTIONS[L.cur][0];
+  const saveSec = (quiet) => { save(); pills(); const ok = COMPLETE[key](); const m = $('#saveMsg'); if (m) { m.className = 'msg ' + (ok ? 'good' : 'bad'); m.textContent = ok ? 'Saved. This section is complete.' : 'Saved. This section is not finished yet; you can come back to it.'; } if (!quiet) toast('Saved'); return ok; };
+  $('#saveBtn').addEventListener('click', () => saveSec());
+  $('#nextBtn').addEventListener('click', () => { saveSec(true); go(L.cur + 1); });
+  $('#back').addEventListener('click', () => { save(); go(L.cur - 1); });
+  let t; const auto = () => { clearTimeout(t); t = setTimeout(() => { save(); pills(); }, 500); };
+  if (key === 'hyp') {
+    $$('.hyp-row').forEach(row => { const k = row.dataset.k; L.hyp[k] = L.hyp[k] || {};
+      $$('.ch', row).forEach(b => b.addEventListener('click', () => { L.hyp[k].p = b.dataset.v; $$('.ch', row).forEach(x => x.setAttribute('aria-pressed', x === b)); auto(); }));
+      $('textarea', row).addEventListener('input', e => { L.hyp[k].why = e.target.value; updBank(k, e.target.value, row); auto(); }); });
+  }
+  if (key === 'proc') $$('.step').forEach(li => { const tog = () => { const i = +li.dataset.i; L.steps[i] = !L.steps[i]; li.classList.toggle('ok', L.steps[i]); li.setAttribute('aria-checked', L.steps[i]); $('.box', li).textContent = L.steps[i] ? '✓' : ''; auto(); }; li.addEventListener('click', tog); li.addEventListener('keydown', e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); tog(); } }); });
+  if (key === 'data') $$('[data-k]').forEach(inp => inp.addEventListener('input', () => { L.data[inp.dataset.k] = inp.value; auto(); const body = $('#chgBody'); if (body) { const tmp = document.createElement('div'); tmp.innerHTML = dataHTML(); body.innerHTML = $('#chgBody', tmp).innerHTML; } }));
+  if (key === 'graph') $$('[data-g]').forEach(inp => inp.addEventListener('input', () => { L.graph[inp.dataset.g] = inp.value; $('#gbox').innerHTML = graphSVG(); $('#gchecks').innerHTML = graphChecks().map(([ok, tx]) => `<li class="${ok ? 'ok' : ''}">${tx}</li>`).join(''); auto(); }));
+  if (key === 'an') {
+    const fbIV = () => { const iv = L.an.iv, dv = L.an.dv, ok1 = iv === AN_SEL.iv[0], ok2 = dv === AN_SEL.dv[1];
+      $('#mk-iv').textContent = iv ? (ok1 ? '✓' : '!') : ''; $('#mk-iv').className = 'mk ' + (ok1 ? 'y' : 'x');
+      $('#mk-dv').textContent = dv ? (ok2 ? '✓' : '!') : ''; $('#mk-dv').className = 'mk ' + (ok2 ? 'y' : 'x');
+      $('#ivdvFb').textContent = (iv && !ok1) ? 'Check the independent variable: it is the one thing you changed on purpose.' : (dv && !ok2) ? 'Check the dependent variable: it is what you measured.' : ''; };
+    $$('[data-a]').forEach(el => el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', () => { L.an[el.dataset.a] = el.value; if (el.tagName === 'SELECT') fbIV(); else updBank(el.dataset.a, el.value); auto(); }));
+    fbIV();
+  }
+  if (key === 'con') {
+    const rw = () => { const all = `${L.con.why || ''} ${L.con.explain || ''}`; $('#rwWarn').textContent = /\b(right|wrong|correct|incorrect)\b/i.test(all) ? 'Reminder: say whether the data supports your hypothesis, not whether you were "right" or "wrong."' : ''; };
+    $$('#supp .ch').forEach(b => b.addEventListener('click', () => { L.con.support = b.dataset.v; $$('#supp .ch').forEach(x => x.setAttribute('aria-pressed', x === b)); auto(); }));
+    $$('[data-c]').forEach(el => el.addEventListener('input', () => { L.con[el.dataset.c] = el.value; updBank(el.dataset.c, el.value); rw(); auto(); }));
+    rw();
+  }
+}
+
+/* ---------- submit ---------- */
+function send() {
+  const m = $('#sendMsg'), s = L.student;
+  const body = new URLSearchParams({ studentId: s.sid, firstName: s.first, lastName: s.last, period: s.period, teacher: s.teacher, activity: ACTIVITY, score: String(doneCount()), total: '6', locks: '0',
+    qlabels: SECTIONS.map(x => x[1]).join('|'), qpoints: SECTIONS.map(([k]) => COMPLETE[k]() ? 1 : 0).join('|'), qmax: SECTIONS.map(() => 1).join('|'), when: new Date().toString() });
+  m.className = 'msg'; m.textContent = 'Sending...';
+  fetch(sheetURL(), { method: 'POST', mode: 'no-cors', body }).then(() => { L.sentAt = new Date().toISOString(); save(); m.className = 'msg good'; m.textContent = 'Sent! Your teacher will see how many sections you finished.'; })
+    .catch(() => { m.className = 'msg bad'; m.textContent = "Couldn't send. Check your internet connection and try again."; });
+}
+function csv() {
+  const s = L.student, D = L.data, cell = v => { v = String(v == null ? '' : v); return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  const head = ['Student ID', 'Last Name', 'First Name', 'Period', 'Teacher', 'Activity', 'Sections Complete', 'Total', 'Tap Day 1 (g)', 'Tap Day 2 (g)', 'Tap Day 3 (g)', 'Distilled Day 1 (g)', 'Distilled Day 2 (g)', 'Distilled Day 3 (g)', 'Date'];
+  const row = [s.sid, s.last, s.first, s.period, s.teacher, ACTIVITY, doneCount(), 6, D.t1, D.t2, D.t3, D.d1, D.d2, D.d3, new Date().toLocaleString()];
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([head.map(cell).join(',') + '\r\n' + row.map(cell).join(',') + '\r\n'], { type: 'text/csv' }));
+  a.download = `OsmosisLab_${(s.last || 'student').replace(/\W+/g, '')}_${(s.first || '').replace(/\W+/g, '')}.csv`; document.body.appendChild(a); a.click(); setTimeout(() => a.remove(), 500);
+}
+function printReport() {
+  const s = L.student, D = L.data, A = L.an, C = L.con, ans = t => `<div class="ans">${esc(t || '')}</div>`, P = Object.fromEntries(PRED), SUP = { all: 'Supports all of them', some: 'Supports some of them', none: 'Does not support them' };
+  $('#report').innerHTML = `<h1>Lab: Exploring Osmosis</h1><p>${esc(s.first)} ${esc(s.last)} · Period ${esc(s.period)} · ${esc(s.teacher)} · ID ${esc(s.sid)}${s.partners ? ' · Partners: ' + esc(s.partners) : ''}</p>
+    <p><b>Guiding question:</b> How will the size of a cell (a gummy bear) change in different types of water?</p>
+    <h2>Hypotheses</h2>${WATERS.map(([k, l]) => `<p class="pb"><b>${l}:</b> ${esc(P[(L.hyp[k] || {}).p] || '—')}${ans((L.hyp[k] || {}).why)}</p>`).join('')}
+    <h2>Results</h2><table class="pb"><tr><th>Mass (g)</th><th>Day 1</th><th>Day 2</th><th>Day 3</th></tr><tr><th>Tap water bear (${esc(D.tColor || 'color?')})</th><td>${esc(D.t1 || '')}</td><td>${esc(D.t2 || '')}</td><td>${esc(D.t3 || '')}</td></tr><tr><th>Distilled water bear (${esc(D.dColor || 'color?')})</th><td>${esc(D.d1 || '')}</td><td>${esc(D.d2 || '')}</td><td>${esc(D.d3 || '')}</td></tr></table>
+    <div class="pb" style="margin-top:8px">${graphSVG()}</div>
+    <h2>Analysis</h2><p><b>Independent variable:</b> ${esc(A.iv || '')}<br><b>Dependent variable:</b> ${esc(A.dv || '')}</p>
+    <p><b>Control group:</b></p>${ans(A.ctrl)}<p><b>Experimental group:</b></p>${ans(A.exp)}<p><b>Constants:</b></p>${ans(A.const)}
+    <p><b>After Day 1:</b></p>${ans(A.g1)}<p><b>After Day 2:</b></p>${ans(A.g2)}<p><b>Greater change overall:</b></p>${ans(A.g3)}<p><b>Why:</b></p>${ans(A.g4)}
+    <table class="pb"><tr><th>Error</th><th>How to prevent it</th></tr>${[1, 2, 3].map(i => `<tr><td style="text-align:left">${esc(A['e' + i] || '')}</td><td style="text-align:left">${esc(A['s' + i] || '')}</td></tr>`).join('')}</table>
+    <h2>Conclusion</h2><p><b>Data and hypotheses:</b> ${esc(SUP[C.support] || '—')}</p>${ans(C.why)}<p><b>Possible explanation:</b></p>${ans(C.explain)}<p><b>Real-world application:</b></p>${ans(C.app)}`;
+  setTimeout(() => window.print(), 50);
+}
+
+/* ---------- teacher ---------- */
+const tOv = $('#tOv');
+$('#teacherBtn').addEventListener('click', () => { tOv.hidden = false; $('#tLogin').classList.remove('hidden'); $('#tPanel').classList.add('hidden'); $('#tCode').value = ''; $('#tMsg').textContent = ''; setTimeout(() => $('#tCode').focus(), 50); });
+const tGo = () => { if ($('#tCode').value.trim() !== TEACHER_CODE) { $('#tMsg').textContent = 'That code is not correct.'; return; }
+  $('#tLogin').classList.add('hidden'); $('#tPanel').classList.remove('hidden');
+  $('#tKey').innerHTML = `<p class="small muted">${L.student.first ? `Student: ${esc(L.student.first)} ${esc(L.student.last)}, period ${esc(L.student.period)}. ` : ''}${doneCount()} of 6 sections complete.</p>
+    <h3>Answer guide</h3><ul class="small">
+    <li><b>Expected results:</b> both bears gain mass in water (Day 1 → 2), with the distilled water bear gaining more. Both lose mass in salt water (Day 2 → 3).</li>
+    <li><b>Independent variable:</b> type of water. <b>Dependent variable:</b> mass of the gummy bear.</li>
+    <li><b>Control group:</b> usually the tap water bear (ordinary water to compare against). <b>Experimental group:</b> the distilled water bear, and both bears once salt is added.</li>
+    <li><b>Constants:</b> same amount of water, same amount of salt, same soaking time (24 h), same scale, same size/type of gummy bear, same cups.</li>
+    <li><b>Why distilled changes more:</b> distilled water has no dissolved minerals, so the difference in water concentration between the bear and the water is larger, and more water moves in by osmosis.</li>
+    <li><b>Salt water:</b> the salty water has more dissolved particles than the bear, so water moves out of the bear and it shrinks.</li>
+    <li><b>Word banks:</b> each written response shows key terms as chips that turn green when used. They guide students but do not change completion.</li>
+    <li><b>Common errors:</b> water left on the bear when weighed (blot it gently the same way each time), bears breaking or losing pieces (lift with a spoon), unequal water or salt amounts (measure with a graduated cylinder or measuring spoon), scale not zeroed with the wax paper (tare it first).</li></ul>`; };
+$('#tGo').addEventListener('click', tGo); $('#tCode').addEventListener('keydown', e => { if (e.key === 'Enter') tGo(); });
+$('#tCancel').addEventListener('click', () => { tOv.hidden = true; }); $('#tClose').addEventListener('click', () => { tOv.hidden = true; });
+$('#tReset').addEventListener('click', () => { if (!confirm('Erase this lab on this device?')) return; try { localStorage.removeItem(KEY); } catch (e) {} location.reload(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') tOv.hidden = true; });
+
+render();
+})();
+</script>
+</body>
+</html>

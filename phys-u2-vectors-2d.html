@@ -1,0 +1,1996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vectors in 2D | Physics Unit 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c1424; --bg2:#101b30; --panel:#14203a; --panel2:#1b2a49; --panel3:#223358;
+  --line:#26375a; --line2:#35496f;
+  --text:#e8eef8; --muted:#a3b4d1; --dim:#7488ab;
+  --e:#5fe1ff; --e-glow:rgba(95,225,255,.55); --p:#ff7d66; --n:#aab6cc; --val:#ffd36b; --gain:#ff8fd0;
+  --amber:#f6b93b; --good:#4ade80; --bad:#fb7185;
+  --c-nonmetal:#45c08f; --c-noble:#a084ff; --c-alkali:#ff8f5e; --c-alkaline:#ffcb5c;
+  --c-metalloid:#46c7d8; --c-post:#8ea8cc; --c-halogen:#f477b8;
+  --r-lg:16px; --r-md:12px; --r-sm:8px;
+  --font:"Lexend","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 110px)}
+*,*::before,*::after{box-sizing:inherit}
+body{
+  margin:0; min-height:100vh; color:var(--text); font-family:var(--font);
+  font-size:17px; line-height:1.6; font-weight:300;
+  background:
+    radial-gradient(900px 520px at 85% -8%, #1a2d52 0%, transparent 62%),
+    radial-gradient(700px 420px at -10% 30%, #13233f 0%, transparent 60%),
+    var(--bg);
+  background-attachment:fixed;
+}
+b,strong{font-weight:600}
+h1,h2,h3{font-weight:600;line-height:1.2;margin:0}
+p{margin:.5em 0}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--e);outline-offset:2px;border-radius:6px}
+.small{font-size:14px}
+.muted{color:var(--muted)}
+.hidden{display:none!important}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:sticky; top:0; z-index:40;
+  padding-top:env(safe-area-inset-top,0px);
+  background:rgba(12,20,36,.9); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.topbar-in{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:14px;padding:10px 18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:16px;white-space:nowrap}
+.brand svg{width:30px;height:30px}
+.navtiles{display:flex;gap:6px;overflow-x:auto;padding:4px 2px;flex:1;scrollbar-width:thin}
+.top-actions{display:flex;gap:8px}
+.top-btn{background:var(--panel2);border:1px solid var(--line2);border-radius:999px;padding:6px 14px;font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap}
+.top-btn:hover{background:var(--panel3)}
+
+/* ---------- element tiles ---------- */
+.tile{
+  --c:var(--c-nonmetal);
+  position:relative; flex:0 0 auto; width:46px; height:52px; border-radius:8px;
+  background:var(--panel2);
+  background:color-mix(in srgb, var(--c) 20%, var(--panel));
+  border:1.5px solid var(--c);
+  border-color:color-mix(in srgb, var(--c) 75%, transparent);
+  display:grid; place-items:center; font-weight:700; font-size:19px; line-height:1;
+  color:var(--text); cursor:pointer; padding:0;
+  transition:transform .2s, box-shadow .2s, opacity .2s;
+}
+.tile .z{position:absolute;top:4px;left:5px;font-size:10px;font-weight:500;color:var(--muted)}
+.tile:hover:not(:disabled){transform:translateY(-2px)}
+.tile.current{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--c)}
+.tile:disabled{cursor:not-allowed;opacity:.32;filter:saturate(.3)}
+.tile .ck{position:absolute;right:-5px;bottom:-5px;width:17px;height:17px;border-radius:50%;background:var(--good);color:#06240f;font-size:11px;display:grid;place-items:center;font-weight:700;opacity:0;transform:scale(.4);transition:.25s}
+.tile.done .ck{opacity:1;transform:scale(1)}
+.tile.unlocking{animation:unlockPop .7s cubic-bezier(.2,1.6,.4,1)}
+@keyframes unlockPop{0%{transform:scale(.7)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
+.tile.big{width:74px;height:82px;font-size:32px;border-width:2px;cursor:default}
+.tile.big .z{font-size:13px;top:6px;left:8px}
+.cat-nonmetal{--c:var(--c-nonmetal)} .cat-noble{--c:var(--c-noble)} .cat-alkali{--c:var(--c-alkali)}
+.cat-alkaline{--c:var(--c-alkaline)} .cat-metalloid{--c:var(--c-metalloid)} .cat-post{--c:var(--c-post)} .cat-halogen{--c:var(--c-halogen)}
+
+/* ---------- layout ---------- */
+main{max-width:980px;margin:0 auto;padding:22px 18px 80px}
+.screen{display:none}
+.screen.on{display:block;animation:screenIn .35s ease-out}
+@keyframes screenIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sec-head{display:flex;align-items:center;gap:18px;margin:8px 0 10px}
+.sec-meta{color:var(--muted);font-size:15px;margin:0 0 4px}
+.sec-head h2{font-size:clamp(26px,4vw,36px);letter-spacing:-.01em}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px 24px;margin:18px 0}
+.card h3{font-size:21px;margin:2px 0 10px}
+.tag{display:inline-block;font-size:13px;font-weight:600;color:var(--muted);background:var(--panel2);border-radius:999px;padding:3px 12px;margin-bottom:8px}
+.k-read .tag{color:#c3cffc;background:#25305a}
+.k-try .tag{color:#0b2630;background:var(--e)}
+.k-qc{border:2px solid var(--amber)}
+.k-qc .tag{color:#241703;background:var(--amber)}
+.read-text{max-width:68ch}
+
+.btn{border:0;border-radius:10px;padding:11px 20px;font-weight:600;font-size:16px;cursor:pointer;transition:transform .15s, background .2s, opacity .2s}
+.btn:active:not(:disabled){transform:scale(.97)}
+.btn.primary{background:var(--e);color:#062430}
+.btn.primary:hover:not(:disabled){background:#8eebff}
+.btn.ghost{background:transparent;border:1.5px solid var(--line2);color:var(--text)}
+.btn.ghost:hover:not(:disabled){background:var(--panel2)}
+.btn.amber{background:var(--amber);color:#241703}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.sm{padding:7px 14px;font-size:14px;border-radius:8px}
+.btn-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}
+
+.sec-foot{display:flex;justify-content:space-between;gap:12px;margin-top:22px}
+
+/* word-help chips */
+.chip{display:inline;background:rgba(95,225,255,.1);border:0;border-bottom:1.5px dotted var(--e);color:#bff3ff;padding:0 4px;border-radius:4px;cursor:help;font-weight:400}
+.chip:hover{background:rgba(95,225,255,.2)}
+#pop{position:fixed;z-index:80;max-width:300px;background:var(--panel3);border:1px solid var(--line2);border-radius:12px;padding:12px 14px;box-shadow:0 14px 40px rgba(0,0,0,.45);font-size:15px}
+#pop b{display:block;color:var(--e);margin-bottom:2px;text-transform:capitalize}
+#pop p{margin:0}
+
+/* particle dots + small tables */
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px;vertical-align:-1px}
+.dot.p{background:var(--p)} .dot.n{background:var(--n)} .dot.e{background:var(--e);box-shadow:0 0 8px var(--e-glow)}
+.mini-table{border-collapse:collapse;margin:14px 0 4px;font-size:15px;min-width:300px}
+.mini-table th,.mini-table td{padding:7px 16px 7px 0;border-bottom:1px solid var(--line);text-align:left}
+.mini-table th{color:var(--muted);font-weight:500}
+.table-scroll{overflow-x:auto}
+.rules{display:grid;gap:8px;margin:12px 0}
+.rule{background:var(--panel2);border-radius:10px;padding:10px 14px}
+.rule small{color:var(--muted)}
+
+/* ---------- Bohr SVG ---------- */
+svg.bohr{width:100%;max-width:340px;height:auto;display:block;margin:0 auto;overflow:visible}
+.bohr .ring{fill:none;stroke:var(--line2);stroke-width:2}
+.bohr .ring.outer{stroke:rgba(255,211,107,.55);stroke-width:2.5}
+.bohr .ring-in{animation:ringIn .45s ease-out}
+@keyframes ringIn{from{opacity:0;stroke-width:8}to{opacity:1}}
+.bohr .nucleus{fill:url(#nucGrad);stroke:rgba(255,125,102,.6);stroke-width:1.5}
+.bohr .nt{fill:#fff;font-size:12.5px;font-weight:600;text-anchor:middle;font-family:var(--font)}
+.bohr .e{fill:var(--e);filter:drop-shadow(0 0 4px var(--e-glow));transform-box:view-box;transform-origin:0 0;
+  transition:transform .55s cubic-bezier(.2,.85,.25,1), opacity .35s, fill .3s}
+.bohr .e.val{fill:var(--val);filter:drop-shadow(0 0 5px rgba(255,211,107,.7))}
+.bohr .e.gain{fill:var(--gain);filter:drop-shadow(0 0 5px rgba(255,143,208,.75))}
+.bohr .ring-out{opacity:0;transition:opacity .45s}
+.bohr .bracket{fill:none;stroke:var(--text);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+.bohr .charge{fill:var(--text);font-size:28px;font-weight:700;font-family:var(--font)}
+.bohr .ion-in{animation:ionIn .6s ease-out}
+@keyframes ionIn{from{opacity:0;transform:scale(1.08)}to{opacity:1;transform:none}}
+.bohr .ionmark{transform-box:view-box;transform-origin:150px 150px}
+.ion{white-space:nowrap;font-weight:600}
+.ion sup{font-size:.62em;margin-left:1px}
+.dot.g{background:var(--gain);box-shadow:0 0 8px rgba(255,143,208,.7)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;color:var(--muted);margin:8px 0 0;justify-content:center}
+.token .tok-model{display:block;width:70px;margin:0 auto 2px}
+.token.model-token{display:inline-flex;flex-direction:column;align-items:center;padding:6px 10px;font-size:14px}
+.big-ion{font-size:clamp(48px,9vw,80px);font-weight:700;line-height:1;text-align:center;margin:8px 0}
+.big-ion sup{font-size:.45em;vertical-align:1.1em;margin-left:2px}
+.arrow-cap{text-align:center;color:var(--muted);font-size:14px}
+.atom-ion{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center}
+.atom-ion .arr{font-size:30px;color:var(--amber);font-weight:700}
+.atom-ion figure{margin:0;text-align:center}
+.atom-ion figcaption{font-size:14px;color:var(--muted);margin-top:4px}
+.atom-ion svg{max-width:220px}
+.meter{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.meter div{background:var(--panel2);border-radius:10px;padding:8px;text-align:center}
+.meter .k{font-size:13px;color:var(--muted)} .meter .v{font-size:24px;font-weight:600}
+.meter .v.pos{color:var(--p)} .meter .v.neg{color:var(--e)}
+.hero-ion svg{max-width:460px;width:100%;height:auto;display:block;margin:0 auto;overflow:visible}
+.hero-ion .travel{transition:transform 1.3s cubic-bezier(.45,0,.25,1)}
+.hero-fig.hero-ion svg{max-width:470px}
+.hero-ion .ionmark{animation:fadeIn .7s ease-out}
+@keyframes fadeIn{from{opacity:0}}
+.bohr.static .e{transition:none}
+.bohr .zone{fill:rgba(95,225,255,.06);stroke:var(--e);stroke-width:1.5;stroke-dasharray:4 3;cursor:pointer;opacity:.75;transition:fill .2s,opacity .2s}
+.bohr .zone:hover,.bohr .zone:focus{fill:rgba(95,225,255,.22);opacity:1;outline:none}
+.bohr .zone.bad{stroke:var(--bad);fill:rgba(251,113,133,.25)}
+.bohr.pulse .zone{animation:zonePulse 1.6s ease-in-out infinite}
+@keyframes zonePulse{50%{fill:rgba(95,225,255,.2)}}
+.bohr.mode-add .e{pointer-events:none}
+.bohr.mode-erase .zone{pointer-events:none;opacity:.25}
+.bohr.mode-erase .e{cursor:pointer}
+.bohr.mode-erase .e:hover{fill:var(--bad)}
+.bohr .sh{transform-box:view-box;transform-origin:150px 150px}
+.bohr.orbit .sh0{animation:spin 14s linear infinite}
+.bohr.orbit .sh1{animation:spin 24s linear infinite}
+.bohr.orbit .sh2{animation:spin 36s linear infinite}
+.bohr.orbit .sh3{animation:spin 50s linear infinite}
+.bohr.celebrate .sh{animation:spin 1.1s cubic-bezier(.3,0,.2,1) 1}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pin circle{fill:var(--panel3);stroke:var(--amber);stroke-width:2}
+.pin text{fill:var(--text);font-size:14px;font-weight:700;text-anchor:middle;font-family:var(--font)}
+.leader{stroke:var(--amber);stroke-width:1.5;stroke-dasharray:4 4;opacity:.8}
+
+/* ---------- start / hero ---------- */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center;margin:12px 0 6px}
+.hero h1{font-size:clamp(40px,7vw,72px);letter-spacing:-.025em;font-weight:700;line-height:1.02;margin:6px 0 14px}
+.hero .unit{color:var(--muted);margin:0;font-size:16px}
+.hero .lede{font-size:19px;max-width:44ch;color:#d3def0}
+.hero-fig{position:relative}
+.hero-fig svg{max-width:360px}
+.hero-cap{text-align:center;color:var(--muted);margin:4px 0 0;font-size:15px;min-height:1.6em}
+.hero-cap b{color:var(--text)}
+.start-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.start-grid .card{margin:0}
+.start-grid + .start-grid{margin-top:18px}
+.obj{border-left:4px solid var(--e)}
+.std{border-left:4px solid var(--c-noble)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;margin:8px 0 6px}
+.form-grid label{display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--muted);font-weight:500}
+input[type=text],input[type=number],input[type=password],select,.inp{
+  background:var(--bg2);border:1.5px solid var(--line2);border-radius:9px;padding:9px 11px;color:var(--text);font-size:16px;width:100%}
+input:focus,select:focus{border-color:var(--e);outline:none}
+.form-msg{color:var(--bad);min-height:1.4em;font-size:15px;margin:4px 0}
+.welcome{background:var(--panel2);border-radius:12px;padding:14px 16px}
+
+/* goals checklist */
+.goals{list-style:none;margin:6px 0;padding:0;display:grid;gap:8px}
+.goals li{display:flex;gap:10px;align-items:flex-start;font-size:15.5px}
+.box{flex:0 0 22px;width:22px;height:22px;border-radius:6px;border:2px solid var(--line2);display:grid;place-items:center;margin-top:1px;transition:.25s}
+.ok > .box,.mission.ok .mt > .box{background:var(--good);border-color:var(--good)}
+.ok > .box::after,.mission.ok .mt > .box::after{content:"";width:6px;height:11px;border:solid #06240f;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.ok{color:var(--text)}
+.goals li:not(.ok){color:var(--muted)}
+.just-ok > .box{animation:tickPop .6s cubic-bezier(.2,1.7,.4,1)}
+@keyframes tickPop{0%{transform:scale(.5)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
+
+/* unlock checklist */
+.unlock{background:var(--bg2);border-style:dashed}
+.unlock h3{font-size:17px;color:var(--muted);font-weight:500}
+.reqs{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.reqs li{display:flex;gap:10px;align-items:flex-start}
+.reqs li:not(.ok){color:var(--muted)}
+.unlock.all-done{border-color:var(--good);border-style:solid}
+
+/* ---------- quick checks ---------- */
+.qc-q{font-weight:500;font-size:18px;margin:4px 0 12px}
+.opts{display:grid;gap:9px}
+.opts.grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+.opt{display:flex;gap:12px;align-items:center;text-align:left;background:var(--panel2);border:1.5px solid var(--line2);border-radius:11px;padding:10px 14px;cursor:pointer;transition:border-color .2s, background .2s, transform .15s;width:100%}
+.opt:hover:not(:disabled){border-color:var(--e)}
+.opt .L{flex:0 0 30px;height:30px;border-radius:8px;background:var(--panel3);display:grid;place-items:center;font-weight:600}
+.opts.grid .opt{flex-direction:column;align-items:stretch;padding:10px}
+.opts.grid .opt .L{align-self:flex-start}
+.opts.grid .opt svg{max-width:170px;stroke-width:1}
+.opts.grid .ring{stroke-width:3}
+.opt.right{border-color:var(--good);background:rgba(74,222,128,.12)}
+.opt.right .L{background:var(--good);color:#06240f}
+.opt.wrong{border-color:var(--bad);background:rgba(251,113,133,.1);opacity:.75}
+.opt.wrong .L{background:var(--bad);color:#2a0710}
+.opt.picked{border-color:var(--e);background:rgba(95,225,255,.12)}
+.opt.picked .L{background:var(--e);color:#062430}
+.opt:disabled{cursor:default}
+body.show-key .opt[data-key]{box-shadow:0 0 0 2px var(--amber)}
+body.show-key .opt[data-key]::after{content:"key";margin-left:auto;font-size:12px;color:var(--amber);font-weight:600}
+.qc-fb{min-height:1.5em;margin:12px 0 0}
+.qc-fb.good{color:#b9f5cf} .qc-fb.bad{color:#ffc2cd}
+.qc-fig{margin:4px 0 10px}
+.qc-fig svg{max-width:280px;margin:0}
+.shake{animation:shake .45s}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+
+/* ---------- sorter (tap or drag) ---------- */
+.sorter .tray{display:flex;flex-wrap:wrap;gap:8px;min-height:50px;padding:10px;background:var(--bg2);border-radius:12px;border:1px dashed var(--line2)}
+.sorter .tray:empty::after{content:"All sorted";color:var(--good);font-size:14px;padding:6px}
+.token{background:var(--panel3);border:1.5px solid var(--line2);border-radius:9px;padding:8px 14px;font-weight:500;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;transition:transform .15s, border-color .15s, background .2s}
+.token.sel{border-color:var(--e);background:#20456a;transform:translateY(-2px)}
+.token.placed{cursor:default;border-color:var(--good);background:rgba(74,222,128,.14);animation:tickPop .45s}
+.token.el-token{display:inline-flex;gap:8px;align-items:center}
+.token.el-token .sym{font-weight:700;font-size:18px}
+.token.el-token .nm{font-size:13px;color:var(--muted)}
+.ghost-token{position:fixed;z-index:90;pointer-events:none;opacity:.92;transform:translate(-50%,-50%) rotate(-3deg);box-shadow:0 12px 28px rgba(0,0,0,.5)}
+.sorter .bins{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:12px}
+.bin{background:var(--panel2);border:1.5px solid var(--line2);border-radius:12px;padding:10px;min-height:96px;cursor:pointer;transition:border-color .2s, background .2s}
+.bin.hover,.bin:focus-visible{border-color:var(--e);background:#1f3a5e}
+.bin-label{font-size:14px;font-weight:600;color:var(--muted);margin-bottom:6px}
+.bin-drop{display:flex;flex-wrap:wrap;gap:6px}
+.sorter.rows .bins{grid-template-columns:1fr;gap:8px}
+.sorter.six .bins{grid-template-columns:repeat(3,1fr)}
+.sorter.rows .bin{display:flex;align-items:center;gap:12px;min-height:54px;padding:8px 10px}
+.sorter.rows .bin-label{margin:0;width:32px;height:32px;border-radius:50%;border:2px solid var(--amber);display:grid;place-items:center;color:var(--text);flex:0 0 32px}
+.sorter.rows .bin-drop:empty::before{content:"Drop a label here";color:var(--dim);font-size:14px}
+.sort-msg{min-height:1.4em;margin:8px 0 0;font-size:15px}
+.label-wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center}
+.label-fig svg{max-width:360px}
+
+/* ---------- element tile explorer ---------- */
+.tile-explore{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center}
+.big-tile{--c:var(--c-alkali);width:190px;height:220px;border-radius:16px;background:color-mix(in srgb,var(--c) 18%,var(--panel));border:2.5px solid var(--c);position:relative;display:grid;grid-template-rows:auto 1fr auto auto;padding:12px;gap:2px}
+.part{background:transparent;border:2px dashed transparent;border-radius:8px;cursor:pointer;padding:2px 6px;transition:border-color .2s, background .2s}
+.part:hover{border-color:rgba(255,255,255,.35)}
+.part.seen{border-color:var(--good)}
+.part.active{background:rgba(255,255,255,.1);border-color:var(--e)}
+.p-z{justify-self:start;font-size:24px;font-weight:600}
+.p-sym{font-size:64px;font-weight:700;line-height:1;justify-self:center;align-self:center}
+.p-name{font-size:18px;justify-self:center}
+.p-mass{font-size:18px;justify-self:center;color:#d5def0}
+.part-info{background:var(--panel2);border-radius:12px;padding:14px 16px;min-height:120px}
+.part-info h4{margin:0 0 4px;color:var(--e);font-size:17px;font-weight:600}
+
+/* notebook tables */
+.notebook{width:100%;border-collapse:collapse;font-size:15px;margin-top:8px}
+.notebook th{color:var(--muted);font-weight:500;text-align:left;padding:6px 8px;border-bottom:1px solid var(--line2)}
+.notebook td{padding:7px 8px;border-bottom:1px solid var(--line)}
+.notebook input{width:76px;text-align:center;padding:7px}
+.notebook input.good{border-color:var(--good);background:rgba(74,222,128,.1)}
+.notebook input.badv{border-color:var(--bad);background:rgba(251,113,133,.1)}
+.mtile{display:inline-grid;grid-template-columns:auto auto;gap:0 8px;align-items:center;background:color-mix(in srgb,var(--c) 18%,var(--panel));border:1.5px solid var(--c);border-radius:8px;padding:4px 9px;font-size:12px;color:var(--muted);line-height:1.25}
+.mtile .s{grid-row:span 2;font-size:20px;font-weight:700;color:var(--text)}
+.fb-line{min-height:1.4em;margin:10px 0 0}
+.fb-line.good{color:#b9f5cf} .fb-line.bad{color:#ffc2cd}
+
+/* ---------- simulators ---------- */
+.sim{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+.sim-el{display:flex;gap:14px;align-items:center;background:var(--panel2);border-radius:12px;padding:12px}
+.sim-el .nm{font-size:20px;font-weight:600}
+.sim-el .ar{color:var(--muted);font-size:15px}
+.sim-el .ar b{color:var(--e);font-size:18px}
+.missions{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:10px}
+.mission{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.mission.ok{border-color:var(--good)}
+.mission .mt{display:flex;gap:10px;align-items:flex-start}
+.mission .mfb{font-size:14px;margin:6px 0 0 32px;min-height:0}
+.mission .btn{margin:8px 0 0 32px}
+.mission.ok .lockin{display:none}
+.counter{font-size:14px;color:var(--muted)}
+
+/* flipchart */
+.flip{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center;background:var(--bg2);border-radius:14px;padding:16px;margin-top:12px}
+.flip-step{color:var(--amber);font-weight:600;font-size:14px;margin:0}
+.flip-text{font-size:18px;min-height:3.4em}
+.flip-left{background:var(--panel2);border-radius:10px;padding:8px 12px;display:inline-block}
+.flip-left b{color:var(--e);font-size:20px}
+.flip-dots{display:flex;gap:6px;margin-top:10px}
+.flip-dots i{width:9px;height:9px;border-radius:50%;background:var(--line2);transition:.3s}
+.flip-dots i.on{background:var(--amber);transform:scale(1.25)}
+
+/* steppers */
+.steppers{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+.stp{background:var(--panel2);border-radius:10px;padding:8px;text-align:center}
+.stp .lab{font-size:13px;color:var(--muted)}
+.stp .row{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:4px}
+.stp button{width:32px;height:32px;border-radius:8px;border:1px solid var(--line2);background:var(--panel3);cursor:pointer;font-size:18px;font-weight:600;line-height:1}
+.stp output{min-width:26px;font-size:20px;font-weight:600}
+.target{display:flex;gap:14px;align-items:center;margin:4px 0 6px}
+.target .t-name{font-size:20px;font-weight:600}
+.progress-pips{display:flex;gap:6px}
+.progress-pips i{width:26px;height:8px;border-radius:4px;background:var(--line2);transition:.3s}
+.progress-pips i.on{background:var(--good)}
+
+/* builder */
+.builder{display:grid;grid-template-columns:1.05fr .95fr;gap:22px;align-items:start}
+.b-fig{background:var(--bg2);border-radius:14px;padding:12px;position:sticky;top:96px}
+.b-fig svg{max-width:420px}
+.b-note{text-align:center;color:var(--muted);font-size:14px;margin:6px 0 0}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.tab{background:var(--panel2);border:1.5px solid var(--line2);border-radius:999px;padding:6px 14px;font-weight:500;cursor:pointer;font-size:15px}
+.tab[aria-selected=true]{border-color:var(--e);background:#1f3a5e}
+.tab.ok::after{content:" ✓";color:var(--good);font-weight:700}
+fieldset{border:1px solid var(--line);border-radius:12px;padding:10px 12px 12px;margin:0 0 10px}
+legend{padding:0 6px;color:var(--muted);font-size:14px;font-weight:500}
+.nuc-in{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.nuc-in label{font-size:14px;color:var(--muted);display:flex;flex-direction:column;gap:3px}
+.seg{display:inline-flex;background:var(--bg2);border-radius:10px;padding:3px;border:1px solid var(--line2)}
+.seg button{border:0;background:transparent;padding:7px 16px;border-radius:8px;cursor:pointer;font-weight:500}
+.seg button[aria-pressed=true]{background:var(--e);color:#062430}
+.inline-stepper{display:inline-flex;align-items:center;gap:8px}
+.inline-stepper button{width:34px;height:34px;border-radius:8px;border:1px solid var(--line2);background:var(--panel3);cursor:pointer;font-size:18px;font-weight:600}
+.inline-stepper output{font-size:20px;font-weight:600;min-width:24px;text-align:center}
+.report{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:7px}
+.report li{display:flex;gap:10px;align-items:flex-start;font-size:15px}
+.report .ic{flex:0 0 22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700}
+.report .y .ic{background:var(--good);color:#06240f}
+.report .x .ic{background:var(--bad);color:#2a0710}
+.report .w .ic{background:var(--line2);color:var(--muted)}
+
+/* placement game */
+.place-prompt{font-size:17px;background:var(--bg2);border-radius:10px;padding:10px 14px;margin:8px 0}
+.place-prompt b{color:var(--e)}
+.num-fig svg{max-width:280px}
+.demo-cap{text-align:center;font-size:16px;min-height:2.8em;margin:6px 0}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:center}
+
+/* periodic table */
+.pt{display:grid;grid-template-columns:repeat(8,minmax(38px,1fr));gap:5px;max-width:460px}
+.pt .gh{text-align:center;font-size:12px;color:var(--muted);font-weight:500}
+.pt .tile{width:auto;height:48px;font-size:17px}
+.pt .tile.same{box-shadow:0 0 0 2px var(--val)}
+.pt .tile.seen::before{content:"";position:absolute;right:4px;top:4px;width:6px;height:6px;border-radius:50%;background:var(--good)}
+.pt-wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:center}
+.pt-info{text-align:center;min-height:3em;margin:4px 0 0}
+.pt-info b.v{color:var(--val)}
+.ans-grid{display:grid;grid-template-columns:repeat(10,minmax(34px,1fr));gap:5px;margin-top:10px}
+.ans-grid .tile{width:auto;height:44px;font-size:16px}
+
+/* final check */
+.fc-dots{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 14px}
+.fc-dots button{width:32px;height:32px;border-radius:8px;border:1.5px solid var(--line2);background:var(--panel2);cursor:pointer;font-size:13px;font-weight:600}
+.fc-dots button.ans{background:#1f3a5e;border-color:var(--e)}
+.fc-dots button.cur{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--amber)}
+.score-big{font-size:64px;font-weight:700;line-height:1;margin:6px 0}
+.score-big.pass{color:var(--good)} .score-big.fail{color:var(--amber)}
+.review-item{border-top:1px solid var(--line);padding:12px 0}
+.review-item .yours{color:#ffc2cd} .review-item .right{color:#b9f5cf}
+.attempts{font-size:15px;color:var(--muted)}
+.lock-note{background:rgba(246,185,59,.1);border:1px solid rgba(246,185,59,.5);border-radius:10px;padding:10px 14px;font-size:15px}
+.review-box{background:var(--bg2);border-radius:12px;padding:12px 16px;margin:10px 0}
+.review-box li{margin:4px 0}
+
+/* results */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:12px 0}
+.stat{background:var(--panel2);border-radius:12px;padding:12px 14px}
+.stat .k{font-size:13px;color:var(--muted)}
+.stat .v{font-size:26px;font-weight:600}
+.who{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 16px;font-size:15px}
+.who span{color:var(--muted);display:block;font-size:13px}
+
+/* overlays */
+.overlay{position:fixed;inset:0;z-index:100;background:rgba(6,11,22,.86);backdrop-filter:blur(6px);display:grid;place-items:center;padding:20px}
+.overlay[hidden]{display:none}
+.modal{background:var(--panel);border:1px solid var(--line2);border-radius:18px;padding:24px;max-width:460px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.modal h3{font-size:22px;margin-bottom:6px}
+.lock-modal{border:2px solid var(--amber);text-align:center}
+.lock-icon{font-size:44px;line-height:1}
+.teacher-tools{display:grid;gap:8px;margin-top:12px}
+.drawer{position:fixed;right:16px;top:76px;z-index:60;width:min(360px,calc(100vw - 32px));background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.55)}
+.drawer[hidden]{display:none}
+.sheetbox{font-size:15px;color:var(--muted);margin:8px 0 0;min-height:1.4em}
+#toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);opacity:0;z-index:120;background:var(--panel3);border:1px solid var(--good);color:var(--text);border-radius:12px;padding:10px 18px;font-weight:500;transition:.35s;pointer-events:none;max-width:90vw;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:820px){
+  .hero,.start-grid,.sim,.builder,.flip,.two-col,.pt-wrap,.label-wrap,.tile-explore{grid-template-columns:1fr}
+  .b-fig{position:static}
+  .brand span{display:none}
+  .form-grid{grid-template-columns:1fr}
+  .big-tile{margin:0 auto}
+  .ans-grid{grid-template-columns:repeat(5,1fr)}
+  .steppers{grid-template-columns:repeat(2,1fr)}
+  .card{padding:18px 16px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .bohr.orbit .sh{animation:none!important}
+}
+@media print{
+  body{background:#fff;color:#000}
+  .topbar,.sec-foot,#toast,.drawer,.overlay,.no-print{display:none!important}
+  .screen{display:none!important}
+  #scr-10{display:block!important}
+  .card,.stat{background:#fff;border:1px solid #999;color:#000}
+  .stat .k,.who span,.muted{color:#333}
+  .goals li:not(.ok){color:#333}
+}
+
+/* ---------- periodic trends ---------- */
+.ptab{display:grid;grid-template-columns:22px repeat(8,minmax(0,1fr));gap:5px;max-width:560px}
+.ptab .tile{width:auto;height:50px;font-size:16px}
+.ptab .gap{visibility:hidden}
+.ptab .colh,.ptab .rowh{font-size:11px;color:var(--muted);text-align:center;align-self:end}
+.ptab .rowh{align-self:center}
+.tile.picked{box-shadow:0 0 0 3px var(--e);transform:translateY(-2px)}
+.tile.pop{animation:popT .5s ease}
+@keyframes popT{40%{transform:scale(1.18)}}
+.tile.heat{background:color-mix(in srgb, var(--e) calc(var(--heat) * 75%), var(--panel2))}
+.xp{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:18px;align-items:start}
+.xp-detail{background:var(--panel2);border-radius:14px;padding:12px;min-height:250px}
+svg.atomviz{display:block;width:100%;max-width:220px;margin:0 auto;overflow:visible}
+svg.atomviz.sm{max-width:130px}
+.atomviz .cloud{transform-origin:100px 100px;animation:grow .55s cubic-bezier(.2,1.3,.4,1)}
+@keyframes grow{from{transform:scale(.2);opacity:.2}}
+.av-lab{fill:var(--text);font-size:13px;font-weight:600;font-family:var(--font)}
+.bars{display:grid;gap:6px;margin-top:8px}
+.bar{display:grid;grid-template-columns:118px 1fr 78px;gap:8px;align-items:center;font-size:13px}
+.bar b{text-align:right}
+.bar .track{height:10px;border-radius:6px;background:var(--bg2);overflow:hidden}
+.bar .fill{display:block;height:100%;border-radius:6px;transition:width .6s cubic-bezier(.2,.9,.3,1)}
+.fill.r{background:var(--e)} .fill.ie{background:var(--amber)} .fill.en{background:var(--gain)}
+.hunt{margin-top:12px}
+.cmp{display:flex;gap:14px;justify-content:center;align-items:stretch;flex-wrap:wrap;margin:8px 0}
+.choice{background:var(--panel2);border:2px solid var(--line2);border-radius:16px;padding:10px 16px;color:var(--text);min-width:140px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:16px}
+.choice:hover{border-color:var(--e)}
+.choice.ok{border-color:var(--good);box-shadow:0 0 0 4px rgba(74,222,128,.22)}
+.choice.no{border-color:var(--bad);opacity:.7}
+.choice .mtile{margin:0}
+.rk-pool{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 0}
+.rk-el{background:var(--panel2);border:2px solid var(--line2);border-radius:14px;padding:6px 12px;color:var(--text);display:flex;align-items:center;gap:8px}
+.rk-el.used{opacity:.35}
+.rk-slots{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;margin:6px 0 10px}
+.rk-slot{min-width:64px;height:64px;border:2px dashed var(--line2);border-radius:12px;display:grid;place-items:center}
+.rk-n{color:var(--muted);font-weight:700}
+.rk-arrow{color:var(--muted);font-size:20px}
+.tarrow{border-left:4px solid var(--tc);background:var(--panel2);border-radius:0 12px 12px 0;padding:8px 12px;margin:6px 0;display:grid;gap:2px}
+.tarrow b:first-child{color:var(--tc)}
+.tarrows{display:grid;gap:4px}
+.row-viz{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;align-items:end}
+.row-viz figure{margin:0}
+.arrow-demo{position:relative;margin-top:8px}
+.ad-arrows{display:flex;justify-content:space-between;gap:10px;margin-top:6px;font-weight:600}
+.ad-across{color:var(--e)} .ad-down{color:var(--amber)}
+.s3stage{display:grid;place-items:center;min-height:300px}
+.s3scale{transform:scale(var(--sc,1));transition:transform .55s cubic-bezier(.2,.9,.3,1);width:100%;max-width:330px}
+input[type=range]{width:100%;accent-color:var(--e)}
+.graph-wrap{overflow-x:auto}
+svg.iegraph{width:100%;min-width:520px;height:auto;display:block}
+.iegraph rect,.iegraph polyline,.iegraph line{pointer-events:none}
+.g-ax{fill:var(--muted);font-size:11px;font-family:var(--font)}
+.g-lab{fill:var(--muted);font-size:11px;font-weight:600;font-family:var(--font)}
+.gpt circle{fill:var(--amber);stroke:var(--bg);stroke-width:2;cursor:pointer;transition:r .2s}
+.gpt:focus{outline:none}
+.gpt:focus-visible circle{stroke:#fff;stroke-width:3}
+.gpt:hover circle,.gpt.on circle{r:9;fill:#fff}
+svg.tug{width:100%;max-width:420px;display:block;margin:0 auto}
+.tug .pair{transition:transform 1s cubic-bezier(.3,.1,.2,1)}
+.tug .pe{fill:var(--gain);filter:drop-shadow(0 0 5px rgba(255,143,208,.8))}
+.flip{display:grid;grid-template-columns:1fr auto 1.3fr;gap:12px;align-items:center;margin:10px 0}
+.flip-a,.flip-b{background:var(--panel2);border-radius:14px;padding:12px;display:grid;gap:2px}
+.flip-a b{color:var(--e)} .flip-b b{color:var(--amber)} .flip-b b:nth-of-type(2){color:var(--gain);margin-top:6px}
+.flip span{color:var(--muted);font-size:14px}
+.flip-arrow{font-size:36px;color:var(--text)}
+.corner-map{margin-top:8px}
+.cm-lab{display:flex;justify-content:space-between;gap:10px;font-weight:600;font-size:14px;margin-top:6px;max-width:560px}
+.cm-bl{color:var(--e)} .cm-tr{color:var(--amber);text-align:right}
+.pred{display:grid;gap:8px;margin:10px 0}
+.pred-row{display:grid;grid-template-columns:1fr auto auto 28px;gap:8px;align-items:center;background:var(--panel2);border-radius:12px;padding:8px 12px}
+.pbtn{background:var(--bg2);border:2px solid var(--line2);border-radius:10px;padding:6px 16px;color:var(--text);font-weight:700;min-width:60px}
+.pbtn[aria-pressed=true]{border-color:var(--e);background:rgba(95,225,255,.15)}
+.pmark.y{color:var(--good);font-weight:700} .pmark.x{color:var(--bad);font-weight:700}
+.mini-atom{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px}
+.md-sel{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+.md-sel label{display:grid;gap:4px;font-size:14px;color:var(--muted)}
+.hero-trend svg{max-width:470px;width:100%;height:auto;display:block;margin:0 auto;overflow:visible}
+.hero-lab{fill:var(--muted);font-size:14px;font-weight:600;font-family:var(--font)}
+.hero-atom{animation:heroPop .6s cubic-bezier(.2,1.4,.4,1) backwards;transform-box:fill-box;transform-origin:center}
+@keyframes heroPop{from{transform:scale(.2);opacity:0}}
+@media (max-width:760px){.xp,.flip{grid-template-columns:1fr}.flip-arrow{transform:rotate(90deg);justify-self:center}.md-sel{grid-template-columns:1fr}.pred-row{grid-template-columns:1fr auto auto 22px}}
+
+/* ---------- photosynthesis ---------- */
+.eq{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin:12px 0 0;font-size:16px}
+.eq span{padding:6px 12px;border-radius:999px;background:var(--panel2);font-weight:600}
+.eq .eq-in{border:2px solid var(--e)} .eq .eq-out{border:2px solid var(--good)} .eq .eq-light{border:2px solid var(--amber);color:var(--amber)}
+.eq-arrow{font-size:22px}
+svg.spec{width:100%;min-width:520px;height:auto;display:block}
+.spec .draw{stroke-dasharray:1400;stroke-dashoffset:1400;animation:drawL 1.6s ease forwards}
+@keyframes drawL{to{stroke-dashoffset:0}}
+svg.chloro{width:100%;max-width:520px;display:block;margin:0 auto}
+.cp-part{cursor:pointer;transition:filter .2s}
+.cp-part:hover,.cp-part.lit{filter:brightness(1.45) drop-shadow(0 0 6px rgba(255,255,255,.5))}
+.ld-wrap svg,.cycsvg,.shine,.lab{width:100%;max-width:420px;display:block;margin:0 auto}
+.sun{fill:#fde047;filter:drop-shadow(0 0 12px rgba(253,224,71,.8))}
+.ldsvg .chl{transition:filter .3s}
+.ldsvg.lit .chl{filter:drop-shadow(0 0 8px #bef264) brightness(1.3)}
+.tiny{fill:var(--text);font-size:11px;font-family:var(--font)} .tiny.dark{fill:#0c1424;font-weight:700}
+.mol{font-family:var(--font);font-size:15px;font-weight:700}
+.mol.h2o{fill:#7dd3fc} .mol.o2{fill:#e2e8f0} .mol.co2{fill:#fca5a5}
+.photon{fill:#fde047;filter:drop-shadow(0 0 6px #fde047);animation:photon .7s ease-in forwards}
+@keyframes photon{to{transform:translate(var(--tx),var(--ty))}}
+.water text{animation:fadeup .6s ease forwards}
+@keyframes fadeup{from{opacity:0;transform:translateY(20px)}to{opacity:1}}
+.rise{animation:rise 1.8s ease-out forwards}
+@keyframes rise{to{transform:translateY(-200px);opacity:0}}
+.bat{stroke:#0c1424;stroke-width:1.5} .bat.atp{fill:#fbbf24} .bat.nad{fill:#c084fc}
+.bat-up{animation:batup 2s ease forwards}
+@keyframes batup{0%{opacity:0;transform:translateY(20px)}30%{opacity:1}100%{transform:translateY(-70px);opacity:0}}
+.cyc{animation:spin 6s linear infinite;transform-origin:160px 150px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.enter{animation:enter 1.4s ease forwards}
+@keyframes enter{from{transform:translateY(-10px);opacity:0}40%{opacity:1}to{transform:translateY(110px);opacity:0}}
+.carbons{display:flex;gap:6px;align-items:center;justify-content:center;margin-top:6px}
+.cb{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--bg2);color:var(--muted);font-weight:700;border:2px solid var(--line2)}
+.cb.on{background:#475569;color:#fff;border-color:#e2e8f0;animation:popT .4s}
+.batts{display:grid;gap:8px;background:var(--panel2);border-radius:12px;padding:10px 14px;font-size:20px;letter-spacing:2px}
+.batts b{display:inline-block;width:80px;font-size:14px;letter-spacing:0}
+.batts div:first-child span{color:#fbbf24} .batts div:last-child span{color:#c084fc}
+.batts .empty{color:var(--muted)!important}
+.pulse-b{animation:popT .6s}
+.flow{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin-top:10px}
+.flow-box{background:var(--panel2);border-radius:14px;padding:12px;display:grid;gap:3px;font-size:14px}
+.flow-box b{font-size:15px} .f1{border-left:4px solid var(--amber)} .f2{border-left:4px solid var(--good)}
+.flow-mid{display:grid;gap:8px;text-align:center;font-weight:600;font-size:13px}
+.fa{color:var(--amber)} .fb{color:var(--muted)}
+.cbtns{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.cbtn{background:var(--panel2);border:2px solid var(--cc);border-radius:12px;padding:6px 14px;color:var(--text);font-weight:700;display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.cbtn small{font-weight:400;color:var(--muted);font-size:11px}
+.cbtn[aria-pressed=true]{background:var(--cc);color:#0c1424} .cbtn[aria-pressed=true] small{color:#0c1424}
+.ray-in,.ray-out{stroke-linecap:round;animation:ray .6s ease} @keyframes ray{from{opacity:0}}
+.fill.ab{background:var(--good)} .fill.rf{background:#94a3b8}
+.fill.chl{background:#22c55e} .fill.car{background:#f59e0b} .fill.ant{background:#dc2626}
+.bubble{fill:rgba(224,242,254,.85);stroke:#bae6fd;animation:bub 1.8s ease-out forwards}
+@keyframes bub{to{transform:translateY(-110px);opacity:0}}
+.bchart{display:flex;gap:10px;align-items:flex-end;height:120px;margin-top:10px;padding:6px;background:var(--panel2);border-radius:12px}
+.bc{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
+.bcv{width:100%;max-width:30px;border-radius:4px 4px 0 0;transition:height .6s ease}
+.bc small{font-size:10px;color:var(--muted)}
+.leafbox{display:grid;place-items:center} svg.leafsvg{width:100%;max-width:200px}
+.leaf-fill{transition:fill .8s ease}
+.hero-ps svg{max-width:470px;width:100%;height:auto;display:block;margin:0 auto;overflow:visible}
+.hray{stroke:#fde047;stroke-width:5;stroke-linecap:round;stroke-dasharray:12 14;animation:hray 1.4s linear infinite}
+@keyframes hray{to{stroke-dashoffset:-52}}
+.hmol{font-family:var(--font);font-size:22px;font-weight:700}
+.hmol.co2{fill:#fca5a5} .hmol.h2o{fill:#7dd3fc} .hmol.o2{fill:#e2e8f0} .hmol.glu{fill:#86efac}
+.hup{animation:hup 2.4s ease-in-out infinite} @keyframes hup{50%{transform:translateY(-10px)}}
+@media (max-width:760px){.flow{grid-template-columns:1fr}.flow-mid{grid-auto-flow:column}}
+
+/* ---------- vectors ---------- */
+svg.grid{width:100%;max-width:440px;display:block;margin:0 auto;touch-action:none}
+svg.grid.tap{cursor:crosshair}
+svg.grid.drag{cursor:grab}
+.gl{stroke:var(--line);stroke-width:1} .gl.ax{stroke:var(--muted);stroke-width:2}
+.vec{stroke-width:4;stroke-linecap:round} .v-e{stroke:var(--e)} .v-b{stroke:var(--amber)} .v-r{stroke:#4ade80} .v-g{stroke:#c084fc} .v-m{stroke:#f472b6}
+.vec.dash{stroke-dasharray:10 6}
+.ah{stroke:none} .ah-e{fill:var(--e)} .ah-b{fill:var(--amber)} .ah-r{fill:#4ade80} .ah-g{fill:#c084fc} .ah-m{fill:#f472b6}
+.vlab{font:700 15px var(--font)} .vl-e{fill:var(--e)} .vl-b{fill:var(--amber)} .vl-r{fill:#4ade80}
+.ghostB{opacity:.85}
+.slide{animation:slideIn .6s ease} @keyframes slideIn{from{opacity:0;transform:translate(-20px,20px)}}
+.grow{stroke-dasharray:600;stroke-dashoffset:600;animation:growL .9s .3s ease forwards} @keyframes growL{to{stroke-dashoffset:0;stroke-dasharray:10 6}}
+.miss{fill:none;stroke:var(--bad);stroke-width:3;animation:fadeO .9s ease forwards} @keyframes fadeO{to{opacity:0}}
+.comp{stroke:var(--muted);stroke-width:2.5;stroke-dasharray:6 5} .comp.cx{stroke:#f472b6} .comp.cy{stroke:#c084fc}
+.handle{fill:rgba(95,225,255,.25);stroke:var(--e);stroke-width:2;cursor:grab}
+svg.vpic{width:100%;max-width:360px;display:block;margin:0 auto}
+.vp-wrap{margin-top:8px}
+svg.tri{width:100%;max-width:320px;display:block;margin:0 auto}
+.tri-side{stroke:var(--text);stroke-width:4;stroke-linecap:round} .tri-side.hl{stroke:var(--amber)}
+.tri-side[data-side=opp]{stroke:#f472b6} .tri-side[data-side=adj]{stroke:#c084fc} .tri-side[data-side=hyp]{stroke:var(--e)}
+.tri-sq{stroke:var(--muted);stroke-width:2} .tri-ang{stroke:var(--amber);stroke-width:2.5} .tri-t{fill:var(--amber);font:700 18px var(--font)}
+.tri-l{fill:var(--text);font:600 13px var(--font)}
+.tri-sm svg{max-width:240px}
+.soh{display:grid;gap:10px;align-content:center}
+.soh div{background:var(--panel2);border-radius:12px;padding:10px 14px;font-size:16px}
+.soh b{color:var(--amber);font-size:20px;margin-right:8px}
+.formula{background:var(--panel2);border-radius:10px;padding:8px 14px;display:inline-block;font-size:18px}
+.nfields{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+.nf{display:flex;align-items:center;gap:6px;background:var(--panel2);border-radius:12px;padding:8px 12px}
+.nf span{font-weight:700} .nf input{width:90px;font:inherit;font-size:17px;padding:6px 8px;border-radius:8px;border:1.5px solid var(--line2);background:var(--bg2);color:var(--text)}
+.nf em{font-style:normal;color:var(--muted);font-size:13px} .nmark{width:16px} .nmark.y{color:var(--good)} .nmark.x{color:var(--bad)}
+.calc{position:fixed;right:16px;top:70px;z-index:120;width:290px;background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:12px;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+.calc-top{display:flex;align-items:center;gap:8px;margin-bottom:8px} .calc-top b{flex:1}
+.calc-x{background:none;border:0;color:var(--text);font-size:22px;cursor:pointer}
+.calc-d{width:100%;font:inherit;font-size:18px;padding:8px 10px;border-radius:10px;border:1.5px solid var(--line2);background:var(--bg2);color:var(--text)}
+.calc-r{text-align:right;font-weight:700;font-size:20px;color:var(--good);min-height:30px;padding:4px 2px}
+.calc-k{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.calc-k button{padding:10px 0;border-radius:10px;border:1px solid var(--line2);background:var(--panel2);color:var(--text);font-weight:700;font-size:14px;cursor:pointer}
+.calc-k button.n{background:var(--bg2)} .calc-k button.eq{background:var(--e);color:#0c1424}
+.hero-vec svg{max-width:470px;width:100%;height:auto;display:block;margin:0 auto}
+.hv1{stroke-dasharray:300;stroke-dashoffset:300;animation:growH .9s ease forwards}
+.hv2{stroke-dasharray:200;stroke-dashoffset:200;animation:growH .9s .9s ease forwards}
+.hv3{stroke-dasharray:350;stroke-dashoffset:350;animation:growR 1.1s 1.9s ease forwards}
+@keyframes growH{to{stroke-dashoffset:0}} @keyframes growR{to{stroke-dashoffset:0;stroke-dasharray:10 6}}
+@media print{.calc{display:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <radialGradient id="cloudGrad" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#5fe1ff" stop-opacity=".05"/><stop offset="70%" stop-color="#5fe1ff" stop-opacity=".18"/><stop offset="100%" stop-color="#5fe1ff" stop-opacity=".38"/></radialGradient>
+    <radialGradient id="nucGrad" cx="40%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#ff9b84"/>
+      <stop offset="55%" stop-color="#d9563f"/>
+      <stop offset="100%" stop-color="#7a2c22"/>
+    </radialGradient>
+  </defs>
+</svg>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="5" fill="#e0654f"/><circle cx="20" cy="20" r="11" fill="none" stroke="#35496f" stroke-width="2"/><circle cx="20" cy="20" r="17" fill="none" stroke="#35496f" stroke-width="2"/><circle cx="20" cy="9" r="2.6" fill="#5fe1ff"/><circle cx="37" cy="20" r="2.6" fill="#5fe1ff"/><circle cx="20" cy="37" r="2.6" fill="#5fe1ff"/></svg>
+      <span>2D Kinematics: Vectors</span>
+    </div>
+    <nav class="navtiles" id="navTiles" aria-label="Lesson sections"></nav>
+    <div class="top-actions">
+      <button class="top-btn" id="goalsBtn" type="button" aria-expanded="false" aria-controls="goalsDrawer">Goals</button>
+      <button class="top-btn" id="teacherBtn" type="button">Teacher</button>
+    </div>
+  </div>
+</header>
+
+<main id="app">
+  <!-- START -->
+  <section class="screen" id="scr-0" aria-label="Start">
+    <div class="hero">
+      <div>
+        <p class="unit">Physics, Unit 2: 2D Kinematics</p>
+        <h1>Vectors in 2D</h1>
+        <p class="lede">Add vectors tip to tail, use the Pythagorean theorem and SOH CAH TOA, and break vectors into components. Eight sections, about 60 minutes. Use the Calculator button at the top any time.</p>
+      </div>
+      <div class="hero-fig hero-vec">
+        <svg id="heroSvg" viewBox="0 0 600 300" aria-label="Vector A points east, vector B starts at its tip and points north, and the resultant R goes from the start of A to the tip of B."></svg>
+        <p class="hero-cap" id="heroCap"></p>
+      </div>
+    </div>
+
+    <div class="start-grid">
+      <section class="card obj">
+        <span class="tag">Objective</span>
+        <p>I can add vectors tip to tail, use the Pythagorean theorem and trigonometry to find a vector's size, components, and direction, and add vectors using components.</p>
+      </section>
+      <section class="card std">
+        <span class="tag">Standard</span>
+        <p><b>NGSS HS-PS2-1 (supporting).</b> Analyze motion using mathematical representations. <b>CCSS HSN-VM.A</b>: represent and model with vector quantities.</p>
+      </section>
+    </div>
+
+    <div class="start-grid">
+      <section class="card" id="startCard">
+        <span class="tag">Before you start</span>
+        <div id="welcomeBack" class="welcome hidden"></div>
+        <div id="startForm">
+          <div class="form-grid">
+            <label>First name<input type="text" id="fFirst" autocomplete="given-name"></label>
+            <label>Last name<input type="text" id="fLast" autocomplete="family-name"></label>
+            <label>Period
+              <select id="fPeriod">
+                <option value="">Choose your period</option>
+                <option>1</option><option>2</option><option>3</option><option>4</option>
+                <option>5</option><option>6</option><option>7</option><option>8</option>
+              </select>
+            </label>
+            <label>Teacher's name<select id="fTeacher"></select></label>
+            <label>Student ID<input type="text" id="fSid" inputmode="numeric" autocomplete="off"></label>
+          </div>
+          <p class="form-msg" id="formMsg" aria-live="polite"></p>
+          <button class="btn primary" id="fStart" type="button">Start the lesson</button>
+        </div>
+      </section>
+      <section class="card">
+        <span class="tag">Your goals</span>
+        <ul class="goals" id="goalsStart"></ul>
+        <p class="small muted">These check themselves off as you finish sections. Your progress saves on this device.</p>
+      </section>
+    </div>
+  </section>
+
+  <section class="screen" id="scr-1"></section>
+  <section class="screen" id="scr-2"></section>
+  <section class="screen" id="scr-3"></section>
+  <section class="screen" id="scr-4"></section>
+  <section class="screen" id="scr-5"></section>
+  <section class="screen" id="scr-6"></section>
+  <section class="screen" id="scr-7"></section>
+  <section class="screen" id="scr-8"></section>
+  <section class="screen" id="scr-9"></section>
+  <section class="screen" id="scr-10"></section>
+</main>
+
+<!-- goals drawer -->
+<aside class="drawer" id="goalsDrawer" hidden aria-label="Your goals">
+  <h3 style="font-size:18px;margin-bottom:10px">Your goals</h3>
+  <ul class="goals" id="goalsDrawerList"></ul>
+  <div class="btn-row"><button class="btn ghost sm" id="goalsClose" type="button">Close</button></div>
+</aside>
+
+<!-- word help popover -->
+<div id="pop" role="dialog" aria-live="polite" hidden><b></b><p></p></div>
+
+<!-- teacher modal -->
+<div class="overlay" id="teacherOv" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="tTitle">
+    <h3 id="tTitle">Teacher view</h3>
+    <div id="tLogin">
+      <p class="muted small">Enter the teacher code.</p>
+      <input type="password" id="tCode" autocomplete="off" aria-label="Teacher code">
+      <p class="form-msg" id="tMsg"></p>
+      <div class="btn-row"><button class="btn primary" id="tGo" type="button">Open teacher view</button><button class="btn ghost" id="tCancel" type="button">Cancel</button></div>
+    </div>
+    <div id="tPanel" class="hidden">
+      <p class="small muted" id="tInfo"></p>
+      <div class="teacher-tools">
+        <button class="btn ghost" id="tUnlock" type="button">Unlock every section</button>
+        <button class="btn ghost" id="tKey" type="button">Show answer key</button>
+        <button class="btn ghost" id="tEndLock" type="button">End lockdown for this check</button>
+        <button class="btn ghost" id="tSend" type="button">Send this student's scores to the sheet</button>
+        <button class="btn ghost" id="tReset" type="button">Reset this device (erase progress)</button>
+        <p class="sheetbox sheetStatus small" aria-live="polite"></p>
+      </div>
+      <div class="btn-row"><button class="btn primary" id="tClose" type="button">Close</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- lockdown -->
+<div class="overlay" id="lockOv" hidden>
+  <div class="modal lock-modal" role="alertdialog" aria-modal="true" aria-labelledby="lockTitle">
+    <div class="lock-icon" aria-hidden="true">🔒</div>
+    <h3 id="lockTitle">Your final check is locked</h3>
+    <p class="muted">You left the page or exited full screen. Ask your teacher to unlock it.</p>
+    <input type="password" id="lockCode" autocomplete="off" aria-label="Teacher unlock code" placeholder="Teacher code">
+    <p class="form-msg" id="lockMsg"></p>
+    <button class="btn amber" id="lockGo" type="button">Unlock</button>
+  </div>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="sheets-config.js"></script>
+<script>
+(() => {
+'use strict';
+
+/* =========================================================
+   SETTINGS
+   ========================================================= */
+const KEY = 'fate_phys_u2_vectors_v1';
+const TEACHER_CODE = 'Austin';
+const LESSON = '2D Kinematics: Vectors';
+/* Google Sheets + teacher list: same setup as the formative assessments.
+   If sheets-config.js (next to this file on the site) defines TEACHERS or SHEETS_WEBHOOK_URL, those win. */
+const BACKUP_URL = 'https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const BACKUP_TEACHERS = ['Austin', 'Mueller', 'McCue', 'Arce', 'Trimm', 'Garcia'];
+function teacherList() { try { if (typeof TEACHERS !== 'undefined' && Array.isArray(TEACHERS) && TEACHERS.length) return TEACHERS.map(String).filter(Boolean); } catch (e) {} return BACKUP_TEACHERS; }
+function sheetURL() { try { if (typeof SHEETS_WEBHOOK_URL !== 'undefined' && SHEETS_WEBHOOK_URL && String(SHEETS_WEBHOOK_URL).indexOf('PASTE') < 0) return String(SHEETS_WEBHOOK_URL); } catch (e) {} return BACKUP_URL; }
+const PASS_SCORE = 8, FC_LEN = 10, NSEC = 8, RES = 10;
+const LOCK_ON = /github\.io$/i.test(location.hostname) || new URLSearchParams(location.search).has('lockdown');
+const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const sum = a => a.reduce((x, y) => x + y, 0);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+/* =========================================================
+   ELEMENT DATA (first 20)
+   ========================================================= */
+const EL = [
+  ['H', 'Hydrogen', '1.008', 1, 1, 'nonmetal'], ['He', 'Helium', '4.003', 18, 1, 'noble'],
+  ['Li', 'Lithium', '6.94', 1, 2, 'alkali'], ['Be', 'Beryllium', '9.012', 2, 2, 'alkaline'],
+  ['B', 'Boron', '10.81', 13, 2, 'metalloid'], ['C', 'Carbon', '12.011', 14, 2, 'nonmetal'],
+  ['N', 'Nitrogen', '14.007', 15, 2, 'nonmetal'], ['O', 'Oxygen', '15.999', 16, 2, 'nonmetal'],
+  ['F', 'Fluorine', '18.998', 17, 2, 'halogen'], ['Ne', 'Neon', '20.180', 18, 2, 'noble'],
+  ['Na', 'Sodium', '22.990', 1, 3, 'alkali'], ['Mg', 'Magnesium', '24.305', 2, 3, 'alkaline'],
+  ['Al', 'Aluminum', '26.982', 13, 3, 'post'], ['Si', 'Silicon', '28.086', 14, 3, 'metalloid'],
+  ['P', 'Phosphorus', '30.974', 15, 3, 'nonmetal'], ['S', 'Sulfur', '32.06', 16, 3, 'nonmetal'],
+  ['Cl', 'Chlorine', '35.45', 17, 3, 'halogen'], ['Ar', 'Argon', '39.948', 18, 3, 'noble'],
+  ['K', 'Potassium', '39.098', 1, 4, 'alkali'], ['Ca', 'Calcium', '40.078', 2, 4, 'alkaline']
+].map((a, i) => ({ z: i + 1, sym: a[0], name: a[1], massStr: a[2], mass: parseFloat(a[2]), group: a[3], period: a[4], cat: a[5] }));
+const E = z => EL[z - 1];
+/* usual ion charge for the first 20 (null = usually shares electrons instead) */
+const ION = { H: 1, He: 0, Li: 1, Be: 2, B: null, C: null, N: -3, O: -2, F: -1, Ne: 0, Na: 1, Mg: 2, Al: 3, Si: null, P: -3, S: -2, Cl: -1, Ar: 0, K: 1, Ca: 2 };
+const ionCharge = z => ION[E(z).sym];
+const chargeText = c => c > 0 ? (c > 1 ? c : '') + '+' : c < 0 ? (c < -1 ? -c : '') + '−' : '';
+const ionHTML = (sym, c) => `<span class="ion">${sym}${c ? `<sup>${chargeText(c)}</sup>` : ''}</span>`;
+const IDE = { F: 'fluoride', Cl: 'chloride', O: 'oxide', S: 'sulfide', N: 'nitride', P: 'phosphide' };
+const ionName = z => { const e = E(z), c = ionCharge(z); return c < 0 ? IDE[e.sym] : e.name.toLowerCase() + ' ion'; };
+const bySym = s => EL.find(e => e.sym === s);
+const massNum = z => Math.round(E(z).mass);
+const neutrons = z => massNum(z) - z;
+function arr(z) { const caps = [2, 8, 8, 8], out = []; let left = z; for (const c of caps) { if (left <= 0) break; const k = Math.min(c, left); out.push(k); left -= k; } return out; }
+const valence = z => arr(z)[arr(z).length - 1];
+/* Class rule: one at a time top, right, bottom, left; the 5th pairs with the 1st, and so on. */
+function conv(n) { n = Math.max(0, Math.min(8, n)); const b = Math.floor(n / 4), r = n % 4; return [0, 1, 2, 3].map(s => b + (s < r ? 1 : 0)); }
+const norm = s => Array.isArray(s) ? s : conv(s);
+const SIDE = ['top', 'right', 'bottom', 'left'];
+const CAP = [2, 8, 8, 8];
+
+/* =========================================================
+   GLOSSARY (word-help chips)
+   ========================================================= */
+const GLOSS = {
+  scalar: 'A quantity with only a size (a number and a unit), like 12 m or 8 s.',
+  vector: 'A quantity with a size and a direction, like 12 m west or 30 m/s north.',
+  magnitude: 'The size of a vector, shown by the length of its arrow.',
+  'tip to tail': 'A way to add vectors: start each new vector at the tip (arrow end) of the one before it.',
+  resultant: 'The single vector that equals the sum of other vectors. It goes from the first tail to the last tip.',
+  hypotenuse: 'The longest side of a right triangle, across from the right angle.',
+  trigonometry: 'The math of triangles. Sine, cosine, and tangent connect a right triangle\'s angles and sides.',
+  components: 'The x part (east-west) and y part (north-south) of a vector.',
+  'inverse tangent': 'tan⁻¹ on a calculator. It turns a ratio (opposite ÷ adjacent) back into an angle.'
+};
+const c = (term, label) => `<button type="button" class="chip" data-term="${term}">${label || term}</button>`;
+
+/* =========================================================
+   STATE (saved on this device)
+   ========================================================= */
+const DEF = () => ({
+  v: 1, student: null, cur: 0, reqs: {}, secDone: {}, qc: {}, tasks: {},
+  final: { attempts: [], passed: false, best: 0, current: null, reviewAt: 0 },
+  lockouts: 0, locked: false, lockActive: false, teacherUnlock: false, startedAt: null, completedAt: null
+});
+let S;
+try {
+  const raw = JSON.parse(localStorage.getItem(KEY) || 'null');
+  S = Object.assign(DEF(), raw || {});
+  S.final = Object.assign(DEF().final, S.final || {});
+} catch (e) { S = DEF(); }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* storage blocked: keep going */ } }
+
+/* =========================================================
+   BOHR MODEL RENDERING
+   ========================================================= */
+const R = [48, 78, 106, 134], CX = 150, CY = 150, SIDE_ANG = [-90, 0, 90, 180];
+function ePos(r, side, k, count, gap = 8.8) {
+  let a = SIDE_ANG[side] * Math.PI / 180;
+  if (count === 2) { const off = gap / r; a += (k === 0 ? -off : off); }
+  return [CX + r * Math.cos(a), CY + r * Math.sin(a)];
+}
+const NS = 'http://www.w3.org/2000/svg';
+function svgEl(tag, attrs) { const el = document.createElementNS(NS, tag); for (const k in attrs) el.setAttribute(k, attrs[k]); return el; }
+
+/* Static Bohr model as an SVG string */
+function bohrInner(spec) {
+  const radii = spec.radii || R;
+  const shells = (spec.shells || []).map(norm);
+  const nr = spec.rings != null ? spec.rings : shells.length;
+  let s = '';
+  for (let i = 0; i < nr; i++) s += `<circle class="ring${spec.val && i === nr - 1 ? ' outer' : ''}" cx="150" cy="150" r="${radii[i]}"/>`;
+  if (!spec.noNucleus) {
+    const nrad = spec.nucR || 31;
+    s += `<circle class="nucleus" cx="150" cy="150" r="${nrad}"/>`;
+    const l1 = spec.l1 != null ? spec.l1 : (spec.p == null ? '?' : spec.p + ' p⁺');
+    const l2 = spec.l2 != null ? spec.l2 : (spec.n == null ? '' : spec.n + ' n⁰');
+    s += `<text class="nt" x="150" y="${l2 ? 146 : 154}">${l1}</text>`;
+    if (l2) s += `<text class="nt" x="150" y="163">${l2}</text>`;
+  }
+  shells.forEach((sides, i) => {
+    if (i >= nr) return;
+    const er = spec.er || 6.5;
+    sides.forEach((cnt, sd) => { for (let k = 0; k < cnt; k++) { const [x, y] = ePos(radii[i], sd, k, cnt, er + 2.6); const g = isGained(spec.orig, i, sd, k, cnt); s += `<circle class="e${g ? ' gain' : ''}${spec.val && i === nr - 1 ? ' val' : ''}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${er}"/>`; } });
+  });
+  if (spec.charge) s += ionMarks(nr, spec.charge, radii);
+  return s;
+}
+/* which electrons were gained (order index past the neutral atom's count in that shell) */
+function isGained(orig, i, sd, k, cnt) {
+  if (!orig) return false;
+  const j = cnt === 2 && k === 1 ? sd + 4 : sd;
+  return i >= orig.length ? true : j >= orig[i];
+}
+function ionMarks(nr, charge, radii = R) {
+  const ro = radii[Math.max(0, nr - 1)] + 16, L = 150 - ro, Rr = 150 + ro, T = 150 - ro, B = 150 + ro, t = 13;
+  return `<g class="ionmark"><path class="bracket" d="M${L + t} ${T} H${L} V${B} H${L + t}"/><path class="bracket" d="M${Rr - t} ${T} H${Rr} V${B} H${Rr - t}"/><text class="charge" x="${Rr + 5}" y="${T + 10}">${chargeText(charge)}</text></g>`;
+}
+function bohrSVG(spec, cls = '') {
+  return `<svg viewBox="0 0 300 300" class="bohr static ${cls}" role="img" aria-label="${esc(spec.aria || 'Bohr model')}">${bohrInner(spec)}</svg>`;
+}
+
+/* Live, animated Bohr model */
+class BohrView {
+  constructor(svg, o = {}) {
+    this.svg = svg; this.o = o;
+    svg.setAttribute('viewBox', '0 0 300 300');
+    svg.classList.add('bohr');
+    svg.innerHTML = '<g class="rings"></g><g class="zones"></g><g class="nuc"><circle class="nucleus" cx="150" cy="150" r="31"></circle><text class="nt" x="150" y="146"></text><text class="nt" x="150" y="163"></text></g><g class="els"><g class="sh sh0"></g><g class="sh sh1"></g><g class="sh sh2"></g><g class="sh sh3"></g></g><g class="ionwrap"></g>';
+    this.ionG = $('.ionwrap', svg); this.ringEls = []; this._ionKey = '';
+    this.ringsG = $('.rings', svg); this.zonesG = $('.zones', svg);
+    this.nt = $$('.nt', svg); this.shG = $$('.sh', svg);
+    this.map = new Map();
+    this.st = { p: null, n: null, shells: [], rings: null, val: false, zones: null };
+    const act = (e) => {
+      const z = e.target.closest && e.target.closest('.zone');
+      if (z && this.o.onZone) { this.o.onZone(+z.dataset.shell, +z.dataset.side, z); return true; }
+      const el = e.target.closest && e.target.closest('.e');
+      if (el && el.dataset.gone) return true;
+      if (el && this.o.onElectron) { this.o.onElectron(+el.dataset.shell, +el.dataset.side, el); return true; }
+      return false;
+    };
+    svg.addEventListener('click', act);
+    svg.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && act(e)) e.preventDefault(); });
+  }
+  set(p) { Object.assign(this.st, p); this.draw(); }
+  draw() {
+    const st = this.st, shells = (st.shells || []).map(norm);
+    const nr = st.rings != null ? st.rings : shells.length;
+    // rings
+    while (this.ringEls.length < nr) {
+      const i = this.ringEls.length, c = svgEl('circle', { cx: 150, cy: 150, r: R[i], class: 'ring ring-in' });
+      this.ringsG.appendChild(c); this.ringEls.push(c);
+    }
+    while (this.ringEls.length > nr) { const c = this.ringEls.pop(); c.classList.add('ring-out'); setTimeout(() => c.remove(), REDUCED ? 0 : 500); }
+    this.ringEls.forEach((ci, i) => ci.classList.toggle('outer', !!st.val && i === nr - 1));
+    // ion brackets + charge
+    const ik = st.charge ? `${nr}|${st.charge}` : '';
+    if (ik !== this._ionKey) {
+      this._ionKey = ik;
+      this.ionG.innerHTML = ik ? ionMarks(nr, st.charge) : '';
+      if (ik && !this.o.instant) { const g = this.ionG.firstChild; g.classList.add('ion-in'); }
+    }
+    // nucleus labels
+    const l1 = st.l1 != null ? st.l1 : (st.p == null ? '?' : st.p + ' p⁺');
+    const l2 = st.l2 != null ? st.l2 : (st.n == null ? '' : st.n + ' n⁰');
+    this.nt[0].textContent = l1; this.nt[1].textContent = l2;
+    this.nt[0].setAttribute('y', l2 ? 146 : 154);
+    // zones
+    this.zonesG.innerHTML = '';
+    if (st.zones) {
+      const list = st.zones === 'all' ? [...Array(nr).keys()] : st.zones;
+      for (const i of list) {
+        if (i >= nr) continue;
+        for (let s = 0; s < 4; s++) {
+          const [x, y] = ePos(R[i], s, 0, 1);
+          this.zonesG.appendChild(svgEl('circle', { cx: x, cy: y, r: 16, class: 'zone', 'data-shell': i, 'data-side': s, tabindex: 0, role: 'button', 'aria-label': `Shell ${i + 1}, ${SIDE[s]}` }));
+        }
+      }
+    }
+    // electrons (diffed so moves animate)
+    const want = new Map();
+    shells.forEach((sides, i) => { if (i >= nr) return; sides.forEach((cnt, sd) => { for (let k = 0; k < cnt; k++) want.set(`${i}-${sd}-${k}`, ePos(R[i], sd, k, cnt)); }); });
+    for (const [key, el] of this.map) {
+      if (!want.has(key)) {
+        this.map.delete(key);
+        const a = Math.atan2(el._y - 150, el._x - 150);
+        el.dataset.gone = '1';
+        el.style.opacity = '0';
+        el.style.transform = `translate(${el._x + 80 * Math.cos(a)}px,${el._y + 80 * Math.sin(a)}px) scale(.7)`;
+        setTimeout(() => el.remove(), 480);
+      }
+    }
+    const instant = REDUCED || this.o.instant;
+    for (const [key, [x, y]] of want) {
+      const [i, sd] = key.split('-').map(Number);
+      let el = this.map.get(key);
+      if (!el) {
+        el = svgEl('circle', { r: 6.5, cx: 0, cy: 0, class: 'e', 'data-shell': i, 'data-side': sd });
+        if (this.o.erasable) { el.setAttribute('tabindex', '0'); el.setAttribute('role', 'button'); el.setAttribute('aria-label', `Electron, shell ${i + 1}, ${SIDE[sd]}`); }
+        const a = SIDE_ANG[sd] * Math.PI / 180, rr = R[i] + 46;
+        if (!instant) {
+          el.style.transform = `translate(${CX + rr * Math.cos(a)}px,${CY + rr * Math.sin(a)}px) scale(.6)`;
+          el.style.opacity = '0';
+        }
+        this.shG[i].appendChild(el);
+        this.map.set(key, el);
+        if (!instant) el.getBoundingClientRect();
+      }
+      el._x = x; el._y = y;
+      el.style.transform = `translate(${x}px,${y}px)`;
+      el.style.opacity = '1';
+      el.classList.toggle('val', !!st.val && i === nr - 1);
+      const cnt = shells[i][sd], k = +key.split('-')[2];
+      el.classList.toggle('gain', isGained(st.orig, i, sd, k, cnt));
+    }
+  }
+  celebrate() {
+    if (REDUCED) return;
+    this.svg.classList.remove('celebrate'); void this.svg.getBoundingClientRect();
+    this.svg.classList.add('celebrate');
+    setTimeout(() => this.svg.classList.remove('celebrate'), 1200);
+  }
+}
+
+/* small element tile chip */
+const mtile = (z) => { const e = E(z); return `<span class="mtile cat-${e.cat}"><span class="s">${e.sym}</span><span>${e.z}</span><span>${e.massStr}</span></span>`; };
+
+/* =========================================================
+   UI HELPERS
+   ========================================================= */
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('on');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('on'), 2600);
+}
+function shake(el) { if (!el) return; el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); setTimeout(() => el.classList.remove('shake'), 500); }
+const card = (kind, title, body, extra = '') => {
+  const label = { read: 'Read', try: 'Try it', qc: 'Quick check', final: 'Final check' }[kind];
+  const cls = kind === 'final' ? 'qc' : kind;
+  return `<section class="card k-${cls}" ${extra}><span class="tag">${label}</span>${title ? `<h3>${title}</h3>` : ''}${body}</section>`;
+};
+
+/* Quick check (A–D) */
+function makeQC(root, cfg) {
+  const st = S.qc[cfg.id] || (S.qc[cfg.id] = { done: false, first: null, tries: 0 });
+  const opts = cfg.opts.map((o, i) => `<button type="button" class="opt" data-i="${i}" ${i === cfg.ans ? 'data-key="1"' : ''}><span class="L">${'ABCD'[i]}</span><span class="ot">${o}</span></button>`).join('');
+  root.innerHTML = `${cfg.fig ? `<div class="qc-fig">${cfg.fig}</div>` : ''}<p class="qc-q">${cfg.q}</p><div class="opts ${cfg.grid ? 'grid' : ''}">${opts}</div><p class="qc-fb" aria-live="polite"></p>`;
+  const fb = $('.qc-fb', root), btns = $$('.opt', root);
+  const finish = () => {
+    btns.forEach(b => { b.disabled = true; if (+b.dataset.i === cfg.ans) b.classList.add('right'); });
+    fb.className = 'qc-fb good'; fb.innerHTML = `<strong>Correct.</strong> ${cfg.explain}`;
+  };
+  if (st.done) finish();
+  btns.forEach(b => b.addEventListener('click', () => {
+    if (st.done) return;
+    const i = +b.dataset.i; st.tries++;
+    if (i === cfg.ans) {
+      if (st.first === null) st.first = true;
+      st.done = true; finish(); save();
+      cfg.onCorrect && cfg.onCorrect();
+    } else {
+      if (st.first === null) st.first = false;
+      b.classList.add('wrong'); b.disabled = true; shake(b);
+      fb.className = 'qc-fb bad'; fb.innerHTML = `<strong>Not quite.</strong> ${cfg.hint || 'Look back at the Read card and try again.'}`;
+      save();
+    }
+  }));
+}
+
+/* Tap-or-drag sorter */
+function makeSorter(root, cfg) {
+  const doneAlready = !!S.tasks[cfg.id];
+  root.innerHTML = `<div class="sorter ${cfg.layout || ''}"><div class="tray" aria-label="Items to sort"></div><div class="bins">${cfg.bins.map(b => `<div class="bin" data-bin="${b.id}" tabindex="0" role="button" aria-label="${esc(b.aria || b.label)}"><div class="bin-label">${b.label}</div><div class="bin-drop"></div></div>`).join('')}</div><p class="sort-msg" aria-live="polite"></p></div>`;
+  const tray = $('.tray', root), msg = $('.sort-msg', root);
+  const binOf = id => cfg.bins.find(b => b.accepts.includes(id));
+  const toks = shuffle(cfg.tokens).map(t => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'token' + (t.cls ? ' ' + t.cls : ''); b.dataset.id = t.id; b.innerHTML = t.label;
+    tray.appendChild(b); return b;
+  });
+  let sel = null, dragged = false;
+  const place = (tok, binEl, silent) => {
+    $('.bin-drop', binEl).appendChild(tok);
+    tok.classList.remove('sel'); tok.classList.add('placed'); tok.setAttribute('aria-disabled', 'true');
+    if (!silent && !tray.children.length) {
+      msg.innerHTML = `<span style="color:var(--good)">${cfg.doneMsg || 'All sorted. Nice work.'}</span>`;
+      S.tasks[cfg.id] = true; save(); cfg.onDone && cfg.onDone();
+    }
+  };
+  if (doneAlready) {
+    toks.forEach(t => place(t, $(`.bin[data-bin="${binOf(t.dataset.id).id}"]`, root), true));
+    msg.innerHTML = `<span style="color:var(--good)">${cfg.doneMsg || 'All sorted. Nice work.'}</span>`;
+    return;
+  }
+  const attempt = (tok, binEl) => {
+    if (!tok || tok.classList.contains('placed')) return;
+    const b = cfg.bins.find(x => x.id === binEl.dataset.bin);
+    if (b.accepts.includes(tok.dataset.id)) { place(tok, binEl); if (tray.children.length) msg.textContent = ''; }
+    else { shake(tok); shake(binEl); msg.innerHTML = `<span style="color:#ffc2cd">${(cfg.hint && cfg.hint(tok.dataset.id, b.id)) || 'Not there. Try a different spot.'}</span>`; tok.classList.remove('sel'); }
+    sel = null;
+  };
+  toks.forEach(tok => {
+    tok.addEventListener('click', () => {
+      if (dragged) { dragged = false; return; }
+      if (tok.classList.contains('placed')) return;
+      if (sel === tok) { tok.classList.remove('sel'); sel = null; return; }
+      if (sel) sel.classList.remove('sel');
+      sel = tok; tok.classList.add('sel');
+      msg.textContent = 'Now tap where it goes.';
+    });
+    let start = null, ghost = null, over = null;
+    tok.addEventListener('pointerdown', e => {
+      if (tok.classList.contains('placed') || e.button > 0) return;
+      start = { x: e.clientX, y: e.clientY }; dragged = false;
+      try { tok.setPointerCapture(e.pointerId); } catch (_) {}
+    });
+    tok.addEventListener('pointermove', e => {
+      if (!start) return;
+      if (!ghost && Math.hypot(e.clientX - start.x, e.clientY - start.y) > 6) {
+        ghost = tok.cloneNode(true); ghost.classList.add('ghost-token'); document.body.appendChild(ghost);
+        tok.style.opacity = '.35'; dragged = true;
+      }
+      if (ghost) {
+        ghost.style.left = e.clientX + 'px'; ghost.style.top = e.clientY + 'px';
+        const t = document.elementFromPoint(e.clientX, e.clientY);
+        const bin = t && t.closest('.bin');
+        if (over && over !== bin) over.classList.remove('hover');
+        over = bin && root.contains(bin) ? bin : null;
+        if (over) over.classList.add('hover');
+      }
+    });
+    const end = e => {
+      if (!start) return;
+      start = null;
+      if (ghost) {
+        ghost.remove(); ghost = null; tok.style.opacity = '';
+        if (over) { over.classList.remove('hover'); attempt(tok, over); over = null; }
+        setTimeout(() => { dragged = false; }, 50);
+      }
+    };
+    tok.addEventListener('pointerup', end);
+    tok.addEventListener('pointercancel', end);
+  });
+  $$('.bin', root).forEach(binEl => {
+    const go = () => { if (sel) attempt(sel, binEl); };
+    binEl.addEventListener('click', e => { if (e.target.closest('.token:not(.placed)')) return; go(); });
+    binEl.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+  });
+}
+/* ---------- Rounds: pick the right choice, repeated practice ---------- */
+function makeRounds(root, cfg) {
+  const st = S.tasks[cfg.id] || (S.tasks[cfg.id] = { n: 0, i: 0 });
+  const R = cfg.rounds, need = cfg.need || R.length;
+  root.innerHTML = `<div class="rounds"><div class="rq" aria-live="polite"></div><div class="rvis"></div><div class="rch"></div><p class="fb-line rfb" aria-live="polite"></p>
+    <div class="btn-row"><div class="progress-pips">${Array.from({ length: need }, () => '<i></i>').join('')}</div><button type="button" class="btn ghost sm rnext hidden">Next</button></div></div>`;
+  const q = $('.rq', root), vis = $('.rvis', root), ch = $('.rch', root), fb = $('.rfb', root), nx = $('.rnext', root);
+  const pips = () => $$('.progress-pips i', root).forEach((p, i) => p.classList.toggle('on', i < st.n));
+  let tries = 0;
+  function show() {
+    const r = R[st.i % R.length]; tries = 0;
+    q.innerHTML = `<p class="place-prompt">${st.n >= need ? '<b>Done. Extra practice:</b> ' : `<b>Round ${st.n + 1} of ${need}.</b> `}${r.q}</p>`;
+    vis.innerHTML = r.vis || '';
+    ch.innerHTML = `<div class="cmp">${(cfg.keepOrder ? r.opts.map((o, k) => k) : shuffle(r.opts.map((o, k) => k))).map(k => `<button type="button" class="choice" data-k="${k}">${r.opts[k]}</button>`).join('')}</div>`;
+    fb.textContent = ''; fb.className = 'fb-line rfb'; nx.classList.add('hidden');
+    $$('.choice', ch).forEach(b => b.addEventListener('click', () => pick(+b.dataset.k, b)));
+    pips();
+  }
+  function pick(k, b) {
+    const r = R[st.i % R.length];
+    if (ch.dataset.locked) return;
+    if (k === r.a) {
+      ch.dataset.locked = '1'; b.classList.add('ok');
+      fb.className = 'fb-line good'; fb.innerHTML = `${tries ? 'Got it.' : 'Correct.'} ${r.why}`;
+      if (st.n < need) st.n++;
+      st.i++; save(); pips();
+      cfg.after && cfg.after(r, vis, k);
+      if (st.n >= need && !S.reqs[cfg.req]) cfg.onDone && cfg.onDone();
+      nx.classList.remove('hidden'); nx.textContent = st.n >= need ? 'More practice' : 'Next';
+    } else {
+      tries++; b.classList.add('no'); shake(b);
+      fb.className = 'fb-line bad'; fb.innerHTML = tries === 1 ? (r.hint || 'Not quite. Think about the trend.') : `${r.hint || ''} ${r.why}`;
+    }
+  }
+  nx.addEventListener('click', () => { delete ch.dataset.locked; show(); });
+  show();
+}
+
+
+/* =========================================================
+   VECTOR HELPERS
+   ========================================================= */
+const RAD = Math.PI / 180;
+const r1 = v => Math.round(v * 10) / 10;
+const fmt = v => { const x = r1(v); return Object.is(x, -0) ? '0' : String(x); };
+function okNum(v, ans, tol) { const x = parseFloat(String(v).replace(/[^0-9.\-]/g, '')); if (!isFinite(x)) return false; return Math.abs(x - ans) <= Math.max(tol == null ? 0.15 : tol, Math.abs(ans) * 0.02); }
+
+/* grid with arrows. range in units; px per unit u */
+function gridSVG({ x0 = -2, x1 = 8, y0 = -2, y1 = 7, u = 34, id = '', arrows = '', cls = '' } = {}) {
+  const W = (x1 - x0) * u + 40, H = (y1 - y0) * u + 40;
+  const X = x => 20 + (x - x0) * u, Y = y => 20 + (y1 - y) * u;
+  let s = `<svg class="grid ${cls}" ${id ? `id="${id}"` : ''} viewBox="0 0 ${W} ${H}" data-x0="${x0}" data-y1="${y1}" data-u="${u}" role="img" aria-label="Coordinate grid">`;
+  s += `<defs>${['e', 'b', 'r', 'g', 'm'].map(k => `<marker id="ah-${k}${id}" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 Z" class="ah ah-${k}"/></marker>`).join('')}</defs>`;
+  for (let x = x0; x <= x1; x++) s += `<line x1="${X(x)}" x2="${X(x)}" y1="${Y(y0)}" y2="${Y(y1)}" class="gl ${x === 0 ? 'ax' : ''}"/>`;
+  for (let y = y0; y <= y1; y++) s += `<line x1="${X(x0)}" x2="${X(x1)}" y1="${Y(y)}" y2="${Y(y)}" class="gl ${y === 0 ? 'ax' : ''}"/>`;
+  s += `<text x="${X(x1) - 4}" y="${Y(0) - 6}" text-anchor="end" class="g-ax">+x (east)</text><text x="${X(0) + 6}" y="${Y(y1) + 12}" class="g-ax">+y (north)</text>`;
+  return s + `<g class="arrows">${arrows}</g></svg>`;
+}
+const gx = (svg, x) => 20 + (x - +svg.dataset.x0) * +svg.dataset.u;
+const gy = (svg, y) => 20 + (+svg.dataset.y1 - y) * +svg.dataset.u;
+function arrowEl(svg, ax, ay, bx, by, k, label, extra = '') {
+  const id = svg.id || '';
+  return `<line x1="${gx(svg, ax)}" y1="${gy(svg, ay)}" x2="${gx(svg, bx)}" y2="${gy(svg, by)}" class="vec v-${k} ${extra}" marker-end="url(#ah-${k}${id})"/>` +
+    (label ? `<text x="${(gx(svg, ax) + gx(svg, bx)) / 2 + 8}" y="${(gy(svg, ay) + gy(svg, by)) / 2 - 8}" class="vlab vl-${k}">${label}</text>` : '');
+}
+
+/* free-scale vector picture: list of {mag, ang, k, label} drawn tip to tail, plus resultant */
+function vecPic(list, { resultant = true, w = 360, h = 240, comps = false } = {}) {
+  let x = 0, y = 0; const pts = [[0, 0]];
+  list.forEach(v => { x += v.mag * Math.cos(v.ang * RAD); y += v.mag * Math.sin(v.ang * RAD); pts.push([x, y]); });
+  const xs = pts.map(p => p[0]).concat([0]), ys = pts.map(p => p[1]).concat([0]);
+  const minx = Math.min(...xs), maxx = Math.max(...xs), miny = Math.min(...ys), maxy = Math.max(...ys);
+  const sc = Math.min((w - 70) / Math.max(1, maxx - minx), (h - 60) / Math.max(1, maxy - miny));
+  const X = v => 35 + (v - minx) * sc, Y = v => h - 30 - (v - miny) * sc;
+  let s = `<svg class="vpic" viewBox="0 0 ${w} ${h}" role="img" aria-label="Vector diagram"><defs>${['e', 'b', 'r', 'g'].map(k => `<marker id="vp-${k}" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 Z" class="ah ah-${k}"/></marker>`).join('')}</defs>`;
+  s += `<line x1="${X(minx) - 10}" x2="${X(maxx) + 20}" y1="${Y(0)}" y2="${Y(0)}" class="gl ax"/><line x1="${X(0)}" x2="${X(0)}" y1="${Y(miny) + 10}" y2="${Y(maxy) - 20}" class="gl ax"/>`;
+  list.forEach((v, i) => { const [ax, ay] = pts[i], [bx, by] = pts[i + 1];
+    if (comps) s += `<line x1="${X(ax)}" y1="${Y(ay)}" x2="${X(bx)}" y2="${Y(ay)}" class="comp"/><line x1="${X(bx)}" y1="${Y(ay)}" x2="${X(bx)}" y2="${Y(by)}" class="comp"/>`;
+    s += `<line x1="${X(ax)}" y1="${Y(ay)}" x2="${X(bx)}" y2="${Y(by)}" class="vec v-${v.k || 'e'}" marker-end="url(#vp-${v.k || 'e'})"/><text x="${(X(ax) + X(bx)) / 2 + 6}" y="${(Y(ay) + Y(by)) / 2 - 8}" class="vlab vl-${v.k || 'e'}">${v.label || ''}</text>`;
+  });
+  if (resultant && list.length > 1) s += `<line x1="${X(0)}" y1="${Y(0)}" x2="${X(x)}" y2="${Y(y)}" class="vec v-r dash" marker-end="url(#vp-r)"/><text x="${(X(0) + X(x)) / 2 - 14}" y="${(Y(0) + Y(y)) / 2 + 18}" class="vlab vl-r">R</text>`;
+  return s + '</svg>';
+}
+
+/* right triangle picture with the angle at the bottom-left */
+function triSVG(ang = 37, { hl = null, labels = true, nums = null } = {}) {
+  const hyp = 230, a = ang * RAD, ax = 40, ay = 200, bx = ax + hyp * Math.cos(a), by = ay, cx = bx, cy = ay - hyp * Math.sin(a);
+  const side = (k, x1, y1, x2, y2) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="tri-side ${hl === k ? 'hl' : ''}" data-side="${k}"/>`;
+  let s = `<svg class="tri" viewBox="0 0 320 230" role="img" aria-label="Right triangle with angle theta at the bottom left. The side across from theta is the opposite side, the side next to theta is the adjacent side, and the longest side is the hypotenuse.">`;
+  s += side('adj', ax, ay, bx, by) + side('opp', bx, by, cx, cy) + side('hyp', ax, ay, cx, cy);
+  s += `<path d="M${bx - 14} ${by} V${by - 14} H${bx}" fill="none" class="tri-sq"/><path d="M${ax + 34} ${ay} A34 34 0 0 0 ${ax + 34 * Math.cos(a)} ${ay - 34 * Math.sin(a)}" fill="none" class="tri-ang"/><text x="${ax + 42}" y="${ay - 8}" class="tri-t">θ</text>`;
+  if (labels) s += `<text x="${(ax + bx) / 2}" y="${ay + 20}" text-anchor="middle" class="tri-l">${nums ? nums.adj : 'adjacent'}</text><text x="${bx + 8}" y="${(by + cy) / 2}" class="tri-l">${nums ? nums.opp : 'opposite'}</text><text x="${(ax + cx) / 2 - 14}" y="${(ay + cy) / 2 - 8}" text-anchor="end" class="tri-l">${nums ? nums.hyp : 'hypotenuse'}</text>`;
+  return s + '</svg>';
+}
+
+/* ---------- numeric practice rounds ---------- */
+function makeNumRounds(root, cfg) {
+  const st = S.tasks[cfg.id] || (S.tasks[cfg.id] = { n: 0, i: 0 });
+  const R = cfg.rounds, need = cfg.need || R.length;
+  root.innerHTML = `<div class="nr"><div class="nr-q" aria-live="polite"></div><div class="nr-vis"></div><div class="nr-f"></div>
+    <div class="btn-row"><button type="button" class="btn primary sm nr-chk">Check</button><div class="progress-pips">${Array.from({ length: need }, () => '<i></i>').join('')}</div><button type="button" class="btn ghost sm nr-nx hidden">Next</button></div>
+    <p class="fb-line nr-fb" aria-live="polite"></p></div>`;
+  const q = $('.nr-q', root), vis = $('.nr-vis', root), f = $('.nr-f', root), fb = $('.nr-fb', root), chk = $('.nr-chk', root), nx = $('.nr-nx', root);
+  let tries = 0;
+  const pips = () => $$('.progress-pips i', root).forEach((p, i) => p.classList.toggle('on', i < st.n));
+  function show() {
+    const r = R[st.i % R.length]; tries = 0;
+    q.innerHTML = `<p class="place-prompt">${st.n >= need ? '<b>Done. Extra practice:</b> ' : `<b>Round ${st.n + 1} of ${need}.</b> `}${r.q}</p>`;
+    vis.innerHTML = r.vis || '';
+    f.innerHTML = `<div class="nfields">${r.fields.map((fd, k) => `<label class="nf"><span>${fd.label}</span><input type="text" inputmode="decimal" data-k="${k}" autocomplete="off" aria-label="${fd.label.replace(/<[^>]+>/g, '')}"><em>${fd.unit || ''}</em><b class="nmark"></b></label>`).join('')}</div>`;
+    fb.textContent = ''; fb.className = 'fb-line nr-fb'; chk.disabled = false; nx.classList.add('hidden'); pips();
+    $$('input', f).forEach(inp => inp.addEventListener('keydown', e => { if (e.key === 'Enter') chk.click(); }));
+  }
+  chk.addEventListener('click', () => {
+    const r = R[st.i % R.length], ins = $$('input', f);
+    if (ins.some(i => !i.value.trim())) { fb.className = 'fb-line bad nr-fb'; fb.textContent = 'Fill in every box first.'; return; }
+    let ok = true;
+    r.fields.forEach((fd, k) => { const good = okNum(ins[k].value, fd.ans, fd.tol); ok = ok && good; const m = $$('.nmark', f)[k]; m.textContent = good ? '✓' : '✗'; m.className = 'nmark ' + (good ? 'y' : 'x'); });
+    if (ok) {
+      chk.disabled = true; fb.className = 'fb-line good nr-fb'; fb.innerHTML = `${tries ? 'Got it.' : 'Correct.'} ${r.why}`;
+      if (st.n < need) st.n++; st.i++; save(); pips();
+      if (st.n >= need) cfg.onDone && cfg.onDone();
+      nx.classList.remove('hidden'); nx.textContent = st.n >= need ? 'More practice' : 'Next';
+    } else {
+      tries++; shake(f); fb.className = 'fb-line bad nr-fb';
+      fb.innerHTML = tries === 1 ? r.hint : `${r.hint}<br><b>Worked answer:</b> ${r.why}`;
+    }
+  });
+  nx.addEventListener('click', show);
+  show();
+}
+
+/* ---------- calculator (available everywhere, including the final check) ---------- */
+function setupCalc() {
+  const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'top-btn'; btn.id = 'calcBtn'; btn.textContent = 'Calculator';
+  const acts = $('.top-actions'); acts.insertBefore(btn, acts.firstChild);
+  const pan = document.createElement('div'); pan.className = 'calc'; pan.id = 'calc'; pan.hidden = true; pan.setAttribute('role', 'dialog'); pan.setAttribute('aria-label', 'Calculator (degrees)');
+  const keys = [['sin', 'sin('], ['cos', 'cos('], ['tan', 'tan('], ['√', '√('], ['sin⁻¹', 'asin('], ['cos⁻¹', 'acos('], ['tan⁻¹', 'atan('], ['x²', '^2'], ['7'], ['8'], ['9'], ['÷', '/'], ['4'], ['5'], ['6'], ['×', '*'], ['1'], ['2'], ['3'], ['−', '-'], ['0'], ['.'], ['('], [')'], ['C', 'C'], ['⌫', 'B'], ['+'], ['=', '=']];
+  pan.innerHTML = `<div class="calc-top"><b>Calculator</b><span class="small muted">degrees</span><button type="button" class="calc-x" aria-label="Close calculator">×</button></div>
+    <input class="calc-d" id="calcD" aria-label="Expression" autocomplete="off"><div class="calc-r" id="calcR" aria-live="polite">&nbsp;</div>
+    <div class="calc-k">${keys.map(([l, v]) => `<button type="button" data-v="${v || l}" class="${/^[0-9.]$/.test(l) ? 'n' : l === '=' ? 'eq' : ''}">${l}</button>`).join('')}</div>`;
+  document.body.appendChild(pan);
+  const d = $('#calcD'), out = $('#calcR');
+  const evalExpr = s => {
+    let t = s.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-').replace(/√\(/g, 'Math.sqrt(').replace(/\^2/g, '**2').replace(/π/g, 'Math.PI');
+    t = t.replace(/asin\(/g, 'ASIN(').replace(/acos\(/g, 'ACOS(').replace(/atan\(/g, 'ATAN(').replace(/sin\(/g, 'SIN(').replace(/cos\(/g, 'COS(').replace(/tan\(/g, 'TAN(');
+    if (/[^0-9+\-*/().\s A-Za-z]/.test(t) || /[A-Za-z]/.test(t.replace(/Math\.(sqrt|PI)|SIN|COS|TAN|ASIN|ACOS|ATAN/g, ''))) throw new Error('bad');
+    const f = new Function('SIN', 'COS', 'TAN', 'ASIN', 'ACOS', 'ATAN', `return (${t || 0});`);
+    return f(x => Math.sin(x * RAD), x => Math.cos(x * RAD), x => Math.tan(x * RAD), x => Math.asin(x) / RAD, x => Math.acos(x) / RAD, x => Math.atan(x) / RAD);
+  };
+  const run = () => { try { const v = evalExpr(d.value); out.textContent = isFinite(v) ? '= ' + (Math.round(v * 10000) / 10000) : 'Error'; } catch (e) { out.textContent = 'Check your expression'; } };
+  $$('.calc-k button', pan).forEach(b => b.addEventListener('click', () => {
+    const v = b.dataset.v;
+    if (v === 'C') { d.value = ''; out.innerHTML = '&nbsp;'; } else if (v === 'B') d.value = d.value.slice(0, -1); else if (v === '=') run(); else d.value += v;
+    d.focus();
+  }));
+  d.addEventListener('keydown', e => { if (e.key === 'Enter') run(); });
+  btn.addEventListener('click', () => { pan.hidden = !pan.hidden; if (!pan.hidden) d.focus(); });
+  $('.calc-x', pan).addEventListener('click', () => { pan.hidden = true; });
+}
+
+/* =========================================================
+   SECTIONS
+   ========================================================= */
+const SECS = [null,
+  { z: 1, title: 'Scalars and vectors', min: 4 },
+  { z: 2, title: 'Adding vectors tip to tail', min: 7 },
+  { z: 3, title: 'How long is the resultant?', min: 7 },
+  { z: 4, title: 'Sine, cosine, and tangent', min: 8 },
+  { z: 5, title: 'Breaking a vector into components', min: 8 },
+  { z: 6, title: 'Finding the direction', min: 7 },
+  { z: 7, title: 'Adding vectors with components', min: 10 },
+  { z: 8, title: 'Final check', min: 9 }
+];
+const REQS = {
+  1: [['sort', 'Sort the quantities into scalars and vectors'], ['qc1', 'Answer the quick check correctly']],
+  2: [['tip', 'Find the resultant 5 times on the grid'], ['qc2', 'Answer the quick check correctly']],
+  3: [['pyth', 'Solve 5 resultant problems'], ['qc3', 'Answer the quick check correctly']],
+  4: [['explore', 'Try 3 different angles in the triangle explorer'], ['sides', 'Answer 5 triangle rounds'], ['qc4', 'Answer the quick check correctly']],
+  5: [['drag', 'Finish the 3 vector-drag missions'], ['comp', 'Find the components of 5 vectors'], ['qc5', 'Answer the quick check correctly']],
+  6: [['dir', 'Find the direction of 5 vectors'], ['qc6', 'Answer the quick check correctly']],
+  7: [['add', 'Solve 5 vector addition problems'], ['qc7', 'Answer the quick check correctly']],
+  8: [['pass', `Score ${PASS_SCORE} or more out of ${FC_LEN} on the final check`]]
+};
+const GOALS = [
+  { t: 'Tell scalars from vectors', sec: 1 },
+  { t: 'Add vectors tip to tail and find the size of the resultant', sec: 3 },
+  { t: 'Use sine, cosine, and tangent in a right triangle', sec: 4 },
+  { t: 'Break a vector into components and find its direction', sec: 6 },
+  { t: 'Add vectors using components', sec: 7 },
+  { t: `Pass the final check (${PASS_SCORE} out of ${FC_LEN})`, sec: 8 }
+];
+function frame(n, inner) {
+  const s = SECS[n], e = E(s.z);
+  return `<header class="sec-head"><div class="tile big cat-${e.cat}" aria-hidden="true"><span class="z">${e.z}</span>${e.sym}</div><div><p class="sec-meta">Section ${n} of ${NSEC} · about ${s.min} min</p><h2>${s.title}</h2></div></header>
+  ${inner}
+  <section class="card unlock" id="unlock-${n}"><h3>To unlock the next section</h3><ul class="reqs"></ul></section>
+  <nav class="sec-foot"><button class="btn ghost" type="button" data-go="${n - 1}">Back</button><button class="btn primary" type="button" id="next-${n}" data-go="${n < NSEC ? n + 1 : RES}" disabled>${n < NSEC ? 'Next section' : 'See your results'}</button></nav>`;
+}
+const B = t => `<b>${t}</b>`;
+
+/* ---------------- Section 1 ---------------- */
+function build1(el) {
+  el.innerHTML = frame(1,
+    card('read', 'Size, or size and direction?', `<div class="read-text">
+      <p>A ${c('scalar')} has only a size (a number and a unit), like 5 meters or 20 seconds. A ${c('vector')} has a size <b>and</b> a direction, like 5 meters east.</p>
+      <p>In 2D motion, direction matters. Walking 3 m east and then 4 m north does not put you 7 m from where you started. To add vectors, you have to keep track of direction.</p>
+      <p>We draw a vector as an arrow. The <b>length</b> shows its size (its ${c('magnitude')}), and the arrow <b>points</b> in its direction.</p></div>
+      <div class="two-col"><div>${gridSVG({ x0: -1, x1: 6, y0: -1, y1: 5, u: 32, id: 'r1g' })}</div>
+      <div class="read-text"><p class="small">The arrow shows a displacement of 5 m at 37° north of east. Its size is 5 m, and its direction is the way it points.</p></div></div>`) +
+    card('try', 'Scalar or vector?', '<p class="muted">Sort each quantity. Drag it, or tap it and then tap a box.</p><div id="s1sort"></div>') +
+    card('qc', '', '<div id="qc1"></div>'));
+  const g = $('#r1g', el); $('.arrows', g).innerHTML = arrowEl(g, 0, 0, 4, 3, 'e', '5 m');
+  makeSorter($('#s1sort', el), {
+    id: 's1sort',
+    tokens: [{ id: 'dist', label: 'Distance: 12 m' }, { id: 'disp', label: 'Displacement: 12 m west' }, { id: 'spd', label: 'Speed: 30 m/s' }, { id: 'vel', label: 'Velocity: 30 m/s north' }, { id: 'time', label: 'Time: 8 s' }, { id: 'mass', label: 'Mass: 2 kg' }, { id: 'acc', label: 'Acceleration: 9.8 m/s² down' }, { id: 'temp', label: 'Temperature: 25 °C' }],
+    bins: [{ id: 'sc', label: 'Scalar (size only)', accepts: ['dist', 'spd', 'time', 'mass', 'temp'] }, { id: 've', label: 'Vector (size and direction)', accepts: ['disp', 'vel', 'acc'] }],
+    hint: () => 'Does it include a direction like north, west, or down?',
+    onDone: () => done(1, 'sort')
+  });
+  makeQC($('#qc1', el), { id: 'qc1', q: 'Which of these is a vector?', opts: ['15 m/s', '15 m/s east', '15 seconds', '15 meters'], ans: 1,
+    explain: 'A vector has a size and a direction. Only "15 m/s east" includes a direction.', hint: 'Look for a direction.', onCorrect: () => done(1, 'qc1') });
+}
+
+/* ---------------- Section 2 ---------------- */
+function build2(el) {
+  const R2 = [[3, 0, 0, 4], [4, 2, -1, 3], [5, 0, -2, 0], [2, 3, 3, -1], [0, 4, 4, 0], [-2, 2, 5, 1]];
+  el.innerHTML = frame(2,
+    card('read', 'Tip to tail', `<div class="read-text">
+      <p>To add two vectors, draw the first one. Then start the second one at the <b>tip</b> (arrow end) of the first. This is called adding vectors ${c('tip to tail')}.</p>
+      <p>The ${c('resultant')} is the single vector from the tail of the first to the tip of the last. It shows where you ended up overall.</p>
+      <p>If the vectors point the same way, their sizes add. If they point opposite ways, they subtract. If they point at an angle, the resultant is a diagonal.</p></div>`) +
+    card('try', 'Find the resultant', `<p class="muted">Vector <b class="tA">A</b> starts at the origin. Vector <b class="tB">B</b> is shown on the side. Tap the grid point where the tip of A + B lands.</p>
+      <div class="sim"><div>${gridSVG({ x0: -3, x1: 8, y0: -2, y1: 7, u: 30, id: 's2g', cls: 'tap' })}</div>
+      <div><p class="place-prompt" id="s2q" aria-live="polite"></p><div class="progress-pips" id="s2pips"><i></i><i></i><i></i><i></i><i></i></div><p class="fb-line" id="s2fb" aria-live="polite"></p><div class="btn-row"><button type="button" class="btn ghost sm hidden" id="s2nx">Next</button></div></div></div>`) +
+    card('qc', '', '<div id="qc2"></div>'));
+  const g = $('#s2g', el), st = S.tasks.s2 || (S.tasks.s2 = { n: 0, i: 0 });
+  let lock = false, tries = 0;
+  const pips = () => $$('#s2pips i', el).forEach((p, i) => p.classList.toggle('on', i < st.n));
+  function show() {
+    const [ax, ay, bx, by] = R2[st.i % R2.length]; lock = false; tries = 0;
+    $('.arrows', g).innerHTML = arrowEl(g, 0, 0, ax, ay, 'e', 'A') + arrowEl(g, 6.5, -1.5, 6.5 + bx, -1.5 + by, 'b', 'B', 'ghostB');
+    $('#s2q', el).innerHTML = `${st.n >= 5 ? '<b>Done. Extra practice:</b> ' : `<b>Round ${st.n + 1} of 5.</b> `}A = (${ax}, ${ay}), B = (${bx}, ${by}). Tap where A + B ends.`;
+    $('#s2fb', el).textContent = ''; $('#s2nx', el).classList.add('hidden'); pips();
+  }
+  g.addEventListener('click', ev => {
+    if (lock) return;
+    const pt = g.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY; const p = pt.matrixTransform(g.getScreenCTM().inverse());
+    const ux = Math.round((p.x - 20) / 30 + -3), uy = Math.round(7 - (p.y - 20) / 30);
+    const [ax, ay, bx, by] = R2[st.i % R2.length], tx = ax + bx, ty = ay + by, fb = $('#s2fb', el);
+    if (ux === tx && uy === ty) {
+      lock = true;
+      $('.arrows', g).innerHTML = arrowEl(g, 0, 0, ax, ay, 'e', 'A') + arrowEl(g, ax, ay, tx, ty, 'b', 'B', 'slide') + arrowEl(g, 0, 0, tx, ty, 'r', 'R', 'dash grow');
+      fb.className = 'fb-line good'; fb.innerHTML = `Yes: B starts at the tip of A, so A + B ends at (${tx}, ${ty}).`;
+      if (st.n < 5) st.n++; st.i++; save(); pips(); if (st.n >= 5) done(2, 'tip');
+      $('#s2nx', el).classList.remove('hidden'); $('#s2nx', el).textContent = st.n >= 5 ? 'More practice' : 'Next';
+    } else {
+      tries++; fb.className = 'fb-line bad';
+      fb.innerHTML = tries === 1 ? `You tapped (${ux}, ${uy}). Start at the tip of A, at (${ax}, ${ay}), then move ${bx} across and ${by} up.` : `Add the parts: x = ${ax} + ${bx} = ${tx}, y = ${ay} + (${by}) = ${ty}.`;
+      const mk = document.createElementNS('http://www.w3.org/2000/svg', 'circle'); mk.setAttribute('cx', gx(g, ux)); mk.setAttribute('cy', gy(g, uy)); mk.setAttribute('r', 7); mk.setAttribute('class', 'miss'); $('.arrows', g).appendChild(mk); setTimeout(() => mk.remove(), 900);
+    }
+  });
+  $('#s2nx', el).addEventListener('click', show);
+  show();
+  makeQC($('#qc2', el), { id: 'qc2', q: 'You walk 6 m east, then 2 m west. What is your resultant displacement?', opts: ['8 m east', '4 m east', '4 m west', '12 m east'], ans: 1,
+    explain: 'The vectors point in opposite directions, so they subtract: 6 − 2 = 4 m, in the direction of the larger one (east).', hint: 'Opposite directions subtract.', onCorrect: () => done(2, 'qc2') });
+}
+
+/* ---------------- Section 3 ---------------- */
+function build3(el) {
+  const P3 = [[3, 4, 'm', 'You walk 3 m east, then 4 m north.'], [6, 8, 'm/s', 'A ball moves 6 m/s east and 8 m/s north at the same time.'], [12, 5, 'km', 'A car drives 12 km east, then 5 km north.'], [2, 3, 'm', 'A robot rolls 2.0 m east, then 3.0 m north.'], [7, 7, 'm', 'A hiker walks 7 m east, then 7 m north.'], [9, 12, 'm/s', 'A drone flies 9 m/s east with a 12 m/s north wind push.']];
+  el.innerHTML = frame(3,
+    card('read', 'The Pythagorean theorem', `<div class="read-text">
+      <p>When two vectors are at a right angle (like east and north), the vectors and their resultant make a <b>right triangle</b>. The resultant is the longest side, the ${c('hypotenuse')}.</p>
+      <p class="formula"><b>R = √(a² + b²)</b></p>
+      <p>Example: 3 m east and 4 m north. R = √(3² + 4²) = √(9 + 16) = √25 = <b>5 m</b>. Not 7 m: the diagonal is a shortcut.</p>
+      <p class="small muted">Use the <b>Calculator</b> button at the top of the page. It has √ and x².</p></div>
+      <div class="vp-wrap">${vecPic([{ mag: 3, ang: 0, k: 'e', label: '3 m' }, { mag: 4, ang: 90, k: 'b', label: '4 m' }])}</div>`) +
+    card('try', 'Find the size of the resultant', '<div id="s3r"></div>') +
+    card('qc', '', '<div id="qc3"></div>'));
+  makeNumRounds($('#s3r', el), { id: 's3r', need: 5, rounds: P3.map(([a, b, u, t]) => { const R = Math.hypot(a, b); return {
+    q: `${t} What is the size of the resultant?`, vis: vecPic([{ mag: a, ang: 0, k: 'e', label: `${a} ${u}` }, { mag: b, ang: 90, k: 'b', label: `${b} ${u}` }], { w: 300, h: 200 }),
+    fields: [{ label: 'R =', ans: R, unit: u }], hint: `Square both sides, add them, then take the square root: √(${a}² + ${b}²).`,
+    why: `R = √(${a}² + ${b}²) = √${a * a + b * b} ≈ ${fmt(R)} ${u}.` }; }), onDone: () => done(3, 'pyth') });
+  makeQC($('#qc3', el), { id: 'qc3', q: 'A plane flies 30 m/s east and is pushed 40 m/s north by wind. What is its speed?', opts: ['10 m/s', '50 m/s', '70 m/s', '35 m/s'], ans: 1,
+    explain: '√(30² + 40²) = √(900 + 1600) = √2500 = 50 m/s.', hint: 'Use R = √(a² + b²).', onCorrect: () => done(3, 'qc3') });
+}
+
+/* ---------------- Section 4 ---------------- */
+function build4(el) {
+  const T4 = [
+    { a: 35, q: 'Which side is <b>opposite</b> the angle θ?', o: ['the side across from θ', 'the side touching θ (not the longest)', 'the longest side'], k: 0, why: 'The opposite side is across the triangle from θ.' },
+    { a: 50, q: 'Which side is the <b>hypotenuse</b>?', o: ['the side across from θ', 'the side touching θ (not the longest)', 'the longest side, across from the right angle'], k: 2, why: 'The hypotenuse is always the longest side, across from the right angle.' },
+    { a: 30, q: 'sin θ = ?', o: ['opposite ÷ hypotenuse', 'adjacent ÷ hypotenuse', 'opposite ÷ adjacent'], k: 0, why: 'SOH: Sine = Opposite ÷ Hypotenuse.' },
+    { a: 60, q: 'cos θ = ?', o: ['opposite ÷ hypotenuse', 'adjacent ÷ hypotenuse', 'opposite ÷ adjacent'], k: 1, why: 'CAH: Cosine = Adjacent ÷ Hypotenuse.' },
+    { a: 40, q: 'tan θ = ?', o: ['opposite ÷ hypotenuse', 'adjacent ÷ hypotenuse', 'opposite ÷ adjacent'], k: 2, why: 'TOA: Tangent = Opposite ÷ Adjacent.' },
+    { a: 30, q: 'The hypotenuse is 10 m and θ = 30°. The opposite side is…', o: ['10 × sin 30° = 5 m', '10 × cos 30° = 8.7 m', '10 ÷ sin 30° = 20 m'], k: 0, why: 'opposite = hypotenuse × sin θ = 10 × 0.5 = 5 m.' }
+  ];
+  el.innerHTML = frame(4,
+    card('read', 'SOH CAH TOA', `<div class="read-text">
+      <p>${c('trigonometry', 'Trigonometry')} connects the angles and sides of a right triangle. Name the sides from the angle θ you are using:</p>
+      <ul><li><b>Opposite:</b> the side across from θ</li><li><b>Adjacent:</b> the side touching θ (not the hypotenuse)</li><li><b>Hypotenuse:</b> the longest side, across from the right angle</li></ul></div>
+      <div class="two-col"><div>${triSVG(37)}</div><div class="soh">
+        <div><b>SOH</b> sin θ = opposite ÷ hypotenuse</div><div><b>CAH</b> cos θ = adjacent ÷ hypotenuse</div><div><b>TOA</b> tan θ = opposite ÷ adjacent</div></div></div>`) +
+    card('try', 'Triangle explorer', `<p class="muted">Slide the angle. The hypotenuse stays 10 m. Watch the sides and the ratios change.</p>
+      <div class="sim"><div id="s4tri"></div><div><input type="range" id="s4ang" min="10" max="80" value="37" aria-label="Angle"><p class="place-prompt" id="s4out"></p><p class="small muted" id="s4seen"></p></div></div>`) +
+    card('try', 'Triangle rounds', '<div id="s4r"></div>') +
+    card('qc', '', '<div id="qc4"></div>'));
+  const st = S.tasks.s4 || (S.tasks.s4 = { seen: [] });
+  const draw = () => {
+    const a = +$('#s4ang', el).value, o = 10 * Math.sin(a * RAD), ad = 10 * Math.cos(a * RAD);
+    $('#s4tri', el).innerHTML = triSVG(a, { nums: { opp: `opp = ${fmt(o)} m`, adj: `adj = ${fmt(ad)} m`, hyp: 'hyp = 10 m' } });
+    $('#s4out', el).innerHTML = `<b>θ = ${a}°</b><br>sin ${a}° = ${fmt(o)} ÷ 10 = ${(o / 10).toFixed(2)}<br>cos ${a}° = ${fmt(ad)} ÷ 10 = ${(ad / 10).toFixed(2)}<br>tan ${a}° = ${fmt(o)} ÷ ${fmt(ad)} = ${(o / ad).toFixed(2)}`;
+    const b = Math.round(a / 10); if (!st.seen.includes(b)) { st.seen.push(b); save(); }
+    $('#s4seen', el).textContent = `Different angles tried: ${Math.min(3, st.seen.length)}/3`;
+    if (st.seen.length >= 3) done(4, 'explore');
+  };
+  $('#s4ang', el).addEventListener('input', draw); draw();
+  makeRounds($('#s4r', el), { id: 's4r', need: 5, req: '4.sides', keepOrder: true, rounds: T4.map(t => ({ q: t.q, vis: `<div class="tri-sm">${triSVG(t.a)}</div>`, opts: t.o.map(B), a: t.k, hint: 'Remember SOH CAH TOA, and name the sides from θ.', why: t.why })), onDone: () => done(4, 'sides') });
+  makeQC($('#qc4', el), { id: 'qc4', q: 'In a right triangle, the hypotenuse is 20 m and θ = 60°. How long is the adjacent side?', opts: ['10 m', '17.3 m', '20 m', '34.6 m'], ans: 0,
+    explain: 'adjacent = hypotenuse × cos θ = 20 × cos 60° = 20 × 0.5 = 10 m.', hint: 'Adjacent goes with cosine (CAH).', onCorrect: () => done(4, 'qc4') });
+}
+
+/* ---------------- Section 5 ---------------- */
+function build5(el) {
+  const P5 = [[10, 30, 'm'], [20, 60, 'm/s'], [15, 45, 'm'], [8, 20, 'm/s'], [25, 53, 'm'], [12, 75, 'm/s']];
+  el.innerHTML = frame(5,
+    card('read', 'Shadows on the axes', `<div class="read-text">
+      <p>Any vector can be split into two ${c('components')}: how far it goes along x (east-west) and how far along y (north-south). The vector is the hypotenuse, and its components are the two legs.</p>
+      <p>If a vector has size <b>A</b> and makes angle <b>θ</b> with the +x axis:</p>
+      <p class="formula"><b>A<sub>x</sub> = A cos θ</b> &nbsp;&nbsp; <b>A<sub>y</sub> = A sin θ</b></p>
+      <p>Example: 10 m at 30°. A<sub>x</sub> = 10 cos 30° = 8.7 m. A<sub>y</sub> = 10 sin 30° = 5.0 m.</p></div>`) +
+    card('try', 'Drag the vector', `<p class="muted">Drag the tip of the vector. The dashed lines are its components.</p>
+      <div class="sim"><div>${gridSVG({ x0: -6, x1: 6, y0: -5, y1: 6, u: 28, id: 's5g', cls: 'drag' })}</div>
+      <div><div class="meter"><div><div class="k">A<sub>x</sub></div><div class="v" id="s5x"></div></div><div><div class="k">A<sub>y</sub></div><div class="v" id="s5y"></div></div><div><div class="k">Size A</div><div class="v" id="s5m"></div></div></div>
+      <p class="place-prompt" id="s5a"></p>
+      <ul class="missions" id="s5ms"></ul></div></div>`) +
+    card('try', 'Find the components', '<p class="muted">Angles are measured counterclockwise from the +x axis (east). Round to one decimal place.</p><div id="s5r"></div>') +
+    card('qc', '', '<div id="qc5"></div>'));
+  const g = $('#s5g', el), st = S.tasks.s5 || (S.tasks.s5 = { m: [false, false, false] });
+  const M = [['Make A<sub>x</sub> = 4 and A<sub>y</sub> = 3. What is the size?', (x, y) => x === 4 && y === 3], ['Make a vector that points straight north (A<sub>x</sub> = 0).', (x, y) => x === 0 && y > 0], ['Make a vector with a negative A<sub>x</sub> (pointing west).', (x, y) => x < 0]];
+  let px = 3, py = 2, drag = false;
+  const ms = () => { $('#s5ms', el).innerHTML = M.map((m, i) => `<li class="mission ${st.m[i] ? 'ok' : ''}"><div class="mt"><span class="box"></span><span>${m[0]}</span></div></li>`).join(''); if (st.m.every(Boolean)) done(5, 'drag'); };
+  const draw = () => {
+    const ang = Math.atan2(py, px) / RAD, mag = Math.hypot(px, py);
+    $('.arrows', g).innerHTML = `<line x1="${gx(g, 0)}" y1="${gy(g, 0)}" x2="${gx(g, px)}" y2="${gy(g, 0)}" class="comp cx"/><line x1="${gx(g, px)}" y1="${gy(g, 0)}" x2="${gx(g, px)}" y2="${gy(g, py)}" class="comp cy"/>` + arrowEl(g, 0, 0, px, py, 'e', 'A') + `<circle cx="${gx(g, px)}" cy="${gy(g, py)}" r="10" class="handle"/>`;
+    $('#s5x', el).textContent = px; $('#s5y', el).textContent = py; $('#s5m', el).textContent = fmt(mag);
+    $('#s5a', el).innerHTML = mag ? `Angle from +x axis: <b>${fmt((ang + 360) % 360)}°</b>` : 'Drag the tip away from the origin.';
+    M.forEach((m, i) => { if (!st.m[i] && mag && m[1](px, py)) { st.m[i] = true; save(); toast('Mission complete'); } }); ms();
+  };
+  const toUnit = ev => { const pt = g.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY; const p = pt.matrixTransform(g.getScreenCTM().inverse()); return [Math.max(-6, Math.min(6, Math.round((p.x - 20) / 28 - 6))), Math.max(-5, Math.min(6, Math.round(6 - (p.y - 20) / 28)))]; };
+  g.addEventListener('pointerdown', ev => { drag = true; try { g.setPointerCapture(ev.pointerId); } catch (e) {} [px, py] = toUnit(ev); draw(); });
+  g.addEventListener('pointermove', ev => { if (!drag) return; [px, py] = toUnit(ev); draw(); });
+  ['pointerup', 'pointercancel'].forEach(t => g.addEventListener(t, () => { drag = false; }));
+  draw();
+  makeNumRounds($('#s5r', el), { id: 's5r', need: 5, rounds: P5.map(([A, th, u]) => { const x = A * Math.cos(th * RAD), y = A * Math.sin(th * RAD); return {
+    q: `A vector is <b>${A} ${u} at ${th}°</b>. Find its components.`, vis: vecPic([{ mag: A, ang: th, k: 'e', label: `${A} ${u}` }], { w: 280, h: 190, comps: true, resultant: false }),
+    fields: [{ label: 'A<sub>x</sub> =', ans: x, unit: u }, { label: 'A<sub>y</sub> =', ans: y, unit: u }], hint: `A<sub>x</sub> = ${A} × cos ${th}°, and A<sub>y</sub> = ${A} × sin ${th}°. Check that the calculator is in degrees.`,
+    why: `A<sub>x</sub> = ${A} cos ${th}° = ${fmt(x)} ${u}; A<sub>y</sub> = ${A} sin ${th}° = ${fmt(y)} ${u}.` }; }), onDone: () => done(5, 'comp') });
+  makeQC($('#qc5', el), { id: 'qc5', q: 'A velocity is 40 m/s at 30° above the +x axis. What is its y component?', opts: ['20 m/s', '34.6 m/s', '40 m/s', '23.1 m/s'], ans: 0,
+    explain: 'A<sub>y</sub> = A sin θ = 40 × sin 30° = 40 × 0.5 = 20 m/s.', hint: 'The y component uses sine.', onCorrect: () => done(5, 'qc5') });
+}
+
+/* ---------------- Section 6 ---------------- */
+function build6(el) {
+  const P6 = [[4, 3], [5, 12], [10, 10], [6, 2], [3, 8], [7, 5]];
+  el.innerHTML = frame(6,
+    card('read', 'Which way does it point?', `<div class="read-text">
+      <p>If you know the components, you can find the direction with the ${c('inverse tangent')} (tan⁻¹), because tan θ = opposite ÷ adjacent = A<sub>y</sub> ÷ A<sub>x</sub>:</p>
+      <p class="formula"><b>θ = tan⁻¹(A<sub>y</sub> ÷ A<sub>x</sub>)</b></p>
+      <p>Example: A<sub>x</sub> = 4 m, A<sub>y</sub> = 3 m. θ = tan⁻¹(3 ÷ 4) = 36.9°. We can say the vector points <b>36.9° north of east</b>: start facing east and turn 36.9° toward north.</p>
+      <p>The size still comes from the Pythagorean theorem: A = √(4² + 3²) = 5 m. So the vector is <b>5 m at 36.9° north of east</b>.</p></div>`) +
+    card('try', 'Find the direction', '<p class="muted">Give the angle north of east (from the +x axis), to one decimal place. Use tan⁻¹ on the calculator.</p><div id="s6r"></div>') +
+    card('qc', '', '<div id="qc6"></div>'));
+  makeNumRounds($('#s6r', el), { id: 's6r', need: 5, rounds: P6.map(([x, y]) => { const th = Math.atan2(y, x) / RAD, m = Math.hypot(x, y); return {
+    q: `A displacement has <b>A<sub>x</sub> = ${x} m</b> and <b>A<sub>y</sub> = ${y} m</b>. Find its size and direction.`, vis: vecPic([{ mag: m, ang: th, k: 'e', label: 'A' }], { w: 260, h: 180, comps: true, resultant: false }),
+    fields: [{ label: 'A =', ans: m, unit: 'm' }, { label: 'θ =', ans: th, unit: '° north of east', tol: 0.6 }], hint: `Size: √(${x}² + ${y}²). Direction: tan⁻¹(${y} ÷ ${x}).`,
+    why: `A = √(${x}² + ${y}²) = ${fmt(m)} m, and θ = tan⁻¹(${y} ÷ ${x}) = ${fmt(th)}° north of east.` }; }), onDone: () => done(6, 'dir') });
+  makeQC($('#qc6', el), { id: 'qc6', q: 'A vector has A<sub>x</sub> = 6 m and A<sub>y</sub> = 6 m. What is its direction?', opts: ['30° north of east', '45° north of east', '60° north of east', '90° north of east'], ans: 1,
+    explain: 'θ = tan⁻¹(6 ÷ 6) = tan⁻¹(1) = 45°. Equal components always give 45°.', hint: 'tan⁻¹(1) = ?', onCorrect: () => done(6, 'qc6') });
+}
+
+/* ---------------- Section 7 ---------------- */
+function build7(el) {
+  const P7 = [
+    { t: 'A hiker walks <b>3 km east</b>, then <b>4 km north</b>.', v: [[3, 0], [4, 90]], u: 'km' },
+    { t: 'A boat aims straight across a river at <b>5 m/s north</b>. The current pushes it <b>2 m/s east</b>.', v: [[5, 90], [2, 0]], u: 'm/s' },
+    { t: 'A plane flies <b>200 km/h east</b>. A wind blows it <b>50 km/h north</b>.', v: [[200, 0], [50, 90]], u: 'km/h' },
+    { t: 'A drone flies <b>10 m at 30°</b>, then <b>5 m north (90°)</b>.', v: [[10, 30], [5, 90]], u: 'm' },
+    { t: 'A robot moves <b>12 m east (0°)</b>, then <b>8 m at 60°</b>.', v: [[12, 0], [8, 60]], u: 'm' },
+    { t: 'A soccer ball is kicked <b>6 m at 20°</b>, then rolls <b>4 m at 70°</b>.', v: [[6, 20], [4, 70]], u: 'm' }
+  ];
+  el.innerHTML = frame(7,
+    card('read', 'The component method', `<div class="read-text">
+      <p>Any vectors can be added with this four-step method, even when they are not at right angles:</p>
+      <ol><li>Break each vector into x and y components.</li><li>Add all the x components: <b>R<sub>x</sub> = A<sub>x</sub> + B<sub>x</sub></b>. Add all the y components: <b>R<sub>y</sub> = A<sub>y</sub> + B<sub>y</sub></b>.</li>
+      <li>Find the size: <b>R = √(R<sub>x</sub>² + R<sub>y</sub>²)</b>.</li><li>Find the direction: <b>θ = tan⁻¹(R<sub>y</sub> ÷ R<sub>x</sub>)</b>.</li></ol>
+      <p>This is how pilots and boat captains figure out where wind and currents will really take them.</p></div>
+      <div class="vp-wrap">${vecPic([{ mag: 10, ang: 30, k: 'e', label: 'A' }, { mag: 5, ang: 90, k: 'b', label: 'B' }], { comps: true })}</div>`) +
+    card('try', 'Add the vectors', '<p class="muted">Fill in all four boxes. Round to one decimal place.</p><div id="s7r"></div>') +
+    card('qc', '', '<div id="qc7"></div>'));
+  makeNumRounds($('#s7r', el), { id: 's7r', need: 5, rounds: P7.map(p => {
+    const rx = p.v.reduce((s, [m, a]) => s + m * Math.cos(a * RAD), 0), ry = p.v.reduce((s, [m, a]) => s + m * Math.sin(a * RAD), 0), R = Math.hypot(rx, ry), th = Math.atan2(ry, rx) / RAD;
+    const parts = p.v.map(([m, a]) => `(${fmt(m * Math.cos(a * RAD))}, ${fmt(m * Math.sin(a * RAD))})`).join(' + ');
+    return { q: `${p.t} Find the resultant.`, vis: vecPic(p.v.map(([m, a], i) => ({ mag: m, ang: a, k: ['e', 'b'][i], label: ['A', 'B'][i] })), { w: 320, h: 210 }),
+      fields: [{ label: 'R<sub>x</sub> =', ans: rx, unit: p.u }, { label: 'R<sub>y</sub> =', ans: ry, unit: p.u }, { label: 'R =', ans: R, unit: p.u }, { label: 'θ =', ans: th, unit: '° north of east', tol: 0.6 }],
+      hint: 'Break each vector into components (east = 0°, north = 90°), add the x parts and the y parts, then use √ and tan⁻¹.',
+      why: `Components: ${parts}. R<sub>x</sub> = ${fmt(rx)}, R<sub>y</sub> = ${fmt(ry)}, R = ${fmt(R)} ${p.u}, θ = ${fmt(th)}° north of east.` };
+  }), onDone: () => done(7, 'add') });
+  makeQC($('#qc7', el), { id: 'qc7', q: 'Two vectors have components A = (3, 1) and B = (1, 2). What are the components of A + B?', opts: ['(4, 3)', '(3, 2)', '(2, −1)', '(4, 2)'], ans: 0,
+    explain: 'Add x to x and y to y: (3 + 1, 1 + 2) = (4, 3).', hint: 'Add the matching components.', onCorrect: () => done(7, 'qc7') });
+}
+
+setupCalc();
+
+/* =========================================================
+   SECTION 9: FINAL CHECK
+   ========================================================= */
+const BANK = [
+  { id: 'f1', q: 'Which quantity is a vector?', o: ['20 m/s', '20 m/s north', '20 s', '20 m'], a: 1, x: 'A vector has a direction. Only 20 m/s north has one.' },
+  { id: 'f2', q: 'Which quantity is a scalar?', o: ['9.8 m/s² down', '5 m east', 'Speed of 12 m/s', '30 m/s west'], a: 2, x: 'Speed has no direction, so it is a scalar.' },
+  { id: 'f3', q: 'You walk 8 m east, then 3 m west. What is your displacement?', o: ['11 m east', '5 m east', '5 m west', '24 m east'], a: 1, x: 'Opposite directions subtract: 8 − 3 = 5 m east.' },
+  { id: 'f4', q: 'You walk 6 m north, then 8 m east. How far are you from where you started?', o: ['14 m', '10 m', '2 m', '48 m'], a: 1, x: '√(6² + 8²) = √100 = 10 m.' },
+  { id: 'f5', q: 'A boat moves 3 m/s north across a river while the current pushes it 4 m/s east. What is its speed?', o: ['7 m/s', '1 m/s', '5 m/s', '12 m/s'], a: 2, x: '√(3² + 4²) = 5 m/s.' },
+  { id: 'f6', q: 'When adding vectors tip to tail, the resultant goes from…', o: ['the tail of the first vector to the tip of the last', 'the tip of the first to the tail of the last', 'the origin to the middle', 'the longest vector to the shortest'], a: 0, x: 'The resultant starts where you started and ends where you ended.' },
+  { id: 'f7', q: 'A = (2, 5) and B = (4, −1). What is A + B?', o: ['(6, 4)', '(6, 6)', '(−2, 6)', '(8, −5)'], a: 0, x: 'Add matching components: (2 + 4, 5 + (−1)) = (6, 4).' },
+  { id: 'f8', q: 'In a right triangle, sin θ equals…', o: ['opposite ÷ hypotenuse', 'adjacent ÷ hypotenuse', 'opposite ÷ adjacent', 'hypotenuse ÷ opposite'], a: 0, x: 'SOH: sine = opposite ÷ hypotenuse.' },
+  { id: 'f9', q: 'In a right triangle, cos θ equals…', o: ['opposite ÷ hypotenuse', 'adjacent ÷ hypotenuse', 'opposite ÷ adjacent', 'adjacent ÷ opposite'], a: 1, x: 'CAH: cosine = adjacent ÷ hypotenuse.' },
+  { id: 'f10', q: 'In a right triangle, tan θ equals…', o: ['opposite ÷ hypotenuse', 'adjacent ÷ hypotenuse', 'opposite ÷ adjacent', 'hypotenuse ÷ adjacent'], a: 2, x: 'TOA: tangent = opposite ÷ adjacent.' },
+  { id: 'f11', q: 'Which side of a right triangle is the hypotenuse?', o: ['The side across from θ', 'The side next to θ', 'The longest side, across from the right angle', 'The shortest side'], a: 2, x: 'The hypotenuse is the longest side, opposite the right angle.' },
+  { id: 'f12', q: 'A 20 m displacement points 30° north of east. What is its x (east) component?', o: ['10.0 m', '17.3 m', '20.0 m', '11.5 m'], a: 1, x: 'A<sub>x</sub> = 20 cos 30° = 17.3 m.' },
+  { id: 'f13', q: 'A 20 m displacement points 30° north of east. What is its y (north) component?', o: ['10.0 m', '17.3 m', '20.0 m', '34.6 m'], a: 0, x: 'A<sub>y</sub> = 20 sin 30° = 10.0 m.' },
+  { id: 'f14', q: 'A velocity of 50 m/s points 60° above the +x axis. What is its x component?', o: ['25.0 m/s', '43.3 m/s', '50.0 m/s', '86.6 m/s'], a: 0, x: 'A<sub>x</sub> = 50 cos 60° = 25.0 m/s.' },
+  { id: 'f15', q: 'A velocity of 50 m/s points 60° above the +x axis. What is its y component?', o: ['25.0 m/s', '43.3 m/s', '50.0 m/s', '28.9 m/s'], a: 1, x: 'A<sub>y</sub> = 50 sin 60° = 43.3 m/s.' },
+  { id: 'f16', q: 'To find the x component of a vector at angle θ from the +x axis, you use…', o: ['A sin θ', 'A cos θ', 'A tan θ', 'A ÷ cos θ'], a: 1, x: 'The x component is adjacent to θ, so it uses cosine.' },
+  { id: 'f17', q: 'A vector has A<sub>x</sub> = 5 m and A<sub>y</sub> = 5 m. What is its direction?', o: ['30° north of east', '45° north of east', '60° north of east', '5° north of east'], a: 1, x: 'tan⁻¹(5 ÷ 5) = tan⁻¹(1) = 45°.' },
+  { id: 'f18', q: 'A vector has A<sub>x</sub> = 8 m and A<sub>y</sub> = 6 m. What is its size?', o: ['14 m', '10 m', '2 m', '48 m'], a: 1, x: '√(8² + 6²) = √100 = 10 m.' },
+  { id: 'f19', q: 'A vector has A<sub>x</sub> = 8 m and A<sub>y</sub> = 6 m. What is its direction?', o: ['36.9° north of east', '53.1° north of east', '45° north of east', '75° north of east'], a: 0, x: 'tan⁻¹(6 ÷ 8) = 36.9°.' },
+  { id: 'f20', q: 'Which calculator key turns a ratio like A<sub>y</sub> ÷ A<sub>x</sub> back into an angle?', o: ['tan', 'tan⁻¹', '√', 'x²'], a: 1, x: 'Inverse tangent (tan⁻¹) gives the angle.' },
+  { id: 'f21', q: 'A plane flies 120 km/h east. A wind pushes it 50 km/h north. What is its speed?', o: ['170 km/h', '130 km/h', '70 km/h', '109 km/h'], a: 1, x: '√(120² + 50²) = √16900 = 130 km/h.' },
+  { id: 'f22', q: 'A plane flies 120 km/h east with a 50 km/h north wind. What is its direction?', o: ['22.6° north of east', '67.4° north of east', '45° north of east', '50° north of east'], a: 0, x: 'tan⁻¹(50 ÷ 120) = 22.6° north of east.' },
+  { id: 'f23', q: 'A = 10 m at 0° and B = 10 m at 90°. What is the size of A + B?', o: ['20 m', '14.1 m', '10 m', '0 m'], a: 1, x: '√(10² + 10²) = 14.1 m.' },
+  { id: 'f24', q: 'In the component method, what is the first step?', o: ['Find the angle with tan⁻¹', 'Break each vector into x and y components', 'Add the sizes of the vectors', 'Square the resultant'], a: 1, x: "Start by finding each vector's x and y components." },
+  { id: 'f25', q: 'Why is walking 3 m east then 4 m north not a 7 m displacement?', o: ['The directions are at a right angle, so the resultant is the diagonal (5 m)', 'Displacement is always smaller than 5 m', 'You have to subtract them', 'Distance and displacement are the same'], a: 0, x: 'Perpendicular vectors make a right triangle; the resultant is the hypotenuse, √(3² + 4²) = 5 m.' },
+  { id: 'f26', q: 'A hiker walks 4 km at 30° north of east, then 4 km due north. What is R<sub>x</sub>?', o: ['3.5 km', '4.0 km', '2.0 km', '8.0 km'], a: 0, x: 'R<sub>x</sub> = 4 cos 30° + 0 = 3.5 km. The northward walk has no x component.' },
+];
+const QB = Object.fromEntries(BANK.map(q => [q.id, q]));
+const optHTML = (o, small) => Array.isArray(o) ? ionHTML(o[0], o[1]) : typeof o === 'object' ? (small ? `<span style="display:inline-block;width:84px;vertical-align:middle">${bohrSVG(o)}</span>` : bohrSVG(o)) : o;
+
+const REVIEW_HTML = `<div class="two-col"><div class="review-box"><ul>
+  <li><b>Vectors</b> have size and direction. Add them tip to tail; the resultant goes from the first tail to the last tip.</li>
+  <li><b>Right angle:</b> R = √(a² + b²).</li>
+  <li><b>SOH CAH TOA:</b> sin = opp ÷ hyp, cos = adj ÷ hyp, tan = opp ÷ adj.</li>
+  <li><b>Components:</b> A<sub>x</sub> = A cos θ, A<sub>y</sub> = A sin θ. <b>Direction:</b> θ = tan⁻¹(A<sub>y</sub> ÷ A<sub>x</sub>).</li>
+  <li><b>Adding:</b> add x components, add y components, then use √ and tan⁻¹.</li></ul></div>
+  <div class="tri-sm">${triSVG(37)}</div></div>`;
+
+function buildFinal(el) { el.innerHTML = frame(NSEC, '<div id="fc"></div>'); }
+
+function renderFinal() {
+  const box = $('#fc'), F = S.final;
+  if (F.current) return renderFCQ();
+  const fails = F.attempts.filter(a => !a.pass).length;
+  const hist = F.attempts.length ? `<p class="attempts">Attempts so far: ${F.attempts.map((a, i) => `#${i + 1}: ${a.score}/${FC_LEN}`).join(', ')}</p>` : '';
+  const lockNote = LOCK_ON ? '<p class="lock-note">This check opens in full screen. If you leave the page or exit full screen, it locks, and your teacher will need to unlock it.</p>' : '';
+  if (F.passed) {
+    box.innerHTML = card('final', 'You passed the final check', `<div class="score-big pass">${F.best}/${FC_LEN}</div><p>That's your best score. Your results page is unlocked.</p>${hist}
+      <div class="btn-row"><button type="button" class="btn primary" data-go="10">See your results</button><button type="button" class="btn ghost" id="fcStart">Practice with new questions</button></div>`);
+    $('#fcStart').addEventListener('click', startAttempt);
+    return;
+  }
+  if (fails >= 3 && fails % 3 === 0 && F.reviewAt < fails) {
+    box.innerHTML = card('read', 'Quick review before your next try', `<p class="muted">You've tried ${fails} times. Read these key ideas, then start a new check.</p>${REVIEW_HTML}
+      <div class="btn-row"><button type="button" class="btn primary" id="fcReviewed">I reviewed this. Start a new check</button></div>`);
+    $('#fcReviewed').addEventListener('click', () => { F.reviewAt = fails; save(); startAttempt(); });
+    return;
+  }
+  box.innerHTML = card('final', fails ? 'Try again with new questions' : 'Ready for the final check?', `<p>${FC_LEN} questions picked at random from a bigger bank. Score ${PASS_SCORE} or more to pass. Each retake gives you different questions.</p>${lockNote}${hist}
+    <div class="btn-row"><button type="button" class="btn amber" id="fcStart">Start the final check</button></div>`);
+  $('#fcStart').addEventListener('click', startAttempt);
+}
+function startAttempt() {
+  const F = S.final;
+  const last = F.attempts.length ? F.attempts[F.attempts.length - 1].ids : [];
+  let ids = shuffle(BANK.map(q => q.id).filter(id => !last.includes(id)));
+  if (ids.length < FC_LEN) ids = ids.concat(shuffle(last));
+  ids = ids.slice(0, FC_LEN);
+  F.current = { qs: ids.map(id => ({ id, order: QB[id].fixed ? [0, 1, 2, 3] : shuffle([0, 1, 2, 3]) })), ans: {}, idx: 0, startedAt: Date.now() };
+  save(); startLockdown(); renderFinal();
+  $('#scr-' + NSEC).scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });
+}
+function renderFCQ() {
+  const cur = S.final.current, qd = cur.qs[cur.idx], q = QB[qd.id], box = $('#fc');
+  const allAns = cur.qs.every(x => cur.ans[x.id] != null);
+  const unanswered = cur.qs.map((x, i) => cur.ans[x.id] == null ? i + 1 : null).filter(Boolean);
+  box.innerHTML = `<section class="card k-qc"><span class="tag">Final check</span>
+    <div class="fc-dots">${cur.qs.map((x, i) => `<button type="button" class="${cur.ans[x.id] != null ? 'ans' : ''} ${i === cur.idx ? 'cur' : ''}" data-j="${i}" aria-label="Question ${i + 1}${cur.ans[x.id] != null ? ', answered' : ''}">${i + 1}</button>`).join('')}</div>
+    <p class="sec-meta">Question ${cur.idx + 1} of ${FC_LEN}</p>
+    ${q.fig ? `<div class="qc-fig">${bohrSVG(q.fig)}</div>` : ''}
+    <p class="qc-q">${q.q}</p>
+    <div class="opts ${q.grid ? 'grid' : ''}">${qd.order.map((oi, pos) => `<button type="button" class="opt ${cur.ans[qd.id] === oi ? 'picked' : ''}" data-oi="${oi}" ${oi === q.a ? 'data-key="1"' : ''}><span class="L">${'ABCD'[pos]}</span><span class="ot">${optHTML(q.o[oi])}</span></button>`).join('')}</div>
+    <div class="btn-row" style="justify-content:space-between;margin-top:18px"><button type="button" class="btn ghost" id="fcPrev" ${cur.idx === 0 ? 'disabled' : ''}>Back</button>
+    ${cur.idx < FC_LEN - 1 ? '<button type="button" class="btn primary" id="fcNext">Next</button>' : `<button type="button" class="btn amber" id="fcSubmit" ${allAns ? '' : 'disabled'}>Submit check</button>`}</div>
+    ${cur.idx === FC_LEN - 1 && !allAns ? `<p class="small muted">Answer every question to submit. Still open: ${unanswered.join(', ')}.</p>` : ''}
+  </section>`;
+  $$('.opt', box).forEach(b => b.addEventListener('click', () => { cur.ans[qd.id] = +b.dataset.oi; save(); renderFCQ(); }));
+  $$('.fc-dots button', box).forEach(b => b.addEventListener('click', () => { cur.idx = +b.dataset.j; save(); renderFCQ(); }));
+  const prev = $('#fcPrev', box), next = $('#fcNext', box), sub = $('#fcSubmit', box);
+  prev && prev.addEventListener('click', () => { cur.idx--; save(); renderFCQ(); });
+  next && next.addEventListener('click', () => { cur.idx++; save(); renderFCQ(); });
+  sub && sub.addEventListener('click', gradeAttempt);
+}
+function gradeAttempt() {
+  const F = S.final, cur = F.current;
+  let score = 0; const missed = [];
+  cur.qs.forEach(x => { const q = QB[x.id]; if (cur.ans[x.id] === q.a) score++; else missed.push(x); });
+  const pass = score >= PASS_SCORE, prevBest = F.best, wasPassed = F.passed;
+  F.attempts.push({ score, pass, at: new Date().toISOString(), ids: cur.qs.map(x => x.id), pts: cur.qs.map(x => cur.ans[x.id] === QB[x.id].a ? 1 : 0) });
+  F.best = Math.max(F.best, score);
+  const autoSend = pass && (!wasPassed || score > prevBest);
+  if (pass) F.passed = true;
+  F.current = null; save(); endLockdown();
+  if (pass) done(NSEC, 'pass');
+  const box = $('#fc');
+  const review = missed.map(x => { const q = QB[x.id]; return `<div class="review-item"><p style="margin:0 0 4px"><b>${q.q}</b></p><p class="yours" style="margin:0">Your answer: ${optHTML(q.o[cur.ans[x.id]], true)}</p><p class="right" style="margin:0">Correct answer: ${optHTML(q.o[q.a], true)}</p><p class="small muted" style="margin:4px 0 0">${q.x}</p></div>`; }).join('');
+  const failsNow = F.attempts.filter(a => !a.pass).length;
+  box.innerHTML = card('final', pass ? 'You passed' : 'Not yet', `<div class="score-big ${pass ? 'pass' : 'fail'}">${score}/${FC_LEN}</div>
+    <p>${pass ? (missed.length ? 'Nice work. Look over the one you missed below.' : 'Perfect score.') : `You need ${PASS_SCORE} to pass. Look over what you missed, then try again with new questions.${failsNow % 3 === 0 ? ' You\'ll see a quick review first.' : ''}`}</p>
+    ${missed.length ? `<h4 style="margin:14px 0 0;font-weight:500;color:var(--muted)">What you missed</h4>${review}` : ''}
+    <div class="btn-row">${pass ? '<button type="button" class="btn primary" data-go="10">See your results</button>' : '<button type="button" class="btn amber" id="fcAgain">Try again</button>'}</div>
+    ${pass ? '<p class="sheetbox sheetStatus" aria-live="polite"></p>' : ''}`);
+  const again = $('#fcAgain'); again && again.addEventListener('click', renderFinal);
+  if (autoSend) sendScores();
+  $('#scr-' + NSEC).scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });
+}
+
+/* =========================================================
+   RESULTS
+   ========================================================= */
+const QC_IDS = ['qc1', 'qc2', 'qc3', 'qc4', 'qc5', 'qc6', 'qc7'];
+function stats() {
+  const F = S.final;
+  return {
+    firstTry: QC_IDS.filter(id => S.qc[id] && S.qc[id].first === true).length,
+    secs: Array.from({ length: NSEC }, (_, i) => i + 1).filter(n => S.secDone[n]).length,
+    best: F.best, attempts: F.attempts.length, passed: F.passed
+  };
+}
+function renderResults() {
+  const el = $('#scr-10'), st = S.student || {}, k = stats();
+  el.innerHTML = `<header class="sec-head"><div class="tile big cat-noble" aria-hidden="true"><span class="z">10</span>Ne</div><div><p class="sec-meta">Results</p><h2>${k.passed ? 'Lesson complete' : 'Your results so far'}</h2></div></header>
+  <section class="card"><span class="tag">Student</span>
+    <div class="who"><div><span>Name</span>${esc((st.first || '') + ' ' + (st.last || ''))}</div><div><span>Period</span>${esc(st.period || '')}</div><div><span>Teacher</span>${esc(st.teacher || '')}</div><div><span>Student ID</span>${esc(st.sid || '')}</div></div>
+    <div class="stats">
+      <div class="stat"><div class="k">Final check (best)</div><div class="v">${k.best}/${FC_LEN}</div></div>
+      <div class="stat"><div class="k">Status</div><div class="v" style="color:${k.passed ? 'var(--good)' : 'var(--amber)'}">${k.passed ? 'Passed' : 'Not yet'}</div></div>
+      <div class="stat"><div class="k">Final check attempts</div><div class="v">${k.attempts}</div></div>
+      <div class="stat"><div class="k">Quick checks right on first try</div><div class="v">${k.firstTry}/${QC_IDS.length}</div></div>
+      <div class="stat"><div class="k">Sections finished</div><div class="v">${k.secs}/${NSEC}</div></div>
+      <div class="stat"><div class="k">Times locked</div><div class="v">${S.lockouts}</div></div>
+    </div>
+    <p class="small muted">${S.completedAt ? 'Completed ' + new Date(S.completedAt).toLocaleString() : ''}</p>
+  </section>
+  <section class="card"><span class="tag">Your goals</span><ul class="goals" id="goalsResults"></ul></section>
+  <div class="btn-row no-print"><button type="button" class="btn primary" id="sendBtn">Send my scores to my teacher</button><button type="button" class="btn ghost" id="csvBtn">Download CSV</button><button type="button" class="btn ghost" id="printBtn">Print results</button><button type="button" class="btn ghost" data-go="${NSEC}">Back to the final check</button></div>
+  <p class="sheetbox sheetStatus no-print" aria-live="polite">${S.sentAt ? `Sent to your teacher ${new Date(S.sentAt).toLocaleString()}.` : ''}</p>`;
+  renderGoalsInto($('#goalsResults'));
+  $('#csvBtn').addEventListener('click', downloadCSV);
+  $('#sendBtn').addEventListener('click', sendScores);
+  $('#printBtn').addEventListener('click', () => window.print());
+}
+function downloadCSV() {
+  const st = S.student || {}, k = stats();
+  const H = ['Student ID', 'Last Name', 'First Name', 'Period', 'Teacher', 'Activity', 'Lesson Score (quick checks right on first try)', 'Lesson Total', 'Final Check Score (best)', 'Final Check Total', 'Final Check Passed', 'Final Check Attempts', `Sections Completed (of ${NSEC})`, 'Times Locked', 'Date'];
+  const row = [st.sid, st.last, st.first, st.period, st.teacher, LESSON, k.firstTry, QC_IDS.length, k.best, FC_LEN, k.passed ? 'Yes' : 'No', k.attempts, k.secs, S.lockouts, new Date().toLocaleString()];
+  const q = v => { const s = String(v == null ? '' : v); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+  const csv = H.map(q).join(',') + '\r\n' + row.map(q).join(',') + '\r\n';
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `Vectors2D_${(st.last || 'student').replace(/\W+/g, '')}_${(st.first || '').replace(/\W+/g, '')}.csv`;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+
+/* =========================================================
+   GOOGLE SHEETS (two rows: the lesson and the final check)
+   ========================================================= */
+function sheetBodies() {
+  const st = S.student || {}, F = S.final;
+  const base = { studentId: st.sid || '', firstName: st.first || '', lastName: st.last || '', period: st.period || '', teacher: st.teacher || '', locks: String(S.lockouts), when: new Date().toString() };
+  const qcPts = QC_IDS.map(id => S.qc[id] && S.qc[id].first === true ? 1 : 0);
+  const lesson = Object.assign({}, base, {
+    activity: `${LESSON}: Lesson`, score: String(sum(qcPts)), total: String(QC_IDS.length),
+    qlabels: QC_IDS.map((_, i) => 'QC' + (i + 1)).join('|'), qpoints: qcPts.join('|'), qmax: QC_IDS.map(() => 1).join('|')
+  });
+  let best = null; F.attempts.forEach(a => { if (!best || a.score >= best.score) best = a; });
+  const fin = Object.assign({}, base, { activity: `${LESSON}: Final Check`, score: String(F.best), total: String(FC_LEN) },
+    best && best.pts ? { qlabels: best.pts.map((_, i) => 'Q' + (i + 1)).join('|'), qpoints: best.pts.join('|'), qmax: best.pts.map(() => 1).join('|') }
+                     : { qlabels: 'Final Check', qpoints: String(F.best), qmax: String(FC_LEN) });
+  return [lesson, fin];
+}
+function sendScores() {
+  const msg = t => $$('.sheetStatus').forEach(e => { e.textContent = t; });
+  if (!S.student) { msg('Sign in on the start page first.'); return; }
+  const url = sheetURL();
+  if (!url) { msg("This lesson isn't connected to your teacher's gradebook sheet yet."); return; }
+  msg('Sending...');
+  Promise.all(sheetBodies().map(b => fetch(url, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(b) })))
+    .then(() => { S.sentAt = new Date().toISOString(); save(); msg('Sent! Your teacher will see your scores.'); })
+    .catch(() => msg("Couldn't send. Check your internet connection and try again."));
+}
+
+/* =========================================================
+   PROGRESS: requirements, sections, goals, nav
+   ========================================================= */
+function renderReqs(n, justId) {
+  const box = $('#unlock-' + n); if (!box) return;
+  $('.reqs', box).innerHTML = REQS[n].map(([id, t]) => `<li class="${S.reqs[n + '.' + id] ? 'ok' : ''} ${id === justId ? 'just-ok' : ''}"><span class="box"></span><span>${t}</span></li>`).join('');
+  box.classList.toggle('all-done', !!S.secDone[n]);
+}
+function updateNext(n) { const b = $('#next-' + n); if (b) b.disabled = !(S.secDone[n] || S.teacherUnlock); }
+function done(n, id) {
+  const k = n + '.' + id;
+  if (S.reqs[k]) return;
+  S.reqs[k] = true; save();
+  renderReqs(n, id);
+  if (REQS[n].every(([r]) => S.reqs[n + '.' + r])) completeSection(n);
+}
+function completeSection(n) {
+  if (S.secDone[n]) return;
+  S.secDone[n] = true;
+  if (n === NSEC && !S.completedAt) S.completedAt = new Date().toISOString();
+  save(); renderReqs(n); updateNext(n);
+  renderNav(n + 1);
+  const gi = GOALS.findIndex(g => g.sec === n);
+  renderGoals(gi);
+  setTimeout(() => toast(gi >= 0 ? `Goal reached: ${GOALS[gi].t}` : (n < NSEC ? `Section ${n + 1} unlocked` : 'Results unlocked')), 250);
+}
+function accessible(n) {
+  if (n === 0) return true;
+  if (!S.student) return false;
+  if (S.teacherUnlock) return true;
+  if (n === 1) return true;
+  if (n <= NSEC) return !!S.secDone[n - 1];
+  if (n === RES) return !!S.secDone[NSEC];
+  return false;
+}
+function renderNav(popN) {
+  const nav = $('#navTiles');
+  nav.innerHTML = [...Array.from({ length: NSEC }, (_, i) => i + 1), RES].map(n => {
+    const e = E(n), title = n <= NSEC ? `Section ${n}: ${SECS[n].title}` : 'Results';
+    return `<button type="button" class="tile cat-${e.cat} ${S.cur === n ? 'current' : ''} ${(n <= NSEC && S.secDone[n]) ? 'done' : ''} ${n === popN && !REDUCED ? 'unlocking' : ''}" data-go="${n}" ${accessible(n) ? '' : 'disabled'} title="${esc(title)}" aria-label="${esc(title)}${accessible(n) ? '' : ' (locked)'}"><span class="z">${e.z}</span>${e.sym}<span class="ck" aria-hidden="true">✓</span></button>`;
+  }).join('');
+}
+function renderGoalsInto(ul, justIdx) {
+  if (!ul) return;
+  ul.innerHTML = GOALS.map((g, i) => `<li class="${S.secDone[g.sec] ? 'ok' : ''} ${i === justIdx ? 'just-ok' : ''}"><span class="box"></span><span>${g.t}</span></li>`).join('');
+}
+function renderGoals(justIdx) {
+  renderGoalsInto($('#goalsStart'), justIdx);
+  renderGoalsInto($('#goalsDrawerList'), justIdx);
+  renderGoalsInto($('#goalsResults'), justIdx);
+  const n = GOALS.filter(g => S.secDone[g.sec]).length;
+  $('#goalsBtn').textContent = `Goals ${n}/${GOALS.length}`;
+}
+
+function go(n) {
+  if (n < 0 || (n > NSEC && n !== RES)) return;
+  if (S.final.current && n !== NSEC) { toast('Submit your final check first.'); return; }
+  if (!accessible(n)) { toast(S.student ? 'Finish the section before this one to unlock it.' : 'Fill in your name and info to start.'); return; }
+  S.cur = n; save();
+  $$('.screen').forEach(s => s.classList.toggle('on', s.id === 'scr-' + n));
+  if (n === NSEC) renderFinal();
+  if (n === RES) renderResults();
+  if (n === 0) startHero(); else heroRun++;
+  renderNav();
+  window.scrollTo({ top: 0, behavior: 'auto' });
+}
+
+/* =========================================================
+   HERO (start screen)
+   ========================================================= */
+let heroRun = 0;
+function startHero() {
+  const svg = $('#heroSvg'), cap = $('#heroCap');
+  svg.innerHTML = `<defs><marker id="hm-e" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L12,6 L0,12 Z" class="ah ah-e"/></marker><marker id="hm-b" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L12,6 L0,12 Z" class="ah ah-b"/></marker><marker id="hm-r" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L12,6 L0,12 Z" class="ah ah-r"/></marker></defs>
+    ${Array.from({ length: 11 }, (_, i) => `<line x1="${60 + i * 48}" y1="20" x2="${60 + i * 48}" y2="280" class="gl"/>`).join('')}${Array.from({ length: 6 }, (_, i) => `<line x1="60" y1="${40 + i * 48}" x2="540" y2="${40 + i * 48}" class="gl"/>`).join('')}
+    <line x1="60" y1="232" x2="348" y2="232" class="vec v-e hv1" marker-end="url(#hm-e)"/><text x="190" y="256" class="vlab vl-e">A</text>
+    <line x1="348" y1="232" x2="348" y2="40" class="vec v-b hv2" marker-end="url(#hm-b)"/><text x="360" y="140" class="vlab vl-b">B</text>
+    <line x1="60" y1="232" x2="348" y2="40" class="vec v-r dash hv3" marker-end="url(#hm-r)"/><text x="180" y="125" class="vlab vl-r">R = A + B</text>`;
+  cap.innerHTML = 'Add vectors tip to tail. The resultant goes from start to finish.';
+}
+
+/* =========================================================
+   LOCKDOWN (final check only, when opened from GitHub Pages)
+   ========================================================= */
+let fsExiting = false;
+function reqFS() {
+  const d = document.documentElement, f = d.requestFullscreen || d.webkitRequestFullscreen;
+  if (f && !document.fullscreenElement) { try { const p = f.call(d); if (p && p.catch) p.catch(() => {}); } catch (e) {} }
+}
+function exitFS() {
+  if (!document.fullscreenElement) return;
+  const f = document.exitFullscreen || document.webkitExitFullscreen;
+  fsExiting = true;
+  try { const p = f.call(document); if (p && p.then) p.then(() => { fsExiting = false; }, () => { fsExiting = false; }); else fsExiting = false; } catch (e) { fsExiting = false; }
+}
+function startLockdown() { if (!LOCK_ON) return; S.lockActive = true; S.locked = false; save(); reqFS(); }
+function endLockdown() { S.lockActive = false; S.locked = false; save(); $('#lockOv').hidden = true; exitFS(); }
+function lockNow() { if (!S.lockActive || S.locked) return; S.locked = true; S.lockouts++; save(); showLock(); }
+function showLock() { $('#lockOv').hidden = false; $('#lockCode').value = ''; $('#lockMsg').textContent = ''; setTimeout(() => $('#lockCode').focus(), 60); }
+document.addEventListener('visibilitychange', () => { if (document.hidden) lockNow(); });
+window.addEventListener('blur', () => { setTimeout(() => { if (!document.hasFocus()) lockNow(); }, 150); });
+document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && !fsExiting) lockNow(); });
+function tryUnlock() {
+  if ($('#lockCode').value.trim() === TEACHER_CODE) { S.locked = false; save(); $('#lockOv').hidden = true; reqFS(); toast('Unlocked'); }
+  else { $('#lockMsg').textContent = 'That code is not correct.'; shake($('#lockCode')); }
+}
+$('#lockGo').addEventListener('click', tryUnlock);
+$('#lockCode').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+
+/* =========================================================
+   TEACHER VIEW
+   ========================================================= */
+const tOv = $('#teacherOv');
+function teacherInfo() {
+  const st = S.student;
+  $('#tInfo').textContent = `${st ? `Student: ${st.first} ${st.last}, period ${st.period}. ` : 'No student signed in. '}Final check attempts: ${S.final.attempts.length}. Best: ${S.final.best}/${FC_LEN}. Times locked: ${S.lockouts}.`;
+  $('#tKey').textContent = document.body.classList.contains('show-key') ? 'Hide answer key' : 'Show answer key';
+  $('#tUnlock').textContent = S.teacherUnlock ? 'Every section is unlocked' : 'Unlock every section';
+  $('#tUnlock').disabled = !!S.teacherUnlock;
+  $('#tEndLock').disabled = !S.lockActive;
+}
+$('#teacherBtn').addEventListener('click', () => {
+  tOv.hidden = false; $('#tLogin').classList.remove('hidden'); $('#tPanel').classList.add('hidden');
+  $('#tCode').value = ''; $('#tMsg').textContent = ''; setTimeout(() => $('#tCode').focus(), 50);
+});
+const tLogin = () => {
+  if ($('#tCode').value.trim() === TEACHER_CODE) { $('#tLogin').classList.add('hidden'); $('#tPanel').classList.remove('hidden'); teacherInfo(); }
+  else { $('#tMsg').textContent = 'That code is not correct.'; shake($('#tCode')); }
+};
+$('#tGo').addEventListener('click', tLogin);
+$('#tCode').addEventListener('keydown', e => { if (e.key === 'Enter') tLogin(); });
+$('#tCancel').addEventListener('click', () => { tOv.hidden = true; });
+$('#tClose').addEventListener('click', () => { tOv.hidden = true; });
+$('#tUnlock').addEventListener('click', () => {
+  if (!S.student) { toast('Have the student sign in first.'); return; }
+  S.teacherUnlock = true; save(); renderNav(); for (let n = 1; n <= NSEC; n++) updateNext(n); teacherInfo(); toast('Every section is unlocked');
+});
+$('#tKey').addEventListener('click', () => { document.body.classList.toggle('show-key'); teacherInfo(); });
+$('#tSend').addEventListener('click', sendScores);
+$('#tEndLock').addEventListener('click', () => { endLockdown(); teacherInfo(); toast('Lockdown ended for this check'); });
+$('#tReset').addEventListener('click', () => {
+  if (!confirm('Erase all progress for this lesson on this device?')) return;
+  try { localStorage.removeItem(KEY); } catch (e) {}
+  S = DEF(); location.reload();
+});
+
+/* =========================================================
+   GLOBAL EVENTS
+   ========================================================= */
+const pop = $('#pop');
+document.addEventListener('click', e => {
+  const g = e.target.closest('[data-go]');
+  if (g && !g.disabled) { go(+g.dataset.go); return; }
+  const ch = e.target.closest('.chip');
+  if (ch) {
+    const t = ch.dataset.term;
+    $('b', pop).textContent = t; $('p', pop).textContent = GLOSS[t] || '';
+    pop.hidden = false;
+    const r = ch.getBoundingClientRect(), w = Math.min(300, window.innerWidth - 24);
+    pop.style.left = Math.max(12, Math.min(r.left, window.innerWidth - w - 12)) + 'px';
+    const below = r.bottom + 8, ph = pop.offsetHeight;
+    pop.style.top = (below + ph > window.innerHeight - 10 ? Math.max(10, r.top - ph - 8) : below) + 'px';
+    return;
+  }
+  if (!e.target.closest('#pop')) pop.hidden = true;
+  const dr = $('#goalsDrawer');
+  if (!dr.hidden && !e.target.closest('#goalsDrawer') && !e.target.closest('#goalsBtn')) { dr.hidden = true; $('#goalsBtn').setAttribute('aria-expanded', 'false'); }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { pop.hidden = true; $('#goalsDrawer').hidden = true; if (!tOv.hidden) tOv.hidden = true; } });
+window.addEventListener('scroll', () => { pop.hidden = true; }, { passive: true });
+$('#goalsBtn').addEventListener('click', () => { const d = $('#goalsDrawer'); d.hidden = !d.hidden; $('#goalsBtn').setAttribute('aria-expanded', String(!d.hidden)); });
+$('#goalsClose').addEventListener('click', () => { $('#goalsDrawer').hidden = true; $('#goalsBtn').setAttribute('aria-expanded', 'false'); });
+$('.brand').style.cursor = 'pointer';
+$('.brand').addEventListener('click', () => go(0));
+
+/* start form */
+function renderStart() {
+  const wb = $('#welcomeBack'), form = $('#startForm');
+  if (S.student) {
+    wb.classList.remove('hidden'); form.classList.add('hidden');
+    wb.innerHTML = `<p style="margin-top:0">Welcome back, <b>${esc(S.student.first)}</b> (period ${esc(S.student.period)}, ${esc(S.student.teacher)}). Your progress is saved on this device.</p><div class="btn-row"><button type="button" class="btn primary" id="wbGo">Continue</button><button type="button" class="btn ghost" id="wbNew">Not you? Start fresh</button></div>`;
+    $('#wbGo').addEventListener('click', () => {
+      let n = S.cur > 0 && accessible(S.cur) ? S.cur : 1;
+      if (S.cur === 0) { for (let k = 1; k <= NSEC; k++) if (accessible(k)) n = k; }
+      go(n);
+    });
+    $('#wbNew').addEventListener('click', () => {
+      if (!confirm('Start fresh? This erases the saved progress on this device.')) return;
+      try { localStorage.removeItem(KEY); } catch (e) {}
+      location.reload();
+    });
+  } else { wb.classList.add('hidden'); form.classList.remove('hidden'); }
+}
+$('#fStart').addEventListener('click', () => {
+  const v = id => $(id).value.trim();
+  const st = { first: v('#fFirst'), last: v('#fLast'), period: v('#fPeriod'), teacher: v('#fTeacher'), sid: v('#fSid') };
+  const missing = [['first', 'first name'], ['last', 'last name'], ['period', 'period'], ['teacher', 'teacher'], ['sid', 'student ID']].filter(([k]) => !st[k]).map(([, l]) => l);
+  if (missing.length) { $('#formMsg').textContent = `Add your ${missing.join(', ')}.`; return; }
+  S.student = st; S.startedAt = new Date().toISOString(); save();
+  renderStart(); go(1);
+});
+
+/* =========================================================
+   INIT
+   ========================================================= */
+$('#fTeacher').innerHTML = '<option value="">Choose your teacher</option>' + teacherList().map(t => `<option>${esc(t)}</option>`).join('');
+const BUILD = [null, build1, build2, build3, build4, build5, build6, build7, buildFinal];
+for (let n = 1; n <= NSEC; n++) {
+  try { BUILD[n]($('#scr-' + n)); } catch (err) { console.error('Section ' + n, err); }
+  renderReqs(n); updateNext(n);
+}
+renderGoals(); renderStart();
+if (S.lockActive && S.final.current) { if (!S.locked) { S.locked = true; S.lockouts++; save(); } }
+let startAt = 0;
+if (S.student) { startAt = S.final.current ? NSEC : (accessible(S.cur) ? S.cur : 0); }
+go(startAt);
+if (S.locked && S.lockActive) showLock();
+})();
+</script>
+</body></html>
