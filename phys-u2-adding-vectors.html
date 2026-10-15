@@ -44,6 +44,9 @@ a{color:var(--y)}
 .topbar-inner{max-width:1120px; margin:0 auto; display:flex; align-items:center; gap:14px; padding:8px 16px}
 .brand{font-weight:600; font-size:15px; white-space:nowrap}
 .brand span{display:block; font-weight:400; font-size:12px; color:var(--muted)}
+.savenote{font-size:13px; color:var(--ok); white-space:nowrap}
+@media (max-width:640px){ .savenote{display:none} }
+.card.nostore{border:2px solid var(--bad); background:rgba(251,113,133,.08)}
 .navtiles{display:flex; gap:6px; overflow-x:auto; flex:1; padding:4px 2px; scrollbar-width:thin}
 .progress{height:4px; background:var(--panel2)}
 .progress div{height:100%; width:0; background:var(--r); transition:width .5s ease}
@@ -252,6 +255,7 @@ table.res th{color:var(--muted); font-weight:400; width:44%}
   <div class="topbar-inner">
     <div class="brand">Adding vectors<span id="whoami"></span></div>
     <nav class="navtiles" id="navtiles" aria-label="Lesson sections"></nav>
+    <span class="savenote" id="saveNote" aria-live="polite"></span>
     <button class="btn ghost small" id="calcBtn" type="button" aria-expanded="false">Calculator</button>
   </div>
   <div class="progress" aria-hidden="true"><div id="progbar"></div></div>
@@ -288,6 +292,10 @@ table.res th{color:var(--muted); font-weight:400; width:44%}
       <ul id="goalsList"></ul>
     </div>
 
+    <div class="card nostore" id="noStore" hidden>
+      <h3>This browser can't save your work</h3>
+      <p>You may be in guest or incognito mode. If you close this tab, your work will be lost. Sign in to your school account on your Chromebook and open the lesson again, or ask your teacher.</p>
+    </div>
     <div class="card" id="signin">
       <h3 id="signinTitle">Sign in to start</h3>
       <div id="resumeBox" hidden>
@@ -295,6 +303,9 @@ table.res th{color:var(--muted); font-weight:400; width:44%}
         <div class="btnrow">
           <button class="btn primary" id="resumeBtn" type="button">Continue the lesson</button>
           <button class="linkbtn" id="notMeBtn" type="button">Not you? Ask your teacher to reset this device.</button>
+        </div>
+        <div class="fb no" id="resumeErr" hidden></div>
+        <div>
         </div>
       </div>
       <form id="startForm" autocomplete="off" novalidate>
@@ -305,7 +316,7 @@ table.res th{color:var(--muted); font-weight:400; width:44%}
           <label class="field">Period<select id="fPeriod" required></select></label>
           <label class="field">Teacher<select id="fTeacher" required></select></label>
         </div>
-        <p class="small muted">You'll need about 90 minutes. A calculator in degree mode is built into the top bar. Your progress saves on this device.</p>
+        <p class="small muted" id="saveInfo">You'll need about 90 minutes. A calculator in degree mode is built into the top bar. Your progress saves on this device.</p>
         <div class="fb no" id="formErr" hidden></div>
         <div class="btnrow"><button class="btn primary" type="submit">Start the lesson</button></div>
       </form>
@@ -315,6 +326,15 @@ table.res th{color:var(--muted); font-weight:400; width:44%}
 
   <div id="sections"></div>
 </main>
+
+<!-- ================= OPEN IN TWO TABS ================= -->
+<div class="overlay" id="tabOv" role="dialog" aria-modal="true" aria-labelledby="tabTitle">
+  <div class="modal">
+    <h2 id="tabTitle">This lesson is open in another tab</h2>
+    <p>To keep your newest work safe, this copy stopped saving. Close the extra tab, then reload this one.</p>
+    <div class="btnrow"><button class="btn primary" id="tabReload" type="button">Reload with my newest work</button></div>
+  </div>
+</div>
 
 <!-- ================= LOCK SCREEN ================= -->
 <div class="overlay" id="lockOv" role="dialog" aria-modal="true" aria-labelledby="lockTitle">
@@ -464,7 +484,18 @@ function freshState(){
 }
 function load(){ try{ const s=JSON.parse(localStorage.getItem(STORE)); return (s && s.lesson===LESSON_ID)?s:null; }catch(e){ return null; } }
 let S = load() || freshState();
-function save(){ try{ localStorage.setItem(STORE, JSON.stringify(S)); }catch(e){} }
+let STORAGE_OK=true, saveBlocked=false, onConflict=()=>{}, onSaved=()=>{};
+try{ localStorage.setItem('__vecAdd_test','1'); STORAGE_OK=localStorage.getItem('__vecAdd_test')==='1'; localStorage.removeItem('__vecAdd_test'); }catch(e){ STORAGE_OK=false; }
+try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){}
+function save(){
+  if(saveBlocked) return;
+  try{
+    const raw=localStorage.getItem(STORE);
+    if(raw){ const st=JSON.parse(raw); if(st && st.lesson===LESSON_ID && (st.rev||0)>(S.rev||0)){ saveBlocked=true; onConflict(); return; } }
+    S.rev=(S.rev||0)+1; S.updatedAt=Date.now();
+    localStorage.setItem(STORE, JSON.stringify(S)); onSaved();
+  }catch(e){}
+}
 
 const ITEMS = new Set();          // ids that count toward the assignment score
 const reg = id => { ITEMS.add(id); return id; };
@@ -643,7 +674,8 @@ function numq(parent, o){
   }
   btn.addEventListener('click',go);
   inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); go(); } });
-  inp.addEventListener('input',()=>inp.classList.remove('no'));
+  inp.addEventListener('input',()=>{ inp.classList.remove('no'); if(!wrap.dataset.done){ S.misc['d_'+o.id]=inp.value; save(); } });
+  if(!S.solved[o.id] && S.misc['d_'+o.id]) inp.value=S.misc['d_'+o.id];
   wrap.append(row, fb); parent.appendChild(wrap);
   if(S.solved[o.id]) solvedUI(S.misc['v_'+o.id]!=null?S.misc['v_'+o.id]:o.ans);
   return wrap;
@@ -1124,8 +1156,8 @@ function cellInput(td, o, fbEl){
     }
   }
   if(o.select) inp.addEventListener('change',go);
-  else { btn.addEventListener('click',go); inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); go(); } }); inp.addEventListener('input',()=>inp.classList.remove('no')); }
-  if(S.solved[o.id]) solvedUI(S.misc['v_'+o.id]);
+  else { btn.addEventListener('click',go); inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); go(); } }); inp.addEventListener('input',()=>{ inp.classList.remove('no'); if(!S.solved[o.id]){ S.misc['d_'+o.id]=inp.value; save(); } }); }
+  if(S.solved[o.id]) solvedUI(S.misc['v_'+o.id]); else if(!o.select && S.misc['d_'+o.id]) inp.value=S.misc['d_'+o.id];
   return {
     setEnabled(b){ if(S.solved[o.id]) return; inp.disabled=!b; if(btn) btn.disabled=!b; if(b) inp.closest('td').style.background='rgba(255,211,92,.06)'; else inp.closest('td').style.background=''; },
     focus(){ inp.focus({preventScroll:true}); }
@@ -1622,7 +1654,7 @@ SECS.push({z:9, sym:'F', name:'Fluorine', title:'Final check', min:10,
     if(score>=PASS_SCORE){
       F.passed=true; if(!S.completedAt) S.completedAt=Date.now(); save();
       reqDone('final-pass'); disarm(); saveRecord(); sendSheet();
-    } else { F.fails++; save(); }
+    } else { F.fails++; save(); cloudSave(true); }
     render(); window.scrollTo({top:0,behavior:RM?'auto':'smooth'});
   }
   function renderScore(){
@@ -1794,7 +1826,7 @@ function refreshAll(){
   $('#progbar').style.width=(tot?Math.round(100*dn/tot):0)+'%';
   renderGoals($('#goalsList'));
 }
-onReqChange=()=>refreshAll();
+onReqChange=()=>{ refreshAll(); cloudSave(true); };
 function go(i){
   if(!canOpen(i)) return;
   $('#start').hidden=true; $('#topbar').hidden=false;
@@ -1809,6 +1841,57 @@ function showStart(){
   SECS.forEach(s=>s.el.hidden=true); $('#start').hidden=false; $('#topbar').hidden=true; renderStart(); window.scrollTo(0,0);
 }
 
+/* ===================== cloud backup (save code = student ID + last name) ===================== */
+const SAVE_URL_BUILTIN='https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';   // Saved Work web-app link (ends in /exec)
+function saveURL(){ try{ if(typeof SAVE_WEBHOOK_URL!=='undefined' && SAVE_WEBHOOK_URL && String(SAVE_WEBHOOK_URL).indexOf('PASTE')<0) return String(SAVE_WEBHOOK_URL); }catch(e){} return SAVE_URL_BUILTIN.indexOf('PASTE')<0?SAVE_URL_BUILTIN:''; }
+const CLOUD=()=>!!saveURL();
+function saveKey(st){ return (String(st.id||'').replace(/\s+/g,'')+'-'+String(st.last||'').toLowerCase().replace(/[^a-z]/g,'')).toLowerCase(); }
+function progressOf(st){ if(!st) return 0; return Object.keys(st.reqs||{}).length*1000+Object.keys(st.solved||{}).length*10+((st.final&&st.final.attempts)||0); }
+let cloudTimer=null, cloudDirty=false, cloudBusy=false, cloudAt=null, cloudErr=false;
+function cloudOK(){ return CLOUD() && S.student && !S.preview && !saveBlocked; }
+function cloudBody(){ const st=S.student||{}; return new URLSearchParams({code:saveKey(st), lesson:LESSON_ID, ver:String(S.updatedAt||Date.now()), prog:String(progressOf(S)),
+  studentId:st.id||'', lastName:st.last||'', firstName:st.first||'', period:st.period||'', teacher:st.teacher||'', summary:progressSummary(), data:JSON.stringify(S)}); }
+function progressSummary(){ let n=0; for(let i=0;i<9;i++) if(secDone(i)) n++; return `${n} of 9 sections done`+(S.final.attempts?` · final check best ${S.final.best}/10`+(S.final.passed?' (passed)':''):''); }
+function cloudSave(soon){
+  if(!cloudOK()) return; cloudDirty=true;
+  if(soon){ clearTimeout(cloudTimer); cloudTimer=setTimeout(cloudFlush,1200); }
+  else if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000);
+}
+async function cloudFlush(){
+  cloudTimer=null;
+  if(!cloudOK()||!cloudDirty) return;
+  if(cloudBusy){ cloudTimer=setTimeout(cloudFlush,4000); return; }
+  cloudBusy=true; cloudDirty=false;
+  try{ await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); cloudAt=new Date(); cloudErr=false; }
+  catch(e){ cloudDirty=true; cloudErr=true; if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); }
+  finally{ cloudBusy=false; showNote(); }
+}
+function cloudBeacon(){ if(!cloudOK()||!cloudDirty) return; try{ if(navigator.sendBeacon && navigator.sendBeacon(saveURL(),cloudBody())) cloudDirty=false; }catch(e){} }
+async function cloudLoad(st){
+  if(!CLOUD()) return {status:'off'};
+  const ctrl=new AbortController(), t=setTimeout(()=>ctrl.abort(),10000);
+  try{
+    const u=saveURL(); const r=await fetch(u+(u.indexOf('?')<0?'?':'&')+new URLSearchParams({code:saveKey(st), lesson:LESSON_ID}).toString(),{signal:ctrl.signal});
+    const j=await r.json();
+    if(j && j.found && j.data){ const d=JSON.parse(j.data); if(d && d.lesson===LESSON_ID) return {status:'found', data:d}; }
+    return {status:'none'};
+  }catch(e){ return {status:'error'}; }finally{ clearTimeout(t); }
+}
+function adoptState(ns){
+  let storedRev=0; try{ const raw=localStorage.getItem(STORE); if(raw) storedRev=JSON.parse(raw).rev||0; }catch(e){}
+  ns.rev=Math.max(ns.rev||0,storedRev); S=ns; saveBlocked=false; save();
+  ITEMS.clear(); tilesEl.innerHTML=''; secsEl.innerHTML=''; buildAll(); refreshAll();
+}
+function showNote(extra){
+  const n=$('#saveNote'); if(!n) return;
+  const tm=d=>d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+  if(extra){ n.textContent=extra; return; }
+  if(cloudErr) n.textContent='✓ Saved on this Chromebook (backup will retry)';
+  else n.textContent='✓ Work saved '+tm(new Date())+(cloudAt?' · backed up '+tm(cloudAt):'');
+}
+function resumeTarget(){ return Math.min(S.sec||0, S.final.passed?9:S.unlocked); }
+function afterAdopt(msg){ if(LOCKDOWN && S.locked && !S.completedAt && !S.preview){ showLock('left the lesson page'); } go(resumeTarget()); if(msg) showNote(msg); }
+
 /* ===================== start page ===================== */
 function renderStart(){
   renderGoals($('#goalsList'));
@@ -1816,20 +1899,65 @@ function renderStart(){
   $('#resumeBox').hidden=!has; $('#startForm').hidden=has;
   $('#signinTitle').textContent=has?'Welcome back':'Sign in to start';
   if(has) $('#resumeText').innerHTML=`Signed in as <b>${S.student.first} ${S.student.last}</b>, period ${S.student.period}.`;
+  $('#notMeBtn').textContent=CLOUD()?'Not you? Sign in as a different student':'Not you? Ask your teacher to reset this device.';
+  if(CLOUD()) $('#saveInfo').innerHTML='You\'ll need about 90 minutes. A calculator in degree mode is built into the top bar. <b>Your work is backed up.</b> On any Chromebook, sign in with the same <b>student ID and last name</b> to pick up where you left off.';
 }
 function fillSelects(){
   $('#fPeriod').innerHTML='<option value="">Choose your period</option>'+PERIODS.map(p=>`<option>${p}</option>`).join('');
   $('#fTeacher').innerHTML='<option value="">Choose your teacher</option>'+teacherList().map(t=>`<option>${t}</option>`).join('');
 }
-$('#startForm').addEventListener('submit',e=>{
+let skipCloud=false;
+$('#startForm').addEventListener('submit',async e=>{
   e.preventDefault();
   const v={first:$('#fFirst').value.trim(), last:$('#fLast').value.trim(), id:$('#fId').value.trim(), period:$('#fPeriod').value, teacher:$('#fTeacher').value};
   const miss=[]; if(!v.first) miss.push('first name'); if(!v.last) miss.push('last name'); if(!v.id) miss.push('student ID'); if(!v.period) miss.push('period'); if(!v.teacher) miss.push('teacher');
-  if(miss.length){ $('#formErr').textContent='Fill in your '+miss.join(', ')+'.'; $('#formErr').hidden=false; return; }
-  S.student=v; S.startedAt=Date.now(); save(); arm(); go(0);
+  const err=$('#formErr'), btn=$('#startForm button[type=submit]');
+  if(miss.length){ err.className='fb no'; err.textContent='Fill in your '+miss.join(', ')+'.'; err.hidden=false; return; }
+  arm();
+  if(CLOUD() && !skipCloud){
+    btn.disabled=true; err.className='fb info'; err.textContent='Checking for your saved work...'; err.hidden=false;
+    const res=await cloudLoad(v);
+    btn.disabled=false;
+    if(res.status==='found'){
+      err.hidden=true;
+      const d=res.data; d.student=Object.assign({},d.student||{},{first:v.first, period:v.period, teacher:v.teacher});
+      adoptState(d); afterAdopt('✓ Your saved work was loaded'); return;
+    }
+    if(res.status==='error'){
+      err.className='fb no';
+      err.innerHTML="Couldn't reach your saved work. Check the Wi-Fi and press <b>Start the lesson</b> again.<br><button class=\"linkbtn\" type=\"button\" id=\"startAnyway\">I'm new to this lesson. Start without saved work.</button>";
+      $('#startAnyway').addEventListener('click',()=>{ skipCloud=true; $('#startForm').requestSubmit(); });
+      return;
+    }
+    err.hidden=true;
+  }
+  const ns=freshState(); ns.student=v; ns.startedAt=Date.now(); adoptState(ns); go(0); cloudSave(true);
 });
-$('#resumeBtn').addEventListener('click',()=>{ arm(); go(Math.min(S.sec||0, S.final.passed?9:S.unlocked)); });
-$('#notMeBtn').addEventListener('click',()=>openTeacher());
+$('#resumeBtn').addEventListener('click',async()=>{
+  arm();
+  const btn=$('#resumeBtn');
+  if(CLOUD() && !S.preview){
+    btn.disabled=true; btn.textContent='Loading your work...';
+    const res=await cloudLoad(S.student);
+    btn.disabled=false; btn.textContent='Continue the lesson';
+    if(res.status==='found'){
+      const d=res.data, cp=progressOf(d), lp=progressOf(S);
+      if(cp>lp || (cp===lp && (d.updatedAt||0)>(S.updatedAt||0))){ d.student=S.student; adoptState(d); afterAdopt('✓ Your newest saved work was loaded'); return; }
+    }
+    cloudSave(true);
+  }
+  go(resumeTarget());
+});
+$('#notMeBtn').addEventListener('click',async()=>{
+  if(!CLOUD()) return openTeacher();
+  const btn=$('#notMeBtn'), err=$('#resumeErr'), who=S.student?`${S.student.first} ${S.student.last}`:'the last student';
+  btn.disabled=true; btn.textContent=`Backing up ${who}'s work...`;
+  try{ await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); }
+  catch(e){ btn.disabled=false; btn.textContent='Not you? Sign in as a different student'; err.textContent=`Can't back up ${who}'s work right now. Check the Wi-Fi and try again, or ask your teacher.`; err.hidden=false; return; }
+  btn.disabled=false; err.hidden=true;
+  const ns=freshState(); adoptState(ns); renderStart();
+  $('#fFirst').value=''; $('#fLast').value=''; $('#fId').value=''; $('#fPeriod').value=''; $('#fTeacher').value='';
+});
 
 /* ===================== lockdown ===================== */
 const LOCKDOWN = /github\.io$/i.test(location.hostname) || /[?&]lockdown=on/i.test(location.search);
@@ -1878,7 +2006,7 @@ function renderTeacher(){
       <button class="btn ghost" type="button" id="tClear" ${recs.length?'':'disabled'}>Clear saved results</button>
     </div>
     <h3 style="margin-top:22px">This device</h3>
-    <p class="small muted">Student signed in: ${S.student?`${S.student.first} ${S.student.last} (period ${S.student.period})`:'nobody'}. Lockdown is ${LOCKDOWN?'on (opened from GitHub)':'off (only on when opened from GitHub)'}. Scores go to the same Google Sheet as the Bohr model lesson.</p>
+    <p class="small muted">Student signed in: ${S.student?`${S.student.first} ${S.student.last} (period ${S.student.period})`:'nobody'}. Lockdown is ${LOCKDOWN?'on (opened from GitHub)':'off (only on when opened from GitHub)'}. Scores go to the same Google Sheet as the Bohr model lesson. Saved-work backup is ${CLOUD()?'on':'off (link not added yet)'}.</p>
     <div class="btnrow">
       ${S.locked?'<button class="btn primary" type="button" id="tUnlock">Unlock the lesson</button>':''}
       ${S.student&&!S.preview?'<button class="btn ghost" type="button" id="tSend">Send this student\'s scores to the sheet</button>':''}
@@ -1886,6 +2014,8 @@ function renderTeacher(){
       <button class="btn ghost" type="button" id="tReset">Reset this device's lesson</button>
       <button class="btn ghost" type="button" id="tClose">Close</button>
     </div>
+    ${CLOUD()?`<h3 style="margin-top:22px">Load a student's saved work onto this device</h3>
+    <div class="btnrow"><input class="ans" id="tLoadId" placeholder="Student ID" style="width:150px"><input class="ans" id="tLoadLast" placeholder="Last name" style="width:170px"><button class="btn ghost" type="button" id="tLoad">Load work</button></div>`:''}
     <p class="fb info sheetStatus" aria-live="polite" style="min-height:1em"></p>
     <div class="fb info" id="tMsg" hidden></div>`;
   const msg=t=>{ $('#tMsg').textContent=t; $('#tMsg').hidden=false; };
@@ -1900,6 +2030,14 @@ function renderTeacher(){
   $('#tReset').addEventListener('click',()=>{ if(confirm('Erase all lesson progress on this device and return to the sign-in page?')){ try{ localStorage.removeItem(STORE); }catch(e){} location.reload(); } });
   $('#tClose').addEventListener('click',closeTeacher);
   if($('#tSend')) $('#tSend').addEventListener('click',()=>sendSheet());
+  if($('#tLoad')) $('#tLoad').addEventListener('click',async()=>{
+    const st={id:$('#tLoadId').value.trim(), last:$('#tLoadLast').value.trim()};
+    if(!st.id||!st.last){ msg('Type the student ID and last name.'); return; }
+    msg('Looking up saved work...');
+    const res=await cloudLoad(st);
+    if(res.status==='found'){ const d=res.data; d.locked=false; adoptState(d); closeTeacher(); showStart(); }
+    else msg(res.status==='none'?'No saved work found for that student ID and last name.':"Couldn't reach the saved-work sheet. Check the Wi-Fi.");
+  });
 }
 
 /* ===================== calculator ===================== */
@@ -1942,6 +2080,16 @@ function hero(){
   const draw=tipToTailScene(P,[5,2],[2,4]);
   playTipToTail(draw,null,['','','','','x','y']);
 }
+onSaved=()=>{ showNote(); cloudSave(false); };
+document.addEventListener('visibilitychange',()=>{ if(document.hidden){ save(); cloudBeacon(); } });
+onConflict=()=>{ $('#tabOv').classList.add('show'); };
+$('#tabReload').addEventListener('click',()=>location.reload());
+window.addEventListener('storage',e=>{
+  if(e.key!==STORE || !e.newValue) return;
+  try{ const st=JSON.parse(e.newValue); if(st && (st.rev||0)>(S.rev||0)){ saveBlocked=true; onConflict(); } }catch(_){}
+});
+window.addEventListener('pagehide',()=>{ save(); cloudBeacon(); });
+if(!STORAGE_OK) $('#noStore').hidden=false;
 fillSelects();
 buildAll();
 refreshAll();
