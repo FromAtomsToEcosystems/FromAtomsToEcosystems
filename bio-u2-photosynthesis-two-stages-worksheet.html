@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Photosynthesis Practice Worksheet | Biology</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0e1b16; --bg2:#12231c; --panel:#172b23; --panel2:#1d3429; --panel3:#24402f;
+  --line:#2c4a3c; --line2:#3a5e4c;
+  --text:#e7f1ea; --muted:#a3bcad; --dim:#7f998a;
+  --e:#ffd166; --e-glow:rgba(255,209,102,.5);
+  --leaf:#62c983; --chla:#3ddc84; --chlb:#c3e64a; --car:#ff9d3c; --act:#5fd3ff; --o2:#7fe0ff; --co2:#c6cfd8;
+  --atp:#ffb347; --nadph:#c79bff; --glc:#ffd166; --h2o:#5fb4e0;
+  --amber:#ff9d5c; --good:#4ade80; --bad:#fb7185;
+  --r-lg:16px; --r-md:12px; --r-sm:8px;
+  --font:"Lexend","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 110px)}
+*,*::before,*::after{box-sizing:inherit}
+body{
+  margin:0; min-height:100vh; color:var(--text); font-family:var(--font);
+  font-size:17px; line-height:1.6; font-weight:300;
+  background:
+    radial-gradient(900px 520px at 85% -8%, #1b3a2b 0%, transparent 62%),
+    radial-gradient(700px 420px at -10% 30%, #12281e 0%, transparent 60%),
+    var(--bg);
+  background-attachment:fixed;
+  -webkit-user-select:none; user-select:none; -webkit-touch-callout:none;
+}
+input,select,textarea{-webkit-user-select:text;user-select:text}
+b,strong{font-weight:600}
+h1,h2,h3,h4{font-weight:600;line-height:1.2;margin:0}
+p{margin:.5em 0}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--e);outline-offset:2px;border-radius:6px}
+.small{font-size:14px}
+.muted{color:var(--muted)}
+.hidden{display:none!important}
+sub,sup{line-height:0}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky;top:0;z-index:40;padding-top:env(safe-area-inset-top,0px);background:rgba(14,27,22,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar-in{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:14px;padding:10px 18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:16px;white-space:nowrap}
+.brand svg{width:32px;height:32px}
+.navtiles{display:flex;gap:6px;overflow-x:auto;padding:4px 2px;flex:1;scrollbar-width:thin}
+.top-actions{display:flex;gap:8px}
+.top-btn{background:var(--panel2);border:1px solid var(--line2);border-radius:999px;padding:6px 14px;font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap}
+.top-btn:hover{background:var(--panel3)}
+
+/* ---------- section tiles (a "periodic table" of membrane transport) ---------- */
+.tile{
+  --c:var(--c-mem);
+  position:relative;flex:0 0 auto;width:46px;height:52px;border-radius:8px;
+  background:var(--panel2);background:color-mix(in srgb,var(--c) 20%,var(--panel));
+  border:1.5px solid var(--c);border-color:color-mix(in srgb,var(--c) 75%,transparent);
+  display:grid;place-items:center;font-weight:700;font-size:19px;line-height:1;
+  color:var(--text);cursor:pointer;padding:0;
+  transition:transform .2s,box-shadow .2s,opacity .2s;
+}
+.tile .z{position:absolute;top:4px;left:5px;font-size:10px;font-weight:500;color:var(--muted)}
+.tile:hover:not(:disabled){transform:translateY(-2px)}
+.tile.current{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--c)}
+.tile:disabled{cursor:not-allowed;opacity:.32;filter:saturate(.3)}
+.tile .ck{position:absolute;right:-5px;bottom:-5px;width:17px;height:17px;border-radius:50%;background:var(--good);color:#06240f;font-size:11px;display:grid;place-items:center;font-weight:700;opacity:0;transform:scale(.4);transition:.25s}
+.tile.done .ck{opacity:1;transform:scale(1)}
+.tile.unlocking{animation:unlockPop .7s cubic-bezier(.2,1.6,.4,1)}
+@keyframes unlockPop{0%{transform:scale(.7)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
+.tile.big{width:82px;height:90px;font-size:32px;border-width:2px;cursor:default;grid-template-rows:1fr auto;padding:16px 4px 6px}
+.tile.big .z{font-size:13px;top:6px;left:8px}
+.tile.big .nm{font-size:9.5px;font-weight:500;color:var(--muted);text-align:center;line-height:1.1}
+.cat-mem{--c:var(--c-mem)} .cat-pas{--c:var(--c-pas)} .cat-wat{--c:var(--c-wat)}
+.cat-act{--c:var(--c-act)} .cat-fin{--c:var(--c-fin)} .cat-res{--c:var(--c-res)}
+
+/* ---------- layout ---------- */
+main{max-width:980px;margin:0 auto;padding:22px 18px 80px}
+.screen{display:none}
+.screen.on{display:block;animation:screenIn .35s ease-out}
+@keyframes screenIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sec-head{display:flex;align-items:center;gap:18px;margin:8px 0 10px}
+.sec-meta{color:var(--muted);font-size:15px;margin:0 0 4px}
+.sec-head h2{font-size:clamp(26px,4vw,36px);letter-spacing:-.01em}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px 24px;margin:18px 0}
+.card h3{font-size:21px;margin:2px 0 10px}
+.tag{display:inline-block;font-size:13px;font-weight:600;color:var(--muted);background:var(--panel2);border-radius:999px;padding:3px 12px;margin-bottom:8px}
+.k-read .tag{color:#cfe9d8;background:#26473a}
+.k-try .tag{color:#2b1f00;background:var(--e)}
+.k-data .tag{color:#2a0b1e;background:var(--sol)}
+.k-qc{border:2px solid var(--amber)}
+.k-qc .tag{color:#2a1300;background:var(--amber)}
+.read-text{max-width:68ch}
+.read-text ul,.read-text ol{padding-left:22px}
+.read-text li{margin:4px 0}
+
+.btn{border:0;border-radius:10px;padding:11px 20px;font-weight:600;font-size:16px;cursor:pointer;transition:transform .15s,background .2s,opacity .2s}
+.btn:active:not(:disabled){transform:scale(.97)}
+.btn.primary{background:var(--e);color:#2b1f00}
+.btn.primary:hover:not(:disabled){background:#ffe099}
+.btn.ghost{background:transparent;border:1.5px solid var(--line2);color:var(--text)}
+.btn.ghost:hover:not(:disabled){background:var(--panel2)}
+.btn.amber{background:var(--amber);color:#2a1300}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.sm{padding:7px 14px;font-size:14px;border-radius:8px}
+.btn-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}
+.sec-foot{display:flex;justify-content:space-between;gap:12px;margin-top:22px}
+
+/* word-help chips */
+.chip{display:inline;background:rgba(255,209,102,.1);border:0;border-bottom:1.5px dotted var(--e);color:#ffe7a8;padding:0 4px;border-radius:4px;cursor:help;font-weight:400}
+.chip:hover{background:rgba(255,209,102,.2)}
+#pop{position:fixed;z-index:80;max-width:300px;background:var(--panel3);border:1px solid var(--line2);border-radius:12px;padding:12px 14px;box-shadow:0 14px 40px rgba(0,0,0,.45);font-size:15px}
+#pop b{display:block;color:var(--e);margin-bottom:2px;text-transform:capitalize}
+#pop p{margin:0}
+
+/* small tables + key-idea rows */
+.mini-table{border-collapse:collapse;margin:14px 0 4px;font-size:15px;min-width:300px}
+.mini-table th,.mini-table td{padding:7px 16px 7px 0;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.mini-table th{color:var(--muted);font-weight:500}
+.table-scroll{overflow-x:auto}
+.rules{display:grid;gap:8px;margin:12px 0}
+.rule{background:var(--panel2);border-radius:10px;padding:10px 14px}
+.rule small{color:var(--muted)}
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px;vertical-align:-1px}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+.vs > div{background:var(--panel2);border-radius:12px;padding:12px 14px;border-top:4px solid var(--c-pas)}
+.vs > div.act{border-top-color:var(--c-act)}
+.vs h4{font-size:17px;margin-bottom:6px}
+.vs ul{margin:0;padding-left:20px;font-size:15.5px}
+
+/* ---------- figures ---------- */
+svg.fig{width:100%;height:auto;display:block;margin:0 auto;overflow:visible}
+.figbox{background:var(--bg2);border-radius:14px;padding:12px}
+.fig-cap{text-align:center;color:var(--muted);font-size:14px;margin:6px 0 0}
+.ph{fill:var(--head);stroke:rgba(0,0,0,.3);stroke-width:1}
+.pt{fill:none;stroke:var(--tail);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
+.prot rect,.prot path{fill:var(--prot);stroke:var(--prot-l);stroke-width:1.5}
+.prot.aqua rect{fill:#245d7a;stroke:var(--e)}
+.prot.pump path{stroke:var(--amber);stroke-width:2.2}
+.atp-t{fill:var(--amber);font-size:10px;font-weight:700;text-anchor:middle;font-family:var(--font)}
+.out-bg{fill:var(--out-bg)} .in-bg{fill:var(--in-bg)}
+.side-lab{fill:var(--muted);font-size:12px;font-family:var(--font);font-weight:500}
+.fig-lab{fill:var(--text);font-size:12px;font-family:var(--font);font-weight:500}
+.fig-lab.m{fill:var(--muted)}
+.mol circle,.mol polygon{stroke:rgba(0,0,0,.4);stroke-width:1}
+.m-o2 circle{fill:var(--o2)}
+.m-co2 circle{fill:var(--o2)} .m-co2 circle.c{fill:#55637d}
+.m-glc polygon{fill:var(--glc)}
+.m-na circle{fill:var(--na)} .m-k circle{fill:var(--k)} .m-cl circle{fill:var(--cl)}
+.m-h2o circle{fill:var(--water);stroke:none;opacity:.8}
+.m-sol circle{fill:var(--sol)}
+.mol text{font-size:7.5px;font-weight:700;fill:#1c1024;text-anchor:middle;font-family:var(--font)}
+.mover{transform-box:view-box;transform-origin:0 0;transition:transform .9s cubic-bezier(.3,.8,.3,1),opacity .4s}
+.static .mover{transition:none}
+.pin circle{fill:var(--panel3);stroke:var(--amber);stroke-width:2}
+.pin text{fill:var(--text);font-size:14px;font-weight:700;text-anchor:middle;font-family:var(--font)}
+.leader{stroke:var(--amber);stroke-width:1.5;stroke-dasharray:4 4;opacity:.85}
+.cyto{fill:#1d3354;stroke:none}
+.memb-h{fill:none;stroke:var(--head);stroke-width:6;stroke-linecap:round;stroke-dasharray:0 9}
+.memb-t{fill:none;stroke:var(--tail);stroke-width:5;opacity:.35}
+.nuc{fill:#3a2f6e;stroke:#8f7fe6;stroke-width:2}
+.arrow-w{stroke:var(--water);stroke-width:3;fill:none;stroke-linecap:round}
+.arrow-w-h{fill:var(--water)}
+.celebrate-glow{animation:glow 1.1s ease-out}
+@keyframes glow{0%{filter:drop-shadow(0 0 0 rgba(74,222,128,0))}40%{filter:drop-shadow(0 0 14px rgba(74,222,128,.75))}100%{filter:drop-shadow(0 0 0 rgba(74,222,128,0))}}
+
+/* ---------- start / hero ---------- */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center;margin:12px 0 6px}
+.hero h1{font-size:clamp(40px,7vw,70px);letter-spacing:-.025em;font-weight:700;line-height:1.02;margin:6px 0 14px}
+.hero .unit{color:var(--muted);margin:0;font-size:16px}
+.hero .lede{font-size:19px;max-width:44ch;color:#d6e8dc}
+.hero-fig svg{max-width:400px}
+.hero-cap{text-align:center;color:var(--muted);margin:6px 0 0;font-size:15px;min-height:1.6em}
+.hero-cap b{color:var(--text)}
+.start-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.start-grid .card{margin:0}
+.start-grid + .start-grid{margin-top:18px}
+.obj{border-left:4px solid var(--e)}
+.std{border-left:4px solid var(--c-fin)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;margin:8px 0 6px}
+.form-grid label{display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--muted);font-weight:500}
+input[type=text],input[type=number],input[type=password],select,.inp{background:var(--bg2);border:1.5px solid var(--line2);border-radius:9px;padding:9px 11px;color:var(--text);font-size:16px;width:100%}
+input:focus,select:focus{border-color:var(--e);outline:none}
+.form-msg{color:var(--bad);min-height:1.4em;font-size:15px;margin:4px 0}
+.welcome{background:var(--panel2);border-radius:12px;padding:14px 16px}
+
+/* goals checklist */
+.goals{list-style:none;margin:6px 0;padding:0;display:grid;gap:8px}
+.goals li{display:flex;gap:10px;align-items:flex-start;font-size:15.5px}
+.box{flex:0 0 22px;width:22px;height:22px;border-radius:6px;border:2px solid var(--line2);display:grid;place-items:center;margin-top:1px;transition:.25s}
+.ok > .box,.mission.ok .mt > .box{background:var(--good);border-color:var(--good)}
+.ok > .box::after,.mission.ok .mt > .box::after{content:"";width:6px;height:11px;border:solid #06240f;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.ok{color:var(--text)}
+.goals li:not(.ok){color:var(--muted)}
+.just-ok > .box{animation:tickPop .6s cubic-bezier(.2,1.7,.4,1)}
+@keyframes tickPop{0%{transform:scale(.5)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
+
+/* unlock checklist */
+.unlock{background:var(--bg2);border-style:dashed}
+.unlock h3{font-size:17px;color:var(--muted);font-weight:500}
+.reqs{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.reqs li{display:flex;gap:10px;align-items:flex-start}
+.reqs li:not(.ok){color:var(--muted)}
+.unlock.all-done{border-color:var(--good);border-style:solid}
+
+/* ---------- quick checks ---------- */
+.qc-q{font-weight:500;font-size:18px;margin:4px 0 12px}
+.opts{display:grid;gap:9px}
+.opts.row3{grid-template-columns:repeat(3,1fr)}
+.opt{display:flex;gap:12px;align-items:center;text-align:left;background:var(--panel2);border:1.5px solid var(--line2);border-radius:11px;padding:10px 14px;cursor:pointer;transition:border-color .2s,background .2s,transform .15s;width:100%}
+.opt:hover:not(:disabled){border-color:var(--e)}
+.opt .L{flex:0 0 30px;height:30px;border-radius:8px;background:var(--panel3);display:grid;place-items:center;font-weight:600}
+.opt.right{border-color:var(--good);background:rgba(74,222,128,.12)}
+.opt.right .L{background:var(--good);color:#06240f}
+.opt.wrong{border-color:var(--bad);background:rgba(251,113,133,.1);opacity:.75}
+.opt.wrong .L{background:var(--bad);color:#2a0710}
+.opt.picked{border-color:var(--e);background:rgba(255,209,102,.12)}
+.opt.picked .L{background:var(--e);color:#2b1f00}
+.opt:disabled{cursor:default}
+body.show-key .opt[data-key]{box-shadow:0 0 0 2px var(--amber)}
+body.show-key .opt[data-key]::after{content:"key";margin-left:auto;font-size:12px;color:var(--amber);font-weight:600}
+.qc-fb{min-height:1.5em;margin:12px 0 0}
+.qc-fb.good{color:#b9f5cf} .qc-fb.bad{color:#ffc2cd}
+.qc-fig{margin:4px 0 10px}
+.qc-fig svg{max-width:340px;margin:0}
+.shake{animation:shake .45s}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+
+/* ---------- sorter (tap or drag) ---------- */
+.sorter .tray{display:flex;flex-wrap:wrap;gap:8px;min-height:50px;padding:10px;background:var(--bg2);border-radius:12px;border:1px dashed var(--line2)}
+.sorter .tray:empty::after{content:"All sorted";color:var(--good);font-size:14px;padding:6px}
+.token{background:var(--panel3);border:1.5px solid var(--line2);border-radius:9px;padding:8px 14px;font-weight:500;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;transition:transform .15s,border-color .15s,background .2s;text-align:left;font-size:15.5px;line-height:1.35}
+.token.sel{border-color:var(--e);background:#3a5a2c;transform:translateY(-2px)}
+.token.placed{cursor:default;border-color:var(--good);background:rgba(74,222,128,.14);animation:tickPop .45s}
+.ghost-token{position:fixed;z-index:90;pointer-events:none;opacity:.92;transform:translate(-50%,-50%) rotate(-3deg);box-shadow:0 12px 28px rgba(0,0,0,.5);max-width:260px}
+.sorter .bins{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:12px}
+.bin{background:var(--panel2);border:1.5px solid var(--line2);border-radius:12px;padding:10px;min-height:96px;cursor:pointer;transition:border-color .2s,background .2s}
+.bin.hover,.bin:focus-visible{border-color:var(--e);background:#2c4a39}
+.bin-label{font-size:14px;font-weight:600;color:var(--muted);margin-bottom:6px}
+.bin-drop{display:flex;flex-wrap:wrap;gap:6px}
+.sorter.rows .bins{grid-template-columns:1fr;gap:8px}
+.sorter.rows .bin{display:flex;align-items:center;gap:12px;min-height:54px;padding:8px 10px}
+.sorter.rows .bin-label{margin:0;width:32px;height:32px;border-radius:50%;border:2px solid var(--amber);display:grid;place-items:center;color:var(--text);flex:0 0 32px}
+.sorter.rows .bin-drop:empty::before{content:"Drop a label here";color:var(--dim);font-size:14px}
+.sort-msg{min-height:1.4em;margin:8px 0 0;font-size:15px}
+.label-wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center}
+.label-fig svg{max-width:380px}
+
+/* ---------- explorer hotspots ---------- */
+.hot{cursor:pointer}
+.hot .hb{fill:rgba(255,255,255,0);stroke:rgba(255,255,255,.28);stroke-width:1.5;stroke-dasharray:5 4;transition:fill .2s,stroke .2s}
+.hot:hover .hb,.hot:focus .hb{stroke:var(--e);fill:rgba(255,209,102,.08)}
+.hot:focus{outline:none}
+.hot.seen .hb{stroke:var(--good);stroke-dasharray:none}
+.hot.active .hb{stroke:var(--e);fill:rgba(255,209,102,.14);stroke-dasharray:none}
+.explore{display:grid;grid-template-columns:1.4fr 1fr;gap:22px;align-items:center}
+#s2build{max-width:560px}
+.part-info{background:var(--panel2);border-radius:12px;padding:14px 16px;min-height:150px}
+.part-info h4{margin:0 0 4px;color:var(--e);font-size:17px;font-weight:600}
+.counter{font-size:14px;color:var(--muted)}
+
+/* bilayer builder */
+.plb{cursor:pointer}
+.plb .flip{transform-box:view-box;transform-origin:0 0;transition:transform .45s cubic-bezier(.3,1.4,.5,1)}
+.plb.down .flip{transform:rotate(180deg)}
+.plb:hover .ph{stroke:#fff;stroke-width:1.5}
+.plb:focus{outline:none}
+.plb:focus .ph{stroke:var(--e);stroke-width:2.5}
+.core-band{fill:rgba(243,210,126,.0);transition:fill .6s}
+.formed .core-band{fill:rgba(243,210,126,.12)}
+.formed .waterdots{opacity:1}
+.waterdots{opacity:.35;transition:opacity .6s}
+
+/* notebook tables + report */
+.notebook{width:100%;border-collapse:collapse;font-size:15px;margin-top:8px}
+.notebook th{color:var(--muted);font-weight:500;text-align:left;padding:6px 8px;border-bottom:1px solid var(--line2)}
+.notebook td{padding:7px 8px;border-bottom:1px solid var(--line)}
+.notebook td.y{color:#b9f5cf} .notebook td.n{color:#ffc2cd}
+.fb-line{min-height:1.4em;margin:10px 0 0}
+.fb-line.good{color:#b9f5cf} .fb-line.bad{color:#ffc2cd}
+.report{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:7px}
+.report li{display:flex;gap:10px;align-items:flex-start;font-size:15px}
+.report .ic{flex:0 0 22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700}
+.report .y .ic{background:var(--good);color:#06240f}
+.report .x .ic{background:var(--bad);color:#2a0710}
+.report .w .ic{background:var(--line2);color:var(--muted)}
+
+/* ---------- simulators ---------- */
+.sim{display:grid;grid-template-columns:1.15fr .85fr;gap:22px;align-items:start}
+.sim.even{grid-template-columns:1fr 1fr}
+canvas.cv{width:100%;height:auto;aspect-ratio:560/320;display:block;border-radius:12px;background:var(--bg2);touch-action:pan-y}
+.missions{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:10px}
+.mission{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.mission.ok{border-color:var(--good)}
+.mission .mt{display:flex;gap:10px;align-items:flex-start}
+.mission .mfb{font-size:14px;margin:6px 0 0 32px;min-height:0}
+.mission .btn{margin:8px 0 0 32px}
+.mission.ok .lockin{display:none}
+.counts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.cnt{background:var(--panel2);border-radius:10px;padding:8px 12px}
+.cnt .k{font-size:13px;color:var(--muted)}
+.cnt .v{font-size:24px;font-weight:600;line-height:1.2}
+.cnt.out{border-left:4px solid var(--e)} .cnt.in{border-left:4px solid var(--sol)}
+.steppers{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:10px 0}
+.stp{background:var(--panel2);border-radius:10px;padding:8px;text-align:center}
+.stp .lab{font-size:13px;color:var(--muted)}
+.stp .row{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:4px}
+.stp button{width:34px;height:34px;border-radius:8px;border:1px solid var(--line2);background:var(--panel3);cursor:pointer;font-size:18px;font-weight:600;line-height:1}
+.stp button:disabled{opacity:.35;cursor:not-allowed}
+.stp output{min-width:30px;font-size:20px;font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px;color:var(--muted);margin:8px 0 0}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend svg{width:22px;height:18px}
+.timer{font-size:14px;color:var(--muted)}
+.graph{width:100%;max-width:420px;height:auto;display:block}
+.graph .ax{stroke:var(--line2);stroke-width:1}
+.graph .gl{stroke:var(--line);stroke-width:1}
+.graph text{fill:var(--muted);font-size:10px;font-family:var(--font)}
+.graph .lo{fill:none;stroke:var(--e);stroke-width:2.2}
+.graph .li{fill:none;stroke:var(--sol);stroke-width:2.2}
+.graph .lp{fill:none;stroke:var(--glc);stroke-width:2.4}
+.graph .pt-dot{fill:var(--glc);stroke:var(--bg);stroke-width:1.5}
+.graph .zero{stroke:var(--muted);stroke-dasharray:4 4}
+.seg{display:inline-flex;background:var(--bg2);border-radius:10px;padding:3px;border:1px solid var(--line2);flex-wrap:wrap}
+.seg button{border:0;background:transparent;padding:7px 14px;border-radius:8px;cursor:pointer;font-weight:500}
+.seg button[aria-pressed=true]{background:var(--e);color:#2b1f00}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.tab{background:var(--panel2);border:1.5px solid var(--line2);border-radius:999px;padding:6px 14px;font-weight:500;cursor:pointer;font-size:15px}
+.tab[aria-selected=true]{border-color:var(--e);background:#2c4a39}
+.tab.ok::after{content:" ✓";color:var(--good);font-weight:700}
+.place-prompt{font-size:17px;background:var(--bg2);border-radius:10px;padding:10px 14px;margin:8px 0}
+.place-prompt b{color:var(--e)}
+.progress-pips{display:flex;gap:6px}
+.progress-pips i{width:26px;height:8px;border-radius:4px;background:var(--line2);transition:.3s}
+.progress-pips i.on{background:var(--good)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:center}
+.readout{background:var(--bg2);border-radius:12px;padding:12px 14px;margin:10px 0;font-size:16px}
+.readout .big{font-size:22px;font-weight:600}
+.readout .hypo{color:var(--e)} .readout .hyper{color:var(--sol)} .readout .iso{color:var(--good)}
+input[type=range]{width:100%;accent-color:var(--e);margin:6px 0}
+.ticks{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted)}
+.atp-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0}
+.atp-pips{display:flex;gap:5px}
+.atp-pips i{width:20px;height:26px;border-radius:5px;border:1.5px solid var(--amber);background:transparent;transition:background .3s}
+.atp-pips i.on{background:var(--amber);box-shadow:0 0 8px rgba(246,185,59,.5)}
+.ion-table{width:100%;border-collapse:collapse;font-size:15px;margin:8px 0}
+.ion-table th,.ion-table td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:center}
+.ion-table th{color:var(--muted);font-weight:500}
+.ion-table td:first-child,.ion-table th:first-child{text-align:left}
+
+/* flipchart */
+.flip{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:center;background:var(--bg2);border-radius:14px;padding:16px;margin-top:12px}
+.flip-step{color:var(--amber);font-weight:600;font-size:14px;margin:0}
+.flip-text{font-size:17.5px;min-height:5.2em}
+.flip-dots{display:flex;gap:6px;margin-top:10px}
+.flip-dots i{width:9px;height:9px;border-radius:50%;background:var(--line2);transition:.3s}
+.flip-dots i.on{background:var(--amber);transform:scale(1.25)}
+
+/* final check */
+.fc-dots{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 14px}
+.fc-dots button{width:32px;height:32px;border-radius:8px;border:1.5px solid var(--line2);background:var(--panel2);cursor:pointer;font-size:13px;font-weight:600}
+.fc-dots button.ans{background:#2c4a39;border-color:var(--e)}
+.fc-dots button.cur{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--amber)}
+.score-big{font-size:64px;font-weight:700;line-height:1;margin:6px 0}
+.score-big.pass{color:var(--good)} .score-big.fail{color:var(--amber)}
+.review-item{border-top:1px solid var(--line);padding:12px 0}
+.review-item .yours{color:#ffc2cd} .review-item .right{color:#b9f5cf}
+.attempts{font-size:15px;color:var(--muted)}
+.lock-note{background:rgba(246,185,59,.1);border:1px solid rgba(246,185,59,.5);border-radius:10px;padding:10px 14px;font-size:15px}
+.review-box{background:var(--bg2);border-radius:12px;padding:12px 16px;margin:10px 0}
+.review-box li{margin:4px 0}
+
+/* results */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:12px 0}
+.stat{background:var(--panel2);border-radius:12px;padding:12px 14px}
+.stat .k{font-size:13px;color:var(--muted)}
+.stat .v{font-size:26px;font-weight:600}
+.who{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 16px;font-size:15px}
+.who span{color:var(--muted);display:block;font-size:13px}
+
+/* overlays */
+.overlay{position:fixed;inset:0;z-index:100;background:rgba(6,11,22,.86);backdrop-filter:blur(6px);display:grid;place-items:center;padding:20px}
+.overlay[hidden]{display:none}
+.modal{background:var(--panel);border:1px solid var(--line2);border-radius:18px;padding:24px;max-width:460px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.modal h3{font-size:22px;margin-bottom:6px}
+.lock-modal{border:2px solid var(--amber);text-align:center}
+.lock-icon{font-size:44px;line-height:1}
+.teacher-tools{display:grid;gap:8px;margin-top:12px}
+.drawer{position:fixed;right:16px;top:76px;z-index:60;width:min(380px,calc(100vw - 32px));background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.55)}
+.drawer[hidden]{display:none}
+.sheetbox{font-size:15px;color:var(--muted);margin:8px 0 0;min-height:1.4em}
+#toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);opacity:0;z-index:120;background:var(--panel3);border:1px solid var(--good);color:var(--text);border-radius:12px;padding:10px 18px;font-weight:500;transition:.35s;pointer-events:none;max-width:90vw;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:820px){
+  .hero,.start-grid,.sim,.sim.even,.flip,.two-col,.label-wrap,.explore,.vs{grid-template-columns:1fr}
+  .brand span{display:none}
+  .form-grid{grid-template-columns:1fr}
+  .opts.row3{grid-template-columns:1fr}
+  .card{padding:18px 16px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+}
+@media print{
+  body{background:#fff;color:#000}
+  .topbar,.sec-foot,#toast,.drawer,.overlay,.no-print{display:none!important}
+  .screen{display:none!important}
+  #scr-5{display:block!important}
+  .card,.stat{background:#fff;border:1px solid #999;color:#000}
+  .stat .k,.who span,.muted{color:#333}
+  .goals li:not(.ok){color:#333}
+}
+
+/* ================= photosynthesis lesson additions ================= */
+.tile{--c:var(--leaf)}
+.tile svg.ic{width:24px;height:24px;display:block}
+.tile.big svg.ic{width:40px;height:40px}
+.tile .z{z-index:1}
+.tile.big{grid-template-rows:auto auto;align-content:center;gap:4px;padding:12px 4px 6px}
+.k-qc .tag{color:#2a1300;background:var(--amber)} .k-qc{border-color:var(--amber)}
+.savenote{font-size:13px;color:var(--good);white-space:nowrap}
+@media (max-width:760px){.savenote{display:none}}
+.card.nostore{border:2px solid var(--bad);background:rgba(251,113,133,.08)}
+.fb{border-radius:10px;padding:9px 12px;margin:10px 0 0;font-size:15px}
+.fb.no{background:rgba(251,113,133,.12);color:#ffc2cd}
+.fb.info{background:rgba(255,209,102,.1);color:#ffe7a8}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;padding:6px 0;font-size:14px}
+.overlay.tabov{display:none}
+.overlay.tabov.show{display:grid}
+/* spectrum + graphs */
+.spec-bar{height:16px;border-radius:6px;margin:6px 0 2px}
+.wl-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.wl-read{font-size:18px;font-weight:600}
+.swatch{display:inline-block;width:18px;height:18px;border-radius:5px;vertical-align:-3px;margin-right:6px;border:1px solid rgba(255,255,255,.3)}
+.bars{display:grid;gap:8px;margin:10px 0}
+.barrow{display:grid;grid-template-columns:96px 1fr 52px;gap:10px;align-items:center;font-size:15px}
+.bartrack{height:16px;background:var(--bg2);border-radius:8px;overflow:hidden;border:1px solid var(--line)}
+.barfill{height:100%;border-radius:8px;transition:width .35s}
+.toggles{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}
+.toggle{border:1.5px solid var(--line2);background:var(--panel2);border-radius:999px;padding:5px 12px;cursor:pointer;font-weight:500;font-size:14px;display:inline-flex;gap:7px;align-items:center}
+.toggle[aria-pressed=true]{border-color:var(--e)}
+.toggle i{width:14px;height:4px;border-radius:2px;display:inline-block}
+.readout-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}
+.readout-grid .cnt{border-left-width:4px;border-left-style:solid}
+svg.agraph{width:100%;height:auto;display:block}
+.agraph text{font-family:var(--font);fill:var(--muted);font-size:11px}
+.agraph .ax{stroke:var(--line2);stroke-width:1.2}
+.agraph .gl{stroke:var(--line);stroke-width:1}
+.agraph .cur{stroke:var(--text);stroke-width:1.5;stroke-dasharray:4 3}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.filter{border:2px solid var(--line2);background:var(--panel2);border-radius:10px;padding:7px 12px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:8px}
+.filter[aria-pressed=true]{border-color:var(--e);background:#2c4a39}
+.filter.tested::after{content:"✓";color:var(--good);font-weight:700}
+.cer textarea{width:100%;min-height:70px;background:var(--bg2);border:1.5px solid var(--line2);border-radius:10px;color:var(--text);font:inherit;padding:9px 11px;resize:vertical;line-height:1.5}
+.cer label{display:block;font-weight:600;margin:12px 0 4px}
+.cer .wc{font-size:13px;color:var(--muted);font-weight:400;margin-left:6px}
+.cer-res li{margin:4px 0}
+.sample{background:var(--bg2);border-radius:12px;padding:10px 14px;margin-top:10px;font-size:15px}
+.meter{display:grid;grid-template-columns:110px 1fr 54px;gap:10px;align-items:center;font-size:14.5px;margin:6px 0}
+.slider-row{display:grid;grid-template-columns:110px 1fr 52px;gap:10px;align-items:center;margin:6px 0}
+.slider-row output{font-weight:600;text-align:right}
+.hero-fig svg{max-width:420px}
+.hero-cap{min-height:3em}
+.fc-points{font-size:14px;color:var(--muted);margin:0 0 6px}
+.opt.multi .L{border-radius:6px}
+.ab-part{margin:4px 0 14px}
+@media (max-width:820px){.readout-grid{grid-template-columns:1fr 1fr}.barrow{grid-template-columns:80px 1fr 48px}}
+
+[data-g]{transition:opacity .45s}
+[data-g].dim{opacity:.18}
+@keyframes spin{to{transform:rotate(360deg)}}
+#s7cyc{transform-box:view-box}
+
+.start-grid{margin-top:18px}
+.readout-grid{grid-template-columns:repeat(4,1fr)}
+@media (max-width:820px){.readout-grid{grid-template-columns:1fr 1fr}}
+
+.ws-item{border-top:1px solid var(--line);padding-top:16px;margin-top:16px}
+.ws-item:first-of-type{border-top:0;margin-top:0;padding-top:0}
+.ws-num{font-size:13px;color:var(--muted);font-weight:600;margin:0 0 2px}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="31" cy="9" r="5" fill="#ffd166"/><path d="M8 33C8 18 18 9 33 9c0 15-9 25-25 24z" fill="#3f9d60"/><path d="M9 32C15 24 21 18 30 12" stroke="#bff0cf" stroke-width="2" fill="none"/></svg>
+      <span>Photosynthesis practice</span>
+    </div>
+    <nav class="navtiles" id="navTiles" aria-label="Lesson sections"></nav>
+    <span class="savenote" id="saveNote" aria-live="polite"></span>
+    <div class="top-actions">
+      <button class="top-btn" id="goalsBtn" type="button" aria-expanded="false" aria-controls="goalsDrawer">Goals 0/4</button>
+      <button class="top-btn" id="teacherBtn" type="button">Teacher</button>
+    </div>
+  </div>
+</header>
+
+<main id="app">
+  <section class="screen" id="scr-0" aria-label="Start">
+    <div class="hero">
+      <div>
+        <p class="unit">Biology, Unit 2: Cell Transport, Photosynthesis, and Cellular Respiration</p>
+        <h1>Photosynthesis Practice</h1>
+        <p class="lede">20 practice questions in four parts: reading the absorption spectrum, absorbed or reflected, stage detective, and what happens if. Every answer is checked with hints. About 30 minutes.</p>
+      </div>
+      <div class="hero-fig">
+        <svg id="heroSvg" class="fig" viewBox="0 0 420 300" role="img" aria-label="Sunlight hitting a leaf: red and blue light are absorbed, green light bounces off"></svg>
+        <p class="hero-cap" id="heroCap"></p>
+      </div>
+    </div>
+
+    <div class="start-grid">
+      <section class="card obj">
+        <span class="tag">Objective</span>
+        <p>I can explain how a plant captures light energy and stores it in glucose: which colors of light its pigments absorb, what the light-dependent reactions make, and how the Calvin cycle uses those products to build sugar.</p>
+      </section>
+      <section class="card std">
+        <span class="tag">Standard</span>
+        <p><b>NGSS HS-LS1-5.</b> Use a model to illustrate how photosynthesis transforms light energy into stored chemical energy.</p>
+      </section>
+    </div>
+
+    <section class="card nostore" id="noStore" hidden>
+      <h3>This browser can't save your work</h3>
+      <p>You may be in guest or incognito mode. If you close this tab, your work will be lost. Sign in to your school account on your Chromebook and open the lesson again, or ask your teacher.</p>
+    </section>
+
+    <div class="start-grid">
+      <section class="card" id="startCard">
+        <span class="tag" id="signinTag">Sign in to start</span>
+        <div id="resumeBox" hidden>
+          <p id="resumeText" style="margin-top:0"></p>
+          <div class="btn-row"><button type="button" class="btn primary" id="resumeBtn">Continue the lesson</button></div>
+          <button type="button" class="linkbtn" id="notMeBtn">Not you? Sign in as a different student</button>
+          <div class="fb no" id="resumeErr" hidden></div>
+        </div>
+        <form id="startForm" autocomplete="off" novalidate>
+          <div class="form-grid">
+            <label>First name<input type="text" id="fFirst" autocomplete="off"></label>
+            <label>Last name<input type="text" id="fLast" autocomplete="off"></label>
+            <label>Period<select id="fPeriod"></select></label>
+            <label>Teacher's name<select id="fTeacher"></select></label>
+            <label>Student ID<input type="text" id="fId" inputmode="numeric" autocomplete="off"></label>
+          </div>
+          <div class="fb" id="formErr" hidden></div>
+          <div class="btn-row"><button class="btn primary" type="submit">Start the lesson</button></div>
+        </form>
+        <p class="small muted" id="saveInfo" style="margin-bottom:0">Your progress saves on this Chromebook.</p>
+      </section>
+      <section class="card">
+        <span class="tag">Your goals</span>
+        <ul class="goals" id="goalsStart"></ul>
+        <p class="small muted">These check themselves off as you finish sections.</p>
+      </section>
+    </div>
+  </section>
+
+  <section class="screen" id="scr-1"></section>
+  <section class="screen" id="scr-2"></section>
+  <section class="screen" id="scr-3"></section>
+  <section class="screen" id="scr-4"></section>
+  <section class="screen" id="scr-5"></section>
+  <section class="screen" id="scr-6"></section>
+  <section class="screen" id="scr-7"></section>
+  <section class="screen" id="scr-8"></section>
+  <section class="screen" id="scr-9"></section>
+</main>
+
+<aside class="drawer" id="goalsDrawer" hidden aria-label="Your goals">
+  <h3 style="font-size:18px;margin-bottom:10px">Your goals</h3>
+  <ul class="goals" id="goalsDrawerList"></ul>
+  <div class="btn-row"><button class="btn ghost sm" id="goalsClose" type="button">Close</button></div>
+</aside>
+
+<div id="pop" role="dialog" aria-live="polite" hidden><b></b><p></p></div>
+
+<div class="overlay" id="teacherOv" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="tTitle">
+    <h3 id="tTitle">Teacher view</h3>
+    <div id="tLogin">
+      <p class="muted small">Enter the teacher code.</p>
+      <input type="password" id="tCode" autocomplete="off" aria-label="Teacher code">
+      <p class="form-msg" id="tMsg"></p>
+      <div class="btn-row"><button class="btn primary" id="tGo" type="button">Open teacher view</button><button class="btn ghost" id="tCancel" type="button">Cancel</button></div>
+    </div>
+    <div id="tPanel" class="hidden">
+      <p class="small muted" id="tInfo"></p>
+      <div class="teacher-tools">
+        <button class="btn ghost" id="tUnlock" type="button">Unlock every section</button>
+        <button class="btn ghost" id="tKey" type="button">Show answer key</button>
+        <button class="btn ghost" id="tEndLock" type="button">End lockdown for this student</button>
+        <button class="btn ghost" id="tSend" type="button">Send this student's scores to the sheet</button>
+        <button class="btn ghost" id="tCSV" type="button">Download scores saved on this Chromebook (CSV)</button>
+        <button class="btn ghost" id="tPreview" type="button">Preview the lesson (nothing is saved)</button>
+        <button class="btn ghost" id="tReset" type="button">Reset this Chromebook (erase saved work)</button>
+        <p class="sheetbox sheetStatus small" aria-live="polite"></p>
+      </div>
+      <div class="btn-row"><button class="btn primary" id="tClose" type="button">Close</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="lockOv" hidden>
+  <div class="modal lock-modal" role="alertdialog" aria-modal="true" aria-labelledby="lockTitle">
+    <div class="lock-icon" aria-hidden="true">🔒</div>
+    <h3 id="lockTitle">Your lesson is locked</h3>
+    <p class="muted">You left the lesson page or exited full screen. Leaving is recorded. Your work is saved. Raise your hand so your teacher can unlock it.</p>
+    <input type="password" id="lockCode" autocomplete="off" aria-label="Teacher unlock code" placeholder="Teacher code">
+    <p class="form-msg" id="lockMsg"></p>
+    <button class="btn amber" id="lockGo" type="button">Unlock</button>
+  </div>
+</div>
+
+<div class="overlay tabov" id="tabOv" role="dialog" aria-modal="true" aria-labelledby="tabTitle">
+  <div class="modal">
+    <h3 id="tabTitle">This lesson is open in another tab</h3>
+    <p class="muted">To keep your newest work safe, this copy stopped saving. Close the extra tab, then reload this one.</p>
+    <div class="btn-row"><button class="btn primary" id="tabReload" type="button">Reload with my newest work</button></div>
+  </div>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="sheets-config.js"></script>
+<script>
+(() => {
+'use strict';
+
+/* =========================================================
+   SETTINGS
+   If sheets-config.js (next to this file on the site) defines TEACHERS,
+   SHEETS_WEBHOOK_URL or SAVE_WEBHOOK_URL, those win.
+   ========================================================= */
+const LESSON_ID = 'bio-u2-photosynthesis-two-stages-worksheet';
+const LESSON = 'Photosynthesis Two Stages Practice Worksheet';
+const STORE = 'fate_bio_u2_photo_two_stages_ws_v1', RECS = 'fate_bio_u2_photo_two_stages_ws_records_v1';
+const TEACHER_CODE = 'Austin';
+const BACKUP_URL = 'https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const SAVE_URL_BUILTIN = 'https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';
+const BACKUP_TEACHERS = ['Austin', 'Mueller', 'McCue', 'Arce', 'Trimm', 'Garcia'];
+const PERIODS = ['1', '2', '3', '4', '5', '6', '7', '8'];
+function teacherList() { try { if (typeof TEACHERS !== 'undefined' && Array.isArray(TEACHERS) && TEACHERS.length) return TEACHERS.map(String).filter(Boolean); } catch (e) {} return BACKUP_TEACHERS; }
+function sheetURL() { try { if (typeof SHEETS_WEBHOOK_URL !== 'undefined' && SHEETS_WEBHOOK_URL && String(SHEETS_WEBHOOK_URL).indexOf('PASTE') < 0) return String(SHEETS_WEBHOOK_URL); } catch (e) {} return BACKUP_URL; }
+function saveURL() { try { if (typeof SAVE_WEBHOOK_URL !== 'undefined' && SAVE_WEBHOOK_URL && String(SAVE_WEBHOOK_URL).indexOf('PASTE') < 0) return String(SAVE_WEBHOOK_URL); } catch (e) {} return SAVE_URL_BUILTIN; }
+const WORKSHEET = true, PASS_PCT = 80, FC_LEN = 10, NSEC = 4, FINAL = 99, RESULTS = NSEC + 1, SECN = Array.from({ length: NSEC }, (_, i) => i + 1);
+const FC_MIX = { mc: 6, ab: 2, multi: 2 }, FC_SKIP = [];
+const LOCK_ON = false; /* practice worksheet: no lockdown */
+const SHOW_HOOKS = {};
+const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const sum = a => a.reduce((x, y) => x + y, 0);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const f1 = v => (+v).toFixed(1);
+const words = s => String(s || '').trim().split(/\s+/).filter(Boolean).length;
+
+/* =========================================================
+   SECTION ICONS
+   ========================================================= */
+const ICONS = {
+  chloro: '<ellipse cx="16" cy="16" rx="13" ry="9" fill="none" stroke="currentColor" stroke-width="2"/><g fill="#62c983"><rect x="8" y="11" width="5" height="2.4" rx="1"/><rect x="8" y="14.4" width="5" height="2.4" rx="1"/><rect x="8" y="17.8" width="5" height="2.4" rx="1"/><rect x="18" y="11" width="5" height="2.4" rx="1"/><rect x="18" y="14.4" width="5" height="2.4" rx="1"/><rect x="18" y="17.8" width="5" height="2.4" rx="1"/></g>',
+  light: '<g stroke-width="3" stroke-linecap="round"><line x1="5" y1="25" x2="5" y2="9" stroke="#8b5cf6"/><line x1="10" y1="25" x2="10" y2="7" stroke="#3b82f6"/><line x1="15" y1="25" x2="15" y2="6" stroke="#22c55e"/><line x1="20" y1="25" x2="20" y2="7" stroke="#facc15"/><line x1="25" y1="25" x2="25" y2="9" stroke="#f97316"/><line x1="30" y1="25" x2="30" y2="11" stroke="#ef4444"/></g>',
+  leaf: '<path d="M5 27C5 14 14 5 28 5c0 14-9 23-23 22z" fill="#3f9d60"/><path d="M6 26C12 19 17 14 25 9" stroke="#bff0cf" stroke-width="1.8" fill="none"/>',
+  bubbles: '<path d="M10 29V12M10 18l-5-4M10 22l5-4M10 14l4-4" stroke="#62c983" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="22" cy="20" r="3" fill="none" stroke="#7fe0ff" stroke-width="1.8"/><circle cx="25" cy="11" r="2.2" fill="none" stroke="#7fe0ff" stroke-width="1.8"/><circle cx="20" cy="5" r="1.6" fill="none" stroke="#7fe0ff" stroke-width="1.6"/>',
+  thyl: '<g fill="#3f9d60" stroke="#bff0cf" stroke-width="1"><rect x="5" y="9" width="17" height="5" rx="2.5"/><rect x="5" y="15" width="17" height="5" rx="2.5"/><rect x="5" y="21" width="17" height="5" rx="2.5"/></g><path d="M27 3l-4 8h4l-3 8" stroke="#ffd166" stroke-width="2" fill="none" stroke-linejoin="round"/>',
+  cycle: '<path d="M25 11A10 10 0 1 0 26 19" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M27 5v7h-7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="16" r="3.5" fill="#ffd166"/>',
+  glucose: '<polygon points="16,4 26,10 26,22 16,28 6,22 6,10" fill="none" stroke="#ffd166" stroke-width="2.4"/><text x="16" y="20" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor" font-family="Lexend,sans-serif">C₆</text>',
+  check: '<circle cx="16" cy="16" r="12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M10 16.5l4 4 8-9" fill="none" stroke="#4ade80" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>',
+  chart: '<path d="M5 27h23M5 27V5" stroke="currentColor" stroke-width="2" fill="none"/><rect x="9" y="17" width="4" height="10" fill="#62c983"/><rect x="15" y="11" width="4" height="16" fill="#ffd166"/><rect x="21" y="14" width="4" height="13" fill="#5fd3ff"/>'
+};
+const ico = k => `<svg class="ic" viewBox="0 0 32 32" aria-hidden="true">${ICONS[k]}</svg>`;
+const TILES = [null, { ic: 'light', name: 'Graph' }, { ic: 'leaf', name: 'Absorb?' }, { ic: 'thyl', name: 'Stages' }, { ic: 'cycle', name: 'What if?' }, { ic: 'chart', name: 'Results' }];
+const tileHTML = (n, cls = '') => `<div class="tile big ${cls}" aria-hidden="true"><span class="z">${n}</span>${ico(TILES[n].ic)}<span class="nm">${TILES[n].name}</span></div>`;
+
+/* =========================================================
+   GLOSSARY (word-help chips)
+   ========================================================= */
+const GLOSS = {
+  photosynthesis: 'The process plants, algae, and some bacteria use to turn light energy into chemical energy stored in glucose.',
+  chloroplast: 'The organelle where photosynthesis happens. It is packed with stacks of thylakoids surrounded by fluid called the stroma.',
+  thylakoid: 'A flattened sac inside the chloroplast. Its membrane holds chlorophyll and is where the light-dependent reactions happen.',
+  granum: 'A stack of thylakoids, like a stack of coins. The plural is grana.',
+  stroma: 'The thick fluid inside the chloroplast, around the thylakoids. The Calvin cycle happens here.',
+  pigment: 'A molecule that absorbs some colors of light and reflects others.',
+  chlorophyll: 'The main green pigment in plants. It absorbs blue-violet and red light and reflects green light.',
+  carotenoid: 'A yellow-orange pigment in chloroplasts. It absorbs blue-green light that chlorophyll misses.',
+  'accessory pigment': 'A pigment, like chlorophyll b or a carotenoid, that absorbs extra colors and passes the energy to chlorophyll a.',
+  wavelength: 'The distance from one wave peak to the next. For visible light it is measured in nanometers (nm), from about 400 (violet) to 700 (red).',
+  absorb: 'To take in light. Absorbed light energy can be used by the plant.',
+  reflect: 'To bounce light off. The colors an object reflects are the colors you see.',
+  'absorption spectrum': 'A graph showing how much light a pigment absorbs at each wavelength.',
+  'action spectrum': 'A graph showing how fast photosynthesis happens at each wavelength of light.',
+  'light-dependent reactions': 'The first stage of photosynthesis. In the thylakoids, light energy splits water, releases oxygen, and charges up ATP and NADPH.',
+  ATP: 'The cell\'s energy-carrying molecule. When it gives up energy it becomes ADP, and it can be recharged.',
+  NADPH: 'A second energy carrier made in stage 1 and used in the Calvin cycle. When it is used up, it becomes NADP⁺.',
+  'Calvin cycle': 'The second stage of photosynthesis. In the stroma, it uses ATP and NADPH to build sugar from carbon dioxide.',
+  'light-independent reactions': 'Another name for the Calvin cycle. It does not use light directly, but it needs the ATP and NADPH made by the light-dependent reactions.',
+  glucose: 'A sugar, C₆H₁₂O₆. It stores the energy captured from light.'
+};
+const c = (term, label) => `<button type="button" class="chip" data-term="${term}">${label || term}</button>`;
+
+/* =========================================================
+   STATE: saved on this Chromebook, backed up with the save code
+   (student ID + last name)
+   ========================================================= */
+function freshState() {
+  return { lesson: LESSON_ID, student: null, cur: 0, reqs: {}, secDone: {}, qc: {}, tasks: {}, misc: {},
+    final: { attempts: [], passed: false, best: 0, bestMax: 0, current: null, reviewAt: 0 },
+    leaves: 0, locked: false, lockActive: false, teacherUnlock: false, preview: false,
+    startedAt: null, completedAt: null, sentAt: null, rev: 0, updatedAt: 0 };
+}
+function load() { try { const s = JSON.parse(localStorage.getItem(STORE)); return s && s.lesson === LESSON_ID ? Object.assign(freshState(), s) : null; } catch (e) { return null; } }
+let S = load() || freshState();
+let STORAGE_OK = true, saveBlocked = false;
+try { localStorage.setItem('__photo_test', '1'); STORAGE_OK = localStorage.getItem('__photo_test') === '1'; localStorage.removeItem('__photo_test'); } catch (e) { STORAGE_OK = false; }
+try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
+function save() {
+  if (saveBlocked || S.preview) return;
+  try {
+    const raw = localStorage.getItem(STORE);
+    if (raw) { const st = JSON.parse(raw); if (st && st.lesson === LESSON_ID && (st.rev || 0) > (S.rev || 0)) { saveBlocked = true; onConflict(); return; } }
+    S.rev = (S.rev || 0) + 1; S.updatedAt = Date.now();
+    localStorage.setItem(STORE, JSON.stringify(S));
+  } catch (e) {}
+  showNote(); cloudSave(false);
+}
+function onConflict() { $('#tabOv').classList.add('show'); }
+
+/* ---------- cloud backup ---------- */
+const CLOUD = () => !!saveURL();
+function saveKey(st) { return (String(st.id || '').replace(/\s+/g, '') + '-' + String(st.last || '').toLowerCase().replace(/[^a-z]/g, '')).toLowerCase(); }
+function progressOf(st) { return Object.keys(st.reqs || {}).length * 1000 + Object.keys(st.qc || {}).length * 10 + ((st.final && st.final.attempts && st.final.attempts.length) || 0); }
+function progressSummary() { const n = SECN.filter(k => S.secDone[k]).length; return `${n} of ${NSEC} sections done` + (S.final.attempts.length ? `, final check best ${S.final.best}/${S.final.bestMax}` + (S.final.passed ? ' (passed)' : '') : ''); }
+let cloudTimer = null, cloudDirty = false, cloudBusy = false, cloudAt = null, cloudErr = false;
+function cloudOK() { return CLOUD() && S.student && !S.preview && !saveBlocked; }
+function cloudBody() { const st = S.student || {}; return new URLSearchParams({ code: saveKey(st), lesson: LESSON_ID, ver: String(S.updatedAt || Date.now()), prog: String(progressOf(S)),
+  studentId: st.id || '', lastName: st.last || '', firstName: st.first || '', period: st.period || '', teacher: st.teacher || '', summary: progressSummary(), data: JSON.stringify(S) }); }
+function cloudSave(soon) {
+  if (!cloudOK()) return; cloudDirty = true;
+  if (soon) { clearTimeout(cloudTimer); cloudTimer = setTimeout(cloudFlush, 1200); }
+  else if (!cloudTimer) cloudTimer = setTimeout(cloudFlush, 30000);
+}
+async function cloudFlush() {
+  cloudTimer = null;
+  if (!cloudOK() || !cloudDirty) return;
+  if (cloudBusy) { cloudTimer = setTimeout(cloudFlush, 4000); return; }
+  cloudBusy = true; cloudDirty = false;
+  try { await fetch(saveURL(), { method: 'POST', mode: 'no-cors', body: cloudBody() }); cloudAt = new Date(); cloudErr = false; }
+  catch (e) { cloudDirty = true; cloudErr = true; if (!cloudTimer) cloudTimer = setTimeout(cloudFlush, 30000); }
+  finally { cloudBusy = false; showNote(); }
+}
+function cloudBeacon() { if (!cloudOK() || !cloudDirty) return; try { if (navigator.sendBeacon && navigator.sendBeacon(saveURL(), cloudBody())) cloudDirty = false; } catch (e) {} }
+async function cloudLoad(st) {
+  if (!CLOUD()) return { status: 'off' };
+  const ctrl = new AbortController(), t = setTimeout(() => ctrl.abort(), 10000);
+  try {
+    const u = saveURL(); const r = await fetch(u + (u.indexOf('?') < 0 ? '?' : '&') + new URLSearchParams({ code: saveKey(st), lesson: LESSON_ID }).toString(), { signal: ctrl.signal });
+    const j = await r.json();
+    if (j && j.found && j.data) { const d = JSON.parse(j.data); if (d && d.lesson === LESSON_ID) return { status: 'found', data: d }; }
+    return { status: 'none' };
+  } catch (e) { return { status: 'error' }; } finally { clearTimeout(t); }
+}
+function showNote(extra) {
+  const n = $('#saveNote'); if (!n) return;
+  if (!S.student) { n.textContent = ''; return; }
+  if (S.preview) { n.textContent = 'Teacher preview: nothing is saved'; return; }
+  const tm = d => d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  if (extra) { n.textContent = extra; return; }
+  n.textContent = cloudErr ? '✓ Saved on this Chromebook (backup will retry)' : '✓ Work saved ' + tm(new Date()) + (cloudAt ? ', backed up ' + tm(cloudAt) : '');
+}
+
+/* =========================================================
+   LIGHT AND PIGMENT MODELS
+   ========================================================= */
+const gs = (x, m, s) => Math.exp(-((x - m) ** 2) / (2 * s * s));
+const chlA = l => clamp(0.03 + 0.86 * gs(l, 430, 17) + 0.84 * gs(l, 663, 16) + 0.12 * gs(l, 405, 25) + 0.1 * gs(l, 615, 22), 0, 1);
+const chlB = l => clamp(0.03 + 0.95 * gs(l, 455, 15) + 0.55 * gs(l, 643, 12) + 0.08 * gs(l, 600, 25), 0, 1);
+const carot = l => l > 540 ? 0.01 : clamp(0.02 + 0.68 * gs(l, 448, 16) + 0.78 * gs(l, 478, 14) + 0.3 * gs(l, 420, 14), 0, 1);
+const PIG = { a: { name: 'Chlorophyll a', f: chlA, col: 'var(--chla)' }, b: { name: 'Chlorophyll b', f: chlB, col: 'var(--chlb)' }, c: { name: 'Carotenoids', f: carot, col: 'var(--car)' } };
+const leafAbs = l => Math.round(100 * clamp(0.14 + 0.9 * Math.min(1, 1.0 * chlA(l) + 0.55 * chlB(l) + 0.4 * carot(l)), 0, 0.95));
+/* elodea data (bubbles of oxygen per minute under each filter) */
+const FILTERS = [
+  { k: 'violet', name: 'Violet', wl: 410, bubbles: 21 }, { k: 'blue', name: 'Blue', wl: 450, bubbles: 26 },
+  { k: 'green', name: 'Green', wl: 530, bubbles: 5 }, { k: 'yellow', name: 'Yellow', wl: 580, bubbles: 6 },
+  { k: 'orange', name: 'Orange', wl: 610, bubbles: 9 }, { k: 'red', name: 'Red', wl: 660, bubbles: 25 }];
+function colorName(l) { return l < 450 ? 'violet' : l < 495 ? 'blue' : l < 520 ? 'blue-green' : l < 565 ? 'green' : l < 590 ? 'yellow' : l < 625 ? 'orange' : 'red'; }
+function wl2rgb(l) {
+  let r = 0, g = 0, b = 0;
+  if (l < 440) { r = -(l - 440) / 60; b = 1; } else if (l < 490) { g = (l - 440) / 50; b = 1; } else if (l < 510) { g = 1; b = -(l - 510) / 20; }
+  else if (l < 580) { r = (l - 510) / 70; g = 1; } else if (l < 645) { r = 1; g = -(l - 645) / 65; } else { r = 1; }
+  const k = l < 420 ? 0.4 + 0.6 * (l - 380) / 40 : l > 680 ? 0.4 + 0.6 * (700 - l) / 20 + 0.0 : 1;
+  const to = v => Math.round(255 * Math.pow(clamp(v * k, 0, 1), 0.8));
+  return `rgb(${to(r)},${to(g)},${to(b)})`;
+}
+const spectrumGrad = () => `linear-gradient(90deg,${[400, 425, 450, 475, 500, 525, 550, 575, 600, 625, 650, 675, 700].map(l => wl2rgb(l)).join(',')})`;
+
+/* absorption / action graph as an SVG string */
+function specGraph(o = {}) {
+  const W = o.w || 520, H = o.h || 270, L = 46, R = 14, T = 14, B = 52;
+  const X = l => L + (l - 400) / 300 * (W - L - R), Y = v => T + (1 - v) * (H - T - B);
+  let s = `<svg viewBox="0 0 ${W} ${H}" class="agraph" role="img" aria-label="${esc(o.aria || 'Absorption spectrum')}"><defs><linearGradient id="${o.gid || 'sg'}" x1="0" x2="1">${[400, 450, 500, 550, 600, 650, 700].map((l, i) => `<stop offset="${i / 6}" stop-color="${wl2rgb(l)}"/>`).join('')}</linearGradient></defs>`;
+  [0, .25, .5, .75, 1].forEach(v => { s += `<line class="gl" x1="${L}" x2="${W - R}" y1="${f1(Y(v))}" y2="${f1(Y(v))}"/>`; });
+  for (let l = 400; l <= 700; l += 50) s += `<text x="${f1(X(l))}" y="${H - B + 30}" text-anchor="middle">${l}</text>`;
+  s += `<rect x="${L}" y="${H - B + 4}" width="${W - L - R}" height="12" rx="3" fill="url(#${o.gid || 'sg'})"/>`;
+  s += `<line class="ax" x1="${L}" y1="${T}" x2="${L}" y2="${H - B}"/><line class="ax" x1="${L}" y1="${H - B}" x2="${W - R}" y2="${H - B}"/>`;
+  s += `<text x="${(L + W - R) / 2}" y="${H - 4}" text-anchor="middle">Wavelength (nm)</text><text x="14" y="${(T + H - B) / 2}" text-anchor="middle" transform="rotate(-90 14 ${(T + H - B) / 2})">${o.yl || 'Light absorbed'}</text>`;
+  s += `<text x="${L - 6}" y="${f1(Y(1) + 4)}" text-anchor="end">high</text><text x="${L - 6}" y="${f1(Y(0) + 4)}" text-anchor="end">low</text>`;
+  s += `<g class="curves">`;
+  (o.curves || ['a', 'b', 'c']).forEach(k => {
+    const f = k === 'act' ? actionRate : PIG[k].f, col = k === 'act' ? 'var(--act)' : PIG[k].col;
+    let d = ''; for (let l = 400; l <= 700; l += 3) d += (l === 400 ? 'M' : 'L') + f1(X(l)) + ',' + f1(Y(f(l)));
+    s += `<path data-k="${k}" d="${d}" fill="none" stroke="${col}" stroke-width="${k === 'act' ? 3 : 2.6}" ${k === 'act' ? 'stroke-dasharray="7 5"' : ''}/>`;
+  });
+  s += `</g>`;
+  if (o.dots) o.dots.forEach(([l, v]) => { s += `<circle cx="${f1(X(l))}" cy="${f1(Y(v))}" r="5" fill="var(--act)" stroke="var(--bg)" stroke-width="2"/>`; });
+  if (o.cursor != null) s += `<line class="cur" x1="${f1(X(o.cursor))}" x2="${f1(X(o.cursor))}" y1="${T}" y2="${H - B}"/>`;
+  return s + '</svg>';
+}
+const actionRate = l => clamp(0.1 + 0.9 * Math.tanh(1.3 * (0.85 * chlA(l) + 0.45 * chlB(l) + 0.4 * carot(l))) / Math.tanh(1.3 * 1.25), 0, 1);
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('on');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('on'), 2600);
+}
+function shake(el) { if (!el) return; el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); setTimeout(() => el.classList.remove('shake'), 500); }
+function glow(el) { if (!el || REDUCED) return; el.classList.remove('celebrate-glow'); void el.getBoundingClientRect(); el.classList.add('celebrate-glow'); setTimeout(() => el.classList.remove('celebrate-glow'), 1200); }
+const card = (kind, title, body, extra = '') => {
+  const label = { read: 'Read', try: 'Try it', qc: 'Quick check', final: 'Final check', data: 'Read the data' }[kind];
+  const cls = kind === 'final' ? 'qc' : kind;
+  return `<section class="card k-${cls}" ${extra}><span class="tag">${label}</span>${title ? `<h3>${title}</h3>` : ''}${body}</section>`;
+};
+function makeQC(root, cfg) {
+  const st = S.qc[cfg.id] || (S.qc[cfg.id] = { done: false, first: null, tries: 0 });
+  if (!cfg.fixed && !(st.order && st.order.length === cfg.opts.length)) { st.order = shuffle(cfg.opts.map((_, i) => i)); save(); }
+  const order = cfg.fixed ? cfg.opts.map((_, i) => i) : st.order;
+  const opts = order.map((i, pos) => `<button type="button" class="opt" data-i="${i}" ${i === cfg.ans ? 'data-key="1"' : ''}><span class="L">${'ABCD'[pos]}</span><span class="ot">${cfg.opts[i]}</span></button>`).join('');
+  root.innerHTML = `${cfg.fig ? `<div class="qc-fig">${cfg.fig}</div>` : ''}<p class="qc-q">${cfg.q}</p><div class="opts">${opts}</div><p class="qc-fb" aria-live="polite"></p>`;
+  const fb = $('.qc-fb', root), btns = $$('.opt', root);
+  const finish = () => {
+    btns.forEach(b => { b.disabled = true; if (+b.dataset.i === cfg.ans) b.classList.add('right'); });
+    fb.className = 'qc-fb good'; fb.innerHTML = `<strong>Correct.</strong> ${cfg.explain}`;
+  };
+  if (st.done) finish();
+  btns.forEach(b => b.addEventListener('click', () => {
+    if (st.done) return;
+    const i = +b.dataset.i; st.tries++;
+    if (i === cfg.ans) {
+      if (st.first === null) st.first = true;
+      st.done = true; finish(); save();
+      cfg.onCorrect && cfg.onCorrect();
+    } else {
+      if (st.first === null) st.first = false;
+      b.classList.add('wrong'); b.disabled = true; shake(b);
+      fb.className = 'qc-fb bad'; fb.innerHTML = `<strong>Not quite.</strong> ${(cfg.hints && cfg.hints[i]) || cfg.hint || 'Look back at the Read card and try again.'}`;
+      save();
+    }
+  }));
+}
+
+/* Tap-or-drag sorter */
+function makeSorter(root, cfg) {
+  const doneAlready = !!S.tasks[cfg.id];
+  root.innerHTML = `<div class="sorter ${cfg.layout || ''}"><div class="tray" aria-label="Items to sort"></div><div class="bins">${cfg.bins.map(b => `<div class="bin" data-bin="${b.id}" tabindex="0" role="button" aria-label="${esc(b.aria || b.label)}"><div class="bin-label">${b.label}</div><div class="bin-drop"></div></div>`).join('')}</div><p class="sort-msg" aria-live="polite"></p></div>`;
+  const tray = $('.tray', root), msg = $('.sort-msg', root);
+  const binOf = id => cfg.bins.find(b => b.accepts.includes(id));
+  const toks = shuffle(cfg.tokens).map(t => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'token' + (t.cls ? ' ' + t.cls : ''); b.dataset.id = t.id; b.innerHTML = t.label;
+    tray.appendChild(b); return b;
+  });
+  let sel = null, dragged = false;
+  const place = (tok, binEl, silent) => {
+    $('.bin-drop', binEl).appendChild(tok);
+    tok.classList.remove('sel'); tok.classList.add('placed'); tok.setAttribute('aria-disabled', 'true');
+    if (!silent && !tray.children.length) {
+      msg.innerHTML = `<span style="color:var(--good)">${cfg.doneMsg || 'All sorted. Nice work.'}</span>`;
+      S.tasks[cfg.id] = true; save(); cfg.onDone && cfg.onDone();
+    }
+  };
+  if (doneAlready) {
+    toks.forEach(t => place(t, $(`.bin[data-bin="${binOf(t.dataset.id).id}"]`, root), true));
+    msg.innerHTML = `<span style="color:var(--good)">${cfg.doneMsg || 'All sorted. Nice work.'}</span>`;
+    return;
+  }
+  const attempt = (tok, binEl) => {
+    if (!tok || tok.classList.contains('placed')) return;
+    const b = cfg.bins.find(x => x.id === binEl.dataset.bin);
+    if (b.accepts.includes(tok.dataset.id)) { place(tok, binEl); if (tray.children.length) msg.textContent = ''; }
+    else { shake(tok); shake(binEl); msg.innerHTML = `<span style="color:#ffc2cd">${(cfg.hint && cfg.hint(tok.dataset.id, b.id)) || 'Not there. Try a different spot.'}</span>`; tok.classList.remove('sel'); }
+    sel = null;
+  };
+  toks.forEach(tok => {
+    tok.addEventListener('click', () => {
+      if (dragged) { dragged = false; return; }
+      if (tok.classList.contains('placed')) return;
+      if (sel === tok) { tok.classList.remove('sel'); sel = null; return; }
+      if (sel) sel.classList.remove('sel');
+      sel = tok; tok.classList.add('sel');
+      msg.textContent = 'Now tap where it goes.';
+    });
+    let start = null, ghost = null, over = null;
+    tok.addEventListener('pointerdown', e => {
+      if (tok.classList.contains('placed') || e.button > 0) return;
+      start = { x: e.clientX, y: e.clientY }; dragged = false;
+      try { tok.setPointerCapture(e.pointerId); } catch (_) {}
+    });
+    tok.addEventListener('pointermove', e => {
+      if (!start) return;
+      if (!ghost && Math.hypot(e.clientX - start.x, e.clientY - start.y) > 6) {
+        ghost = tok.cloneNode(true); ghost.classList.add('ghost-token'); document.body.appendChild(ghost);
+        tok.style.opacity = '.35'; dragged = true;
+      }
+      if (ghost) {
+        ghost.style.left = e.clientX + 'px'; ghost.style.top = e.clientY + 'px';
+        const t = document.elementFromPoint(e.clientX, e.clientY);
+        const bin = t && t.closest('.bin');
+        if (over && over !== bin) over.classList.remove('hover');
+        over = bin && root.contains(bin) ? bin : null;
+        if (over) over.classList.add('hover');
+      }
+    });
+    const end = () => {
+      if (!start) return;
+      start = null;
+      if (ghost) {
+        ghost.remove(); ghost = null; tok.style.opacity = '';
+        if (over) { over.classList.remove('hover'); attempt(tok, over); over = null; }
+        setTimeout(() => { dragged = false; }, 50);
+      }
+    };
+    tok.addEventListener('pointerup', end);
+    tok.addEventListener('pointercancel', end);
+  });
+  $$('.bin', root).forEach(binEl => {
+    const go = () => { if (sel) attempt(sel, binEl); };
+    binEl.addEventListener('click', e => { if (e.target.closest('.token:not(.placed)')) return; go(); });
+    binEl.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+  });
+}
+
+/* Missions with a "Lock in" button. Each check() returns [ok, message]. */
+function makeMissions(root, sec, list, onLock) {
+  root.innerHTML = list.map((m, i) => {
+    const d = !!S.reqs[sec + '.' + m.id];
+    return `<li class="mission ${d ? 'ok' : ''}" data-m="${i}"><div class="mt"><span class="box"></span><span><b>Mission ${i + 1}.</b> ${m.t}</span></div><button type="button" class="btn sm ghost lockin" ${d ? 'disabled' : ''}>${m.btn || 'Lock in'}</button><p class="mfb" aria-live="polite" ${d ? 'style="color:var(--good)"' : ''}>${d ? (S.tasks['mfb.' + sec + '.' + m.id] || 'Done.') : ''}</p></li>`;
+  }).join('');
+  $$('.mission', root).forEach(li => {
+    const m = list[+li.dataset.m];
+    $('.lockin', li).addEventListener('click', () => {
+      const fb = $('.mfb', li), [ok, text] = m.check();
+      if (ok) {
+        li.classList.add('ok', 'just-ok'); $('.lockin', li).disabled = true;
+        fb.style.color = 'var(--good)'; fb.innerHTML = text;
+        S.tasks['mfb.' + sec + '.' + m.id] = text; save();
+        done(sec, m.id); onLock && onLock(m);
+      } else { fb.style.color = '#ffc2cd'; fb.innerHTML = text; shake(li); }
+    });
+  });
+}
+
+/* Steppers: [{id, label, min, max, step, val}] */
+function makeSteppers(root, list, onChange) {
+  root.innerHTML = list.map(s => `<div class="stp"><div class="lab">${s.label}</div><div class="row"><button type="button" data-id="${s.id}" data-d="-1" aria-label="Less: ${esc(s.label)}">−</button><output id="${s.id}">${s.val}</output><button type="button" data-id="${s.id}" data-d="1" aria-label="More: ${esc(s.label)}">+</button></div></div>`).join('');
+  const vals = Object.fromEntries(list.map(s => [s.id, s.val]));
+  const upd = () => list.forEach(s => {
+    $('#' + s.id, root).textContent = vals[s.id];
+    $(`button[data-id="${s.id}"][data-d="-1"]`, root).disabled = vals[s.id] <= s.min;
+    $(`button[data-id="${s.id}"][data-d="1"]`, root).disabled = vals[s.id] >= s.max;
+  });
+  $$('button', root).forEach(b => b.addEventListener('click', () => {
+    const s = list.find(x => x.id === b.dataset.id);
+    vals[s.id] = clamp(vals[s.id] + (+b.dataset.d) * (s.step || 1), s.min, s.max);
+    upd(); onChange && onChange(vals, s.id);
+  }));
+  upd();
+  return { vals, set: (id, v) => { vals[id] = v; upd(); } };
+}
+
+function lineGraph(o) {
+  // o: { w, h, x:[min,max], y:[min,max], xt:[], yt:[], xl, yl, series:[{cls, pts:[[x,y]], dots}], zero }
+  const W = o.w || 300, H = o.h || 170, L = 40, R = 10, T = 10, B = 36;
+  const X = v => L + (v - o.x[0]) / (o.x[1] - o.x[0]) * (W - L - R);
+  const Y = v => T + (1 - (v - o.y[0]) / (o.y[1] - o.y[0])) * (H - T - B);
+  let s = `<svg viewBox="0 0 ${W} ${H}" class="graph" role="img" aria-label="${esc(o.aria || 'Line graph')}">`;
+  (o.yt || []).forEach(v => { s += `<line class="gl" x1="${L}" x2="${W - R}" y1="${f1(Y(v))}" y2="${f1(Y(v))}"/><text x="${L - 6}" y="${f1(Y(v) + 3.5)}" text-anchor="end">${v}</text>`; });
+  (o.xt || []).forEach(v => { s += `<text x="${f1(X(v))}" y="${H - B + 14}" text-anchor="middle">${v}</text>`; });
+  if (o.zero) s += `<line class="zero" x1="${L}" x2="${W - R}" y1="${f1(Y(0))}" y2="${f1(Y(0))}"/>`;
+  s += `<line class="ax" x1="${L}" x2="${L}" y1="${T}" y2="${H - B}"/><line class="ax" x1="${L}" x2="${W - R}" y1="${H - B}" y2="${H - B}"/>`;
+  s += `<text x="${(L + W - R) / 2}" y="${H - 4}" text-anchor="middle">${o.xl || ''}</text><text x="12" y="${(T + H - B) / 2}" text-anchor="middle" transform="rotate(-90 12 ${(T + H - B) / 2})">${o.yl || ''}</text>`;
+  (o.series || []).forEach(se => {
+    if (se.pts.length > 1) s += `<polyline class="${se.cls}" points="${se.pts.map(([a, b]) => f1(X(a)) + ',' + f1(Y(b))).join(' ')}"/>`;
+    if (se.dots) se.pts.forEach(([a, b]) => { s += `<circle class="pt-dot" cx="${f1(X(a))}" cy="${f1(Y(b))}" r="3.6"/>`; });
+  });
+  return s + '</svg>';
+}
+
+let SIM7 = null;
+const SECS = [null,
+  { title: "Read the absorption spectrum", min: 8 },
+  { title: "Absorbed or reflected?", min: 8 },
+  { title: "Stage detective", min: 8 },
+  { title: "What happens if…?", min: 8 }
+];
+const REQS = {
+  1: [['all', 'Answer all 5 questions in Part 1 correctly']],
+  2: [['all', 'Answer all 5 questions in Part 2 correctly']],
+  3: [['all', 'Answer all 5 questions in Part 3 correctly']],
+  4: [['all', 'Answer all 5 questions in Part 4 correctly']]
+};
+const GOALS = [
+  { t: 'Read an absorption spectrum', sec: 1 },
+  { t: 'Predict which colors of light a leaf absorbs or reflects', sec: 2 },
+  { t: 'Match events to the light-dependent reactions or the Calvin cycle', sec: 3 },
+  { t: 'Predict what happens when one stage is cut off', sec: 4 }
+];
+const LESSON_ITEMS = [['w1_0', 1, 1], ['w1_1', 1, 1], ['w1_2', 1, 1], ['w1_3', 1, 1], ['w1_4', 1, 1], ['w2_0', 2, 1], ['w2_1', 2, 1], ['w2_2', 2, 1], ['w2_3', 2, 1], ['w2_4', 2, 1], ['w3_0', 3, 1], ['w3_1', 3, 1], ['w3_2', 3, 1], ['w3_3', 3, 1], ['w3_4', 3, 1], ['w4_0', 4, 1], ['w4_1', 4, 1], ['w4_2', 4, 1], ['w4_3', 4, 1], ['w4_4', 4, 1]];
+const WS_PARTS = {"1": [["At 430 nm, which pigment absorbs the most light?", ["Chlorophyll a", "Chlorophyll b", "Carotenoids", "None of them absorb at 430 nm"], 0, "Set the slider to 430 nm and compare the three numbers.", "At 430 nm chlorophyll a is near its tallest peak."], ["At 480 nm, which pigment absorbs the most light?", ["Chlorophyll a", "Carotenoids", "Chlorophyll b", "All three absorb the same"], 1, "Set the slider to 480 nm.", "Carotenoids peak around 450–480 nm, where chlorophyll a is low."], ["At 640 nm, which pigment absorbs the most light?", ["Carotenoids", "Chlorophyll a", "Chlorophyll b", "None of them"], 2, "Set the slider to 640 nm.", "Chlorophyll b has a red peak near 640 nm, a little left of chlorophyll a's."], ["At which wavelength does chlorophyll a absorb the <b>least</b>?", ["430 nm", "660 nm", "410 nm", "550 nm"], 3, "Look for where the chlorophyll a line is lowest.", "Chlorophyll a is near the bottom around 550 nm, in the green."], ["Chlorophyll a has two peaks. Which colors are they in?", ["Violet-blue and red", "Green and yellow", "Yellow and orange", "Blue and green"], 0, "Find both tall peaks, then check the color bar under them.", "The peaks are near 430 nm (violet-blue) and 660 nm (red)."]], "2": [["Red light (660 nm) shines on a green leaf. What happens to most of it?", ["It is absorbed", "It is reflected"], 0, "Is red one of chlorophyll's peaks?", "Chlorophyll absorbs red light strongly, so it can power photosynthesis."], ["Green light (550 nm) shines on a green leaf. What happens to most of it?", ["It is absorbed", "It is reflected"], 1, "Why does the leaf look green?", "Green light is mostly reflected. That's the color you see."], ["Blue light (450 nm) shines on a green leaf. What happens to most of it?", ["It is reflected", "It is absorbed"], 1, "Check the graph around 450 nm.", "Chlorophyll and carotenoids all absorb blue light well."], ["A fall leaf has lost most of its chlorophyll but still has carotenoids. Which colors does it reflect?", ["Blue and violet", "Green", "Yellow and orange", "Red only"], 2, "Carotenoids absorb blue light. What do they reflect?", "Carotenoids reflect yellow and orange, so fall leaves look yellow and orange."], ["Under which single LED color would a plant grow the <b>worst</b>?", ["Red", "Blue", "Violet", "Green"], 3, "Which color do the pigments absorb least?", "Green light is mostly reflected, so little energy is captured."]], "3": [["Water molecules are split.", ["Stage 1 (light-dependent reactions)", "Stage 2 (Calvin cycle)"], 0, "Which stage releases oxygen?", "Stage 1 uses light energy to split water."], ["Carbon dioxide is taken in from the air.", ["Stage 1 (light-dependent reactions)", "Stage 2 (Calvin cycle)"], 1, "Which stage builds sugar out of carbon?", "The Calvin cycle takes in CO₂ and builds it into sugar."], ["Oxygen is released.", ["Stage 2 (Calvin cycle)", "Stage 1 (light-dependent reactions)"], 1, "Where does the oxygen come from?", "Splitting water in stage 1 releases O₂."], ["ATP and NADPH are used up.", ["Stage 1 (light-dependent reactions)", "Stage 2 (Calvin cycle)"], 1, "Which stage makes them, and which stage spends them?", "Stage 1 charges them up; the Calvin cycle spends them."], ["Glucose (sugar) is made.", ["Stage 2 (Calvin cycle)", "Stage 1 (light-dependent reactions)"], 0, "Which stage takes in CO₂?", "The Calvin cycle builds glucose."]], "4": [["A plant is moved into total darkness. What happens to the Calvin cycle?", ["It speeds up, because it's the \"dark\" reaction", "It keeps going for weeks", "It soon stops, because no new ATP and NADPH are being made", "It starts releasing oxygen"], 2, "What does the Calvin cycle need from stage 1?", "Without light, stage 1 stops, so ATP and NADPH run out and the Calvin cycle stops."], ["A plant has bright light but no carbon dioxide. What stops first?", ["Making sugar", "Absorbing light", "Splitting water", "Releasing oxygen"], 0, "Which stage uses CO₂?", "The Calvin cycle can't build sugar without CO₂. Later, stage 1 slows down too."], ["A plant's leaves get no water. What stops?", ["Only sugar-making, right away", "Releasing oxygen and making ATP and NADPH", "Absorbing CO₂ only", "Nothing changes"], 1, "Which stage uses water?", "Stage 1 splits water. No water means no O₂, ATP, or NADPH, and then no sugar."], ["Which molecules travel from stage 1 to stage 2?", ["Glucose and oxygen", "ADP and NADP⁺", "Water and CO₂", "ATP and NADPH"], 3, "Think of the charged batteries.", "Charged ATP and NADPH carry energy to the Calvin cycle."], ["Which molecules travel from stage 2 back to stage 1?", ["ADP and NADP⁺", "ATP and NADPH", "Oxygen and glucose", "CO₂ and water"], 0, "Think of the empty batteries.", "The empty ADP and NADP⁺ go back to be recharged."]]};
+const WS_INTRO = {"1": "Use the graph. Drag the slider to read any wavelength.", "2": "Decide what happens to each color of light. Remember: you see the colors that are reflected.", "3": "Decide which stage each event belongs to.", "4": "Use what you know about how the two stages connect."};
+function frame(n, inner) {
+  const s = SECS[n];
+  return `<header class="sec-head">${tileHTML(n)}<div><p class="sec-meta">Part ${n} of ${NSEC} · about ${s.min} min</p><h2>${s.title}</h2></div></header>
+  ${inner}
+  <section class="card unlock" id="unlock-${n}"><h3>To unlock the next part</h3><ul class="reqs"></ul></section>
+  <nav class="sec-foot"><button class="btn ghost" type="button" data-go="${n - 1}">Back</button><button class="btn primary" type="button" id="next-${n}" data-go="${n + 1}" disabled>${n < NSEC ? 'Next part' : 'See your results'}</button></nav>`;
+}
+
+function buildPart(n) {
+  return el => {
+    const items = WS_PARTS[n];
+    let graph = '';
+    if (n === 1) graph = `<div class="figbox" id="wsgraph"></div><input type="range" id="wswl" min="400" max="700" step="2" value="500" aria-label="Wavelength on the graph"><div class="readout-grid" id="wsread"></div>`;
+    el.innerHTML = frame(n, card('try', SECS[n].title, `<p class="muted">${WS_INTRO[n]}</p>${graph}${items.map((_, k) => `<div class="ws-item"><p class="ws-num">Question ${(n - 1) * 5 + k + 1}</p><div id="w${n}_${k}"></div></div>`).join('')}`));
+    if (n === 1) {
+      let l = 500;
+      const lvl = v => v >= 0.6 ? 'high' : v >= 0.25 ? 'medium' : 'low';
+      const draw = () => {
+        $('#wsgraph', el).innerHTML = specGraph({ curves: ['a', 'b', 'c'], cursor: l, gid: 'wsg', aria: 'Absorption spectra of chlorophyll a, chlorophyll b, and carotenoids' });
+        $('#wsread', el).innerHTML = `<div class="cnt" style="border-left-color:${wl2rgb(l)}"><div class="k">Wavelength</div><div class="v">${l} nm</div><div class="k">${colorName(l)}</div></div>` +
+          Object.values(PIG).map(p => `<div class="cnt" style="border-left-color:${p.col}"><div class="k">${p.name}</div><div class="v">${Math.round(p.f(l) * 100)}</div><div class="k">${lvl(p.f(l))}</div></div>`).join('');
+      };
+      $('#wswl', el).addEventListener('input', e => { l = +e.target.value; draw(); }); draw();
+    }
+    const check = () => { if (items.every((_, k) => S.qc['w' + n + '_' + k] && S.qc['w' + n + '_' + k].done)) done(n, 'all'); };
+    items.forEach(([q, o, a, h, x], k) => makeQC($('#w' + n + '_' + k, el), { id: 'w' + n + '_' + k, q, opts: o, ans: a, hint: h, explain: x, fixed: o.length === 2, onCorrect: check }));
+    check();
+  };
+}
+
+/* =========================================================
+   SECTION 8: FINAL CHECK (partial credit on two-part and select-all questions)
+   ========================================================= */
+const ABS_FIG = () => specGraph({ curves: ['a', 'b', 'c'], gid: 'fcg', w: 460, h: 240, aria: 'Absorption spectra of chlorophyll a, chlorophyll b, and carotenoids' }) + `<p class="small muted" style="margin:4px 0 0"><span class="swatch" style="background:var(--chla)"></span>chlorophyll a <span class="swatch" style="background:var(--chlb);margin-left:10px"></span>chlorophyll b <span class="swatch" style="background:var(--car);margin-left:10px"></span>carotenoids</p>`;
+const DATA_FIG = () => `<table class="mini-table"><thead><tr><th>Filter color</th>${FILTERS.map(f => `<th>${f.name}</th>`).join('')}</tr></thead><tbody><tr><td>O₂ bubbles per minute</td>${FILTERS.map(f => `<td>${f.bubbles}</td>`).join('')}</tr></tbody></table>`;
+const BANK = [
+  { id: 'f1', t: 'mc', q: 'What is the main job of photosynthesis?', o: ['To turn light energy into chemical energy stored in glucose', 'To break down glucose to release energy', 'To turn oxygen into carbon dioxide', 'To absorb water from the soil'], a: 0, x: 'Photosynthesis stores light energy in the bonds of glucose. Breaking glucose down is cellular respiration.' },
+  { id: 'f2', t: 'mc', q: 'Where do the light-dependent reactions take place?', o: ['In the thylakoids', 'In the stroma', 'In the mitochondria', 'In the cell membrane'], a: 0, x: 'Stage 1 happens in the thylakoids, where the chlorophyll is.' },
+  { id: 'f3', t: 'mc', q: 'Where does the Calvin cycle take place?', o: ['In the stroma', 'In the thylakoids', 'In the nucleus', 'Outside the chloroplast'], a: 0, x: 'The Calvin cycle runs in the stroma, the fluid around the thylakoids.' },
+  { id: 'f4', t: 'mc', fig: ABS_FIG, q: 'Use the graph. Which colors of light does chlorophyll a absorb best?', o: ['Violet-blue and red', 'Green and yellow', 'Only green', 'Orange and yellow'], a: 0, x: 'Chlorophyll a has its tall peaks near 430 nm (violet-blue) and 660 nm (red).' },
+  { id: 'f5', t: 'mc', q: 'Why do most leaves look green?', o: ['Chlorophyll absorbs little green light, so green is reflected to our eyes', 'Chlorophyll absorbs green light best', 'Leaves make green light', 'Green light is the only color in sunlight'], a: 0, x: 'We see the colors an object reflects. Chlorophyll reflects green.' },
+  { id: 'f6', t: 'mc', q: 'The oxygen released by a plant comes from which molecule?', o: ['Water', 'Carbon dioxide', 'Glucose', 'ATP'], a: 0, x: 'Light energy splits water in stage 1, and the oxygen is released as O₂.' },
+  { id: 'f7', t: 'mc', q: 'Which molecules carry energy from the light-dependent reactions to the Calvin cycle?', o: ['ATP and NADPH', 'Glucose and oxygen', 'Water and carbon dioxide', 'ADP and NADP⁺'], a: 0, x: 'ATP and NADPH are the charged carriers. ADP and NADP⁺ are the empty ones that go back.' },
+  { id: 'f8', t: 'mc', q: 'What does the Calvin cycle take in from the air to build sugar?', o: ['Carbon dioxide', 'Oxygen', 'Nitrogen', 'Water vapor'], a: 0, x: 'The Calvin cycle takes in CO₂ and builds its carbon into glucose.' },
+  { id: 'f9', t: 'mc', q: 'Why are carotenoids useful to a plant?', o: ['They absorb blue-green light that chlorophyll a misses and pass the energy along', 'They reflect red light so the leaf stays cool', 'They build glucose without light', 'They split water to release oxygen'], a: 0, x: 'Carotenoids are accessory pigments. They widen the range of colors the plant can use.' },
+  { id: 'f10', t: 'mc', q: 'In the fall, many leaves turn yellow and orange. Why?', o: ['Chlorophyll breaks down, so the carotenoids that were there all along show', 'The leaves start making green pigment', 'The leaves absorb more yellow light', 'Carotenoids form only in cold weather'], a: 0, x: 'Carotenoids are in the leaf all summer, hidden by chlorophyll.' },
+  { id: 'f11', t: 'mc', q: 'What does "light-independent" mean for the Calvin cycle?', o: ['It doesn\'t use light directly, but it needs ATP and NADPH made using light', 'It only works in the dark', 'It works the same with or without light forever', 'It doesn\'t need any energy'], a: 0, x: 'It needs the charged carriers, so it stops soon after the light goes out.' },
+  { id: 'f12', t: 'mc', q: 'A plant is moved into total darkness. What happens to the Calvin cycle?', o: ['It soon stops, because no new ATP and NADPH are being made', 'It speeds up, because it is the "dark" reaction', 'It keeps going forever', 'It starts making oxygen instead'], a: 0, x: 'Without light there are no new ATP and NADPH, so the Calvin cycle runs out of energy.' },
+  { id: 'f13', t: 'mc', q: 'An action spectrum shows…', o: ['how fast photosynthesis happens at each wavelength', 'how much each pigment weighs', 'how much glucose a plant stores at night', 'which colors a leaf reflects'], a: 0, x: 'An action spectrum measures the rate of photosynthesis, for example O₂ bubbles per minute, at each wavelength.' },
+  { id: 'f14', t: 'mc', q: 'A grower has one LED color to choose for plants. Based on the pigments, which is the best choice?', o: ['Red (about 660 nm)', 'Green (about 530 nm)', 'Yellow (about 580 nm)', 'Any color works the same'], a: 0, x: 'Chlorophyll absorbs red strongly. Green and yellow are mostly reflected.' },
+  { id: 'f15', t: 'mc', q: 'What happens to ADP and NADP⁺ after the Calvin cycle uses ATP and NADPH?', o: ['They go back to the thylakoids to be recharged', 'They are released into the air', 'They become glucose', 'They are broken down for good'], a: 0, x: 'The carriers cycle back and forth between the two stages.' },
+  { id: 'f16', t: 'mc', q: 'Which equation shows photosynthesis?', o: ['6 CO₂ + 6 H₂O + light → C₆H₁₂O₆ + 6 O₂', 'C₆H₁₂O₆ + 6 O₂ → 6 CO₂ + 6 H₂O + energy', '6 O₂ + light → 6 CO₂', 'C₆H₁₂O₆ → 6 CO₂ + 6 H₂O'], a: 0, x: 'Carbon dioxide and water go in; glucose and oxygen come out.' },
+  { id: 'a1', t: 'ab', fig: DATA_FIG, q: 'Students counted oxygen bubbles from elodea under colored filters.', parts: [
+    { q: '<b>Part A:</b> Which conclusion do the data support?', o: ['Blue and red light drive photosynthesis fastest', 'Green light drives photosynthesis fastest', 'All colors drive photosynthesis equally', 'Yellow light drives photosynthesis fastest'], a: 0 },
+    { q: '<b>Part B:</b> Which evidence best supports your answer to Part A?', o: ['Blue gave 26 and red gave 25 bubbles per minute, but green gave only 5', 'Elodea is a green plant', 'Violet light has the shortest wavelength', 'The bubbles are oxygen'], a: 0 }], x: 'The bubble counts are highest under blue and red and lowest under green.' },
+  { id: 'a2', t: 'ab', q: 'A greenhouse replaces its white lights with green lights only.', parts: [
+    { q: '<b>Part A:</b> What will happen to the plants\' photosynthesis?', o: ['It will slow down a lot', 'It will speed up', 'It will stay the same', 'It will stop making oxygen but keep making sugar'], a: 0 },
+    { q: '<b>Part B:</b> Why?', o: ['Chlorophyll absorbs little green light, so less light energy is captured', 'Green light has more energy than white light', 'Plants only use green light at night', 'Green light breaks down glucose'], a: 0 }], x: 'Green light is mostly reflected, so the plants capture much less energy.' },
+  { id: 'a3', t: 'ab', q: 'A plant has plenty of light, but its leaves cannot get water.', parts: [
+    { q: '<b>Part A:</b> What happens to oxygen production?', o: ['It stops, because water is what gets split to release O₂', 'It speeds up', 'It stays the same, because O₂ comes from CO₂', 'It switches to making CO₂'], a: 0 },
+    { q: '<b>Part B:</b> What happens to the Calvin cycle soon after?', o: ['It slows and stops, because no new ATP and NADPH are being made', 'It speeds up to use the extra light', 'Nothing, because it doesn\'t depend on the first stage', 'It starts splitting water instead'], a: 0 }], x: 'No water means stage 1 can\'t replace its electrons, so it stops making O₂, ATP, and NADPH. Stage 2 then runs out of energy.' },
+  { id: 'm1', t: 'multi', q: 'Select <b>all</b> the products of the light-dependent reactions.', o: ['Oxygen (O₂)', 'ATP', 'NADPH', 'Glucose', 'Carbon dioxide (CO₂)'], a: [0, 1, 2], x: 'Stage 1 makes O₂, ATP, and NADPH. Glucose is made in the Calvin cycle, and CO₂ is used there.' },
+  { id: 'm2', t: 'multi', q: 'Select <b>all</b> the inputs to the Calvin cycle.', o: ['Carbon dioxide (CO₂)', 'ATP', 'NADPH', 'Oxygen (O₂)', 'Water (H₂O)'], a: [0, 1, 2], x: 'The Calvin cycle uses CO₂, ATP, and NADPH. Water is used in stage 1, and O₂ is a product.' },
+  { id: 'm3', t: 'multi', fig: ABS_FIG, q: 'Use the graph. Select <b>all</b> the colors chlorophyll a absorbs strongly.', o: ['Violet-blue (about 430 nm)', 'Red (about 660 nm)', 'Green (about 550 nm)', 'Yellow (about 580 nm)'], a: [0, 1], x: 'Chlorophyll a peaks near 430 nm and 660 nm and is low in the green and yellow.' }
+];
+const QB = Object.fromEntries(BANK.map(q => [q.id, q]));
+const qMax = q => q.t === 'mc' ? 1 : q.t === 'ab' ? 2 : q.a.length;
+function qPts(q, a) {
+  if (a == null) return 0;
+  if (q.t === 'mc') return a === q.a ? 1 : 0;
+  if (q.t === 'ab') return q.parts.reduce((s, p, k) => s + (a[k] === p.a ? 1 : 0), 0);
+  const right = a.filter(i => q.a.includes(i)).length, wrong = a.filter(i => !q.a.includes(i)).length;
+  return Math.max(0, right - wrong);
+}
+const answered = (q, a) => a != null && (q.t === 'mc' ? true : q.t === 'ab' ? a[0] != null && a[1] != null : a.length > 0);
+const REVIEW_HTML = `<div class="review-box"><ul>
+  <li>Photosynthesis: 6 CO₂ + 6 H₂O + light → C₆H₁₂O₆ + 6 O₂, in the chloroplasts.</li>
+  <li>Pigments absorb violet-blue and red light best and reflect green. Only absorbed light powers photosynthesis, so the action spectrum matches the absorption spectrum.</li>
+  <li><b>Stage 1, light-dependent</b> (thylakoids): light splits water, releases O₂, and charges up ATP and NADPH.</li>
+  <li><b>Stage 2, Calvin cycle</b> (stroma): uses CO₂, ATP, and NADPH to build glucose, then sends ADP and NADP⁺ back.</li>
+  <li>If either stage stops, the other soon stops too.</li></ul></div>`;
+
+function buildFinal(el) { el.innerHTML = frame(FINAL, '<div id="fc"></div>'); }
+function renderFinal() {
+  const box = $('#fc'), F = S.final;
+  if (F.current) return renderFCQ();
+  const fails = F.attempts.filter(a => !a.pass).length;
+  const hist = F.attempts.length ? `<p class="attempts">Attempts so far: ${F.attempts.map((a, i) => `#${i + 1}: ${a.score}/${a.max}`).join(', ')}</p>` : '';
+  const lockNote = LOCK_ON ? '<p class="lock-note">The lesson stays in full screen. If you leave the page or exit full screen, it locks, and your teacher will need to unlock it.</p>' : '';
+  if (F.passed) {
+    box.innerHTML = card('final', 'You passed the final check', `<div class="score-big pass">${F.best}/${F.bestMax}</div><p>That's your best score. Your results page is unlocked.</p>${hist}
+      <div class="btn-row"><button type="button" class="btn primary" data-go="${RESULTS}">See your results</button><button type="button" class="btn ghost" id="fcStart">Practice with new questions</button></div>`);
+    $('#fcStart').addEventListener('click', startAttempt); return;
+  }
+  if (fails >= 3 && fails % 3 === 0 && F.reviewAt < fails) {
+    box.innerHTML = card('read', 'Quick review before your next try', `<p class="muted">You've tried ${fails} times. Read these key ideas, then start a new check.</p>${REVIEW_HTML}<div class="btn-row"><button type="button" class="btn primary" id="fcReviewed">I reviewed this. Start a new check</button></div>`);
+    $('#fcReviewed').addEventListener('click', () => { F.reviewAt = fails; save(); startAttempt(); }); return;
+  }
+  box.innerHTML = card('final', fails ? 'Try again with new questions' : 'Ready for the final check?', `<p>${FC_LEN} questions picked at random. Two-part and select-all questions give partial credit. Score ${PASS_PCT}% or better to pass. Each retake gives you different questions.</p>${lockNote}${hist}
+    <div class="btn-row"><button type="button" class="btn amber" id="fcStart">Start the final check</button></div>`);
+  $('#fcStart').addEventListener('click', startAttempt);
+}
+function startAttempt() {
+  const F = S.final, last = F.attempts.length ? F.attempts[F.attempts.length - 1].ids : [];
+  const pick = (t, n) => { const pool = BANK.filter(q => q.t === t && !FC_SKIP.includes(q.id)); let ids = shuffle(pool.filter(q => !last.includes(q.id))).map(q => q.id); if (ids.length < n) ids = ids.concat(shuffle(pool.filter(q => last.includes(q.id))).map(q => q.id)); return ids.slice(0, n); };
+  const ids = shuffle(pick('mc', FC_MIX.mc).concat(pick('ab', FC_MIX.ab), pick('multi', FC_MIX.multi)));
+  F.current = { qs: ids.map(id => { const q = QB[id]; return { id, order: q.t === 'ab' ? q.parts.map(p => shuffle(p.o.map((_, i) => i))) : shuffle(q.o.map((_, i) => i)) }; }), ans: {}, idx: 0 };
+  save(); renderFinal();
+  $('#scr-' + FINAL).scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });
+}
+function optBtn(i, pos, text, picked, key, multi) { return `<button type="button" class="opt ${multi ? 'multi' : ''} ${picked ? 'picked' : ''}" data-oi="${i}" ${key ? 'data-key="1"' : ''} ${multi ? `aria-pressed="${picked}"` : ''}><span class="L">${multi ? (picked ? '✓' : '') : 'ABCDE'[pos]}</span><span class="ot">${text}</span></button>`; }
+function renderFCQ() {
+  const cur = S.final.current, qd = cur.qs[cur.idx], q = QB[qd.id], box = $('#fc'), a = cur.ans[qd.id];
+  const allAns = cur.qs.every(x => answered(QB[x.id], cur.ans[x.id]));
+  let body = '';
+  if (q.t === 'mc') body = `<p class="qc-q">${q.q}</p><div class="opts">${qd.order.map((i, pos) => optBtn(i, pos, q.o[i], a === i, i === q.a, false)).join('')}</div>`;
+  else if (q.t === 'multi') body = `<p class="qc-q">${q.q}</p><p class="fc-points">Select every correct answer. Each right choice earns a point; each wrong choice takes one away.</p><div class="opts">${qd.order.map((i, pos) => optBtn(i, pos, q.o[i], (a || []).includes(i), q.a.includes(i), true)).join('')}</div>`;
+  else body = `<p class="qc-q">${q.q}</p>` + q.parts.map((p, k) => `<div class="ab-part" data-part="${k}"><p class="qc-q" style="font-size:17px">${p.q}</p><div class="opts">${qd.order[k].map((i, pos) => optBtn(i, pos, p.o[i], a && a[k] === i, i === p.a, false)).join('')}</div></div>`).join('');
+  box.innerHTML = `<section class="card k-qc"><span class="tag">Final check</span>
+    <div class="fc-dots">${cur.qs.map((x, i) => `<button type="button" class="${answered(QB[x.id], cur.ans[x.id]) ? 'ans' : ''} ${i === cur.idx ? 'cur' : ''}" data-j="${i}" aria-label="Question ${i + 1}">${i + 1}</button>`).join('')}</div>
+    <p class="sec-meta">Question ${cur.idx + 1} of ${FC_LEN} · worth ${qMax(q)} point${qMax(q) > 1 ? 's' : ''}</p>
+    ${q.fig ? `<div class="qc-fig">${q.fig()}</div>` : ''}${body}
+    <div class="btn-row" style="justify-content:space-between;margin-top:18px"><button type="button" class="btn ghost" id="fcPrev" ${cur.idx === 0 ? 'disabled' : ''}>Back</button>
+    ${cur.idx < FC_LEN - 1 ? '<button type="button" class="btn primary" id="fcNext">Next</button>' : `<button type="button" class="btn amber" id="fcSubmit" ${allAns ? '' : 'disabled'}>Submit check</button>`}</div>
+    ${cur.idx === FC_LEN - 1 && !allAns ? `<p class="small muted">Answer every question to submit. Still open: ${cur.qs.map((x, i) => answered(QB[x.id], cur.ans[x.id]) ? null : i + 1).filter(Boolean).join(', ')}.</p>` : ''}</section>`;
+  $$('.opt', box).forEach(b => b.addEventListener('click', () => {
+    const i = +b.dataset.oi;
+    if (q.t === 'mc') cur.ans[qd.id] = i;
+    else if (q.t === 'multi') { const s = new Set(cur.ans[qd.id] || []); s.has(i) ? s.delete(i) : s.add(i); cur.ans[qd.id] = [...s]; }
+    else { const k = +b.closest('.ab-part').dataset.part, v = (cur.ans[qd.id] || [null, null]).slice(); v[k] = i; cur.ans[qd.id] = v; }
+    save(); renderFCQ();
+  }));
+  $$('.fc-dots button', box).forEach(b => b.addEventListener('click', () => { cur.idx = +b.dataset.j; save(); renderFCQ(); }));
+  const prev = $('#fcPrev', box), next = $('#fcNext', box), sub = $('#fcSubmit', box);
+  prev && prev.addEventListener('click', () => { cur.idx--; save(); renderFCQ(); });
+  next && next.addEventListener('click', () => { cur.idx++; save(); renderFCQ(); });
+  sub && sub.addEventListener('click', gradeAttempt);
+}
+function ansText(q, a) {
+  if (q.t === 'mc') return q.o[a];
+  if (q.t === 'multi') return (a || []).map(i => q.o[i]).join('; ') || 'No answer';
+  return q.parts.map((p, k) => `Part ${'AB'[k]}: ${p.o[a[k]]}`).join(' / ');
+}
+const rightText = q => q.t === 'mc' ? q.o[q.a] : q.t === 'multi' ? q.a.map(i => q.o[i]).join('; ') : q.parts.map((p, k) => `Part ${'AB'[k]}: ${p.o[p.a]}`).join(' / ');
+function gradeAttempt() {
+  const F = S.final, cur = F.current;
+  const pts = cur.qs.map(x => qPts(QB[x.id], cur.ans[x.id])), max = cur.qs.map(x => qMax(QB[x.id]));
+  const score = sum(pts), tot = sum(max), pass = score / tot * 100 >= PASS_PCT;
+  const prevPct = F.bestMax ? F.best / F.bestMax : 0, wasPassed = F.passed;
+  F.attempts.push({ score, max: tot, pass, at: new Date().toISOString(), ids: cur.qs.map(x => x.id), pts, maxes: max });
+  if (score / tot >= prevPct) { F.best = score; F.bestMax = tot; }
+  if (pass) { F.passed = true; if (!S.completedAt) S.completedAt = new Date().toISOString(); }
+  F.current = null; save();
+  if (pass) { done(FINAL, 'pass'); disarm(); saveRecord(); }
+  const box = $('#fc');
+  const review = cur.qs.map((x, i) => { const q = QB[x.id]; if (pts[i] === max[i]) return ''; return `<div class="review-item"><p style="margin:0 0 4px"><b>${q.parts ? q.q + ' ' : ''}${q.parts ? '' : q.q}</b> <span class="muted small">(${pts[i]}/${max[i]})</span></p><p class="yours" style="margin:0">Your answer: ${ansText(q, cur.ans[x.id])}</p><p class="right" style="margin:0">Correct answer: ${rightText(q)}</p><p class="small muted" style="margin:4px 0 0">${q.x}</p></div>`; }).join('');
+  const failsNow = F.attempts.filter(a => !a.pass).length;
+  box.innerHTML = card('final', pass ? 'You passed' : 'Not yet', `<div class="score-big ${pass ? 'pass' : 'fail'}">${score}/${tot}</div>
+    <p>${pass ? (review ? 'Nice work. Look over what you missed below.' : 'Perfect score.') : `You need ${PASS_PCT}% to pass. Look over what you missed, then try again with new questions.${failsNow % 3 === 0 ? ' You\'ll see a quick review first.' : ''}`}</p>
+    ${review ? `<h4 style="margin:14px 0 0;font-weight:500;color:var(--muted)">What you missed</h4>${review}` : ''}
+    <div class="btn-row">${pass ? '<button type="button" class="btn primary" data-go="${RESULTS}">See your results</button>' : '<button type="button" class="btn amber" id="fcAgain">Try again</button>'}</div>
+    ${pass ? '<p class="sheetbox sheetStatus" aria-live="polite"></p>' : ''}`);
+  const again = $('#fcAgain'); again && again.addEventListener('click', renderFinal);
+  if (pass && (!wasPassed || score / tot > prevPct)) sendScores();
+  $('#scr-' + FINAL).scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });
+}
+
+/* =========================================================
+   SCORES, RECORDS, CSV, GOOGLE SHEETS
+   ========================================================= */
+const SEC_LABELS = ['Part 1 Absorption spectrum', 'Part 2 Absorbed or reflected', 'Part 3 Stage detective', 'Part 4 What happens if'];
+function lessonScore() {
+  const pts = SEC_LABELS.map(() => 0), max = SEC_LABELS.map(() => 0);
+  LESSON_ITEMS.forEach(([id, sec, p]) => { max[sec - 1] += p; pts[sec - 1] += id === 'cer' ? (S.misc.cerPts || 0) : (S.qc[id] && S.qc[id].first === true ? p : 0); });
+  return { pts, max, c: sum(pts), t: sum(max) };
+}
+const secsDone = () => SECN.filter(n => S.secDone[n]).length;
+const CSV_HEAD = ['Student ID', 'Last Name', 'First Name', 'Period', 'Teacher', 'Activity', 'Score (right on first try)', 'Total', 'Parts Completed (of 4)', 'Date'];
+function recordFromState() {
+  const st = S.student || {}, a = lessonScore(), F = S.final;
+  return [st.id || '', st.last || '', st.first || '', st.period || '', st.teacher || '', LESSON, a.c, a.t, secsDone(), new Date(S.completedAt || Date.now()).toLocaleString()];
+}
+function csvText(rows) { const q = v => { v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }; return [CSV_HEAD, ...rows].map(r => r.map(q).join(',')).join('\r\n') + '\r\n'; }
+function downloadCSV(rows, name) {
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csvText(rows)], { type: 'text/csv;charset=utf-8' })); a.download = name;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+function loadRecs() { try { return (JSON.parse(localStorage.getItem(RECS)) || []).filter(r => Array.isArray(r) && r.length === CSV_HEAD.length); } catch (e) { return []; } }
+function saveRecord() {
+  if (S.preview || !S.student) return;
+  const recs = loadRecs(), row = recordFromState(), i = recs.findIndex(r => r[0] === row[0] && r[1] === row[1]);
+  if (i >= 0) recs[i] = row; else recs.push(row);
+  try { localStorage.setItem(RECS, JSON.stringify(recs)); } catch (e) {}
+}
+function sheetBodies() {
+  const st = S.student || {}, F = S.final, a = lessonScore();
+  const base = { studentId: st.id || '', firstName: st.first || '', lastName: st.last || '', period: st.period || '', teacher: st.teacher || '', locks: String(S.leaves), when: new Date().toString() };
+  const lesson = Object.assign({}, base, { activity: LESSON, score: String(a.c), total: String(a.t), qlabels: SEC_LABELS.join('|'), qpoints: a.pts.join('|'), qmax: a.max.join('|') });
+  let best = null; F.attempts.forEach(x => { if (!best || x.score / x.max >= best.score / best.max) best = x; });
+  const fin = Object.assign({}, base, { activity: `${LESSON}: Final Check`, score: String(F.best), total: String(F.bestMax || 0) },
+    best ? { qlabels: best.ids.map((id, i) => 'Q' + (i + 1)).join('|'), qpoints: best.pts.join('|'), qmax: best.maxes.join('|') } : { qlabels: 'Final Check', qpoints: '0', qmax: '0' });
+  return F.attempts.length ? [lesson, fin] : [lesson];
+}
+function sendScores() {
+  const msg = t => $$('.sheetStatus').forEach(e => { e.textContent = t; });
+  if (!S.student || S.preview) { msg(S.preview ? 'Preview mode: scores are not sent.' : 'Sign in on the start page first.'); return; }
+  saveRecord(); msg('Sending...');
+  Promise.all(sheetBodies().map(b => fetch(sheetURL(), { method: 'POST', mode: 'no-cors', body: new URLSearchParams(b) })))
+    .then(() => { S.sentAt = new Date().toISOString(); save(); msg('Sent! Your teacher will see your scores.'); })
+    .catch(() => msg("Couldn't send. Check the Wi-Fi and try again, or download the CSV."));
+}
+function renderResults() {
+  const el = $('#scr-' + RESULTS), st = S.student || {}, a = lessonScore(), F = S.final;
+  el.innerHTML = `<header class="sec-head">${tileHTML(RESULTS)}<div><p class="sec-meta">Results</p><h2>${S.completedAt ? 'Worksheet complete' : 'Your results so far'}</h2></div></header>
+  <section class="card"><span class="tag">Student</span>
+    <div class="who"><div><span>Name</span>${esc(st.first)} ${esc(st.last)}</div><div><span>Period</span>${esc(st.period)}</div><div><span>Teacher</span>${esc(st.teacher)}</div><div><span>Student ID</span>${esc(st.id)}</div></div>
+    <div class="stats">
+      <div class="stat"><div class="k">Right on the first try</div><div class="v">${a.c}/${a.t}</div></div>
+      <div class="stat"><div class="k">Parts finished</div><div class="v">${secsDone()}/${NSEC}</div></div>
+    </div>
+    <div class="table-scroll"><table class="mini-table"><thead><tr><th>Part</th><th>Points</th></tr></thead><tbody>${SEC_LABELS.map((l, i) => `<tr><td>${l}</td><td>${a.pts[i]} / ${a.max[i]}</td></tr>`).join('')}</tbody></table></div>
+    <p class="small muted">${S.completedAt ? 'Completed ' + new Date(S.completedAt).toLocaleString() : ''}</p></section>
+  <section class="card"><span class="tag">Your goals</span><ul class="goals" id="goalsResults"></ul></section>
+  <div class="btn-row no-print"><button type="button" class="btn primary" id="sendBtn">Send my scores to my teacher</button><button type="button" class="btn ghost" id="csvBtn">Download CSV</button><button type="button" class="btn ghost" id="printBtn">Print results</button></div>
+  <p class="sheetbox sheetStatus no-print" aria-live="polite">${S.sentAt ? `Sent to your teacher ${new Date(S.sentAt).toLocaleString()}.` : ''}</p>`;
+  renderGoalsInto($('#goalsResults'));
+  $('#csvBtn').addEventListener('click', () => downloadCSV([recordFromState()], `photosynthesis-worksheet-${saveKey(st)}.csv`));
+  $('#sendBtn').addEventListener('click', sendScores);
+  $('#printBtn').addEventListener('click', () => window.print());
+}
+
+/* =========================================================
+   PROGRESS: requirements, sections, goals, nav
+   ========================================================= */
+function renderReqs(n, justId) {
+  const box = $('#unlock-' + n); if (!box) return;
+  $('.reqs', box).innerHTML = REQS[n].map(([id, t]) => `<li class="${S.reqs[n + '.' + id] ? 'ok' : ''} ${id === justId ? 'just-ok' : ''}"><span class="box"></span><span>${t}</span></li>`).join('');
+  box.classList.toggle('all-done', !!S.secDone[n]);
+}
+function updateNext(n) { const b = $('#next-' + n); if (b) b.disabled = !(S.secDone[n] || S.teacherUnlock); }
+function done(n, id) {
+  const k = n + '.' + id;
+  if (S.reqs[k]) return;
+  S.reqs[k] = true; save();
+  if (!REQS[n].some(([r]) => r === id)) return;
+  renderReqs(n, id);
+  if (REQS[n].every(([r]) => S.reqs[n + '.' + r])) completeSection(n);
+}
+function completeSection(n) {
+  if (S.secDone[n]) return;
+  S.secDone[n] = true; save(); cloudSave(true);
+  if (n === NSEC) { S.completedAt = S.completedAt || new Date().toISOString(); save(); saveRecord(); sendScores(); }
+  renderReqs(n); updateNext(n); renderNav(n + 1);
+  const gi = GOALS.findIndex(g => g.sec === n); renderGoals(gi);
+  setTimeout(() => toast(gi >= 0 ? `Goal reached: ${GOALS[gi].t}` : (n < NSEC ? `Section ${n + 1} unlocked` : 'Results unlocked')), 250);
+}
+function accessible(n) {
+  if (n === 0) return true;
+  if (!S.student) return false;
+  if (S.teacherUnlock || S.preview) return true;
+  if (n === 1) return true;
+  if (n <= NSEC) return !!S.secDone[n - 1];
+  return !!S.secDone[NSEC];
+}
+function renderNav(popN) {
+  $('#navTiles').innerHTML = [...SECN, RESULTS].map(n => {
+    const title = n <= NSEC ? `Section ${n}: ${SECS[n].title}` : 'Results';
+    return `<button type="button" class="tile ${S.cur === n ? 'current' : ''} ${n <= NSEC && S.secDone[n] ? 'done' : ''} ${n === popN && !REDUCED ? 'unlocking' : ''}" data-go="${n}" ${accessible(n) ? '' : 'disabled'} title="${esc(title)}" aria-label="${esc(title)}${accessible(n) ? '' : ' (locked)'}"><span class="z">${n}</span>${ico(TILES[n].ic)}<span class="ck" aria-hidden="true">✓</span></button>`;
+  }).join('');
+}
+function renderGoalsInto(ul, justIdx) { if (ul) ul.innerHTML = GOALS.map((g, i) => `<li class="${S.secDone[g.sec] ? 'ok' : ''} ${i === justIdx ? 'just-ok' : ''}"><span class="box"></span><span>${g.t}</span></li>`).join(''); }
+function renderGoals(justIdx) {
+  renderGoalsInto($('#goalsStart'), justIdx); renderGoalsInto($('#goalsDrawerList'), justIdx); renderGoalsInto($('#goalsResults'), justIdx);
+  $('#goalsBtn').textContent = `Goals ${GOALS.filter(g => S.secDone[g.sec]).length}/${GOALS.length}`;
+}
+function go(n) {
+  if (n < 0 || n > RESULTS) return;
+  if (S.final.current && n !== FINAL) { toast('Submit your final check first.'); return; }
+  if (!accessible(n)) { toast(S.student ? 'Finish the section before this one to unlock it.' : 'Sign in to start.'); return; }
+  S.cur = n; save();
+  if (n >= 1) arm();
+  $$('.screen').forEach(s => s.classList.toggle('on', s.id === 'scr-' + n));
+  if (SIM7) SIM7.stop();
+  if (SHOW_HOOKS[n]) SHOW_HOOKS[n]();
+  if (n === FINAL) renderFinal();
+  if (n === RESULTS) renderResults();
+  if (n === 0) { startHero(); renderStart(); } else heroRun++;
+  renderNav();
+  window.scrollTo({ top: 0, behavior: 'auto' });
+}
+const BUILD = [null, buildPart(1), buildPart(2), buildPart(3), buildPart(4)];
+function buildAll() {
+  for (let n = 1; n <= NSEC; n++) { try { BUILD[n]($('#scr-' + n)); } catch (err) { console.error('Section ' + n, err); } renderReqs(n); updateNext(n); }
+  renderGoals(); renderNav();
+}
+
+/* =========================================================
+   HERO: sunlight on a leaf
+   ========================================================= */
+let heroRun = 0;
+function startHero() {
+  const svg = $('#heroSvg'), id = ++heroRun;
+  const ray = (x1, y1, x2, y2, col, d) => `<path d="M${x1} ${y1} L${x2} ${y2}" stroke="${col}" stroke-width="7" stroke-linecap="round" stroke-dasharray="26 400" stroke-dashoffset="26"><animate attributeName="stroke-dashoffset" from="26" to="-${Math.hypot(x2 - x1, y2 - y1).toFixed(0)}" dur="2.4s" begin="${d}s" repeatCount="indefinite"/></path>`;
+  svg.innerHTML = `<circle cx="56" cy="52" r="30" fill="#ffd166"/><g stroke="#ffd166" stroke-width="3" stroke-linecap="round">${[0, 45, 90, 135, 180, 225, 270, 315].map(a => { const r = a * Math.PI / 180; return `<line x1="${56 + 38 * Math.cos(r)}" y1="${52 + 38 * Math.sin(r)}" x2="${56 + 48 * Math.cos(r)}" y2="${52 + 48 * Math.sin(r)}"/>`; }).join('')}</g>
+    <path d="M150 270C150 175 222 100 360 92c0 112-78 180-210 178z" fill="#3f9d60" stroke="#9be0b3" stroke-width="2.5"/><path d="M156 264C200 214 250 170 340 110" stroke="#bff0cf" stroke-width="3" fill="none"/>
+    ${REDUCED ? '' : ray(80, 70, 230, 190, '#3b82f6', 0) + ray(80, 70, 270, 160, '#ef4444', 0.8) + ray(80, 70, 210, 210, '#22c55e', 1.6)}
+    ${REDUCED ? '' : `<path d="M210 210 L120 290" stroke="#22c55e" stroke-width="7" stroke-linecap="round" stroke-dasharray="26 400" stroke-dashoffset="26" opacity=".9"><animate attributeName="stroke-dashoffset" from="26" to="-130" dur="1.2s" begin="2.8s" repeatCount="indefinite"/></path>`}
+    ${[0, 1, 2].map(i => `<circle cx="${330 + i * 14}" cy="80" r="${5 + i}" fill="none" stroke="#7fe0ff" stroke-width="2">${REDUCED ? '' : `<animate attributeName="cy" from="90" to="10" dur="${2.6 + i * 0.4}s" begin="${i * 0.7}s" repeatCount="indefinite"/>`}</circle>`).join('')}
+    <text x="360" y="30" fill="#7fe0ff" font-size="14" font-family="Lexend,sans-serif" font-weight="600">O₂</text>`;
+  $('#heroCap').innerHTML = '<b>Blue</b> and <b>red</b> light are absorbed and power photosynthesis. <b>Green</b> light bounces off, which is why leaves look green.';
+  if (id !== heroRun) return;
+}
+
+/* =========================================================
+   LOCKDOWN: the whole lesson runs in full screen (GitHub Pages)
+   ========================================================= */
+let fsExiting = false, teacherOpen = false;
+function reqFS() { const d = document.documentElement, f = d.requestFullscreen || d.webkitRequestFullscreen; if (f && !document.fullscreenElement) { try { const p = f.call(d); if (p && p.catch) p.catch(() => {}); } catch (e) {} } }
+function exitFS() { if (!document.fullscreenElement) return; const f = document.exitFullscreen || document.webkitExitFullscreen; fsExiting = true; try { const p = f.call(document); if (p && p.then) p.then(() => { fsExiting = false; }, () => { fsExiting = false; }); else fsExiting = false; } catch (e) { fsExiting = false; } }
+function arm() { if (!LOCK_ON || S.preview || S.completedAt || !S.student || S.locked) return; if (!S.lockActive) { S.lockActive = true; save(); } reqFS(); }
+function disarm() { S.lockActive = false; S.locked = false; save(); $('#lockOv').hidden = true; exitFS(); }
+function lockNow() { if (!S.lockActive || S.locked || teacherOpen || S.completedAt || S.preview) return; S.locked = true; S.leaves++; save(); cloudSave(true); showLock(); }
+function showLock() { $('#lockOv').hidden = false; $('#lockCode').value = ''; $('#lockMsg').textContent = ''; setTimeout(() => $('#lockCode').focus(), 60); }
+document.addEventListener('visibilitychange', () => { if (document.hidden) { save(); cloudBeacon(); lockNow(); } });
+window.addEventListener('blur', () => { setTimeout(() => { if (!document.hasFocus()) lockNow(); }, 150); });
+document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && !fsExiting) lockNow(); });
+function tryUnlock() {
+  if ($('#lockCode').value.trim().toLowerCase() === TEACHER_CODE.toLowerCase()) { S.locked = false; save(); $('#lockOv').hidden = true; reqFS(); toast('Unlocked'); }
+  else { $('#lockMsg').textContent = 'That code isn\'t right. Ask your teacher.'; shake($('#lockCode')); }
+}
+$('#lockGo').addEventListener('click', tryUnlock);
+$('#lockCode').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+
+/* =========================================================
+   NO COPY, CUT, PASTE, RIGHT-CLICK, OR TEXT SELECTION
+   ========================================================= */
+const inField = t => !!(t && t.closest && t.closest('input, select, textarea'));
+['copy', 'cut', 'paste'].forEach(ev => document.addEventListener(ev, e => { e.preventDefault(); toast('Copy and paste are turned off in this lesson.'); }, true));
+document.addEventListener('contextmenu', e => e.preventDefault(), true);
+document.addEventListener('selectstart', e => { if (!inField(e.target)) e.preventDefault(); }, true);
+document.addEventListener('dragstart', e => e.preventDefault(), true);
+document.addEventListener('drop', e => e.preventDefault(), true);
+document.addEventListener('keydown', e => {
+  const k = (e.key || '').toLowerCase(), mod = e.ctrlKey || e.metaKey;
+  if (mod && ['c', 'x', 'v', 'p', 's', 'u'].includes(k)) { e.preventDefault(); if (k === 'c' || k === 'x' || k === 'v') toast('Copy and paste are turned off in this lesson.'); return; }
+  if (mod && k === 'a' && !inField(e.target)) { e.preventDefault(); return; }
+  if (k === 'f12' || (mod && e.shiftKey && ['i', 'j', 'c'].includes(k))) e.preventDefault();
+}, true);
+
+/* =========================================================
+   TEACHER VIEW
+   ========================================================= */
+const tOv = $('#teacherOv');
+function teacherInfo() {
+  const st = S.student, a = lessonScore();
+  $('#tInfo').textContent = `${st ? `${S.preview ? 'Preview mode. ' : `Student: ${st.first} ${st.last}, period ${st.period}, save code ${saveKey(st)}. `}` : 'No student signed in. '}Lesson score: ${a.c}/${a.t}. Final check best: ${S.final.best}/${S.final.bestMax || '—'} (${S.final.attempts.length} attempts). Times locked: ${S.leaves}. Scores saved on this Chromebook: ${loadRecs().length}.`;
+  $('#tKey').textContent = document.body.classList.contains('show-key') ? 'Hide answer key' : 'Show answer key';
+  $('#tUnlock').disabled = !!S.teacherUnlock; $('#tUnlock').textContent = S.teacherUnlock ? 'Every section is unlocked' : 'Unlock every section';
+  $('#tEndLock').disabled = !S.lockActive;
+}
+$('#teacherBtn').addEventListener('click', () => { teacherOpen = true; tOv.hidden = false; $('#tLogin').classList.remove('hidden'); $('#tPanel').classList.add('hidden'); $('#tCode').value = ''; $('#tMsg').textContent = ''; setTimeout(() => $('#tCode').focus(), 50); });
+const closeT = () => { tOv.hidden = true; teacherOpen = false; };
+const tLogin = () => { if ($('#tCode').value.trim().toLowerCase() === TEACHER_CODE.toLowerCase()) { $('#tLogin').classList.add('hidden'); $('#tPanel').classList.remove('hidden'); teacherInfo(); } else { $('#tMsg').textContent = 'That code isn\'t right.'; shake($('#tCode')); } };
+$('#tGo').addEventListener('click', tLogin);
+$('#tCode').addEventListener('keydown', e => { if (e.key === 'Enter') tLogin(); });
+$('#tCancel').addEventListener('click', closeT); $('#tClose').addEventListener('click', closeT);
+$('#tUnlock').addEventListener('click', () => { if (!S.student) { toast('Have the student sign in first.'); return; } S.teacherUnlock = true; save(); renderNav(); for (let n = 1; n <= NSEC; n++) updateNext(n); teacherInfo(); toast('Every section is unlocked'); });
+$('#tKey').addEventListener('click', () => { document.body.classList.toggle('show-key'); teacherInfo(); });
+$('#tSend').addEventListener('click', sendScores);
+$('#tCSV').addEventListener('click', () => { const r = loadRecs(); if (!r.length) { $('.sheetStatus', tOv).textContent = 'No finished lessons are saved on this Chromebook yet.'; return; } downloadCSV(r, 'photosynthesis-worksheet-scores.csv'); });
+$('#tEndLock').addEventListener('click', () => { disarm(); teacherInfo(); toast('Lockdown ended for this student'); });
+$('#tPreview').addEventListener('click', () => {
+  const ns = freshState(); ns.preview = true; ns.teacherUnlock = true; ns.student = { first: 'Teacher', last: 'Preview', period: '-', teacher: '-', id: 'preview' };
+  S = ns; saveBlocked = false; buildAll(); closeT(); go(1); showNote(); toast('Preview: nothing you do here is saved.');
+});
+let resetArmed = false;
+$('#tReset').addEventListener('click', () => {
+  if (!resetArmed) { resetArmed = true; $('#tReset').textContent = 'Tap again to erase the saved lesson on this Chromebook'; setTimeout(() => { resetArmed = false; $('#tReset').textContent = 'Reset this Chromebook (erase saved work)'; }, 4000); return; }
+  try { localStorage.removeItem(STORE); } catch (e) {}
+  location.reload();
+});
+
+/* =========================================================
+   GLOBAL EVENTS
+   ========================================================= */
+const pop = $('#pop');
+document.addEventListener('click', e => {
+  const g = e.target.closest('[data-go]');
+  if (g && !g.disabled) { go(+g.dataset.go); return; }
+  const ch = e.target.closest('.chip');
+  if (ch) {
+    const t = ch.dataset.term; $('b', pop).textContent = t; $('p', pop).textContent = GLOSS[t] || ''; pop.hidden = false;
+    const r = ch.getBoundingClientRect(), w = Math.min(300, window.innerWidth - 24);
+    pop.style.left = Math.max(12, Math.min(r.left, window.innerWidth - w - 12)) + 'px';
+    const ph = pop.offsetHeight; pop.style.top = (r.bottom + 8 + ph > window.innerHeight - 10 ? Math.max(10, r.top - ph - 8) : r.bottom + 8) + 'px';
+    return;
+  }
+  if (!e.target.closest('#pop')) pop.hidden = true;
+  const dr = $('#goalsDrawer');
+  if (!dr.hidden && !e.target.closest('#goalsDrawer') && !e.target.closest('#goalsBtn')) { dr.hidden = true; $('#goalsBtn').setAttribute('aria-expanded', 'false'); }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { pop.hidden = true; $('#goalsDrawer').hidden = true; } });
+window.addEventListener('scroll', () => { pop.hidden = true; }, { passive: true });
+$('#goalsBtn').addEventListener('click', () => { const d = $('#goalsDrawer'); d.hidden = !d.hidden; $('#goalsBtn').setAttribute('aria-expanded', String(!d.hidden)); });
+$('#goalsClose').addEventListener('click', () => { $('#goalsDrawer').hidden = true; $('#goalsBtn').setAttribute('aria-expanded', 'false'); });
+$('.brand').style.cursor = 'pointer';
+$('.brand').addEventListener('click', () => { if (!S.final.current) go(0); });
+$('#tabReload').addEventListener('click', () => location.reload());
+window.addEventListener('storage', e => { if (e.key !== STORE || !e.newValue) return; try { const st = JSON.parse(e.newValue); if (st && (st.rev || 0) > (S.rev || 0)) { saveBlocked = true; onConflict(); } } catch (_) {} });
+window.addEventListener('pagehide', () => { save(); cloudBeacon(); });
+
+/* =========================================================
+   START PAGE: sign in, resume, save code
+   ========================================================= */
+function renderStart() {
+  const has = !!S.student && !S.preview;
+  $('#resumeBox').hidden = !has; $('#startForm').hidden = has;
+  $('#signinTag').textContent = has ? 'Welcome back' : 'Sign in to start';
+  if (has) $('#resumeText').innerHTML = `Signed in as <b>${esc(S.student.first)} ${esc(S.student.last)}</b>, period ${esc(S.student.period)}.`;
+  $('#saveInfo').innerHTML = CLOUD() ? 'Your work is saved on this Chromebook and <b>backed up</b>. On any Chromebook, sign in with the same <b>student ID and last name</b> to pick up where you left off.' : 'Your progress saves on this Chromebook.';
+}
+function adoptState(ns) {
+  let storedRev = 0; try { const raw = localStorage.getItem(STORE); if (raw) storedRev = JSON.parse(raw).rev || 0; } catch (e) {}
+  ns.rev = Math.max(ns.rev || 0, storedRev); S = Object.assign(freshState(), ns); saveBlocked = false; save(); buildAll();
+}
+const resumeTarget = () => { if (S.cur >= 1 && S.cur <= RESULTS && accessible(S.cur)) return S.cur; let n = 1; for (let k = 1; k <= NSEC; k++) if (accessible(k)) n = k; return n; };
+$('#fPeriod').innerHTML = '<option value="">Choose your period</option>' + PERIODS.map(p => `<option>${p}</option>`).join('');
+$('#fTeacher').innerHTML = '<option value="">Choose your teacher</option>' + teacherList().map(t => `<option>${esc(t)}</option>`).join('');
+let skipCloud = false;
+$('#startForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const v = { first: $('#fFirst').value.trim(), last: $('#fLast').value.trim(), id: $('#fId').value.trim(), period: $('#fPeriod').value, teacher: $('#fTeacher').value };
+  const miss = [['first', 'first name'], ['last', 'last name'], ['id', 'student ID'], ['period', 'period'], ['teacher', 'teacher']].filter(([k]) => !v[k]).map(([, l]) => l);
+  const err = $('#formErr'), btn = $('#startForm button[type=submit]');
+  if (miss.length) { err.className = 'fb no'; err.textContent = 'Fill in your ' + miss.join(', ') + '.'; err.hidden = false; return; }
+  if (LOCK_ON) reqFS();
+  if (CLOUD() && !skipCloud) {
+    btn.disabled = true; err.className = 'fb info'; err.textContent = 'Checking for your saved work...'; err.hidden = false;
+    const res = await cloudLoad(v); btn.disabled = false;
+    if (res.status === 'found') {
+      err.hidden = true; const d = res.data; d.student = Object.assign({}, d.student || {}, { first: v.first, period: v.period, teacher: v.teacher });
+      d.preview = false; adoptState(d); go(resumeTarget()); showNote('✓ Your saved work was loaded'); return;
+    }
+    if (res.status === 'error') {
+      err.className = 'fb no';
+      err.innerHTML = 'Couldn\'t reach your saved work. Check the Wi-Fi and press <b>Start the lesson</b> again.<br><button class="linkbtn" type="button" id="startAnyway">I\'m new to this lesson. Start without saved work.</button>';
+      $('#startAnyway').addEventListener('click', () => { skipCloud = true; $('#startForm').requestSubmit(); });
+      return;
+    }
+    err.hidden = true;
+  }
+  const ns = freshState(); ns.student = v; ns.startedAt = Date.now(); adoptState(ns); go(1); cloudSave(true);
+});
+$('#resumeBtn').addEventListener('click', () => { if (S.locked && S.lockActive) { showLock(); return; } go(resumeTarget()); });
+$('#notMeBtn').addEventListener('click', async () => {
+  const btn = $('#notMeBtn'), err = $('#resumeErr'), who = S.student ? `${S.student.first} ${S.student.last}` : 'the last student';
+  if (CLOUD() && S.student) {
+    btn.disabled = true; btn.textContent = `Backing up ${who}'s work...`;
+    try { await fetch(saveURL(), { method: 'POST', mode: 'no-cors', body: cloudBody() }); }
+    catch (e) { btn.disabled = false; btn.textContent = 'Not you? Sign in as a different student'; err.textContent = `Can't back up ${who}'s work right now. Check the Wi-Fi and try again, or ask your teacher.`; err.hidden = false; return; }
+    btn.disabled = false; btn.textContent = 'Not you? Sign in as a different student'; err.hidden = true;
+  }
+  adoptState(freshState()); renderStart();
+  ['#fFirst', '#fLast', '#fId', '#fPeriod', '#fTeacher'].forEach(s => { $(s).value = ''; });
+});
+
+/* =========================================================
+   INIT
+   ========================================================= */
+if (!STORAGE_OK) $('#noStore').hidden = false;
+if (S.preview) S = freshState();
+buildAll(); renderStart(); showNote();
+go(0);
+if (S.student && S.locked && S.lockActive && !S.completedAt) showLock();
+})();
+</script>
+</body>
+</html>
