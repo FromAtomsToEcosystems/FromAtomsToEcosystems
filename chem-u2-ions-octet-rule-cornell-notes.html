@@ -88,6 +88,10 @@ table.t th{background:var(--soft)}
 .side>div:first-child{flex:1}
 .ex.yt{border-top:0;margin-top:0;padding-top:2px}
 .ex.yt b:first-child{color:#b5610e}
+.tile.ion{font-size:11px;width:auto;min-width:30px;padding:0 3px}.tile.ion sup{font-size:.7em;line-height:0}
+.tile.ion.pos{border-color:#2f6fd1;color:#2f6fd1}.tile.ion.neg{border-color:#c0267a;color:#c0267a}.tile.ion.neu{border-color:#b5610e;color:#b5610e}.tile.ion.long{font-size:9.5px}
+.yt-inline b{color:#b5610e}
+.tile.ion .lab{white-space:nowrap}
 </style>
 </head>
 <body>
@@ -112,13 +116,13 @@ table.t th{background:var(--soft)}
 <!-- ================= PAGE 2 ================= -->
 <div class="page">
  <div class="head">
-  <div><h1>Ions and the Octet Rule (continued)</h1><div class="sub">Predicting, naming, and drawing ions</div></div>
+  <div><h1>Ions and the Octet Rule (continued)</h1><div class="sub">Naming, drawing, and combining ions</div></div>
   <div class="who"><label for="nm2">Name</label><input id="nm2" data-save="name2"></div>
  </div>
  <div class="cornell" id="p2"></div>
  <div class="summary">
   <h3>Summary</h3>
-  <p style="margin:0 0 4px;font-size:13px;color:var(--muted)">In 2–3 sentences: Explain why metals form positive ions and nonmetals form negative ions. Use the words octet rule, valence electrons, and charge.</p>
+  <p style="margin:0 0 4px;font-size:13px;color:var(--muted)">In 2–3 sentences: Explain why metals form positive ions and nonmetals form negative ions, and how they combine. Use the words octet rule, valence electrons, and charge.</p>
   <textarea aria-label="Summary" data-save="summary"></textarea>
  </div>
  <div class="foot">From Atoms To Ecosystems</div>
@@ -127,7 +131,7 @@ table.t th{background:var(--soft)}
 <script>
 const TEACHER_CODE="Austin";
 const KEY="fate_chem_u2_ions_cornell_v1";
-const T=(z,sym,sec)=>`<div class="where"><span class="tile"><i>${z}</i>${sym}</span>Section ${sec}</div>`;
+const T=(lab,k,sec)=>`<div class="where"><span class="tile ion ${k}"><i>${sec}</i><span class="lab">${lab}</span></span>Section ${sec}</div>`;
 const GT=`<table class="t"><tr><th>Group</th><th>1</th><th>2</th><th>13</th><th>14</th><th>15</th><th>16</th><th>17</th><th>18</th></tr><tr><td>Ion charge</td><td>{{1+|+1}}</td><td>{{2+|+2}}</td><td>{{3+|+3}}</td><td>{{shares|share}}</td><td>{{3−|3-|-3}}</td><td>{{2−|2-|-2}}</td><td>{{1−|1-|-1}}</td><td>{{none|0}}</td></tr></table>`;
 /* ---------- drawing practice: click the faint spots to place electrons ---------- */
 const ORDER=[[-90,-1],[0,-1],[90,-1],[180,-1],[-90,1],[0,1],[90,1],[180,1]];
@@ -151,44 +155,43 @@ function clearDots(id){if(keyOn)return;Object.keys(dots).filter(k=>k.startsWith(
 
 const P1=[
  {head:true},
- {where:T(1,"H",1),cue:"What is the octet rule?",notes:`
+ {where:T("Ne","neu",1),cue:"What is the octet rule?",notes:`
   <p>Atoms are most stable when their outer shell is {{full}}. For most atoms, full means {{8}} electrons. This is the {{octet}} rule.</p>
   <p>The {{noble gases}} (group 18) already have full outer shells, so they almost never react.</p>
   <p class="ex"><b>Example:</b> Neon is 2, 8. Its outer shell has {{8}} electrons, so it is stable.</p>
   <p class="ex yt"><b>Your turn:</b> Argon is 2, 8, 8. Is its outer shell full? {{yes}}</p>`},
- {where:T(2,"He",2),cue:"What is an ion, and how do you find its charge?",notes:`
+ {where:T("Na<sup>+</sup>","pos",2),cue:"What is an ion, and how do you find its charge?",notes:`
   <p>An ion is an atom that has gained or lost {{electrons}}. The number of {{protons}} never changes.</p>
   <p>Charge = {{protons}} − {{electrons}}. Losing electrons makes a {{positive}} ion; gaining electrons makes a {{negative}} ion.</p>
   <p class="ex"><b>Example:</b> 11 protons and 10 electrons: 11 − 10 = {{+1|1+}}. This is Na⁺.</p>
   <p class="ex yt"><b>Your turn:</b> 35 protons and 36 electrons: charge = {{−1|-1|1-|1−}}.</p>`},
- {where:T(3,"Li",3),cue:"Why do metals lose electrons?",notes:`
-  <p>Metals have only {{1, 2, or 3|1-3|1 to 3}} valence electrons. It is easier to {{lose}} them than to gain 5 or more. The empty shell goes away, and the shell underneath is already {{full}}.</p>
-  <p class="ex"><b>Example:</b> Sodium (2, 8, 1) loses {{1}} electron and becomes Na⁺ with arrangement {{2, 8|2,8}}.</p>
-  <p class="ex yt"><b>Your turn:</b> Beryllium (2, 2) loses {{2}} electrons and becomes Be²⁺ with arrangement {{2}}.</p>`},
- {where:T(4,"Be",4),cue:"Why do nonmetals gain electrons?",notes:`
-  <p>Nonmetals have {{5, 6, or 7|5-7|5 to 7}} valence electrons. It is easier to {{gain}} a few to reach 8. Gained electrons still go in the {{class}} order.</p>
-  <p class="ex"><b>Example:</b> Chlorine (2, 8, 7) gains {{1}} electron and becomes Cl⁻ with arrangement {{2, 8, 8|2,8,8}}.</p>
-  <div class="side"><div><p class="ex yt"><b>Your turn:</b> Phosphorus (2, 8, 5) gains {{3}} electrons and becomes P³⁻.</p><p class="small"><b>Draw it:</b> Click the spots to draw P³⁻ (phosphorus: atomic number 15, mass 30.974). Remember the class order, and fill the outer shell to 8.</p></div>${drawBox('P3','Draw P³⁻')}</div>`}
+ {where:T("Mg<sup>2+</sup>","pos",3),cue:"Will an atom lose or gain electrons?",notes:`
+  <p>Metals have only {{1, 2, or 3|1-3|1 to 3}} valence electrons, so they {{lose}} them. The empty shell goes away, and the shell underneath is already {{full}}.</p>
+  <p>Nonmetals have {{5, 6, or 7|5-7|5 to 7}} valence electrons, so they {{gain}} a few to reach 8. Gained electrons go in the {{class}} order.</p>
+  <p class="ex"><b>Example:</b> Sodium (2, 8, 1) loses {{1}} → Na⁺ ({{2, 8|2,8}}). Chlorine (2, 8, 7) gains {{1}} → Cl⁻ ({{2, 8, 8|2,8,8}}).</p>
+  <div class="side"><div><p class="ex yt"><b>Your turn:</b> Phosphorus (2, 8, 5) will {{gain}} {{3}} electrons and become P³⁻.</p><p class="small"><b>Draw it:</b> Click the spots to draw P³⁻ (phosphorus: atomic number 15, mass 30.974). Fill the outer shell to 8 in the class order.</p></div>${drawBox('P3','Draw P³⁻')}</div>`},
+ {where:T("Al<sup>3+</sup>","pos",4),cue:"How can the periodic table predict an ion's charge?",notes:`
+  <p>Elements in the same {{group}} form ions with the same charge.</p>${GT}
+  <p class="ex"><b>Example:</b> Calcium is in group 2, so it forms {{Ca²⁺|Ca2+}}.</p>
+  <p class="ex yt"><b>Your turn:</b> Iodine is in group 17, so it forms an ion with a charge of {{1−|1-|-1}}.</p>`}
 ];
 const P2=[
  {head:true},
- {where:T(5,"B",5),cue:"How can the periodic table predict an ion's charge?",notes:`
-  <p>Elements in the same {{group}} form ions with the same charge.</p>${GT}
-  <p class="ex"><b>Example:</b> Calcium is in group 2, so it forms {{Ca²⁺|Ca2+}}.</p>
-  <p class="ex yt"><b>Your turn:</b> Iodine is in group 17, so it forms an ion with a charge of {{1−|1-|-1}}.</p>`},
- {where:T(6,"C",6),cue:"How do you write and name ions?",notes:`
+ {where:T("O<sup>2−</sup>","neg",5),cue:"How do you write and name ions?",notes:`
   <p>Symbol: write the {{number}} first, then the {{sign}} (Mg²⁺). If the charge is 1, write just the sign (Na⁺).</p>
   <p>Positive ions keep the element's {{name}} (sodium ion). Negative ions end in {{-ide|ide}}.</p>
   <p class="ex"><b>Example:</b> O²⁻ is called {{oxide}}.</p>
   <p class="ex yt"><b>Your turn:</b> Br⁻ is called {{bromide}}.</p>`},
- {where:T(7,"N",7),cue:"How do you draw a Bohr model of an ion?",notes:`
+ {where:T("S<sup>2−</sup>","neg",6),cue:"How do you draw a Bohr model of an ion?",notes:`
   <p>Keep the same {{nucleus}}. For a positive ion, remove the outer electrons and do not draw the {{empty}} shell. For a negative ion, fill the outer shell to {{8}}. Put {{brackets}} around the model and write the {{charge}} at the top right.</p>
   <p class="ex"><b>Example:</b> Mg²⁺: 12 p⁺, 12 n⁰, {{10}} electrons, arranged {{2, 8|2,8}}.</p>
   <div class="side"><div><p class="ex yt"><b>Your turn:</b> F⁻: 9 p⁺, 10 n⁰, {{10}} electrons, arranged {{2, 8|2,8}}.</p><p class="small"><b>Draw it:</b> Click the spots to draw F⁻ (fluorine: atomic number 9, mass 18.998). Then fill in the nucleus and charge.</p></div>${drawBox('F1','Draw F⁻')}</div>`},
- {where:T(8,"O",8),cue:"How are ions like noble gases?",notes:`
-  <p>Ions often have the same electron arrangement as a {{noble gas}}, which is why they are stable.</p>
-  <p class="ex"><b>Example:</b> Na⁺ (2, 8) has the same arrangement as {{neon}}.</p>
-  <p class="ex yt"><b>Your turn:</b> Cl⁻ (2, 8, 8) has the same arrangement as {{argon}}.</p>`}
+ {where:T("K<sup>+</sup>","pos",7),cue:"How are ions like noble gases?",notes:`
+  <p>Ions often have the same electron arrangement as a {{noble gas}}. Example: Na⁺ (2, 8) matches {{neon}}. <span class="yt-inline"><b>Your turn:</b></span> Cl⁻ (2, 8, 8) matches {{argon}}.</p>`},
+ {where:T("MgCl₂","neu long",8),cue:"How many of each ion make a compound?",notes:`
+  <p>An ionic compound has no overall {{charge}}, so the total positive charge must {{equal}} the total negative charge.</p>
+  <p class="ex"><b>Example:</b> Mg²⁺ (+2) and Cl⁻ (−1): {{1}} Mg²⁺ and {{2}} Cl⁻ make MgCl₂.</p>
+  <p class="ex yt"><b>Your turn:</b> Al³⁺ and O²⁻: {{2}} Al³⁺ and {{3}} O²⁻ (total +6 and −6).</p>`}
 ];
 let blankId=0;const BLANKS=[];
 function blanksIn(html){

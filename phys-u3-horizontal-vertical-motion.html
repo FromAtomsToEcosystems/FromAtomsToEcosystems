@@ -1,0 +1,1899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Horizontal and Vertical Motion | Physics Unit 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1626; --panel:#142136; --panel2:#1a2a44; --line:#2a3d5f; --line2:#3a5580;
+  --text:#e8eef8; --muted:#a3b4cf; --dim:#7488a9;
+  --x:#ff7d6e; --y:#45c8f0; --a:#b996ff; --b:#5fe3a9; --r:#ffd35c; --amber:#f5a524;
+  --ok:#4ade80; --bad:#fb7185; --radius:14px;
+  --font:'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+html,body{margin:0}
+body{
+  background-color:var(--bg);
+  background-image:linear-gradient(rgba(110,150,210,.065) 1px,transparent 1px),linear-gradient(90deg,rgba(110,150,210,.065) 1px,transparent 1px);
+  background-size:32px 32px;
+  color:var(--text); font-family:var(--font); font-size:17px; line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{line-height:1.2; margin:0 0 .5em; font-weight:600}
+h1{font-size:clamp(30px,5vw,46px); font-weight:700; letter-spacing:-.01em}
+h2{font-size:clamp(24px,3.4vw,32px)}
+h3{font-size:20px}
+h4{font-size:16px}
+p{margin:0 0 .8em}
+sub{font-size:.72em}
+a{color:var(--y)}
+.num,.nb,input.ans,.readout{font-variant-numeric:tabular-nums}
+.cx{color:var(--x); font-weight:600} .cy{color:var(--y); font-weight:600}
+.ca{color:var(--a); font-weight:600} .cb{color:var(--b); font-weight:600} .cr{color:var(--r); font-weight:600}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky; top:0; z-index:20; background:rgba(13,22,38,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:1120px; margin:0 auto; display:flex; align-items:center; gap:14px; padding:8px 16px}
+.brand{font-weight:600; font-size:15px; white-space:nowrap}
+.brand span{display:block; font-weight:400; font-size:12px; color:var(--muted)}
+.savenote{font-size:13px; color:var(--ok); white-space:nowrap}
+@media (max-width:640px){ .savenote{display:none} }
+.card.nostore{border:2px solid var(--bad); background:rgba(251,113,133,.08)}
+.navtiles{display:flex; gap:6px; overflow-x:auto; flex:1; padding:4px 2px; scrollbar-width:thin}
+.progress{height:4px; background:var(--panel2)}
+.progress div{height:100%; width:0; background:var(--r); transition:width .5s ease}
+
+.tile{flex:0 0 auto; width:50px; height:54px; border-radius:6px; border:1.5px solid var(--line2); background:var(--panel); color:var(--text);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; cursor:pointer; font-family:var(--font); padding:0}
+.tile .z{position:absolute; top:2px; left:4px; font-size:9px; color:var(--muted)}
+.tile .sym{font-size:19px; font-weight:700; line-height:1}
+.tile .nm{font-size:8.5px; color:var(--muted); margin-top:2px}
+.tile.cur{background:var(--r); border-color:var(--r); color:#231a00}
+.tile.cur .z,.tile.cur .nm{color:#5a4600}
+.tile.done::after{content:'✓'; position:absolute; top:1px; right:4px; font-size:10px; font-weight:700; color:var(--ok)}
+.tile.cur.done::after{color:#1d6b35}
+.tile.locked{opacity:.4; cursor:not-allowed}
+.tile.ne{border-style:dashed}
+
+/* ---------- layout ---------- */
+main{max-width:1000px; margin:0 auto; padding:24px 18px 80px}
+.sechead{display:flex; gap:18px; align-items:center; margin:12px 0 8px}
+.badge{flex:0 0 auto; width:94px; height:94px; border-radius:10px; border:2px solid var(--r); background:var(--panel);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative}
+.badge .z{position:absolute; top:4px; left:7px; font-size:12px; color:var(--muted)}
+.badge .sym{font-size:38px; font-weight:700; line-height:1; color:var(--r)}
+.badge .nm{font-size:11px; color:var(--muted); margin-top:6px}
+.meta{color:var(--muted); font-size:15px; margin-bottom:4px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:22px 24px; margin:18px 0}
+.card.qc{border:2px solid var(--amber)}
+.tag{display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; padding:3px 11px 3px 8px; border-radius:999px; margin-bottom:12px}
+.tag svg{width:15px; height:15px}
+.tag.read{background:rgba(69,200,240,.14); color:var(--y)}
+.tag.try{background:rgba(95,227,169,.14); color:var(--b)}
+.tag.qc{background:rgba(245,165,36,.16); color:var(--amber)}
+.split{display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); gap:22px; align-items:start}
+@media (max-width:780px){ .split{grid-template-columns:1fr} }
+.fig{background:#0a1322; border:1px solid var(--line); border-radius:12px; width:100%; height:auto; display:block; touch-action:none; user-select:none; -webkit-user-select:none}
+.fig text{font-family:var(--font)}
+.handle{cursor:grab}
+.handle:focus{outline:none}
+.handle:focus-visible{stroke:#fff; stroke-width:3}
+.caption{font-size:15px; color:var(--muted); margin-top:8px; min-height:3em}
+.formula{display:inline-block; background:var(--bg); border:1px solid var(--line2); border-radius:10px; padding:8px 16px; font-size:19px; margin:4px 0 10px}
+.formula + .formula{margin-left:10px}
+.callout{background:var(--panel2); border-radius:10px; padding:12px 16px; margin:10px 0; font-size:16px}
+.callout b{color:var(--r)}
+ul.tight{margin:0 0 .8em; padding-left:1.2em} ul.tight li{margin:.25em 0}
+
+/* ---------- buttons & inputs ---------- */
+.btn{font:inherit; font-weight:600; font-size:15px; border-radius:10px; padding:10px 18px; cursor:pointer; border:1.5px solid transparent; transition:transform .08s ease}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--r); color:#231a00}
+.btn.primary:disabled{background:var(--line); color:var(--dim); cursor:not-allowed}
+.btn.ghost{background:transparent; border-color:var(--line2); color:var(--text)}
+.btn.ghost:hover{border-color:var(--muted)}
+.btn.small{padding:6px 12px; font-size:14px}
+.btn:disabled{opacity:.7}
+.btnrow{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:12px}
+:focus-visible{outline:3px solid var(--r); outline-offset:2px}
+input.ans, select.ans{width:112px; background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:7px 10px; font:inherit; font-size:16px}
+select.ans{width:auto}
+input.ans.ok, select.ans.ok{border-color:var(--ok); background:rgba(74,222,128,.08)}
+input.ans.no, select.ans.no{border-color:var(--bad)}
+input.ans:disabled, select.ans:disabled{opacity:.45}
+.field{display:flex; flex-direction:column; gap:4px; font-size:14px; color:var(--muted)}
+.field input,.field select{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px}
+.formgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; margin:12px 0}
+.numrow{display:flex; flex-wrap:wrap; align-items:center; gap:8px 10px; margin:10px 0 4px}
+.numrow label{min-width:150px}
+.inwrap{display:inline-flex; align-items:center; gap:6px}
+.unit{color:var(--muted); font-size:15px}
+
+/* ---------- feedback ---------- */
+.fb{margin-top:10px; padding:10px 14px; border-radius:10px; font-size:15px}
+.fb.ok{background:rgba(74,222,128,.12); color:#cdf8dc}
+.fb.no{background:rgba(251,113,133,.12); color:#ffd3db}
+.fb.info{background:var(--panel2); color:var(--text)}
+.how{margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,.12); color:var(--text)}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes pop{0%{transform:scale(.85)}60%{transform:scale(1.06)}100%{transform:scale(1)}}
+.shake{animation:shake .35s}
+
+/* ---------- multiple choice ---------- */
+.mcq{margin:6px 0 22px}
+.mcq:last-child{margin-bottom:4px}
+.mcq .q{font-weight:500; margin-bottom:10px}
+.opts{display:grid; gap:8px}
+.opt{display:flex; gap:12px; align-items:center; text-align:left; background:var(--panel2); border:1.5px solid var(--line); color:var(--text); border-radius:10px; padding:9px 14px; font:inherit; font-size:16px; cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--line2)}
+.opt .L{flex:0 0 28px; height:28px; border-radius:50%; display:grid; place-items:center; background:var(--bg); font-weight:600; font-size:14px}
+.opt.right{border-color:var(--ok); background:rgba(74,222,128,.12)}
+.opt.right .L{background:var(--ok); color:#06210f}
+.opt.wrong{border-color:var(--bad); background:rgba(251,113,133,.08); opacity:.8}
+.opt:disabled{cursor:default}
+
+/* ---------- sorter ---------- */
+.chips{display:flex; flex-wrap:wrap; gap:8px; min-height:52px; padding:10px; border-radius:12px; background:var(--bg); border:1px solid var(--line)}
+.chips:empty::before{content:'All sorted.'; color:var(--muted); font-size:14px; padding:4px}
+.chip{background:var(--panel2); border:1.5px solid var(--line2); color:var(--text); border-radius:999px; padding:6px 14px; font:inherit; font-size:15px; cursor:grab}
+.chip.sel{border-color:var(--r); box-shadow:0 0 0 3px rgba(255,211,92,.25)}
+.chip.placed{cursor:default; border-color:rgba(74,222,128,.6); animation:pop .3s; pointer-events:none}
+.bins{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; margin-top:12px}
+.bin{border:2px dashed var(--line2); border-radius:12px; padding:10px; min-height:110px; cursor:pointer; transition:border-color .15s, background .15s}
+.bin h4{margin:0 0 8px; font-size:16px}
+.bin.over,.bin.ready{border-color:var(--r); background:rgba(255,211,92,.05)}
+.binchips{display:flex; flex-wrap:wrap; gap:6px}
+
+/* ---------- missions, readouts, tables ---------- */
+.missions{background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:12px 16px; margin-top:12px}
+.missions h4{margin-bottom:6px}
+.missions ol{margin:0; padding-left:1.3em}
+.missions li{margin:4px 0; color:var(--muted)}
+.missions li.cur{color:var(--text); font-weight:500}
+.missions li.done{color:var(--ok); text-decoration:line-through; text-decoration-color:rgba(74,222,128,.5)}
+.readout{display:grid; grid-template-columns:auto 1fr; gap:4px 14px; background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:12px 16px; font-size:16px}
+.readout dt{color:var(--muted)} .readout dd{margin:0; font-weight:600}
+table.nb{border-collapse:collapse; width:100%; margin:8px 0}
+table.nb th,table.nb td{border:1px solid var(--line2); padding:7px 10px; text-align:center}
+table.nb th{background:var(--panel2); font-weight:600; font-size:14px}
+table.nb td:first-child{text-align:left; font-size:15px}
+table.nb input.ans{width:90px}
+.cellwrap{display:inline-flex; gap:4px; align-items:center}
+.cellbtn{background:var(--panel2); border:1.5px solid var(--line2); color:var(--text); border-radius:8px; width:34px; height:36px; font:inherit; cursor:pointer}
+.cellbtn:disabled{opacity:.35; cursor:default}
+.steps-row{display:grid; grid-template-columns:minmax(150px,auto) 1fr; gap:10px 12px; align-items:center; margin:12px 0}
+.slider{display:flex; align-items:center; gap:12px; margin:8px 0}
+.slider input{flex:1; accent-color:var(--r)}
+.slider label{min-width:72px}
+.stepbox{background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:14px 16px; min-height:120px}
+.stepbox .k{color:var(--muted); font-size:14px; margin-bottom:4px}
+.wide{overflow-x:auto}
+
+/* ---------- unlock checklist ---------- */
+.unlock{border:1.5px dashed var(--line2); border-radius:var(--radius); padding:18px 22px; margin:30px 0 12px; background:rgba(20,33,54,.75)}
+.unlock h3{font-size:18px}
+.unlock ul{margin:0; padding:0}
+.unlock li{list-style:none; display:flex; gap:10px; align-items:flex-start; padding:5px 0; color:var(--muted)}
+.unlock li .box{width:22px; height:22px; border-radius:6px; border:2px solid var(--line2); flex:0 0 22px; display:grid; place-items:center; font-size:13px; font-weight:700; margin-top:2px}
+.unlock li.done{color:var(--text)}
+.unlock li.done .box{background:var(--ok); border-color:var(--ok); color:#06210f; animation:pop .3s}
+.secnav{display:flex; justify-content:space-between; gap:10px; margin-top:16px; flex-wrap:wrap}
+
+/* ---------- start page ---------- */
+.hero{display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr); gap:26px; align-items:center; margin:10px 0 18px}
+@media (max-width:780px){ .hero{grid-template-columns:1fr} }
+.hero .kicker{color:var(--muted); font-size:16px; margin-bottom:8px}
+.hero p.lead{font-size:19px; color:var(--muted); max-width:34em}
+.twocards{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+@media (max-width:700px){ .twocards{grid-template-columns:1fr} }
+.twocards .card{margin:0}
+.goals li{list-style:none; display:flex; gap:10px; padding:4px 0; color:var(--muted)}
+.goals ul{margin:0; padding:0}
+.goals li .box{width:22px; height:22px; border-radius:50%; border:2px solid var(--line2); flex:0 0 22px; display:grid; place-items:center; font-size:12px; font-weight:700; margin-top:2px}
+.goals li.done{color:var(--text)} .goals li.done .box{background:var(--ok); border-color:var(--ok); color:#06210f}
+.linkbtn{background:none; border:none; color:var(--muted); font:inherit; font-size:14px; text-decoration:underline; cursor:pointer; padding:4px}
+
+/* ---------- final check ---------- */
+.dots{display:flex; gap:6px; margin:4px 0 14px; flex-wrap:wrap}
+.dots span{width:28px; height:28px; border-radius:50%; border:2px solid var(--line2); display:grid; place-items:center; font-size:12px; color:var(--muted)}
+.dots span.cur{border-color:var(--r); color:var(--r)}
+.dots span.ans{background:var(--line2); color:var(--text)}
+.dots span.ok{background:var(--ok); border-color:var(--ok); color:#06210f}
+.dots span.no{background:var(--bad); border-color:var(--bad); color:#3a0611}
+.bigscore{font-size:54px; font-weight:700; line-height:1; color:var(--r)}
+.reviewlist{margin:14px 0 0; padding:0; list-style:none}
+.reviewlist li{border-top:1px solid var(--line); padding:10px 0; font-size:15px}
+.reviewlist .yes{color:var(--ok); font-weight:600} .reviewlist .nope{color:var(--bad); font-weight:600}
+
+/* ---------- results ---------- */
+table.res{border-collapse:collapse; width:100%; margin:6px 0 4px}
+table.res th,table.res td{text-align:left; padding:8px 10px; border-bottom:1px solid var(--line)}
+table.res th{color:var(--muted); font-weight:400; width:44%}
+
+/* ---------- overlays ---------- */
+.overlay{position:fixed; inset:0; background:rgba(4,9,18,.9); z-index:100; display:none; align-items:center; justify-content:center; padding:20px}
+.overlay.show{display:flex}
+.modal{background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:26px; max-width:560px; width:100%; max-height:92vh; overflow:auto}
+.modal.wide{max-width:980px}
+.lockicon{width:56px; height:56px; border-radius:14px; background:rgba(251,113,133,.15); display:grid; place-items:center; margin-bottom:12px}
+
+/* ---------- calculator ---------- */
+.calc{position:fixed; right:16px; bottom:16px; z-index:60; width:300px; background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:14px; box-shadow:0 18px 50px rgba(0,0,0,.45)}
+.calc header{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:14px; color:var(--muted)}
+.calc input{width:100%; background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:8px 10px; font:inherit; font-size:17px; text-align:right}
+.calc .out{text-align:right; font-size:22px; font-weight:600; min-height:32px; margin:6px 2px; font-variant-numeric:tabular-nums; color:var(--r)}
+.calc .keys{display:grid; grid-template-columns:repeat(5,1fr); gap:6px}
+.calc .keys button{background:var(--panel2); border:1px solid var(--line); color:var(--text); border-radius:8px; padding:9px 0; font:inherit; font-size:15px; cursor:pointer}
+.calc .keys button.fn{color:var(--y)}
+.calc .keys button.eq{background:var(--r); color:#231a00; font-weight:700}
+@media (max-width:520px){ .calc{left:10px; right:10px; width:auto; bottom:10px} }
+
+
+.work{background:var(--bg); border:1.5px dashed var(--bad); border-radius:10px; padding:10px 14px; margin-bottom:12px; font-variant-numeric:tabular-nums}
+.mistabs .btn.on{border-color:var(--r); color:var(--r)}
+
+.tile .ic{display:block; line-height:0; color:var(--r)}
+.tile.cur .ic{color:#231a00}
+.badge .ic{display:block; line-height:0; color:var(--r); margin-top:4px}
+@media (prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important} }
+
+@media print{
+  body{background:#fff; color:#000; font-size:13px}
+  .topbar,.calc,.overlay,.noprint,.unlock,.secnav{display:none !important}
+  main{padding:0; max-width:none}
+  .card{background:#fff; border:1px solid #999; color:#000}
+  .badge{border-color:#000; background:#fff} .badge .sym{color:#000}
+  .muted,.meta,table.res th{color:#333}
+  table.res th,table.res td{border-color:#bbb}
+  .bigscore{color:#000}
+}
+</style>
+</head>
+<body>
+<header class="topbar noprint" id="topbar" hidden>
+  <div class="topbar-inner">
+    <div class="brand">Horizontal & vertical motion<span id="whoami"></span></div>
+    <nav class="navtiles" id="navtiles" aria-label="Lesson sections"></nav>
+    <span class="savenote" id="saveNote" aria-live="polite"></span>
+    <button class="btn ghost small" id="calcBtn" type="button" aria-expanded="false">Calculator</button>
+  </div>
+  <div class="progress" aria-hidden="true"><div id="progbar"></div></div>
+</header>
+
+<main id="main">
+  <!-- ================= START PAGE ================= -->
+  <section id="start" class="page">
+    <div class="hero">
+      <div>
+        <div class="kicker">Physics · Unit 3: 2D Kinematics & Projectile Motion · Self-taught lesson</div>
+        <h1>Horizontal and Vertical Motion</h1>
+        <p class="lead">A ball rolling off a table moves sideways and falls at the same time. The two motions never affect each other, and that makes them easy to solve.</p>
+      </div>
+      <div id="heroFig"></div>
+    </div>
+
+    <div class="twocards">
+      <div class="card">
+        <h3>Objective</h3>
+        <p>I can explain why horizontal and vertical motion are independent, find how long a sideways-launched object is in the air and how far it goes, and find its velocity at any moment.</p>
+      </div>
+      <div class="card">
+        <h3>Standards</h3>
+        <p class="small" style="margin-bottom:.5em"><b>NGSS HS-PS2-1 (supports)</b> Describe and predict motion mathematically, using the effect of a constant force (gravity) on an object's motion.</p>
+        <p class="small" style="margin-bottom:.5em"><b>CA CCSS Math A-CED.A.4</b> Rearrange formulas to highlight a quantity of interest (like solving <i>d</i> = ½<i>gt</i>² for <i>t</i>).</p>
+        <p class="small" style="margin:0"><b>NGSS SEP 2 and 5</b> Developing and using models; using mathematics and computational thinking.</p>
+      </div>
+    </div>
+
+    <div class="card goals" id="goalsCard">
+      <h3>Goals</h3>
+      <p class="small muted">These check themselves off as you finish sections.</p>
+      <ul id="goalsList"></ul>
+    </div>
+
+    <div class="card nostore" id="noStore" hidden>
+      <h3>This browser can't save your work</h3>
+      <p>You may be in guest or incognito mode. If you close this tab, your work will be lost. Sign in to your school account on your Chromebook and open the lesson again, or ask your teacher.</p>
+    </div>
+    <div class="card" id="signin">
+      <h3 id="signinTitle">Sign in to start</h3>
+      <div id="resumeBox" hidden>
+        <p id="resumeText"></p>
+        <div class="btnrow">
+          <button class="btn primary" id="resumeBtn" type="button">Continue the lesson</button>
+          <button class="linkbtn" id="notMeBtn" type="button">Not you? Ask your teacher to reset this device.</button>
+        </div>
+        <div class="fb no" id="resumeErr" hidden></div>
+        <div>
+        </div>
+      </div>
+      <form id="startForm" autocomplete="off" novalidate>
+        <div class="formgrid">
+          <label class="field">First name<input id="fFirst" required></label>
+          <label class="field">Last name<input id="fLast" required></label>
+          <label class="field">Student ID<input id="fId" inputmode="numeric" required></label>
+          <label class="field">Period<select id="fPeriod" required></select></label>
+          <label class="field">Teacher<select id="fTeacher" required></select></label>
+        </div>
+        <p class="small muted" id="saveInfo">You'll need about 60 minutes. A calculator in degree mode is built into the top bar. Your progress saves on this device.</p>
+        <div class="fb no" id="formErr" hidden></div>
+        <div class="btnrow"><button class="btn primary" type="submit">Start the lesson</button></div>
+      </form>
+    </div>
+    <p style="text-align:center"><button class="linkbtn" id="teacherLink" type="button">Teacher view</button></p>
+  </section>
+
+  <div id="sections"></div>
+</main>
+
+<!-- ================= OPEN IN TWO TABS ================= -->
+<div class="overlay" id="tabOv" role="dialog" aria-modal="true" aria-labelledby="tabTitle">
+  <div class="modal">
+    <h2 id="tabTitle">This lesson is open in another tab</h2>
+    <p>To keep your newest work safe, this copy stopped saving. Close the extra tab, then reload this one.</p>
+    <div class="btnrow"><button class="btn primary" id="tabReload" type="button">Reload with my newest work</button></div>
+  </div>
+</div>
+
+<!-- ================= LOCK SCREEN ================= -->
+<div class="overlay" id="lockOv" role="dialog" aria-modal="true" aria-labelledby="lockTitle">
+  <div class="modal">
+    <div class="lockicon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fb7185" stroke-width="2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+    <h2 id="lockTitle">Lesson locked</h2>
+    <p id="lockMsg">You left the lesson page or exited full screen. Raise your hand so your teacher can unlock it. Your work is saved.</p>
+    <div class="btnrow">
+      <input class="ans" id="lockCode" type="password" placeholder="Teacher code" style="width:200px" autocomplete="off">
+      <button class="btn primary" id="lockBtn" type="button">Unlock</button>
+    </div>
+    <div class="fb no" id="lockErr" hidden>That code didn't work. Only your teacher can unlock the lesson.</div>
+  </div>
+</div>
+
+<!-- ================= FULL-SCREEN GATE ================= -->
+<div class="overlay" id="gateOv" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+  <div class="modal">
+    <h2 id="gateTitle">This lesson runs in full screen</h2>
+    <p>Stay on this page until you finish. If you leave the page or exit full screen, the lesson locks and your teacher has to unlock it.</p>
+    <div class="btnrow"><button class="btn primary" id="gateBtn" type="button">Enter full screen and continue</button></div>
+  </div>
+</div>
+
+<!-- ================= TEACHER VIEW ================= -->
+<div class="overlay" id="teachOv" role="dialog" aria-modal="true" aria-labelledby="teachTitle">
+  <div class="modal" id="teachModal">
+    <div id="teachLogin">
+      <h2 id="teachTitle">Teacher view</h2>
+      <p class="muted">Enter the teacher code.</p>
+      <div class="btnrow">
+        <input class="ans" id="teachCode" type="password" placeholder="Teacher code" style="width:200px" autocomplete="off">
+        <button class="btn primary" id="teachGo" type="button">Open</button>
+        <button class="btn ghost" id="teachCancel" type="button">Close</button>
+      </div>
+      <div class="fb no" id="teachErr" hidden>That code didn't work.</div>
+    </div>
+    <div id="teachPanel" hidden></div>
+  </div>
+</div>
+
+<!-- ================= CALCULATOR ================= -->
+<div class="calc noprint" id="calc" hidden role="dialog" aria-label="Calculator in degree mode">
+  <header><span>Calculator · degree mode</span><button class="linkbtn" id="calcClose" type="button">Close</button></header>
+  <input id="calcIn" aria-label="Calculation" placeholder="e.g. 20*cos(30)" autocomplete="off" spellcheck="false">
+  <div class="out" id="calcOut" aria-live="polite"></div>
+  <div class="keys" id="calcKeys"></div>
+</div>
+<script src="sheets-config.js"></script>
+<script>
+(function(){
+'use strict';
+
+/* =====================================================================
+   SETTINGS — the only part of this file you should need to change
+   ===================================================================== */
+const LESSON_ID   = 'phys-u3-horizontal-vertical-motion';
+const LESSON_NAME = 'Horizontal and Vertical Motion';
+const TEACHER_CODE = 'Austin';                 // unlocks lock screen + teacher view
+/* Google Sheets + teacher list: same setup as the formative assessments and the Bohr model lesson.
+   If sheets-config.js (next to this file on the site) defines TEACHERS or SHEETS_WEBHOOK_URL, those win. */
+const BACKUP_URL = 'https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const BACKUP_TEACHERS = ['Austin', 'Mueller', 'McCue', 'Arce', 'Trimm', 'Garcia'];
+function teacherList() { try { if (typeof TEACHERS !== 'undefined' && Array.isArray(TEACHERS) && TEACHERS.length) return TEACHERS.map(String).filter(Boolean); } catch (e) {} return BACKUP_TEACHERS; }
+function sheetURL() { try { if (typeof SHEETS_WEBHOOK_URL !== 'undefined' && SHEETS_WEBHOOK_URL && String(SHEETS_WEBHOOK_URL).indexOf('PASTE') < 0) return String(SHEETS_WEBHOOK_URL); } catch (e) {} return BACKUP_URL; }
+const PERIODS = ['1','2','3','4','5','6','7','8'];
+const PASS_SCORE = 8;                          // out of 10 on the final check
+/* ===================================================================== */
+
+const STORE = 'hvMotion_state_v1', RECS = 'hvMotion_records_v1';
+const NS = 'http://www.w3.org/2000/svg';
+const COL = {x:'#ff7d6e', y:'#45c8f0', a:'#b996ff', b:'#5fe3a9', r:'#ffd35c', amber:'#f5a524',
+             grid:'#1b2a44', axis:'#5d7399', text:'#e8eef8', muted:'#a3b4cf', bg:'#0a1322', ok:'#4ade80'};
+const RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const $ = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+function h(tag, attrs={}, html){
+  const e=document.createElement(tag);
+  for(const k in attrs){
+    if(k==='class') e.className=attrs[k];
+    else if(k.startsWith('on') && typeof attrs[k]==='function') e.addEventListener(k.slice(2), attrs[k]);
+    else if(attrs[k]!==false && attrs[k]!=null) e.setAttribute(k, attrs[k]===true?'':attrs[k]);
+  }
+  if(html!=null) e.innerHTML=html;
+  return e;
+}
+function sv(tag, attrs={}, parent){
+  const e=document.createElementNS(NS,tag);
+  for(const k in attrs) if(attrs[k]!=null) e.setAttribute(k, attrs[k]);
+  if(parent) parent.appendChild(e);
+  return e;
+}
+const rad=d=>d*Math.PI/180, deg=r=>r*180/Math.PI;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+function fmt(v,d=1){ let s=(Math.round(v*Math.pow(10,d))/Math.pow(10,d)).toFixed(d); if(/^-0\.?0*$/.test(s)) s=s.slice(1); return s.replace('-','−'); }
+function parseNum(str){
+  if(str==null) return NaN;
+  const s=String(str).trim().replace(/[−–—]/g,'-').replace(/,/g,'').replace(/\s+/g,'');
+  const m=s.match(/^[+-]?(\d+\.?\d*|\.\d+)/);
+  return m?parseFloat(m[0]):NaN;
+}
+function near(v, ans, kind){
+  if(isNaN(v)) return false;
+  if(kind==='angle') return Math.abs(v-ans)<=0.6;
+  if(kind==='time') return Math.abs(v-ans)<=Math.max(0.015, Math.abs(ans)*0.025);
+  return Math.abs(v-ans) <= Math.max(0.15, Math.abs(ans)*0.015);
+}
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function tween(ms, fn){
+  return new Promise(res=>{
+    if(RM || ms<=0){ fn(1); res(); return; }
+    const t0=performance.now();
+    function step(now){ const t=Math.min(1,(now-t0)/ms); fn(ease(t)); if(t<1) requestAnimationFrame(step); else res(); }
+    requestAnimationFrame(step);
+  });
+}
+const wait=ms=>new Promise(r=>setTimeout(r, RM?0:ms));
+function quad(x,y){ if(x>0&&y>0) return 'I'; if(x<0&&y>0) return 'II'; if(x<0&&y<0) return 'III'; if(x>0&&y<0) return 'IV'; return null; }
+function stdAngle(x,y){ let a=deg(Math.atan2(y,x)); if(a<0) a+=360; return a; }
+function compass(th){
+  th=((th%360)+360)%360; const t=Math.round(th*10)/10;
+  const ax={0:'straight east',90:'straight north',180:'straight west',270:'straight south'};
+  if(ax[t]!==undefined) return {h:ax[t], v:null};
+  const f=n=>(Math.round(n*10)/10).toString();
+  if(t<90)  return {h:`${f(t)}° north of east`,  v:`${f(90-t)}° east of north`};
+  if(t<180) return {h:`${f(180-t)}° north of west`, v:`${f(t-90)}° west of north`};
+  if(t<270) return {h:`${f(t-180)}° south of west`, v:`${f(270-t)}° west of south`};
+  return {h:`${f(360-t)}° south of east`, v:`${f(t-270)}° east of south`};
+}
+// colored symbols
+const V = {
+  Ax:'<span class="cx">A<sub>x</sub></span>', Ay:'<span class="cy">A<sub>y</sub></span>',
+  Bx:'<span class="cx">B<sub>x</sub></span>', By:'<span class="cy">B<sub>y</sub></span>',
+  Rx:'<span class="cx">R<sub>x</sub></span>', Ry:'<span class="cy">R<sub>y</sub></span>',
+  vx:'<span class="cx">v<sub>x</sub></span>', vy:'<span class="cy">v<sub>y</sub></span>',
+  A:'<span class="ca">A</span>', B:'<span class="cb">B</span>', R:'<span class="cr">R</span>',
+  tref:'θ<sub>ref</sub>'
+};
+
+/* ---------------- state ---------------- */
+function freshState(){
+  return {lesson:LESSON_ID, student:null, startedAt:null, sec:0, unlocked:0, reqs:{}, first:{}, solved:{}, misc:{},
+    final:{attempts:0, fails:0, best:0, passed:false, cur:null, history:[], reviewed:false},
+    leaves:0, locked:false, completedAt:null, sent:false, preview:false};
+}
+function load(){ try{ const s=JSON.parse(localStorage.getItem(STORE)); return (s && s.lesson===LESSON_ID)?s:null; }catch(e){ return null; } }
+let S = load() || freshState();
+let STORAGE_OK=true, saveBlocked=false, onConflict=()=>{}, onSaved=()=>{};
+try{ localStorage.setItem('__vecAdd_test','1'); STORAGE_OK=localStorage.getItem('__vecAdd_test')==='1'; localStorage.removeItem('__vecAdd_test'); }catch(e){ STORAGE_OK=false; }
+try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){}
+function save(){
+  if(saveBlocked) return;
+  try{
+    const raw=localStorage.getItem(STORE);
+    if(raw){ const st=JSON.parse(raw); if(st && st.lesson===LESSON_ID && (st.rev||0)>(S.rev||0)){ saveBlocked=true; onConflict(); return; } }
+    S.rev=(S.rev||0)+1; S.updatedAt=Date.now();
+    localStorage.setItem(STORE, JSON.stringify(S)); onSaved();
+  }catch(e){}
+}
+
+const ITEMS = new Set();          // ids that count toward the assignment score
+const reg = id => { ITEMS.add(id); return id; };
+function attempt(id, ok){ if(!(id in S.first)) S.first[id]=ok; if(ok) S.solved[id]=true; save(); }
+function assignScore(){ let c=0; ITEMS.forEach(id=>{ if(S.first[id]===true) c++; }); const t=ITEMS.size; return {c, t, pct:t?Math.round(100*c/t):0}; }
+
+let onReqChange = ()=>{};
+function reqDone(id){ if(S.reqs[id]) return; S.reqs[id]=true; save(); onReqChange(id); }
+function allSolved(ids){ return ids.every(i=>S.solved[i]); }
+
+/* ---------------- SVG helpers ---------------- */
+function arrow(g, x1,y1,x2,y2, color, o={}){
+  const w=o.w||3, hl=o.head||12, hw=o.hw||6.5;
+  const dx=x2-x1, dy=y2-y1, L=Math.hypot(dx,dy);
+  const grp=sv('g',{opacity:o.op!=null?o.op:null},g);
+  if(L<0.5) return grp;
+  const ux=dx/L, uy=dy/L, hh=Math.min(hl, L*0.55);
+  const bx=x2-ux*hh, by=y2-uy*hh;
+  sv('line',{x1,y1,x2:bx,y2:by,stroke:color,'stroke-width':w,'stroke-linecap':o.dash?'butt':'round','stroke-dasharray':o.dash||null},grp);
+  const k=hh/hl;
+  sv('polygon',{points:`${x2},${y2} ${bx-uy*hw*k},${by+ux*hw*k} ${bx+uy*hw*k},${by-ux*hw*k}`,fill:color},grp);
+  return grp;
+}
+function label(g, x, y, txt, color, o={}){
+  const t=sv('text',{x,y,fill:color||COL.text,'font-size':o.size||15,'font-weight':o.weight||600,'text-anchor':o.anchor||'middle',
+    'dominant-baseline':'middle','paint-order':'stroke',stroke:COL.bg,'stroke-width':o.halo==null?5:o.halo,'stroke-linejoin':'round'},g);
+  t.innerHTML=txt;
+  return t;
+}
+function arcPath(cx,cy,r,a0,a1){
+  const p=a=>[cx+r*Math.cos(rad(a)), cy-r*Math.sin(rad(a))];
+  const [x0,y0]=p(a0),[x1,y1]=p(a1); const large=Math.abs(a1-a0)>180?1:0; const sweep=a1>a0?0:1;
+  return `M${x0},${y0} A${r},${r} 0 ${large} ${sweep} ${x1},${y1}`;
+}
+function niceStep(span){ const raw=span/8; const p=Math.pow(10,Math.floor(Math.log10(raw))); const m=raw/p; return (m<1.5?1:m<3.5?2:m<7.5?5:10)*p; }
+
+function plane(o){
+  const pad=o.pad??24;
+  const xmin=o.xmin,xmax=o.xmax,ymin=o.ymin,ymax=o.ymax;
+  const s=o.scale || ((o.w||440)-2*pad)/(xmax-xmin);
+  const W=(xmax-xmin)*s+2*pad, H=(ymax-ymin)*s+2*pad;
+  const svg=sv('svg',{viewBox:`0 0 ${W} ${H}`,class:'fig',role:'img','aria-label':o.label||'Coordinate grid'});
+  const X=x=>pad+(x-xmin)*s, Y=y=>pad+(ymax-y)*s;
+  const gGrid=sv('g',{},svg), gDraw=sv('g',{},svg), gTop=sv('g',{},svg);
+  const step=o.grid||1;
+  if(o.grid!==0){
+    for(let x=Math.ceil(xmin/step)*step; x<=xmax+1e-9; x+=step) sv('line',{x1:X(x),y1:Y(ymin),x2:X(x),y2:Y(ymax),stroke:COL.grid,'stroke-width':1},gGrid);
+    for(let y=Math.ceil(ymin/step)*step; y<=ymax+1e-9; y+=step) sv('line',{x1:X(xmin),y1:Y(y),x2:X(xmax),y2:Y(y),stroke:COL.grid,'stroke-width':1},gGrid);
+  }
+  if(xmin<=0&&xmax>=0) sv('line',{x1:X(0),y1:Y(ymin),x2:X(0),y2:Y(ymax),stroke:COL.axis,'stroke-width':1.6},gGrid);
+  if(ymin<=0&&ymax>=0) sv('line',{x1:X(xmin),y1:Y(0),x2:X(xmax),y2:Y(0),stroke:COL.axis,'stroke-width':1.6},gGrid);
+  if(o.ticks){
+    const ts=o.ticks;
+    for(let x=Math.ceil(xmin/ts)*ts; x<=xmax; x+=ts) if(Math.abs(x)>1e-9 && x>xmin && x<xmax) label(gGrid,X(x),Y(0)+13,String(+x.toFixed(2)).replace('-','−'),COL.muted,{size:11,weight:400,halo:3});
+    for(let y=Math.ceil(ymin/ts)*ts; y<=ymax; y+=ts) if(Math.abs(y)>1e-9 && y>ymin && y<ymax) label(gGrid,X(0)-5,Y(y),String(+y.toFixed(2)).replace('-','−'),COL.muted,{size:11,weight:400,anchor:'end',halo:3});
+  }
+  if(o.names!==false){
+    if(ymin<=0&&ymax>=0) label(gGrid,X(xmax)-4,Y(0)-11,'+x',COL.muted,{size:13,anchor:'end',halo:3});
+    if(xmin<=0&&xmax>=0) label(gGrid,X(0)+8,Y(ymax)+10,'+y',COL.muted,{size:13,anchor:'start',halo:3});
+  }
+  function toData(e){
+    const pt=svg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY;
+    const p=pt.matrixTransform(svg.getScreenCTM().inverse());
+    return {x:(p.x-pad)/s+xmin, y:ymax-(p.y-pad)/s};
+  }
+  return {svg,X,Y,s,W,H,gGrid,gDraw,gTop,toData};
+}
+function autoPlane(points, o={}){
+  let xs=[0,...points.map(p=>p[0])], ys=[0,...points.map(p=>p[1])];
+  let x0=Math.min(...xs), x1=Math.max(...xs), y0=Math.min(...ys), y1=Math.max(...ys);
+  const span=Math.max(x1-x0, y1-y0, 1); const m=span*0.16;
+  x0-=m; x1+=m; y0-=m; y1+=m;
+  const room=span*0.24; x0=Math.min(x0,-room); x1=Math.max(x1,room); y0=Math.min(y0,-room); y1=Math.max(y1,room);
+  // make the window square so tall or wide vectors don't stretch the figure
+  const sx=x1-x0, sy=y1-y0;
+  if(sx<sy){ const d=(sy-sx)/2; x0-=d; x1+=d; } else if(sy<sx){ const d=(sx-sy)/2; y0-=d; y1+=d; }
+  const step=niceStep(Math.max(x1-x0,y1-y0));
+  return plane(Object.assign({xmin:Math.floor(x0/step)*step, xmax:Math.ceil(x1/step)*step, ymin:Math.floor(y0/step)*step, ymax:Math.ceil(y1/step)*step, grid:step, w:o.w||420}, o));
+}
+function rightMark(g, P, cx, cy, dx, dy, size){
+  // small square at corner (cx,cy) in data coords; dx,dy are signs pointing into the triangle
+  const s=size/P.s;
+  sv('path',{d:`M${P.X(cx+dx*s)},${P.Y(cy)} L${P.X(cx+dx*s)},${P.Y(cy+dy*s)} L${P.X(cx)},${P.Y(cy+dy*s)}`,fill:'none',stroke:COL.muted,'stroke-width':1.3},g);
+}
+// drag handles on a plane. handles: [{get:()=>[x,y], set:(x,y)=>{}, el}]
+function svgDrag(P, handles, maxDist){
+  let act=null;
+  P.svg.addEventListener('pointerdown',e=>{
+    const d=P.toData(e); let best=null, bd=1e9;
+    handles.forEach(hd=>{ const [hx,hy]=hd.get(); const dd=Math.hypot(hx-d.x,hy-d.y); if(dd<bd){bd=dd; best=hd;} });
+    if(!best || (maxDist && bd>maxDist)) return;
+    act=best; try{ P.svg.setPointerCapture(e.pointerId); }catch(_){}
+    act.set(d.x,d.y); e.preventDefault();
+  });
+  P.svg.addEventListener('pointermove',e=>{ if(!act) return; const d=P.toData(e); act.set(d.x,d.y); });
+  const end=()=>{ act=null; };
+  P.svg.addEventListener('pointerup',end); P.svg.addEventListener('pointercancel',end);
+  handles.forEach(hd=>{
+    if(!hd.el) return;
+    hd.el.addEventListener('keydown',e=>{
+      const [x,y]=hd.get(); const st=hd.step||1; let nx=x, ny=y;
+      if(e.key==='ArrowLeft') nx-=st; else if(e.key==='ArrowRight') nx+=st; else if(e.key==='ArrowUp') ny+=st; else if(e.key==='ArrowDown') ny-=st; else return;
+      e.preventDefault(); hd.set(nx,ny);
+    });
+  });
+}
+
+/* ---------------- UI components ---------------- */
+const ICON = {
+  read:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H2z"/><path d="M22 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8z"/></svg>',
+  try:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V5a2 2 0 0 1 4 0v6"/><path d="M13 10a2 2 0 0 1 4 0v2a2 2 0 0 1 3 1v2a7 7 0 0 1-7 7h-1a7 7 0 0 1-6-3l-2.5-4a2 2 0 0 1 3.4-2L9 15"/></svg>',
+  qc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg>'
+};
+function card(parent, kind, title){
+  const names={read:'Read', try:'Try it', qc:'Quick check'};
+  const c=h('div',{class:'card'+(kind==='qc'?' qc':'')});
+  c.innerHTML=`<span class="tag ${kind}">${ICON[kind]}${names[kind]}</span>${title?`<h3>${title}</h3>`:''}`;
+  parent.appendChild(c); return c;
+}
+
+function mcq(parent, o){
+  reg(o.id);
+  const w=h('div',{class:'mcq'}); w.innerHTML=`<div class="q">${o.q}</div>`;
+  const opts=h('div',{class:'opts'}), fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'});
+  const btns=o.opts.map((t,i)=>{
+    const b=h('button',{class:'opt',type:'button'},`<span class="L">${'ABCD'[i]}</span><span>${t}</span>`);
+    b.addEventListener('click',()=>{
+      if(w.dataset.done) return;
+      const ok=i===o.ans; attempt(o.id, ok);
+      if(ok){ solvedUI(); o.onSolved && o.onSolved(); }
+      else {
+        b.classList.add('wrong','shake'); b.disabled=true; setTimeout(()=>b.classList.remove('shake'),400);
+        fb.className='fb no'; fb.innerHTML='<b>Not quite.</b> '+((o.wrong&&o.wrong[i])||'Look back at the reading and try again.'); fb.hidden=false;
+      }
+    });
+    opts.appendChild(b); return b;
+  });
+  function solvedUI(){
+    w.dataset.done=1; btns.forEach(x=>x.disabled=true); btns[o.ans].classList.add('right');
+    fb.className='fb ok'; fb.innerHTML='<b>Correct.</b> '+(o.why||''); fb.hidden=false;
+  }
+  w.append(opts, fb); parent.appendChild(w);
+  if(S.solved[o.id]) solvedUI();
+  return w;
+}
+function qcGroup(parent, qs, reqId){
+  const ids=qs.map(q=>q.id);
+  qs.forEach(q=>{ q.onSolved=()=>{ if(allSolved(ids)) reqDone(reqId); }; mcq(parent,q); });
+}
+
+function numq(parent, o){
+  const counts=o.counts!==false; if(counts) reg(o.id);
+  const wrap=h('div',{class:'numq'});
+  const row=h('div',{class:'numrow'});
+  row.innerHTML=`<label for="in-${o.id}">${o.label}</label><span class="inwrap"><input class="ans" id="in-${o.id}" type="text" autocomplete="off" spellcheck="false" placeholder="?"><span class="unit">${o.unit||''}</span></span><button class="btn small ghost" type="button">Check</button>`;
+  const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'});
+  const inp=$('input',row), btn=$('button',row); let tries=0;
+  function solvedUI(v){
+    wrap.dataset.done=1; inp.value=fmt(v, o.dp??1).replace('−','-'); inp.classList.remove('no'); inp.classList.add('ok'); inp.readOnly=true; btn.disabled=true;
+    if(o.why){ fb.className='fb ok'; fb.innerHTML='<b>Correct.</b> '+o.why; fb.hidden=false; } else fb.hidden=true;
+  }
+  function go(){
+    if(wrap.dataset.done) return;
+    const v=parseNum(inp.value);
+    if(isNaN(v)){ fb.className='fb no'; fb.innerHTML='Type a number first.'; fb.hidden=false; return; }
+    const ok=o.check?o.check(v):near(v,o.ans,o.kind);
+    if(counts) attempt(o.id, ok); else if(ok){ S.solved[o.id]=true; save(); }
+    if(ok){ S.misc['v_'+o.id]=v; save(); solvedUI(v); o.onSolved && o.onSolved(v); }
+    else{
+      tries++; inp.classList.add('no'); inp.classList.remove('shake'); void inp.offsetWidth; inp.classList.add('shake');
+      let msg=o.hint||'Check your work and try again.';
+      if(o.ans!=null && o.kind!=='angle' && near(-v,o.ans) && Math.abs(o.ans)>0.2) msg='Right size, wrong sign. Which way does it point along that axis?';
+      else if(o.signHint && o.ans!=null && near(Math.abs(v),Math.abs(o.ans)) ) msg=o.signHint;
+      fb.className='fb no'; fb.innerHTML='<b>Not yet.</b> '+msg+(tries>=2&&o.how?`<div class="how"><b>Here's how:</b> ${o.how}</div>`:''); fb.hidden=false;
+    }
+  }
+  btn.addEventListener('click',go);
+  inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); go(); } });
+  inp.addEventListener('input',()=>{ inp.classList.remove('no'); if(!wrap.dataset.done){ S.misc['d_'+o.id]=inp.value; save(); } });
+  if(!S.solved[o.id] && S.misc['d_'+o.id]) inp.value=S.misc['d_'+o.id];
+  wrap.append(row, fb); parent.appendChild(wrap);
+  if(S.solved[o.id]) solvedUI(S.misc['v_'+o.id]!=null?S.misc['v_'+o.id]:o.ans);
+  return wrap;
+}
+
+function sorter(parent, o){
+  const key='sort_'+o.id; const st=S.misc[key]||(S.misc[key]={});
+  const w=h('div',{class:'sorter'});
+  w.innerHTML=`<p class="small muted" style="margin-bottom:8px">Tap an item, then tap the box it belongs in. You can also drag.</p>`;
+  const tray=h('div',{class:'chips'}); const bins=h('div',{class:'bins'}); const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'});
+  let sel=null; const binEls={};
+  o.bins.forEach(b=>{
+    const be=h('div',{class:'bin',tabindex:0,role:'button','aria-label':'Put the selected item in '+b.label});
+    be.innerHTML=`<h4>${b.html||b.label}</h4><div class="binchips"></div>`;
+    be.addEventListener('click',()=>{ if(sel!=null) place(sel,b.k); });
+    be.addEventListener('keydown',e=>{ if((e.key==='Enter'||e.key===' ')&&sel!=null){ e.preventDefault(); place(sel,b.k); } });
+    be.addEventListener('dragover',e=>{ e.preventDefault(); be.classList.add('over'); });
+    be.addEventListener('dragleave',()=>be.classList.remove('over'));
+    be.addEventListener('drop',e=>{ e.preventDefault(); be.classList.remove('over'); const i=+e.dataTransfer.getData('text/plain'); if(!isNaN(i)) place(i,b.k); });
+    bins.appendChild(be); binEls[b.k]=be;
+  });
+  const chips=[];
+  const order=S.misc[key+'_order']||(S.misc[key+'_order']=shuffle(o.items.map((_,i)=>i)));
+  order.forEach(i=>{
+    const it=o.items[i];
+    const c=h('button',{class:'chip',type:'button',draggable:'true'},it.html||it.t);
+    c.addEventListener('click',()=>{ if(c.classList.contains('placed')) return; chips.forEach(x=>x&&x.classList.remove('sel')); sel=i; c.classList.add('sel'); Object.values(binEls).forEach(b=>b.classList.add('ready')); });
+    c.addEventListener('dragstart',e=>{ if(c.classList.contains('placed')){ e.preventDefault(); return; } sel=i; e.dataTransfer.setData('text/plain',String(i)); });
+    chips[i]=c; tray.appendChild(c);
+  });
+  function settle(i,k){ const c=chips[i]; c.classList.remove('sel'); c.classList.add('placed'); c.draggable=false; c.disabled=true; $('.binchips',binEls[k]).appendChild(c); }
+  function place(i,k){
+    Object.values(binEls).forEach(b=>b.classList.remove('ready'));
+    const it=o.items[i], c=chips[i]; sel=null;
+    if(it.k===k){ st[i]=k; save(); settle(i,k); fb.hidden=true; check(); }
+    else{
+      c.classList.remove('sel','shake'); void c.offsetWidth; c.classList.add('shake');
+      fb.className='fb no'; fb.innerHTML='<b>Not that box.</b> '+(it.why||'Think about it again.'); fb.hidden=false;
+    }
+  }
+  function check(){ if(Object.keys(st).length===o.items.length){ fb.className='fb ok'; fb.innerHTML='<b>All sorted.</b> '+(o.doneMsg||''); fb.hidden=false; o.onDone&&o.onDone(); } }
+  Object.keys(st).forEach(i=>settle(+i, st[i]));
+  w.append(tray,bins,fb); parent.appendChild(w);
+  if(Object.keys(st).length===o.items.length){ fb.className='fb ok'; fb.innerHTML='<b>All sorted.</b> '+(o.doneMsg||''); fb.hidden=false; }
+  return w;
+}
+
+function missionBox(parent, key, list, reqId){
+  const box=h('div',{class:'missions'}); parent.appendChild(box);
+  let idx=S.misc[key]||0; let last='';
+  function render(){
+    box.innerHTML='<h4>Missions</h4><ol>'+list.map((m,i)=>`<li class="${i<idx?'done':i===idx?'cur':''}">${m.text}</li>`).join('')+'</ol>'
+      +(last?`<div class="fb ok">${last}</div>`:'')+(idx>=list.length&&!last?'<div class="fb ok">All missions complete.</div>':'');
+  }
+  render();
+  return function test(state){
+    if(idx>=list.length) return;
+    if(list[idx].test(state)){
+      last=list[idx].done||'Mission complete.'; idx++; S.misc[key]=idx; save(); render();
+      if(idx>=list.length) reqDone(reqId);
+    }
+  };
+}
+
+function stepper(parent, steps, onStep, reqId){
+  const box=h('div',{class:'stepbox'}); const nav=h('div',{class:'btnrow'});
+  const back=h('button',{class:'btn ghost small',type:'button'},'Back'); const next=h('button',{class:'btn primary small',type:'button'},'Next step');
+  nav.append(back,next); parent.append(box,nav);
+  let k=0;
+  function show(){
+    box.innerHTML=`<div class="k">Step ${k+1} of ${steps.length}</div>${steps[k]}`;
+    back.disabled=k===0; next.disabled=k===steps.length-1; next.textContent=k===steps.length-1?'Done':'Next step';
+    onStep&&onStep(k);
+    if(k===steps.length-1 && reqId) reqDone(reqId);
+  }
+  back.addEventListener('click',()=>{ if(k>0){k--; show();} });
+  next.addEventListener('click',()=>{ if(k<steps.length-1){k++; show();} });
+  show();
+  return {show:i=>{k=i; show();}};
+}
+// Physics section icons (24x24, stroke = currentColor)
+const PHYS_ICONS=[
+ {label:'Both',     svg:'<path d="M2 7h7v14"/><path d="M10 7.5Q17 8 20.5 20" stroke-dasharray="2.2 2.2"/><circle cx="12" cy="11.5" r="1.2" fill="currentColor"/><circle cx="12" cy="15.8" r="1.2" fill="currentColor"/><circle cx="12" cy="20.2" r="1.2" fill="currentColor"/>'},
+ {label:'Sideways', svg:'<circle cx="3.5" cy="12" r="1.8" fill="currentColor"/><circle cx="9" cy="12" r="1.8" fill="currentColor"/><circle cx="14.5" cy="12" r="1.8" fill="currentColor"/><path d="M17 12h5.5M19.5 9l3 3-3 3"/>'},
+ {label:'Falling',  svg:'<circle cx="10" cy="2.5" r="1.3" fill="currentColor"/><circle cx="10" cy="6" r="1.3" fill="currentColor"/><circle cx="10" cy="11" r="1.3" fill="currentColor"/><circle cx="10" cy="18.5" r="1.3" fill="currentColor"/><path d="M17 8v13M14.5 18.5l2.5 2.5 2.5-2.5"/>'},
+ {label:'Time',     svg:'<circle cx="12" cy="13.5" r="7.5"/><path d="M12 13.5V9.5M12 13.5l3 2M10 3h4M12 3v2.5M18.5 6.5l1.5-1.5"/>'},
+ {label:'How far',  svg:'<path d="M2 6h5v15"/><path d="M7 6Q15 6.5 18 16" stroke-dasharray="2.2 2.2"/><path d="M15 16.5h6l-1 4.5h-4z"/><path d="M7 22.5h14" opacity=".6"/>'},
+ {label:'Velocity', svg:'<path d="M3 6h12"/><path d="M15 6v12"/><path d="M3 6l11.2 11.2"/><path d="M15 18l-5-1 4-4z" fill="currentColor"/>'},
+ {label:'Graphs',   svg:'<path d="M4 3v17h17"/><path d="M6.5 17.5L19 5.5"/><path d="M6.5 11h12.5" opacity=".6" stroke-dasharray="2 2"/>'},
+ {label:'Missions', svg:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/><path d="M12 1.5v5M12 17.5v5M1.5 12h5M17.5 12h5"/>'},
+ {label:'Final',    svg:'<rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4V2.5h6V4"/><path d="M8.5 13l2.5 2.5 4.5-5"/>'},
+ {label:'Results',  svg:'<path d="M3 21h18"/><rect x="5" y="12" width="3.5" height="9"/><rect x="10.25" y="7" width="3.5" height="14"/><rect x="15.5" y="3" width="3.5" height="18"/>'}
+];
+function iconSVG(i,size,color){ return `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="${color||'currentColor'}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PHYS_ICONS[i].svg}</svg>`; }
+
+/* ---------- Spot the mistake: pick what's wrong, then fix it ---------- */
+function spotMistakes(parent, list, reqId){
+  const ids=[]; list.forEach(m=>ids.push(m.id+'w', m.id+'f'));
+  parent.insertAdjacentHTML('beforeend','<p>Each tab shows a student\'s work with <b>one mistake</b>. Find what went wrong, then fix it.</p>');
+  const bar=h('div',{class:'btnrow mistabs',style:'margin-top:4px'}); parent.appendChild(bar);
+  const tabs=[], panes=[];
+  list.forEach((m,i)=>{
+    const b=h('button',{class:'btn ghost small',type:'button'},`Mistake ${i+1}`); b.addEventListener('click',()=>show(i)); bar.appendChild(b); tabs.push(b);
+    const pane=h('div'); parent.appendChild(pane); panes.push(pane);
+    pane.innerHTML=`<p style="margin:12px 0 6px"><b>${m.title}</b></p><div class="work"><div class="small muted" style="margin-bottom:4px">${m.who||'A student'}'s work</div>${m.work}</div>`;
+    const fx=h('div',{class:'fixbox'});
+    mcq(pane,{id:m.id+'w', q:'What went wrong?', opts:m.opts, ans:m.ans, why:m.why, wrong:m.wrong, onSolved:()=>{ fx.hidden=false; upd(); }});
+    fx.hidden=!S.solved[m.id+'w'];
+    fx.insertAdjacentHTML('beforeend',`<p style="margin:4px 0 0"><b>Now fix it.</b> ${m.fix.q}</p>`);
+    pane.appendChild(fx);
+    numq(fx,Object.assign({id:m.id+'f', onSolved:upd},m.fix));
+  });
+  function show(i){ panes.forEach((p,j)=>p.hidden=j!==i); tabs.forEach((t,j)=>t.classList.toggle('on',j===i)); }
+  function upd(){ list.forEach((m,i)=>{ const d=S.solved[m.id+'w']&&S.solved[m.id+'f']; tabs[i].textContent=`Mistake ${i+1}${d?' ✓':''}`; }); if(allSolved(ids)) reqDone(reqId); }
+  show(0); upd();
+}
+
+/* =====================================================================
+   SECTION CONTENT: Horizontal and Vertical Motion (g = 9.8 m/s²)
+   ===================================================================== */
+const SECS=[];
+const G=9.8;
+const tolT=ans=>v=>Math.abs(v-ans)<=Math.max(0.015,Math.abs(ans)*0.025);      // times
+const tolD=ans=>v=>Math.abs(v-ans)<=Math.max(0.06,Math.abs(ans)*0.03);        // answers built from rounded steps
+const VX='<span class="cx">v<sub>x</sub></span>', VY='<span class="cy">v<sub>y</sub></span>', VV='<span class="cr">v</span>';
+const sub=(s,c,v)=>`${s}<tspan font-size="10" dy="3">${c}</tspan><tspan dy="-3">${v}</tspan>`;
+
+/* ---------- shared: draw a table/cliff edge on a plane ---------- */
+function ledge(P, h, x0, label){
+  const g=P.gDraw;
+  sv('rect',{x:P.X(x0),y:P.Y(h),width:P.X(0)-P.X(x0),height:P.Y(0)-P.Y(h),fill:'#2a3d5f',stroke:'#3a5580'},g);
+  sv('line',{x1:P.X(x0),y1:P.Y(0),x2:P.X(1e3),y2:P.Y(0),stroke:'#5d7399','stroke-width':2},g);
+  if(label) label_(g,P.X(x0/2),P.Y(h/2),label);
+}
+function label_(g,x,y,t){ label(g,x,y,t,COL.muted,{size:12,weight:500,halo:0}); }
+function animate(ms,fn){ return new Promise(res=>{ if(RM){ fn(1); res(); return; } const t0=performance.now(); (function f(now){ const t=Math.min(1,(now-t0)/ms); fn(t); if(t<1) requestAnimationFrame(f); else res(); })(performance.now()); }); }
+
+/* ===================== SECTION 1: two motions at once ===================== */
+SECS.push({z:1, sym:'H', name:'Hydrogen', title:'Two motions at the same time', min:6,
+ reqs:[{id:'s1-sim',text:'Launch Ball B at 3 different speeds'},{id:'s1-qc',text:'Answer both quick check questions correctly'}],
+ build(body){
+  const c1=card(body,'read','Sideways and down, at the same time');
+  c1.insertAdjacentHTML('beforeend',`
+    <p>When a ball rolls off a table, it keeps moving sideways while it falls. It's doing two motions at once: a <b>horizontal</b> motion (sideways) and a <b>vertical</b> motion (down).</p>
+    <p>Here's the big idea of this lesson: <b>the two motions are independent.</b> The sideways motion doesn't change how the ball falls, and the falling doesn't change the sideways motion. (We ignore air resistance.)</p>
+    <div class="callout"><b>Predict:</b> Ball A is dropped. At the same moment, Ball B rolls off the same table sideways. Which one hits the floor first? Make your guess, then test it below.</div>`);
+
+  const c2=card(body,'try','Drop vs. launch');
+  c2.insertAdjacentHTML('beforeend','<p>Pick a launch speed for Ball B and press <b>Release</b>. The faint dots show where each ball was every 0.05 s. The dashed lines connect where they were at the same moment.</p>');
+  const sp=h('div',{class:'split'}); c2.appendChild(sp); const L=h('div'), R=h('div'); sp.append(L,R);
+  const H0=1.25, TF=Math.sqrt(2*H0/G);
+  const P=plane({xmin:-0.5,xmax:3.4,ymin:-0.12,ymax:1.55,w:460,grid:0.5,names:false,label:'Ball A dropped and Ball B launched from a 1.25 m table'});
+  L.appendChild(P.svg);
+  const gS=sv('g',{},P.gDraw), gB=sv('g',{},P.gDraw);
+  ledge(P,H0,-0.5,'');
+  label_(P.gDraw,P.X(-0.25),P.Y(0.6),'1.25 m');
+  R.innerHTML=`<div class="slider"><label for="s1v">Ball B speed</label><input id="s1v" type="range" min="0.5" max="6" step="0.5" value="2"><b class="s1vv num">2.0 m/s</b></div>
+    <div class="btnrow"><button class="btn primary" type="button" id="s1go">Release</button></div>
+    <dl class="readout s1ro" style="margin-top:12px"><dt>Ball A lands at</dt><dd>?</dd><dt>Ball B lands at</dt><dd>?</dd><dt>Ball B lands</dt><dd>?</dd></dl>
+    <p class="small muted s1cnt" style="margin-top:8px"></p>`;
+  const tried=new Set(S.misc.s1tried||[]); let busy=false;
+  function draw(t,v){
+    gB.innerHTML=''; gS.innerHTML='';
+    for(let ts=0; ts<=Math.min(t,TF)+1e-9; ts+=0.05){
+      const yy=H0-0.5*G*ts*ts; if(yy<0) break;
+      sv('line',{x1:P.X(0.04),y1:P.Y(yy),x2:P.X(0.04+v*ts),y2:P.Y(yy),stroke:'#ffffff','stroke-opacity':.18,'stroke-dasharray':'3 4'},gS);
+      sv('circle',{cx:P.X(0.04),cy:P.Y(yy),r:5,fill:COL.a,opacity:.35},gS);
+      sv('circle',{cx:P.X(0.04+v*ts),cy:P.Y(yy),r:5,fill:COL.b,opacity:.35},gS);
+    }
+    const tt=Math.min(t,TF), y=Math.max(0,H0-0.5*G*tt*tt);
+    sv('circle',{cx:P.X(0.04),cy:P.Y(y)-8,r:8,fill:COL.a},gB); sv('circle',{cx:P.X(0.04+v*tt),cy:P.Y(y)-8,r:8,fill:COL.b},gB);
+    label(gB,P.X(0.04)-14,P.Y(y)-8,'A',COL.a,{size:13,anchor:'end'}); label(gB,P.X(0.04+v*tt)+14,P.Y(y)-8,'B',COL.b,{size:13,anchor:'start'});
+  }
+  draw(0,2);
+  const vin=$('#s1v',R);
+  vin.addEventListener('input',()=>{ $('.s1vv',R).textContent=fmt(+vin.value)+' m/s'; if(!busy) draw(0,+vin.value); });
+  const cnt=()=>{ $('.s1cnt',R).textContent=tried.size>=3?'Tested at 3 speeds. Did the speed ever change the landing time?':`Speeds tested: ${tried.size} of 3`; };
+  cnt();
+  $('#s1go',R).addEventListener('click',async()=>{
+    if(busy) return; busy=true; const v=+vin.value; const ro=$$('.s1ro dd',R); ro.forEach(d=>d.textContent='…');
+    await animate(TF*4000,t=>draw(t*TF,v));
+    ro[0].textContent=fmt(TF,2)+' s'; ro[1].textContent=fmt(TF,2)+' s'; ro[2].textContent=fmt(v*TF,2)+' m from the table';
+    tried.add(v); S.misc.s1tried=[...tried]; save(); cnt(); if(tried.size>=3) reqDone('s1-sim'); busy=false;
+  });
+
+  const c3=card(body,'qc');
+  qcGroup(c3,[
+    {id:'s1q1', q:'Ball A is dropped. At the same moment, Ball B is thrown sideways from the same height. Which hits the ground first?', opts:['Ball A','Ball B','They land at the same time','It depends on how fast B is thrown'], ans:2,
+      why:'They fall the same way, because the sideways motion doesn\'t change the falling.', wrong:{0:'Throwing B sideways doesn\'t slow down its fall. Look at the dashed lines: the balls are always at the same height.',1:'B goes farther, but not faster downward.',3:'Try it in the simulator: every speed gives the same landing time.'}},
+    {id:'s1q2', q:'Ignoring air, what happens to Ball B\'s <b>sideways</b> speed while it falls?', opts:['It stays the same','It speeds up','It slows down','It becomes zero'], ans:0,
+      why:'Nothing pushes it sideways after it leaves the table, so its horizontal speed stays constant.', wrong:{1:'Gravity pulls down, not sideways. Nothing speeds it up sideways.',2:'Without air resistance, nothing slows it down sideways.',3:'It keeps moving sideways the whole way down.'}}
+  ],'s1-qc');
+ }
+});
+
+/* ---------- strobe figure (equal sideways gaps, growing vertical gaps) ---------- */
+function strobeFig(){
+  const H0=1.25, v=2.0, TF=Math.sqrt(2*H0/G);
+  const P=plane({xmin:-0.35,xmax:1.2,ymin:-0.1,ymax:1.45,w:400,grid:0,names:false,label:'Strobe picture of a ball rolling off a table'});
+  ledge(P,H0,-0.35,'');
+  const g=P.gDraw;
+  for(let i=0;i<=5;i++){ const t=i*0.1; if(t>TF) break; const x=v*t, y=H0-0.5*G*t*t;
+    sv('line',{x1:P.X(x),y1:P.Y(H0+0.12),x2:P.X(x),y2:P.Y(0),stroke:COL.x,'stroke-opacity':.35,'stroke-dasharray':'3 4'},g);
+    sv('line',{x1:P.X(-0.35),y1:P.Y(y),x2:P.X(1.15),y2:P.Y(y),stroke:COL.y,'stroke-opacity':.35,'stroke-dasharray':'3 4'},g);
+    sv('circle',{cx:P.X(x),cy:P.Y(y),r:7,fill:COL.r},g); }
+  label(g,P.X(0.5),P.Y(H0+0.08),'equal sideways gaps',COL.x,{size:13});
+  label(g,P.X(1.15),P.Y(0.62),'vertical gaps',COL.y,{size:13,anchor:'end'});
+  label(g,P.X(1.15),P.Y(0.52),'get bigger',COL.y,{size:13,anchor:'end'});
+  return P.svg;
+}
+function practice(parent, items, reqId){
+  const ids=items.map(it=>it.id);
+  items.forEach((it,i)=>{
+    parent.insertAdjacentHTML('beforeend',`<p style="margin:14px 0 0"><b>${i+1}.</b> ${it.q}</p>`);
+    numq(parent,Object.assign({onSolved:()=>{ if(allSolved(ids)) reqDone(reqId); }},it));
+  });
+}
+
+/* ===================== SECTION 2: horizontal ===================== */
+SECS.push({z:2, sym:'He', name:'Helium', title:'Horizontal motion: steady speed', min:6,
+ reqs:[{id:'s2-prac',text:'Solve all 5 horizontal motion problems'},{id:'s2-qc',text:'Answer both quick check questions correctly'}],
+ build(body){
+  const c1=card(body,'read','Nothing pushes it sideways');
+  c1.insertAdjacentHTML('beforeend',`<div class="split"><div>
+    <p>Once the ball leaves the table, nothing pushes it sideways (we ignore air). So its horizontal velocity, ${VX}, <b>stays the same</b> the whole time it falls.</p>
+    <p>That makes the horizontal motion easy. It's just constant speed:</p>
+    <div class="formula"><i>x</i> = ${VX} <i>t</i></div>
+    <p><i>x</i> is how far it moves sideways (m), ${VX} is the horizontal speed (m/s), and <i>t</i> is the time (s).</p>
+    <p>A strobe picture shows this. The ball moves the same distance sideways in each time step, so the sideways gaps are equal.</p>
+    </div><div class="s2fig"></div></div>`);
+  $('.s2fig',c1).appendChild(strobeFig());
+
+  const c2=card(body,'try','Practice: horizontal motion');
+  c2.insertAdjacentHTML('beforeend','<p>Use <i>x</i> = v<sub>x</sub><i>t</i>. To find v<sub>x</sub> or <i>t</i>, rearrange: v<sub>x</sub> = <i>x</i> ÷ <i>t</i> and <i>t</i> = <i>x</i> ÷ v<sub>x</sub>. Round to one decimal place.</p>');
+  practice(c2,[
+    {id:'s2p1', q:`A ball leaves a table at ${VX} = 4.0 m/s. How far sideways does it go in 0.50 s?`, label:'<i>x</i> =', ans:2.0, unit:'m', hint:'Multiply: x = vₓ × t.', how:'4.0 × 0.50 = 2.0 m'},
+    {id:'s2p2', q:`A rock is kicked off a cliff at ${VX} = 12 m/s. How far sideways does it go in 1.5 s?`, label:'<i>x</i> =', ans:18, unit:'m', hint:'Multiply: x = vₓ × t.', how:'12 × 1.5 = 18.0 m'},
+    {id:'s2p3', q:`A marble rolls off a desk at ${VX} = 7.5 m/s and falls for 0.80 s. How far sideways does it land?`, label:'<i>x</i> =', ans:6.0, unit:'m', hint:'Multiply: x = vₓ × t.', how:'7.5 × 0.80 = 6.0 m'},
+    {id:'s2p4', q:'A ball lands 15 m from a ledge after 2.0 s in the air. What was its horizontal speed?', label:`${VX} =`, ans:7.5, unit:'m/s', hint:'Divide: vₓ = x ÷ t.', how:'15 ÷ 2.0 = 7.5 m/s'},
+    {id:'s2p5', q:`A puck slides off a table at ${VX} = 3.2 m/s and lands 9.6 m away. How long was it in the air?`, label:'<i>t</i> =', ans:3.0, unit:'s', check:tolT(3.0), hint:'Divide: t = x ÷ vₓ.', how:'9.6 ÷ 3.2 = 3.0 s'}
+  ],'s2-prac');
+
+  const c3=card(body,'qc');
+  qcGroup(c3,[
+    {id:'s2q1', q:'In a strobe picture of a ball rolling off a table, the <b>sideways</b> gaps between the images are…', opts:['equal','getting bigger','getting smaller','zero'], ans:0,
+      why:'Horizontal speed stays constant, so the ball moves the same distance sideways in each time step.', wrong:{1:'The vertical gaps get bigger, not the sideways ones.',2:'Nothing slows the ball sideways (no air resistance).',3:'The ball keeps moving sideways the whole time.'}},
+    {id:'s2q2', q:'A ball leaves a table at 3.0 m/s. How far sideways has it moved after 0.40 s?', opts:['0.75 m','1.2 m','3.4 m','7.5 m'], ans:1,
+      why:'x = vₓt = 3.0 × 0.40 = 1.2 m.', wrong:{0:'That\'s 3.0 ÷ 0.40 flipped. Multiply speed by time.',2:'Don\'t add speed and time. Multiply them.',3:'That\'s 3.0 ÷ 0.40. Multiply instead.'}}
+  ],'s2-qc');
+ }
+});
+
+/* ===================== SECTION 3: vertical ===================== */
+SECS.push({z:3, sym:'Li', name:'Lithium', title:'Vertical motion: falling from rest', min:7,
+ reqs:[{id:'s3-explore',text:'Check the falling ball at 3 different times'},{id:'s3-prac',text:'Solve all 5 vertical motion problems'},{id:'s3-qc',text:'Answer both quick check questions correctly'}],
+ build(body){
+  const c1=card(body,'read','Starts at zero, speeds up downward');
+  c1.insertAdjacentHTML('beforeend',`
+    <p>A ball launched straight sideways has <b>no vertical speed at the start</b>. All of its launch speed is horizontal. So vertically, it acts just like a dropped ball.</p>
+    <p>Gravity makes it speed up downward by <b><i>g</i> = 9.8 m/s²</b>. That means it gains 9.8 m/s of downward speed every second. We'll use sizes and just say "down."</p>
+    <div class="formula">${VY} = <i>g t</i></div><div class="formula"><i>d</i> = ½ <i>g t</i>²</div>
+    <p>${VY} is the downward speed (m/s) and <i>d</i> is how far it has fallen (m). Because it keeps speeding up, it falls farther in each time step. That's why the vertical gaps in a strobe picture get bigger.</p>
+    <div class="wide"><table class="nb"><tr><th>Time <i>t</i> (s)</th><th>0</th><th>1</th><th>2</th><th>3</th></tr>
+      <tr><td>Downward speed ${VY} (m/s)</td><td>0</td><td>9.8</td><td>19.6</td><td>29.4</td></tr>
+      <tr><td>Distance fallen <i>d</i> (m)</td><td>0</td><td>4.9</td><td>19.6</td><td>44.1</td></tr></table></div>`);
+
+  const c2=card(body,'try','The falling clock');
+  c2.insertAdjacentHTML('beforeend','<p>Move the time slider. Watch the downward speed grow steadily while the distance fallen grows faster and faster.</p>');
+  const sp=h('div',{class:'split'}); c2.appendChild(sp); const L=h('div'), R=h('div'); sp.append(L,R);
+  const svg=sv('svg',{viewBox:'0 0 320 360',class:'fig',role:'img','aria-label':'A ball falling with a growing downward velocity arrow'}); L.appendChild(svg);
+  const top=24, bot=330, k=(bot-top)/45;
+  for(let m=0;m<=45;m+=5){ const y=top+m*k; sv('line',{x1:60,x2:300,y1:y,y2:y,stroke:'#1b2a44'},svg); label(svg,52,y,m+' m',COL.muted,{size:11,weight:400,anchor:'end',halo:0}); }
+  const gB=sv('g',{},svg);
+  R.innerHTML=`<div class="slider"><label for="s3t">Time</label><input id="s3t" type="range" min="0" max="3" step="0.25" value="0"><b class="s3tv num">0.00 s</b></div>
+    <dl class="readout s3ro" style="margin-top:12px"></dl><p class="small muted s3cnt" style="margin-top:8px"></p>`;
+  const seen=new Set(S.misc.s3seen||[]);
+  function draw(t){
+    gB.innerHTML=''; const d=0.5*G*t*t, vy=G*t, y=top+d*k;
+    for(let ts=0.5; ts<=t+1e-9; ts+=0.5){ const yy=top+0.5*G*ts*ts*k; sv('circle',{cx:120,cy:yy,r:8,fill:COL.r,opacity:.25},gB); }
+    if(vy>0) arrow(gB,175,y,175,y+vy*3.2,COL.y,{w:4});
+    sv('circle',{cx:120,cy:y,r:10,fill:COL.r},gB);
+    if(vy>0) label(gB,185,y+vy*1.6,sub('v','y',' = '+fmt(vy)+' m/s'),COL.y,{size:13,anchor:'start'});
+    $('.s3tv',R).textContent=fmt(t,2)+' s';
+    $('.s3ro',R).innerHTML=`<dt>Downward speed</dt><dd>${VY} = 9.8 × ${fmt(t,2)} = ${fmt(vy)} m/s</dd><dt>Distance fallen</dt><dd><i>d</i> = ½ × 9.8 × ${fmt(t,2)}² = ${fmt(d)} m</dd>`;
+  }
+  const tin=$('#s3t',R);
+  tin.addEventListener('input',()=>{ const t=+tin.value; draw(t); if(t>0){ seen.add(t); S.misc.s3seen=[...seen]; save(); } $('.s3cnt',R).textContent=seen.size>=3?'Explored. Speed goes up by the same amount each second; distance doesn\'t.':`Times checked: ${seen.size} of 3`; if(seen.size>=3) reqDone('s3-explore'); });
+  draw(0); $('.s3cnt',R).textContent=seen.size>=3?'Explored.':`Times checked: ${seen.size} of 3`;
+
+  const c3=card(body,'try','Practice: vertical motion');
+  c3.insertAdjacentHTML('beforeend','<p>Use v<sub>y</sub> = <i>gt</i> and <i>d</i> = ½<i>gt</i>², with <i>g</i> = 9.8 m/s². Square the time first, then multiply. Round to one decimal place.</p>');
+  practice(c3,[
+    {id:'s3p1', q:'A ball rolls off a roof and falls for 2.0 s. What is its downward speed?', label:`${VY} =`, ans:19.6, unit:'m/s', hint:'vᵧ = g × t = 9.8 × t.', how:'9.8 × 2.0 = 19.6 m/s'},
+    {id:'s3p2', q:'A ball falls for 0.50 s. How far has it fallen?', label:'<i>d</i> =', ans:1.225, unit:'m', check:v=>Math.abs(v-1.225)<=0.06, hint:'d = ½ × 9.8 × t². Square 0.50 first: 0.25.', how:'0.5 × 9.8 × 0.50² = 0.5 × 9.8 × 0.25 = 1.2 m'},
+    {id:'s3p3', q:'A ball falls for 1.5 s. How far has it fallen?', label:'<i>d</i> =', ans:11.025, unit:'m', hint:'d = ½ × 9.8 × t². 1.5² = 2.25.', how:'0.5 × 9.8 × 2.25 = 11.0 m'},
+    {id:'s3p4', q:'A stone falls from a cliff for 3.0 s. What is its downward speed?', label:`${VY} =`, ans:29.4, unit:'m/s', hint:'vᵧ = 9.8 × t.', how:'9.8 × 3.0 = 29.4 m/s'},
+    {id:'s3p5', q:'A ball falls for 0.80 s. How far has it fallen?', label:'<i>d</i> =', ans:3.136, unit:'m', hint:'d = ½ × 9.8 × t². 0.80² = 0.64.', how:'0.5 × 9.8 × 0.64 = 3.1 m'}
+  ],'s3-prac');
+
+  const c4=card(body,'qc');
+  qcGroup(c4,[
+    {id:'s3q1', q:'A ball launched straight sideways off a table. What is its <b>vertical</b> speed at the moment it leaves the table?', opts:['0 m/s','9.8 m/s','The same as its sideways speed','It depends on the table height'], ans:0,
+      why:'All of the launch speed is sideways, so vertically it starts from rest, just like a dropped ball.', wrong:{1:'9.8 m/s is how much downward speed it gains each second, not where it starts.',2:'The launch speed is all horizontal.',3:'The height changes how long it falls, not its starting vertical speed.'}},
+    {id:'s3q2', q:'Why do the <b>vertical</b> gaps in a strobe picture get bigger as the ball falls?', opts:['The ball speeds up downward, so it falls farther each time step','The ball slows down sideways','The camera speeds up','Gravity gets stronger near the floor'], ans:0,
+      why:'Its downward speed grows by 9.8 m/s every second, so each time step covers more distance.', wrong:{1:'The sideways speed stays the same.',2:'The strobe flashes at equal time steps.',3:'g is the same (9.8 m/s²) the whole way down.'}}
+  ],'s3-qc');
+ }
+});
+
+/* ===================== SECTION 4: fall time ===================== */
+SECS.push({z:4, sym:'Be', name:'Beryllium', title:'How long is it in the air?', min:7,
+ reqs:[{id:'s4-ex',text:'Step through the worked example'},{id:'s4-prac',text:'Solve all 5 fall-time problems'},{id:'s4-qc',text:'Answer both quick check questions correctly'}],
+ build(body){
+  const c1=card(body,'read','Only the height decides the time');
+  c1.insertAdjacentHTML('beforeend',`
+    <p>Because the two motions are independent, the time in the air depends only on <b>how high</b> it starts (and on <i>g</i>). The sideways speed doesn't matter.</p>
+    <p>Start from <i>d</i> = ½<i>gt</i>², with <i>d</i> = the height <i>h</i>. Solve for <i>t</i>:</p>
+    <div class="formula"><i>t</i> = √( 2<i>h</i> ÷ <i>g</i> )</div>
+    <div class="callout">Calculator order: <b>2 × h</b>, then <b>÷ 9.8</b>, then <b>√</b>. In the built-in calculator, type √(2*1.2/9.8).</div>`);
+  const c2=card(body,'read','Worked example: off the lab bench');
+  c2.insertAdjacentHTML('beforeend','<p>A marble rolls off a lab bench that is <b>1.2 m</b> high. How long is it in the air?</p>');
+  stepper(c2,[
+    `<p><b>What do we know?</b> Height <i>h</i> = 1.2 m and <i>g</i> = 9.8 m/s². We want the time <i>t</i>.</p>`,
+    `<p><b>Pick the equation.</b> Only the height matters for time: <i>t</i> = √(2<i>h</i> ÷ <i>g</i>).</p>`,
+    `<p><b>Plug in.</b></p><p class="num"><i>t</i> = √(2 × 1.2 ÷ 9.8) = √(2.4 ÷ 9.8) = √0.245 = <b>0.49 s</b></p>`,
+    `<p><b>Check.</b> Falling 1.2 m should take about half a second, like a dropped pencil. 0.49 s makes sense. A faster marble would still take 0.49 s.</p>`
+  ], null, 's4-ex');
+
+  const c3=card(body,'try','Practice: time in the air');
+  c3.insertAdjacentHTML('beforeend','<p>Use <i>t</i> = √(2<i>h</i> ÷ 9.8). Round to two decimal places.</p>');
+  practice(c3,[
+    {id:'s4p1', q:'A ball rolls off a ledge 4.9 m high. How long is it in the air?', label:'<i>t</i> =', ans:1.0, unit:'s', check:tolT(1.0), hint:'t = √(2 × 4.9 ÷ 9.8).', how:'√(9.8 ÷ 9.8) = √1 = 1.00 s'},
+    {id:'s4p2', q:'A rock is kicked off a 19.6 m cliff. How long is it in the air?', label:'<i>t</i> =', ans:2.0, unit:'s', check:tolT(2.0), hint:'t = √(2 × 19.6 ÷ 9.8).', how:'√(39.2 ÷ 9.8) = √4 = 2.00 s'},
+    {id:'s4p3', q:'A toy car drives off a 0.80 m table. How long is it in the air?', label:'<i>t</i> =', ans:Math.sqrt(1.6/G), unit:'s', check:tolT(Math.sqrt(1.6/G)), hint:'t = √(2 × 0.80 ÷ 9.8).', how:'√(1.6 ÷ 9.8) = √0.163 = 0.40 s'},
+    {id:'s4p4', q:'A diver runs straight off a 45 m cliff. How long until the water?', label:'<i>t</i> =', ans:Math.sqrt(90/G), unit:'s', check:tolT(Math.sqrt(90/G)), hint:'t = √(2 × 45 ÷ 9.8).', how:'√(90 ÷ 9.8) = √9.18 = 3.03 s'},
+    {id:'s4p5', q:'A skateboard rolls off a 2.5 m wall. How long is it in the air?', label:'<i>t</i> =', ans:Math.sqrt(5/G), unit:'s', check:tolT(Math.sqrt(5/G)), hint:'t = √(2 × 2.5 ÷ 9.8).', how:'√(5 ÷ 9.8) = √0.510 = 0.71 s'}
+  ],'s4-prac');
+
+  const c4=card(body,'qc');
+  qcGroup(c4,[
+    {id:'s4q1', q:'Ball A rolls off a 1.0 m table at 2 m/s. Ball B rolls off the same table at 6 m/s. Which is in the air longer?', opts:['Ball A','Ball B','Same time','Can\'t tell without the mass'], ans:2,
+      why:'Time in the air depends only on the height. B just lands farther away.', wrong:{0:'Speed sideways doesn\'t change the fall time.',1:'B goes farther, but it falls the same 1.0 m in the same time.',3:'Without air, mass doesn\'t change how things fall.'}},
+    {id:'s4q2', q:'Which change makes a sideways-launched ball stay in the air <b>longer</b>?', opts:['Launch it from higher up','Throw it faster sideways','Use a heavier ball','Throw it slower sideways'], ans:0,
+      why:'t = √(2h ÷ g): only a bigger height gives more time.', wrong:{1:'Faster sideways means farther, not longer.',2:'Mass doesn\'t change fall time (ignoring air).',3:'Slower sideways means it lands closer, in the same time.'}}
+  ],'s4-qc');
+ }
+});
+
+/* ===================== SECTION 5: how far ===================== */
+function targetGame(parent){
+  const H0=1.0, TF=Math.sqrt(2*H0/G);
+  const sp=h('div',{class:'split'}); parent.appendChild(sp); const L=h('div'), R=h('div'); sp.append(L,R);
+  const P=plane({xmin:-0.4,xmax:2.6,ymin:-0.1,ymax:1.3,w:460,grid:0.5,names:false,ticks:0.5,label:'Launch a ball off a 1.0 m table into a cup'});
+  L.appendChild(P.svg);
+  ledge(P,H0,-0.4,''); label_(P.gDraw,P.X(-0.2),P.Y(0.5),'1.0 m');
+  const gC=sv('g',{},P.gDraw), gB=sv('g',{},P.gDraw);
+  const cups=[1.2,2.0,0.7];
+  let idx=Math.min(S.misc.s5m||0,cups.length);
+  R.innerHTML=`<p class="s5mis"></p>
+    <div class="numrow"><label for="s5v">Launch speed</label><span class="inwrap"><input class="ans" id="s5v" type="text" autocomplete="off" placeholder="?"><span class="unit">m/s</span></span><button class="btn primary small" id="s5go" type="button">Launch</button></div>
+    <div class="fb" id="s5fb" hidden></div>`;
+  const fb=$('#s5fb',R);
+  function drawCup(){ gC.innerHTML=''; if(idx>=cups.length) return; const D=cups[idx];
+    sv('path',{d:`M${P.X(D-0.07)},${P.Y(0.12)} L${P.X(D-0.05)},${P.Y(0)} L${P.X(D+0.05)},${P.Y(0)} L${P.X(D+0.07)},${P.Y(0.12)}`,fill:'rgba(255,211,92,.2)',stroke:COL.r,'stroke-width':2},gC);
+    label(gC,P.X(D),P.Y(0.2),D.toFixed(2)+' m',COL.r,{size:12}); }
+  function mis(){ $('.s5mis',R).innerHTML=idx>=cups.length?'<b>All 3 cups hit.</b>':`<b>Cup ${idx+1} of 3:</b> the cup is <b>${cups[idx].toFixed(2)} m</b> from the table. Calculate the launch speed, then test it.`; drawCup(); }
+  mis();
+  let busy=false, misses=0;
+  $('#s5go',R).addEventListener('click',async()=>{
+    if(busy||idx>=cups.length) return; const v=parseNum($('#s5v',R).value);
+    if(isNaN(v)||v<=0||v>8){ fb.className='fb no'; fb.textContent='Type a launch speed between 0 and 8 m/s.'; fb.hidden=false; return; }
+    busy=true; fb.hidden=true; gB.innerHTML='';
+    const path=sv('path',{fill:'none',stroke:COL.b,'stroke-width':2,'stroke-dasharray':'4 4'},gB), ball=sv('circle',{r:8,fill:COL.b},gB);
+    await animate(TF*3000,t=>{ const tt=t*TF; let d=''; for(let s=0;s<=tt+1e-9;s+=TF/40){ d+=(d?' L':'M')+P.X(v*s)+','+P.Y(H0-0.5*G*s*s); } path.setAttribute('d',d); ball.setAttribute('cx',P.X(v*tt)); ball.setAttribute('cy',P.Y(H0-0.5*G*tt*tt)-6); });
+    const land=v*TF, D=cups[idx];
+    if(Math.abs(land-D)<=0.06){ fb.className='fb ok'; fb.innerHTML=`<b>In the cup!</b> At ${fmt(v,2)} m/s it lands ${fmt(land,2)} m away.`; fb.hidden=false; idx++; S.misc.s5m=idx; save(); misses=0; $('#s5v',R).value=''; setTimeout(()=>{ gB.innerHTML=''; mis(); },900); if(idx>=cups.length) reqDone('s5-game'); }
+    else{ misses++; fb.className='fb no'; fb.innerHTML=`It landed ${fmt(land,2)} m away, ${land<D?'short of':'past'} the cup. `+(misses>=2?`Hint: the table is 1.0 m high, so <i>t</i> = √(2 × 1.0 ÷ 9.8) = 0.45 s. Then v<sub>x</sub> = ${D.toFixed(2)} ÷ 0.45.`:'Find the fall time first, then v<sub>x</sub> = x ÷ t.'); fb.hidden=false; }
+    busy=false;
+  });
+  $('#s5v',R).addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); $('#s5go',R).click(); } });
+}
+SECS.push({z:5, sym:'B', name:'Boron', title:'How far does it go?', min:10,
+ reqs:[{id:'s5-link',text:'Sort the x and y equations and name what they share'},{id:'s5-ex',text:'Step through the worked example'},{id:'s5-game',text:'Land the ball in all 3 cups'},{id:'s5-prac',text:'Solve all 5 how-far problems'},{id:'s5-qc',text:'Answer both quick check questions correctly'}],
+ build(body){
+  const c0=card(body,'read','The x side and the y side, together');
+  c0.insertAdjacentHTML('beforeend',`<p>Here is everything from Sections 2 and 3 side by side. The two columns never mix, except for one thing.</p>
+    <div class="wide"><table class="nb">
+      <tr><th></th><th>Horizontal (x)</th><th>Vertical (y)</th></tr>
+      <tr><td>Force</td><td>none</td><td>gravity</td></tr>
+      <tr><td>Acceleration</td><td>0</td><td><i>g</i> = 9.8 m/s² down</td></tr>
+      <tr><td>Starting velocity</td><td>${VX}</td><td>0</td></tr>
+      <tr><td>Velocity</td><td>${VX} stays the same</td><td>${VY} = <i>gt</i></td></tr>
+      <tr><td>Position</td><td><i>x</i> = ${VX}<i>t</i></td><td><i>d</i> = ½<i>gt</i>²</td></tr>
+      <tr><td><b>Shared</b></td><td colspan="2"><b>the same <i>t</i></b></td></tr></table></div>`);
+  const cS=card(body,'try','Which side does it go on?');
+  const linkIds=['s5link'];
+  sorter(cS,{id:'s5', bins:[{k:'x',label:'Horizontal (x)',html:'<span class="cx">Horizontal (x)</span>'},{k:'y',label:'Vertical (y)',html:'<span class="cy">Vertical (y)</span>'}],
+    items:[
+      {html:'<i>x</i> = v<sub>x</sub><i>t</i>',t:'x = vx t',k:'x',why:'x = vₓt is the sideways equation: constant speed.'},
+      {html:'<i>d</i> = ½<i>gt</i>²',t:'d = ½gt²',k:'y',why:'d = ½gt² uses g, so it describes falling.'},
+      {html:'v<sub>y</sub> = <i>gt</i>',t:'vy = gt',k:'y',why:'vᵧ = gt is the downward speed, which grows.'},
+      {html:'acceleration = 0',t:'acceleration = 0',k:'x',why:'Nothing pushes sideways, so the horizontal acceleration is 0.'},
+      {html:'acceleration = 9.8 m/s² down',t:'acceleration = 9.8 m/s² down',k:'y',why:'Gravity accelerates the object downward.'},
+      {html:'velocity never changes',t:'velocity never changes',k:'x',why:'vₓ stays the same the whole flight.'},
+      {html:'starts at 0 m/s',t:'starts at 0 m/s',k:'y',why:'A sideways launch has no starting vertical speed.'},
+      {html:'pulled by gravity',t:'pulled by gravity',k:'y',why:'Gravity only acts downward.'}
+    ], doneMsg:'Every equation lives on one side. Now find what both sides share.', onDone:()=>{ S.misc.s5sorted=1; save(); if(S.solved.s5link) reqDone('s5-link'); }});
+  mcq(cS,{id:'s5link', q:'Look at both columns. Which quantity appears on <b>both</b> sides and connects them?', opts:['Time, <i>t</i>','Velocity','Acceleration','Distance'], ans:0,
+    why:'The same t goes into x = vₓt and d = ½gt². Find t from one side, then use it on the other.', wrong:{1:'The velocities are different on each side (vₓ vs. vᵧ).',2:'The accelerations are different: 0 sideways, g downward.',3:'The distances are different: x sideways, d down.'},
+    onSolved:()=>{ if(S.misc.s5sorted) reqDone('s5-link'); }});
+  const c1=card(body,'read','Time is the link');
+  c1.insertAdjacentHTML('beforeend',`
+    <p>The horizontal and vertical motions are separate, but they share one thing: <b>time</b>. The ball moves sideways for exactly as long as it falls.</p>
+    <p>So "how far does it land?" is a two-step problem:</p>
+    <ol class="tight"><li><b>Vertical:</b> use the height to find the time, <i>t</i> = √(2<i>h</i> ÷ <i>g</i>).</li><li><b>Horizontal:</b> use that time with the sideways speed, <i>x</i> = ${VX}<i>t</i>.</li></ol>`);
+  stepper(c1,[
+    `<p><b>Example:</b> a ball rolls off a 1.25 m table at 2.0 m/s. How far from the table does it land?</p><p>Step 1 is vertical. Use the height to get the time.</p>`,
+    `<p class="num"><i>t</i> = √(2 × 1.25 ÷ 9.8) = √0.255 = <b>0.51 s</b></p>`,
+    `<p>Step 2 is horizontal. It moves sideways for that same 0.51 s.</p><p class="num"><i>x</i> = ${VX}<i>t</i> = 2.0 × 0.51 = <b>1.0 m</b></p>`,
+    `<p><b>Working backward:</b> if you know where it landed, find the time from the height, then ${VX} = <i>x</i> ÷ <i>t</i>.</p>`
+  ], null, 's5-ex');
+
+  const c2=card(body,'try','Land it in the cup');
+  c2.insertAdjacentHTML('beforeend','<p>Each cup sits on the floor somewhere past a 1.0 m table. Work out the launch speed that lands the ball in the cup, type it in, and launch. Two decimal places is close enough.</p>');
+  targetGame(c2);
+
+  const c3=card(body,'try','Practice: how far?');
+  c3.insertAdjacentHTML('beforeend','<p>Two steps each: find <i>t</i> from the height, then use <i>x</i> = v<sub>x</sub><i>t</i>. Round to one decimal place.</p>');
+  const t1=Math.sqrt(2/G), t2=Math.sqrt(40/G), t3=Math.sqrt(3.6/G), t5=Math.sqrt(1.8/G);
+  practice(c3,[
+    {id:'s5p1', q:`A ball rolls off a 1.0 m table at ${VX} = 3.0 m/s. How far from the table does it land?`, label:'<i>x</i> =', ans:3*t1, unit:'m', check:tolD(3*t1), hint:'First t = √(2 × 1.0 ÷ 9.8), then x = 3.0 × t.', how:`t = 0.45 s, so x = 3.0 × 0.45 = 1.4 m`},
+    {id:'s5p2', q:`A rock is kicked off a 20 m cliff at ${VX} = 8.0 m/s. How far from the base does it land?`, label:'<i>x</i> =', ans:8*t2, unit:'m', check:tolD(8*t2), hint:'t = √(2 × 20 ÷ 9.8), then x = 8.0 × t.', how:`t = 2.02 s, so x = 8.0 × 2.02 = 16.2 m`},
+    {id:'s5p3', q:`A marble leaves a 1.8 m shelf at ${VX} = 5.0 m/s. How far does it land?`, label:'<i>x</i> =', ans:5*t3, unit:'m', check:tolD(5*t3), hint:'t = √(2 × 1.8 ÷ 9.8), then x = 5.0 × t.', how:`t = 0.61 s, so x = 5.0 × 0.61 = 3.0 m`},
+    {id:'s5p4', q:'A ball rolls off a 4.9 m ledge and lands 6.0 m away. How fast was it rolling?', label:`${VX} =`, ans:6.0, unit:'m/s', check:tolD(6.0), hint:'t = √(2 × 4.9 ÷ 9.8) = 1.0 s, then vₓ = x ÷ t.', how:'t = 1.0 s, so vₓ = 6.0 ÷ 1.0 = 6.0 m/s'},
+    {id:'s5p5', q:'A toy car drives off a 0.90 m table and lands 1.2 m away. How fast was it going?', label:`${VX} =`, ans:1.2/t5, unit:'m/s', check:tolD(1.2/t5), hint:'t = √(2 × 0.90 ÷ 9.8), then vₓ = 1.2 ÷ t.', how:`t = 0.43 s, so vₓ = 1.2 ÷ 0.43 = 2.8 m/s`}
+  ],'s5-prac');
+
+  const c4=card(body,'qc');
+  qcGroup(c4,[
+    {id:'s5q1', q:'In a "how far does it land?" problem, what connects the horizontal motion to the vertical motion?', opts:['The time','The speed','The mass','The angle'], ans:0,
+      why:'The ball moves sideways for exactly as long as it falls, so both motions share the same t.', wrong:{1:'Horizontal and vertical speeds are different and independent.',2:'Mass doesn\'t appear in these equations.',3:'These launches are straight sideways, so there\'s no launch angle.'}},
+    {id:'s5q2', q:'A ball rolls off a table and lands 0.8 m away. If it rolled off the same table <b>twice as fast</b>, where would it land?', opts:['0.8 m away','1.6 m away','0.4 m away','3.2 m away'], ans:1,
+      why:'Same height means the same time. Twice the speed for the same time gives twice the distance.', wrong:{0:'Faster sideways means farther in the same time.',2:'Faster should go farther, not shorter.',3:'Distance doubles, it doesn\'t quadruple: x = vₓt.'}}
+  ],'s5-qc');
+ }
+});
+
+/* ===================== SECTION 6: velocity at any moment ===================== */
+SECS.push({z:6, sym:'C', name:'Carbon', title:'Velocity at any moment', min:7,
+ reqs:[{id:'s6-explore',text:'Check the velocity at 3 different times'},{id:'s6-prac',text:'Solve all 5 velocity problems'},{id:'s6-qc',text:'Answer both quick check questions correctly'}],
+ build(body){
+  const c1=card(body,'read','Two components, like any vector');
+  c1.insertAdjacentHTML('beforeend',`
+    <p>At any moment, the ball's velocity has two components, just like the vectors from the last lesson:</p>
+    <p>${VX} sideways, which never changes, and ${VY} = <i>gt</i> downward, which keeps growing.</p>
+    <p>Combine them the same way you added vector components:</p>
+    <div class="formula">${VV} = √( ${VX}² + ${VY}² )</div><div class="formula">θ = tan⁻¹( ${VY} ÷ ${VX} )</div>
+    <p>θ is the angle <b>below the horizontal</b>. As the ball falls, ${VY} grows, so the velocity gets longer and points more steeply down.</p>`);
+
+  const c2=card(body,'try','Velocity viewer');
+  c2.insertAdjacentHTML('beforeend','<p>A ball leaves a 5.0 m ledge at 4.0 m/s. Move the slider to see its velocity components at different times.</p>');
+  const sp=h('div',{class:'split'}); c2.appendChild(sp); const L=h('div'), R=h('div'); sp.append(L,R);
+  const H0=5, V0=4, TF=Math.sqrt(2*H0/G);
+  const P=plane({xmin:-1,xmax:5.2,ymin:-0.3,ymax:5.8,w:440,grid:1,names:false,ticks:1,label:'Ball leaving a 5 m ledge with velocity components drawn'});
+  L.appendChild(P.svg); ledge(P,H0,-1,'');
+  const gT=sv('g',{},P.gDraw), gV=sv('g',{},P.gDraw);
+  let d=''; for(let s=0;s<=TF+1e-9;s+=TF/50) d+=(d?' L':'M')+P.X(V0*s)+','+P.Y(H0-0.5*G*s*s); sv('path',{d,fill:'none',stroke:'#ffffff','stroke-opacity':.25,'stroke-dasharray':'4 4'},gT);
+  R.innerHTML=`<div class="slider"><label for="s6t">Time</label><input id="s6t" type="range" min="0" max="${TF.toFixed(2)}" step="0.1" value="0"><b class="s6tv num">0.0 s</b></div><dl class="readout s6ro" style="margin-top:12px"></dl><p class="small muted s6cnt" style="margin-top:8px"></p>`;
+  const seen=new Set(S.misc.s6seen||[]), ks=0.16;
+  function draw(t){
+    gV.innerHTML=''; const x=V0*t, y=H0-0.5*G*t*t, vy=G*t, v=Math.hypot(V0,vy), th=deg(Math.atan2(vy,V0));
+    arrow(gV,P.X(x),P.Y(y),P.X(x+V0*ks),P.Y(y),COL.x,{w:3.5});
+    if(vy>0.01){ arrow(gV,P.X(x+V0*ks),P.Y(y),P.X(x+V0*ks),P.Y(y-vy*ks),COL.y,{w:3.5}); arrow(gV,P.X(x),P.Y(y),P.X(x+V0*ks),P.Y(y-vy*ks),COL.r,{w:4}); }
+    sv('circle',{cx:P.X(x),cy:P.Y(y),r:8,fill:COL.text},gV);
+    $('.s6tv',R).textContent=fmt(t,1)+' s';
+    $('.s6ro',R).innerHTML=`<dt>${VX}</dt><dd>4.0 m/s</dd><dt>${VY}</dt><dd>9.8 × ${fmt(t,1)} = ${fmt(vy)} m/s</dd><dt>${VV}</dt><dd>${fmt(v)} m/s</dd><dt>θ below horizontal</dt><dd>${fmt(th)}°</dd>`;
+  }
+  const tin=$('#s6t',R);
+  tin.addEventListener('input',()=>{ const t=+tin.value; draw(t); if(t>0){ seen.add(t); S.misc.s6seen=[...seen]; save(); } $('.s6cnt',R).textContent=seen.size>=3?'Explored. Only the blue arrow changes, and the gold arrow gets steeper.':`Times checked: ${seen.size} of 3`; if(seen.size>=3) reqDone('s6-explore'); });
+  draw(0); $('.s6cnt',R).textContent=seen.size>=3?'Explored.':`Times checked: ${seen.size} of 3`;
+
+  const c3=card(body,'try','Practice: velocity');
+  c3.insertAdjacentHTML('beforeend','<p>v<sub>y</sub> = <i>gt</i>, then <i>v</i> = √(v<sub>x</sub>² + v<sub>y</sub>²) and θ = tan⁻¹(v<sub>y</sub> ÷ v<sub>x</sub>). Round to one decimal place.</p>');
+  const vy5=G*0.6;
+  practice(c3,[
+    {id:'s6p1', q:`A ball leaves a table at ${VX} = 6.0 m/s. What is ${VY} after 0.50 s?`, label:`${VY} =`, ans:4.9, unit:'m/s', hint:'vᵧ = 9.8 × t.', how:'9.8 × 0.50 = 4.9 m/s'},
+    {id:'s6p2', q:`At one moment, ${VX} = 6.0 m/s and ${VY} = 4.9 m/s. What is the ball's speed?`, label:`${VV} =`, ans:Math.hypot(6,4.9), unit:'m/s', hint:'v = √(vₓ² + vᵧ²).', how:'√(36 + 24.0) = √60.0 = 7.7 m/s'},
+    {id:'s6p3', q:`A ball leaves a cliff at ${VX} = 5.0 m/s. What is its speed after 1.0 s?`, label:`${VV} =`, ans:Math.hypot(5,9.8), unit:'m/s', check:tolD(Math.hypot(5,9.8)), hint:'First vᵧ = 9.8 × 1.0, then v = √(5.0² + vᵧ²).', how:'vᵧ = 9.8, so v = √(25 + 96.0) = 11.0 m/s'},
+    {id:'s6p4', q:`At one moment, ${VX} = 8.0 m/s and ${VY} = 8.0 m/s. What angle below horizontal is the velocity?`, label:'θ =', ans:45, kind:'angle', unit:'°', hint:'θ = tan⁻¹(vᵧ ÷ vₓ).', how:'tan⁻¹(8.0 ÷ 8.0) = tan⁻¹(1) = 45°'},
+    {id:'s6p5', q:`A ball leaves a table at ${VX} = 3.0 m/s. What angle below horizontal is its velocity after 0.60 s?`, label:'θ =', ans:deg(Math.atan(vy5/3)), kind:'angle', unit:'°', check:v=>Math.abs(v-deg(Math.atan(vy5/3)))<=1, hint:'First vᵧ = 9.8 × 0.60, then θ = tan⁻¹(vᵧ ÷ 3.0).', how:'vᵧ = 5.9 m/s, so θ = tan⁻¹(5.9 ÷ 3.0) = 63.0°'}
+  ],'s6-prac');
+
+  const c4=card(body,'qc');
+  qcGroup(c4,[
+    {id:'s6q1', q:'As a sideways-launched ball falls, its velocity arrow…', opts:['gets longer and points more steeply down','stays the same','gets shorter','points more sideways'], ans:0,
+      why:'vₓ stays the same while vᵧ grows, so the total gets bigger and tips downward.', wrong:{1:'vᵧ keeps growing, so the velocity changes.',2:'It speeds up, so the arrow gets longer.',3:'The growing vᵧ makes it point more downward, not sideways.'}},
+    {id:'s6q2', q:'Which velocity component changes while a sideways-launched ball is in the air?', opts:['Only the vertical component','Only the horizontal component','Both components','Neither component'], ans:0,
+      why:'Gravity only acts downward, so only vᵧ changes.', wrong:{1:'Nothing pushes sideways, so vₓ stays the same.',2:'vₓ stays constant.',3:'vᵧ grows by 9.8 m/s each second.'}}
+  ],'s6-qc');
+ }
+});
+
+/* ===================== SECTION 7: graphs ===================== */
+function graphIcon(kind){
+  const p={flat:'M8,22 L52,22', up:'M8,38 L52,8', curve:'M8,38 Q36,36 52,6'}[kind];
+  return `<svg viewBox="0 0 60 44" width="60" height="44" aria-hidden="true" style="vertical-align:middle;margin-right:6px"><path d="M6,4 L6,40 L56,40" fill="none" stroke="#7488a9" stroke-width="1.5"/><path d="${p}" fill="none" stroke="#ffd35c" stroke-width="3" stroke-linecap="round"/></svg>`;
+}
+SECS.push({z:7, sym:'N', name:'Nitrogen', title:'Graphs of the motion', min:5,
+ reqs:[{id:'s7-sort',text:'Match all 6 quantities to their graph shapes'},{id:'s7-qc',text:'Answer both quick check questions correctly'}],
+ build(body){
+  const c1=card(body,'read','Each direction has its own graphs');
+  c1.insertAdjacentHTML('beforeend',`
+    <div class="wide"><table class="nb">
+      <tr><th>Graph</th><th>Shape</th><th>Why</th></tr>
+      <tr><td>Horizontal position vs. time</td><td>${graphIcon('up')}straight line</td><td>Steady sideways speed: equal distance each second</td></tr>
+      <tr><td>Horizontal velocity vs. time</td><td>${graphIcon('flat')}flat line</td><td>${VX} never changes</td></tr>
+      <tr><td>Distance fallen vs. time</td><td>${graphIcon('curve')}curve, getting steeper</td><td>Speeding up, so more distance each second</td></tr>
+      <tr><td>Downward velocity vs. time</td><td>${graphIcon('up')}straight line</td><td>Gains 9.8 m/s every second. The slope is <i>g</i>.</td></tr>
+    </table></div>`);
+  const c2=card(body,'try','Match the graphs');
+  sorter(c2,{id:'s7', bins:[{k:'flat',label:'Flat line',html:graphIcon('flat')+'Flat line'},{k:'up',label:'Straight line sloping up',html:graphIcon('up')+'Straight line'},{k:'curve',label:'Curve getting steeper',html:graphIcon('curve')+'Curve, steeper'}],
+    items:[
+      {t:'Horizontal position vs. time',k:'up',why:'Constant sideways speed adds the same distance each second: a straight line.'},
+      {t:'Horizontal velocity vs. time',k:'flat',why:'vₓ never changes, so its graph is flat.'},
+      {t:'Distance fallen vs. time',k:'curve',why:'The ball speeds up, so it falls more each second: a curve.'},
+      {t:'Downward velocity vs. time',k:'up',why:'vᵧ grows by the same 9.8 m/s each second: a straight line.'},
+      {t:'Vertical acceleration vs. time',k:'flat',why:'g stays 9.8 m/s² the whole fall: flat.'},
+      {t:'Horizontal position vs. time for a faster ball',k:'up',why:'Still constant speed, just a steeper straight line.'}
+    ], doneMsg:'Horizontal graphs look like constant speed. Vertical graphs look like free fall.', onDone:()=>reqDone('s7-sort')});
+  const c3=card(body,'qc');
+  qcGroup(c3,[
+    {id:'s7q1', q:'What is the slope of the downward velocity vs. time graph for a falling ball?', opts:['9.8 m/s²','0','The horizontal speed','It keeps changing'], ans:0,
+      why:'vᵧ grows by 9.8 m/s every second, so the slope is g = 9.8 m/s².', wrong:{1:'A slope of 0 would be a flat line, but vᵧ grows.',2:'The horizontal speed is a separate motion.',3:'The line is straight, so the slope is constant.'}},
+    {id:'s7q2', q:'Which graph is a flat line for a sideways-launched ball?', opts:['Horizontal velocity vs. time','Distance fallen vs. time','Downward velocity vs. time','Horizontal position vs. time'], ans:0,
+      why:'vₓ stays the same the whole time, so its graph is flat.', wrong:{1:'Distance fallen grows faster and faster: a curve.',2:'vᵧ grows steadily: a straight line sloping up.',3:'Position keeps increasing: a straight line sloping up.'}}
+  ],'s7-qc');
+ }
+});
+function cellInput(td, o, fbEl){
+  reg(o.id);
+  let inp, btn;
+  if(o.select){
+    td.innerHTML=`<span class="cellwrap"><select class="ans" aria-label="${o.aria}"><option value="">choose</option>${o.select.map(v=>`<option>${v}</option>`).join('')}</select></span>`;
+    inp=$('select',td);
+  } else {
+    td.innerHTML=`<span class="cellwrap"><input class="ans" type="text" autocomplete="off" spellcheck="false" placeholder="?" aria-label="${o.aria}"><button class="cellbtn" type="button" aria-label="Check ${o.aria}">✓</button></span>`;
+    inp=$('input',td); btn=$('button',td);
+  }
+  let tries=0;
+  function solvedUI(v){ const td0=inp.closest('td'); if(td0) td0.style.background=''; inp.classList.remove('no'); inp.classList.add('ok'); inp.disabled=false; if(o.select){ inp.value=v; inp.disabled=true; } else { inp.value=fmt(v,o.dp??1).replace('−','-'); inp.readOnly=true; btn.disabled=true; } }
+  function go(){
+    if(S.solved[o.id]) return;
+    const v=o.select?inp.value:parseNum(inp.value);
+    if(o.select? !v : isNaN(v)){ fbEl.className='fb no'; fbEl.innerHTML='Enter an answer in the highlighted box first.'; fbEl.hidden=false; return; }
+    const ok=o.check(v); attempt(o.id, ok);
+    if(ok){ S.misc['v_'+o.id]=v; save(); solvedUI(v); fbEl.className='fb ok'; fbEl.innerHTML='<b>Correct.</b> '+(o.why?(typeof o.why==='function'?o.why(v):o.why):''); fbEl.hidden=false; o.onSolved&&o.onSolved(v); }
+    else{
+      tries++; inp.classList.add('no'); inp.classList.remove('shake'); void inp.offsetWidth; inp.classList.add('shake');
+      let msg=typeof o.hint==='function'?o.hint(v):o.hint;
+      if(!o.select && o.ans!=null && o.kind!=='angle' && near(-v,o.ans()) && Math.abs(o.ans())>0.2) msg='Right size, wrong sign. Which way does it point along that axis?';
+      const how=typeof o.how==='function'?o.how():o.how;
+      fbEl.className='fb no'; fbEl.innerHTML='<b>Not yet.</b> '+msg+(tries>=2&&how?`<div class="how"><b>Here's how:</b> ${how}</div>`:''); fbEl.hidden=false;
+    }
+  }
+  if(o.select) inp.addEventListener('change',go);
+  else { btn.addEventListener('click',go); inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); go(); } }); inp.addEventListener('input',()=>{ inp.classList.remove('no'); if(!S.solved[o.id]){ S.misc['d_'+o.id]=inp.value; save(); } }); }
+  if(S.solved[o.id]) solvedUI(S.misc['v_'+o.id]); else if(!o.select && S.misc['d_'+o.id]) inp.value=S.misc['d_'+o.id];
+  return {
+    setEnabled(b){ if(S.solved[o.id]) return; inp.disabled=!b; if(btn) btn.disabled=!b; if(b) inp.closest('td').style.background='rgba(255,211,92,.06)'; else inp.closest('td').style.background=''; },
+    focus(){ inp.focus({preventScroll:true}); }
+  };
+}
+
+/* ===================== SECTION 8: full problems ===================== */
+function hvMission(parent, m, reqId){
+  const TF=Math.sqrt(2*m.h/G), XL=m.vx*TF, VYL=G*TF, VL=Math.hypot(m.vx,VYL), TH=deg(Math.atan(VYL/m.vx));
+  const vals0=0; const vals=S.misc['hv_'+m.id]||(S.misc['hv_'+m.id]={});
+  const sp=h('div',{class:'split',style:'margin-top:10px'}); parent.appendChild(sp); const L=h('div'), R=h('div'); sp.append(L,R);
+  const span=Math.max(XL,m.h), ks0=0.22*span/VL;
+  const P=plane({xmin:-0.28*span,xmax:XL+m.vx*ks0+0.32*span,ymin:-VYL*ks0-0.1*span,ymax:m.h+0.18*span,w:440,grid:0,names:false,label:'Diagram of this problem'});
+  L.appendChild(P.svg);
+  if(m.plane){ sv('line',{x1:P.X(-0.28*span),y1:P.Y(0),x2:P.X(1e4),y2:P.Y(0),stroke:'#5d7399','stroke-width':2},P.gDraw);
+    sv('line',{x1:P.X(-0.06*span),y1:P.Y(0),x2:P.X(-0.06*span),y2:P.Y(m.h),stroke:'#5d7399','stroke-dasharray':'4 4'},P.gDraw);
+    const px=P.X(0), py=P.Y(m.h); sv('path',{d:`M${px-46},${py-6} L${px+4},${py-6} L${px+14},${py} L${px+4},${py+5} L${px-46},${py+5} Z M${px-30},${py-6} L${px-20},${py-22} L${px-12},${py-6} Z M${px-46},${py-6} L${px-52},${py-18} L${px-40},${py-6} Z`,fill:'#a3b4cf'},P.gDraw); }
+  else ledge(P,m.h,-0.28*span,'');
+  label(P.gDraw,P.X(-0.14*span),P.Y(m.h/2),m.h+' m',COL.muted,{size:12,weight:500,halo:0});
+  const gD=sv('g',{},P.gDraw);
+  R.innerHTML=`<p>${m.story}</p><div class="wide"><table class="nb"><tr><th>Step</th><th>Answer</th></tr>
+    <tr><td>1. Time in the air, <i>t</i> = √(2<i>h</i> ÷ <i>g</i>) (s)</td><td data-k="t"></td></tr>
+    <tr><td>2. Landing distance, <i>x</i> = v<sub>x</sub><i>t</i> (m)</td><td data-k="x"></td></tr>
+    <tr><td>3. Downward speed at landing, v<sub>y</sub> = <i>gt</i> (m/s)</td><td data-k="vy"></td></tr>
+    <tr><td>4. Landing speed, <i>v</i> = √(v<sub>x</sub>² + v<sub>y</sub>²) (m/s)</td><td data-k="v"></td></tr>
+    <tr><td>5. Angle below horizontal, θ = tan⁻¹(v<sub>y</sub> ÷ v<sub>x</sub>) (°)</td><td data-k="th"></td></tr></table></div>`;
+  const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'}); R.appendChild(fb);
+  const near2=(v,ex,ch,a,r)=>Math.abs(v-ex)<=Math.max(a,Math.abs(ex)*r)||(ch!=null&&!isNaN(ch)&&Math.abs(v-ch)<=Math.max(a*0.8,Math.abs(ch)*r*0.6));
+  const cells=[
+    {k:'t',aria:'time in the air',dp:2,ans:()=>TF,check:v=>tolT(TF)(v),hint:`t = √(2 × ${m.h} ÷ 9.8).`,how:()=>`√(${fmt(2*m.h,1)} ÷ 9.8) = √${fmt(2*m.h/G,3)} = ${fmt(TF,2)} s`},
+    {k:'x',aria:'landing distance',ans:()=>XL,check:v=>near2(v,XL,m.vx*vals.t,0.06,0.03),hint:'x = vₓ × t, using your time from step 1.',how:()=>`${fmt(m.vx,1)} × ${fmt(vals.t,2)} = ${fmt(m.vx*vals.t,1)} m`},
+    {k:'vy',aria:'downward speed at landing',ans:()=>VYL,check:v=>near2(v,VYL,G*vals.t,0.06,0.03),hint:'vᵧ = 9.8 × t.',how:()=>`9.8 × ${fmt(vals.t,2)} = ${fmt(G*vals.t,1)} m/s`},
+    {k:'v',aria:'landing speed',ans:()=>VL,check:v=>near2(v,VL,Math.hypot(m.vx,vals.vy),0.06,0.03),hint:'v = √(vₓ² + vᵧ²).',how:()=>`√(${fmt(m.vx,1)}² + ${fmt(vals.vy,1)}²) = ${fmt(Math.hypot(m.vx,vals.vy),1)} m/s`},
+    {k:'th',aria:'angle below horizontal',kind:'angle',ans:()=>TH,check:v=>Math.abs(v-TH)<=1||Math.abs(v-deg(Math.atan(vals.vy/m.vx)))<=1,hint:'θ = tan⁻¹(vᵧ ÷ vₓ).',how:()=>`tan⁻¹(${fmt(vals.vy,1)} ÷ ${fmt(m.vx,1)}) = ${fmt(deg(Math.atan(vals.vy/m.vx)),1)}°`}
+  ];
+  const ui={};
+  cells.forEach(cl=>{ cl.id='s8'+m.id+'_'+cl.k; cl.onSolved=v=>{ vals[cl.k]=v; save(); refresh(true); }; ui[cl.k]=cellInput($(`td[data-k="${cl.k}"]`,R),cl,fb); });
+  function render(lv){
+    gD.innerHTML=''; const g=gD, ks=0.22*span/VL;
+    let d=''; for(let s=0;s<=TF+1e-9;s+=TF/60) d+=(d?' L':'M')+P.X(m.vx*s)+','+P.Y(m.h-0.5*G*s*s);
+    sv('path',{d,fill:'none',stroke:lv>=1?COL.b:'#ffffff','stroke-opacity':lv>=1?0.9:0.2,'stroke-width':lv>=1?2.5:1.5,'stroke-dasharray':'5 5'},g);
+    arrow(g,P.X(0),P.Y(m.h),P.X(m.vx*ks),P.Y(m.h),COL.x,{w:3}); label(g,P.X(m.vx*ks)+6,P.Y(m.h)-12,sub('v','x',' = '+fmt(m.vx,1)+' m/s'),COL.x,{size:12,anchor:'start'});
+    if(lv>=1) label(g,P.X(XL*0.62),P.Y(m.h*0.7),'t = '+fmt(vals.t,2)+' s',COL.b,{size:13,anchor:'start'});
+    if(lv>=2){ sv('line',{x1:P.X(0),y1:P.Y(0)+10,x2:P.X(XL),y2:P.Y(0)+10,stroke:COL.r,'stroke-width':1.5},g); label(g,P.X(XL*0.4),P.Y(0)+26,'x = '+fmt(vals.x,1)+' m',COL.r,{size:13}); }
+    if(lv>=3){ arrow(g,P.X(XL),P.Y(0),P.X(XL+m.vx*ks),P.Y(0),COL.x,{w:3}); arrow(g,P.X(XL+m.vx*ks),P.Y(0),P.X(XL+m.vx*ks),P.Y(-VYL*ks),COL.y,{w:3}); label(g,P.X(XL+m.vx*ks)+6,P.Y(-VYL*ks/2),sub('v','y',' = '+fmt(vals.vy,1)),COL.y,{size:12,anchor:'start'}); }
+    if(lv>=4){ arrow(g,P.X(XL),P.Y(0),P.X(XL+m.vx*ks),P.Y(-VYL*ks),COL.r,{w:4}); }
+    if(lv>=5){ sv('path',{d:arcPath(P.X(XL),P.Y(0),24,-TH,0),fill:'none',stroke:COL.amber,'stroke-width':2.5},g); label(g,P.X(XL)-8,P.Y(0)+22,fmt(vals.th,1)+'°',COL.amber,{size:12,anchor:'end'}); }
+    sv('circle',{cx:P.X(lv>=2?XL:0),cy:P.Y(lv>=2?0:m.h)-(lv>=2?0:7),r:7,fill:COL.text},g);
+  }
+  function refresh(focusNext){
+    let lv=0; for(const cl of cells){ if(S.solved[cl.id]) lv++; else break; }
+    cells.forEach((cl,i)=>ui[cl.k].setEnabled(i===lv)); render(lv);
+    if(lv>=cells.length){ reqDone(reqId); fb.className='fb ok'; fb.innerHTML=`<b>Solved.</b> It lands ${fmt(vals.x,1)} m away at ${fmt(vals.v,1)} m/s, ${fmt(vals.th,1)}° below horizontal.`; fb.hidden=false; }
+    else if(focusNext) setTimeout(()=>ui[cells[lv].k].focus(),50);
+  }
+  refresh(false);
+}
+SECS.push({z:8, sym:'O', name:'Oxygen', title:'Putting it all together', min:8,
+ reqs:[{id:'s8-m1',text:'Solve mission 1 (the skateboarder)'},{id:'s8-m2',text:'Solve mission 2 (the supply drop)'},{id:'s8-qc',text:'Answer both quick check questions correctly'},{id:'s8-fix',text:'Find and fix all 4 mistakes'}],
+ build(body){
+  const c0=card(body,'read','The whole method');
+  c0.insertAdjacentHTML('beforeend',`<ol class="tight">
+    <li><b>Time</b> from the height: <i>t</i> = √(2<i>h</i> ÷ <i>g</i>).</li>
+    <li><b>Distance</b> from the sideways speed: <i>x</i> = v<sub>x</sub><i>t</i>.</li>
+    <li><b>Downward speed</b> at landing: v<sub>y</sub> = <i>gt</i>.</li>
+    <li><b>Landing velocity</b> by combining the components: <i>v</i> = √(v<sub>x</sub>² + v<sub>y</sub>²) and θ = tan⁻¹(v<sub>y</sub> ÷ v<sub>x</sub>).</li></ol>
+    <p class="muted small" style="margin:0">Use your rounded answer from each step in the next one. The diagram fills in as you go.</p>`);
+  const c1=card(body,'try','Mission 1: the skateboarder');
+  hvMission(c1,{id:'m1',h:1.5,vx:4.0,story:'A skateboarder rolls straight off a <b>1.5 m</b> ledge at <b>4.0 m/s</b>.'},'s8-m1');
+  const c2=card(body,'try','Mission 2: the supply drop');
+  hvMission(c2,{id:'m2',h:80,vx:60,plane:true,story:'A plane flying level at <b>60 m/s</b>, <b>80 m</b> above the ground, releases a crate of supplies. Ignore air resistance.'},'s8-m2');
+  const c3=card(body,'qc');
+  qcGroup(c3,[
+    {id:'s8q1', q:'In mission 2, the plane keeps flying at 60 m/s. Ignoring air, where is the crate when it hits the ground?', opts:['Directly below the plane','Behind the plane','In front of the plane','Right where it was released'], ans:0,
+      why:'The crate keeps the plane\'s 60 m/s sideways speed, so it stays under the plane the whole way down.', wrong:{1:'Without air, the crate doesn\'t lose any sideways speed, so it doesn\'t fall behind.',2:'The crate never moves sideways faster than the plane.',3:'The crate keeps moving forward at 60 m/s as it falls.'}},
+    {id:'s8q2', q:'A ball rolls off a 1.25 m table and lands 1.5 m away. About how fast was it rolling?', opts:['3.0 m/s','1.2 m/s','1.9 m/s','0.34 m/s'], ans:0,
+      why:'t = √(2 × 1.25 ÷ 9.8) = 0.51 s, so vₓ = 1.5 ÷ 0.51 = 3.0 m/s.', wrong:{1:'That\'s 1.5 ÷ 1.25. Find the time first, then divide the distance by the time.',2:'Check the time: √(2 × 1.25 ÷ 9.8) = 0.51 s.',3:'Divide distance by time, not time by distance.'}}
+  ],'s8-qc');
+  const c4=card(body,'try','Spot the mistake');
+  spotMistakes(c4,[
+    {id:'s8x1', who:'Jordan', title:'A ball rolls off a 1.25 m table at 3.0 m/s. How long is it in the air?', work:'<p class="num" style="margin:0"><i>t</i> = 1.25 ÷ 3.0 = <b>0.42 s</b></p>',
+      opts:['Used the sideways speed; the time depends only on the height','Should have multiplied 1.25 × 3.0','Forgot to add 9.8','Should have rounded to 0.4 s'], ans:0,
+      why:'Fall time comes from the height alone: t = √(2h ÷ g).', wrong:{1:'Sideways speed isn\'t part of the fall time at all.',2:'g goes inside t = √(2h ÷ g), not added.',3:'The method is wrong, not the rounding.'},
+      fix:{q:'What is the correct time? (two decimal places)', label:'<i>t</i> =', ans:Math.sqrt(2.5/G), unit:'s', check:tolT(Math.sqrt(2.5/G)), hint:'t = √(2 × 1.25 ÷ 9.8).', how:'√(2.5 ÷ 9.8) = √0.255 = 0.51 s'}},
+    {id:'s8x2', who:'Sam', title:'How far does a ball fall in 2.0 s?', work:'<p class="num" style="margin:0"><i>d</i> = ½ × 9.8 × 2.0 = <b>9.8 m</b></p>',
+      opts:['Forgot to square the time','Should have used 9.8 × 2.0','Should have divided by 2.0','Used the wrong value of g'], ans:0,
+      why:'d = ½gt², so 2.0 must be squared first.', wrong:{1:'9.8 × 2.0 is the speed vᵧ, not the distance.',2:'There\'s no division by t in d = ½gt².',3:'9.8 m/s² is correct.'},
+      fix:{q:'What is the correct distance fallen?', label:'<i>d</i> =', ans:19.6, unit:'m', hint:'d = ½ × 9.8 × 2.0².', how:'0.5 × 9.8 × 4.0 = 19.6 m'}},
+    {id:'s8x3', who:'Alex', title:'At landing, v<sub>x</sub> = 6.0 m/s and v<sub>y</sub> = 8.0 m/s. How fast is the ball going?', work:'<p class="num" style="margin:0"><i>v</i> = 6.0 + 8.0 = <b>14.0 m/s</b></p>',
+      opts:['Added the components instead of using the Pythagorean theorem','Should have subtracted','Should have used only vᵧ','Forgot to multiply by g'], ans:0,
+      why:'The components are perpendicular, so v = √(vₓ² + vᵧ²).', wrong:{1:'Subtracting doesn\'t give the total speed either.',2:'Both components are part of the velocity.',3:'vᵧ is already given.'},
+      fix:{q:'What is the correct speed?', label:'<i>v</i> =', ans:10, unit:'m/s', hint:'v = √(vₓ² + vᵧ²).', how:'√(36 + 64) = √100 = 10.0 m/s'}},
+    {id:'s8x4', who:'Riley', title:'A ball rolls off a 1.0 m table at 2.0 m/s. How far from the table does it land?', work:'<p class="num" style="margin:0"><i>t</i> = √(2 × 1.0 ÷ 9.8) = 0.45 s<br><i>x</i> = ½ × 2.0 × 0.45² = <b>0.20 m</b></p>',
+      opts:['Used a falling equation for the sideways motion; it should be x = vₓt','The time is wrong','Should have used 9.8 for the speed','Should have added the height'], ans:0,
+      why:'Sideways motion is constant speed, so x = vₓt. Step 1 was right.', wrong:{1:'t = 0.45 s is correct for a 1.0 m table.',2:'The sideways speed is 2.0 m/s.',3:'The height was already used to find t.'},
+      fix:{q:'What is the correct landing distance?', label:'<i>x</i> =', ans:2*Math.sqrt(2/G), unit:'m', check:tolD(2*Math.sqrt(2/G)), hint:'x = vₓ × t = 2.0 × 0.45.', how:'2.0 × 0.45 = 0.90 m'}}
+  ],'s8-fix');
+ }
+});
+
+/* hero: drop vs. launch, played once */
+function projHero(){
+  const H0=1.25, TF=Math.sqrt(2*H0/G), v=2.4;
+  const P=plane({xmin:-0.55,xmax:1.6,ymin:-0.1,ymax:1.45,w:420,grid:0.25,names:false,label:'One ball dropped and one launched sideways land at the same time'});
+  $('#heroFig').appendChild(P.svg); ledge(P,H0,-0.55,'');
+  const g=sv('g',{},P.gDraw);
+  animate(TF*5000,t=>{ const tt=t*TF; g.innerHTML='';
+    for(let s=0;s<=tt+1e-9;s+=0.05){ const y=H0-0.5*G*s*s; sv('line',{x1:P.X(0.04),y1:P.Y(y),x2:P.X(0.04+v*s),y2:P.Y(y),stroke:'#fff','stroke-opacity':.15,'stroke-dasharray':'3 4'},g); sv('circle',{cx:P.X(0.04),cy:P.Y(y),r:5,fill:COL.a,opacity:.35},g); sv('circle',{cx:P.X(0.04+v*s),cy:P.Y(y),r:5,fill:COL.b,opacity:.35},g); }
+    const y=Math.max(0,H0-0.5*G*tt*tt); sv('circle',{cx:P.X(0.04),cy:P.Y(y)-7,r:8,fill:COL.a},g); sv('circle',{cx:P.X(0.04+v*tt),cy:P.Y(y)-7,r:8,fill:COL.b},g); });
+}
+
+/* ===================== SECTION 9: final check ===================== */
+const FBANK=[
+ {id:'f1',t:'mc',q:'Ball A is dropped. At the same moment, Ball B is thrown straight sideways from the same height. Ignoring air, which lands first?',opts:['They land at the same time','Ball A','Ball B','The heavier one'],ans:0,why:'The sideways motion doesn\'t affect the falling, so both fall the same height in the same time.'},
+ {id:'f2',t:'mc',q:'Ignoring air, what happens to a projectile\'s <b>horizontal</b> velocity while it is in the air?',opts:['It stays the same','It increases by 9.8 m/s each second','It decreases to zero','It becomes vertical'],ans:0,why:'Nothing pushes it sideways after launch, so vₓ is constant.'},
+ {id:'f3',t:'mc',q:'A ball is launched straight sideways off a table. What is its <b>vertical</b> velocity at the instant it leaves the table?',opts:['0 m/s','9.8 m/s','Equal to its sideways speed','It depends on the height'],ans:0,why:'All of the launch speed is horizontal, so vertically it starts from rest.'},
+ {id:'f4',t:'mc',q:'In a strobe picture of a ball rolling off a table, how do the gaps between images change?',opts:['Sideways gaps stay equal; vertical gaps get bigger','Both get bigger','Sideways gaps get bigger; vertical gaps stay equal','Both stay equal'],ans:0,why:'Constant horizontal speed gives equal sideways gaps; speeding up downward gives growing vertical gaps.'},
+ {id:'f5',t:'mc',q:'Two balls roll off the same table. Ball B is twice as fast as Ball A. Compared to A, Ball B…',opts:['lands at the same time, twice as far away','lands first, twice as far away','lands at the same time and place','lands later, twice as far away'],ans:0,why:'Same height means same fall time; twice the speed for the same time means twice the distance.'},
+ {id:'f6',t:'mc',q:'What quantity is the same for the horizontal and vertical parts of a projectile problem?',opts:['Time','Velocity','Acceleration','Distance'],ans:0,why:'The object moves sideways for exactly as long as it falls.'},
+ {id:'f7',t:'mc',q:'A plane flying level drops a package. Ignoring air, where is the package when it hits the ground?',opts:['Directly below the plane','Far behind the plane','In front of the plane','Directly below where it was dropped'],ans:0,why:'The package keeps the plane\'s horizontal speed, so it stays under the plane.'},
+ {id:'f8',t:'mc',q:'What does a graph of <b>downward velocity vs. time</b> look like for a falling projectile?',opts:['A straight line sloping up','A flat line','A curve getting steeper','A straight line sloping down'],ans:0,why:'vᵧ increases by 9.8 m/s every second: a straight line with slope g.'},
+ {id:'f9',t:'mc',q:'What does a graph of <b>horizontal velocity vs. time</b> look like for a projectile?',opts:['A flat line','A straight line sloping up','A curve getting steeper','A straight line sloping down'],ans:0,why:'vₓ never changes, so the graph is flat.'},
+ {id:'f10',t:'mc',q:'Which change would make a sideways-launched ball stay in the air longer?',opts:['Launch it from higher up','Launch it faster','Use a heavier ball','Launch it slower'],ans:0,why:'t = √(2h ÷ g): only the height changes the time.'},
+ {id:'f11',t:'mc',q:'As a sideways-launched ball falls, its velocity…',opts:['gets bigger and points more steeply down','stays the same','gets smaller','points more sideways'],ans:0,why:'vₓ stays the same while vᵧ grows, so v grows and tips downward.'},
+ {id:'n1',t:'num',q:'A ball leaves a table at vₓ = 5.0 m/s and is in the air for 1.2 s. How far sideways does it land?',ans:6.0,unit:'m',why:'x = vₓt = 5.0 × 1.2 = 6.0 m'},
+ {id:'n2',t:'num',q:'A ball falls for 0.70 s. What is its downward speed vᵧ?',ans:9.8*0.7,unit:'m/s',why:'vᵧ = gt = 9.8 × 0.70 = 6.9 m/s'},
+ {id:'n3',t:'num',q:'A ball falls for 1.2 s. How far has it fallen?',ans:0.5*9.8*1.44,unit:'m',why:'d = ½gt² = 0.5 × 9.8 × 1.44 = 7.1 m'},
+ {id:'n4',t:'num',q:'A rock is kicked off an 11 m cliff. How long is it in the air? (two decimal places)',ans:Math.sqrt(22/9.8),unit:'s',kind:'time',why:'t = √(2 × 11 ÷ 9.8) = √2.24 = 1.50 s'},
+ {id:'n5',t:'num',q:'A marble rolls off a 1.0 m table. How long is it in the air? (two decimal places)',ans:Math.sqrt(2/9.8),unit:'s',kind:'time',why:'t = √(2 × 1.0 ÷ 9.8) = √0.204 = 0.45 s'},
+ {id:'n6',t:'num',q:'A marble rolls off a 1.0 m table at 2.5 m/s. How far from the table does it land?',ans:2.5*Math.sqrt(2/9.8),unit:'m',why:'t = 0.45 s, so x = 2.5 × 0.45 = 1.1 m'},
+ {id:'n7',t:'num',q:'A ball is kicked straight off a 30 m cliff at 10 m/s. How far from the base does it land?',ans:10*Math.sqrt(60/9.8),unit:'m',why:'t = √(60 ÷ 9.8) = 2.47 s, so x = 10 × 2.47 = 24.7 m'},
+ {id:'n8',t:'num',q:'A ball rolls off a 4.9 m ledge and lands 8.0 m away. What was its horizontal speed?',ans:8.0,unit:'m/s',why:'t = √(2 × 4.9 ÷ 9.8) = 1.0 s, so vₓ = 8.0 ÷ 1.0 = 8.0 m/s'},
+ {id:'n9',t:'num',q:'At one moment a projectile has vₓ = 4.0 m/s and vᵧ = 3.0 m/s. What is its speed?',ans:5.0,unit:'m/s',why:'v = √(4.0² + 3.0²) = √25 = 5.0 m/s'},
+ {id:'n10',t:'num',q:'A ball leaves a cliff at vₓ = 6.0 m/s. What is its speed after 1.0 s?',ans:Math.hypot(6,9.8),unit:'m/s',why:'vᵧ = 9.8 m/s, so v = √(36 + 96.0) = 11.5 m/s'},
+ {id:'n11',t:'num',q:'At one moment vₓ = 10 m/s and vᵧ = 10 m/s. What angle below the horizontal is the velocity?',ans:45,unit:'°',kind:'angle',why:'θ = tan⁻¹(10 ÷ 10) = 45°'},
+ {id:'n12',t:'num',q:'A ball leaves a table at vₓ = 5.0 m/s. What angle below horizontal is its velocity after 0.50 s?',ans:Math.atan(4.9/5)*180/Math.PI,unit:'°',kind:'angle',why:'vᵧ = 4.9 m/s, so θ = tan⁻¹(4.9 ÷ 5.0) = 44.4°'},
+ {id:'n13',t:'num',q:'A ball moves 3.0 m sideways in 0.60 s after leaving a table. What is its horizontal speed?',ans:5.0,unit:'m/s',why:'vₓ = x ÷ t = 3.0 ÷ 0.60 = 5.0 m/s'}
+];
+const FB=Object.fromEntries(FBANK.map(q=>[q.id,q]));
+function gradeQ(q,a){
+  if(a==null||a==='') return false;
+  if(q.t==='mc') return a===q.ans;
+  const v=parseNum(a); if(isNaN(v)) return false;
+  return q.abs?near(Math.abs(v),q.ans,q.kind):near(v,q.ans,q.kind);
+}
+function newAttempt(){
+  const prev=new Set((S.final.cur&&S.final.cur.ids)||[]);
+  const pick=(pool,n)=>{ const fresh=shuffle(pool.filter(q=>!prev.has(q.id))); const old=shuffle(pool.filter(q=>prev.has(q.id))); return fresh.concat(old).slice(0,n).map(q=>q.id); };
+  const ids=shuffle(pick(FBANK.filter(q=>q.t==='mc'),4).concat(pick(FBANK.filter(q=>q.t==='num'),6)));
+  S.final.cur={ids, answers:{}, idx:0, submitted:false, score:null}; save();
+}
+
+SECS.push({z:9, sym:'F', name:'Fluorine', title:'Final check', min:10,
+ reqs:[{id:'final-pass',text:`Score ${PASS_SCORE} out of 10 or better on the final check`}],
+ build(body, sec){
+  const wrap=h('div'); body.appendChild(wrap);
+  sec.onShow=()=>render();
+  function reviewNeeded(){ return S.final.fails>=3 && S.final.reviewedAt!==S.final.fails && !S.final.passed; }
+  function render(){
+    const F=S.final, cur=F.cur; wrap.innerHTML='';
+    if(cur && !cur.submitted) return renderQ();
+    if(cur && cur.submitted) return renderScore();
+    const c=card(wrap,'read','Show what you know');
+    c.insertAdjacentHTML('beforeend',`<p>You'll get <b>10 questions</b> picked at random: some multiple choice and some where you calculate a number. You need <b>${PASS_SCORE} out of 10</b> to pass.</p>
+      <p>You won't see right or wrong until you submit. If you don't pass, you'll get a new set of questions. Use the calculator in the top bar and round to one decimal place.</p>`);
+    const b=h('button',{class:'btn primary',type:'button'},'Start the final check'); b.addEventListener('click',()=>{ newAttempt(); render(); });
+    const row=h('div',{class:'btnrow'}); row.appendChild(b); c.appendChild(row);
+  }
+  function renderQ(){
+    const cur=S.final.cur; const i=cur.idx; const q=FB[cur.ids[i]];
+    const c=card(wrap,'qc',`Question ${i+1} of 10`);
+    const dots=h('div',{class:'dots','aria-hidden':'true'}); cur.ids.forEach((id,j)=>{ const d=h('span',{class:(j===i?'cur ':'')+(cur.answers[id]!=null&&cur.answers[id]!==''?'ans':'')},String(j+1)); d.style.cursor='pointer'; d.addEventListener('click',()=>{ cur.idx=j; save(); render(); }); dots.appendChild(d); });
+    c.appendChild(dots);
+    c.insertAdjacentHTML('beforeend',`<p style="font-weight:500">${q.q}</p>`);
+    if(q.t==='mc'){
+      const opts=h('div',{class:'opts'});
+      q.opts.forEach((t,k)=>{ const b=h('button',{class:'opt'+(cur.answers[q.id]===k?' right':''),type:'button','aria-pressed':cur.answers[q.id]===k?'true':'false'},`<span class="L">${'ABCD'[k]}</span><span>${t}</span>`);
+        b.addEventListener('click',()=>{ cur.answers[q.id]=k; save(); render(); }); opts.appendChild(b); });
+      c.appendChild(opts);
+    } else {
+      const row=h('div',{class:'numrow'}); row.innerHTML=`<label for="fin">Your answer</label><span class="inwrap"><input class="ans" id="fin" type="text" autocomplete="off" spellcheck="false" placeholder="?"><span class="unit">${q.unit}</span></span>`;
+      c.appendChild(row); const inp=$('input',row); inp.value=cur.answers[q.id]??'';
+      inp.addEventListener('input',()=>{ cur.answers[q.id]=inp.value.trim(); save(); const d=dots.children[i]; d.classList.toggle('ans',inp.value.trim()!==''); });
+      inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); nextB.click(); } });
+      setTimeout(()=>inp.focus({preventScroll:true}),30);
+    }
+    const msg=h('div',{class:'fb no',hidden:true}); c.appendChild(msg);
+    const nav=h('div',{class:'btnrow'});
+    const back=h('button',{class:'btn ghost',type:'button'},'Back'); back.disabled=i===0;
+    back.addEventListener('click',()=>{ cur.idx=Math.max(0,i-1); save(); render(); });
+    const last=i===9; const nextB=h('button',{class:'btn primary',type:'button'},last?'Submit the final check':'Next');
+    nextB.addEventListener('click',()=>{
+      if(!last){ cur.idx=i+1; save(); render(); return; }
+      const missing=cur.ids.map((id,j)=>(cur.answers[id]==null||cur.answers[id]==='')?j+1:null).filter(Boolean);
+      if(missing.length){ msg.innerHTML='Answer every question before you submit. Still blank: '+missing.join(', ')+'.'; msg.hidden=false; return; }
+      submit();
+    });
+    nav.append(back,nextB); c.appendChild(nav);
+  }
+  function submit(){
+    const F=S.final, cur=F.cur;
+    const pts=cur.ids.map(id=>gradeQ(FB[id],cur.answers[id])?1:0); const score=pts.reduce((x,y)=>x+y,0);
+    cur.submitted=true; cur.score=score; F.attempts++; F.best=Math.max(F.best,score); F.history.push({score,at:Date.now(),pts});
+    if(score>=PASS_SCORE){
+      F.passed=true; if(!S.completedAt) S.completedAt=Date.now(); save();
+      reqDone('final-pass'); disarm(); saveRecord(); sendSheet();
+    } else { F.fails++; save(); cloudSave(true); }
+    render(); window.scrollTo({top:0,behavior:RM?'auto':'smooth'});
+  }
+  function renderScore(){
+    const F=S.final, cur=F.cur, pass=cur.score>=PASS_SCORE;
+    const c=card(wrap,'qc',pass?'You passed the final check':'Not quite there yet');
+    c.insertAdjacentHTML('beforeend',`<div class="bigscore">${cur.score}/10</div><p class="muted" style="margin-top:6px">${pass?`Best score: ${F.best}/10. Your results are ready.`:`You need ${PASS_SCORE} out of 10. Look over what you missed, then try a new set of questions.`}</p>${pass?`<p class="fb info sheetStatus" aria-live="polite">${sendMsg()}</p>`:''}`);
+    const ul=h('ul',{class:'reviewlist'});
+    cur.ids.forEach((id,j)=>{ const q=FB[id], a=cur.answers[id], ok=gradeQ(q,a);
+      const yours=q.t==='mc'?q.opts[a]:`${a} ${q.unit}`;
+      const right=q.t==='mc'?q.opts[q.ans]:`${fmt(q.ans)} ${q.unit}`;
+      ul.insertAdjacentHTML('beforeend',`<li><span class="${ok?'yes':'nope'}">${ok?'✓':'✗'} ${j+1}.</span> ${q.q}<br><span class="muted">Your answer:</span> ${yours}${ok?'':` <span class="muted">· Correct:</span> ${right}`}<br><span class="muted small">${q.why}</span></li>`); });
+    c.appendChild(ul);
+    const row=h('div',{class:'btnrow'});
+    if(pass){ const b=h('button',{class:'btn primary',type:'button'},'See your results'); b.addEventListener('click',()=>go(9)); row.appendChild(b); }
+    else if(reviewNeeded()){
+      c.appendChild(row);
+      const r=card(wrap,'read','Quick review before your next try');
+      r.insertAdjacentHTML('beforeend',`<p>You've tried ${F.fails} times. Here is the whole method on one card. Read it, then go again.</p>
+        <ol class="tight">
+          <li><b>Independent:</b> sideways speed never changes; downward speed starts at 0 and grows by 9.8 m/s each second.</li>
+          <li><b>Horizontal:</b> x = v<sub>x</sub>t.</li>
+          <li><b>Vertical:</b> v<sub>y</sub> = gt and d = ½gt².</li>
+          <li><b>Time</b> comes from the height: t = √(2h ÷ g). The same t works for both directions.</li>
+          <li><b>Velocity</b> at any moment: v = √(v<sub>x</sub>² + v<sub>y</sub>²), θ = tan⁻¹(v<sub>y</sub> ÷ v<sub>x</sub>) below horizontal.</li>
+        </ol>
+        <p class="small muted">Want more practice first? Sections 4 (Be), 5 (B), and 8 (O) have the worked examples.</p>`);
+      const rb=h('button',{class:'btn primary',type:'button'},'I reviewed it. Give me a new set');
+      rb.addEventListener('click',()=>{ F.reviewedAt=F.fails; newAttempt(); save(); render(); });
+      const rr=h('div',{class:'btnrow'}); rr.appendChild(rb); r.appendChild(rr); return;
+    } else { const b=h('button',{class:'btn primary',type:'button'},'Try a new set of questions'); b.addEventListener('click',()=>{ newAttempt(); render(); }); row.appendChild(b); }
+    c.appendChild(row);
+  }
+ }
+});
+
+/* ===================== RESULTS (Ne) ===================== */
+SECS.push({z:10, sym:'Ne', name:'Neon', title:'Your results', results:true, reqs:[],
+ build(body, sec){
+  const wrap=h('div'); body.appendChild(wrap);
+  sec.onShow=()=>render();
+  function render(){
+    wrap.innerHTML='';
+    if(!S.final.passed && !S.preview){ const c=card(wrap,'read','Almost there'); c.insertAdjacentHTML('beforeend','<p>Pass the final check to see your results.</p>'); return; }
+    const st=S.student||{}; const a=assignScore(); const mins=S.startedAt?Math.round(((S.completedAt||Date.now())-S.startedAt)/60000):0;
+    const c=h('div',{class:'card'}); wrap.appendChild(c);
+    c.innerHTML=`<h3>${st.first||''} ${st.last||''}</h3><p class="muted">${LESSON_NAME} · Physics Unit 3</p>
+      <table class="res">
+        <tr><th>Student ID</th><td>${st.id||''}</td></tr>
+        <tr><th>Period</th><td>${st.period||''}</td></tr>
+        <tr><th>Teacher</th><td>${st.teacher||''}</td></tr>
+        <tr><th>Lesson score (practice and quick checks right on the first try)</th><td><b>${a.c} of ${a.t}</b> <span class="muted">(${a.pct}%)</span></td></tr>
+        <tr><th>Final check (best score)</th><td><b>${S.final.best}/10</b> <span class="muted">(${S.final.best*10}%)</span></td></tr>
+        <tr><th>Final check tries</th><td>${S.final.attempts}</td></tr>
+        <tr><th>Times the lesson locked</th><td>${S.leaves}</td></tr>
+        <tr><th>Time in lesson</th><td>about ${mins} min</td></tr>
+        <tr><th>Finished</th><td>${S.completedAt?new Date(S.completedAt).toLocaleString():''}</td></tr>
+      </table>
+      <div class="btnrow noprint">
+        <button class="btn primary" type="button" id="csvBtn">Download CSV</button>
+        <button class="btn ghost" type="button" id="printBtn">Print</button>
+        <button class="btn ghost" type="button" id="sendBtn">Send my scores to my teacher</button>
+      </div>
+      <div class="fb info noprint sheetStatus" aria-live="polite">${sendMsg()}</div>`;
+    $('#csvBtn',c).addEventListener('click',()=>downloadCSV([recordFromState()],`HVMotion_${(st.last||'student').replace(/\W+/g,'')}_${(st.first||'').replace(/\W+/g,'')}_P${st.period||''}.csv`));
+    $('#printBtn',c).addEventListener('click',()=>window.print());
+    $('#sendBtn',c).addEventListener('click',()=>sendSheet());
+    const g=h('div',{class:'card goals'}); g.innerHTML='<h3>Goals</h3><ul></ul>'; wrap.appendChild(g); renderGoals($('ul',g));
+  }
+ }
+});
+
+/* ===================== records, CSV, Google Sheets ===================== */
+const CSV_HEAD=['Student ID','Last Name','First Name','Period','Teacher','Activity','Lesson Score (practice + quick checks right on first try)','Lesson Total','Final Check Score (best)','Final Check Total','Final Check Passed','Final Check Attempts','Sections Completed (of 9)','Times Locked','Date'];
+function recordFromState(){
+  const st=S.student||{}, a=assignScore();
+  let secs=0; for(let i=0;i<9;i++) if(secDone(i)) secs++;
+  return [st.id||'',st.last||'',st.first||'',st.period||'',st.teacher||'',LESSON_NAME,a.c,a.t,S.final.best,10,S.final.passed?'Yes':'No',S.final.attempts,secs,S.leaves,new Date(S.completedAt||Date.now()).toLocaleString()];
+}
+function csvText(rows){ const esc=v=>{ v=String(v??''); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }; return [CSV_HEAD,...rows].map(r=>r.map(esc).join(',')).join('\r\n')+'\r\n'; }
+function downloadCSV(rows, name){
+  const blob=new Blob([csvText(rows)],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500);
+}
+function loadRecs(){ try{ const r=JSON.parse(localStorage.getItem(RECS))||[]; return r.filter(x=>Array.isArray(x)&&x.length===CSV_HEAD.length); }catch(e){ return []; } }
+function saveRecord(){
+  if(S.preview) return;
+  const recs=loadRecs(); const row=recordFromState();
+  const i=recs.findIndex(r=>r[0]===row[0]&&r[1]===row[1]&&r[2]===row[2]);
+  if(i>=0) recs[i]=row; else recs.push(row);
+  try{ localStorage.setItem(RECS,JSON.stringify(recs)); }catch(e){}
+}
+/* Two rows, same as the Bohr model lesson: one for the lesson, one for the final check */
+const SEC_LABELS=['S1 Independence','S2 Horizontal','S3 Vertical','S4 Fall time','S5 Distance','S6 Velocity','S7 Graphs','S8 Missions'];
+function sheetBodies(){
+  const st=S.student||{}, F=S.final;
+  const base={studentId:st.id||'', firstName:st.first||'', lastName:st.last||'', period:st.period||'', teacher:st.teacher||'', locks:String(S.leaves), when:new Date().toString()};
+  const pts=SEC_LABELS.map(()=>0), max=SEC_LABELS.map(()=>0);
+  ITEMS.forEach(id=>{ const m=id.match(/^s(\d)/); if(!m) return; const n=+m[1]-1; max[n]++; if(S.first[id]===true) pts[n]++; });
+  const a=assignScore();
+  const lesson=Object.assign({},base,{activity:`${LESSON_NAME}: Lesson`, score:String(a.c), total:String(a.t), qlabels:SEC_LABELS.join('|'), qpoints:pts.join('|'), qmax:max.join('|')});
+  let best=null; F.history.forEach(x=>{ if(!best||x.score>=best.score) best=x; });
+  const fin=Object.assign({},base,{activity:`${LESSON_NAME}: Final Check`, score:String(F.best), total:'10'},
+    best&&best.pts?{qlabels:best.pts.map((_,i)=>'Q'+(i+1)).join('|'), qpoints:best.pts.join('|'), qmax:best.pts.map(()=>1).join('|')}
+                  :{qlabels:'Final Check', qpoints:String(F.best), qmax:'10'});
+  return [lesson,fin];
+}
+function sendMsg(){
+  if(S.preview) return 'Preview mode: scores are not sent.';
+  if(S.sentAt) return `Sent to your teacher ${new Date(S.sentAt).toLocaleString()}.`;
+  return S.final.passed?'Sending your scores to your teacher...':'';
+}
+function sendSheet(){
+  const msg=t=>$$('.sheetStatus').forEach(e=>{ e.textContent=t; });
+  if(S.preview){ msg('Preview mode: scores are not sent.'); return; }
+  if(!S.student){ msg('Sign in on the start page first.'); return; }
+  const url=sheetURL();
+  if(!url){ msg("This lesson isn't connected to your teacher's gradebook sheet yet. Download the CSV instead."); return; }
+  msg('Sending...');
+  Promise.all(sheetBodies().map(b=>fetch(url,{method:'POST',mode:'no-cors',body:new URLSearchParams(b)})))
+    .then(()=>{ S.sent=true; S.sentAt=new Date().toISOString(); save(); msg('Sent! Your teacher will see your scores.'); })
+    .catch(()=>msg("Couldn't send. Check your internet connection and try again, or download the CSV."));
+}
+
+/* ===================== goals ===================== */
+const GOALS=[
+  {t:'I can explain why horizontal and vertical motion are independent.',secs:[0]},
+  {t:'I can use x = vₓt for the horizontal motion and vᵧ = gt, d = ½gt² for the vertical motion.',secs:[1,2]},
+  {t:'I can find the time in the air from the height, and use it to find how far a projectile lands.',secs:[3,4]},
+  {t:'I can find a projectile\'s velocity at any moment and read its motion graphs.',secs:[5,6,7]}
+];
+function secDone(i){ const r=SECS[i].reqs; return r.length>0 && r.every(q=>S.reqs[q.id]); }
+function renderGoals(ul){ ul.innerHTML=GOALS.map(g=>{ const d=g.secs.every(secDone); return `<li class="${d?'done':''}"><span class="box">${d?'✓':''}</span><span>${g.t}</span></li>`; }).join(''); }
+
+/* ===================== navigation ===================== */
+const tilesEl=$('#navtiles'), secsEl=$('#sections');
+function canOpen(i){ if(S.preview) return true; if(i===9) return S.final.passed; return i<=S.unlocked; }
+function buildAll(){
+  SECS.forEach((s,i)=>{
+    const t=h('button',{class:'tile'+(i===9?' ne':''),type:'button','aria-label':`${s.results?'Results':'Section '+(i+1)}: ${s.title}`},`<span class="z">${s.z}</span><span class="ic">${iconSVG(i,22)}</span><span class="nm">${PHYS_ICONS[i].label}</span>`);
+    t.addEventListener('click',()=>{ if(canOpen(i)) go(i); }); tilesEl.appendChild(t); s.tile=t;
+    const sec=h('section',{class:'page',id:'sec'+i,hidden:true});
+    sec.innerHTML=`<div class="sechead"><div class="badge" aria-hidden="true"><span class="z">${s.z}</span><span class="ic">${iconSVG(i,42)}</span><span class="nm">${PHYS_ICONS[i].label}</span></div><div><div class="meta">${s.results?'Results':`Section ${i+1} of 9 · about ${s.min} min`}</div><h2>${s.title}</h2></div></div>`;
+    const body=h('div'); sec.appendChild(body); secsEl.appendChild(sec); s.el=sec;
+    s.build(body,s);
+    if(s.reqs.length){
+      const u=h('div',{class:'unlock'}); u.innerHTML=`<h3>${i<8?'To unlock the next section':'To finish the lesson'}</h3><ul>${s.reqs.map(r=>`<li data-req="${r.id}"><span class="box"></span><span>${r.text}</span></li>`).join('')}</ul>`;
+      sec.appendChild(u); s.unlockEl=u;
+    }
+    const nav=h('div',{class:'secnav noprint'});
+    const back=h('button',{class:'btn ghost',type:'button'},i===0?'Back to start':'Back'); back.addEventListener('click',()=>i===0?showStart():go(i-1));
+    nav.appendChild(back);
+    if(i<9){ const nx=h('button',{class:'btn primary',type:'button'},i===8?'See your results':`Next: ${SECS[i+1].title}`); nx.addEventListener('click',()=>go(i+1)); nav.appendChild(nx); s.nextBtn=nx; }
+    sec.appendChild(nav);
+  });
+}
+function refreshAll(){
+  let u=0; while(u<8 && secDone(u)) u++; if(u>S.unlocked){ S.unlocked=u; save(); }
+  let tot=0, dn=0;
+  SECS.forEach((s,i)=>{
+    if(!s.tile) return;
+    s.reqs.forEach(r=>{ tot++; if(S.reqs[r.id]) dn++; });
+    if(s.unlockEl) $$('li',s.unlockEl).forEach(li=>{ const d=!!S.reqs[li.dataset.req]; li.classList.toggle('done',d); $('.box',li).textContent=d?'✓':''; });
+    if(s.nextBtn) s.nextBtn.disabled=!(S.preview || (i<8?secDone(i):S.final.passed));
+    s.tile.classList.toggle('done', i<9 ? secDone(i) : S.final.passed);
+    s.tile.classList.toggle('locked', !canOpen(i));
+    s.tile.classList.toggle('cur', !s.el.hidden);
+  });
+  $('#progbar').style.width=(tot?Math.round(100*dn/tot):0)+'%';
+  renderGoals($('#goalsList'));
+}
+onReqChange=()=>{ refreshAll(); cloudSave(true); };
+function go(i){
+  if(!canOpen(i)) return;
+  $('#start').hidden=true; $('#topbar').hidden=false;
+  SECS.forEach((s,j)=>{ s.el.hidden=j!==i; s.tile.classList.toggle('cur',j===i); });
+  S.sec=i; save(); refreshAll();
+  $('#whoami').textContent=S.student?`${S.student.first} ${S.student.last}`:'';
+  window.scrollTo(0,0);
+  SECS[i].tile.scrollIntoView({block:'nearest',inline:'center'});
+  SECS[i].onShow && SECS[i].onShow();
+}
+function showStart(){
+  SECS.forEach(s=>s.el.hidden=true); $('#start').hidden=false; $('#topbar').hidden=true; renderStart(); window.scrollTo(0,0);
+}
+
+/* ===================== cloud backup (save code = student ID + last name) ===================== */
+const SAVE_URL_BUILTIN='https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';   // Saved Work web-app link (ends in /exec)
+function saveURL(){ try{ if(typeof SAVE_WEBHOOK_URL!=='undefined' && SAVE_WEBHOOK_URL && String(SAVE_WEBHOOK_URL).indexOf('PASTE')<0) return String(SAVE_WEBHOOK_URL); }catch(e){} return SAVE_URL_BUILTIN.indexOf('PASTE')<0?SAVE_URL_BUILTIN:''; }
+const CLOUD=()=>!!saveURL();
+function saveKey(st){ return (String(st.id||'').replace(/\s+/g,'')+'-'+String(st.last||'').toLowerCase().replace(/[^a-z]/g,'')).toLowerCase(); }
+function progressOf(st){ if(!st) return 0; return Object.keys(st.reqs||{}).length*1000+Object.keys(st.solved||{}).length*10+((st.final&&st.final.attempts)||0); }
+let cloudTimer=null, cloudDirty=false, cloudBusy=false, cloudAt=null, cloudErr=false;
+function cloudOK(){ return CLOUD() && S.student && !S.preview && !saveBlocked; }
+function cloudBody(){ const st=S.student||{}; return new URLSearchParams({code:saveKey(st), lesson:LESSON_ID, ver:String(S.updatedAt||Date.now()), prog:String(progressOf(S)),
+  studentId:st.id||'', lastName:st.last||'', firstName:st.first||'', period:st.period||'', teacher:st.teacher||'', summary:progressSummary(), data:JSON.stringify(S)}); }
+function progressSummary(){ let n=0; for(let i=0;i<9;i++) if(secDone(i)) n++; return `${n} of 9 sections done`+(S.final.attempts?` · final check best ${S.final.best}/10`+(S.final.passed?' (passed)':''):''); }
+function cloudSave(soon){
+  if(!cloudOK()) return; cloudDirty=true;
+  if(soon){ clearTimeout(cloudTimer); cloudTimer=setTimeout(cloudFlush,1200); }
+  else if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000);
+}
+async function cloudFlush(){
+  cloudTimer=null;
+  if(!cloudOK()||!cloudDirty) return;
+  if(cloudBusy){ cloudTimer=setTimeout(cloudFlush,4000); return; }
+  cloudBusy=true; cloudDirty=false;
+  try{ await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); cloudAt=new Date(); cloudErr=false; }
+  catch(e){ cloudDirty=true; cloudErr=true; if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); }
+  finally{ cloudBusy=false; showNote(); }
+}
+function cloudBeacon(){ if(!cloudOK()||!cloudDirty) return; try{ if(navigator.sendBeacon && navigator.sendBeacon(saveURL(),cloudBody())) cloudDirty=false; }catch(e){} }
+async function cloudLoad(st){
+  if(!CLOUD()) return {status:'off'};
+  const ctrl=new AbortController(), t=setTimeout(()=>ctrl.abort(),5000);
+  try{
+    const u=saveURL(); const r=await fetch(u+(u.indexOf('?')<0?'?':'&')+new URLSearchParams({code:saveKey(st), lesson:LESSON_ID}).toString(),{signal:ctrl.signal});
+    const j=await r.json();
+    if(j && j.found && j.data){ const d=JSON.parse(j.data); if(d && d.lesson===LESSON_ID) return {status:'found', data:d}; }
+    return {status:'none'};
+  }catch(e){ return {status:'error'}; }finally{ clearTimeout(t); }
+}
+function adoptState(ns){
+  let storedRev=0; try{ const raw=localStorage.getItem(STORE); if(raw) storedRev=JSON.parse(raw).rev||0; }catch(e){}
+  ns.rev=Math.max(ns.rev||0,storedRev); S=ns; saveBlocked=false; save();
+  ITEMS.clear(); tilesEl.innerHTML=''; secsEl.innerHTML=''; buildAll(); refreshAll();
+}
+function showNote(extra){
+  const n=$('#saveNote'); if(!n) return;
+  const tm=d=>d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+  if(extra){ n.textContent=extra; return; }
+  if(cloudErr) n.textContent='✓ Saved on this Chromebook (backup will retry)';
+  else n.textContent='✓ Work saved '+tm(new Date())+(cloudAt?' · backed up '+tm(cloudAt):'');
+}
+function resumeTarget(){ return Math.min(S.sec||0, S.final.passed?9:S.unlocked); }
+function afterAdopt(msg){ if(LOCKDOWN && S.locked && !S.completedAt && !S.preview){ showLock('left the lesson page'); } go(resumeTarget()); if(msg) showNote(msg); }
+
+/* ===================== start page ===================== */
+function renderStart(){
+  renderGoals($('#goalsList'));
+  const has=!!S.student;
+  $('#resumeBox').hidden=!has; $('#startForm').hidden=has;
+  $('#signinTitle').textContent=has?'Welcome back':'Sign in to start';
+  if(has) $('#resumeText').innerHTML=`Signed in as <b>${S.student.first} ${S.student.last}</b>, period ${S.student.period}.`;
+  $('#notMeBtn').textContent=CLOUD()?'Not you? Sign in as a different student':'Not you? Ask your teacher to reset this device.';
+  if(CLOUD()) $('#saveInfo').innerHTML='You\'ll need about 60 minutes. A calculator in degree mode is built into the top bar. <b>Your work is backed up.</b> On any Chromebook, sign in with the same <b>student ID and last name</b> to pick up where you left off.';
+}
+function fillSelects(){
+  $('#fPeriod').innerHTML='<option value="">Choose your period</option>'+PERIODS.map(p=>`<option>${p}</option>`).join('');
+  $('#fTeacher').innerHTML='<option value="">Choose your teacher</option>'+teacherList().map(t=>`<option>${t}</option>`).join('');
+}
+let skipCloud=false;
+$('#startForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const v={first:$('#fFirst').value.trim(), last:$('#fLast').value.trim(), id:$('#fId').value.trim(), period:$('#fPeriod').value, teacher:$('#fTeacher').value};
+  const miss=[]; if(!v.first) miss.push('first name'); if(!v.last) miss.push('last name'); if(!v.id) miss.push('student ID'); if(!v.period) miss.push('period'); if(!v.teacher) miss.push('teacher');
+  const err=$('#formErr'), btn=$('#startForm button[type=submit]');
+  if(miss.length){ err.className='fb no'; err.textContent='Fill in your '+miss.join(', ')+'.'; err.hidden=false; return; }
+  arm();
+  if(CLOUD() && !skipCloud){
+    btn.disabled=true; err.className='fb info'; err.textContent='Checking for your saved work...'; err.hidden=false;
+    const res=await cloudLoad(v);
+    btn.disabled=false;
+    if(res.status==='found'){
+      err.hidden=true;
+      const d=res.data; d.student=Object.assign({},d.student||{},{first:v.first, period:v.period, teacher:v.teacher});
+      adoptState(d); afterAdopt('✓ Your saved work was loaded'); return;
+    }
+    err.hidden=true;
+    if(res.status==='error'){ const ns=freshState(); ns.student=v; ns.startedAt=Date.now(); adoptState(ns); go(0); showNote('✓ Saving on this Chromebook'); cloudSave(true); return; }
+  }
+  const ns=freshState(); ns.student=v; ns.startedAt=Date.now(); adoptState(ns); go(0); cloudSave(true);
+});
+$('#resumeBtn').addEventListener('click',async()=>{
+  arm();
+  const btn=$('#resumeBtn');
+  if(CLOUD() && !S.preview){
+    btn.disabled=true; btn.textContent='Loading your work...';
+    const res=await cloudLoad(S.student);
+    btn.disabled=false; btn.textContent='Continue the lesson';
+    if(res.status==='found'){
+      const d=res.data, cp=progressOf(d), lp=progressOf(S);
+      if(cp>lp || (cp===lp && (d.updatedAt||0)>(S.updatedAt||0))){ d.student=S.student; adoptState(d); afterAdopt('✓ Your newest saved work was loaded'); return; }
+    }
+    cloudSave(true);
+  }
+  go(resumeTarget());
+});
+$('#notMeBtn').addEventListener('click',async()=>{
+  if(!CLOUD()) return openTeacher();
+  const btn=$('#notMeBtn'), err=$('#resumeErr'), who=S.student?`${S.student.first} ${S.student.last}`:'the last student';
+  btn.disabled=true; btn.textContent=`Backing up ${who}'s work...`;
+  try{ await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); }
+  catch(e){ btn.disabled=false; btn.textContent='Not you? Sign in as a different student'; err.textContent=`Can't back up ${who}'s work right now. Check the Wi-Fi and try again, or ask your teacher.`; err.hidden=false; return; }
+  btn.disabled=false; err.hidden=true;
+  const ns=freshState(); adoptState(ns); renderStart();
+  $('#fFirst').value=''; $('#fLast').value=''; $('#fId').value=''; $('#fPeriod').value=''; $('#fTeacher').value='';
+});
+
+/* ===================== lockdown ===================== */
+const LOCKDOWN = /github\.io$/i.test(location.hostname) || /[?&]lockdown=on/i.test(location.search);
+let armed=false, teacherOpen=false;
+const fsOK=()=>!!(document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen);
+const inFS=()=>!!(document.fullscreenElement||document.webkitFullscreenElement);
+function enterFS(){ const d=document.documentElement; try{ const p=(d.requestFullscreen||d.webkitRequestFullscreen).call(d); return (p&&p.then)?p.catch(()=>{}):Promise.resolve(); }catch(e){ return Promise.resolve(); } }
+function arm(){ if(!LOCKDOWN||S.preview||S.completedAt) return; enterFS().then(()=>setTimeout(()=>{ armed=true; },500)); }
+function disarm(){ armed=false; }
+function trip(reason){
+  if(!armed||S.locked||S.completedAt||S.preview||teacherOpen) return;
+  armed=false; S.leaves++; S.locked=true; save(); showLock(reason);
+}
+function showLock(reason){ $('#lockMsg').textContent=`The lesson locked because you ${reason||'left the lesson page'}. Raise your hand so your teacher can unlock it. Your work is saved.`; $('#lockErr').hidden=true; $('#lockCode').value=''; $('#lockOv').classList.add('show'); setTimeout(()=>$('#lockCode').focus(),50); }
+$('#lockBtn').addEventListener('click',()=>{
+  if($('#lockCode').value.trim().toLowerCase()===TEACHER_CODE.toLowerCase()){ S.locked=false; save(); $('#lockOv').classList.remove('show'); arm(); }
+  else $('#lockErr').hidden=false;
+});
+$('#lockCode').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#lockBtn').click(); });
+$('#gateBtn').addEventListener('click',()=>{ $('#gateOv').classList.remove('show'); arm(); });
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) trip('left the lesson page'); });
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>{ if(!inFS()&&fsOK()) trip('exited full screen'); }));
+window.addEventListener('blur',()=>setTimeout(()=>{ if(!document.hasFocus()) trip('switched to another window'); },300));
+
+/* ===================== teacher view ===================== */
+function openTeacher(){
+  teacherOpen=true; $('#teachLogin').hidden=false; $('#teachPanel').hidden=true; $('#teachErr').hidden=true; $('#teachCode').value='';
+  $('#teachModal').classList.remove('wide'); $('#teachOv').classList.add('show'); setTimeout(()=>$('#teachCode').focus(),50);
+}
+function closeTeacher(){ $('#teachOv').classList.remove('show'); teacherOpen=false; }
+$('#teacherLink').addEventListener('click',openTeacher);
+$('#teachCancel').addEventListener('click',closeTeacher);
+$('#teachCode').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#teachGo').click(); });
+$('#teachGo').addEventListener('click',()=>{
+  if($('#teachCode').value.trim().toLowerCase()!==TEACHER_CODE.toLowerCase()){ $('#teachErr').hidden=false; return; }
+  $('#teachLogin').hidden=true; $('#teachPanel').hidden=false; $('#teachModal').classList.add('wide'); renderTeacher();
+});
+function renderTeacher(){
+  const recs=loadRecs(); const p=$('#teachPanel');
+  const rows=recs.map(r=>`<tr><td>${r[1]}, ${r[2]}</td><td>${r[0]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[6]}/${r[7]}</td><td>${r[8]}/10</td><td>${r[11]}</td><td>${r[13]}</td><td>${r[14]}</td></tr>`).join('');
+  p.innerHTML=`<h2>Teacher view</h2>
+    <h3 style="margin-top:14px">Results saved on this device (${recs.length})</h3>
+    <div class="wide">${recs.length?`<table class="nb"><tr><th>Student</th><th>ID</th><th>Period</th><th>Teacher</th><th>Lesson</th><th>Final</th><th>Tries</th><th>Locked</th><th>Date</th></tr>${rows}</table>`:'<p class="muted">No finished lessons on this device yet. Each student\'s results page also has its own CSV download.</p>'}</div>
+    <div class="btnrow">
+      <button class="btn primary" type="button" id="tCsv" ${recs.length?'':'disabled'}>Download these results (CSV)</button>
+      <button class="btn ghost" type="button" id="tClear" ${recs.length?'':'disabled'}>Clear saved results</button>
+    </div>
+    <h3 style="margin-top:22px">This device</h3>
+    <p class="small muted">Student signed in: ${S.student?`${S.student.first} ${S.student.last} (period ${S.student.period})`:'nobody'}. Lockdown is ${LOCKDOWN?'on (opened from GitHub)':'off (only on when opened from GitHub)'}. Scores go to the same Google Sheet as the Bohr model lesson. Saved-work backup is ${CLOUD()?'on':'off (link not added yet)'}.</p>
+    <div class="btnrow">
+      ${S.locked?'<button class="btn primary" type="button" id="tUnlock">Unlock the lesson</button>':''}
+      ${S.student&&!S.preview?'<button class="btn ghost" type="button" id="tSend">Send this student\'s scores to the sheet</button>':''}
+      <button class="btn ghost" type="button" id="tPreview">${S.preview?'Turn off preview mode':'Preview: open every section'}</button>
+      <button class="btn ghost" type="button" id="tReset">Reset this device's lesson</button>
+      <button class="btn ghost" type="button" id="tClose">Close</button>
+    </div>
+    ${CLOUD()?`<h3 style="margin-top:22px">Load a student's saved work onto this device</h3>
+    <div class="btnrow"><input class="ans" id="tLoadId" placeholder="Student ID" style="width:150px"><input class="ans" id="tLoadLast" placeholder="Last name" style="width:170px"><button class="btn ghost" type="button" id="tLoad">Load work</button></div>`:''}
+    <p class="fb info sheetStatus" aria-live="polite" style="min-height:1em"></p>
+    <div class="fb info" id="tMsg" hidden></div>`;
+  const msg=t=>{ $('#tMsg').textContent=t; $('#tMsg').hidden=false; };
+  $('#tCsv').addEventListener('click',()=>downloadCSV(recs,`HVMotion_results_${new Date().toISOString().slice(0,10)}.csv`));
+  $('#tClear').addEventListener('click',()=>{ if(confirm('Delete the saved results list on this device? Students\' own lesson progress is not affected.')){ localStorage.removeItem(RECS); renderTeacher(); } });
+  if($('#tUnlock')) $('#tUnlock').addEventListener('click',()=>{ S.locked=false; save(); $('#lockOv').classList.remove('show'); closeTeacher(); arm(); });
+  $('#tPreview').addEventListener('click',()=>{
+    S.preview=!S.preview;
+    if(S.preview && !S.student){ S.student={first:'Teacher',last:'Preview',id:'0',period:'-',teacher:teacherList()[0]||''}; S.startedAt=Date.now(); }
+    save(); closeTeacher(); disarm(); $('#lockOv').classList.remove('show'); refreshAll(); if(S.preview) go(0); else location.reload();
+  });
+  $('#tReset').addEventListener('click',()=>{ if(confirm('Erase all lesson progress on this device and return to the sign-in page?')){ try{ localStorage.removeItem(STORE); }catch(e){} location.reload(); } });
+  $('#tClose').addEventListener('click',closeTeacher);
+  if($('#tSend')) $('#tSend').addEventListener('click',()=>sendSheet());
+  if($('#tLoad')) $('#tLoad').addEventListener('click',async()=>{
+    const st={id:$('#tLoadId').value.trim(), last:$('#tLoadLast').value.trim()};
+    if(!st.id||!st.last){ msg('Type the student ID and last name.'); return; }
+    msg('Looking up saved work...');
+    const res=await cloudLoad(st);
+    if(res.status==='found'){ const d=res.data; d.locked=false; adoptState(d); closeTeacher(); showStart(); }
+    else msg(res.status==='none'?'No saved work found for that student ID and last name.':"Couldn't reach the saved-work sheet. Check the Wi-Fi.");
+  });
+}
+
+/* ===================== calculator ===================== */
+(function(){
+  const keys=[['sin','sin(','fn'],['cos','cos(','fn'],['tan','tan(','fn'],['tan⁻¹','tan⁻¹(','fn'],['√','√(','fn'],
+    ['7','7'],['8','8'],['9','9'],['(','('],[')',')'],
+    ['4','4'],['5','5'],['6','6'],['×','×'],['÷','÷'],
+    ['1','1'],['2','2'],['3','3'],['+','+'],['−','−'],
+    ['0','0'],['.','.'],['x²','^2'],['C','C'],['=','=','eq']];
+  const kEl=$('#calcKeys'), inp=$('#calcIn'), out=$('#calcOut'); let ans=0;
+  keys.forEach(([t,v,c])=>{ const b=h('button',{type:'button',class:c||''},t); b.addEventListener('click',()=>{
+    if(v==='C'){ inp.value=''; out.textContent=''; }
+    else if(v==='='){ calc(); }
+    else { const s=inp.selectionStart??inp.value.length; inp.value=inp.value.slice(0,s)+v+inp.value.slice(inp.selectionEnd??s); inp.focus(); const p=s+v.length; inp.setSelectionRange(p,p); }
+  }); kEl.appendChild(b); });
+  function calc(){
+    let e=inp.value;
+    e=e.replace(/tan⁻¹|tan\^-1|tan-1|arctan|atan/gi,'AT').replace(/arcsin|asin/gi,'AS').replace(/arccos|acos/gi,'AC')
+       .replace(/sin/gi,'S').replace(/cos/gi,'C').replace(/tan/gi,'T').replace(/√|sqrt/gi,'Q').replace(/π|pi/gi,'PI').replace(/ans/gi,'ANS')
+       .replace(/×/g,'*').replace(/÷/g,'/').replace(/[−–]/g,'-').replace(/²/g,'^2').replace(/\^/g,'**');
+    e=e.replace(/(\d|\))\s*(?=[A-Z(])/g,'$1*');
+    const tokens=e.match(/[A-Z]+/g)||[]; const okT=['S','C','T','AT','AS','AC','Q','PI','ANS'];
+    if(!/^[0-9+\-*/().\sA-Z]*$/.test(e) || tokens.some(t=>!okT.includes(t))){ out.textContent='Check the expression'; return; }
+    try{
+      const f=new Function('S','C','T','AT','AS','AC','Q','PI','ANS','"use strict";return ('+e+');');
+      const r=f(x=>Math.sin(rad(x)),x=>Math.cos(rad(x)),x=>Math.tan(rad(x)),x=>deg(Math.atan(x)),x=>deg(Math.asin(x)),x=>deg(Math.acos(x)),Math.sqrt,Math.PI,ans);
+      if(typeof r!=='number'||!isFinite(r)){ out.textContent='Not a number'; return; }
+      ans=r; out.textContent=String(+r.toFixed(5)).replace('-','−');
+    }catch(err){ out.textContent='Check the expression'; }
+  }
+  inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); calc(); } });
+  $('#calcBtn').addEventListener('click',()=>{ const c=$('#calc'); c.hidden=!c.hidden; $('#calcBtn').setAttribute('aria-expanded',String(!c.hidden)); if(!c.hidden) inp.focus(); });
+  $('#calcClose').addEventListener('click',()=>{ $('#calc').hidden=true; $('#calcBtn').setAttribute('aria-expanded','false'); });
+})();
+
+/* ===================== hero + init ===================== */
+function hero(){ projHero(); }
+onSaved=()=>{ showNote(); cloudSave(false); };
+document.addEventListener('visibilitychange',()=>{ if(document.hidden){ save(); cloudBeacon(); } });
+onConflict=()=>{ $('#tabOv').classList.add('show'); };
+$('#tabReload').addEventListener('click',()=>location.reload());
+window.addEventListener('storage',e=>{
+  if(e.key!==STORE || !e.newValue) return;
+  try{ const st=JSON.parse(e.newValue); if(st && (st.rev||0)>(S.rev||0)){ saveBlocked=true; onConflict(); } }catch(_){}
+});
+window.addEventListener('pagehide',()=>{ save(); cloudBeacon(); });
+if(!STORAGE_OK) $('#noStore').hidden=false;
+fillSelects();
+buildAll();
+refreshAll();
+hero();
+showStart();
+if(S.student){
+  if(S.preview){ /* preview: no lockdown */ }
+  else if(LOCKDOWN && S.locked && !S.completedAt) showLock('left the lesson page');
+  else if(LOCKDOWN && !S.completedAt) { /* resume button arms full screen */ }
+}
+})();
+</script>
+</body>
+</html>
