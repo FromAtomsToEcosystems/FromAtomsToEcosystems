@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Periodic Trends Warm-Up | Chemistry Unit 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c1424; --bg2:#101b30; --panel:#14203a; --panel2:#1b2a49; --panel3:#223358;
+  --line:#26375a; --line2:#35496f;
+  --text:#e8eef8; --muted:#a3b4d1; --dim:#7488ab;
+  --e:#5fe1ff; --e-glow:rgba(95,225,255,.55); --p:#ff7d66; --n:#aab6cc; --val:#ffd36b; --gain:#ff8fd0;
+  --amber:#f6b93b; --good:#4ade80; --bad:#fb7185;
+  --c-nonmetal:#45c08f; --c-noble:#a084ff; --c-alkali:#ff8f5e; --c-alkaline:#ffcb5c;
+  --c-metalloid:#46c7d8; --c-post:#8ea8cc; --c-halogen:#f477b8;
+  --r-lg:16px; --r-md:12px; --r-sm:8px;
+  --font:"Lexend","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 110px)}
+*,*::before,*::after{box-sizing:inherit}
+body{
+  margin:0; min-height:100vh; color:var(--text); font-family:var(--font);
+  font-size:17px; line-height:1.6; font-weight:300;
+  background:
+    radial-gradient(900px 520px at 85% -8%, #1a2d52 0%, transparent 62%),
+    radial-gradient(700px 420px at -10% 30%, #13233f 0%, transparent 60%),
+    var(--bg);
+  background-attachment:fixed;
+}
+b,strong{font-weight:600}
+h1,h2,h3{font-weight:600;line-height:1.2;margin:0}
+p{margin:.5em 0}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--e);outline-offset:2px;border-radius:6px}
+.small{font-size:14px}
+.muted{color:var(--muted)}
+.hidden{display:none!important}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:sticky; top:0; z-index:40;
+  padding-top:env(safe-area-inset-top,0px);
+  background:rgba(12,20,36,.9); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.topbar-in{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:14px;padding:10px 18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:16px;white-space:nowrap}
+.brand svg{width:30px;height:30px}
+.navtiles{display:flex;gap:6px;overflow-x:auto;padding:4px 2px;flex:1;scrollbar-width:thin}
+.top-actions{display:flex;gap:8px}
+.top-btn{background:var(--panel2);border:1px solid var(--line2);border-radius:999px;padding:6px 14px;font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap}
+.top-btn:hover{background:var(--panel3)}
+
+/* ---------- element tiles ---------- */
+.tile{
+  --c:var(--c-nonmetal);
+  position:relative; flex:0 0 auto; width:46px; height:52px; border-radius:8px;
+  background:var(--panel2);
+  background:color-mix(in srgb, var(--c) 20%, var(--panel));
+  border:1.5px solid var(--c);
+  border-color:color-mix(in srgb, var(--c) 75%, transparent);
+  display:grid; place-items:center; font-weight:700; font-size:19px; line-height:1;
+  color:var(--text); cursor:pointer; padding:0;
+  transition:transform .2s, box-shadow .2s, opacity .2s;
+}
+.tile .z{position:absolute;top:4px;left:5px;font-size:10px;font-weight:500;color:var(--muted)}
+.tile:hover:not(:disabled){transform:translateY(-2px)}
+.tile.current{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--c)}
+.tile:disabled{cursor:not-allowed;opacity:.32;filter:saturate(.3)}
+.tile .ck{position:absolute;right:-5px;bottom:-5px;width:17px;height:17px;border-radius:50%;background:var(--good);color:#06240f;font-size:11px;display:grid;place-items:center;font-weight:700;opacity:0;transform:scale(.4);transition:.25s}
+.tile.done .ck{opacity:1;transform:scale(1)}
+.tile.unlocking{animation:unlockPop .7s cubic-bezier(.2,1.6,.4,1)}
+@keyframes unlockPop{0%{transform:scale(.7)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
+.tile.big{width:74px;height:82px;font-size:32px;border-width:2px;cursor:default}
+.tile.big .z{font-size:13px;top:6px;left:8px}
+.cat-nonmetal{--c:var(--c-nonmetal)} .cat-noble{--c:var(--c-noble)} .cat-alkali{--c:var(--c-alkali)}
+.cat-alkaline{--c:var(--c-alkaline)} .cat-metalloid{--c:var(--c-metalloid)} .cat-post{--c:var(--c-post)} .cat-halogen{--c:var(--c-halogen)}
+
+/* ---------- layout ---------- */
+main{max-width:980px;margin:0 auto;padding:22px 18px 80px}
+.screen{display:none}
+.screen.on{display:block;animation:screenIn .35s ease-out}
+@keyframes screenIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sec-head{display:flex;align-items:center;gap:18px;margin:8px 0 10px}
+.sec-meta{color:var(--muted);font-size:15px;margin:0 0 4px}
+.sec-head h2{font-size:clamp(26px,4vw,36px);letter-spacing:-.01em}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px 24px;margin:18px 0}
+.card h3{font-size:21px;margin:2px 0 10px}
+.tag{display:inline-block;font-size:13px;font-weight:600;color:var(--muted);background:var(--panel2);border-radius:999px;padding:3px 12px;margin-bottom:8px}
+.k-read .tag{color:#c3cffc;background:#25305a}
+.k-try .tag{color:#0b2630;background:var(--e)}
+.k-qc{border:2px solid var(--amber)}
+.k-qc .tag{color:#241703;background:var(--amber)}
+.read-text{max-width:68ch}
+
+.btn{border:0;border-radius:10px;padding:11px 20px;font-weight:600;font-size:16px;cursor:pointer;transition:transform .15s, background .2s, opacity .2s}
+.btn:active:not(:disabled){transform:scale(.97)}
+.btn.primary{background:var(--e);color:#062430}
+.btn.primary:hover:not(:disabled){background:#8eebff}
+.btn.ghost{background:transparent;border:1.5px solid var(--line2);color:var(--text)}
+.btn.ghost:hover:not(:disabled){background:var(--panel2)}
+.btn.amber{background:var(--amber);color:#241703}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.sm{padding:7px 14px;font-size:14px;border-radius:8px}
+.btn-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}
+
+.sec-foot{display:flex;justify-content:space-between;gap:12px;margin-top:22px}
+
+/* word-help chips */
+.chip{display:inline;background:rgba(95,225,255,.1);border:0;border-bottom:1.5px dotted var(--e);color:#bff3ff;padding:0 4px;border-radius:4px;cursor:help;font-weight:400}
+.chip:hover{background:rgba(95,225,255,.2)}
+#pop{position:fixed;z-index:80;max-width:300px;background:var(--panel3);border:1px solid var(--line2);border-radius:12px;padding:12px 14px;box-shadow:0 14px 40px rgba(0,0,0,.45);font-size:15px}
+#pop b{display:block;color:var(--e);margin-bottom:2px;text-transform:capitalize}
+#pop p{margin:0}
+
+/* particle dots + small tables */
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px;vertical-align:-1px}
+.dot.p{background:var(--p)} .dot.n{background:var(--n)} .dot.e{background:var(--e);box-shadow:0 0 8px var(--e-glow)}
+.mini-table{border-collapse:collapse;margin:14px 0 4px;font-size:15px;min-width:300px}
+.mini-table th,.mini-table td{padding:7px 16px 7px 0;border-bottom:1px solid var(--line);text-align:left}
+.mini-table th{color:var(--muted);font-weight:500}
+.table-scroll{overflow-x:auto}
+.rules{display:grid;gap:8px;margin:12px 0}
+.rule{background:var(--panel2);border-radius:10px;padding:10px 14px}
+.rule small{color:var(--muted)}
+
+/* ---------- Bohr SVG ---------- */
+svg.bohr{width:100%;max-width:340px;height:auto;display:block;margin:0 auto;overflow:visible}
+.bohr .ring{fill:none;stroke:var(--line2);stroke-width:2}
+.bohr .ring.outer{stroke:rgba(255,211,107,.55);stroke-width:2.5}
+.bohr .ring-in{animation:ringIn .45s ease-out}
+@keyframes ringIn{from{opacity:0;stroke-width:8}to{opacity:1}}
+.bohr .nucleus{fill:url(#nucGrad);stroke:rgba(255,125,102,.6);stroke-width:1.5}
+.bohr .nt{fill:#fff;font-size:12.5px;font-weight:600;text-anchor:middle;font-family:var(--font)}
+.bohr .e{fill:var(--e);filter:drop-shadow(0 0 4px var(--e-glow));transform-box:view-box;transform-origin:0 0;
+  transition:transform .55s cubic-bezier(.2,.85,.25,1), opacity .35s, fill .3s}
+.bohr .e.val{fill:var(--val);filter:drop-shadow(0 0 5px rgba(255,211,107,.7))}
+.bohr .e.gain{fill:var(--gain);filter:drop-shadow(0 0 5px rgba(255,143,208,.75))}
+.bohr .ring-out{opacity:0;transition:opacity .45s}
+.bohr .bracket{fill:none;stroke:var(--text);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+.bohr .charge{fill:var(--text);font-size:28px;font-weight:700;font-family:var(--font)}
+.bohr .ion-in{animation:ionIn .6s ease-out}
+@keyframes ionIn{from{opacity:0;transform:scale(1.08)}to{opacity:1;transform:none}}
+.bohr .ionmark{transform-box:view-box;transform-origin:150px 150px}
+.ion{white-space:nowrap;font-weight:600}
+.ion sup{font-size:.62em;margin-left:1px}
+.dot.g{background:var(--gain);box-shadow:0 0 8px rgba(255,143,208,.7)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;color:var(--muted);margin:8px 0 0;justify-content:center}
+.token .tok-model{display:block;width:70px;margin:0 auto 2px}
+.token.model-token{display:inline-flex;flex-direction:column;align-items:center;padding:6px 10px;font-size:14px}
+.big-ion{font-size:clamp(48px,9vw,80px);font-weight:700;line-height:1;text-align:center;margin:8px 0}
+.big-ion sup{font-size:.45em;vertical-align:1.1em;margin-left:2px}
+.arrow-cap{text-align:center;color:var(--muted);font-size:14px}
+.atom-ion{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center}
+.atom-ion .arr{font-size:30px;color:var(--amber);font-weight:700}
+.atom-ion figure{margin:0;text-align:center}
+.atom-ion figcaption{font-size:14px;color:var(--muted);margin-top:4px}
+.atom-ion svg{max-width:220px}
+.meter{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.meter div{background:var(--panel2);border-radius:10px;padding:8px;text-align:center}
+.meter .k{font-size:13px;color:var(--muted)} .meter .v{font-size:24px;font-weight:600}
+.meter .v.pos{color:var(--p)} .meter .v.neg{color:var(--e)}
+.hero-ion svg{max-width:460px;width:100%;height:auto;display:block;margin:0 auto;overflow:visible}
+.hero-ion .travel{transition:transform 1.3s cubic-bezier(.45,0,.25,1)}
+.hero-fig.hero-ion svg{max-width:470px}
+.hero-ion .ionmark{animation:fadeIn .7s ease-out}
+@keyframes fadeIn{from{opacity:0}}
+.bohr.static .e{transition:none}
+.bohr .zone{fill:rgba(95,225,255,.06);stroke:var(--e);stroke-width:1.5;stroke-dasharray:4 3;cursor:pointer;opacity:.75;transition:fill .2s,opacity .2s}
+.bohr .zone:hover,.bohr .zone:focus{fill:rgba(95,225,255,.22);opacity:1;outline:none}
+.bohr .zone.bad{stroke:var(--bad);fill:rgba(251,113,133,.25)}
+.bohr.pulse .zone{animation:zonePulse 1.6s ease-in-out infinite}
+@keyframes zonePulse{50%{fill:rgba(95,225,255,.2)}}
+.bohr.mode-add .e{pointer-events:none}
+.bohr.mode-erase .zone{pointer-events:none;opacity:.25}
+.bohr.mode-erase .e{cursor:pointer}
+.bohr.mode-erase .e:hover{fill:var(--bad)}
+.bohr .sh{transform-box:view-box;transform-origin:150px 150px}
+.bohr.orbit .sh0{animation:spin 14s linear infinite}
+.bohr.orbit .sh1{animation:spin 24s linear infinite}
+.bohr.orbit .sh2{animation:spin 36s linear infinite}
+.bohr.orbit .sh3{animation:spin 50s linear infinite}
+.bohr.celebrate .sh{animation:spin 1.1s cubic-bezier(.3,0,.2,1) 1}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pin circle{fill:var(--panel3);stroke:var(--amber);stroke-width:2}
+.pin text{fill:var(--text);font-size:14px;font-weight:700;text-anchor:middle;font-family:var(--font)}
+.leader{stroke:var(--amber);stroke-width:1.5;stroke-dasharray:4 4;opacity:.8}
+
+/* ---------- start / hero ---------- */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center;margin:12px 0 6px}
+.hero h1{font-size:clamp(40px,7vw,72px);letter-spacing:-.025em;font-weight:700;line-height:1.02;margin:6px 0 14px}
+.hero .unit{color:var(--muted);margin:0;font-size:16px}
+.hero .lede{font-size:19px;max-width:44ch;color:#d3def0}
+.hero-fig{position:relative}
+.hero-fig svg{max-width:360px}
+.hero-cap{text-align:center;color:var(--muted);margin:4px 0 0;font-size:15px;min-height:1.6em}
+.hero-cap b{color:var(--text)}
+.start-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.start-grid .card{margin:0}
+.start-grid + .start-grid{margin-top:18px}
+.obj{border-left:4px solid var(--e)}
+.std{border-left:4px solid var(--c-noble)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;margin:8px 0 6px}
+.form-grid label{display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--muted);font-weight:500}
+input[type=text],input[type=number],input[type=password],select,.inp{
+  background:var(--bg2);border:1.5px solid var(--line2);border-radius:9px;padding:9px 11px;color:var(--text);font-size:16px;width:100%}
+input:focus,select:focus{border-color:var(--e);outline:none}
+.form-msg{color:var(--bad);min-height:1.4em;font-size:15px;margin:4px 0}
+.welcome{background:var(--panel2);border-radius:12px;padding:14px 16px}
+
+/* goals checklist */
+.goals{list-style:none;margin:6px 0;padding:0;display:grid;gap:8px}
+.goals li{display:flex;gap:10px;align-items:flex-start;font-size:15.5px}
+.box{flex:0 0 22px;width:22px;height:22px;border-radius:6px;border:2px solid var(--line2);display:grid;place-items:center;margin-top:1px;transition:.25s}
+.ok > .box,.mission.ok .mt > .box{background:var(--good);border-color:var(--good)}
+.ok > .box::after,.mission.ok .mt > .box::after{content:"";width:6px;height:11px;border:solid #06240f;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.ok{color:var(--text)}
+.goals li:not(.ok){color:var(--muted)}
+.just-ok > .box{animation:tickPop .6s cubic-bezier(.2,1.7,.4,1)}
+@keyframes tickPop{0%{transform:scale(.5)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
+
+/* unlock checklist */
+.unlock{background:var(--bg2);border-style:dashed}
+.unlock h3{font-size:17px;color:var(--muted);font-weight:500}
+.reqs{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.reqs li{display:flex;gap:10px;align-items:flex-start}
+.reqs li:not(.ok){color:var(--muted)}
+.unlock.all-done{border-color:var(--good);border-style:solid}
+
+/* ---------- quick checks ---------- */
+.qc-q{font-weight:500;font-size:18px;margin:4px 0 12px}
+.opts{display:grid;gap:9px}
+.opts.grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+.opt{display:flex;gap:12px;align-items:center;text-align:left;background:var(--panel2);border:1.5px solid var(--line2);border-radius:11px;padding:10px 14px;cursor:pointer;transition:border-color .2s, background .2s, transform .15s;width:100%}
+.opt:hover:not(:disabled){border-color:var(--e)}
+.opt .L{flex:0 0 30px;height:30px;border-radius:8px;background:var(--panel3);display:grid;place-items:center;font-weight:600}
+.opts.grid .opt{flex-direction:column;align-items:stretch;padding:10px}
+.opts.grid .opt .L{align-self:flex-start}
+.opts.grid .opt svg{max-width:170px;stroke-width:1}
+.opts.grid .ring{stroke-width:3}
+.opt.right{border-color:var(--good);background:rgba(74,222,128,.12)}
+.opt.right .L{background:var(--good);color:#06240f}
+.opt.wrong{border-color:var(--bad);background:rgba(251,113,133,.1);opacity:.75}
+.opt.wrong .L{background:var(--bad);color:#2a0710}
+.opt.picked{border-color:var(--e);background:rgba(95,225,255,.12)}
+.opt.picked .L{background:var(--e);color:#062430}
+.opt:disabled{cursor:default}
+body.show-key .opt[data-key]{box-shadow:0 0 0 2px var(--amber)}
+body.show-key .opt[data-key]::after{content:"key";margin-left:auto;font-size:12px;color:var(--amber);font-weight:600}
+.qc-fb{min-height:1.5em;margin:12px 0 0}
+.qc-fb.good{color:#b9f5cf} .qc-fb.bad{color:#ffc2cd}
+.qc-fig{margin:4px 0 10px}
+.qc-fig svg{max-width:280px;margin:0}
+.shake{animation:shake .45s}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+
+/* ---------- sorter (tap or drag) ---------- */
+.sorter .tray{display:flex;flex-wrap:wrap;gap:8px;min-height:50px;padding:10px;background:var(--bg2);border-radius:12px;border:1px dashed var(--line2)}
+.sorter .tray:empty::after{content:"All sorted";color:var(--good);font-size:14px;padding:6px}
+.token{background:var(--panel3);border:1.5px solid var(--line2);border-radius:9px;padding:8px 14px;font-weight:500;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;transition:transform .15s, border-color .15s, background .2s}
+.token.sel{border-color:var(--e);background:#20456a;transform:translateY(-2px)}
+.token.placed{cursor:default;border-color:var(--good);background:rgba(74,222,128,.14);animation:tickPop .45s}
+.token.el-token{display:inline-flex;gap:8px;align-items:center}
+.token.el-token .sym{font-weight:700;font-size:18px}
+.token.el-token .nm{font-size:13px;color:var(--muted)}
+.ghost-token{position:fixed;z-index:90;pointer-events:none;opacity:.92;transform:translate(-50%,-50%) rotate(-3deg);box-shadow:0 12px 28px rgba(0,0,0,.5)}
+.sorter .bins{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:12px}
+.bin{background:var(--panel2);border:1.5px solid var(--line2);border-radius:12px;padding:10px;min-height:96px;cursor:pointer;transition:border-color .2s, background .2s}
+.bin.hover,.bin:focus-visible{border-color:var(--e);background:#1f3a5e}
+.bin-label{font-size:14px;font-weight:600;color:var(--muted);margin-bottom:6px}
+.bin-drop{display:flex;flex-wrap:wrap;gap:6px}
+.sorter.rows .bins{grid-template-columns:1fr;gap:8px}
+.sorter.six .bins{grid-template-columns:repeat(3,1fr)}
+.sorter.rows .bin{display:flex;align-items:center;gap:12px;min-height:54px;padding:8px 10px}
+.sorter.rows .bin-label{margin:0;width:32px;height:32px;border-radius:50%;border:2px solid var(--amber);display:grid;place-items:center;color:var(--text);flex:0 0 32px}
+.sorter.rows .bin-drop:empty::before{content:"Drop a label here";color:var(--dim);font-size:14px}
+.sort-msg{min-height:1.4em;margin:8px 0 0;font-size:15px}
+.label-wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center}
+.label-fig svg{max-width:360px}
+
+/* ---------- element tile explorer ---------- */
+.tile-explore{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center}
+.big-tile{--c:var(--c-alkali);width:190px;height:220px;border-radius:16px;background:color-mix(in srgb,var(--c) 18%,var(--panel));border:2.5px solid var(--c);position:relative;display:grid;grid-template-rows:auto 1fr auto auto;padding:12px;gap:2px}
+.part{background:transparent;border:2px dashed transparent;border-radius:8px;cursor:pointer;padding:2px 6px;transition:border-color .2s, background .2s}
+.part:hover{border-color:rgba(255,255,255,.35)}
+.part.seen{border-color:var(--good)}
+.part.active{background:rgba(255,255,255,.1);border-color:var(--e)}
+.p-z{justify-self:start;font-size:24px;font-weight:600}
+.p-sym{font-size:64px;font-weight:700;line-height:1;justify-self:center;align-self:center}
+.p-name{font-size:18px;justify-self:center}
+.p-mass{font-size:18px;justify-self:center;color:#d5def0}
+.part-info{background:var(--panel2);border-radius:12px;padding:14px 16px;min-height:120px}
+.part-info h4{margin:0 0 4px;color:var(--e);font-size:17px;font-weight:600}
+
+/* notebook tables */
+.notebook{width:100%;border-collapse:collapse;font-size:15px;margin-top:8px}
+.notebook th{color:var(--muted);font-weight:500;text-align:left;padding:6px 8px;border-bottom:1px solid var(--line2)}
+.notebook td{padding:7px 8px;border-bottom:1px solid var(--line)}
+.notebook input{width:76px;text-align:center;padding:7px}
+.notebook input.good{border-color:var(--good);background:rgba(74,222,128,.1)}
+.notebook input.badv{border-color:var(--bad);background:rgba(251,113,133,.1)}
+.mtile{display:inline-grid;grid-template-columns:auto auto;gap:0 8px;align-items:center;background:color-mix(in srgb,var(--c) 18%,var(--panel));border:1.5px solid var(--c);border-radius:8px;padding:4px 9px;font-size:12px;color:var(--muted);line-height:1.25}
+.mtile .s{grid-row:span 2;font-size:20px;font-weight:700;color:var(--text)}
+.fb-line{min-height:1.4em;margin:10px 0 0}
+.fb-line.good{color:#b9f5cf} .fb-line.bad{color:#ffc2cd}
+
+/* ---------- simulators ---------- */
+.sim{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+.sim-el{display:flex;gap:14px;align-items:center;background:var(--panel2);border-radius:12px;padding:12px}
+.sim-el .nm{font-size:20px;font-weight:600}
+.sim-el .ar{color:var(--muted);font-size:15px}
+.sim-el .ar b{color:var(--e);font-size:18px}
+.missions{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:10px}
+.mission{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.mission.ok{border-color:var(--good)}
+.mission .mt{display:flex;gap:10px;align-items:flex-start}
+.mission .mfb{font-size:14px;margin:6px 0 0 32px;min-height:0}
+.mission .btn{margin:8px 0 0 32px}
+.mission.ok .lockin{display:none}
+.counter{font-size:14px;color:var(--muted)}
+
+/* flipchart */
+.flip{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center;background:var(--bg2);border-radius:14px;padding:16px;margin-top:12px}
+.flip-step{color:var(--amber);font-weight:600;font-size:14px;margin:0}
+.flip-text{font-size:18px;min-height:3.4em}
+.flip-left{background:var(--panel2);border-radius:10px;padding:8px 12px;display:inline-block}
+.flip-left b{color:var(--e);font-size:20px}
+.flip-dots{display:flex;gap:6px;margin-top:10px}
+.flip-dots i{width:9px;height:9px;border-radius:50%;background:var(--line2);transition:.3s}
+.flip-dots i.on{background:var(--amber);transform:scale(1.25)}
+
+/* steppers */
+.steppers{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+.stp{background:var(--panel2);border-radius:10px;padding:8px;text-align:center}
+.stp .lab{font-size:13px;color:var(--muted)}
+.stp .row{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:4px}
+.stp button{width:32px;height:32px;border-radius:8px;border:1px solid var(--line2);background:var(--panel3);cursor:pointer;font-size:18px;font-weight:600;line-height:1}
+.stp output{min-width:26px;font-size:20px;font-weight:600}
+.target{display:flex;gap:14px;align-items:center;margin:4px 0 6px}
+.target .t-name{font-size:20px;font-weight:600}
+.progress-pips{display:flex;gap:6px}
+.progress-pips i{width:26px;height:8px;border-radius:4px;background:var(--line2);transition:.3s}
+.progress-pips i.on{background:var(--good)}
+
+/* builder */
+.builder{display:grid;grid-template-columns:1.05fr .95fr;gap:22px;align-items:start}
+.b-fig{background:var(--bg2);border-radius:14px;padding:12px;position:sticky;top:96px}
+.b-fig svg{max-width:420px}
+.b-note{text-align:center;color:var(--muted);font-size:14px;margin:6px 0 0}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.tab{background:var(--panel2);border:1.5px solid var(--line2);border-radius:999px;padding:6px 14px;font-weight:500;cursor:pointer;font-size:15px}
+.tab[aria-selected=true]{border-color:var(--e);background:#1f3a5e}
+.tab.ok::after{content:" ✓";color:var(--good);font-weight:700}
+fieldset{border:1px solid var(--line);border-radius:12px;padding:10px 12px 12px;margin:0 0 10px}
+legend{padding:0 6px;color:var(--muted);font-size:14px;font-weight:500}
+.nuc-in{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.nuc-in label{font-size:14px;color:var(--muted);display:flex;flex-direction:column;gap:3px}
+.seg{display:inline-flex;background:var(--bg2);border-radius:10px;padding:3px;border:1px solid var(--line2)}
+.seg button{border:0;background:transparent;padding:7px 16px;border-radius:8px;cursor:pointer;font-weight:500}
+.seg button[aria-pressed=true]{background:var(--e);color:#062430}
+.inline-stepper{display:inline-flex;align-items:center;gap:8px}
+.inline-stepper button{width:34px;height:34px;border-radius:8px;border:1px solid var(--line2);background:var(--panel3);cursor:pointer;font-size:18px;font-weight:600}
+.inline-stepper output{font-size:20px;font-weight:600;min-width:24px;text-align:center}
+.report{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:7px}
+.report li{display:flex;gap:10px;align-items:flex-start;font-size:15px}
+.report .ic{flex:0 0 22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700}
+.report .y .ic{background:var(--good);color:#06240f}
+.report .x .ic{background:var(--bad);color:#2a0710}
+.report .w .ic{background:var(--line2);color:var(--muted)}
+
+/* placement game */
+.place-prompt{font-size:17px;background:var(--bg2);border-radius:10px;padding:10px 14px;margin:8px 0}
+.place-prompt b{color:var(--e)}
+.num-fig svg{max-width:280px}
+.demo-cap{text-align:center;font-size:16px;min-height:2.8em;margin:6px 0}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:center}
+
+/* periodic table */
+.pt{display:grid;grid-template-columns:repeat(8,minmax(38px,1fr));gap:5px;max-width:460px}
+.pt .gh{text-align:center;font-size:12px;color:var(--muted);font-weight:500}
+.pt .tile{width:auto;height:48px;font-size:17px}
+.pt .tile.same{box-shadow:0 0 0 2px var(--val)}
+.pt .tile.seen::before{content:"";position:absolute;right:4px;top:4px;width:6px;height:6px;border-radius:50%;background:var(--good)}
+.pt-wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:center}
+.pt-info{text-align:center;min-height:3em;margin:4px 0 0}
+.pt-info b.v{color:var(--val)}
+.ans-grid{display:grid;grid-template-columns:repeat(10,minmax(34px,1fr));gap:5px;margin-top:10px}
+.ans-grid .tile{width:auto;height:44px;font-size:16px}
+
+/* final check */
+.fc-dots{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 14px}
+.fc-dots button{width:32px;height:32px;border-radius:8px;border:1.5px solid var(--line2);background:var(--panel2);cursor:pointer;font-size:13px;font-weight:600}
+.fc-dots button.ans{background:#1f3a5e;border-color:var(--e)}
+.fc-dots button.cur{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--amber)}
+.score-big{font-size:64px;font-weight:700;line-height:1;margin:6px 0}
+.score-big.pass{color:var(--good)} .score-big.fail{color:var(--amber)}
+.review-item{border-top:1px solid var(--line);padding:12px 0}
+.review-item .yours{color:#ffc2cd} .review-item .right{color:#b9f5cf}
+.attempts{font-size:15px;color:var(--muted)}
+.lock-note{background:rgba(246,185,59,.1);border:1px solid rgba(246,185,59,.5);border-radius:10px;padding:10px 14px;font-size:15px}
+.review-box{background:var(--bg2);border-radius:12px;padding:12px 16px;margin:10px 0}
+.review-box li{margin:4px 0}
+
+/* results */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:12px 0}
+.stat{background:var(--panel2);border-radius:12px;padding:12px 14px}
+.stat .k{font-size:13px;color:var(--muted)}
+.stat .v{font-size:26px;font-weight:600}
+.who{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 16px;font-size:15px}
+.who span{color:var(--muted);display:block;font-size:13px}
+
+/* overlays */
+.overlay{position:fixed;inset:0;z-index:100;background:rgba(6,11,22,.86);backdrop-filter:blur(6px);display:grid;place-items:center;padding:20px}
+.overlay[hidden]{display:none}
+.modal{background:var(--panel);border:1px solid var(--line2);border-radius:18px;padding:24px;max-width:460px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.modal h3{font-size:22px;margin-bottom:6px}
+.lock-modal{border:2px solid var(--amber);text-align:center}
+.lock-icon{font-size:44px;line-height:1}
+.teacher-tools{display:grid;gap:8px;margin-top:12px}
+.drawer{position:fixed;right:16px;top:76px;z-index:60;width:min(360px,calc(100vw - 32px));background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.55)}
+.drawer[hidden]{display:none}
+.sheetbox{font-size:15px;color:var(--muted);margin:8px 0 0;min-height:1.4em}
+#toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);opacity:0;z-index:120;background:var(--panel3);border:1px solid var(--good);color:var(--text);border-radius:12px;padding:10px 18px;font-weight:500;transition:.35s;pointer-events:none;max-width:90vw;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:820px){
+  .hero,.start-grid,.sim,.builder,.flip,.two-col,.pt-wrap,.label-wrap,.tile-explore{grid-template-columns:1fr}
+  .b-fig{position:static}
+  .brand span{display:none}
+  .form-grid{grid-template-columns:1fr}
+  .big-tile{margin:0 auto}
+  .ans-grid{grid-template-columns:repeat(5,1fr)}
+  .steppers{grid-template-columns:repeat(2,1fr)}
+  .card{padding:18px 16px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .bohr.orbit .sh{animation:none!important}
+}
+@media print{
+  body{background:#fff;color:#000}
+  .topbar,.sec-foot,#toast,.drawer,.overlay,.no-print{display:none!important}
+  .screen{display:none!important}
+  #scr-10{display:block!important}
+  .card,.stat{background:#fff;border:1px solid #999;color:#000}
+  .stat .k,.who span,.muted{color:#333}
+  .goals li:not(.ok){color:#333}
+}
+
+/* ---------- formative layout ---------- */
+body[data-screen=test] main, body[data-screen=revise] main{max-width:1340px;padding-bottom:120px}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.split .card{margin:0;max-height:calc(100vh - 200px);overflow:auto}
+.stim-tabs{position:sticky;top:-22px;background:var(--panel);padding:6px 0 10px;z-index:3}
+.stim-body h3{font-size:18px;color:var(--e);margin:6px 0 8px}
+.stim-body p{max-width:64ch}
+.formula{background:var(--panel2);border-radius:10px;padding:8px 14px;display:inline-block}
+.mini-table.data td,.mini-table.data th{padding:8px 18px 8px 0}
+.foot{position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(12,20,36,.96);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid var(--line);display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:10px 18px calc(10px + env(safe-area-inset-bottom,0px))}
+.foot-mid{display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap}
+.chips{display:flex;gap:6px}
+.qchip{width:42px;height:46px;font-size:16px}
+.qchip.done .ck{opacity:1;transform:scale(1)}
+.qchip.flag::after{content:"";position:absolute;top:-5px;right:-5px;width:12px;height:12px;border-radius:50%;background:var(--amber);border:2px solid var(--bg)}
+.flagbtn{background:transparent;border:1.5px solid var(--amber);color:var(--amber);border-radius:999px;padding:7px 14px;font-weight:600;cursor:pointer}
+.flagbtn.on{background:var(--amber);color:#241703}
+.qhead{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.qtag{color:#241703;background:var(--amber);margin:0}
+.qlabel{font-size:22px;margin:10px 0 6px}
+.qprompt{font-size:17px}
+.placer .tray{display:flex;flex-wrap:wrap;gap:8px;min-height:80px;padding:10px;background:var(--bg2);border-radius:12px;border:1px dashed var(--line2);align-items:center}
+.acard{display:inline-flex;flex-direction:column;align-items:center;padding:6px 8px;gap:2px}
+.acard .tok-model{width:128px}
+.acard.sel{box-shadow:0 0 0 3px var(--e)}
+.pbins{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.pbin{min-height:118px}
+.pbin .acard .tok-model{width:100px}
+.qtable input{width:96px}
+.cerbox{margin:10px 0}
+.cerbox label{display:block;font-weight:600;color:var(--e);margin-bottom:4px}
+.cerbox textarea{width:100%;min-height:92px;background:var(--bg2);border:1.5px solid var(--line2);border-radius:10px;padding:10px;color:var(--text);font:inherit;font-size:16px;resize:vertical}
+.cerbox textarea:focus{border-color:var(--e);outline:none}
+.qbuilder{grid-template-columns:1fr 1fr}
+.qbuilder .b-fig{position:static}
+.rvlist{display:grid;gap:10px;margin:14px 0}
+.rvitem{display:flex;gap:14px;align-items:center;text-align:left;background:var(--panel);border:1.5px solid var(--line2);border-radius:14px;padding:12px 14px;cursor:pointer;color:var(--text);font-size:16px}
+.rvitem.todo{border-color:var(--amber)} .rvitem.done{border-color:var(--good)}
+.rvitem .tile{pointer-events:none;cursor:default}
+.res h3{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.rtag{font-size:14px;background:var(--panel2);border-radius:999px;padding:3px 12px}
+.rtag.good{background:var(--good);color:#06240f} .rtag.miss{background:var(--amber);color:#241703}
+.part{border-left:3px solid var(--line2);padding:7px 12px;margin:6px 0;background:var(--bg2);border-radius:0 8px 8px 0}
+.part.ok{border-left-color:var(--good)} .part.no{border-left-color:var(--bad)}
+.fix{color:#ffc2cd;font-weight:600}
+.cap{color:var(--muted);font-size:14px}
+.model{background:rgba(95,225,255,.08);border:1px solid rgba(95,225,255,.35);border-radius:10px;padding:10px 12px;margin-top:10px}
+.resp{background:var(--bg2);border-radius:8px;padding:8px 10px;margin:4px 0 10px;white-space:pre-wrap}
+.checks{display:grid;gap:8px;margin:8px 0}
+.checks label{display:flex;gap:10px;align-items:flex-start}
+.checks input{margin-top:5px;width:18px;height:18px;accent-color:var(--good)}
+.form-grid.five{grid-template-columns:repeat(5,1fr)}
+.phen{border-left:4px solid var(--amber)}
+.intro .hero{grid-template-columns:1.4fr .6fr}
+.intro .hero-fig svg{max-width:220px}
+.build-res .atom-ion svg{max-width:180px}
+.topbar .spacer{flex:1}
+@media (max-width:900px){.split,.qbuilder{grid-template-columns:1fr}.split .card{max-height:none}.form-grid.five{grid-template-columns:1fr 1fr}.pbins{grid-template-columns:1fr 1fr}.foot{grid-template-columns:1fr;text-align:center}.intro .hero{grid-template-columns:1fr}}
+@media print{main{display:block!important;max-width:none}.foot,.topbar{display:none!important}.part,.resp,.model{background:#fff;color:#000;border-color:#999}.rtag{border:1px solid #999}}
+
+.graph-wrap{overflow-x:auto}
+svg.iegraph{width:100%;min-width:480px;height:auto;display:block}
+.iegraph rect,.iegraph polyline,.iegraph line{pointer-events:none}
+.g-ax{fill:var(--muted);font-size:11px;font-family:var(--font)}
+.g-lab{fill:var(--muted);font-size:11px;font-weight:600;font-family:var(--font)}
+.gpt circle{fill:var(--amber);stroke:var(--bg);stroke-width:2;cursor:pointer}
+.gpt:focus{outline:none}
+.gpt:focus-visible circle{stroke:#fff;stroke-width:3}
+.gpt:hover circle,.gpt.on circle{r:9;fill:#fff}
+svg.atomviz{display:block;width:100%;max-width:200px;margin:0 auto;overflow:visible}
+svg.atomviz.sm{max-width:120px}
+.av-lab{fill:var(--text);font-size:13px;font-weight:600;font-family:var(--font)}
+.wu-atoms{display:flex;align-items:flex-end;justify-content:center;gap:4px}
+.pbins.three{grid-template-columns:repeat(3,1fr)}
+.acard .tile{width:52px;height:56px;font-size:20px;cursor:inherit}
+.sels{display:grid;gap:10px;margin-top:8px}
+.selrow{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;background:var(--panel2);border-radius:12px;padding:10px 12px}
+.selrow select{min-width:150px}
+</style>
+</head>
+<body data-screen="intro">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><radialGradient id="cloudGrad" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#5fe1ff" stop-opacity=".05"/><stop offset="70%" stop-color="#5fe1ff" stop-opacity=".18"/><stop offset="100%" stop-color="#5fe1ff" stop-opacity=".38"/></radialGradient><radialGradient id="nucGrad" cx="40%" cy="35%" r="70%"><stop offset="0%" stop-color="#ff9b84"/><stop offset="55%" stop-color="#d9563f"/><stop offset="100%" stop-color="#7a2c22"/></radialGradient></defs></svg>
+<header class="topbar"><div class="topbar-in">
+  <div class="brand"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="5" fill="#e0654f"/><circle cx="20" cy="20" r="11" fill="none" stroke="#35496f" stroke-width="2"/><circle cx="20" cy="20" r="17" fill="none" stroke="#35496f" stroke-width="2"/><circle cx="20" cy="9" r="2.6" fill="#5fe1ff"/><circle cx="37" cy="20" r="2.6" fill="#5fe1ff"/><circle cx="20" cy="37" r="2.6" fill="#ff8fd0"/></svg><span>Periodic Trends Warm-Up</span></div>
+  <div class="spacer"></div>
+  <div class="top-actions"><button class="top-btn" id="teacherBtn" type="button">Teacher</button></div>
+</div></header>
+<main id="app"></main>
+<div class="overlay" id="teacherOv" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="tTitle"><h3 id="tTitle">Teacher view</h3>
+  <div id="tLogin"><p class="muted small">Enter the teacher code.</p><input type="password" id="tCode" autocomplete="off" aria-label="Teacher code"><p class="form-msg" id="tMsg"></p><div class="btn-row"><button class="btn primary" id="tGo" type="button">Open teacher view</button><button class="btn ghost" id="tCancel" type="button">Cancel</button></div></div>
+  <div id="tPanel" class="hidden"><p class="small muted" id="tInfo"></p><div class="teacher-tools"><button class="btn ghost" id="tEndLock" type="button">End lockdown</button><button class="btn ghost" id="tReset" type="button">Reset this device (erase answers)</button></div><div class="btn-row"><button class="btn primary" id="tClose" type="button">Close</button></div></div>
+</div></div>
+<div class="overlay" id="lockOv" hidden><div class="modal lock-modal" role="alertdialog" aria-modal="true" aria-labelledby="lockTitle"><div class="lock-icon" aria-hidden="true">🔒</div><h3 id="lockTitle">This assessment is locked</h3><p class="muted">You left the page or exited full screen. Ask your teacher to unlock it.</p><input type="password" id="lockCode" autocomplete="off" aria-label="Teacher unlock code" placeholder="Teacher code"><p class="form-msg" id="lockMsg"></p><button class="btn amber" id="lockGo" type="button">Unlock</button></div></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="sheets-config.js"></script>
+<script>
+(() => {
+'use strict';
+
+/* =========================================================
+   SETTINGS
+   ========================================================= */
+const KEY = 'fate_chem_trends_warmup_v1';
+const TEACHER_CODE = 'trends'; /* unlock code = last word of the lesson title, any capitalization */
+const LESSON = 'Periodic Trends Warm-Up';
+/* Google Sheets + teacher list: same setup as the formative assessments.
+   If sheets-config.js (next to this file on the site) defines TEACHERS or SHEETS_WEBHOOK_URL, those win. */
+const BACKUP_URL = 'https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const BACKUP_TEACHERS = ['Austin', 'Mueller', 'McCue', 'Arce', 'Trimm', 'Garcia', 'Trimm/Callanan', 'Callanan'];
+function periodList() { try { if (typeof PERIODS !== 'undefined' && Array.isArray(PERIODS) && PERIODS.length) return PERIODS.map(String); } catch (e) {} return ['1', '2', '3', '4', '5', '6', '7', '8']; }
+
+function teacherList() { try { if (typeof TEACHERS !== 'undefined' && Array.isArray(TEACHERS) && TEACHERS.length) return TEACHERS.map(String).filter(Boolean); } catch (e) {} return BACKUP_TEACHERS; }
+function sheetURL() { try { if (typeof SHEETS_WEBHOOK_URL !== 'undefined' && SHEETS_WEBHOOK_URL && String(SHEETS_WEBHOOK_URL).indexOf('PASTE') < 0) return String(SHEETS_WEBHOOK_URL); } catch (e) {} return BACKUP_URL; }
+const PASS_SCORE = 8, FC_LEN = 10;
+const LOCK_ON = /github\.io$/i.test(location.hostname) || new URLSearchParams(location.search).has('lockdown');
+const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const sum = a => a.reduce((x, y) => x + y, 0);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+/* =========================================================
+   ELEMENT DATA (first 20)
+   ========================================================= */
+const EL = [
+  ['H', 'Hydrogen', '1.008', 1, 1, 'nonmetal'], ['He', 'Helium', '4.003', 18, 1, 'noble'],
+  ['Li', 'Lithium', '6.94', 1, 2, 'alkali'], ['Be', 'Beryllium', '9.012', 2, 2, 'alkaline'],
+  ['B', 'Boron', '10.81', 13, 2, 'metalloid'], ['C', 'Carbon', '12.011', 14, 2, 'nonmetal'],
+  ['N', 'Nitrogen', '14.007', 15, 2, 'nonmetal'], ['O', 'Oxygen', '15.999', 16, 2, 'nonmetal'],
+  ['F', 'Fluorine', '18.998', 17, 2, 'halogen'], ['Ne', 'Neon', '20.180', 18, 2, 'noble'],
+  ['Na', 'Sodium', '22.990', 1, 3, 'alkali'], ['Mg', 'Magnesium', '24.305', 2, 3, 'alkaline'],
+  ['Al', 'Aluminum', '26.982', 13, 3, 'post'], ['Si', 'Silicon', '28.086', 14, 3, 'metalloid'],
+  ['P', 'Phosphorus', '30.974', 15, 3, 'nonmetal'], ['S', 'Sulfur', '32.06', 16, 3, 'nonmetal'],
+  ['Cl', 'Chlorine', '35.45', 17, 3, 'halogen'], ['Ar', 'Argon', '39.948', 18, 3, 'noble'],
+  ['K', 'Potassium', '39.098', 1, 4, 'alkali'], ['Ca', 'Calcium', '40.078', 2, 4, 'alkaline']
+].map((a, i) => ({ z: i + 1, sym: a[0], name: a[1], massStr: a[2], mass: parseFloat(a[2]), group: a[3], period: a[4], cat: a[5] }));
+const E = z => EL[z - 1];
+/* usual ion charge for the first 20 (null = usually shares electrons instead) */
+const ION = { H: 1, He: 0, Li: 1, Be: 2, B: null, C: null, N: -3, O: -2, F: -1, Ne: 0, Na: 1, Mg: 2, Al: 3, Si: null, P: -3, S: -2, Cl: -1, Ar: 0, K: 1, Ca: 2 };
+const ionCharge = z => ION[E(z).sym];
+const chargeText = c => c > 0 ? (c > 1 ? c : '') + '+' : c < 0 ? (c < -1 ? -c : '') + '−' : '';
+const ionHTML = (sym, c) => `<span class="ion">${sym}${c ? `<sup>${chargeText(c)}</sup>` : ''}</span>`;
+const IDE = { F: 'fluoride', Cl: 'chloride', O: 'oxide', S: 'sulfide', N: 'nitride', P: 'phosphide' };
+const ionName = z => { const e = E(z), c = ionCharge(z); return c < 0 ? IDE[e.sym] : e.name.toLowerCase() + ' ion'; };
+const bySym = s => EL.find(e => e.sym === s);
+const massNum = z => Math.round(E(z).mass);
+const neutrons = z => massNum(z) - z;
+function arr(z) { const caps = [2, 8, 8, 8], out = []; let left = z; for (const c of caps) { if (left <= 0) break; const k = Math.min(c, left); out.push(k); left -= k; } return out; }
+const valence = z => arr(z)[arr(z).length - 1];
+/* Class rule: one at a time top, right, bottom, left; the 5th pairs with the 1st, and so on. */
+function conv(n) { n = Math.max(0, Math.min(8, n)); const b = Math.floor(n / 4), r = n % 4; return [0, 1, 2, 3].map(s => b + (s < r ? 1 : 0)); }
+const norm = s => Array.isArray(s) ? s : conv(s);
+const SIDE = ['top', 'right', 'bottom', 'left'];
+const CAP = [2, 8, 8, 8];
+
+/* =========================================================
+   GLOSSARY (word-help chips)
+   ========================================================= */
+const GLOSS = {
+  nucleus: 'The tiny, dense center of an atom. It holds the protons and neutrons.',
+  proton: 'A particle in the nucleus with a positive (+) charge. The number of protons tells you which element it is.',
+  neutron: 'A particle in the nucleus with no charge.',
+  electron: 'A tiny particle with a negative (−) charge. Electrons are found in shells around the nucleus.',
+  shell: 'One of the circles around the nucleus where electrons are found. Also called an energy level.',
+  'energy level': 'Another name for a shell. Shells closer to the nucleus have lower energy.',
+  'Bohr model': 'A simple drawing of an atom: nucleus in the middle, circles for shells, dots for electrons.',
+  'atomic number': 'The whole number on a periodic table tile. It equals the number of protons.',
+  'atomic mass': 'The decimal number on a periodic table tile. Round it to get the mass number.',
+  'mass number': 'Protons + neutrons. Find it by rounding the atomic mass to the nearest whole number.',
+  neutral: 'Having no overall charge. A neutral atom has the same number of electrons as protons.',
+  'electron arrangement': 'The number of electrons in each shell, written from the inside out, like 2, 8, 1.',
+  'valence electrons': 'The electrons in the outermost shell. They decide how an atom reacts with other atoms.',
+  group: 'A column of the periodic table. Elements in the same group have the same number of valence electrons.',
+  'octet rule': 'Atoms are most stable with 8 electrons in their outer shell, so they gain or lose electrons to get there.',
+  'noble gases': 'The elements in group 18, like neon and argon. Their outer shells are already full.',
+  ion: 'An atom that has gained or lost electrons, so it has a charge.',
+  cation: 'A positive ion. It formed by losing electrons.',
+  anion: 'A negative ion. It formed by gaining electrons.'
+};
+const c = (term, label) => `<button type="button" class="chip" data-term="${term}">${label || term}</button>`;
+
+/* =========================================================
+   BOHR MODEL RENDERING
+   ========================================================= */
+const R = [48, 78, 106, 134], CX = 150, CY = 150, SIDE_ANG = [-90, 0, 90, 180];
+function ePos(r, side, k, count, gap = 8.8) {
+  let a = SIDE_ANG[side] * Math.PI / 180;
+  if (count === 2) { const off = gap / r; a += (k === 0 ? -off : off); }
+  return [CX + r * Math.cos(a), CY + r * Math.sin(a)];
+}
+const NS = 'http://www.w3.org/2000/svg';
+function svgEl(tag, attrs) { const el = document.createElementNS(NS, tag); for (const k in attrs) el.setAttribute(k, attrs[k]); return el; }
+
+/* Static Bohr model as an SVG string */
+function bohrInner(spec) {
+  const radii = spec.radii || R;
+  const shells = (spec.shells || []).map(norm);
+  const nr = spec.rings != null ? spec.rings : shells.length;
+  let s = '';
+  for (let i = 0; i < nr; i++) s += `<circle class="ring${spec.val && i === nr - 1 ? ' outer' : ''}" cx="150" cy="150" r="${radii[i]}"/>`;
+  if (!spec.noNucleus) {
+    const nrad = spec.nucR || 31;
+    s += `<circle class="nucleus" cx="150" cy="150" r="${nrad}"/>`;
+    const l1 = spec.l1 != null ? spec.l1 : (spec.p == null ? '?' : spec.p + ' p⁺');
+    const l2 = spec.l2 != null ? spec.l2 : (spec.n == null ? '' : spec.n + ' n⁰');
+    s += `<text class="nt" x="150" y="${l2 ? 146 : 154}">${l1}</text>`;
+    if (l2) s += `<text class="nt" x="150" y="163">${l2}</text>`;
+  }
+  shells.forEach((sides, i) => {
+    if (i >= nr) return;
+    const er = spec.er || 6.5;
+    sides.forEach((cnt, sd) => { for (let k = 0; k < cnt; k++) { const [x, y] = ePos(radii[i], sd, k, cnt, er + 2.6); const g = isGained(spec.orig, i, sd, k, cnt); s += `<circle class="e${g ? ' gain' : ''}${spec.val && i === nr - 1 ? ' val' : ''}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${er}"/>`; } });
+  });
+  if (spec.charge) s += ionMarks(nr, spec.charge, radii);
+  return s;
+}
+/* which electrons were gained (order index past the neutral atom's count in that shell) */
+function isGained(orig, i, sd, k, cnt) {
+  if (!orig) return false;
+  const j = cnt === 2 && k === 1 ? sd + 4 : sd;
+  return i >= orig.length ? true : j >= orig[i];
+}
+function ionMarks(nr, charge, radii = R) {
+  const ro = radii[Math.max(0, nr - 1)] + 16, L = 150 - ro, Rr = 150 + ro, T = 150 - ro, B = 150 + ro, t = 13;
+  return `<g class="ionmark"><path class="bracket" d="M${L + t} ${T} H${L} V${B} H${L + t}"/><path class="bracket" d="M${Rr - t} ${T} H${Rr} V${B} H${Rr - t}"/><text class="charge" x="${Rr + 5}" y="${T + 10}">${chargeText(charge)}</text></g>`;
+}
+function bohrSVG(spec, cls = '') {
+  return `<svg viewBox="0 0 300 300" class="bohr static ${cls}" role="img" aria-label="${esc(spec.aria || 'Bohr model')}">${bohrInner(spec)}</svg>`;
+}
+
+/* Live, animated Bohr model */
+class BohrView {
+  constructor(svg, o = {}) {
+    this.svg = svg; this.o = o;
+    svg.setAttribute('viewBox', '0 0 300 300');
+    svg.classList.add('bohr');
+    svg.innerHTML = '<g class="rings"></g><g class="zones"></g><g class="nuc"><circle class="nucleus" cx="150" cy="150" r="31"></circle><text class="nt" x="150" y="146"></text><text class="nt" x="150" y="163"></text></g><g class="els"><g class="sh sh0"></g><g class="sh sh1"></g><g class="sh sh2"></g><g class="sh sh3"></g></g><g class="ionwrap"></g>';
+    this.ionG = $('.ionwrap', svg); this.ringEls = []; this._ionKey = '';
+    this.ringsG = $('.rings', svg); this.zonesG = $('.zones', svg);
+    this.nt = $$('.nt', svg); this.shG = $$('.sh', svg);
+    this.map = new Map();
+    this.st = { p: null, n: null, shells: [], rings: null, val: false, zones: null };
+    const act = (e) => {
+      const z = e.target.closest && e.target.closest('.zone');
+      if (z && this.o.onZone) { this.o.onZone(+z.dataset.shell, +z.dataset.side, z); return true; }
+      const el = e.target.closest && e.target.closest('.e');
+      if (el && el.dataset.gone) return true;
+      if (el && this.o.onElectron) { this.o.onElectron(+el.dataset.shell, +el.dataset.side, el); return true; }
+      return false;
+    };
+    svg.addEventListener('click', act);
+    svg.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && act(e)) e.preventDefault(); });
+  }
+  set(p) { Object.assign(this.st, p); this.draw(); }
+  draw() {
+    const st = this.st, shells = (st.shells || []).map(norm);
+    const nr = st.rings != null ? st.rings : shells.length;
+    // rings
+    while (this.ringEls.length < nr) {
+      const i = this.ringEls.length, c = svgEl('circle', { cx: 150, cy: 150, r: R[i], class: 'ring ring-in' });
+      this.ringsG.appendChild(c); this.ringEls.push(c);
+    }
+    while (this.ringEls.length > nr) { const c = this.ringEls.pop(); c.classList.add('ring-out'); setTimeout(() => c.remove(), REDUCED ? 0 : 500); }
+    this.ringEls.forEach((ci, i) => ci.classList.toggle('outer', !!st.val && i === nr - 1));
+    // ion brackets + charge
+    const ik = st.charge ? `${nr}|${st.charge}` : '';
+    if (ik !== this._ionKey) {
+      this._ionKey = ik;
+      this.ionG.innerHTML = ik ? ionMarks(nr, st.charge) : '';
+      if (ik && !this.o.instant) { const g = this.ionG.firstChild; g.classList.add('ion-in'); }
+    }
+    // nucleus labels
+    const l1 = st.l1 != null ? st.l1 : (st.p == null ? '?' : st.p + ' p⁺');
+    const l2 = st.l2 != null ? st.l2 : (st.n == null ? '' : st.n + ' n⁰');
+    this.nt[0].textContent = l1; this.nt[1].textContent = l2;
+    this.nt[0].setAttribute('y', l2 ? 146 : 154);
+    // zones
+    this.zonesG.innerHTML = '';
+    if (st.zones) {
+      const list = st.zones === 'all' ? [...Array(nr).keys()] : st.zones;
+      for (const i of list) {
+        if (i >= nr) continue;
+        for (let s = 0; s < 4; s++) {
+          const [x, y] = ePos(R[i], s, 0, 1);
+          this.zonesG.appendChild(svgEl('circle', { cx: x, cy: y, r: 16, class: 'zone', 'data-shell': i, 'data-side': s, tabindex: 0, role: 'button', 'aria-label': `Shell ${i + 1}, ${SIDE[s]}` }));
+        }
+      }
+    }
+    // electrons (diffed so moves animate)
+    const want = new Map();
+    shells.forEach((sides, i) => { if (i >= nr) return; sides.forEach((cnt, sd) => { for (let k = 0; k < cnt; k++) want.set(`${i}-${sd}-${k}`, ePos(R[i], sd, k, cnt)); }); });
+    for (const [key, el] of this.map) {
+      if (!want.has(key)) {
+        this.map.delete(key);
+        const a = Math.atan2(el._y - 150, el._x - 150);
+        el.dataset.gone = '1';
+        el.style.opacity = '0';
+        el.style.transform = `translate(${el._x + 80 * Math.cos(a)}px,${el._y + 80 * Math.sin(a)}px) scale(.7)`;
+        setTimeout(() => el.remove(), 480);
+      }
+    }
+    const instant = REDUCED || this.o.instant;
+    for (const [key, [x, y]] of want) {
+      const [i, sd] = key.split('-').map(Number);
+      let el = this.map.get(key);
+      if (!el) {
+        el = svgEl('circle', { r: 6.5, cx: 0, cy: 0, class: 'e', 'data-shell': i, 'data-side': sd });
+        if (this.o.erasable) { el.setAttribute('tabindex', '0'); el.setAttribute('role', 'button'); el.setAttribute('aria-label', `Electron, shell ${i + 1}, ${SIDE[sd]}`); }
+        const a = SIDE_ANG[sd] * Math.PI / 180, rr = R[i] + 46;
+        if (!instant) {
+          el.style.transform = `translate(${CX + rr * Math.cos(a)}px,${CY + rr * Math.sin(a)}px) scale(.6)`;
+          el.style.opacity = '0';
+        }
+        this.shG[i].appendChild(el);
+        this.map.set(key, el);
+        if (!instant) el.getBoundingClientRect();
+      }
+      el._x = x; el._y = y;
+      el.style.transform = `translate(${x}px,${y}px)`;
+      el.style.opacity = '1';
+      el.classList.toggle('val', !!st.val && i === nr - 1);
+      const cnt = shells[i][sd], k = +key.split('-')[2];
+      el.classList.toggle('gain', isGained(st.orig, i, sd, k, cnt));
+    }
+  }
+  celebrate() {
+    if (REDUCED) return;
+    this.svg.classList.remove('celebrate'); void this.svg.getBoundingClientRect();
+    this.svg.classList.add('celebrate');
+    setTimeout(() => this.svg.classList.remove('celebrate'), 1200);
+  }
+}
+
+/* small element tile chip */
+const mtile = (z) => { const e = E(z); return `<span class="mtile cat-${e.cat}"><span class="s">${e.sym}</span><span>${e.z}</span><span>${e.massStr}</span></span>`; };
+
+/* =========================================================
+   UI HELPERS
+   ========================================================= */
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('on');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('on'), 2600);
+}
+function shake(el) { if (!el) return; el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); setTimeout(() => el.classList.remove('shake'), 500); }
+const card = (kind, title, body, extra = '') => {
+  const label = { read: 'Read', try: 'Try it', qc: 'Quick check', final: 'Final check' }[kind];
+  const cls = kind === 'final' ? 'qc' : kind;
+  return `<section class="card k-${cls}" ${extra}><span class="tag">${label}</span>${title ? `<h3>${title}</h3>` : ''}${body}</section>`;
+};
+
+
+/* =========================================================
+   TREND DATA (main-group elements, periods 1–4)
+   radius = calculated atomic radius (pm); ie = first ionization energy (kJ/mol); en = Pauling electronegativity
+   ========================================================= */
+const TROWS = [
+  ['H', 'Hydrogen', 1, 1, 1, 'nonmetal', 53, 1312, 2.20], ['He', 'Helium', 2, 18, 1, 'noble', 31, 2372, null],
+  ['Li', 'Lithium', 3, 1, 2, 'alkali', 167, 520, 0.98], ['Be', 'Beryllium', 4, 2, 2, 'alkaline', 112, 900, 1.57],
+  ['B', 'Boron', 5, 13, 2, 'metalloid', 87, 801, 2.04], ['C', 'Carbon', 6, 14, 2, 'nonmetal', 67, 1086, 2.55],
+  ['N', 'Nitrogen', 7, 15, 2, 'nonmetal', 56, 1402, 3.04], ['O', 'Oxygen', 8, 16, 2, 'nonmetal', 48, 1314, 3.44],
+  ['F', 'Fluorine', 9, 17, 2, 'halogen', 42, 1681, 3.98], ['Ne', 'Neon', 10, 18, 2, 'noble', 38, 2081, null],
+  ['Na', 'Sodium', 11, 1, 3, 'alkali', 190, 496, 0.93], ['Mg', 'Magnesium', 12, 2, 3, 'alkaline', 145, 738, 1.31],
+  ['Al', 'Aluminum', 13, 13, 3, 'post', 118, 578, 1.61], ['Si', 'Silicon', 14, 14, 3, 'metalloid', 111, 787, 1.90],
+  ['P', 'Phosphorus', 15, 15, 3, 'nonmetal', 98, 1012, 2.19], ['S', 'Sulfur', 16, 16, 3, 'nonmetal', 88, 1000, 2.58],
+  ['Cl', 'Chlorine', 17, 17, 3, 'halogen', 79, 1251, 3.16], ['Ar', 'Argon', 18, 18, 3, 'noble', 71, 1521, null],
+  ['K', 'Potassium', 19, 1, 4, 'alkali', 243, 419, 0.82], ['Ca', 'Calcium', 20, 2, 4, 'alkaline', 194, 590, 1.00],
+  ['Ga', 'Gallium', 31, 13, 4, 'post', 136, 579, 1.81], ['Ge', 'Germanium', 32, 14, 4, 'metalloid', 125, 762, 2.01],
+  ['As', 'Arsenic', 33, 15, 4, 'metalloid', 114, 947, 2.18], ['Se', 'Selenium', 34, 16, 4, 'nonmetal', 103, 941, 2.55],
+  ['Br', 'Bromine', 35, 17, 4, 'halogen', 94, 1140, 2.96], ['Kr', 'Krypton', 36, 18, 4, 'noble', 88, 1351, null]
+];
+const TD = Object.fromEntries(TROWS.map(a => [a[0], { sym: a[0], name: a[1], z: a[2], g: a[3], p: a[4], cat: a[5], r: a[6], ie: a[7], en: a[8] }]));
+const GCOLS = [1, 2, 13, 14, 15, 16, 17, 18];
+const MET = {
+  r: { key: 'r', label: 'Atomic radius', short: 'radius', unit: 'pm', max: 243, big: 'larger', small: 'smaller' },
+  ie: { key: 'ie', label: 'Ionization energy', short: 'ionization energy', unit: 'kJ/mol', max: 2372, big: 'higher', small: 'lower' },
+  en: { key: 'en', label: 'Electronegativity', short: 'electronegativity', unit: '', max: 4, big: 'higher', small: 'lower' }
+};
+const fmtv = (m, v) => v == null ? '—' : m === 'en' ? v.toFixed(2) : String(v);
+const ttile = (s, extra = '') => { const t = TD[s]; return `<span class="mtile cat-${t.cat}" ${extra}><span class="s">${t.sym}</span><span class="z">${t.z}</span></span>`; };
+const nm = s => TD[s].name;
+
+/* atom picture: cloud size is drawn to scale with atomic radius */
+function atomViz(s, { scale = 0.36, label = true, cls = '' } = {}) {
+  const t = TD[s], rr = Math.max(9, t.r * scale);
+  return `<svg class="atomviz ${cls}" viewBox="0 0 200 200" role="img" aria-label="${t.name} atom, radius ${t.r} picometers">
+    <circle cx="100" cy="100" r="${rr.toFixed(1)}" fill="url(#cloudGrad)" class="cloud" style="--rr:${rr.toFixed(1)}"/>
+    <circle cx="100" cy="100" r="${rr.toFixed(1)}" fill="none" stroke="var(--e)" stroke-opacity=".55" stroke-dasharray="3 5"/>
+    <circle cx="100" cy="100" r="5" fill="url(#nucGrad)"/>
+    ${label ? `<text x="100" y="${Math.min(196, 100 + rr + 16).toFixed(0)}" text-anchor="middle" class="av-lab">${t.sym} · ${t.r} pm</text>` : ''}
+  </svg>`;
+}
+function barsHTML(s, which = ['r', 'ie', 'en']) {
+  const t = TD[s];
+  return `<div class="bars">${which.map(m => { const v = t[MET[m].key]; const w = v == null ? 0 : Math.round(100 * v / MET[m].max);
+    return `<div class="bar"><span>${MET[m].label}</span><span class="track"><span class="fill ${m}" style="width:${w}%"></span></span><b>${fmtv(m, v)}${v != null && MET[m].unit ? ' ' + MET[m].unit : ''}</b></div>`; }).join('')}</div>`;
+}
+
+/* clickable main-group periodic table (periods 1–4) */
+function ptableHTML(id, { heat = null } = {}) {
+  let h = `<div class="ptab" id="${id}" role="group" aria-label="Periodic table, main groups, periods 1 to 4"><span></span>${GCOLS.map(g => `<span class="colh">${g}</span>`).join('')}`;
+  for (let p = 1; p <= 4; p++) {
+    h += `<span class="rowh">${p}</span>`;
+    GCOLS.forEach(g => {
+      const t = TROWS.find(a => a[3] === g && a[4] === p);
+      if (!t) { h += '<span class="gap"></span>'; return; }
+      const d = TD[t[0]];
+      let st = '';
+      if (heat && d[MET[heat].key] != null) st = `style="--heat:${(d[MET[heat].key] / MET[heat].max).toFixed(2)}"`;
+      h += `<button type="button" class="tile cat-${d.cat} ${heat ? 'heat heat-' + heat : ''}" data-sym="${d.sym}" ${st} aria-label="${d.name}"><span class="z">${d.z}</span>${d.sym}</button>`;
+    });
+  }
+  return h + '</div>';
+}
+
+/* ---------- Explorer: table + details + missions ---------- */
+function makeExplorer(root, cfg) {
+  const which = cfg.which || ['r', 'ie', 'en'];
+  root.innerHTML = `<div class="xp"><div>${ptableHTML(cfg.id + '-t', { heat: cfg.heat })}<p class="small muted" style="margin:8px 0 0">Tap any element to see its numbers.</p></div>
+    <div class="xp-detail"><div class="xp-viz"></div><div class="xp-info" aria-live="polite"></div></div></div>
+    <div class="hunt"><p class="place-prompt hunt-q" aria-live="polite"></p><div class="progress-pips">${cfg.missions.map(() => '<i></i>').join('')}</div><p class="fb-line hunt-fb" aria-live="polite"></p></div>`;
+  const st = S.tasks[cfg.id] || (S.tasks[cfg.id] = { n: 0 });
+  const viz = $('.xp-viz', root), info = $('.xp-info', root), q = $('.hunt-q', root), fb = $('.hunt-fb', root);
+  const show = s => {
+    const t = TD[s];
+    viz.innerHTML = atomViz(s);
+    info.innerHTML = `<div class="t-name" style="text-align:center">${t.name}</div><p class="small muted" style="text-align:center;margin:2px 0 0">Period ${t.p}, group ${t.g}</p>${which.length ? barsHTML(s, which) : ''}`;
+    $$('.tile', root).forEach(b => b.classList.toggle('picked', b.dataset.sym === s));
+  };
+  const pips = () => $$('.progress-pips i', root).forEach((p, i) => p.classList.toggle('on', i < st.n));
+  const ask = () => {
+    pips();
+    if (st.n >= cfg.missions.length) { q.innerHTML = `<b>All ${cfg.missions.length} missions done.</b> Keep exploring if you like.`; return; }
+    q.innerHTML = `<b>Mission ${st.n + 1} of ${cfg.missions.length}.</b> ${cfg.missions[st.n].t}`;
+  };
+  $$('.tile', root).forEach(b => b.addEventListener('click', () => {
+    const s = b.dataset.sym; show(s);
+    if (st.n >= cfg.missions.length) return;
+    const m = cfg.missions[st.n];
+    if (s === m.ans) {
+      st.n++; save(); fb.className = 'fb-line good'; fb.innerHTML = m.why || `Yes: ${nm(s)}.`;
+      b.classList.add('pop'); setTimeout(() => b.classList.remove('pop'), 600);
+      if (st.n >= cfg.missions.length) cfg.onDone && cfg.onDone();
+      ask();
+    } else { fb.className = 'fb-line bad'; fb.innerHTML = m.hint ? m.hint(s) : 'Not that one. Look again.'; shake(b); }
+  }));
+  show(cfg.start || 'Na'); ask();
+}
+
+/* ---------- Rounds: pick the right choice, repeated practice ---------- */
+function makeRounds(root, cfg) {
+  const st = S.tasks[cfg.id] || (S.tasks[cfg.id] = { n: 0, i: 0 });
+  const R = cfg.rounds, need = cfg.need || R.length;
+  root.innerHTML = `<div class="rounds"><div class="rq" aria-live="polite"></div><div class="rvis"></div><div class="rch"></div><p class="fb-line rfb" aria-live="polite"></p>
+    <div class="btn-row"><div class="progress-pips">${Array.from({ length: need }, () => '<i></i>').join('')}</div><button type="button" class="btn ghost sm rnext hidden">Next</button></div></div>`;
+  const q = $('.rq', root), vis = $('.rvis', root), ch = $('.rch', root), fb = $('.rfb', root), nx = $('.rnext', root);
+  const pips = () => $$('.progress-pips i', root).forEach((p, i) => p.classList.toggle('on', i < st.n));
+  let tries = 0;
+  function show() {
+    const r = R[st.i % R.length]; tries = 0;
+    q.innerHTML = `<p class="place-prompt">${st.n >= need ? '<b>Done. Extra practice:</b> ' : `<b>Round ${st.n + 1} of ${need}.</b> `}${r.q}</p>`;
+    vis.innerHTML = r.vis || '';
+    ch.innerHTML = `<div class="cmp">${r.opts.map((o, k) => `<button type="button" class="choice" data-k="${k}">${o}</button>`).join('')}</div>`;
+    fb.textContent = ''; fb.className = 'fb-line rfb'; nx.classList.add('hidden');
+    $$('.choice', ch).forEach(b => b.addEventListener('click', () => pick(+b.dataset.k, b)));
+    pips();
+  }
+  function pick(k, b) {
+    const r = R[st.i % R.length];
+    if (ch.dataset.locked) return;
+    if (k === r.a) {
+      ch.dataset.locked = '1'; b.classList.add('ok');
+      fb.className = 'fb-line good'; fb.innerHTML = `${tries ? 'Got it.' : 'Correct.'} ${r.why}`;
+      if (st.n < need) st.n++;
+      st.i++; save(); pips();
+      cfg.after && cfg.after(r, vis, k);
+      if (st.n >= need && !S.reqs[cfg.req]) cfg.onDone && cfg.onDone();
+      nx.classList.remove('hidden'); nx.textContent = st.n >= need ? 'More practice' : 'Next';
+    } else {
+      tries++; b.classList.add('no'); shake(b);
+      fb.className = 'fb-line bad'; fb.innerHTML = tries === 1 ? (r.hint || 'Not quite. Think about the trend.') : `${r.hint || ''} ${r.why}`;
+    }
+  }
+  nx.addEventListener('click', () => { delete ch.dataset.locked; show(); });
+  show();
+}
+
+/* ---------- Ranking: tap elements in order ---------- */
+function makeRank(root, cfg) {
+  const st = S.tasks[cfg.id] || (S.tasks[cfg.id] = { n: 0, i: 0 });
+  const R = cfg.rounds, need = cfg.need || R.length;
+  root.innerHTML = `<div class="rank"><p class="place-prompt rk-q" aria-live="polite"></p><div class="rk-pool"></div><div class="rk-slots"></div>
+    <div class="btn-row"><button type="button" class="btn primary sm rk-check">Check</button><button type="button" class="btn ghost sm rk-clear">Clear</button><div class="progress-pips">${Array.from({ length: need }, () => '<i></i>').join('')}</div><button type="button" class="btn ghost sm rk-next hidden">Next</button></div>
+    <p class="fb-line rk-fb" aria-live="polite"></p></div>`;
+  const q = $('.rk-q', root), pool = $('.rk-pool', root), slots = $('.rk-slots', root), fb = $('.rk-fb', root), nx = $('.rk-next', root), chk = $('.rk-check', root);
+  let order = [], cur, tries = 0;
+  const pips = () => $$('.progress-pips i', root).forEach((p, i) => p.classList.toggle('on', i < st.n));
+  function draw() {
+    pool.innerHTML = cur.shuf.map(s => `<button type="button" class="rk-el ${order.includes(s) ? 'used' : ''}" data-s="${s}">${ttile(s)}<span>${nm(s)}</span></button>`).join('');
+    slots.innerHTML = cur.syms.map((_, i) => `<div class="rk-slot">${order[i] ? ttile(order[i]) : `<span class="rk-n">${i + 1}</span>`}</div>`).join('<span class="rk-arrow">→</span>');
+    $$('.rk-el', pool).forEach(b => b.addEventListener('click', () => {
+      if (chk.disabled) return;
+      const s = b.dataset.s; if (order.includes(s)) order = order.filter(x => x !== s); else if (order.length < cur.syms.length) order.push(s);
+      draw();
+    }));
+  }
+  function show() {
+    const r = R[st.i % R.length], m = MET[r.m];
+    const sorted = r.syms.slice().sort((a, b) => r.dir === 'asc' ? TD[a][m.key] - TD[b][m.key] : TD[b][m.key] - TD[a][m.key]);
+    cur = { ...r, sorted, shuf: shuffle(r.syms) };
+    order = []; tries = 0; chk.disabled = false; nx.classList.add('hidden'); fb.textContent = ''; fb.className = 'fb-line rk-fb';
+    q.innerHTML = `${st.n >= need ? '<b>Done. Extra practice:</b> ' : `<b>Round ${st.n + 1} of ${need}.</b> `}Rank by <b>${m.short}</b>, ${r.dir === 'asc' ? `<b>${m.small === 'smaller' ? 'smallest' : 'lowest'}</b> to <b>${m.big === 'larger' ? 'largest' : 'highest'}</b>` : `<b>${m.big === 'larger' ? 'largest' : 'highest'}</b> to <b>${m.small === 'smaller' ? 'smallest' : 'lowest'}</b>`}. Tap them in order.`;
+    draw(); pips();
+  }
+  chk.addEventListener('click', () => {
+    if (order.length < cur.syms.length) { fb.className = 'fb-line bad'; fb.textContent = `Tap all ${cur.syms.length} elements first.`; return; }
+    if (order.join() === cur.sorted.join()) {
+      chk.disabled = true; fb.className = 'fb-line good';
+      fb.innerHTML = `Correct: ${cur.sorted.map(s => `${s} (${fmtv(cur.m, TD[s][MET[cur.m].key])})`).join(' → ')}. ${cur.why || ''}`;
+      if (st.n < need) st.n++; st.i++; save(); pips();
+      if (st.n >= need) cfg.onDone && cfg.onDone();
+      nx.classList.remove('hidden'); nx.textContent = st.n >= need ? 'More practice' : 'Next';
+    } else {
+      tries++; shake(slots); fb.className = 'fb-line bad';
+      fb.innerHTML = tries === 1 ? (cur.hint || 'Not quite. Use the trend arrows.') : `${cur.hint || ''} Check the ${cur.syms.length === 3 ? 'first and last' : 'ends'} first.`;
+    }
+  });
+  $('.rk-clear', root).addEventListener('click', () => { if (chk.disabled) return; order = []; draw(); });
+  nx.addEventListener('click', show);
+  show();
+}
+
+/* ---------- arrows card ---------- */
+const trendArrows = (which) => {
+  const A = {
+    r: ['Atomic radius', 'gets smaller →', 'gets larger ↓', 'var(--e)'],
+    ie: ['Ionization energy', 'gets higher →', 'gets lower ↓', 'var(--amber)'],
+    en: ['Electronegativity', 'gets higher →', 'gets lower ↓', 'var(--gain)']
+  }[which];
+  return `<div class="tarrow" style="--tc:${A[3]}"><b>${A[0]}</b><span>Across a period: <b>${A[1]}</b></span><span>Down a group: <b>${A[2]}</b></span></div>`;
+};
+
+/* ---------- IE graph (Z = 1 to 20) ---------- */
+function ieGraphSVG() {
+  const L = TROWS.filter(a => a[2] <= 20), W = 640, H = 260, x0 = 46, x1 = 624, y0 = 222, y1 = 16;
+  const X = z => x0 + (z - 1) * (x1 - x0) / 19, Y = v => y0 - (v / 2500) * (y0 - y1);
+  let s = `<svg class="iegraph" viewBox="0 0 ${W} ${H}" role="img" aria-label="Line graph of first ionization energy for elements 1 to 20. It rises across each period to a peak at the noble gas, then drops sharply at the next alkali metal.">`;
+  [[1, 2, '1'], [3, 10, 'Period 2'], [11, 18, 'Period 3'], [19, 20, '4']].forEach(([a, b, t], i) => {
+    s += `<rect x="${X(a) - 12}" y="${y1}" width="${X(b) - X(a) + 24}" height="${y0 - y1}" fill="${i % 2 ? 'rgba(255,255,255,.03)' : 'rgba(95,225,255,.05)'}"/><text x="${(X(a) + X(b)) / 2}" y="${y1 + 12}" class="g-lab" text-anchor="middle">${t}</text>`;
+  });
+  [0, 500, 1000, 1500, 2000, 2500].forEach(v => { s += `<line x1="${x0}" x2="${x1}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)" stroke-width="1"/><text x="${x0 - 6}" y="${Y(v) + 4}" text-anchor="end" class="g-ax">${v}</text>`; });
+  s += `<polyline fill="none" stroke="var(--amber)" stroke-width="2.5" points="${L.map(a => `${X(a[2])},${Y(a[7])}`).join(' ')}"/>`;
+  L.forEach(a => { s += `<g class="gpt" data-s="${a[0]}" tabindex="0" role="button" aria-label="${a[1]}: ${a[7]} kilojoules per mole"><circle cx="${X(a[2])}" cy="${Y(a[7])}" r="6"/><text x="${X(a[2])}" y="${y0 + 16}" text-anchor="middle" class="g-ax">${a[0]}</text></g>`; });
+  s += `<text x="12" y="${(y0 + y1) / 2}" transform="rotate(-90 12 ${(y0 + y1) / 2})" text-anchor="middle" class="g-ax">kJ/mol</text></svg>`;
+  return s;
+}
+function wireGraph(root, onPick) {
+  $$('.gpt', root).forEach(g => {
+    const f = () => { $$('.gpt', root).forEach(x => x.classList.remove('on')); g.classList.add('on'); onPick && onPick(g.dataset.s); };
+    g.addEventListener('click', f); g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); f(); } });
+  });
+}
+
+/* ---------- tug of war (electronegativity) ---------- */
+function tugSVG(a, b) {
+  const ra = Math.max(26, TD[a].r * 0.42), rb = Math.max(26, TD[b].r * 0.42);
+  return `<svg class="tug" viewBox="0 0 420 170" role="img" aria-label="${nm(a)} and ${nm(b)} sharing a pair of electrons">
+    <circle cx="120" cy="85" r="${ra}" fill="url(#cloudGrad)"/><circle cx="300" cy="85" r="${rb}" fill="url(#cloudGrad)"/>
+    <circle cx="120" cy="85" r="7" fill="url(#nucGrad)"/><circle cx="300" cy="85" r="7" fill="url(#nucGrad)"/>
+    <text x="120" y="160" text-anchor="middle" class="av-lab">${a}</text><text x="300" y="160" text-anchor="middle" class="av-lab">${b}</text>
+    <g class="pair" style="transform:translateX(0px)"><circle cx="204" cy="85" r="7" class="pe"/><circle cx="216" cy="85" r="7" class="pe"/></g>
+  </svg>`;
+}
+
+
+
+/* =========================================================
+   FORMATIVE: SETTINGS
+   ========================================================= */
+const ACTIVITY = 'Periodic Trends Warm-Up';
+const legendHTML = '';
+const STIM = {
+  passage: { label: 'Passage', html: () => `<h3>Size decides the grip</h3>
+    <p>Atoms are not all the same size. The <b>atomic radius</b> is the distance from the nucleus to the outer electrons.</p>
+    <p>Going <b>down a group</b>, each atom has one more shell of electrons, so atoms get larger. Going <b>across a period</b>, the number of shells stays the same, but each atom has one more proton. The extra positive charge pulls the electrons in closer, so atoms get smaller.</p>
+    <p>Size controls how tightly an atom holds electrons. <b>Ionization energy</b> is the energy needed to remove an outer electron. <b>Electronegativity</b> is how strongly an atom pulls on electrons it shares in a bond. In a small atom, the outer electrons are close to the nucleus, so both values are high.</p>` },
+  graph: { label: 'Graph', html: () => `<h3>Figure 1. First ionization energy, elements 1 to 20</h3><div class="graph-wrap">${ieGraphSVG()}</div><p class="small muted">Tap a point to read its value.</p><p class="small" id="gread" aria-live="polite"></p>` },
+  data: { label: 'Data', html: () => `<h3>Table 1. Atomic radius in period 3</h3>
+    <div class="table-scroll"><table class="mini-table data"><thead><tr><th>Element</th><th>Atomic radius (pm)</th></tr></thead><tbody>
+    ${['Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl'].map(s => `<tr><td>${nm(s)} (${s})</td><td>${TD[s].r}</td></tr>`).join('')}</tbody></table></div>` }
+};
+const BINS = [['s', 'Smallest radius'], ['m', 'Middle'], ['l', 'Largest radius']];
+const BIN_NAME = Object.fromEntries(BINS);
+const CARDS = [{ id: 'K', key: 'l' }, { id: 'Li', key: 's' }, { id: 'Na', key: 'm' }];
+const SEL2 = [
+  { label: 'The period 3 element with the <b>highest</b> ionization energy is', opts: ['Sodium', 'Magnesium', 'Chlorine', 'Argon'], key: 'Argon' },
+  { label: 'Across period 3, ionization energy generally', opts: ['increases', 'decreases', 'stays the same'], key: 'increases' }
+];
+const SEL3 = [
+  { label: 'Sodium (Na)', opts: ['0.93', '2.19', '3.16'], key: '0.93' },
+  { label: 'Phosphorus (P)', opts: ['0.93', '2.19', '3.16'], key: '2.19' },
+  { label: 'Chlorine (Cl)', opts: ['0.93', '2.19', '3.16'], key: '3.16' }
+];
+const QS = [
+  { t: 'sort', tab: 'passage', label: 'Rank by size (drag and drop)', pts: 3,
+    prompt: 'Lithium, sodium, and potassium are all in group 1. Drag each card to the box that matches its atomic radius.',
+    why: 'Going down group 1 adds a shell each time, so lithium is smallest, sodium is in the middle, and potassium is largest.' },
+  { t: 'selects', sel: SEL2, tab: 'graph', label: 'Read the graph', pts: 2,
+    prompt: 'Use the <b>Graph</b> tab to complete each sentence.',
+    why: 'Within period 3 (Na to Ar), the line climbs to its peak at argon. The small zigzags do not change the overall rise.' },
+  { t: 'selects', sel: SEL3, tab: 'data', label: 'Predict electronegativity', pts: 3,
+    prompt: 'The electronegativity values for three period 3 elements are 0.93, 2.19, and 3.16. Use the atomic radii in the <b>Data</b> tab to match each element to its value.',
+    why: 'Smaller atoms pull shared electrons harder. Chlorine (79 pm) is smallest, so it gets 3.16; sodium (190 pm) is largest, so it gets 0.93.' },
+  { t: 'cer', tab: 'data', label: 'Constructed response (Claim, Evidence, Reasoning)', pts: 3,
+    prompt: 'Which has the higher ionization energy, <b>magnesium or sulfur</b>? Use the Data and Graph tabs. Keep each part to one or two sentences.',
+    ph: { c: 'The element with the higher ionization energy is ...', e: 'The data show ...', r: 'This is because ...' },
+    model: {
+      c: 'Sulfur has the higher ionization energy.',
+      e: 'Sulfur\'s ionization energy is about 1000 kJ/mol and magnesium\'s is about 738 kJ/mol. Sulfur\'s radius is 88 pm and magnesium\'s is 145 pm.',
+      r: 'Sulfur is smaller because it has more protons pulling on the same three shells. Its outer electrons are closer to the nucleus and held more tightly, so it takes more energy to remove one.' },
+    checks: ['Claim: says sulfur has the higher ionization energy.',
+      'Evidence: uses numbers from the graph (about 1000 vs. 738 kJ/mol) or the table (88 vs. 145 pm).',
+      'Reasoning: explains that sulfur is smaller (more protons, same shells), so its outer electrons are held tighter.'],
+    kw: {
+      claim: [/sulfur|\bS\b/i, /higher|more|greater|larger/i],
+      evidence: [/\b1000\b|\b1,000\b|\b738\b|\b740\b|\b88\b|\b145\b/],
+      reasoning: [/small|radius|closer|close to/i, /proton|tight|pull|hold|harder/i]
+    } }
+];
+const MAX_TOTAL = QS.reduce((s, q) => s + q.pts, 0);
+
+/* =========================================================
+   STATE (saved on this device)
+   ========================================================= */
+const FDEF = () => ({ screen: 'intro', cur: 0, tab: 'passage', ans: {}, flagged: [], student: { id: '', first: '', last: '', period: '', teacher: '' }, selfChecks: [false, false, false], cerRevised: false, lockouts: 0, lockActive: false, locked: false, submittedAt: null, sentAt: null });
+let F;
+try { F = Object.assign(FDEF(), JSON.parse(localStorage.getItem(KEY) || 'null') || {}); } catch (e) { F = FDEF(); }
+const fsave = () => { try { localStorage.setItem(KEY, JSON.stringify(F)); } catch (e) {} };
+const flagged = () => new Set(F.flagged);
+
+/* =========================================================
+   ANSWERED / SCORING
+   ========================================================= */
+function isAnswered(i) {
+  const a = F.ans[i], q = QS[i];
+  if (q.t === 'sort') return !!a && CARDS.every(c => a[c.id]);
+  if (q.t === 'selects') return !!a && q.sel.every((s, k) => a[k]);
+  if (q.t === 'cer') return !!a && !!((a.c || '').trim() || (a.e || '').trim() || (a.r || '').trim());
+  return false;
+}
+function score(i) {
+  const q = QS[i], a = F.ans[i] || {};
+  if (q.t === 'sort') return CARDS.filter(c => a[c.id] === c.key).length;
+  if (q.t === 'selects') { const pts = q.sel.filter((s, k) => a[k] === s.key).length; return Math.min(q.pts, pts); }
+  if (q.t === 'cer') return F.selfChecks.filter(Boolean).length;
+  return 0;
+}
+const total = () => QS.reduce((s, q, i) => s + score(i), 0);
+function autoCheckCER() {
+  const kw = QS[3].kw, a = F.ans[3] || { c: '', e: '', r: '' }, all = `${a.c || ''} ${a.e || ''} ${a.r || ''}`;
+  F.selfChecks = [kw.claim[0].test(a.c || all) && kw.claim[1].test(a.c || all), kw.evidence[0].test(all), kw.reasoning[0].test(all) && kw.reasoning[1].test(all)];
+}
+
+/* =========================================================
+   RENDERING
+   ========================================================= */
+const root = () => $('#app');
+function chipsHTML() {
+  const fl = flagged();
+  return QS.map((q, i) => { const e = E(i + 1); return `<button type="button" class="tile qchip cat-${e.cat} ${i === F.cur ? 'current' : ''} ${isAnswered(i) ? 'done' : ''} ${fl.has(i) ? 'flag' : ''}" data-q="${i}" aria-label="Question ${i + 1}${isAnswered(i) ? ', answered' : ''}${fl.has(i) ? ', flagged' : ''}"><span class="z">${i + 1}</span>${e.sym}<span class="ck" aria-hidden="true">✓</span></button>`; }).join('');
+}
+function stimHTML() {
+  return `<div class="tabs stim-tabs" role="tablist">${Object.entries(STIM).map(([k, v]) => `<button type="button" class="tab" role="tab" aria-selected="${F.tab === k}" data-tab="${k}">${v.label}</button>`).join('')}</div><div class="stim-body">${STIM[F.tab].html()}</div>`;
+}
+function qHTML(i) {
+  const q = QS[i];
+  let body = '';
+  if (q.t === 'sort') {
+    const a = F.ans[i] || {};
+    const cardH = c => `<button type="button" class="token acard ${selCard === c.id ? 'sel' : ''}" data-card="${c.id}" aria-label="${nm(c.id)}"><span class="tile cat-${TD[c.id].cat}"><span class="z">${TD[c.id].z}</span>${c.id}</span><b>${nm(c.id)}</b></button>`;
+    body = `<div class="placer"><div class="tray" aria-label="Element cards">${CARDS.filter(c => !a[c.id]).map(cardH).join('') || '<span class="muted small">All cards placed. Tap a card to move it.</span>'}</div>
+      <div class="pbins three">${BINS.map(([id, lab]) => `<div class="bin pbin" data-bin="${id}" tabindex="0" role="button" aria-label="${lab}"><div class="bin-label">${lab}</div><div class="bin-drop">${CARDS.filter(c => a[c.id] === id).map(cardH).join('')}</div></div>`).join('')}</div>
+      <p class="small muted" id="placeMsg">${selCard ? `${nm(selCard)} selected. Tap a box to put it there.` : 'Drag a card, or tap a card and then tap a box.'}</p></div>`;
+  } else if (q.t === 'selects') {
+    const a = F.ans[i] || {};
+    body = `<div class="sels">${q.sel.map((s, k) => `<label class="selrow"><span>${s.label}</span><select data-k="${k}"><option value="">Choose…</option>${s.opts.map(o => `<option ${a[k] === o ? 'selected' : ''}>${o}</option>`).join('')}</select></label>`).join('')}</div>`;
+  } else if (q.t === 'cer') {
+    const v = F.ans[i] || { c: '', e: '', r: '' };
+    body = ['c', 'e', 'r'].map(k => `<div class="cerbox"><label for="cer-${k}">${{ c: 'Claim', e: 'Evidence', r: 'Reasoning' }[k]}</label><textarea id="cer-${k}" data-k="${k}" placeholder="${esc(q.ph[k])}" spellcheck="true">${esc(v[k] || '')}</textarea></div>`).join('');
+  }
+  return `<div class="qhead"><span class="tag qtag">Question ${i + 1} of ${QS.length}</span><span class="small muted">${q.pts} points · use the ${STIM[q.tab].label} tab</span></div>
+    <h2 class="qlabel">${q.label}</h2><p class="qprompt">${q.prompt}</p>${body}`;
+}
+let selCard = null, tool = 'add', bview = null;
+
+function render() {
+  const r = root();
+  document.body.dataset.screen = F.screen;
+  if (F.screen === 'intro') r.innerHTML = introHTML();
+  else if (F.screen === 'test' || F.screen === 'revise') r.innerHTML = testHTML();
+  else if (F.screen === 'review') r.innerHTML = reviewHTML();
+  else r.innerHTML = resultsHTML();
+  wire();
+}
+function introHTML() {
+  const s = F.student;
+  return `<section class="intro">
+    <div class="hero"><div>
+      <p class="unit">Chemistry, Unit 2: Ions, Periodic Trends and Bonding</p>
+      <h1>Periodic Trends Warm-Up</h1>
+      <p class="lede">Warm-up. 4 quick questions, about 8 minutes.</p></div>
+      <div class="hero-fig"><div class="wu-atoms">${['K', 'Na', 'Li'].map(s => atomViz(s, { cls: 'sm' })).join('')}</div></div></div>
+    <div class="card phen"><span class="tag">Driving question</span><p>Potassium reacts with water so violently it can catch fire, but lithium only fizzes. Both are in group 1. What could the size of an atom have to do with it?</p></div>
+    <div class="card"><span class="tag">Student information</span><p class="small muted" style="margin-top:0">Required. Used to record your score.</p>
+      <div class="form-grid five">
+        <label>Student ID<input type="text" id="sid" inputmode="numeric" autocomplete="off" value="${esc(s.id)}"></label>
+        <label>First name<input type="text" id="fn" autocomplete="off" value="${esc(s.first)}"></label>
+        <label>Last name<input type="text" id="ln" autocomplete="off" value="${esc(s.last)}"></label>
+        <label>Period<select id="pd"><option value="">Choose</option>${periodList().map(p => `<option ${String(p) === String(s.period) ? 'selected' : ''}>${esc(p)}</option>`).join('')}</select></label>
+        <label>Teacher's name<select id="tc"><option value="">Choose…</option>${teacherList().map(t => `<option ${s.teacher === t ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select></label>
+      </div>
+      <p class="form-msg" id="nmerr"></p>
+      ${LOCK_ON ? '<p class="lock-note">This assessment opens in full screen. If you leave the page or exit full screen, it locks, and your teacher will need to unlock it.</p>' : ''}
+      <div class="btn-row"><button type="button" class="btn primary" id="begin">${Object.keys(F.ans).length ? 'Continue' : 'Begin'}</button></div>
+    </div></section>`;
+}
+function testHTML() {
+  const rev = F.screen === 'revise';
+  return `<div class="split">
+    <section class="card stim" aria-label="Stimulus">${stimHTML()}</section>
+    <section class="card qp" aria-label="Question">${qHTML(F.cur)}</section>
+  </div>
+  <div class="foot">
+    ${rev ? `<div></div><div><b>Revising your response.</b> This is your only chance to change it.</div><div><button type="button" class="btn primary" id="saveRev">Save revision and see results</button></div>`
+      : `<div><button type="button" class="btn ghost" id="prev" ${F.cur === 0 ? 'disabled' : ''}>Previous</button></div>
+    <div class="foot-mid"><button type="button" class="flagbtn ${flagged().has(F.cur) ? 'on' : ''}" id="flag">${flagged().has(F.cur) ? 'Flagged' : 'Flag for review'}</button><div class="chips" id="chips">${chipsHTML()}</div></div>
+    <div><button type="button" class="btn primary" id="next">${F.cur === QS.length - 1 ? 'Review and submit' : 'Next'}</button></div>`}
+  </div>`;
+}
+function reviewHTML() {
+  const un = QS.map((q, i) => i).filter(i => !isAnswered(i)), fl = flagged();
+  return `<section class="intro"><h2 style="font-size:32px;margin-bottom:8px">Review your answers</h2>
+    <p>${un.length ? `You have <b>${un.length}</b> unfinished question${un.length > 1 ? 's' : ''}: ${un.map(i => i + 1).join(', ')}.` : 'Every question has an answer.'} Select a question to go back to it.</p>
+    <div class="rvlist">${QS.map((q, i) => `<button type="button" class="rvitem ${isAnswered(i) ? 'done' : 'todo'}" data-q="${i}"><span class="tile cat-${E(i + 1).cat}" aria-hidden="true"><span class="z">${i + 1}</span>${E(i + 1).sym}</span><span><b>Question ${i + 1}${fl.has(i) ? ' (flagged)' : ''}</b><br>${q.label}<br><span class="small">${isAnswered(i) ? 'Answered' : 'Not finished'}</span></span></button>`).join('')}</div>
+    <div class="btn-row"><button type="button" class="btn ghost" id="backTest">Back to the questions</button><button type="button" class="btn amber" id="submit">Submit my answers</button></div></section>`;
+}
+function detailHTML(i) {
+  const q = QS[i], a = F.ans[i] || {};
+  if (q.t === 'sort') return CARDS.map(c => { const ok = a[c.id] === c.key; return `<div class="part ${ok ? 'ok' : 'no'}"><b>${nm(c.id)}:</b> you chose ${a[c.id] ? BIN_NAME[a[c.id]] : 'nothing'}.${ok ? '' : ` <span class="fix">Correct: ${BIN_NAME[c.key]}.</span>`} <span class="cap">${TD[c.id].r} pm</span></div>`; }).join('');
+  if (q.t === 'selects') return q.sel.map((s, k) => { const ok = a[k] === s.key; return `<div class="part ${ok ? 'ok' : 'no'}">${s.label}: you chose <b>${esc(a[k] || 'nothing')}</b>.${ok ? '' : ` <span class="fix">Correct: ${s.key}.</span>`}</div>`; }).join('');
+  return '';
+}
+function resultsHTML() {
+  const s = F.student, cq = QS[3], ca = F.ans[3] || { c: '', e: '', r: '' };
+  let h = `<section class="intro results"><p class="sec-meta">Results</p><h2 style="font-size:30px">${esc(s.first)} ${esc(s.last)}, period ${esc(s.period)}, ${esc(s.teacher)}</h2>
+    <div class="score-big pass" style="margin:10px 0"><span id="totalscore">${total()}</span> / ${MAX_TOTAL}</div>
+    <div class="stats">${QS.map((q, i) => `<div class="stat"><div class="k">Question ${i + 1}${q.t === 'cer' ? ' (CER, auto-checked)' : ''}</div><div class="v">${q.t === 'cer' ? `<span id="cerscore">${score(i)}</span>` : score(i)} / ${q.pts}</div></div>`).join('')}</div>
+    <div class="btn-row no-print"><button type="button" class="btn primary" id="sendBtn">Send my score to my teacher</button><button type="button" class="btn ghost" id="csvBtn">Download score (CSV)</button><button type="button" class="btn ghost" id="printBtn">Print or save as PDF</button></div>
+    <p class="sheetbox no-print" id="sheetStatus" aria-live="polite">${F.sentAt ? `Sent to your teacher ${new Date(F.sentAt).toLocaleString()}.` : ''}</p>`;
+  QS.forEach((q, i) => {
+    if (q.t === 'cer') return;
+    const sc = score(i), full = sc === q.pts;
+    h += `<div class="card res ${full ? 'good' : 'miss'}"><h3>Question ${i + 1}: ${q.label} <span class="rtag ${full ? 'good' : 'miss'}">${sc} / ${q.pts}</span></h3>${detailHTML(i)}<div class="model">${q.why}</div></div>`;
+  });
+  h += `<div class="card res self"><h3>Question 4: Claim, Evidence, Reasoning <span class="rtag">${score(3)} / 3</span></h3>
+    <p class="cap">${cq.prompt}</p>
+    <div><b>Your claim:</b></div><div class="resp">${esc(ca.c || '(blank)')}</div>
+    <div><b>Your evidence:</b></div><div class="resp">${esc(ca.e || '(blank)')}</div>
+    <div><b>Your reasoning:</b></div><div class="resp">${esc(ca.r || '(blank)')}</div>
+    <div class="model" style="user-select:none"><b>Model response</b><br><b>Claim:</b> ${cq.model.c}<br><b>Evidence:</b> ${cq.model.e}<br><b>Reasoning:</b> ${cq.model.r}</div>
+    <p><b>Auto-checked.</b> These boxes were checked automatically from key words in your response (not a full reading). Compare your response to the model and adjust any box that isn't right.</p>
+    <div class="checks">${cq.checks.map((t, k) => `<label><input type="checkbox" data-self="${k}" ${F.selfChecks[k] ? 'checked' : ''}> ${t}</label>`).join('')}</div>
+    ${F.cerRevised ? '<p><b>You have used your one revision for this response.</b></p>' : '<p class="no-print"><button type="button" class="btn ghost" id="reviseBtn">Revise your answer (one chance)</button></p>'}
+  </div></section>`;
+  return h;
+}
+
+/* =========================================================
+   WIRING
+   ========================================================= */
+function wire() {
+  const r = root();
+  if (F.screen === 'intro') {
+    $('#begin', r).addEventListener('click', () => {
+      const v = id => ($('#' + id).value || '').trim();
+      const st = { id: v('sid'), first: v('fn'), last: v('ln'), period: v('pd'), teacher: v('tc') };
+      if (!st.id || !st.first || !st.last || !st.period || !st.teacher) { $('#nmerr').textContent = 'Fill in all five boxes before starting.'; return; }
+      F.student = st; F.screen = 'test'; fsave(); startLockdown(); render(); window.scrollTo(0, 0);
+    });
+    return;
+  }
+  if (F.screen === 'review') {
+    $$('.rvitem', r).forEach(b => b.addEventListener('click', () => go(+b.dataset.q)));
+    $('#backTest', r).addEventListener('click', () => go(F.cur));
+    $('#submit', r).addEventListener('click', submitAll);
+    return;
+  }
+  if (F.screen === 'results') {
+    $('#sendBtn', r).addEventListener('click', sendToSheet);
+    $('#csvBtn', r).addEventListener('click', downloadCSV);
+    $('#printBtn', r).addEventListener('click', () => window.print());
+    $$('[data-self]', r).forEach(cb => cb.addEventListener('change', () => { F.selfChecks[+cb.dataset.self] = cb.checked; fsave(); $('#cerscore').textContent = score(3); $('#totalscore').textContent = total(); }));
+    const rv = $('#reviseBtn', r); rv && rv.addEventListener('click', () => { F.cur = 3; F.tab = 'data'; F.screen = 'revise'; fsave(); startLockdown(); render(); window.scrollTo(0, 0); });
+    return;
+  }
+  // test / revise
+  wireStim();
+  const p = $('#prev', r), n = $('#next', r), f = $('#flag', r), sv = $('#saveRev', r);
+  p && p.addEventListener('click', () => go(F.cur - 1));
+  n && n.addEventListener('click', () => { if (F.cur < QS.length - 1) go(F.cur + 1); else { F.screen = 'review'; fsave(); render(); window.scrollTo(0, 0); } });
+  f && f.addEventListener('click', () => { const fl = flagged(); fl.has(F.cur) ? fl.delete(F.cur) : fl.add(F.cur); F.flagged = [...fl]; fsave(); refreshFoot(); });
+  sv && sv.addEventListener('click', () => { F.cerRevised = true; autoCheckCER(); endLockdown(); F.screen = 'results'; fsave(); render(); window.scrollTo(0, 0); });
+  $$('#chips .qchip', r).forEach(b => b.addEventListener('click', () => go(+b.dataset.q)));
+  wireQuestion();
+}
+function wireStim() { const r = root(); $$('.stim-tabs .tab', r).forEach(b => b.onclick = () => { F.tab = b.dataset.tab; fsave(); $('.stim', r).innerHTML = stimHTML(); wireStim(); }); const st = $('.stim', r); if (st && $('.iegraph', st)) wireGraph(st, s => { $('#gread').textContent = `${nm(s)}: ${TD[s].ie} kJ/mol`; }); }
+function refreshFoot() {
+  const ch = $('#chips'); if (ch) { ch.innerHTML = chipsHTML(); $$('#chips .qchip').forEach(b => b.addEventListener('click', () => go(+b.dataset.q))); }
+  const f = $('#flag'); if (f) { const on = flagged().has(F.cur); f.classList.toggle('on', on); f.textContent = on ? 'Flagged' : 'Flag for review'; }
+}
+function go(i) {
+  if (i < 0 || i >= QS.length) return;
+  F.cur = i; F.tab = QS[i].tab; F.screen = 'test'; selCard = null; fsave(); render();
+  const qp = $('.qp'); if (qp) qp.scrollTop = 0;
+}
+function rerenderQ() { const qp = $('.qp'); const y = qp ? qp.scrollTop : 0; qp.innerHTML = qHTML(F.cur); wireQuestion(); qp.scrollTop = y; refreshFoot(); }
+function wireQuestion() {
+  const q = QS[F.cur], qp = $('.qp');
+  if (q.t === 'sort') {
+    const a = F.ans[0] || (F.ans[0] = {});
+    const place = (id, bin) => { if (bin) a[id] = bin; else delete a[id]; selCard = null; fsave(); rerenderQ(); };
+    $$('.acard', qp).forEach(card => {
+      let start = null, ghost = null, over = null, dragged = false;
+      card.addEventListener('click', ev => { if (dragged) { dragged = false; return; } const inBin = card.closest('.pbin'); if (selCard && selCard !== card.dataset.card && inBin) { ev.stopPropagation(); place(selCard, inBin.dataset.bin); return; } selCard = selCard === card.dataset.card ? null : card.dataset.card; rerenderQ(); });
+      card.addEventListener('pointerdown', e => { if (e.button > 0) return; start = { x: e.clientX, y: e.clientY }; dragged = false; try { card.setPointerCapture(e.pointerId); } catch (_) {} });
+      card.addEventListener('pointermove', e => {
+        if (!start) return;
+        if (!ghost && Math.hypot(e.clientX - start.x, e.clientY - start.y) > 6) { ghost = card.cloneNode(true); ghost.classList.add('ghost-token'); document.body.appendChild(ghost); card.style.opacity = '.35'; dragged = true; }
+        if (ghost) { ghost.style.left = e.clientX + 'px'; ghost.style.top = e.clientY + 'px'; const t = document.elementFromPoint(e.clientX, e.clientY), bin = t && (t.closest('.pbin') || t.closest('.tray')); if (over && over !== bin) over.classList.remove('hover'); over = bin; if (over) over.classList.add('hover'); }
+      });
+      const end = () => { if (!start) return; start = null; if (ghost) { ghost.remove(); ghost = null; card.style.opacity = ''; if (over) { over.classList.remove('hover'); place(card.dataset.card, over.classList.contains('pbin') ? over.dataset.bin : null); over = null; } setTimeout(() => { dragged = false; }, 50); } };
+      card.addEventListener('pointerup', end); card.addEventListener('pointercancel', end);
+    });
+    $$('.pbin', qp).forEach(b => {
+      const go2 = (e) => { if (e && e.target.closest('.acard')) return; if (selCard) place(selCard, b.dataset.bin); };
+      b.addEventListener('click', go2); b.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (selCard) place(selCard, b.dataset.bin); } });
+    });
+    const tray = $('.tray', qp); tray.addEventListener('click', e => { if (e.target.closest('.acard')) return; if (selCard) place(selCard, null); });
+  } else if (q.t === 'selects') {
+    const a = F.ans[F.cur] || (F.ans[F.cur] = {});
+    $$('select[data-k]', qp).forEach(s => s.addEventListener('change', () => { a[s.dataset.k] = s.value; fsave(); refreshFoot(); }));
+  } else if (q.t === 'cer') {
+    const a = F.ans[3] || (F.ans[3] = { c: '', e: '', r: '' });
+    $$('textarea[data-k]', qp).forEach(t => { t.addEventListener('input', () => { a[t.dataset.k] = t.value; fsave(); refreshFoot(); }); t.addEventListener('paste', e => e.preventDefault()); t.addEventListener('drop', e => e.preventDefault()); });
+  }
+}
+function submitAll() { autoCheckCER(); F.submittedAt = new Date().toISOString(); F.screen = 'results'; endLockdown(); fsave(); render(); window.scrollTo(0, 0); }
+
+/* =========================================================
+   SHEETS + CSV
+   ========================================================= */
+function sendToSheet() {
+  const st = $('#sheetStatus'), url = sheetURL();
+  if (!url) { st.textContent = "This activity isn't connected to your teacher's gradebook sheet yet."; return; }
+  const s = F.student;
+  const body = new URLSearchParams({ studentId: s.id, firstName: s.first, lastName: s.last, period: s.period, teacher: s.teacher, activity: ACTIVITY, score: String(total()), total: String(MAX_TOTAL), locks: String(F.lockouts), qlabels: QS.map((q, i) => 'Q' + (i + 1) + (q.t === 'cer' ? ' CER' : '')).join('|'), qpoints: QS.map((q, i) => score(i)).join('|'), qmax: QS.map(q => q.pts).join('|'), when: new Date().toString() });
+  st.textContent = 'Sending...';
+  fetch(url, { method: 'POST', mode: 'no-cors', body })
+    .then(() => { F.sentAt = new Date().toISOString(); fsave(); st.textContent = 'Sent! Your teacher will see your score.'; })
+    .catch(() => { st.textContent = "Couldn't send. Check your internet connection and try again."; });
+}
+function downloadCSV() {
+  const s = F.student, cell = v => { v = String(v == null ? '' : v); return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  const head = ['Student ID', 'Last Name', 'First Name', 'Period', 'Teacher', 'Activity', 'Q1 (of 3)', 'Q2 (of 2)', 'Q3 (of 3)', 'Q4 CER (of 3)', 'Score', 'Total', 'Times Locked', 'Date'];
+  const row = [s.id, s.last, s.first, s.period, s.teacher, ACTIVITY, score(0), score(1), score(2), score(3), total(), MAX_TOTAL, F.lockouts, new Date().toLocaleString()];
+  const blob = new Blob([head.map(cell).join(',') + '\r\n' + row.map(cell).join(',') + '\r\n'], { type: 'text/csv' }), a = document.createElement('a');
+  const clean = t => String(t).replace(/[^A-Za-z0-9_-]+/g, '');
+  a.href = URL.createObjectURL(blob); a.download = `TrendsWarmUp_${clean(s.last)}_${clean(s.first)}.csv`;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 800);
+}
+
+/* =========================================================
+   LOCKDOWN (when opened from GitHub Pages)
+   ========================================================= */
+let fsExiting = false;
+function reqFS() { const d = document.documentElement, f = d.requestFullscreen || d.webkitRequestFullscreen; if (f && !document.fullscreenElement) { try { const p = f.call(d); if (p && p.catch) p.catch(() => {}); } catch (e) {} } }
+function exitFS() { if (!document.fullscreenElement) return; const f = document.exitFullscreen || document.webkitExitFullscreen; fsExiting = true; try { const p = f.call(document); if (p && p.then) p.then(() => { fsExiting = false; }, () => { fsExiting = false; }); else fsExiting = false; } catch (e) { fsExiting = false; } }
+function startLockdown() { if (!LOCK_ON) return; F.lockActive = true; F.locked = false; fsave(); reqFS(); }
+function endLockdown() { F.lockActive = false; F.locked = false; fsave(); $('#lockOv').hidden = true; exitFS(); }
+function lockNow() { if (!F.lockActive || F.locked) return; F.locked = true; F.lockouts++; fsave(); showLock(); }
+function showLock() { $('#lockOv').hidden = false; $('#lockCode').value = ''; $('#lockMsg').textContent = ''; setTimeout(() => $('#lockCode').focus(), 60); }
+document.addEventListener('visibilitychange', () => { if (document.hidden) lockNow(); });
+window.addEventListener('blur', () => { setTimeout(() => { if (!document.hasFocus()) lockNow(); }, 150); });
+document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && !fsExiting) lockNow(); });
+function tryUnlock() { if ($('#lockCode').value.trim().toLowerCase() === TEACHER_CODE) { F.locked = false; fsave(); $('#lockOv').hidden = true; reqFS(); toast('Unlocked'); } else { $('#lockMsg').textContent = 'That code is not correct.'; shake($('#lockCode')); } }
+$('#lockGo').addEventListener('click', tryUnlock);
+$('#lockCode').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+
+/* teacher view */
+const tOv = $('#teacherOv');
+$('#teacherBtn').addEventListener('click', () => { tOv.hidden = false; $('#tLogin').classList.remove('hidden'); $('#tPanel').classList.add('hidden'); $('#tCode').value = ''; $('#tMsg').textContent = ''; setTimeout(() => $('#tCode').focus(), 50); });
+const tLogin = () => { if ($('#tCode').value.trim().toLowerCase() === TEACHER_CODE) { $('#tLogin').classList.add('hidden'); $('#tPanel').classList.remove('hidden'); $('#tInfo').textContent = `${F.student.first ? `Student: ${F.student.first} ${F.student.last}, period ${F.student.period}. ` : ''}Times locked: ${F.lockouts}.`; $('#tEndLock').disabled = !F.lockActive; } else { $('#tMsg').textContent = 'That code is not correct.'; shake($('#tCode')); } };
+$('#tGo').addEventListener('click', tLogin);
+$('#tCode').addEventListener('keydown', e => { if (e.key === 'Enter') tLogin(); });
+$('#tCancel').addEventListener('click', () => { tOv.hidden = true; });
+$('#tClose').addEventListener('click', () => { tOv.hidden = true; });
+$('#tEndLock').addEventListener('click', () => { endLockdown(); tOv.hidden = true; toast('Lockdown ended'); });
+$('#tReset').addEventListener('click', () => { if (!confirm('Erase this assessment on this device?')) return; try { localStorage.removeItem(KEY); } catch (e) {} location.reload(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !tOv.hidden) tOv.hidden = true; });
+
+/* init */
+if (F.lockActive && (F.screen === 'test' || F.screen === 'revise' || F.screen === 'review')) { if (!F.locked) { F.locked = true; F.lockouts++; fsave(); } }
+render();
+if (F.locked && F.lockActive) showLock();
+})();
+
+</script>
+</body></html>
