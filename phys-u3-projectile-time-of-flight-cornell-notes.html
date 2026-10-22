@@ -44,8 +44,8 @@ input,select,textarea{-webkit-user-select:text;user-select:text;font-family:inhe
 .eqtop .n{display:inline-block;width:1.4em;font-weight:600;color:var(--amber)}
 @media (max-width:700px){.eqtop{grid-template-columns:1fr}}
 /* cornell rows */
-.colhead{display:grid;grid-template-columns:2.05in 1fr;font-size:.72rem;color:var(--muted);border-bottom:1px solid var(--ink);padding:4px 0;margin-top:6px}
-.sec{display:grid;grid-template-columns:2.05in 1fr;border-bottom:1px solid var(--ink)}
+.colhead{display:grid;grid-template-columns:1.7in 1fr;font-size:.72rem;color:var(--muted);border-bottom:1px solid var(--ink);padding:4px 0;margin-top:6px}
+.sec{display:grid;grid-template-columns:1.7in 1fr;border-bottom:1px solid var(--ink)}
 .pair{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:stretch;break-inside:avoid;page-break-inside:avoid}
 .pair .ex,.pair .prac{margin:4px 0}
 .ncols,.ex,.prac{break-inside:avoid;page-break-inside:avoid}
@@ -60,7 +60,7 @@ input,select,textarea{-webkit-user-select:text;user-select:text;font-family:inhe
 .notes{padding:8px 0 8px 12px}
 .notes p{margin:0 0 6px}
 .notes ul{margin:0 0 6px;padding-left:18px} .notes li{margin:2px 0}
-.ncols{display:grid;grid-template-columns:1fr 210px;gap:12px;align-items:start}
+.ncols{display:grid;grid-template-columns:1fr 165px;gap:12px;align-items:start}
 @media (max-width:700px){.ncols{grid-template-columns:1fr}.sec,.colhead{grid-template-columns:1fr}.cue{border-right:0;border-bottom:1px dashed var(--line)}}
 .fig svg{width:100%;height:auto;display:block}
 .figcap{font-size:.7rem;color:var(--muted);text-align:center}
@@ -95,18 +95,53 @@ body.key input.b,body.key select.b,body.key textarea{color:var(--teal)}
   select.b{background:none!important;-webkit-appearance:none;appearance:none}
   .prac{background:#f6f6f6}
 }
+.cue .prac{margin:8px 10px 0 0;font-size:.8rem;border-left:3px solid var(--amber)}
+.cue .prac .wk{grid-template-columns:auto 1fr;gap:3px 6px}
+.cue .wkl{min-width:0;height:2.6em}
+.cue input.b{max-width:100%}
+.pair:empty{display:none}
+.who b{min-height:1.4em}
+.pair{display:block!important}
+.prac.flat{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;align-items:start;padding:5px 9px;margin:5px 0 0}
+.prac.flat .pq{font-size:.86rem}
+.prac.flat .pw .wk{margin-top:0}
+.prac.flat .wkl{min-width:0}
+@media (max-width:700px){.prac.flat{grid-template-columns:1fr}}
+@media print{
+  html,body{font-size:10.3px;line-height:1.36}
+  .page{padding:0}
+  .head{padding-bottom:4px}
+  .head h1{font-size:1.2rem}
+  .eqtop{margin:5px 0 3px;padding:4px 8px;gap:2px 12px;font-size:.86rem}
+  .colhead{margin-top:2px;padding:2px 0}
+  .cue{padding:4px 7px 4px 0}
+  .notes{padding:4px 0 4px 8px}
+  .notes p{margin:0 0 3px}
+  .notes ul,.notes ol{margin:0 0 3px}
+  .cue .ic svg{width:22px;height:22px}
+  .ncols{grid-template-columns:1fr 135px!important;gap:8px}
+  .fig svg{max-height:112px}
+  .figcap{font-size:.62rem}
+  .prac.flat{padding:3px 8px;margin-top:3px}
+  .wk{gap:1px 8px}
+  .wkl{height:1.25em}
+  .summary{margin-top:6px}
+  .summary textarea{min-height:58px}
+  .sec{break-inside:auto}
+  .ncols,.prac{break-inside:avoid}
+}
 </style>
 </head>
 <body>
 <div class="bar noprint">
   <button class="btn" id="printBtn" type="button">Print</button>
   <button class="btn" id="checkBtn" type="button">Check my notes</button>
-  <button class="btn teal" id="turnBtn" type="button">Turn in</button>
+  <button class="btn teal" id="turnBtn" type="button" hidden>Turn in</button>
   <span class="sp"></span>
   <span id="saved" aria-live="polite"></span>
   <button class="btn" id="keyBtn" type="button">Teacher: answer key</button>
-  <button class="btn" id="csvBtn" type="button">Teacher: scores CSV</button>
-  <button class="btn" id="endLockBtn" type="button">Teacher: end lockdown</button>
+  <button class="btn" id="csvBtn" type="button" hidden>Teacher: scores CSV</button>
+  <button class="btn" id="endLockBtn" type="button" hidden>Teacher: end lockdown</button>
 </div>
 <div class="banner" id="banner" role="alert"></div>
 <div class="page" id="pageEl"></div>
@@ -126,7 +161,7 @@ body.key input.b,body.key select.b,body.key textarea{color:var(--teal)}
 'use strict';
 const LESSON = 'Projectile Motion and Time of Flight';
 const LESSON_ID = 'phys-u3-projectile-time-of-flight-notes';
-const KEY = 'fate_phys_u3_projectile_tof_notes_v1', RECS = KEY + '_records';
+const KEY = 'fate_phys_u3_projectile_tof_notes_print_v2', RECS = KEY + '_records';
 const UNLOCK_CODE = 'flight';           // last word of the lesson title: unlocks the lockdown screen only
 const LOCK_ON = /github\.io$/i.test(location.hostname) || new URLSearchParams(location.search).has('lockdown');
 const TEACHER_CODE = 'teacher007';        // opens the answer key and scores CSV
@@ -242,11 +277,12 @@ function figCliff() {
 
 /* ---------- the notes ---------- */
 function section(n, ic, title, cue, eqs, body) {
-  SEC = n; const html = body();
-  return `<div class="sec" data-sec="${n}"><div class="cue"><div class="ic">${icon(ic)}<b>${n}. ${title}</b></div><div class="q">${cue}</div>${eqs ? `<div class="eqs">${eqs}</div>` : ''}</div><div class="notes">${html}</div></div>`;
+  SEC = n; PRAC = ''; const html = body().replace(/<div class="pair">\s*<\/div>/g, '');
+  return `<div class="sec" data-sec="${n}"><div class="cue"><div class="ic">${icon(ic)}<b>${n}. ${title}</b></div><div class="q">${cue}</div>${eqs ? `<div class="eqs">${eqs}</div>` : ''}${PRAC}</div><div class="notes">${html}</div></div>`;
 }
-const ex = (q, rows) => `<div class="ex"><div class="pt">Example (worked out)</div>${q}${wk(rows)}</div>`;
-const prac = (q, rows) => `<div class="prac"><div class="pt">Practice (you solve it)</div>${q}${wk(rows)}</div>`;
+let PRAC = '';
+const ex = () => '';   // worked examples live in the lesson, not the printed notes
+const prac = (q, rows) => `<div class="prac flat"><div class="pq"><div class="pt">Practice</div>${q}</div><div class="pw">${wk(rows)}</div></div>`;
 const work = id => `<input class="wkl" id="${id}" autocomplete="off" spellcheck="false" aria-label="Show your work">`;
 const wk = rows => `<div class="wk">${rows.map(([l, h]) => `<span class="l">${l}</span><span>${h}</span>`).join('')}</div>`;
 const VIY = ['viy', 'v iy', 'vy', 'the up part', 'up part', 'vertical velocity', 'the vertical velocity', 'vertical part', 'the vertical part', 'initial vertical velocity'];
@@ -256,7 +292,7 @@ function buildNotes() {
   BL.length = 0;
   const top = `<div class="head"><div><h1>Projectile Motion and Time of Flight</h1><div class="sub">Physics · Unit 3: 2D Kinematics &amp; Projectile Motion · Cornell Notes</div></div>
     <div class="who"><span>Name</span><b id="wName"></b><span>Period</span><b id="wPer"></b><span>Date</span><b id="wDate"></b></div></div>
-  <div class="sign noprint" id="signBox">
+  <div class="sign noprint" id="signBox" hidden>
     <label>First name<input id="sFirst" maxlength="40"></label><label>Last name<input id="sLast" maxlength="40"></label><label>Student ID<input id="sId" inputmode="numeric" maxlength="12"></label>
     <label>Period<select id="sPeriod"><option value="">Choose</option>${periodList().map(p => `<option>${esc(p)}</option>`).join('')}</select></label><label>Teacher<select id="sTeacher"></select></label>
     <button class="btn primary" id="signBtn" type="button">Sign in</button><div class="msg" id="signmsg">Sign in so your notes save. Your save code is your student ID and last name.</div></div>
@@ -378,7 +414,7 @@ function apply() {
   BL.forEach(x => { const el = $(x.id); if (el) { el.value = S.v[x.id] != null ? S.v[x.id] : ''; el.classList.remove('ok', 'no'); } });
   $('summary').value = S.summary || '';
   $$('.wkl').forEach(el => { el.value = (S.w && S.w[el.id]) || ''; });
-  const st = S.student; $('wName').textContent = st ? `${st.first} ${st.last}` : ''; $('wPer').textContent = st ? st.period : ''; $('wDate').textContent = new Date().toLocaleDateString();
+  const st = S.student; $('wName').textContent = st ? `${st.first} ${st.last}` : ''; $('wPer').textContent = st ? st.period : ''; $('wDate').textContent = '';
 }
 function renderScoreLine() {
   const sc = score(); $('scoreline').innerHTML = S.turnedIn ? `Turned in ${new Date(S.turnedAt).toLocaleString()}: <b>${sc.pts} / ${sc.max}</b>. You can fix blanks and turn in again to update.` : `${sc.filled} of ${BL.length} blanks filled.`;
@@ -445,6 +481,7 @@ $('turnBtn').addEventListener('click', () => {
 /* ---------- teacher tools (code: flight) ---------- */
 let codeFn = null;
 function askCode(fn) { codeFn = fn; $('codeIn').value = ''; $('codeMsg').textContent = ''; $('codeOv').hidden = false; setTimeout(() => $('codeIn').focus(), 30); }
+function showUnlockCode() { const old = document.getElementById('unlockInfo'); if (old) old.remove(); document.querySelector('.bar').insertAdjacentHTML('afterend', `<div id="unlockInfo" class="noprint" style="max-width:900px;margin:0 auto 10px;border:2px solid #e9b53a;background:#fff6dc;border-radius:10px;padding:8px 12px;font-size:.92rem;color:#16213a">🔑 Code to end lockdown on this activity: <b style="font-size:1.1rem">${UNLOCK_CODE}</b> <span style="font-size:.8rem;color:#55627f">Give this to absent students. It ends lockdown only.</span></div>`); }
 $('codeGo').addEventListener('click', () => { if (!isTeacherCode($('codeIn').value)) { $('codeMsg').textContent = 'That code isn\u2019t right.'; return; } $('codeOv').hidden = true; const f = codeFn; codeFn = null; if (f) f(); });
 $('codeIn').addEventListener('keydown', e => { if (e.key === 'Enter') $('codeGo').click(); });
 $('codeNo').addEventListener('click', () => { $('codeOv').hidden = true; codeFn = null; });
