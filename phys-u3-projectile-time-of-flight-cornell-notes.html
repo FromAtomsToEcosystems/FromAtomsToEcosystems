@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Projectile Motion and Time of Flight Notes | Physics Unit 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#16213a;--muted:#55627f;--line:#c9d1e3;--soft:#f3f5fa;--amber:#c28a00;--amberbg:#fff6dc;--teal:#0f8a63;--red:#c43c47;--sky:#2f6fc0;--violet:#6a4fd0;--orange:#d0661e;--font:'Lexend',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;font-family:var(--font);color:var(--ink);background:#dfe4ee;line-height:1.45;font-size:14px;-webkit-user-select:none;user-select:none}
+input,select,textarea{-webkit-user-select:text;user-select:text;font-family:inherit}
+.v{font-style:italic;white-space:nowrap} sub{font-size:.7em}
+[hidden]{display:none!important}
+/* top bar */
+.bar{position:sticky;top:0;z-index:30;max-width:900px;margin:0 auto 12px;background:#fff;padding:8px 14px;border-radius:0 0 10px 10px;box-shadow:0 2px 8px rgba(0,0,0,.12);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{border:1px solid var(--line);background:#fff;color:var(--ink);padding:7px 12px;border-radius:8px;font-size:.85rem;cursor:pointer;font-family:inherit}
+.btn:hover{border-color:var(--sky)}
+.btn.primary{background:#ffcf5a;border-color:#e9b53a;font-weight:600}
+.btn.teal{background:var(--teal);border-color:var(--teal);color:#fff;font-weight:600}
+.btn.on{border-color:var(--teal);color:var(--teal)}
+.bar .sp{flex:1}
+#saved{font-size:.78rem;color:var(--muted)}
+.banner{max-width:900px;margin:0 auto 10px;background:#fff1e6;border:1px solid var(--orange);color:#7a3a0d;border-radius:8px;padding:8px 12px;font-size:.85rem;display:none}
+.banner.show{display:block}
+/* page */
+.page{max-width:900px;margin:0 auto 30px;background:#fff;padding:.45in .5in;box-shadow:0 2px 14px rgba(0,0,0,.12)}
+.head{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end;border-bottom:3px solid var(--ink);padding-bottom:8px}
+.head h1{margin:0;font-size:1.45rem;line-height:1.15;font-weight:600}
+.head .sub{color:var(--muted);font-size:.82rem}
+.who{display:grid;grid-template-columns:auto 170px;gap:3px 8px;font-size:.8rem;align-items:center}
+.who span{color:var(--muted)}
+.who b{border-bottom:1px solid var(--ink);min-height:1.2em;font-weight:500}
+.sign{border:1px dashed var(--line);border-radius:8px;padding:10px 12px;margin:10px 0;display:grid;grid-template-columns:repeat(5,1fr) auto;gap:8px;align-items:end;font-size:.78rem}
+.sign label{display:flex;flex-direction:column;gap:2px;color:var(--muted)}
+.sign input,.sign select{padding:6px;border:1px solid var(--line);border-radius:6px;font-size:.85rem}
+.sign .msg{grid-column:1/-1;font-size:.8rem}
+.msg.good{color:var(--teal)} .msg.bad{color:var(--red)}
+@media (max-width:700px){.sign{grid-template-columns:1fr 1fr}}
+.eqtop{display:grid;grid-template-columns:repeat(3,1fr);gap:4px 16px;background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:10px 0 6px;font-size:.9rem}
+.eqtop .cap{grid-column:1/-1;font-size:.75rem;color:var(--muted)}
+.eqtop .n{display:inline-block;width:1.4em;font-weight:600;color:var(--amber)}
+@media (max-width:700px){.eqtop{grid-template-columns:1fr}}
+/* cornell rows */
+.colhead{display:grid;grid-template-columns:2.05in 1fr;font-size:.72rem;color:var(--muted);border-bottom:1px solid var(--ink);padding:4px 0;margin-top:6px}
+.sec{display:grid;grid-template-columns:2.05in 1fr;border-bottom:1px solid var(--ink)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:stretch;break-inside:avoid;page-break-inside:avoid}
+.pair .ex,.pair .prac{margin:4px 0}
+.ncols,.ex,.prac{break-inside:avoid;page-break-inside:avoid}
+@media (max-width:700px){.pair{grid-template-columns:1fr}}
+.cue{border-right:1px solid var(--ink);padding:8px 10px 8px 0;font-size:.82rem}
+.cue .ic{display:flex;gap:8px;align-items:center;margin-bottom:4px}
+.cue .ic svg{width:30px;height:30px;flex:0 0 auto;border:2px solid var(--amber);border-radius:7px;padding:3px;background:var(--amberbg)}
+.cue .ic b{font-size:.88rem;line-height:1.15}
+.cue .q{font-weight:500;margin:4px 0}
+.cue .eqs{color:var(--muted);margin-top:4px}
+.cue .eqs div{white-space:nowrap}
+.notes{padding:8px 0 8px 12px}
+.notes p{margin:0 0 6px}
+.notes ul{margin:0 0 6px;padding-left:18px} .notes li{margin:2px 0}
+.ncols{display:grid;grid-template-columns:1fr 210px;gap:12px;align-items:start}
+@media (max-width:700px){.ncols{grid-template-columns:1fr}.sec,.colhead{grid-template-columns:1fr}.cue{border-right:0;border-bottom:1px dashed var(--line)}}
+.fig svg{width:100%;height:auto;display:block}
+.figcap{font-size:.7rem;color:var(--muted);text-align:center}
+input.b{border:0;border-bottom:1.5px solid var(--ink);background:#fbfcff;padding:0 3px;font-size:.92rem;color:#1a3fa0;text-align:center;border-radius:0;height:1.45em}
+input.b.ok{border-bottom-color:var(--teal);background:#e6f7ef}
+input.b.no{border-bottom-color:var(--red);background:#fdecee}
+select.b{border:1px solid var(--ink);border-radius:5px;font-size:.88rem;padding:0 2px;color:#1a3fa0;background:#fbfcff}
+select.b.ok{border-color:var(--teal);background:#e6f7ef} select.b.no{border-color:var(--red);background:#fdecee}
+.prac{background:var(--soft);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:6px 10px;margin:6px 0 2px;font-size:.88rem}
+.prac .pt{font-weight:600;font-size:.8rem;color:var(--amber)}
+.ex{border:1px solid var(--line);border-left:3px solid var(--sky);border-radius:0 8px 8px 0;padding:6px 10px;margin:6px 0 2px;font-size:.88rem}
+.ex .pt{font-weight:600;font-size:.8rem;color:var(--sky)}
+.wkl{border:0;border-bottom:1px dotted #8a96b3;width:100%;min-width:200px;font-size:.88rem;color:#1a3fa0;background:transparent;padding:1px 2px;height:1.6em}
+.wk{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;margin-top:4px;align-items:baseline}
+.wk .l{color:var(--muted);font-size:.75rem}
+.summary{margin-top:12px;break-inside:avoid}
+.summary h3{margin:0 0 4px;font-size:1rem}
+.summary textarea{width:100%;min-height:110px;border:1px solid var(--ink);border-radius:6px;padding:8px;font-size:.92rem;color:#1a3fa0;background:#fbfcff;resize:vertical}
+.scoreline{font-size:.82rem;color:var(--muted);margin-top:6px}
+/* modal */
+.overlay{position:fixed;inset:0;background:rgba(10,15,30,.6);display:flex;align-items:center;justify-content:center;z-index:50}
+.modal{background:#fff;border-radius:12px;padding:18px;max-width:380px;width:92%}
+.modal input{width:100%;padding:8px;border:1px solid var(--line);border-radius:6px;font-size:1rem;margin:8px 0}
+body.key input.b,body.key select.b,body.key textarea{color:var(--teal)}
+@page{size:letter;margin:.45in}
+@media print{
+  html,body{background:#fff;font-size:11.5px}
+  .cue{break-inside:avoid}
+  .bar,.banner,.sign,.noprint,.overlay{display:none!important}
+  .page{box-shadow:none;margin:0;padding:0;max-width:none}
+  input.b{background:none!important;border-bottom-color:#000!important}
+  select.b{background:none!important;-webkit-appearance:none;appearance:none}
+  .prac{background:#f6f6f6}
+}
+</style>
+</head>
+<body>
+<div class="bar noprint">
+  <button class="btn" id="printBtn" type="button">Print</button>
+  <button class="btn" id="checkBtn" type="button">Check my notes</button>
+  <button class="btn teal" id="turnBtn" type="button">Turn in</button>
+  <span class="sp"></span>
+  <span id="saved" aria-live="polite"></span>
+  <button class="btn" id="keyBtn" type="button">Teacher: answer key</button>
+  <button class="btn" id="csvBtn" type="button">Teacher: scores CSV</button>
+  <button class="btn" id="endLockBtn" type="button">Teacher: end lockdown</button>
+</div>
+<div class="banner" id="banner" role="alert"></div>
+<div class="page" id="pageEl"></div>
+<div class="overlay" id="gateOv" hidden><div class="modal" role="dialog" aria-modal="true"><b style="font-size:1.1rem">Full screen is required</b>
+  <p style="color:#55627f;font-size:.9rem">These notes run in full screen. If you leave the page or exit full screen, they lock and your teacher has to unlock them. Your work is saved.</p>
+  <button class="btn primary" id="gateGo" type="button">Enter full screen</button></div></div>
+<div class="overlay" id="lockOv" hidden><div class="modal" role="alertdialog" aria-modal="true"><div style="font-size:2rem">🔒</div><b style="font-size:1.1rem">Your notes are locked</b>
+  <p style="color:#55627f;font-size:.9rem">You left the page or exited full screen. Ask your teacher to unlock them. Your work is saved.</p>
+  <input type="password" id="lockCode" autocomplete="off" aria-label="Unlock code" placeholder="Code to end lockdown"><p class="msg bad" id="lockMsg" style="margin:0 0 6px;font-size:.82rem"></p>
+  <button class="btn primary" id="lockGo" type="button">End lockdown</button></div></div>
+<div class="overlay" id="codeOv" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="codeT">
+  <b id="codeT">Teacher code</b><input type="password" id="codeIn" autocomplete="off" aria-label="Teacher code"><p class="msg bad" id="codeMsg" style="margin:0 0 6px;font-size:.82rem"></p>
+  <button class="btn primary" id="codeGo" type="button">OK</button> <button class="btn" id="codeNo" type="button">Cancel</button></div></div>
+<script src="sheets-config.js"></script>
+<script>
+(() => {
+'use strict';
+const LESSON = 'Projectile Motion and Time of Flight';
+const LESSON_ID = 'phys-u3-projectile-time-of-flight-notes';
+const KEY = 'fate_phys_u3_projectile_tof_notes_v1', RECS = KEY + '_records';
+const UNLOCK_CODE = 'flight';           // last word of the lesson title: unlocks the lockdown screen only
+const LOCK_ON = /github\.io$/i.test(location.hostname) || new URLSearchParams(location.search).has('lockdown');
+const TEACHER_CODE = 'teacher007';        // opens the answer key and scores CSV
+const isTeacherCode = v => String(v || '').trim().toLowerCase() === TEACHER_CODE.toLowerCase();
+const BACKUP_URL = 'https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const SAVE_URL_BUILTIN = 'https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';
+const BACKUP_TEACHERS = ['Austin', 'Mueller', 'McCue', 'Arce', 'Trimm', 'Garcia', 'Trimm/Callanan', 'Callanan'];
+function periodList() { try { if (typeof PERIODS !== 'undefined' && Array.isArray(PERIODS) && PERIODS.length) return PERIODS.map(String).filter(Boolean); } catch (e) {} return ['1', '2', '3', '4', '5', '6', '7', '8']; }
+function teacherList() { try { if (typeof TEACHERS !== 'undefined' && Array.isArray(TEACHERS) && TEACHERS.length) return TEACHERS.map(String).filter(Boolean); } catch (e) {} return BACKUP_TEACHERS; }
+function sheetURL() { try { if (typeof SHEETS_WEBHOOK_URL !== 'undefined' && SHEETS_WEBHOOK_URL && String(SHEETS_WEBHOOK_URL).indexOf('PASTE') < 0) return String(SHEETS_WEBHOOK_URL); } catch (e) {} return BACKUP_URL; }
+function saveURL() {
+  try { if (typeof SAVE_WEBHOOK_URL !== 'undefined' && SAVE_WEBHOOK_URL && String(SAVE_WEBHOOK_URL).indexOf('PASTE') < 0) return String(SAVE_WEBHOOK_URL); } catch (e) {}
+  try { if (typeof PROGRESS_WEBHOOK_URL !== 'undefined' && PROGRESS_WEBHOOK_URL && String(PROGRESS_WEBHOOK_URL).indexOf('PASTE') < 0) return String(PROGRESS_WEBHOOK_URL); } catch (e) {}
+  return SAVE_URL_BUILTIN;
+}
+const CLOUD = () => /^https?:/.test(location.protocol);
+const $ = id => document.getElementById(id), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const V = (b, s) => `<span class="v">${b}<sub>${s}</sub></span>`;
+const vix = V('v', 'ix'), viy = V('v', 'iy'), vfy = V('v', 'fy'), vx = V('v', 'x'), vy = V('v', 'y'), Dx = V('ΔD', 'x'), Dy = V('ΔD', 'y'), ay = V('a', 'y'), ax = V('a', 'x'), t_ = '<span class="v">Δt</span>';
+const G = 9.8;
+
+/* ---------- icons (same drawings as the lesson's section tiles) ---------- */
+const IC = {
+  launch: '<path d="M3 20h18"/><path d="M5 18l8-8"/><path d="M13 10l-.5 4.2M13 10l-4.2.5"/><path d="M5 18h8" stroke-dasharray="1.6 2.2" opacity=".75"/><path d="M13 18v-8" stroke-dasharray="1.6 2.2" opacity=".75"/><path d="M8 18a3 3 0 0 0-.9-2.1"/>',
+  updown: '<path d="M3 20c3-13 15-13 18 0"/><path d="M6.2 12.5v-4M4.6 10l1.6-1.6L7.8 10"/><path d="M17.8 8.5v4M16.2 11l1.6 1.6 1.6-1.6"/><circle cx="12" cy="7.8" r="1.4"/>',
+  peak: '<path d="M3 20c3-13 15-13 18 0"/><path d="M12 10.3V3.5"/><path d="M12 3.5h5l-1.4 1.6L17 6.7h-5"/><path d="M8.5 10.3h7" stroke-dasharray="1.4 1.8" opacity=".7"/>',
+  time: '<circle cx="12" cy="13.5" r="7"/><path d="M12 13.5V9.5M12 13.5l2.8 1.8"/><path d="M10 3.5h4M12 3.5v3"/><path d="M18.4 7.2l1.3-1.3"/>',
+  range: '<path d="M2.5 17c3-11 12-11 15 0"/><circle cx="19" cy="17.5" r="2.6"/><circle cx="19" cy="17.5" r=".6"/><path d="M2.5 21h14M14.5 19.6l2 1.4-2 1.4" />',
+  angle: '<path d="M3 19h18"/><path d="M3 19L15 7"/><path d="M9 19a6 6 0 0 0-1.76-4.24"/><path d="M3 19a9 9 0 0 1 18 0" opacity=".45" stroke-dasharray="1.5 2"/>',
+  cliff: '<path d="M2 8h7v13"/><path d="M9 8c3-6 8-4 11.5 13"/><path d="M2 21h20"/><circle cx="9" cy="8" r="1.2"/>',
+  mistake: '<circle cx="10" cy="10" r="6.5"/><path d="M15 15l5.5 5.5"/><path d="M7.7 7.7l4.6 4.6M12.3 7.7l-4.6 4.6"/>'
+};
+const icon = k => `<svg viewBox="0 0 24 24" fill="none" stroke="#c28a00" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[k]}</svg>`;
+
+/* ---------- blanks ----------
+   b(id, answers, width): typed blank. answers: array of accepted words, or {n: value, tol}
+   pick(id, answer): equation-number dropdown (1-6) */
+const BL = [];
+let SEC = 0;
+const norm = s => String(s || '').toLowerCase().replace(/[−–—]/g, '-').replace(/[_\s]+/g, ' ').replace(/[^a-z0-9.\-+/° ]/g, '').replace(/ /g, '').trim();
+function numOf(s) { const m = String(s || '').replace(/[−–—]/g, '-').replace(/,/g, '').match(/-?\d*\.?\d+/); return m ? parseFloat(m[0]) : NaN; }
+function b(id, ans, w) { BL.push({ id, ans, sec: SEC, kind: 'b' }); return `<input class="b" id="${id}" style="width:${w || 80}px" autocomplete="off" spellcheck="false" aria-label="blank">`; }
+const EQN = ['①', '②', '③', '④', '⑤', '⑥', '⑦'];
+function pick(id, ans) { BL.push({ id, ans, sec: SEC, kind: 'pick' }); return `<select class="b" id="${id}" aria-label="equation number"><option value=""> </option>${EQN.map((e, i) => `<option value="${i + 1}">${e}</option>`).join('')}</select>`; }
+function right(x, v) {
+  if (x.kind === 'pick') return String(v) === String(x.ans);
+  if (Array.isArray(x.ans)) return x.ans.some(a => norm(a) === norm(v));
+  const n = numOf(v); return isFinite(n) && Math.abs(n - x.ans.n) <= (x.ans.tol != null ? x.ans.tol : Math.max(0.051, Math.abs(x.ans.n) * 0.02));
+}
+const keyText = x => x.kind === 'pick' ? String(x.ans) : Array.isArray(x.ans) ? x.ans[0] : (x.ans.show || String(x.ans.n));
+const N = (n, tol, show) => ({ n, tol, show });
+
+/* ---------- small light-theme diagrams ---------- */
+const NS = 'http://www.w3.org/2000/svg';
+function plot(o) {
+  const W = o.W || 260, H = o.H || 170, L = 26, R = 10, T = 10, B = 22, xmin = o.xmin || 0;
+  const s = Math.min((W - L - R) / (o.xmax - xmin), (H - T - B) / o.ymax), X = x => L + (x - xmin) * s, Y = y => H - B - y * s;
+  let g = '';
+  for (let x = Math.ceil(xmin / o.xs) * o.xs; x <= o.xmax + 1e-9; x += o.xs) g += `<line x1="${X(x)}" x2="${X(x)}" y1="${Y(0)}" y2="${Y(o.ymax)}" stroke="#e3e8f2"/><text x="${X(x)}" y="${H - 8}" font-size="8" fill="#7a86a3" text-anchor="middle">${x}</text>`;
+  for (let y = o.ys; y <= o.ymax + 1e-9; y += o.ys) g += `<line x1="${X(xmin)}" x2="${X(o.xmax)}" y1="${Y(y)}" y2="${Y(y)}" stroke="#e3e8f2"/><text x="${L - 4}" y="${Y(y) + 3}" font-size="8" fill="#7a86a3" text-anchor="end">${y}</text>`;
+  g += `<line x1="${X(xmin)}" x2="${X(o.xmax)}" y1="${Y(0)}" y2="${Y(0)}" stroke="#55627f" stroke-width="1.5"/><text x="${W - R}" y="${H - 1}" font-size="7.5" fill="#7a86a3" text-anchor="end">m</text>`;
+  const path = (h0, vxx, vyy, col, dash, x0 = 0) => { const T = (vyy + Math.sqrt(vyy * vyy + 2 * G * h0)) / G; let p = ''; for (let i = 0; i <= 50; i++) { const t = T * i / 50; p += `${X(x0 + vxx * t)},${Y(Math.max(0, h0 + vyy * t - .5 * G * t * t))} `; } return `<polyline points="${p}" fill="none" stroke="${col}" stroke-width="1.6" stroke-dasharray="${dash || 'none'}"/>`; };
+  const arrow = (x1, y1, x2, y2, col) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="2" marker-end="url(#ah-${col.slice(1)})"/>`;
+  const defs = `<defs>${['2f6fc0', '6a4fd0', 'c28a00', '0f8a63', '16213a'].map(c => `<marker id="ah-${c}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#${c}"/></marker>`).join('')}</defs>`;
+  return { s, X, Y, W, H, path, arrow, open: `<svg viewBox="0 0 ${W} ${H}" xmlns="${NS}" role="img" aria-label="${o.label}">${defs}${g}`, close: '</svg>' };
+}
+const txt = (x, y, s, col, size, anchor) => `<text x="${x}" y="${y}" font-size="${size || 9}" fill="${col || '#16213a'}" text-anchor="${anchor || 'start'}" font-family="Lexend, sans-serif">${s}</text>`;
+function figVector() {
+  return `<svg viewBox="0 0 220 130" xmlns="${NS}" role="img" aria-label="Launch velocity triangle with three numbered parts"><defs>${['c28a00', '2f6fc0', '6a4fd0'].map(c => `<marker id="vv-${c}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#${c}"/></marker>`).join('')}</defs>
+    <line x1="8" y1="112" x2="212" y2="112" stroke="#55627f" stroke-width="1.5"/>
+    <line x1="25" y1="112" x2="160" y2="112" stroke="#2f6fc0" stroke-width="2.2" stroke-dasharray="5 3" marker-end="url(#vv-2f6fc0)"/>
+    <line x1="166" y1="112" x2="166" y2="34" stroke="#6a4fd0" stroke-width="2.2" stroke-dasharray="5 3" marker-end="url(#vv-6a4fd0)"/>
+    <line x1="25" y1="112" x2="162" y2="33" stroke="#c28a00" stroke-width="2.6" marker-end="url(#vv-c28a00)"/>
+    <path d="M57 112 A32 32 0 0 0 52.5 96" fill="none" stroke="#16213a"/>${txt(62, 106, 'θ', '#16213a', 11)}
+    <circle cx="88" cy="62" r="8" fill="#fff" stroke="#c28a00"/>${txt(88, 65.5, '1', '#c28a00', 10, 'middle')}
+    <circle cx="95" cy="124" r="7" fill="#fff" stroke="#2f6fc0"/>${txt(95, 127.5, '2', '#2f6fc0', 10, 'middle')}
+    <circle cx="182" cy="74" r="8" fill="#fff" stroke="#6a4fd0"/>${txt(182, 77.5, '3', '#6a4fd0', 10, 'middle')}
+    <rect x="158" y="104" width="8" height="8" fill="none" stroke="#55627f"/></svg>`;
+}
+function figStrobe() {
+  const P = plot({ xmax: 22, ymax: 21, xs: 5, ys: 5, W: 210, H: 190, label: 'Strobe picture with velocity arrows' });
+  let s = P.open + P.path(0, 5, 19.6, '#9aa6c2', '3 3');
+  for (let i = 0; i <= 8; i++) { const t = i * .5, x = 5 * t, y = 19.6 * t - 4.9 * t * t, vyy = 19.6 - G * t; s += `<circle cx="${P.X(x)}" cy="${P.Y(y)}" r="2.6" fill="#c28a00"/>`;
+    if (i % 2 === 0) { s += P.arrow(P.X(x), P.Y(y), P.X(x) + 5 * .35 * P.s, P.Y(y), '#2f6fc0'); if (Math.abs(vyy) > .1) s += P.arrow(P.X(x), P.Y(y), P.X(x), P.Y(y) - vyy * .3 * P.s, '#6a4fd0'); } }
+  return s + txt(P.X(10), P.Y(19.6) - 4, 'top: v<tspan font-size="6" dy="2">y</tspan><tspan dy="-2"> = 0</tspan>', '#16213a', 8, 'middle') + P.close;
+}
+function figPeak() {
+  const P = plot({ xmax: 12, ymax: 6, xs: 2, ys: 2, W: 210, H: 130, label: 'Peak of a launch' });
+  const pk = 4.9;
+  return P.open + P.path(0, 3, 9.8, '#c28a00') + `<line x1="${P.X(0)}" x2="${P.X(12)}" y1="${P.Y(pk)}" y2="${P.Y(pk)}" stroke="#0f8a63" stroke-dasharray="3 3"/>` + P.arrow(P.X(3), P.Y(0), P.X(3), P.Y(pk) + 2, '#0f8a63') + txt(P.X(3) + 4, P.Y(2), 'max height', '#0f8a63', 8) + txt(P.X(3) + 4, P.Y(pk) - 4, 'v<tspan font-size="6" dy="2">fy</tspan><tspan dy="-2"> = 0 here</tspan>', '#16213a', 8) + P.close;
+}
+function figSym() {
+  const P = plot({ xmax: 22, ymax: 21, xs: 5, ys: 5, W: 210, H: 150, label: 'Trip up and trip down take the same time' });
+  return P.open + P.path(0, 5, 19.6, '#c28a00') + P.arrow(P.X(1), P.Y(1.5), P.X(9.3), P.Y(1.5), '#6a4fd0') + P.arrow(P.X(19), P.Y(1.5), P.X(10.7), P.Y(1.5), '#6a4fd0') + txt(P.X(5), P.Y(3.3), 'up: 2.0 s', '#6a4fd0', 8, 'middle') + txt(P.X(15), P.Y(3.3), 'down: 2.0 s', '#6a4fd0', 8, 'middle') + P.close;
+}
+function figRange() {
+  const P = plot({ xmax: 20, ymax: 12, xs: 5, ys: 4, W: 210, H: 140, label: 'Range of a launch' });
+  return P.open + P.path(0, 6, 14.7, '#c28a00') + P.arrow(P.X(0), P.Y(0) - 6, P.X(18), P.Y(0) - 6, '#16213a') + txt(P.X(9), P.Y(0) - 10, 'range ΔD<tspan font-size="6" dy="2">x</tspan>', '#16213a', 8.5, 'middle') + P.close;
+}
+function figAngles() {
+  const P = plot({ xmax: 42, ymax: 16, xs: 10, ys: 5, W: 210, H: 120, label: 'Launches at 30, 45, and 60 degrees at the same speed' });
+  let s = P.open; [[30, '#2f6fc0'], [45, '#c28a00'], [60, '#6a4fd0']].forEach(([a, c]) => { const r = a * Math.PI / 180; s += P.path(0, 20 * Math.cos(r), 20 * Math.sin(r), c) ; });
+  return s + txt(P.X(35.3), P.Y(0) - 4, '30° &amp; 60°', '#16213a', 7.5, 'middle') + txt(P.X(40.8), P.Y(2.4), '45°', '#c28a00', 7.5, 'middle') + P.close;
+}
+function figCliff() {
+  const P = plot({ xmin: -5, xmax: 20, ymax: 26, xs: 5, ys: 5, W: 210, H: 200, label: 'Ball launched from a cliff' });
+  const h = 20, tu = 1, pk = h + 4.9;
+  return P.open + `<rect x="${P.X(-5)}" y="${P.Y(h)}" width="${5 * P.s}" height="${h * P.s}" fill="#dfe5f1" stroke="#55627f"/>` + P.path(h, 6, 9.8, '#c28a00') +
+    `<line x1="${P.X(-5)}" x2="${P.X(6)}" y1="${P.Y(pk)}" y2="${P.Y(pk)}" stroke="#0f8a63" stroke-dasharray="3 3"/>` + P.arrow(P.X(2.5), P.Y(pk), P.X(2.5), P.Y(0) - 1, '#6a4fd0') +
+    txt(P.X(2.5) + 3, P.Y(12), 'falls from rest', '#6a4fd0', 7.5) + txt(P.X(6) + 3, P.Y(pk) + 3, 'peak', '#0f8a63', 7.5) + txt(P.X(-2.5), P.Y(10), 'cliff', '#55627f', 7.5, 'middle') + P.close;
+}
+
+/* ---------- the notes ---------- */
+function section(n, ic, title, cue, eqs, body) {
+  SEC = n; const html = body();
+  return `<div class="sec" data-sec="${n}"><div class="cue"><div class="ic">${icon(ic)}<b>${n}. ${title}</b></div><div class="q">${cue}</div>${eqs ? `<div class="eqs">${eqs}</div>` : ''}</div><div class="notes">${html}</div></div>`;
+}
+const ex = (q, rows) => `<div class="ex"><div class="pt">Example (worked out)</div>${q}${wk(rows)}</div>`;
+const prac = (q, rows) => `<div class="prac"><div class="pt">Practice (you solve it)</div>${q}${wk(rows)}</div>`;
+const work = id => `<input class="wkl" id="${id}" autocomplete="off" spellcheck="false" aria-label="Show your work">`;
+const wk = rows => `<div class="wk">${rows.map(([l, h]) => `<span class="l">${l}</span><span>${h}</span>`).join('')}</div>`;
+const VIY = ['viy', 'v iy', 'vy', 'the up part', 'up part', 'vertical velocity', 'the vertical velocity', 'vertical part', 'the vertical part', 'initial vertical velocity'];
+const VIX = ['vix', 'v ix', 'vx', 'the sideways part', 'sideways part', 'horizontal velocity', 'the horizontal velocity', 'horizontal part', 'the horizontal part', 'initial horizontal velocity'];
+
+function buildNotes() {
+  BL.length = 0;
+  const top = `<div class="head"><div><h1>Projectile Motion and Time of Flight</h1><div class="sub">Physics · Unit 3: 2D Kinematics &amp; Projectile Motion · Cornell Notes</div></div>
+    <div class="who"><span>Name</span><b id="wName"></b><span>Period</span><b id="wPer"></b><span>Date</span><b id="wDate"></b></div></div>
+  <div class="sign noprint" id="signBox">
+    <label>First name<input id="sFirst" maxlength="40"></label><label>Last name<input id="sLast" maxlength="40"></label><label>Student ID<input id="sId" inputmode="numeric" maxlength="12"></label>
+    <label>Period<select id="sPeriod"><option value="">Choose</option>${periodList().map(p => `<option>${esc(p)}</option>`).join('')}</select></label><label>Teacher<select id="sTeacher"></select></label>
+    <button class="btn primary" id="signBtn" type="button">Sign in</button><div class="msg" id="signmsg">Sign in so your notes save. Your save code is your student ID and last name.</div></div>
+  <div class="eqtop"><div class="cap">The equations (up is positive, ${ay} = −9.8 m/s², ${ax} = 0). Use the circled numbers in the practice.</div>
+    <div><span class="n">①</span>${vfy} = ${viy} + ${ay}${t_}</div><div><span class="n">②</span>${Dy} = ${viy}${t_} + ½${ay}${t_}²</div><div><span class="n">③</span>${vfy}² = ${viy}² + 2${ay}${Dy}</div>
+    <div><span class="n">④</span>${Dy} = ½(${viy} + ${vfy})${t_}</div><div><span class="n">⑤</span>${Dy} = ${vfy}${t_} − ½${ay}${t_}²</div><div><span class="n">⑥</span>${Dx} = ${vix}${t_} + ½${ax}${t_}²</div>
+    <div><span class="n">⑦</span><span class="v">θ</span> = tan⁻¹(${viy} ÷ ${vix})</div></div>
+  <div class="colhead"><span>Questions / cues</span><span style="padding-left:12px">Notes</span></div>`;
+
+  const s1 = section(1, 'launch', 'Launching at an angle', 'How do you split a launch into two parts?', `⑦ <span class="v">θ</span> = tan⁻¹(${viy} ÷ ${vix})`, () => `<div class="ncols"><div>
+    <p>A ball kicked at an angle moves sideways and ${b('n1a', ['up', 'upward', 'vertically', 'up and down', 'vertical'], 80)} at the same time. The two motions are ${b('n1b', ['independent', 'separate'], 95)}.</p>
+    <p>${vix} is the ${b('n1c', ['sideways', 'horizontal', 'x'], 85)} part of the launch velocity. ${viy} is the ${b('n1d', ['up', 'vertical', 'upward', 'y'], 70)} part.</p>
+    <p>The launch angle <span class="v">θ</span> is measured up from the ${b('n1e', ['ground', 'horizontal', 'horizon', 'x axis', 'x-axis', 'floor'], 85)}.</p>
+    <p>Label the diagram: ① ${b('n1f', ['vi', 'v i', 'launch velocity', 'initial velocity'], 60)} ② ${b('n1g', ['vix'], 60)} ③ ${b('n1h', ['viy'], 60)}</p>
+  </div><div class="fig">${figVector()}<div class="figcap">Launch velocity and its two parts</div></div></div>
+  <div class="pair">${ex(`A ball is launched with ${vix} = 10.0 m/s and ${viy} = 10.0 m/s. Find its launch angle.`, [['Equation', `⑦ <span class="v">θ</span> = tan⁻¹(${viy} ÷ ${vix})`], ['Plug in', `<span class="v">θ</span> = tan⁻¹(10.0 ÷ 10.0)`], ['Answer', `<span class="v">θ</span> = tan⁻¹(1) = <b>45.0°</b>`]])}${prac(`A frisbee is thrown with ${vix} = 12.0 m/s and ${viy} = 5.0 m/s. Find its launch angle.`, [['Equation', pick('n1i', 7)], ['Your work', work('w1a')], ['Answer', `<span class="v">θ</span> = ${b('n1l', N(22.6, 0.6, '22.6'), 60)} °`]])}</div>`);
+
+  const s2 = section(2, 'updown', 'Rising and falling', 'What does gravity do during the whole flight?', `${ay} = −9.8 m/s² always<br>${ax} = 0`, () => `<div class="ncols"><div>
+    <p>We choose ${b('n2a', ['up', 'upward'], 60)} as the positive direction.</p>
+    <p>${ay} = ${b('n2b', N(-9.8, 0.01, '−9.8'), 60)} m/s² the whole flight: going up, at the top, and coming down. ${ax} = ${b('n2c', N(0, 0.001, '0'), 40)}, so ${vx} stays the same.</p>
+    <p>At the peak, ${vy} = ${b('n2d', N(0, 0.001, '0'), 40)} m/s, but ${vx} is not zero, so the ball is still moving ${b('n2e', ['sideways', 'horizontally', 'horizontal', 'forward'], 90)}.</p>
+    <p>On level ground, the trip up and the trip down take the ${b('n2f', ['same', 'equal', 'same amount of'], 60)} time.</p>
+  </div><div class="fig">${figStrobe()}<div class="figcap">Blue: ${vx} (never changes). Purple: ${vy}.</div></div></div>
+  <div class="pair">${ex(`A ball is launched with ${viy} = 14.7 m/s. What is ${vy} at <span class="v">Δt</span> = 2.5 s?`, [['Equation', `① ${vfy} = ${viy} + ${ay}${t_}`], ['Plug in', `${vfy} = 14.7 + (−9.8)(2.5)`], ['Answer', `${vfy} = 14.7 − 24.5 = <b>−9.8 m/s</b> (negative: coming down)`]])}${prac(`A ball is launched with ${viy} = 19.6 m/s. Find ${vy} at each time.`, [['Equation', pick('n2k', 1)], ['Your work', work('w2a')], ['<span class="v">Δt</span> = 1 s', `${b('n2g', N(9.8, 0.06, '9.8'), 55)} m/s`], ['<span class="v">Δt</span> = 2 s', `${b('n2h', N(0, 0.06, '0'), 55)} m/s`], ['<span class="v">Δt</span> = 3 s', `${b('n2i', N(-9.8, 0.06, '−9.8'), 55)} m/s`], ['<span class="v">Δt</span> = 4 s', `${b('n2j', N(-19.6, 0.06, '−19.6'), 55)} m/s`]])}</div>`);
+
+  const s3 = section(3, 'peak', 'Time to the top and maximum height', 'What is true at the very top of the path?', `Time to the top: ①<br>Max height (no <span class="v">Δt</span>): ③`, () => `<div class="ncols"><div>
+    <p>At the peak, ${vfy} = ${b('n3a', N(0, 0.001, '0'), 40)}. That one fact gives two answers.</p>
+    <p>Only ${b('n3b', VIY, 70)} matters for how high and how long it rises. ${vix} does not.</p>
+  </div><div class="fig">${figPeak()}<div class="figcap">At the peak, the vertical velocity is 0.</div></div></div>
+  <div class="pair">${ex(`A ball is launched with ${viy} = 14.7 m/s. Find its time to the top and its maximum height.`, [['Equation', `① ${vfy} = ${viy} + ${ay}${t_}`], ['Plug in', `0 = 14.7 + (−9.8)${t_}`], ['Answer', `${t_} = 14.7 ÷ 9.8 = <b>1.50 s</b>`], ['Equation', `③ ${vfy}² = ${viy}² + 2${ay}${Dy}`], ['Plug in', `0² = 14.7² + 2(−9.8)${Dy}`], ['Answer', `${Dy} = 216.09 ÷ 19.6 = <b>11.0 m</b>`]])}${prac(`A ball is launched with ${viy} = 9.8 m/s. Find its time to the top and its maximum height.`, [['Equation (time)', pick('n3c', 1)], ['Your work', work('w3a')], ['Answer', `${t_} = ${b('n3f', N(1.0, 0.02, '1.00'), 50)} s`], ['Equation (height)', pick('n3g', 3)], ['Your work', work('w3b')], ['Answer', `${Dy} = ${b('n3h', N(4.9, 0.06, '4.9'), 50)} m`]])}</div>`);
+
+  const s4 = section(4, 'time', 'Time of flight on level ground', 'How long is the ball in the air if it lands at the same height?', `Use ①, then double it`, () => `<div class="ncols"><div>
+    <p>Time of flight = the ${b('n4a', ['total', 'whole', 'entire'], 60)} time in the air.</p>
+    <p>On level ground: time of flight = ${b('n4b', N(2, 0.001, '2'), 35)} × time to the top.</p>
+    <p>Only ${b('n4c', VIY, 70)} decides the time in the air. A bigger ${vix} makes it go farther, not stay up longer.</p>
+  </div><div class="fig">${figSym()}<div class="figcap">Symmetry: same time up and down</div></div></div>
+  <div class="pair">${ex(`A ball is kicked on a flat field with ${vix} = 6.0 m/s and ${viy} = 14.7 m/s. Find its time of flight.`, [['Equation', `① ${vfy} = ${viy} + ${ay}${t_}`], ['Plug in', `0 = 14.7 + (−9.8)${t_}`], ['Time up', `${t_} = 14.7 ÷ 9.8 = 1.50 s`], ['Answer', `time of flight = 2 × 1.50 = <b>3.00 s</b>`]])}${prac(`A soccer ball is kicked on a flat field with ${vix} = 5.0 m/s and ${viy} = 19.6 m/s.`, [['Equation', pick('n4f', 1)], ['Your work', work('w4a')], ['Time to the top', `${b('n4d', N(2.0, 0.02, '2.00'), 50)} s`], ['Time of flight', `${b('n4e', N(4.0, 0.03, '4.00'), 50)} s`]])}</div>`);
+
+  const s5 = section(5, 'range', 'How far does it go?', 'How do you find the range?', `⑥ with ${ax} = 0`, () => `<div class="ncols"><div>
+    <p>Sideways, ${ax} = ${b('n5a', N(0, 0.001, '0'), 35)}, so the ½${ax}${t_}² part drops out. The ball moves at steady speed sideways.</p>
+    <p>The x side and the y side share the same ${b('n5b', ['time', 't'], 55)}.</p>
+    <p>Step 1: use ${viy} to find the ${b('n5c', ['time of flight', 'time', 'total time'], 100)}. Step 2: use ${vix} and that time to find ${Dx}.</p>
+  </div><div class="fig">${figRange()}<div class="figcap">Range is the sideways displacement.</div></div></div>
+  <div class="pair">${ex(`A ball is launched on level ground with ${vix} = 8.0 m/s and ${viy} = 9.8 m/s. Find its range.`, [['Time of flight', `① gives 1.00 s up, so 2 × 1.00 = 2.00 s`], ['Equation', `⑥ ${Dx} = ${vix}${t_} + ½${ax}${t_}²`], ['Plug in', `${Dx} = 8.0(2.00) + ½(0)(2.00)²`], ['Answer', `${Dx} = <b>16.0 m</b>`]])}${prac(`A ball is launched on level ground with ${vix} = 6.0 m/s and ${viy} = 14.7 m/s. Find its range.`, [['Your work', work('w5a')], ['Time of flight', `${b('n5d', N(3.0, 0.03, '3.00'), 50)} s`], ['Range equation', pick('n5e', 6)], ['Your work', work('w5b')], ['Answer', `${Dx} = ${b('n5h', N(18.0, 0.2, '18.0'), 50)} m`]])}</div>`);
+
+  const s6 = section(6, 'angle', 'Launch angle, time, and range', 'How does the angle change the time and the range?', `Same speed:<br>steeper → more ${viy}`, () => `<div class="ncols"><div>
+    <p>At the same launch speed, ${b('n6a', N(45, 0.01, '45'), 40)}° goes the farthest on level ground.</p>
+    <p>Angles that add up to ${b('n6b', N(90, 0.01, '90'), 40)}° land at the same spot.</p>
+    <p>A steeper launch has more ${viy}, so it goes higher and stays in the air ${b('n6c', ['longer', 'more', 'more time', 'a longer time'], 70)}.</p>
+  </div><div class="fig">${figAngles()}<div class="figcap">Same speed (20 m/s), three angles</div></div></div>
+  <div class="pair">${ex(`Same speed, level ground. Which angle lands at the same spot as 20°? Which one stays up longer?`, [['Pair', `90° − 20° = <b>70°</b>`], ['Longer', `70° has more ${viy}, so <b>70°</b> stays up longer`]])}${prac(`Same speed, level ground.`, [['Lands at the same spot as 25°', `${b('n6d', N(65, 0.01, '65'), 45)} °`], ['Of those two, stays up longer', `${b('n6e', N(65, 0.01, '65'), 45)} °`]])}</div>`);
+
+  const s7 = section(7, 'cliff', 'Launched from a height', 'What changes when the ball starts above where it lands?', `Up: ①<br>Down from rest: ②`, () => `<div class="ncols"><div>
+    <p>The ball has farther to fall, so the time of flight is ${b('n7a', ['longer', 'more', 'greater', 'bigger'], 70)} than 2 × time to the top.</p>
+    <p>Split the flight at the peak. From the peak, the ball falls from ${b('n7b', ['rest', 'zero', '0'], 50)} through the cliff height plus the rise.</p>
+    <p>Time of flight = time up + time ${b('n7c', ['down'], 55)}.</p>
+  </div><div class="fig">${figCliff()}<div class="figcap">Up to the peak, then a fall from rest</div></div></div>
+  <div class="pair">${ex(`A ball rolls straight sideways (${viy} = 0) off a 4.9 m wall at ${vix} = 3.0 m/s. How long is it in the air, and how far does it land?`, [['Equation', `② ${Dy} = ${viy}${t_} + ½${ay}${t_}²`], ['Plug in', `−4.9 = 0·${t_} + ½(−9.8)${t_}²`], ['Answer', `${t_}² = 1.00, so ${t_} = <b>1.00 s</b>`], ['How far', `${Dx} = 3.0 × 1.00 = <b>3.0 m</b>`]])}${prac(`A ball rolls straight sideways (${viy} = 0) off a 19.6 m cliff at ${vix} = 4.0 m/s.`, [['Equation', pick('n7d', 2)], ['Your work', work('w7a')], ['Time in the air', `${t_} = ${b('n7f', N(2.0, 0.02, '2.00'), 50)} s`], ['Your work', work('w7b')], ['How far', `${Dx} = ${b('n7g', N(8.0, 0.1, '8.0'), 50)} m`]])}</div>`);
+
+  const s8 = section(8, 'mistake', 'What is wrong with this?', 'What mistakes should I watch for?', '', () => `
+    <ul><li>The range uses ${b('n8a', VIX, 70)}, not ${viy}.</li>
+    <li>On level ground, the time to the top is only ${b('n8b', ['half', '1/2', 'one half', '0.5'], 50)} of the time of flight.</li>
+    <li>Gravity is ${ay} = ${b('n8c', N(-9.8, 0.01, '−9.8'), 55)} m/s² even while the ball is rising.</li>
+    <li>At the top, only ${vy} is zero. ${vx} ${b('n8d', ['stays the same', 'is the same', 'does not change', 'doesnt change', 'stays', 'is not zero', 'keeps going'], 120)}.</li></ul>
+    <div class="pair">${ex(`A student says a ball with ${viy} = 14.7 m/s on level ground has a time of flight of 1.50 s.`, [['Mistake', '1.50 s is only the trip up'], ['Fix', `time of flight = 2 × 1.50 = <b>3.00 s</b>`]])}${prac(`A ball has ${vix} = 8.0 m/s and ${viy} = 9.8 m/s. A student writes "time of flight = 2.00 s, so ${Dx} = 9.8 × 2.00 = 19.6 m." Find the correct range.`, [['Your work', work('w8a')], ['Correct range', `${Dx} = ${b('n8e', N(16.0, 0.2, '16.0'), 50)} m`]])}</div>`);
+
+  const sum = `<div class="summary"><h3>Summary</h3><p style="margin:0 0 6px;font-size:.85rem;color:#55627f">In 3 to 5 sentences: how do you find how long a projectile is in the air and how far it goes? Use the words time of flight, ${viy}, ${vix}, and range.</p>
+    <textarea id="summary" data-save aria-label="Summary"></textarea><div class="scoreline noprint" id="scoreline"></div></div>`;
+  $('pageEl').innerHTML = top + s1 + s2 + s3 + s4 + s5 + s6 + s7 + s8 + sum;
+}
+const SECNAMES = ['', 'Launching at an angle', 'Rising and falling', 'Time to the top', 'Time of flight', 'Range', 'Launch angle', 'From a height', 'Mistakes'];
+const SUM_MAX = 3;
+function sumScore(t) {
+  const words = String(t || '').trim().split(/\s+/).filter(Boolean).length, s = String(t || '').toLowerCase();
+  const terms = [/time of flight/, /v\s*_?\s*iy|vertical|up part/, /v\s*_?\s*ix|horizontal|sideways/, /range/].filter(r => r.test(s)).length;
+  return (words >= 25 ? 1 : 0) + (terms >= 2 ? 1 : 0) + (terms >= 4 ? 1 : 0);
+}
+
+/* ---------- state + saving ---------- */
+let S = { lesson: LESSON_ID, rev: 0, student: null, v: {}, summary: '', turnedIn: false, turnedAt: '', lockouts: 0, locked: false, lockActive: true }, blocked = false, keyOn = false, STORAGE_OK = true;
+try { localStorage.setItem(KEY + '_t', '1'); localStorage.removeItem(KEY + '_t'); } catch (e) { STORAGE_OK = false; }
+function banner(t) { const el = $('banner'); el.textContent = t; el.classList.add('show'); }
+function saveKey(st) { return (String(st.id || '').replace(/\s+/g, '') + '-' + String(st.last || '').toLowerCase().replace(/[^a-z]/g, '')).toLowerCase(); }
+function score() {
+  const per = []; for (let n = 1; n <= 8; n++) { const xs = BL.filter(x => x.sec === n); per.push({ n, pts: xs.filter(x => right(x, S.v[x.id])).length, max: xs.length }); }
+  per.push({ n: 'Summary', pts: sumScore(S.summary), max: SUM_MAX });
+  const filled = BL.filter(x => S.v[x.id] != null && S.v[x.id] !== '').length;
+  return { per, pts: per.reduce((a, x) => a + x.pts, 0), max: per.reduce((a, x) => a + x.max, 0), filled };
+}
+let saveT = null, cloudT = null;
+function save() {
+  if (keyOn || !S.student) return;
+  if (!blocked && STORAGE_OK) try {
+    const raw = localStorage.getItem(KEY); if (raw) { const o = JSON.parse(raw); if (o && o.student && o.student.id === S.student.id && (o.rev || 0) > S.rev) { blocked = true; banner('These notes are open in another tab. Close the other tab, then reload this one. Saving is paused.'); return; } }
+    S.rev++; localStorage.setItem(KEY, JSON.stringify(S));
+  } catch (e) {}
+  const s = $('saved'); s.textContent = 'Saved ✓'; clearTimeout(saveT); saveT = setTimeout(() => { s.textContent = ''; }, 1800);
+  clearTimeout(cloudT); cloudT = setTimeout(cloudPush, 3000);
+}
+function cloudBody() {
+  const st = S.student, sc = score();
+  return new URLSearchParams({ code: saveKey(st), lesson: LESSON_ID, ver: String(Date.now()), prog: String(sc.filled), studentId: st.id, lastName: st.last, firstName: st.first, period: st.period, teacher: st.teacher,
+    summary: S.turnedIn ? `Turned in: ${sc.pts}/${sc.max}` : `${sc.filled} of ${BL.length} blanks filled`, data: JSON.stringify(S) });
+}
+function cloudPush() { if (!S.student || blocked || !CLOUD()) return; fetch(saveURL(), { method: 'POST', mode: 'no-cors', body: cloudBody() }).catch(() => {}); }
+async function cloudFetch(st) {
+  if (!CLOUD()) return null; const ctrl = new AbortController(), t = setTimeout(() => ctrl.abort(), 8000);
+  try { const u = saveURL(); const r = await fetch(u + (u.indexOf('?') < 0 ? '?' : '&') + new URLSearchParams({ code: saveKey(st), lesson: LESSON_ID }).toString(), { signal: ctrl.signal });
+    const j = await r.json(); if (j && j.found && j.data) { const d = JSON.parse(j.data); if (d && d.lesson === LESSON_ID) return d; } } catch (e) {} finally { clearTimeout(t); }
+  return null;
+}
+window.addEventListener('pagehide', () => { save(); if (S.student && CLOUD() && !blocked) try { navigator.sendBeacon && navigator.sendBeacon(saveURL(), cloudBody()); } catch (e) {} });
+window.addEventListener('storage', e => { if (e.key !== KEY || !e.newValue) return; try { const o = JSON.parse(e.newValue); if ((o.rev || 0) > S.rev) { blocked = true; banner('These notes are open in another tab. Close the other tab, then reload this one. Saving is paused.'); } } catch (_) {} });
+(async () => { try { if (navigator.storage && navigator.storage.estimate) { const q = (await navigator.storage.estimate()).quota || 0; if (q && q < 300 * 1024 * 1024) banner('You may be in guest or incognito mode. Your notes won\u2019t stay on this Chromebook after you close it. Sign in with your school account, or turn them in today.'); } } catch (e) {} })();
+['copy', 'cut', 'paste', 'contextmenu', 'drop'].forEach(ev => document.addEventListener(ev, e => e.preventDefault()));
+
+/* ---------- apply state to the page ---------- */
+function apply() {
+  BL.forEach(x => { const el = $(x.id); if (el) { el.value = S.v[x.id] != null ? S.v[x.id] : ''; el.classList.remove('ok', 'no'); } });
+  $('summary').value = S.summary || '';
+  $$('.wkl').forEach(el => { el.value = (S.w && S.w[el.id]) || ''; });
+  const st = S.student; $('wName').textContent = st ? `${st.first} ${st.last}` : ''; $('wPer').textContent = st ? st.period : ''; $('wDate').textContent = new Date().toLocaleDateString();
+}
+function renderScoreLine() {
+  const sc = score(); $('scoreline').innerHTML = S.turnedIn ? `Turned in ${new Date(S.turnedAt).toLocaleString()}: <b>${sc.pts} / ${sc.max}</b>. You can fix blanks and turn in again to update.` : `${sc.filled} of ${BL.length} blanks filled.`;
+}
+document.addEventListener('input', e => {
+  if (keyOn) return;
+  if (e.target.matches('input.b')) { S.v[e.target.id] = e.target.value; e.target.classList.remove('ok', 'no'); save(); renderScoreLine(); }
+  if (e.target.id === 'summary') { S.summary = e.target.value; save(); }
+  if (e.target.matches('.wkl')) { S.w = S.w || {}; S.w[e.target.id] = e.target.value; save(); }
+});
+document.addEventListener('change', e => { if (!keyOn && e.target.matches('select.b')) { S.v[e.target.id] = e.target.value; e.target.classList.remove('ok', 'no'); save(); renderScoreLine(); } });
+
+/* ---------- sign in ---------- */
+function setupSign() {
+  $('sTeacher').innerHTML = '<option value="">Choose</option>' + teacherList().map(t => `<option>${esc(t)}</option>`).join('');
+  if (S.student) showSigned();
+  $('signBtn').addEventListener('click', async () => {
+    const v = { first: $('sFirst').value.trim(), last: $('sLast').value.trim(), id: $('sId').value.trim(), period: $('sPeriod').value, teacher: $('sTeacher').value }, m = $('signmsg');
+    if (!v.first || !v.last || !v.id || !v.period || !v.teacher) { m.className = 'msg bad'; m.textContent = 'Fill in every box.'; return; }
+    if (!/^\d{3,12}$/.test(v.id)) { m.className = 'msg bad'; m.textContent = 'Your student ID should be numbers only.'; return; }
+    if (S.student && S.student.id === v.id && S.student.last.toLowerCase() === v.last.toLowerCase()) { S.student = v; apply(); showSigned(); save(); return; }
+    m.className = 'msg'; m.textContent = 'Checking for your saved notes...';
+    const d = await cloudFetch(v);
+    S = d ? Object.assign({ lesson: LESSON_ID, rev: 0, v: {}, summary: '' }, d, { student: v }) : { lesson: LESSON_ID, rev: 0, student: v, v: {}, summary: '', turnedIn: false, turnedAt: '' };
+    blocked = false; apply(); renderScoreLine(); showSigned(); save(); if (d) m.textContent += ' Your saved notes were loaded.';
+  });
+}
+function showSigned() {
+  setTimeout(startLock, 0);
+  const st = S.student, m = $('signmsg'); m.className = 'msg good';
+  m.innerHTML = `Signed in as ${esc(st.first)} ${esc(st.last)} (period ${esc(st.period)}). Save code: ${esc(saveKey(st))}. <button class="btn" type="button" id="notMe" style="padding:2px 8px">Not you?</button>`;
+  $('notMe').addEventListener('click', () => { cloudPush(); S = { lesson: LESSON_ID, rev: 0, student: null, v: {}, summary: '', turnedIn: false, turnedAt: '' }; try { localStorage.removeItem(KEY); } catch (e) {} apply(); renderScoreLine(); ['sFirst', 'sLast', 'sId', 'sPeriod', 'sTeacher'].forEach(i => { $(i).value = ''; }); $('signmsg').className = 'msg'; $('signmsg').textContent = 'Sign in so your notes save.'; });
+  ['sFirst', 'sLast', 'sId', 'sPeriod', 'sTeacher'].forEach((i, k) => { $(i).value = [st.first, st.last, st.id, st.period, st.teacher][k] || ''; });
+}
+
+/* ---------- check, turn in, print ---------- */
+$('printBtn').addEventListener('click', () => { printing = true; window.print(); setTimeout(() => { printing = false; if (lockLive() && !isFull() && !S.locked) $('gateOv').hidden = false; }, 1500); });
+$('checkBtn').addEventListener('click', () => {
+  let ok = 0, filled = 0; BL.forEach(x => { const el = $(x.id), v = S.v[x.id]; el.classList.remove('ok', 'no'); if (v == null || v === '') return; filled++; const r = right(x, v); el.classList.add(r ? 'ok' : 'no'); if (r) ok++; });
+  $('saved').textContent = `${ok} of ${filled} filled blanks are right. Red ones need another look.`;
+});
+const CSV_HEAD = ['Student ID', 'Last Name', 'First Name', 'Period', 'Teacher', 'Activity', 'Score', 'Total', 'Percent', 'Times Locked', 'Date', 'Points by Question'];
+function rowOf(bd) { return [bd.studentId, bd.lastName, bd.firstName, bd.period, bd.teacher, bd.activity, bd.score, bd.total, Math.round(bd.score / bd.total * 100) + '%', bd.locks, new Date(bd.when).toLocaleString(), bd.qlabels.split('|').map((l, i) => `${l}:${bd.qpoints.split('|')[i]}/${bd.qmax.split('|')[i]}`).join(' ')]; }
+function csv(rows, name) {
+  const q = v => { const s = String(v == null ? '' : v); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([[CSV_HEAD].concat(rows).map(r => r.map(q).join(',')).join('\r\n') + '\r\n'], { type: 'text/csv;charset=utf-8' })); a.download = name;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+$('turnBtn').addEventListener('click', () => {
+  if (keyOn) { alert('Hide the answer key first.'); return; }
+  if (!S.student) { $('signmsg').className = 'msg bad'; $('signmsg').textContent = 'Sign in first, then turn in.'; $('signBox').scrollIntoView({ behavior: 'smooth' }); return; }
+  const sc = score(), st = S.student;
+  if (sc.filled < BL.length && !confirm(`You have ${BL.length - sc.filled} empty blanks. Turn in anyway?`)) return;
+  S.turnedIn = true; S.turnedAt = new Date().toISOString(); S.lockActive = false; save(); renderScoreLine(); endFull();
+  BL.forEach(x => { const el = $(x.id); el.classList.remove('ok', 'no'); el.classList.add(right(x, S.v[x.id]) ? 'ok' : 'no'); });
+  const body = { studentId: st.id, firstName: st.first, lastName: st.last, period: st.period, teacher: st.teacher, activity: `${LESSON}: Cornell Notes`, score: String(sc.pts), total: String(sc.max),
+    qlabels: sc.per.map(x => typeof x.n === 'number' ? 'S' + x.n : x.n).join('|'), qpoints: sc.per.map(x => x.pts).join('|'), qmax: sc.per.map(x => x.max).join('|'), locks: String(S.lockouts || 0), when: new Date().toString() };
+  try { const recs = JSON.parse(localStorage.getItem(RECS) || '[]').filter(r => r.studentId !== st.id); recs.push(body); localStorage.setItem(RECS, JSON.stringify(recs)); } catch (e) {}
+  $('saved').textContent = 'Sending...';
+  fetch(sheetURL(), { method: 'POST', mode: 'no-cors', body: new URLSearchParams(body) }).then(() => { $('saved').textContent = `Turned in: ${sc.pts}/${sc.max}. Sent to your teacher ✓`; })
+    .catch(() => { $('saved').textContent = "Couldn't send. Downloading a CSV for your teacher instead."; csv([rowOf(body)], `ProjectileNotes_${saveKey(st)}.csv`); });
+});
+
+/* ---------- teacher tools (code: flight) ---------- */
+let codeFn = null;
+function askCode(fn) { codeFn = fn; $('codeIn').value = ''; $('codeMsg').textContent = ''; $('codeOv').hidden = false; setTimeout(() => $('codeIn').focus(), 30); }
+$('codeGo').addEventListener('click', () => { if (!isTeacherCode($('codeIn').value)) { $('codeMsg').textContent = 'That code isn\u2019t right.'; return; } $('codeOv').hidden = true; const f = codeFn; codeFn = null; if (f) f(); });
+$('codeIn').addEventListener('keydown', e => { if (e.key === 'Enter') $('codeGo').click(); });
+$('codeNo').addEventListener('click', () => { $('codeOv').hidden = true; codeFn = null; });
+function toggleKey() {
+  keyOn = !keyOn; document.body.classList.toggle('key', keyOn); $('keyBtn').textContent = keyOn ? 'Hide answer key' : 'Teacher: answer key'; $('keyBtn').classList.toggle('on', keyOn);
+  BL.forEach(x => { const el = $(x.id); el.classList.remove('ok', 'no'); el.value = keyOn ? keyText(x) : (S.v[x.id] || ''); el.disabled = keyOn; });
+  $('summary').value = keyOn ? 'Example: To find the time of flight, use v_iy. At the top v_fy = 0, so equation 1 gives the time to the top, and on level ground the time of flight is twice that. If the ball starts higher than it lands, add the time to fall from rest from the peak. To find the range, multiply v_ix by the time of flight, because a_x = 0 and the sideways speed never changes.' : (S.summary || '');
+  $('summary').disabled = keyOn;
+}
+$('keyBtn').addEventListener('click', () => { if (keyOn) toggleKey(); else askCode(toggleKey); });
+$('csvBtn').addEventListener('click', () => askCode(() => { let recs = []; try { recs = JSON.parse(localStorage.getItem(RECS) || '[]'); } catch (e) {} if (!recs.length) { alert('No turned-in notes are saved on this Chromebook yet.'); return; } csv(recs.map(rowOf), 'ProjectileNotes_scores.csv'); }));
+
+/* ---------- start ---------- */
+/* ---------- lockdown (GitHub Pages, or ?lockdown) ---------- */
+let printing = false, leaving = false;
+window.addEventListener('beforeprint', () => { printing = true; });
+window.addEventListener('afterprint', () => { setTimeout(() => { printing = false; if (lockLive() && !isFull() && !S.locked) $('gateOv').hidden = false; }, 800); });
+const lockLive = () => LOCK_ON && S.student && S.lockActive !== false && !keyOn;
+const isFull = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
+function endFull() { try { if (isFull()) { leaving = true; (document.exitFullscreen || document.webkitExitFullscreen).call(document); setTimeout(() => { leaving = false; }, 800); } } catch (e) {} }
+function startLock() { if (!lockLive()) return; if (S.locked) { showLock(); return; } if (!isFull()) $('gateOv').hidden = false; }
+function lockNow() { if (!lockLive() || S.locked || printing || leaving || !$('gateOv').hidden) return; S.locked = true; S.lockouts = (S.lockouts || 0) + 1; save(); cloudPush(); showLock(); }
+function showLock() { $('lockOv').hidden = false; $('lockCode').value = ''; $('lockMsg').textContent = ''; setTimeout(() => $('lockCode').focus(), 30); }
+$('gateGo').addEventListener('click', async () => { try { const el = document.documentElement; await (el.requestFullscreen || el.webkitRequestFullscreen).call(el); } catch (e) {} $('gateOv').hidden = true; });
+$('lockGo').addEventListener('click', () => { if ($('lockCode').value.trim().toLowerCase() !== UNLOCK_CODE) { $('lockMsg').textContent = 'That code isn\u2019t right.'; return; } S.locked = false; S.lockActive = false; save(); cloudPush(); $('lockOv').hidden = true; $('gateOv').hidden = true; endFull(); $('saved').textContent = 'Lockdown ended for this student on this Chromebook.'; });
+$('lockCode').addEventListener('keydown', e => { if (e.key === 'Enter') $('lockGo').click(); });
+document.addEventListener('fullscreenchange', () => { if (!isFull()) lockNow(); });
+document.addEventListener('webkitfullscreenchange', () => { if (!isFull()) lockNow(); });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') lockNow(); });
+$('endLockBtn').addEventListener('click', () => askCode(() => { S.lockActive = false; S.locked = false; save(); $('lockOv').hidden = true; $('gateOv').hidden = true; endFull(); $('saved').textContent = 'Lockdown is off for this student on this Chromebook.'; }));
+
+buildNotes(); setupSign();
+try { const o = JSON.parse(localStorage.getItem(KEY) || 'null'); if (o && o.lesson === LESSON_ID) S = Object.assign(S, o); } catch (e) {}
+apply(); if (S.student) showSigned(); renderScoreLine();
+})();
+</script>
+</body>
+</html>

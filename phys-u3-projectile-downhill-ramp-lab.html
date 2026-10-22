@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Downhill Ramp Marble Lab: Predicting the Landing | Physics Unit 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0c1426;--bg2:#101a30;--panel:#141f38;--panel2:#1a2746;--line:#2a3a60;--line2:#34476f;--ink:#e9eefb;--muted:#a3b2d2;--dim:#7385aa;--amber:#ffcf5a;--teal:#3fd6a0;--sky:#6cb8ff;--violet:#b19bff;--red:#ff7f86;--orange:#ff9f5a;--font:'Lexend',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.55;-webkit-user-select:none;user-select:none}
+body{background-image:linear-gradient(rgba(120,150,210,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(120,150,210,.055) 1px,transparent 1px);background-size:34px 34px;min-height:100vh}
+input,textarea,select{-webkit-user-select:text;user-select:text;font-family:inherit}
+button{font-family:inherit}
+.v{font-style:italic;white-space:nowrap} sub{font-size:.7em}
+[hidden]{display:none!important}
+:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
+header{background:rgba(12,20,38,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+.hin{max-width:1240px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.hin .ic{width:44px;height:44px;border:2px solid var(--amber);border-radius:10px;background:var(--panel2);padding:7px;flex:0 0 auto}
+.hin h1{font-size:1.08rem;margin:0;line-height:1.2;font-weight:600}
+.hin .sub{font-size:.78rem;color:var(--muted)}
+.hin .sp{flex:1}
+.sub{color:var(--muted)}
+#saveNote{font-size:.78rem;color:var(--muted)}
+.btn{border:1px solid var(--line2);background:var(--panel2);color:var(--ink);padding:8px 14px;border-radius:9px;font-size:.9rem;cursor:pointer;font-weight:500}
+.btn:hover{border-color:var(--sky)}
+.btn.primary{background:var(--amber);border-color:var(--amber);color:#1b1505;font-weight:600}
+.btn.teal{background:var(--teal);border-color:var(--teal);color:#05221a;font-weight:600}
+.btn.small{padding:5px 10px;font-size:.8rem}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+main{max-width:1240px;margin:0 auto;padding:14px 16px 80px}
+.banner{display:none;background:rgba(255,159,90,.13);border:1px solid var(--orange);color:#ffd2b0;border-radius:10px;padding:8px 12px;margin-bottom:10px;font-size:.88rem}
+.banner.show{display:block}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.signwrap{max-width:760px;margin:20px auto;display:grid;gap:14px}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+.form label{display:flex;flex-direction:column;gap:4px;font-size:.84rem;color:var(--muted)}
+.form input,.form select{padding:9px 10px;border:1px solid var(--line2);border-radius:8px;font-size:.95rem;color:var(--ink);background:var(--bg2)}
+.form .full{grid-column:1/-1}
+.err{color:var(--orange);font-size:.88rem;margin:4px 0}
+.split{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:900px){.split{grid-template-columns:1fr}}
+.stim{position:sticky;top:80px;max-height:calc(100vh - 96px);overflow:auto}
+@media (max-width:900px){.stim{position:static;max-height:none}}
+.phen{background:rgba(255,207,90,.08);border:1px solid rgba(255,207,90,.45);border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:.92rem}
+.phen b{display:block;font-size:.76rem;color:var(--amber);margin-bottom:2px}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:2px solid var(--line);margin-bottom:10px}
+.tab{border:1px solid var(--line);border-bottom:0;background:var(--bg2);color:var(--muted);padding:7px 12px;border-radius:8px 8px 0 0;cursor:pointer;font-size:.86rem}
+.tab.on{background:var(--panel2);color:var(--ink);font-weight:600;border-color:var(--amber);position:relative;top:2px}
+.pane p{margin:0 0 8px}
+.fig{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:6px}
+.fig svg{width:100%;height:auto;display:block;max-height:380px}
+.figcap{font-size:.76rem;color:var(--muted);text-align:center;margin-top:4px}
+table.dt{border-collapse:collapse;width:100%;font-size:.88rem}
+table.dt th,table.dt td{border:1px solid var(--line2);padding:6px 8px;text-align:center}
+table.dt th{background:var(--panel2);font-weight:500;color:var(--muted)}
+.eqbox{background:var(--bg2);border:1px solid var(--line2);border-radius:10px;padding:10px 14px;margin:8px 0;font-size:1rem}
+.eqbox .eq{padding:3px 0;white-space:nowrap;overflow-x:auto}
+.eqbox .n{display:inline-block;width:1.5em;color:var(--amber);font-weight:600}
+.eqbox .cap{font-size:.78rem;color:var(--muted);margin-bottom:4px}
+.ro{display:inline-block;background:var(--bg2);border:1px solid var(--line2);border-radius:7px;padding:3px 9px;font-size:.84rem;margin:2px 4px 2px 0}
+.qnav{display:flex;gap:6px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+.qdot{min-width:44px;height:36px;border-radius:9px;border:2px solid var(--line2);background:var(--panel2);cursor:pointer;font-size:.85rem;color:var(--muted)}
+.qdot.cur{border-color:var(--amber);color:var(--ink);font-weight:600}
+.qdot.ans{color:var(--ink);border-color:rgba(108,184,255,.6)}
+.qhead{font-size:.8rem;color:var(--muted);margin-bottom:4px}
+.qtext{margin:0 0 10px}
+.opts{display:grid;gap:7px;margin:6px 0 12px}
+.opt{display:flex;gap:10px;align-items:center;text-align:left;padding:9px 11px;border:1px solid var(--line2);border-radius:9px;background:var(--panel2);cursor:pointer;font-size:.93rem;color:var(--ink)}
+.opt .L{flex:0 0 26px;height:26px;border-radius:7px;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:.8rem;color:var(--muted)}
+.opt.sel{border-color:var(--sky);background:rgba(108,184,255,.12)}
+.opt.sel .L{background:var(--sky);color:#06182e}
+.opt.right{border-color:var(--teal);background:rgba(63,214,160,.12)}
+.opt.wrong{border-color:var(--red);background:rgba(255,127,134,.1)}
+.opt:disabled{cursor:default}
+.part{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:8px 0}
+.part h4{margin:0 0 4px;font-size:.84rem;color:var(--muted);font-weight:500}
+.numrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin:7px 0;background:var(--bg2)}
+.numrow .in{display:flex;gap:6px;align-items:center}
+.numrow input{width:110px;padding:8px 10px;border-radius:8px;border:1px solid var(--line2);background:var(--panel);color:var(--ink);font-size:.98rem;text-align:center}
+.numrow input.right{border-color:var(--teal);background:rgba(63,214,160,.12)} .numrow input.wrong{border-color:var(--red);background:rgba(255,127,134,.1)}
+.numrow .u{color:var(--muted);font-size:.86rem;min-width:30px}
+.workbox{width:100%;min-height:58px;border:1px dashed var(--line2);border-radius:8px;padding:7px;font-size:.88rem;background:transparent;color:var(--ink);resize:vertical}
+.cer label{display:block;font-weight:600;font-size:.9rem;margin:10px 0 3px}
+.cer label span{font-weight:400;color:var(--muted);font-size:.8rem}
+.cer textarea{width:100%;min-height:72px;border:1px solid var(--line2);border-radius:8px;padding:8px;font-size:.93rem;resize:vertical;color:var(--ink);background:var(--bg2)}
+.qfoot{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.result{border-radius:9px;padding:8px 12px;margin:8px 0;font-size:.9rem}
+.result.good{background:rgba(63,214,160,.1);border:1px solid var(--teal)} .result.part{background:rgba(255,207,90,.08);border:1px solid var(--amber)} .result.bad{background:rgba(255,127,134,.08);border:1px solid var(--red)}
+.big{font-size:2.6rem;font-weight:600;line-height:1}
+.overlay{position:fixed;inset:0;z-index:100;background:rgba(5,9,18,.88);display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--panel);border:1px solid var(--line2);border-radius:14px;padding:20px;max-width:480px;width:100%;max-height:90vh;overflow:auto}
+.modal h3{margin:0 0 8px}
+.modal input{width:100%;padding:9px;border:1px solid var(--line2);border-radius:8px;font-size:1rem;margin:8px 0;background:var(--bg2);color:var(--ink)}
+.tgrid{display:grid;gap:7px;margin-top:8px}.tgrid .btn{text-align:left}
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--sky);color:var(--ink);padding:9px 15px;border-radius:9px;z-index:120;opacity:0;transition:opacity .2s;pointer-events:none}
+#toast.show{opacity:1}
+.previewbar{background:rgba(177,155,255,.18);border-bottom:1px solid var(--violet);text-align:center;font-size:.84rem;padding:4px}
+body.key .keyonly{display:block!important}.keyonly{display:none;color:var(--teal);font-size:.84rem;margin-top:4px}
+#calc{position:fixed;right:16px;bottom:16px;z-index:60;width:270px;background:var(--panel);border:1px solid var(--line2);border-radius:14px;padding:12px;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+#calc .disp{background:var(--bg2);border:1px solid var(--line2);border-radius:8px;padding:8px 10px;min-height:58px;text-align:right;overflow-wrap:anywhere}
+#calc .expr{font-size:.85rem;color:var(--muted);min-height:1.2em}
+#calc .res{font-size:1.25rem;font-weight:600}
+#calc .keys{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+#calc .keys button{padding:9px 0;border-radius:8px;border:1px solid var(--line2);background:var(--panel2);color:var(--ink);cursor:pointer;font-size:.92rem}
+#calc .keys button.op{color:var(--amber)}
+#calc .keys button.eq{background:var(--amber);color:#1b1505;border-color:var(--amber)}
+#calc .chead{display:flex;justify-content:space-between;align-items:center;font-size:.85rem;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.nav{max-width:1240px;margin:0 auto;padding:0 16px 10px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.tile{position:relative;height:62px;border-radius:10px;border:2px solid var(--line2);background:var(--panel);color:var(--muted);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px;font-family:inherit}
+.tile svg{width:26px;height:26px}
+.tile .n{position:absolute;top:3px;left:6px;font-size:.68rem;color:var(--dim)}
+.tile .lb{font-size:.66rem;line-height:1.1;text-align:center}
+.tile .ck{position:absolute;top:2px;right:5px;font-size:.7rem;color:var(--teal);display:none}
+.tile.done{border-color:rgba(63,214,160,.55)} .tile.done .ck{display:block}
+.tile.current{border-color:var(--amber);color:var(--ink);background:var(--panel2)}
+.tile:disabled{opacity:.38;cursor:not-allowed}
+@media (max-width:760px){.tile .lb{display:none}}
+.sechead{display:flex;align-items:center;gap:18px;margin:6px 0 16px}
+.bigtile{flex:0 0 auto;width:90px;height:94px;border:3px solid var(--amber);border-radius:14px;background:var(--panel2);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;color:var(--muted);font-size:.76rem}
+.bigtile .n{position:absolute;top:4px;left:9px;font-size:.85rem}
+.bigtile svg{width:42px;height:42px;margin-bottom:3px}
+.sechead .meta{color:var(--muted);font-size:.86rem} .sechead h2{margin:2px 0 0;font-size:1.55rem;font-weight:600}
+.page{display:none}.page.show{display:block}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:860px){.cols{grid-template-columns:1fr}}
+.card{margin-bottom:14px}
+.card h3{margin:2px 0 8px;font-size:1.12rem;font-weight:600}
+.card p{margin:0 0 8px} .card ol,.card ul{margin:0 0 8px;padding-left:22px} .card li{margin:3px 0}
+.chip{display:inline-block;white-space:nowrap;font-size:.72rem;font-weight:600;padding:3px 10px;border-radius:99px;margin-bottom:6px}
+.chip.do{background:rgba(63,214,160,.14);color:var(--teal);border:1px solid rgba(63,214,160,.4)}
+.chip.math{background:rgba(177,155,255,.15);color:var(--violet);border:1px solid rgba(177,155,255,.4)}
+.chip.read{background:rgba(108,184,255,.16);color:var(--sky);border:1px solid rgba(108,184,255,.4)}
+.chip.safe{background:rgba(255,159,90,.14);color:var(--orange);border:1px solid rgba(255,159,90,.45)}
+.numrow{grid-template-columns:minmax(0,1fr) auto}
+.numrow .tag{font-size:.78rem;color:var(--muted)}
+.trials{display:grid;grid-template-columns:auto repeat(3,minmax(0,1fr));gap:6px 10px;align-items:center;margin:8px 0}
+.trials .h{font-size:.8rem;color:var(--muted);text-align:center}
+.trials input{width:100%;padding:7px;border-radius:8px;border:1px solid var(--line2);background:var(--panel);color:var(--ink);text-align:center;font-size:.95rem}
+.trials input.right,.numrow input.right{border-color:var(--teal);background:rgba(63,214,160,.12)}
+.trials input.wrong,.numrow input.wrong{border-color:var(--red);background:rgba(255,127,134,.1)}
+.trials .lab{font-size:.86rem}
+.fb{font-size:.88rem;margin:6px 0}.fb.ok{color:var(--teal)}.fb.no{color:var(--orange)}
+.lockbox{border:1px dashed var(--amber);border-radius:10px;padding:10px 12px;margin:10px 0;background:rgba(255,207,90,.06)}
+.wk{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;background:var(--bg2);border:1px solid var(--line2);border-radius:10px;padding:10px 14px;margin:8px 0}
+.wk .l{color:var(--muted);font-size:.78rem}
+.c-vi{color:#c3b2ff;font-weight:600}.c-vx{color:#ff8f96;font-weight:600}.c-a{color:#ffab70;font-weight:600}.c-D{color:#ffcf5a;font-weight:600}.c-t{color:#7cc2ff;font-weight:600}.c-vf{color:#3fd6a0;font-weight:600}
+.reqline{font-size:.84rem;color:var(--muted);margin-top:8px}
+</style>
+</head>
+<body>
+<div class="previewbar" id="previewBar" hidden>Preview mode: nothing is saved or sent. Reload to leave preview mode.</div>
+<header>
+  <div class="hin">
+    <div><h1>Downhill Ramp Marble Lab: Predicting the Landing</h1><div class="sub">Physics · Unit 3 · Projectile Motion and Time of Flight · lab, about 45 minutes</div></div>
+    <span class="sp"></span><span id="saveNote" aria-live="polite"></span>
+    <button class="btn small" id="calcBtn" type="button">Calculator</button>
+    <button class="btn small ghost" id="teachBtn" type="button">Teacher</button>
+  </div>
+  <nav class="nav" id="nav" aria-label="Lab steps" hidden></nav>
+</header>
+<main>
+  <div class="banner" id="banner" role="alert"></div>
+  <section id="signPage" class="signwrap">
+    <div class="card"><h2 style="margin:0 0 6px;font-size:1.3rem">Downhill Ramp Marble Lab: Predicting the Landing</h2>
+      <p class="sub" style="margin:0">A marble rolls down a ramp, across your table, and off the edge. Your job: use measurements and physics to predict exactly where it will land, then test your prediction.</p></div>
+    <div class="card" id="signCard"><h3 style="margin:0 0 6px">Sign in</h3>
+      <p style="margin:0 0 10px;font-size:.86rem;color:var(--muted)">Your save code is your student ID and last name. Use the same ones on any Chromebook to pick up where you left off. Each person in the group signs in on their own Chromebook and records the group's data.</p>
+      <form class="form" id="signForm" autocomplete="off" novalidate>
+        <label>First name<input id="fFirst" maxlength="40"></label><label>Last name<input id="fLast" maxlength="40"></label>
+        <label>Student ID<input id="fId" inputmode="numeric" maxlength="12"></label>
+        <label>Period<select id="fPeriod"></select></label>
+        <label class="full">Teacher<select id="fTeacher"></select></label>
+        <label class="full">Lab partners (names)<input id="fPartners" maxlength="120"></label>
+        <div class="full"><p class="err" id="signErr" hidden></p><button class="btn primary" id="startBtn" type="submit">Start the lab</button></div>
+      </form></div>
+    <div class="card" id="resumeCard" hidden><h3 style="margin:0 0 6px">Welcome back</h3><p id="resumeWho"></p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" id="resumeBtn" type="button">Keep going</button><button class="btn" id="notMeBtn" type="button">Not you? Sign in as a different student</button></div></div>
+  </section>
+  <section class="page" id="page1"></section><section class="page" id="page2"></section><section class="page" id="page3"></section>
+  <section class="page" id="page4"></section><section class="page" id="page5"></section><section class="page" id="page6"></section>
+</main>
+<div class="overlay" id="gateOv" hidden><div class="modal"><h3>Full screen is required</h3><p style="color:var(--muted)">This lab runs in full screen on your Chromebook. If you leave the page or exit full screen, it locks and your teacher has to unlock it. Your work is saved. (Use your phone for the video; that won't lock anything.)</p><button class="btn primary" id="gateGo" type="button">Enter full screen</button></div></div>
+<div class="overlay" id="lockOv" hidden><div class="modal" role="alertdialog"><div style="font-size:2rem">🔒</div><h3>Locked</h3><p style="color:var(--muted)">You left the page or exited full screen. Ask your teacher. Your work is saved.</p>
+  <input type="password" id="lockCode" placeholder="Code to end lockdown" aria-label="Code to end lockdown" autocomplete="off"><p class="err" id="lockMsg"></p><button class="btn primary" id="lockGo" type="button">End lockdown</button></div></div>
+<div class="overlay" id="teachOv" hidden><div class="modal"><h3>Teacher tools</h3>
+  <div id="tLogin"><input type="password" id="tCode" placeholder="Teacher code" aria-label="Teacher code" autocomplete="off"><p class="err" id="tMsg"></p><button class="btn primary" id="tGo" type="button">Open</button> <button class="btn" data-close type="button">Cancel</button></div>
+  <div id="tTools" hidden><div class="tgrid">
+    <button class="btn" id="tKey" type="button">Show answer key (based on this student's own measurements)</button>
+    <button class="btn" id="tUnlockPred" type="button">Unlock this student's prediction so it can be changed</button>
+    <button class="btn" id="tPreview" type="button">Preview mode (saves nothing)</button>
+    <button class="btn" id="tEndLock" type="button">End lockdown on this Chromebook</button>
+    <button class="btn" id="tScores" type="button">Download scores saved on this Chromebook (CSV)</button>
+    <button class="btn" id="tReset" type="button">Reset this student's work</button>
+    <button class="btn" data-close type="button">Close</button></div><p id="tNote" style="font-size:.84rem;color:var(--muted)"></p></div></div></div>
+<div class="overlay" id="confOv" hidden><div class="modal"><h3 id="confT"></h3><p id="confX" style="color:var(--muted)"></p><button class="btn primary" id="confYes" type="button">Yes</button> <button class="btn" id="confNo" type="button">Cancel</button></div></div>
+<div id="calc" hidden aria-label="Calculator"><div class="chead"><span>Calculator (degrees)</span><button class="btn small ghost" id="calcClose" type="button" aria-label="Close calculator">✕</button></div>
+  <div class="disp"><div class="expr" id="cExpr"></div><div class="res" id="cRes">0</div></div><div class="keys" id="cKeys"></div></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="sheets-config.js"></script>
+<script>
+(() => {
+'use strict';
+/* ================= SETTINGS ================= */
+const LESSON_ID = 'phys-u3-projectile-downhill-ramp-lab';
+const KEY = 'fate_phys_u3_downhill_ramp_lab_v1', RECS = KEY + '_records';
+const ACTIVITY = 'Downhill Ramp Marble Lab: Predicting the Landing';
+const UNLOCK_CODE = 'landing';            // last word of the title: ends lockdown, nothing else
+const TEACHER_CODE = 'teacher007';         // opens the teacher tools
+const isTeacherCode = v => String(v || '').trim().toLowerCase() === TEACHER_CODE.toLowerCase();
+const G = 9.8;
+const BACKUP_URL = 'https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const SAVE_URL_BUILTIN = 'https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';
+const BACKUP_TEACHERS = ['Austin', 'Mueller', 'McCue', 'Arce', 'Trimm', 'Garcia', 'Trimm/Callanan', 'Callanan'];
+function teacherList() { try { if (typeof TEACHERS !== 'undefined' && Array.isArray(TEACHERS) && TEACHERS.length) return TEACHERS.map(String).filter(Boolean); } catch (e) {} return BACKUP_TEACHERS; }
+function periodList() { try { if (typeof PERIODS !== 'undefined' && Array.isArray(PERIODS) && PERIODS.length) return PERIODS.map(String).filter(Boolean); } catch (e) {} return ['1', '2', '3', '4', '5', '6', '7', '8']; }
+function sheetURL() { try { if (typeof SHEETS_WEBHOOK_URL !== 'undefined' && SHEETS_WEBHOOK_URL && String(SHEETS_WEBHOOK_URL).indexOf('PASTE') < 0) return String(SHEETS_WEBHOOK_URL); } catch (e) {} return BACKUP_URL; }
+function saveURL() {
+  try { if (typeof SAVE_WEBHOOK_URL !== 'undefined' && SAVE_WEBHOOK_URL && String(SAVE_WEBHOOK_URL).indexOf('PASTE') < 0) return String(SAVE_WEBHOOK_URL); } catch (e) {}
+  try { if (typeof PROGRESS_WEBHOOK_URL !== 'undefined' && PROGRESS_WEBHOOK_URL && String(PROGRESS_WEBHOOK_URL).indexOf('PASTE') < 0) return String(PROGRESS_WEBHOOK_URL); } catch (e) {}
+  return SAVE_URL_BUILTIN;
+}
+const CLOUD = () => /^https?:/.test(location.protocol);
+const LOCK_ON = /github\.io$/i.test(location.hostname) || new URLSearchParams(location.search).has('lockdown');
+
+/* ================= HELPERS ================= */
+const $ = s => document.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const V = (b, s) => `<span class="v">${b}<sub>${s}</sub></span>`;
+const vix = V('v', 'ix'), viy = V('v', 'iy'), vfy = V('v', 'fy'), ay = V('a', 'y'), ax = V('a', 'x'), Dx = V('ΔD', 'x'), Dy = V('ΔD', 'y'), t_ = '<span class="v">Δt</span>', vi = V('v', 'i');
+const k = (c, h) => `<span class="c-${c}">${h}</span>`;
+function toast(t) { const e = $('#toast'); e.textContent = t; e.classList.add('show'); clearTimeout(toast.T); toast.T = setTimeout(() => e.classList.remove('show'), 2600); }
+function banner(t) { const b = $('#banner'); b.textContent = t; b.classList.add('show'); }
+function num(s) { const m = String(s == null ? '' : s).replace(/[−–—]/g, '-').replace(/,/g, '').match(/-?\d*\.?\d+/); return m ? parseFloat(m[0]) : NaN; }
+const ok = x => typeof x === 'number' && isFinite(x);
+function near(student, correct, rel = 0.03, abs = 0.02) { return ok(student) && ok(correct) && Math.abs(student - correct) <= Math.max(abs, Math.abs(correct) * rel) + 1e-9; }
+const r2 = x => ok(x) ? (Math.round(x * 100) / 100).toFixed(2) : '—', r1 = x => ok(x) ? (Math.round(x * 10) / 10).toFixed(1) : '—', r3 = x => ok(x) ? (Math.round(x * 1000) / 1000).toFixed(3) : '—';
+
+/* ================= ICONS ================= */
+const IC = {
+  setup: '<path d="M2 21h20"/><path d="M3 12h13v9"/><path d="M4 4l8 8"/><circle cx="5" cy="3.6" r="1.3"/><path d="M16 12c2 0 3 2 4 6" stroke-dasharray="1.6 2"/>',
+  speed: '<rect x="7" y="2.5" width="10" height="19" rx="2.2"/><circle cx="12" cy="10" r="2.8"/><path d="M10.3 18h3.4"/>',
+  split: '<path d="M4 19h14"/><path d="M18 19V7" stroke-dasharray="2 2"/><path d="M4 19L18 7"/><path d="M15.4 19v-2.6H18"/>',
+  predict: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/>',
+  test: '<path d="M2.5 21h19"/><path d="M3.5 9c4.5-6 10-4 13 9" stroke-dasharray="2 2"/><circle cx="17" cy="18.6" r="2.1"/>',
+  conclude: '<rect x="5" y="4.5" width="14" height="17" rx="2"/><path d="M9 3h6v3H9z"/><path d="M8.5 13.5l2.4 2.4 4.6-5"/>',
+  results: '<path d="M3 21h18"/><path d="M6 21v-6h3v6M10.5 21V9h3v12M15 21V5h3v16"/>'
+};
+const icon = k2 => `<svg viewBox="0 0 24 24" fill="none" stroke="#ffcf5a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[k2]}</svg>`;
+const STEPS = [null,
+  { ic: 'setup', name: 'Set up', title: 'Build and measure the ramp and table', min: 8 },
+  { ic: 'speed', name: 'Speed', title: 'Measure the launch speed', min: 10 },
+  { ic: 'predict', name: 'Predict', title: 'Predict the landing spot', min: 8 },
+  { ic: 'test', name: 'Test', title: 'Test your prediction', min: 10 },
+  { ic: 'conclude', name: 'Conclude', title: 'Analysis and conclusion', min: 7 },
+  { ic: 'results', name: 'Results', title: 'Your results', min: 0 }];
+const LAST = 5, RES = 6;
+
+/* ================= STATE + SAVING ================= */
+let STORAGE_OK = true; try { localStorage.setItem(KEY + '_t', '1'); localStorage.removeItem(KEY + '_t'); } catch (e) { STORAGE_OK = false; }
+const fresh = () => ({ lesson: LESSON_ID, rev: 0, student: null, d: {}, work: {}, cur: 1, predLocked: false, predAt: '', done: false, result: null, sentAt: '', lockouts: 0, locked: false, lockActive: true, preview: false });
+let S = fresh(), blocked = false, keyOn = false;
+try { const o = JSON.parse(localStorage.getItem(KEY) || 'null'); if (o && o.lesson === LESSON_ID) S = Object.assign(fresh(), o); } catch (e) {}
+if (S.preview) S = fresh();
+function saveKey(st) { return (String(st.id || '').replace(/\s+/g, '') + '-' + String(st.last || '').toLowerCase().replace(/[^a-z]/g, '')).toLowerCase(); }
+let cloudT = null;
+function save(soon) {
+  if (!S.student || S.preview) return;
+  if (!blocked && STORAGE_OK) try {
+    const raw = localStorage.getItem(KEY); if (raw) { const o = JSON.parse(raw); if (o && o.student && o.student.id === S.student.id && (o.rev || 0) > S.rev) { blocked = true; banner('This lab is open in another tab. Close the other tab, then reload this one. Saving is paused.'); return; } }
+    S.rev++; localStorage.setItem(KEY, JSON.stringify(S));
+  } catch (e) {}
+  $('#saveNote').textContent = 'Saved ✓'; clearTimeout(cloudT); cloudT = setTimeout(cloudPush, soon ? 800 : 4000);
+}
+function cloudBody() { const st = S.student; return new URLSearchParams({ code: saveKey(st), lesson: LESSON_ID, ver: String(Date.now()), prog: String(Object.keys(S.d).length + (S.done ? 1000 : 0)), studentId: st.id, lastName: st.last, firstName: st.first, period: String(st.period), teacher: st.teacher,
+  summary: S.done ? `Turned in: ${S.result.pts}/${S.result.max}` : `${Object.keys(S.d).length} entries, step ${S.cur}`, data: JSON.stringify(S) }); }
+function cloudPush() { if (!S.student || blocked || S.preview || !CLOUD()) return; fetch(saveURL(), { method: 'POST', mode: 'no-cors', body: cloudBody() }).then(() => { $('#saveNote').textContent = 'Saved ✓ backed up ' + new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); }).catch(() => {}); }
+async function cloudFetch(st) {
+  if (!CLOUD()) return { status: 'off' }; const ctrl = new AbortController(), t = setTimeout(() => ctrl.abort(), 8000);
+  try { const u = saveURL(); const r = await fetch(u + (u.indexOf('?') < 0 ? '?' : '&') + new URLSearchParams({ code: saveKey(st), lesson: LESSON_ID }).toString(), { signal: ctrl.signal });
+    const j = await r.json(); if (j && j.found && j.data) { const d = JSON.parse(j.data); if (d && d.lesson === LESSON_ID) return { status: 'found', data: d }; } return { status: 'none' }; } catch (e) { return { status: 'error' }; } finally { clearTimeout(t); }
+}
+window.addEventListener('pagehide', () => { save(); if (S.student && !blocked && !S.preview && CLOUD()) try { navigator.sendBeacon && navigator.sendBeacon(saveURL(), cloudBody()); } catch (e) {} });
+window.addEventListener('storage', e => { if (e.key !== KEY || !e.newValue) return; try { const o = JSON.parse(e.newValue); if ((o.rev || 0) > S.rev) { blocked = true; banner('This lab is open in another tab. Close the other tab, then reload this one. Saving is paused.'); } } catch (_) {} });
+(async () => { try { if (navigator.storage && navigator.storage.estimate) { const q = (await navigator.storage.estimate()).quota || 0; if (q && q < 300 * 1024 * 1024) banner('You may be in guest or incognito mode. Your work won\u2019t stay on this Chromebook after you close it. Sign in with your school account, or finish and turn it in today.'); } } catch (e) {} })();
+['copy', 'cut', 'paste', 'contextmenu', 'drop'].forEach(ev => document.addEventListener(ev, e => e.preventDefault()));
+document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && ['c', 'v', 'x', 'p', 'u'].includes(e.key.toLowerCase())) e.preventDefault(); });
+
+/* ================= THE PHYSICS (from the student's own numbers) ================= */
+const D = id => num(S.d[id]);
+const pick = (id, fallback) => ok(D(id)) ? D(id) : fallback;   // follow-through: use the student's value when they gave one
+function model() {
+  const m = {}, fps = D('fps'), dm = D('dmark');
+  [1, 2, 3].forEach(i => { m['t' + i] = ok(D('f' + i)) && fps > 0 ? D('f' + i) / fps : NaN; m['v' + i] = ok(dm) && pick('t' + i, m['t' + i]) > 0 ? (dm / 100) / pick('t' + i, m['t' + i]) : NaN; });
+  const vs = [1, 2, 3].map(i => pick('v' + i, m['v' + i])); m.vavg = vs.every(ok) ? (vs[0] + vs[1] + vs[2]) / 3 : NaN;
+  const h = D('h'); m.viy = 0; m.vix = pick('vavg', m.vavg);
+  m.tof = h > 0 ? Math.sqrt(2 * h / G) : NaN;
+  m.dx = ok(m.vix) ? m.vix * pick('tof', m.tof) : NaN;
+  const as = [1, 2, 3].map(i => D('a' + i)); m.aavg = as.every(ok) ? (as[0] + as[1] + as[2]) / 3 : NaN;
+  const dxs = pick('dx', m.dx), aa = pick('aavg', m.aavg); m.perr = ok(dxs) && dxs > 0 && ok(aa) ? Math.abs(aa - dxs) / dxs * 100 : NaN;
+  return m;
+}
+const MATH = { t1: [0.03, 0.002], t2: [0.03, 0.002], t3: [0.03, 0.002], v1: [0.03, 0.02], v2: [0.03, 0.02], v3: [0.03, 0.02], vavg: [0.03, 0.02], vix: [0.03, 0.02], viy: [0, 0.001], tof: [0.03, 0.02], dx: [0.03, 0.02], aavg: [0.02, 0.01], perr: [0.05, 1] };
+const fieldRight = (id, m) => near(D(id), m[id], MATH[id][0], MATH[id][1]);
+
+/* ================= DIAGRAMS (no results shown) ================= */
+function setupFig() {
+  return `<div class="fig"><svg viewBox="0 0 560 320" role="img" aria-label="Lab setup: ramp on books running down onto the table; the marble rolls across and off the edge">
+    <rect x="20" y="150" width="320" height="10" fill="#2a3a60" stroke="#5d6f96"/><line x1="40" y1="160" x2="40" y2="290" stroke="#5d6f96" stroke-width="6"/><line x1="320" y1="160" x2="320" y2="290" stroke="#5d6f96" stroke-width="6"/>
+    <line x1="10" y1="290" x2="550" y2="290" stroke="#5d6f96" stroke-width="2"/>
+    <rect x="30" y="92" width="40" height="58" fill="#34476f" stroke="#5d6f96"/><text x="50" y="126" font-size="10" fill="#a3b2d2" text-anchor="middle">books</text>
+    <path d="M40 90 L170 148" stroke="#ffcf5a" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="60" cy="91" r="7" fill="#6cb8ff" stroke="#0c1426" stroke-width="2"/><text x="60" y="76" font-size="11" fill="#6cb8ff" text-anchor="middle">release mark</text>
+    <path d="M178 141 h120" stroke="#6cb8ff" stroke-width="2" stroke-dasharray="4 4"/><path d="M298 141 l-7 -4 v8z" fill="#6cb8ff"/><text x="238" y="134" font-size="11" fill="#6cb8ff" text-anchor="middle">rolls across the table</text>
+    <line x1="340" y1="150" x2="340" y2="290" stroke="#a3b2d2" stroke-dasharray="4 4"/><text x="346" y="210" font-size="11" fill="#a3b2d2">table height</text><text x="346" y="224" font-size="11" fill="#a3b2d2">(tabletop to floor)</text>
+    <path d="M340 290 l-6 -10 h12z" fill="#a3b2d2"/><text x="340" y="308" font-size="10" fill="#a3b2d2" text-anchor="middle">plumb point (tape X)</text>
+    <line x1="340" y1="280" x2="530" y2="280" stroke="#3fd6a0" stroke-width="2"/><path d="M530 280 l-8 -4 v8z" fill="#3fd6a0"/><text x="440" y="273" font-size="11" fill="#3fd6a0" text-anchor="middle">ΔD<tspan font-size="8" dy="3">x</tspan><tspan dy="-3"> is measured along the floor from here</tspan></text>
+  </svg></div><div class="figcap">Side view (not to scale). The marble leaves the edge moving straight sideways.</div>`;
+}
+function speedFig() {
+  return `<div class="fig"><svg viewBox="0 0 560 210" role="img" aria-label="Two tape marks on the tabletop near the edge, filmed in slow motion from the side">
+    <rect x="20" y="150" width="480" height="10" fill="#2a3a60" stroke="#5d6f96"/><line x1="500" y1="160" x2="500" y2="205" stroke="#5d6f96" stroke-width="6"/>
+    <line x1="340" y1="132" x2="340" y2="150" stroke="#3fd6a0" stroke-width="3"/><line x1="440" y1="132" x2="440" y2="150" stroke="#3fd6a0" stroke-width="3"/>
+    <text x="340" y="126" font-size="11" fill="#3fd6a0" text-anchor="middle">mark 1</text><text x="440" y="126" font-size="11" fill="#3fd6a0" text-anchor="middle">mark 2</text>
+    <text x="390" y="180" font-size="11" fill="#a3b2d2" text-anchor="middle">measured distance between marks</text>
+    <circle cx="290" cy="142" r="8" fill="#6cb8ff" stroke="#0c1426" stroke-width="2"/><path d="M304 142 h24" stroke="#6cb8ff" stroke-width="2"/><path d="M328 142 l-7 -4 v8z" fill="#6cb8ff"/>
+    <rect x="110" y="16" width="56" height="96" rx="9" fill="#1a2746" stroke="#a3b2d2" stroke-width="2"/><circle cx="138" cy="48" r="10" fill="none" stroke="#a3b2d2" stroke-width="2"/><text x="138" y="88" font-size="10" fill="#a3b2d2" text-anchor="middle">slo-mo</text>
+    <path d="M172 60 L370 132" stroke="#a3b2d2" stroke-dasharray="4 4"/><text x="196" y="112" font-size="11" fill="#a3b2d2">film from the side, phone held still</text>
+  </svg></div><div class="figcap">Put the marks on the flat tabletop, close to the edge, after the marble is off the ramp.</div>`;
+}
+
+/* ================= FIELD RENDERING ================= */
+function inp(id, label, unit, opts = {}) {
+  const ro = (S.done || (opts.pred && S.predLocked)) ? 'readonly' : '';
+  return `<div class="numrow"><div>${label}${opts.tag ? `<div class="tag">${opts.tag}</div>` : ''}</div><div class="in"><input type="text" inputmode="decimal" autocomplete="off" data-f="${id}" id="f-${id}" value="${esc(S.d[id] || '')}" aria-label="${esc(label.replace(/<[^>]+>/g, ''))}" ${ro}><span class="u">${unit}</span></div></div>${MATH[id] ? `<div class="keyonly" data-key="${id}"></div>` : ''}`;
+}
+function trialRow(prefix, label, unit, isMath) {
+  return `<div class="lab">${label}${unit ? ` (${unit})` : ''}</div>${[1, 2, 3].map(i => `<input type="text" inputmode="decimal" autocomplete="off" data-f="${prefix}${i}" id="f-${prefix}${i}" value="${esc(S.d[prefix + i] || '')}" aria-label="${esc(label)} trial ${i}" ${S.done ? 'readonly' : ''}>`).join('')}`;
+}
+const workBox = id => `<label style="display:block;font-size:.82rem;color:var(--muted);margin:10px 0 3px" for="w-${id}">Show your work</label><textarea class="workbox" id="w-${id}" data-w="${id}" ${S.done ? 'readonly' : ''}>${esc(S.work[id] || '')}</textarea>`;
+function secHead(n) { const t = STEPS[n]; return `<div class="sechead"><div class="bigtile"><span class="n">${n < RES ? n : ''}</span>${icon(t.ic)}<span>${t.name}</span></div><div><div class="meta">${n < RES ? `Step ${n} of ${LAST} · about ${t.min} min` : ''}</div><h2>${t.title}</h2></div></div>`; }
+const nextBtn = n => `<div class="qfoot"><button class="btn" type="button" data-go="${n - 1}" ${n === 1 ? 'disabled' : ''}>Back</button><button class="btn primary" type="button" data-go="${n + 1}">Next: ${STEPS[n + 1].title}</button></div>`;
+const checkBtn = (ids, label) => `<div class="qfoot"><button class="btn" type="button" data-check="${ids.join(',')}">${label || 'Check my math'}</button><span class="fb" data-fbfor="${ids.join(',')}"></span></div>`;
+
+/* ================= STEPS ================= */
+const EQS = () => `<div class="eqbox"><div class="cap">Equations (up is positive, ${ay} = −9.8 m/s², ${ax} = 0)</div>
+  <div class="eq"><span class="n">①</span>${vfy} = ${viy} + ${ay}${t_}</div><div class="eq"><span class="n">②</span>${Dy} = ${viy}${t_} + ½${ay}${t_}²</div><div class="eq"><span class="n">③</span>${vfy}² = ${viy}² + 2${ay}${Dy}</div>
+  <div class="eq"><span class="n">④</span>${Dy} = ½(${viy} + ${vfy})${t_}</div><div class="eq"><span class="n">⑤</span>${Dy} = ${vfy}${t_} − ½${ay}${t_}²</div><div class="eq"><span class="n">⑥</span>${Dx} = ${vix}${t_} + ½${ax}${t_}²</div></div>`;
+function build() {
+  $('#page1').innerHTML = secHead(1) + `
+  <div class="card"><span class="chip read">Your goal</span><h3>Predict, then test</h3>
+    <p>A marble rolls down a ramp onto your table, rolls across the tabletop, and rolls off the edge. You will measure the table and the marble's speed, use the kinematics equations to <b>predict exactly where the marble will land</b>, put a target there, and then test it. Your prediction is locked in before you launch for real.</p>
+    <p><b>Materials:</b> marble, a ramp (grooved ruler, or foam pipe insulation cut in half), books or blocks, tape, meter stick and ruler, string with a small weight (plumb line), a phone that records slow-motion video, a paper target, and carbon paper (or paper and a marker) to mark landings.</p></div>
+  <div class="card"><span class="chip safe">Safety</span><p style="margin:0">Marbles on the floor are a slipping hazard. Catch every marble, keep the landing area clear of feet and backpacks, and never roll toward people.</p></div>
+  <div class="card"><span class="chip do">Do it</span><h3>Build the ramp</h3>
+    <div class="cols"><div><ol>
+      <li>Rest the top of the ramp on a stack of books. Set the bottom on the tabletop, at least 40 cm back from the edge, aimed straight at the edge. Tape the ramp so it can't move.</li>
+      <li>Put a tape mark near the top of the ramp. <b>Always release the marble from this mark</b>, from rest (just let go, don't push).</li>
+      <li>Check that the marble rolls straight across the table toward the edge. Adjust the ramp if it curves.</li>
+      <li>Hang the plumb line from the edge of the table where the marble will leave, and put a tape X on the floor where it points. All landing distances are measured from this X.</li>
+      <li>Do <b>not</b> let the marble go off the table yet. Your first real launch is the test.</li>
+    </ol></div><div>${setupFig()}</div></div></div>
+  <div class="card"><span class="chip do">Measure</span><h3>Measurements</h3>
+    ${inp('rh', 'Height of the release mark above the tabletop', 'cm', { tag: 'record it so you can repeat the setup' })}
+    ${inp('h', 'Table height (tabletop to floor)', 'm', { tag: 'where the marble leaves the edge' })}
+    <p class="fb" id="setupMsg"></p></div>
+  ${nextBtn(1)}`;
+
+  $('#page2').innerHTML = secHead(2) + `
+  <div class="card"><span class="chip read">How it works</span><h3>Timing with slow motion</h3>
+    <div class="cols"><div>
+      <p>Slow-motion video records a set number of frames each second (often 120 or 240 fps; check your phone's settings). If you count how many frames it takes the marble to travel between two marks, the time is:</p>
+      <div class="eqbox"><div class="eq">time = (number of frames) ÷ (frames per second)</div></div>
+      <p>Then the speed is the distance between the marks divided by that time. Measure the distance in cm, but use meters in your speed.</p>
+    </div><div>${speedFig()}</div></div></div>
+  <div class="card"><span class="chip do">Do it</span><h3>Film three runs</h3><ol>
+    <li>Put two thin tape marks on the tabletop between the bottom of the ramp and the edge, close to the edge. Measure the distance between them.</li>
+    <li>Hold the phone still, at the side, level with the tabletop. Record in slow motion.</li>
+    <li>Release from your release mark and have a partner <b>catch the marble at the edge of the table</b>, so it doesn't fall yet.</li>
+    <li>Step through the video one frame at a time. Count the frames from when the front of the marble reaches mark 1 to when it reaches mark 2.</li>
+    <li>Repeat for 3 runs.</li></ol>
+    ${inp('dmark', 'Distance between the marks', 'cm')}${inp('fps', 'Slow-motion frame rate', 'fps')}
+    <div class="trials"><div></div><div class="h">Run 1</div><div class="h">Run 2</div><div class="h">Run 3</div>
+      ${trialRow('f', 'Frames between marks', '')}
+      ${trialRow('t', 'Time', 's', 1)}
+      ${trialRow('v', 'Speed', 'm/s', 1)}</div>
+    <div class="keyonly" data-keytrials="1"></div>
+    ${inp('vavg', `Average speed leaving the table ${vix}`, 'm/s')}
+    ${workBox('speed')}${checkBtn(['t1', 't2', 't3', 'v1', 'v2', 'v3', 'vavg'])}</div>
+  ${nextBtn(2)}`;
+
+  $('#page3').innerHTML = secHead(3) + `
+  <div class="card"><span class="chip read">Read</span><h3>Two independent motions</h3>
+    <div class="cols"><div>
+      <p>The marble leaves the table moving straight sideways. Your average speed is its sideways part ${vix}. It starts with no up-or-down motion, so ${viy} = 0.</p>
+      <p>It starts at the table height and lands on the floor, so ${Dy} = −(table height). Up is positive and ${ay} = −9.8 m/s².</p>
+      <p><b>Up and down:</b> use the equation with ${Dy}, ${viy}, ${ay}, and ${t_} to find the time in the air.</p>
+      <p><b>Sideways:</b> use ${Dx} = ${vix}${t_} + ½${ax}${t_}² with ${ax} = 0 to find how far from the X it lands.</p>
+    </div>${EQS()}</div></div>
+  <div class="card"><span class="chip math">Calculate</span><h3>Your prediction</h3>
+    ${inp('viy', `Vertical velocity as it leaves the table ${viy}`, 'm/s', { pred: 1 })}
+    ${inp('tof', 'Predicted time in the air', 's', { pred: 1 })}${inp('dx', `Predicted landing distance ${Dx} from the X`, 'm', { pred: 1 })}
+    ${workBox('predict')}${checkBtn(['viy', 'tof', 'dx'])}
+    <div class="lockbox" id="lockbox"></div></div>
+  ${nextBtn(3)}`;
+
+  $('#page4').innerHTML = secHead(4) + `<div id="testBody"></div>${nextBtn(4)}`;
+
+  $('#page5').innerHTML = secHead(5) + `
+  <div class="card"><span class="chip math">Analyze</span><h3>Claim, evidence, reasoning</h3>
+    <p>How well did your physics predict where the marble landed? Use your numbers.</p>
+    <div class="cer">
+      <label for="c-claim">Claim <span>Was your prediction accurate? How close was it?</span></label><textarea id="c-claim" data-c="claim" ${S.done ? 'readonly' : ''}>${esc(S.d.claim || '')}</textarea>
+      <label for="c-evidence">Evidence <span>Give your predicted distance, your average landing distance, and your percent error.</span></label><textarea id="c-evidence" data-c="evidence" ${S.done ? 'readonly' : ''}>${esc(S.d.evidence || '')}</textarea>
+      <label for="c-reasoning">Reasoning <span>Explain why it landed where it did, or why it didn't land exactly where you predicted.</span></label><textarea id="c-reasoning" data-c="reasoning" ${S.done ? 'readonly' : ''}>${esc(S.d.reasoning || '')}</textarea>
+    </div></div>
+  <div class="card"><span class="chip math">Analyze</span><h3>Sources of error</h3>
+    <p>Name one real source of error in <b>your</b> setup, and say whether it would make the marble land closer or farther than predicted.</p>
+    <textarea class="workbox" style="min-height:80px;border-style:solid" data-c="errsrc" ${S.done ? 'readonly' : ''}>${esc(S.d.errsrc || '')}</textarea></div>
+  <div class="card"><span class="chip math">Apply</span><h3>What if?</h3>
+    <p>You move the release mark higher up the ramp, so the marble rolls off the table faster. The table stays the same. What happens to the time in the air and the landing distance?</p>
+    <div class="opts">${['Time stays the same, distance increases', 'Both the time and the distance increase', 'Time increases, distance stays the same', 'Both stay the same, because the table height is the same'].map((o, i) => `<button type="button" class="opt ${S.d.whatif === i ? 'sel' : ''}" data-whatif="${i}" ${S.done ? 'disabled' : ''}><span class="L">${'ABCD'[i]}</span><span>${o}</span></button>`).join('')}</div></div>
+  <div class="qfoot"><button class="btn" type="button" data-go="4">Back</button><button class="btn teal" type="button" id="turnIn" ${S.done ? 'disabled' : ''}>Turn in the lab</button><span class="sub" id="turnMsg" style="font-size:.84rem"></span></div>`;
+  renderTest(); renderLockbox(); paintKey();
+}
+function renderLockbox() {
+  const lb = $('#lockbox'); if (!lb) return;
+  lb.innerHTML = S.predLocked ? `<b>Prediction locked</b> ${S.predAt ? 'at ' + new Date(S.predAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : ''}. Put your target at your predicted distance, then go to step 4.`
+    : `<b>Lock in your prediction.</b> Once locked, it can't be changed (your teacher can unlock it). Testing opens after you lock it. <div style="margin-top:8px"><button class="btn primary" type="button" id="lockPred">Lock in my prediction</button></div>`;
+  const b = $('#lockPred'); if (b) b.addEventListener('click', () => {
+    if (!ok(D('tof')) || !ok(D('dx')) || D('dx') <= 0) { toast('Enter your predicted time and distance first.'); return; }
+    confirmBox('Lock in your prediction?', `Predicted landing distance: ${S.d.dx} m. You won't be able to change it.`, () => { S.predLocked = true; S.predAt = new Date().toISOString(); save(true); build(); toast('Prediction locked. Set up your target, then test.'); });
+  });
+}
+function renderTest() {
+  const tb = $('#testBody'); if (!tb) return;
+  if (!S.predLocked) { tb.innerHTML = `<div class="card"><p style="margin:0">Testing opens after you lock in your prediction in step 3.</p><div class="qfoot"><button class="btn primary" type="button" data-go="3">Go to step 3</button></div></div>`; return; }
+  tb.innerHTML = `<div class="card"><span class="chip do">Do it</span><h3>Launch for real</h3><ol>
+      <li>Your locked prediction: the marble lands <b>${esc(S.d.dx)} m</b> from the X. Measure that distance from the X along the floor, in line with the marble's path, and center your paper target there. Tape carbon paper on top (or have a partner watch closely).</li>
+      <li>Release from the same release mark, from rest. Launch 3 times.</li>
+      <li>For each landing, measure from the X to the landing mark, along the floor.</li></ol>
+    <div class="trials"><div></div><div class="h">Launch 1</div><div class="h">Launch 2</div><div class="h">Launch 3</div>${trialRow('a', 'Landing distance from the X', 'm')}</div>
+    ${inp('aavg', 'Average landing distance', 'm')}
+    ${inp('perr', 'Percent error', '%', { tag: '|actual − predicted| ÷ predicted × 100' })}
+    ${workBox('test')}${checkBtn(['aavg', 'perr'])}</div>`;
+  paintKey();
+}
+
+/* ================= CHECKING + KEY ================= */
+const CHECKED = new Set();
+function paintChecks() {
+  const m = model();
+  CHECKED.forEach(id => { const el = $('#f-' + id); if (!el) return; const r = fieldRight(id, m); el.classList.toggle('right', r); el.classList.toggle('wrong', !r); });
+}
+function paintKey() {
+  const m = model();
+  $$('[data-key]').forEach(e => { const id = e.dataset.key; const v = m[id]; e.textContent = 'Answer key (from this student\u2019s data): ' + (['t1', 't2', 't3'].includes(id) ? r3(v) : id === 'perr' || id === 'theta' ? r1(v) : r2(v)); });
+  $$('[data-keytrials]').forEach(e => { e.textContent = `Answer key: times ${r3(m.t1)}, ${r3(m.t2)}, ${r3(m.t3)} s; speeds ${r2(m.v1)}, ${r2(m.v2)}, ${r2(m.v3)} m/s`; });
+}
+document.addEventListener('click', e => {
+  const c = e.target.closest('[data-check]'); if (!c) return;
+  const ids = c.dataset.check.split(','), m = model(), fb = $(`[data-fbfor="${c.dataset.check}"]`);
+  const missing = ids.filter(id => !ok(D(id)));
+  if (missing.length) { fb.className = 'fb no'; fb.textContent = 'Fill in every box first (and the measurements they depend on).'; return; }
+  ids.forEach(id => CHECKED.add(id)); paintChecks();
+  const right = ids.filter(id => fieldRight(id, m)).length;
+  fb.className = right === ids.length ? 'fb ok' : 'fb no';
+  fb.textContent = right === ids.length ? 'All correct for your data.' : `${right} of ${ids.length} match your data. Red boxes: recheck the math (and units: cm vs m).`;
+});
+
+/* ================= INPUT ================= */
+document.addEventListener('input', e => {
+  if (S.done) return;
+  const f = e.target.closest('[data-f]'); if (f) { S.d[f.dataset.f] = f.value; f.classList.remove('right', 'wrong'); CHECKED.delete(f.dataset.f); paintKey(); setupMsg(); deb(); return; }
+  const w = e.target.closest('[data-w]'); if (w) { S.work[w.dataset.w] = w.value; deb(); return; }
+  const c = e.target.closest('[data-c]'); if (c) { S.d[c.dataset.c] = c.value; deb(); }
+});
+function deb() { clearTimeout(deb.T); deb.T = setTimeout(() => { save(); renderNav(); }, 500); }
+function setupMsg() {
+  const el = $('#setupMsg'); if (!el) return; const h = D('h'), rh = D('rh'); const w = [];
+  if (ok(h) && (h < 0.2 || h > 3)) w.push('Check the table height: it should be in meters (a table is usually around 0.7–1.0 m).');
+  if (ok(rh) && rh > 100) w.push('Check the release height: it should be in centimeters.');
+  el.className = 'fb no'; el.textContent = w.join(' ');
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-whatif]'); if (b && !S.done) { S.d.whatif = +b.dataset.whatif; $$('[data-whatif]').forEach(x => x.classList.toggle('sel', +x.dataset.whatif === S.d.whatif)); save(); } });
+
+/* ================= NAV ================= */
+function stepDone(n) {
+  if (n === 1) return ['rh', 'h'].every(id => ok(D(id)));
+  if (n === 2) return ['dmark', 'fps', 'f1', 'f2', 'f3', 't1', 't2', 't3', 'v1', 'v2', 'v3', 'vavg'].every(id => ok(D(id)));
+  if (n === 3) return S.predLocked;
+  if (n === 4) return ['a1', 'a2', 'a3', 'aavg', 'perr'].every(id => ok(D(id)));
+  if (n === 5) return S.done;
+  return false;
+}
+function renderNav() {
+  $('#nav').innerHTML = STEPS.slice(1).map((t, i) => { const n = i + 1, can = n < RES || S.done;
+    return `<button type="button" class="tile ${S.cur === n ? 'current' : ''} ${stepDone(n) ? 'done' : ''}" data-go="${n}" ${can ? '' : 'disabled'} aria-label="Step ${n}: ${esc(t.title)}"><span class="n">${n < RES ? n : ''}</span>${icon(t.ic)}<span class="lb">${t.name}</span><span class="ck" aria-hidden="true">✓</span></button>`; }).join('');
+}
+function go(n) {
+  if (n < 1 || n > RES) return; if (n === RES && !S.done) return;
+  S.cur = n; $$('.page').forEach(p => p.classList.remove('show')); $('#page' + n).classList.add('show');
+  if (n === 4) renderTest(); if (n === RES) renderResults(); renderNav(); window.scrollTo(0, 0); save();
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (b && !b.disabled) go(+b.dataset.go); });
+
+/* ================= SCORING ================= */
+const CER = {
+  claim: [['accurate', 'close', 'within', 'off by', 'near', 'almost', 'not accurate', 'pretty good', 'very good', 'precise', 'farther', 'shorter', 'short', 'over', 'under']],
+  evidence: [['%', 'percent'], ['m ', ' m', 'meter', '.']],
+  reasoning: [['friction', 'air', 'measure', 'timing', 'frame', 'speed', 'angle', 'spin', 'roll', 'height', 'ramp', 'release', 'bounce', 'error']],
+  errsrc: [['friction', 'air', 'measure', 'timing', 'frame', 'speed', 'angle', 'spin', 'roll', 'height', 'ramp', 'release', 'bounce', 'plumb', 'ruler', 'track', 'slow']],
+  errdir: [['closer', 'farther', 'shorter', 'longer', 'less', 'more', 'short', 'further']]
+};
+const has = (txt, groups) => groups.every(g => g.some(w => (' ' + String(txt || '').toLowerCase() + ' ').includes(w)));
+function score() {
+  const m = model(), parts = [];
+  parts.push({ l: 'Setup', p: (ok(D('h')) && D('h') > 0 ? 1 : 0) + (ok(D('rh')) && D('rh') > 0 ? 1 : 0), m: 2 });
+  const tr = ['t1', 't2', 't3'].filter(id => fieldRight(id, m)).length, vr = ['v1', 'v2', 'v3'].filter(id => fieldRight(id, m)).length;
+  parts.push({ l: 'Speed', p: Math.round((tr / 3 + vr / 3 + (fieldRight('vavg', m) ? 1 : 0)) * 2) / 2, m: 3 });
+  parts.push({ l: 'Prediction', p: S.predLocked ? ['viy', 'tof', 'dx'].filter(id => fieldRight(id, m)).length : 0, m: 3 });
+  const trialsIn = ['a1', 'a2', 'a3'].every(id => ok(D(id)));
+  parts.push({ l: 'Test', p: trialsIn ? ['aavg', 'perr'].filter(id => fieldRight(id, m)).length : 0, m: 2 });
+  parts.push({ l: 'CER', p: (has(S.d.claim, CER.claim) ? 1 : 0) + (has(S.d.evidence, CER.evidence) && /\d/.test(S.d.evidence || '') ? 1 : 0) + (has(S.d.reasoning, CER.reasoning) ? 1 : 0), m: 3 });
+  parts.push({ l: 'Error source', p: (has(S.d.errsrc, CER.errsrc) ? 0.5 : 0) + (has(S.d.errsrc, CER.errdir) ? 0.5 : 0), m: 1 });
+  parts.push({ l: 'What if', p: S.d.whatif === 0 ? 1 : 0, m: 1 });
+  return { parts, pts: parts.reduce((a, x) => a + x.p, 0), max: parts.reduce((a, x) => a + x.m, 0) };
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('#turnIn') || S.done) return;
+  const missing = [1, 2, 3, 4].filter(n => !stepDone(n));
+  const cerMissing = ['claim', 'evidence', 'reasoning', 'errsrc'].some(id => !String(S.d[id] || '').trim()) || S.d.whatif == null;
+  if (missing.length || cerMissing) { $('#turnMsg').textContent = missing.length ? `Finish step${missing.length > 1 ? 's' : ''} ${missing.join(', ')} first.` : 'Answer every question on this page first.'; return; }
+  confirmBox('Turn in the lab?', 'You can\u2019t change anything after you turn it in.', () => {
+    S.result = score(); S.done = true; S.lockActive = false; save(true); endFull(); build(); go(RES); send();
+  });
+});
+function body() {
+  const st = S.student, r = S.result || score();
+  return { studentId: st.id, firstName: st.first, lastName: st.last, period: String(st.period), teacher: st.teacher, activity: ACTIVITY, score: String(r.pts), total: String(r.max),
+    qlabels: r.parts.map(x => x.l).join('|'), qpoints: r.parts.map(x => x.p).join('|'), qmax: r.parts.map(x => x.m).join('|'), locks: String(S.lockouts), when: new Date().toString(), partners: st.partners || '' };
+}
+const CSV_HEAD = ['Student ID', 'Last Name', 'First Name', 'Period', 'Teacher', 'Activity', 'Score', 'Total', 'Percent', 'Times Locked', 'Date', 'Points by Part', 'Lab Partners'];
+const row = b => [b.studentId, b.lastName, b.firstName, b.period, b.teacher, b.activity, b.score, b.total, Math.round(b.score / b.total * 100) + '%', b.locks, new Date(b.when).toLocaleString(), b.qlabels.split('|').map((l, i) => `${l}:${b.qpoints.split('|')[i]}/${b.qmax.split('|')[i]}`).join(' '), b.partners || ''];
+function csv(rows, name) { const q = v => { const s = String(v == null ? '' : v); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([[CSV_HEAD].concat(rows).map(r => r.map(q).join(',')).join('\r\n') + '\r\n'], { type: 'text/csv;charset=utf-8' })); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); }
+function send() {
+  const m = () => $('#sendMsg'); if (S.preview) { if (m()) m().textContent = 'Preview mode: nothing is sent.'; return; }
+  const b = body(); try { const recs = JSON.parse(localStorage.getItem(RECS) || '[]').filter(r => r.studentId !== b.studentId); recs.push(b); localStorage.setItem(RECS, JSON.stringify(recs)); } catch (e) {}
+  if (m()) m().textContent = 'Sending...';
+  fetch(sheetURL(), { method: 'POST', mode: 'no-cors', body: new URLSearchParams(b) }).then(() => { S.sentAt = new Date().toISOString(); save(true); if (m()) m().textContent = 'Sent to your teacher ✓'; })
+    .catch(() => { if (m()) m().textContent = "Couldn't send. Check the Wi-Fi and try again, or download the CSV for your teacher."; });
+}
+function renderResults() {
+  const r = S.result; if (!r) return;
+  $('#page' + RES).innerHTML = secHead(RES) + `<div class="card"><div class="big">${r.pts}<span style="font-size:1.1rem;color:var(--muted)"> / ${r.max}</span></div>
+    <p>${r.parts.map(x => `<span class="ro">${x.l}: ${x.p}/${x.m}</span>`).join('')}</p>
+    <p class="sub" style="font-size:.88rem">Predicted ${esc(S.d.dx)} m · average landing ${esc(S.d.aavg)} m · percent error ${esc(S.d.perr)}%</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" id="resend" type="button">Send my score again</button><button class="btn" id="myCsv" type="button">Download my score (CSV)</button></div><p id="sendMsg" class="sub" style="font-size:.86rem">${S.sentAt ? 'Sent to your teacher ✓' : ''}</p></div>`;
+  $('#resend').addEventListener('click', send); $('#myCsv').addEventListener('click', () => csv([row(body())], `DownhillRampLab_${saveKey(S.student)}.csv`));
+}
+
+/* ================= SIGN IN ================= */
+$('#fTeacher').innerHTML = '<option value="">Choose</option>' + teacherList().map(t => `<option>${esc(t)}</option>`).join('');
+$('#fPeriod').innerHTML = '<option value="">Choose</option>' + periodList().map(x => `<option>${esc(x)}</option>`).join('');
+function showLab() { $('#signPage').hidden = true; $('#nav').hidden = false; build(); go(S.done ? RES : Math.min(Math.max(S.cur || 1, 1), LAST)); startLock(); }
+function showSign() { $('#signPage').hidden = false; $('#nav').hidden = true; $$('.page').forEach(p => p.classList.remove('show')); const has2 = !!S.student && !S.preview; $('#signCard').hidden = has2; $('#resumeCard').hidden = !has2;
+  if (has2) $('#resumeWho').innerHTML = `Signed in as <b>${esc(S.student.first)} ${esc(S.student.last)}</b>, period ${esc(S.student.period)}. ${S.done ? 'Already turned in.' : `On step ${S.cur}.`}`; }
+let skipCloud = false;
+$('#signForm').addEventListener('submit', async e => {
+  e.preventDefault(); const err = $('#signErr');
+  const v = { first: $('#fFirst').value.trim(), last: $('#fLast').value.trim(), id: $('#fId').value.trim(), period: $('#fPeriod').value, teacher: $('#fTeacher').value, partners: $('#fPartners').value.trim() };
+  if (!v.first || !v.last || !v.id || !v.period || !v.teacher) { err.textContent = 'Fill in every box (partners are optional).'; err.hidden = false; return; }
+  if (!/^\d{3,12}$/.test(v.id)) { err.textContent = 'Your student ID should be numbers only.'; err.hidden = false; return; }
+  err.hidden = true;
+  if (!skipCloud && CLOUD()) {
+    const btn = $('#startBtn'); btn.disabled = true; btn.textContent = 'Checking for your saved work...'; const r = await cloudFetch(v); btn.disabled = false; btn.textContent = 'Start the lab';
+    if (r.status === 'found') { S = Object.assign(fresh(), r.data, { student: Object.assign({}, r.data.student || {}, v) }); save(true); toast('Your saved work was loaded.'); showLab(); return; }
+    if (r.status === 'error') { err.innerHTML = 'Can\u2019t reach your saved work. Check the Wi-Fi and try again. <button class="btn small" type="button" id="anyway">Start without saved work</button>'; err.hidden = false; $('#anyway').addEventListener('click', () => { skipCloud = true; $('#signForm').requestSubmit(); }); return; }
+  }
+  S = fresh(); S.student = v; save(true); showLab();
+});
+$('#resumeBtn').addEventListener('click', showLab);
+$('#notMeBtn').addEventListener('click', () => { cloudPush(); S = fresh(); try { localStorage.removeItem(KEY); } catch (e) {} showSign(); });
+
+/* ================= LOCKDOWN ================= */
+let leaving = false;
+const live = () => LOCK_ON && S.student && S.lockActive && !S.preview && !S.done;
+const isFull = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
+function endFull() { try { if (isFull()) { leaving = true; (document.exitFullscreen || document.webkitExitFullscreen).call(document); setTimeout(() => { leaving = false; }, 700); } } catch (e) {} }
+function startLock() { if (!live()) return; if (S.locked) { showLock(); return; } if (!isFull()) $('#gateOv').hidden = false; }
+function lockNow() { if (!live() || S.locked || leaving || !$('#gateOv').hidden) return; S.locked = true; S.lockouts++; save(true); showLock(); }
+function showLock() { $('#lockOv').hidden = false; $('#lockCode').value = ''; $('#lockMsg').textContent = ''; }
+$('#gateGo').addEventListener('click', async () => { try { const el = document.documentElement; await (el.requestFullscreen || el.webkitRequestFullscreen).call(el); } catch (e) {} $('#gateOv').hidden = true; });
+$('#lockGo').addEventListener('click', () => { if ($('#lockCode').value.trim().toLowerCase() !== UNLOCK_CODE) { $('#lockMsg').textContent = 'That code isn\u2019t right.'; return; } S.locked = false; S.lockActive = false; save(true); $('#lockOv').hidden = true; $('#gateOv').hidden = true; endFull(); toast('Lockdown ended for this student on this Chromebook.'); });
+$('#lockCode').addEventListener('keydown', e => { if (e.key === 'Enter') $('#lockGo').click(); });
+document.addEventListener('fullscreenchange', () => { if (!isFull()) lockNow(); });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') lockNow(); });
+
+/* ================= TEACHER ================= */
+let confFn = null;
+function confirmBox(t, x, fn) { $('#confT').textContent = t; $('#confX').textContent = x; confFn = fn; $('#confOv').hidden = false; }
+$('#confYes').addEventListener('click', () => { $('#confOv').hidden = true; const f = confFn; confFn = null; f && f(); });
+$('#confNo').addEventListener('click', () => { $('#confOv').hidden = true; confFn = null; });
+document.addEventListener('click', e => { if (e.target.closest('[data-close]')) $('#teachOv').hidden = true; });
+$('#teachBtn').addEventListener('click', () => { $('#teachOv').hidden = false; $('#tLogin').hidden = false; $('#tTools').hidden = true; $('#tCode').value = ''; $('#tMsg').textContent = ''; });
+$('#tGo').addEventListener('click', () => { if (!isTeacherCode($('#tCode').value)) { $('#tMsg').textContent = 'That code isn\u2019t right.'; return; } $('#tLogin').hidden = true; $('#tTools').hidden = false; $('#tNote').textContent = S.student ? `Signed in: ${S.student.first} ${S.student.last}. Save code: ${saveKey(S.student)}` : 'No student is signed in.'; });
+$('#tCode').addEventListener('keydown', e => { if (e.key === 'Enter') $('#tGo').click(); });
+$('#tKey').addEventListener('click', () => { keyOn = !keyOn; document.body.classList.toggle('key', keyOn); $('#tKey').textContent = keyOn ? 'Hide answer key' : 'Show answer key (based on this student\u2019s own measurements)'; paintKey(); });
+$('#tUnlockPred').addEventListener('click', () => { if (!S.student) return; S.predLocked = false; save(true); build(); go(3); $('#teachOv').hidden = true; toast('Prediction unlocked for this student.'); });
+$('#tPreview').addEventListener('click', () => { S = fresh(); S.preview = true; S.student = { first: 'Teacher', last: 'Preview', id: '0', period: '0', teacher: 'Preview' }; $('#previewBar').hidden = false; $('#teachOv').hidden = true; $('#gateOv').hidden = true; $('#lockOv').hidden = true; showLab(); });
+$('#tEndLock').addEventListener('click', () => { S.lockActive = false; S.locked = false; save(true); $('#lockOv').hidden = true; $('#gateOv').hidden = true; endFull(); $('#teachOv').hidden = true; toast('Lockdown is off for this student on this Chromebook.'); });
+$('#tScores').addEventListener('click', () => { let r = []; try { r = JSON.parse(localStorage.getItem(RECS) || '[]'); } catch (e) {} if (!r.length) { toast('No scores are saved on this Chromebook yet.'); return; } csv(r.map(row), 'DownhillRampLab_scores.csv'); });
+$('#tReset').addEventListener('click', () => { if (!S.student) { toast('No student is signed in.'); return; } $('#teachOv').hidden = true;
+  confirmBox('Reset this student\u2019s work?', `This erases ${S.student.first} ${S.student.last}'s lab on this Chromebook and in the backup.`, async () => { const st = S.student; S = fresh(); S.student = st; try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} if (CLOUD()) { try { await fetch(saveURL(), { method: 'POST', mode: 'no-cors', body: cloudBody() }); } catch (e) {} } location.reload(); }); });
+
+/* ================= CALCULATOR ================= */
+const CK = [['C', 'clr'], ['⌫', 'bs'], ['(', '('], [')', ')'], ['tan⁻¹', 'tan⁻¹('], ['√', '√('], ['x²', '²'], ['÷', '÷'], ['7', '7'], ['8', '8'], ['9', '9'], ['×', '×'], ['4', '4'], ['5', '5'], ['6', '6'], ['−', '−'], ['1', '1'], ['2', '2'], ['3', '3'], ['+', '+'], ['0', '0'], ['.', '.'], ['ans', 'ans'], ['=', 'eq']];
+let cExpr = '', cAns = 0, cJust = false;
+$('#cKeys').innerHTML = CK.map(([l, v]) => `<button type="button" data-ck="${esc(v)}" class="${'÷×−+²'.includes(v) || (v.endsWith('(') && v.length > 1) ? 'op' : ''} ${v === 'eq' ? 'eq' : ''}">${l}</button>`).join('');
+function cEval(s) {
+  let js = s.replace(/ans/g, '(' + cAns + ')').replace(/tan⁻¹\(/g, 'A(').replace(/√\(/g, 'Q(').replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-').replace(/²/g, '**2');
+  if (!/^[0-9.+\-*/()AQ\s]*$/.test(js.replace(/\*\*/g, '*'))) throw new Error('bad');
+  const opens = (js.match(/\(/g) || []).length - (js.match(/\)/g) || []).length; js += ')'.repeat(Math.max(0, opens));
+  const r = Function('A', 'Q', '"use strict";return (' + js + ')')(x => Math.atan(x) * 180 / Math.PI, Math.sqrt); if (!isFinite(r)) throw new Error('bad'); return r;
+}
+function cPress(v) {
+  if (v === 'clr') { cExpr = ''; $('#cRes').textContent = '0'; }
+  else if (v === 'bs') cExpr = cExpr.replace(/(tan⁻¹\(|√\(|ans|.)$/, '');
+  else if (v === 'eq') { try { cAns = Math.round(cEval(cExpr) * 1e8) / 1e8; $('#cRes').textContent = String(cAns); cJust = true; } catch (e) { $('#cRes').textContent = 'Check your entry'; } $('#cExpr').textContent = cExpr; return; }
+  else { if (cJust && /^[0-9.]|^tan|^√/.test(v)) cExpr = ''; if (cJust && /^[÷×−+²]/.test(v)) cExpr = 'ans'; cExpr += v; }
+  cJust = false; $('#cExpr').textContent = cExpr;
+}
+$('#cKeys').addEventListener('click', e => { const b = e.target.closest('[data-ck]'); if (b) cPress(b.dataset.ck); });
+$('#calcBtn').addEventListener('click', () => { $('#calc').hidden = !$('#calc').hidden; });
+$('#calcClose').addEventListener('click', () => { $('#calc').hidden = true; });
+document.addEventListener('keydown', e => {
+  if ($('#calc').hidden || e.target.matches('input,select,textarea')) return;
+  const mm = { Enter: 'eq', '=': 'eq', Backspace: 'bs', Escape: 'clr', '*': '×', '/': '÷', '-': '−', '+': '+', '(': '(', ')': ')', '.': '.' };
+  if (/^[0-9]$/.test(e.key)) { cPress(e.key); e.preventDefault(); } else if (mm[e.key]) { cPress(mm[e.key]); e.preventDefault(); }
+});
+
+/* ================= START ================= */
+showSign(); if (S.student && S.locked && live()) showLock();
+})();
+</script>
+</body>
+</html>
