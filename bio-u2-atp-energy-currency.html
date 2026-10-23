@@ -1,0 +1,1864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ATP: The Energy Currency | Biology Unit 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1626; --panel:#142136; --panel2:#1a2a44; --line:#2a3d5f; --line2:#3a5580;
+  --text:#e8eef8; --muted:#a3b4cf; --dim:#7488a9;
+  --x:#ff7d6e; --y:#45c8f0; --a:#b996ff; --b:#5fe3a9; --r:#ffd35c; --amber:#f5a524;
+  --ok:#4ade80; --bad:#fb7185; --radius:14px;
+  --font:'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+html,body{margin:0}
+body{
+  background-color:var(--bg);
+  background-image:linear-gradient(rgba(110,150,210,.065) 1px,transparent 1px),linear-gradient(90deg,rgba(110,150,210,.065) 1px,transparent 1px);
+  background-size:32px 32px;
+  color:var(--text); font-family:var(--font); font-size:17px; line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{line-height:1.2; margin:0 0 .5em; font-weight:600}
+h1{font-size:clamp(30px,5vw,46px); font-weight:700; letter-spacing:-.01em}
+h2{font-size:clamp(24px,3.4vw,32px)}
+h3{font-size:20px}
+h4{font-size:16px}
+p{margin:0 0 .8em}
+sub{font-size:.72em}
+a{color:var(--y)}
+.num,.nb,input.ans,.readout{font-variant-numeric:tabular-nums}
+.cx{color:var(--x); font-weight:600} .cy{color:var(--y); font-weight:600}
+.ca{color:var(--a); font-weight:600} .cb{color:var(--b); font-weight:600} .cr{color:var(--r); font-weight:600}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky; top:0; z-index:20; background:rgba(13,22,38,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:1120px; margin:0 auto; display:flex; align-items:center; gap:14px; padding:8px 16px}
+.brand{font-weight:600; font-size:15px; white-space:nowrap}
+.brand span{display:block; font-weight:400; font-size:12px; color:var(--muted)}
+.savenote{font-size:13px; color:var(--ok); white-space:nowrap}
+@media (max-width:640px){ .savenote{display:none} }
+.card.nostore{border:2px solid var(--bad); background:rgba(251,113,133,.08)}
+.navtiles{display:flex; gap:6px; overflow-x:auto; flex:1; padding:4px 2px; scrollbar-width:thin}
+.progress{height:4px; background:var(--panel2)}
+.progress div{height:100%; width:0; background:var(--r); transition:width .5s ease}
+
+.tile{flex:0 0 auto; width:50px; height:54px; border-radius:6px; border:1.5px solid var(--line2); background:var(--panel); color:var(--text);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; cursor:pointer; font-family:var(--font); padding:0}
+.tile .z{position:absolute; top:2px; left:4px; font-size:9px; color:var(--muted)}
+.tile .sym{font-size:19px; font-weight:700; line-height:1}
+.tile .nm{font-size:8.5px; color:var(--muted); margin-top:2px}
+.tile.cur{background:var(--r); border-color:var(--r); color:#231a00}
+.tile.cur .z,.tile.cur .nm{color:#5a4600}
+.tile.done::after{content:'✓'; position:absolute; top:1px; right:4px; font-size:10px; font-weight:700; color:var(--ok)}
+.tile.cur.done::after{color:#1d6b35}
+.tile.locked{opacity:.4; cursor:not-allowed}
+.tile.ne{border-style:dashed}
+
+/* ---------- layout ---------- */
+main{max-width:1000px; margin:0 auto; padding:24px 18px 80px}
+.sechead{display:flex; gap:18px; align-items:center; margin:12px 0 8px}
+.badge{flex:0 0 auto; width:94px; height:94px; border-radius:10px; border:2px solid var(--r); background:var(--panel);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative}
+.badge .z{position:absolute; top:4px; left:7px; font-size:12px; color:var(--muted)}
+.badge .sym{font-size:38px; font-weight:700; line-height:1; color:var(--r)}
+.badge .nm{font-size:11px; color:var(--muted); margin-top:6px}
+.meta{color:var(--muted); font-size:15px; margin-bottom:4px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:22px 24px; margin:18px 0}
+.card.qc{border:2px solid var(--amber)}
+.tag{display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; padding:3px 11px 3px 8px; border-radius:999px; margin-bottom:12px}
+.tag svg{width:15px; height:15px}
+.tag.read{background:rgba(69,200,240,.14); color:var(--y)}
+.tag.try{background:rgba(95,227,169,.14); color:var(--b)}
+.tag.qc{background:rgba(245,165,36,.16); color:var(--amber)}
+.split{display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); gap:22px; align-items:start}
+@media (max-width:780px){ .split{grid-template-columns:1fr} }
+.fig{background:#0a1322; border:1px solid var(--line); border-radius:12px; width:100%; height:auto; display:block; touch-action:none; user-select:none; -webkit-user-select:none}
+.fig text{font-family:var(--font)}
+.handle{cursor:grab}
+.handle:focus{outline:none}
+.handle:focus-visible{stroke:#fff; stroke-width:3}
+.caption{font-size:15px; color:var(--muted); margin-top:8px; min-height:3em}
+.formula{display:inline-block; background:var(--bg); border:1px solid var(--line2); border-radius:10px; padding:8px 16px; font-size:19px; margin:4px 0 10px}
+.formula + .formula{margin-left:10px}
+.callout{background:var(--panel2); border-radius:10px; padding:12px 16px; margin:10px 0; font-size:16px}
+.callout b{color:var(--r)}
+ul.tight{margin:0 0 .8em; padding-left:1.2em} ul.tight li{margin:.25em 0}
+
+/* ---------- buttons & inputs ---------- */
+.btn{font:inherit; font-weight:600; font-size:15px; border-radius:10px; padding:10px 18px; cursor:pointer; border:1.5px solid transparent; transition:transform .08s ease}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--r); color:#231a00}
+.btn.primary:disabled{background:var(--line); color:var(--dim); cursor:not-allowed}
+.btn.ghost{background:transparent; border-color:var(--line2); color:var(--text)}
+.btn.ghost:hover{border-color:var(--muted)}
+.btn.small{padding:6px 12px; font-size:14px}
+.btn:disabled{opacity:.7}
+.btnrow{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:12px}
+:focus-visible{outline:3px solid var(--r); outline-offset:2px}
+input.ans, select.ans{width:112px; background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:7px 10px; font:inherit; font-size:16px}
+select.ans{width:auto}
+input.ans.ok, select.ans.ok{border-color:var(--ok); background:rgba(74,222,128,.08)}
+input.ans.no, select.ans.no{border-color:var(--bad)}
+input.ans:disabled, select.ans:disabled{opacity:.45}
+.field{display:flex; flex-direction:column; gap:4px; font-size:14px; color:var(--muted)}
+.field input,.field select{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px}
+.formgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; margin:12px 0}
+.numrow{display:flex; flex-wrap:wrap; align-items:center; gap:8px 10px; margin:10px 0 4px}
+.numrow label{min-width:150px}
+.inwrap{display:inline-flex; align-items:center; gap:6px}
+.unit{color:var(--muted); font-size:15px}
+
+/* ---------- feedback ---------- */
+.fb{margin-top:10px; padding:10px 14px; border-radius:10px; font-size:15px}
+.fb.ok{background:rgba(74,222,128,.12); color:#cdf8dc}
+.fb.no{background:rgba(251,113,133,.12); color:#ffd3db}
+.fb.info{background:var(--panel2); color:var(--text)}
+.how{margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,.12); color:var(--text)}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes pop{0%{transform:scale(.85)}60%{transform:scale(1.06)}100%{transform:scale(1)}}
+.shake{animation:shake .35s}
+
+/* ---------- multiple choice ---------- */
+.mcq{margin:6px 0 22px}
+.mcq:last-child{margin-bottom:4px}
+.mcq .q{font-weight:500; margin-bottom:10px}
+.opts{display:grid; gap:8px}
+.opt{display:flex; gap:12px; align-items:center; text-align:left; background:var(--panel2); border:1.5px solid var(--line); color:var(--text); border-radius:10px; padding:9px 14px; font:inherit; font-size:16px; cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--line2)}
+.opt .L{flex:0 0 28px; height:28px; border-radius:50%; display:grid; place-items:center; background:var(--bg); font-weight:600; font-size:14px}
+.opt.right{border-color:var(--ok); background:rgba(74,222,128,.12)}
+.opt.right .L{background:var(--ok); color:#06210f}
+.opt.wrong{border-color:var(--bad); background:rgba(251,113,133,.08); opacity:.8}
+.opt:disabled{cursor:default}
+
+/* ---------- sorter ---------- */
+.chips{display:flex; flex-wrap:wrap; gap:8px; min-height:52px; padding:10px; border-radius:12px; background:var(--bg); border:1px solid var(--line)}
+.chips:empty::before{content:'All sorted.'; color:var(--muted); font-size:14px; padding:4px}
+.chip{background:var(--panel2); border:1.5px solid var(--line2); color:var(--text); border-radius:999px; padding:6px 14px; font:inherit; font-size:15px; cursor:grab}
+.chip.sel{border-color:var(--r); box-shadow:0 0 0 3px rgba(255,211,92,.25)}
+.chip.placed{cursor:default; border-color:rgba(74,222,128,.6); animation:pop .3s; pointer-events:none}
+.bins{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; margin-top:12px}
+.bin{border:2px dashed var(--line2); border-radius:12px; padding:10px; min-height:110px; cursor:pointer; transition:border-color .15s, background .15s}
+.bin h4{margin:0 0 8px; font-size:16px}
+.bin.over,.bin.ready{border-color:var(--r); background:rgba(255,211,92,.05)}
+.binchips{display:flex; flex-wrap:wrap; gap:6px}
+
+/* ---------- missions, readouts, tables ---------- */
+.missions{background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:12px 16px; margin-top:12px}
+.missions h4{margin-bottom:6px}
+.missions ol{margin:0; padding-left:1.3em}
+.missions li{margin:4px 0; color:var(--muted)}
+.missions li.cur{color:var(--text); font-weight:500}
+.missions li.done{color:var(--ok); text-decoration:line-through; text-decoration-color:rgba(74,222,128,.5)}
+.readout{display:grid; grid-template-columns:auto 1fr; gap:4px 14px; background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:12px 16px; font-size:16px}
+.readout dt{color:var(--muted)} .readout dd{margin:0; font-weight:600}
+table.nb{border-collapse:collapse; width:100%; margin:8px 0}
+table.nb th,table.nb td{border:1px solid var(--line2); padding:7px 10px; text-align:center}
+table.nb th{background:var(--panel2); font-weight:600; font-size:14px}
+table.nb td:first-child{text-align:left; font-size:15px}
+table.nb input.ans{width:90px}
+.cellwrap{display:inline-flex; gap:4px; align-items:center}
+.cellbtn{background:var(--panel2); border:1.5px solid var(--line2); color:var(--text); border-radius:8px; width:34px; height:36px; font:inherit; cursor:pointer}
+.cellbtn:disabled{opacity:.35; cursor:default}
+.steps-row{display:grid; grid-template-columns:minmax(150px,auto) 1fr; gap:10px 12px; align-items:center; margin:12px 0}
+.slider{display:flex; align-items:center; gap:12px; margin:8px 0}
+.slider input{flex:1; accent-color:var(--r)}
+.slider label{min-width:72px}
+.stepbox{background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:14px 16px; min-height:120px}
+.stepbox .k{color:var(--muted); font-size:14px; margin-bottom:4px}
+.wide{overflow-x:auto}
+
+/* ---------- unlock checklist ---------- */
+.unlock{border:1.5px dashed var(--line2); border-radius:var(--radius); padding:18px 22px; margin:30px 0 12px; background:rgba(20,33,54,.75)}
+.unlock h3{font-size:18px}
+.unlock ul{margin:0; padding:0}
+.unlock li{list-style:none; display:flex; gap:10px; align-items:flex-start; padding:5px 0; color:var(--muted)}
+.unlock li .box{width:22px; height:22px; border-radius:6px; border:2px solid var(--line2); flex:0 0 22px; display:grid; place-items:center; font-size:13px; font-weight:700; margin-top:2px}
+.unlock li.done{color:var(--text)}
+.unlock li.done .box{background:var(--ok); border-color:var(--ok); color:#06210f; animation:pop .3s}
+.secnav{display:flex; justify-content:space-between; gap:10px; margin-top:16px; flex-wrap:wrap}
+
+/* ---------- start page ---------- */
+.hero{display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr); gap:26px; align-items:center; margin:10px 0 18px}
+@media (max-width:780px){ .hero{grid-template-columns:1fr} }
+.hero .kicker{color:var(--muted); font-size:16px; margin-bottom:8px}
+.hero p.lead{font-size:19px; color:var(--muted); max-width:34em}
+.twocards{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+@media (max-width:700px){ .twocards{grid-template-columns:1fr} }
+.twocards .card{margin:0}
+.goals li{list-style:none; display:flex; gap:10px; padding:4px 0; color:var(--muted)}
+.goals ul{margin:0; padding:0}
+.goals li .box{width:22px; height:22px; border-radius:50%; border:2px solid var(--line2); flex:0 0 22px; display:grid; place-items:center; font-size:12px; font-weight:700; margin-top:2px}
+.goals li.done{color:var(--text)} .goals li.done .box{background:var(--ok); border-color:var(--ok); color:#06210f}
+.linkbtn{background:none; border:none; color:var(--muted); font:inherit; font-size:14px; text-decoration:underline; cursor:pointer; padding:4px}
+
+/* ---------- final check ---------- */
+.dots{display:flex; gap:6px; margin:4px 0 14px; flex-wrap:wrap}
+.dots span{width:28px; height:28px; border-radius:50%; border:2px solid var(--line2); display:grid; place-items:center; font-size:12px; color:var(--muted)}
+.dots span.cur{border-color:var(--r); color:var(--r)}
+.dots span.ans{background:var(--line2); color:var(--text)}
+.dots span.ok{background:var(--ok); border-color:var(--ok); color:#06210f}
+.dots span.no{background:var(--bad); border-color:var(--bad); color:#3a0611}
+.bigscore{font-size:54px; font-weight:700; line-height:1; color:var(--r)}
+.reviewlist{margin:14px 0 0; padding:0; list-style:none}
+.reviewlist li{border-top:1px solid var(--line); padding:10px 0; font-size:15px}
+.reviewlist .yes{color:var(--ok); font-weight:600} .reviewlist .nope{color:var(--bad); font-weight:600}
+
+/* ---------- results ---------- */
+table.res{border-collapse:collapse; width:100%; margin:6px 0 4px}
+table.res th,table.res td{text-align:left; padding:8px 10px; border-bottom:1px solid var(--line)}
+table.res th{color:var(--muted); font-weight:400; width:44%}
+
+/* ---------- overlays ---------- */
+.overlay{position:fixed; inset:0; background:rgba(4,9,18,.9); z-index:100; display:none; align-items:center; justify-content:center; padding:20px}
+.overlay.show{display:flex}
+.modal{background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:26px; max-width:560px; width:100%; max-height:92vh; overflow:auto}
+.modal.wide{max-width:980px}
+.lockicon{width:56px; height:56px; border-radius:14px; background:rgba(251,113,133,.15); display:grid; place-items:center; margin-bottom:12px}
+
+/* ---------- calculator ---------- */
+.calc{position:fixed; right:16px; bottom:16px; z-index:60; width:300px; background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:14px; box-shadow:0 18px 50px rgba(0,0,0,.45)}
+.calc header{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:14px; color:var(--muted)}
+.calc input{width:100%; background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:8px 10px; font:inherit; font-size:17px; text-align:right}
+.calc .out{text-align:right; font-size:22px; font-weight:600; min-height:32px; margin:6px 2px; font-variant-numeric:tabular-nums; color:var(--r)}
+.calc .keys{display:grid; grid-template-columns:repeat(5,1fr); gap:6px}
+.calc .keys button{background:var(--panel2); border:1px solid var(--line); color:var(--text); border-radius:8px; padding:9px 0; font:inherit; font-size:15px; cursor:pointer}
+.calc .keys button.fn{color:var(--y)}
+.calc .keys button.eq{background:var(--r); color:#231a00; font-weight:700}
+@media (max-width:520px){ .calc{left:10px; right:10px; width:auto; bottom:10px} }
+
+
+.work{background:var(--bg); border:1.5px dashed var(--bad); border-radius:10px; padding:10px 14px; margin-bottom:12px; font-variant-numeric:tabular-nums}
+.mistabs .btn.on{border-color:var(--r); color:var(--r)}
+
+.tile .ic{display:block; line-height:0; color:var(--r)}
+.tile.cur .ic{color:#231a00}
+.badge .ic{display:block; line-height:0; color:var(--r); margin-top:4px}
+
+.wh{font:inherit; font-size:.92em; font-weight:600; color:var(--y); background:rgba(69,200,240,.1); border:1px dashed rgba(69,200,240,.6); border-radius:999px; padding:0 8px; cursor:help}
+.whpop{position:absolute; z-index:90; max-width:300px; background:var(--panel2); border:1px solid var(--y); border-radius:10px; padding:8px 12px; font-size:14px; box-shadow:0 10px 30px rgba(0,0,0,.4)}
+body.keyon .opt[data-key]{outline:2px dashed var(--r); outline-offset:2px}
+body.keyon .chip[data-key]:not(.placed)::after{content:' → ' attr(data-key); color:var(--r); font-size:12px}
+body.keyon [data-keyshow]::after{content:' (' attr(data-keyshow) ')'; color:var(--r); font-size:13px}
+.selall .opt .L{border-radius:6px}
+.opt.picked{border-color:var(--r); background:rgba(255,211,92,.1)}
+.opt.picked .L{background:var(--r); color:#231a00}
+.twopart h4{margin:14px 0 6px}
+#calcBtn{display:none !important}
+.stage{fill:none}
+
+.tag.phen{background:rgba(244,114,182,.16); color:#f9a8d4}
+.card.phencard{border:1.5px solid rgba(244,114,182,.5); background:linear-gradient(180deg,rgba(244,114,182,.07),transparent 40%), var(--panel)}
+.lvlbtns .btn.on{background:var(--r); color:#231a00; border-color:var(--r)}
+.meters{display:grid; gap:9px}
+.meter .lab{display:flex; justify-content:space-between; font-size:14px; margin-bottom:3px}
+.meter .track{height:12px; border-radius:6px; background:var(--panel2); overflow:hidden}
+.meter .fill{height:100%; border-radius:6px; transition:width .6s ease, background .6s}
+.runner .leg1{transform-origin:150px 150px; animation:swing var(--dur,1s) ease-in-out infinite alternate}
+.runner .leg2{transform-origin:150px 150px; animation:swing var(--dur,1s) ease-in-out infinite alternate-reverse}
+.runner .arm1{transform-origin:150px 100px; animation:swing var(--dur,1s) ease-in-out infinite alternate-reverse}
+.runner .arm2{transform-origin:150px 100px; animation:swing var(--dur,1s) ease-in-out infinite alternate}
+.runner.still .leg1,.runner.still .leg2,.runner.still .arm1,.runner.still .arm2{animation:none}
+@keyframes swing{from{transform:rotate(-24deg)} to{transform:rotate(24deg)}}
+.puff{animation:puff var(--bdur,4s) linear infinite; opacity:0}
+@keyframes puff{0%{transform:translate(0,0) scale(.6); opacity:.9} 100%{transform:translate(60px,-24px) scale(1.6); opacity:0}}
+.belt{animation:belt var(--dur,1s) linear infinite}
+@keyframes belt{from{stroke-dashoffset:0} to{stroke-dashoffset:-24}}
+.wbank{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px} .wbank span{font-size:13px; padding:3px 10px; border-radius:999px; border:1.5px solid var(--line2); color:var(--muted)} .wbank span.on{background:var(--ok); border-color:var(--ok); color:#06210f}
+.firstidea{background:var(--panel2); border-left:3px solid #f472b6; border-radius:8px; padding:10px 14px; margin:8px 0 12px; font-style:italic}
+
+.btbkey{display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; font-size:14px; background:var(--panel2); border-radius:10px; padding:8px 12px; margin:8px 0}
+.btbkey span{display:inline-block; width:16px; height:16px; border-radius:50%; vertical-align:middle; margin-right:2px; border:1.5px solid #e8eef8}
+.toggles label{display:flex; gap:8px; align-items:center; margin:6px 0; font-size:16px} .toggles input{width:18px; height:18px; accent-color:var(--r)}
+.btn.on{background:var(--r); color:#231a00; border-color:var(--r)}
+svg.tube{width:150px; height:auto; display:inline-block}
+.dot{display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:6px; vertical-align:middle; border:1px solid #e8eef8}
+.tuberow{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; text-align:center; margin:10px 0} .tuberow svg.tube{width:100%; max-width:110px}
+.eqbox{background:var(--panel2); border-radius:12px; padding:12px 16px; margin:8px 0}
+.eqlab{font-size:14px; font-weight:700; margin-top:6px} .eqline{font-size:20px; font-weight:600; margin:2px 0 6px}
+
+.ffrow{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; text-align:center; margin:10px 0}
+.ffcell svg.fftube{width:100%; max-width:130px; display:block; margin:0 auto 6px}
+.glow.pulse{animation:ffpulse 1.6s ease-in-out infinite}
+@keyframes ffpulse{0%,100%{opacity:.75} 50%{opacity:1}}
+.moneyrow{display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin:6px 0 12px}
+.bill{background:#1f6b3a; border:2px solid #5fe3a9; border-radius:8px; padding:10px 16px; font-size:24px; font-weight:800; text-align:center; color:#d9ffe9} .bill span{font-size:12px; font-weight:600}
+.arrowtxt{font-size:13px; color:var(--muted); text-align:center}
+.coins{display:flex; flex-wrap:wrap; gap:4px; align-items:center; max-width:340px} .coins span{display:inline-grid; place-items:center; width:34px; height:34px; border-radius:50%; background:var(--r); color:#231a00; font-size:10px; font-weight:800; border:2px solid #b8860b} .coins b{font-size:13px; margin-left:6px}
+@media (prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important} }
+
+@media print{
+  body{background:#fff; color:#000; font-size:13px}
+  .topbar,.calc,.overlay,.noprint,.unlock,.secnav{display:none !important}
+  main{padding:0; max-width:none}
+  .card{background:#fff; border:1px solid #999; color:#000}
+  .badge{border-color:#000; background:#fff} .badge .sym{color:#000}
+  .muted,.meta,table.res th{color:#333}
+  table.res th,table.res td{border-color:#bbb}
+  .bigscore{color:#000}
+}
+</style>
+</head>
+<body>
+<header class="topbar noprint" id="topbar" hidden>
+  <div class="topbar-inner">
+    <div class="brand">ATP: energy currency<span id="whoami"></span></div>
+    <nav class="navtiles" id="navtiles" aria-label="Lesson sections"></nav>
+    <span class="savenote" id="saveNote" aria-live="polite"></span>
+    <button class="btn ghost small" id="teachBtn" type="button">Teacher</button>
+    <button class="btn ghost small" id="calcBtn" type="button" aria-expanded="false">Calculator</button>
+  </div>
+  <div class="progress" aria-hidden="true"><div id="progbar"></div></div>
+</header>
+
+<main id="main">
+  <!-- ================= START PAGE ================= -->
+  <section id="start" class="page">
+    <div class="hero">
+      <div>
+        <div class="kicker">Biology · Unit 2: Energy Flow · Self-taught lesson</div>
+        <h1>ATP: The Energy Currency</h1>
+        <p class="lead">Ground-up firefly tails stop glowing. Add sugar: still dark. Add ATP: they light up. Find out why every cell on Earth "pays" for its work with ATP.</p>
+      </div>
+      <div id="heroFig"></div>
+    </div>
+
+    <div class="twocards">
+      <div class="card">
+        <h3>Objective</h3>
+        <p>I can describe the parts of ATP, explain that its energy is stored in chemical bonds, show how ATP and ADP cycle as energy is spent and recharged, and explain why ATP is called the cell's energy currency.</p>
+      </div>
+      <div class="card">
+        <h3>Standards</h3>
+        <p class="small" style="margin-bottom:.5em"><b>NGSS HS-LS1-7</b> Cellular respiration is a chemical process in which the bonds of food molecules are broken and new compounds form, resulting in a net transfer of energy.</p>
+        <p class="small" style="margin:0"><b>Supports:</b> energy is stored in chemical bonds and released when they break; cells use ATP to power their processes.</p>
+      </div>
+    </div>
+
+    <div class="card goals" id="goalsCard">
+      <h3>Goals</h3>
+      <p class="small muted">These check themselves off as you finish sections.</p>
+      <ul id="goalsList"></ul>
+    </div>
+
+    <div class="card nostore" id="noStore" hidden>
+      <h3>This browser can't save your work</h3>
+      <p>You may be in guest or incognito mode. If you close this tab, your work will be lost. Sign in to your school account on your Chromebook and open the lesson again, or ask your teacher.</p>
+    </div>
+    <div class="card" id="signin">
+      <h3 id="signinTitle">Sign in to start</h3>
+      <div id="resumeBox" hidden>
+        <p id="resumeText"></p>
+        <div class="btnrow">
+          <button class="btn primary" id="resumeBtn" type="button">Continue the lesson</button>
+          <button class="linkbtn" id="notMeBtn" type="button">Not you? Ask your teacher to reset this device.</button>
+        </div>
+        <div class="fb no" id="resumeErr" hidden></div>
+        <div>
+        </div>
+      </div>
+      <form id="startForm" autocomplete="off" novalidate>
+        <div class="formgrid">
+          <label class="field">First name<input id="fFirst" required></label>
+          <label class="field">Last name<input id="fLast" required></label>
+          <label class="field">Student ID<input id="fId" inputmode="numeric" required></label>
+          <label class="field">Period<select id="fPeriod" required></select></label>
+          <label class="field">Teacher<select id="fTeacher" required></select></label>
+        </div>
+        <p class="small muted" id="saveInfo">You'll need about 45 minutes. Your progress saves on this device.</p>
+        <div class="fb no" id="formErr" hidden></div>
+        <div class="btnrow"><button class="btn primary" type="button" id="startBtn">Start the lesson</button></div>
+      </form>
+    </div>
+    <p style="text-align:center"><button class="btn ghost" id="teacherLink" type="button">Teacher: enter unlock code</button></p>
+  </section>
+
+  <div id="sections"></div>
+</main>
+
+<!-- ================= OPEN IN TWO TABS ================= -->
+<div class="overlay" id="tabOv" role="dialog" aria-modal="true" aria-labelledby="tabTitle">
+  <div class="modal">
+    <h2 id="tabTitle">This lesson is open in another tab</h2>
+    <p>To keep your newest work safe, this copy stopped saving. Close the extra tab, then reload this one.</p>
+    <div class="btnrow"><button class="btn primary" id="tabReload" type="button">Reload with my newest work</button></div>
+  </div>
+</div>
+
+<!-- ================= LOCK SCREEN ================= -->
+<div class="overlay" id="lockOv" role="dialog" aria-modal="true" aria-labelledby="lockTitle">
+  <div class="modal">
+    <div class="lockicon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fb7185" stroke-width="2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+    <h2 id="lockTitle">Lesson locked</h2>
+    <p id="lockMsg">You left the lesson page or exited full screen. Raise your hand so your teacher can unlock it. Your work is saved.</p>
+    <div class="btnrow">
+      <input class="ans" id="lockCode" type="password" placeholder="Teacher code" style="width:200px" autocomplete="off">
+      <button class="btn primary" id="lockBtn" type="button">Unlock</button>
+    </div>
+    <div class="fb no" id="lockErr" hidden>That code didn't work. Only your teacher can unlock the lesson.</div>
+  </div>
+</div>
+
+<!-- ================= FULL-SCREEN GATE ================= -->
+<div class="overlay" id="gateOv" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+  <div class="modal">
+    <h2 id="gateTitle">This lesson runs in full screen</h2>
+    <p>Stay on this page until you finish. If you leave the page or exit full screen, the lesson locks and your teacher has to unlock it.</p>
+    <div class="btnrow"><button class="btn primary" id="gateBtn" type="button">Enter full screen and continue</button></div>
+  </div>
+</div>
+
+<!-- ================= TEACHER VIEW ================= -->
+<div class="overlay" id="teachOv" role="dialog" aria-modal="true" aria-labelledby="teachTitle">
+  <div class="modal" id="teachModal">
+    <div id="teachLogin">
+      <h2 id="teachTitle">Teacher view</h2>
+      <p class="muted">Enter the teacher code.</p>
+      <div class="btnrow">
+        <input class="ans" id="teachCode" type="password" placeholder="Teacher code" style="width:200px" autocomplete="off">
+        <button class="btn primary" id="teachGo" type="button">Open</button>
+        <button class="btn ghost" id="teachCancel" type="button">Close</button>
+      </div>
+      <div class="fb no" id="teachErr" hidden>That code didn't work.</div>
+    </div>
+    <div id="teachPanel" hidden></div>
+  </div>
+</div>
+
+<!-- ================= CALCULATOR ================= -->
+<div class="calc noprint" id="calc" hidden role="dialog" aria-label="Calculator in degree mode">
+  <header><span>Calculator · degree mode</span><button class="linkbtn" id="calcClose" type="button">Close</button></header>
+  <input id="calcIn" aria-label="Calculation" placeholder="e.g. 20*cos(30)" autocomplete="off" spellcheck="false">
+  <div class="out" id="calcOut" aria-live="polite"></div>
+  <div class="keys" id="calcKeys"></div>
+</div>
+<script src="sheets-config.js"></script>
+<script>
+(function(){
+'use strict';
+
+/* =====================================================================
+   SETTINGS — the only part of this file you should need to change
+   ===================================================================== */
+const LESSON_ID   = 'bio-u2-atp-energy-currency';
+const LESSON_NAME = 'ATP: The Energy Currency';
+const UNLOCK_CODE = LESSON_NAME.trim().split(/\s+/).pop();   // lock-screen code = last word of the title (respiration)
+const TEACHER_CODE = 'Teacher007';                           // universal teacher-tools code (also opens the lock screen)
+const codeIs=(v,c)=>String(v||'').trim().toLowerCase()===String(c).toLowerCase();
+/* Google Sheets + teacher list: same setup as the formative assessments and the Bohr model lesson.
+   If sheets-config.js (next to this file on the site) defines TEACHERS or SHEETS_WEBHOOK_URL, those win. */
+const BACKUP_URL = 'https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const BACKUP_TEACHERS = ['Austin', 'Mueller', 'McCue', 'Arce', 'Trimm', 'Garcia', 'Trimm/Callanan', 'Callanan'];
+function teacherList() { try { if (typeof TEACHERS !== 'undefined' && Array.isArray(TEACHERS) && TEACHERS.length) return TEACHERS.map(String).filter(Boolean); } catch (e) {} return BACKUP_TEACHERS; }
+function sheetURL() { try { if (typeof SHEETS_WEBHOOK_URL !== 'undefined' && SHEETS_WEBHOOK_URL && String(SHEETS_WEBHOOK_URL).indexOf('PASTE') < 0) return String(SHEETS_WEBHOOK_URL); } catch (e) {} return BACKUP_URL; }
+const BACKUP_PERIODS = ['1','2','3','4','5','6','7','8'];
+function periodList(){ try{ if(typeof PERIODS!=='undefined'&&Array.isArray(PERIODS)&&PERIODS.length) return PERIODS.map(String); }catch(e){} return BACKUP_PERIODS; }
+const PASS_SCORE = 8;                          // out of 10 on the final check
+/* ===================================================================== */
+
+const STORE = 'atpCurrency_state_v1', RECS = 'atpCurrency_records_v1';
+const NS = 'http://www.w3.org/2000/svg';
+const COL = {x:'#ff7d6e', y:'#45c8f0', a:'#b996ff', b:'#5fe3a9', r:'#ffd35c', amber:'#f5a524',
+             grid:'#1b2a44', axis:'#5d7399', text:'#e8eef8', muted:'#a3b4cf', bg:'#0a1322', ok:'#4ade80'};
+const RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const $ = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+function h(tag, attrs={}, html){
+  const e=document.createElement(tag);
+  for(const k in attrs){
+    if(k==='class') e.className=attrs[k];
+    else if(k.startsWith('on') && typeof attrs[k]==='function') e.addEventListener(k.slice(2), attrs[k]);
+    else if(attrs[k]!==false && attrs[k]!=null) e.setAttribute(k, attrs[k]===true?'':attrs[k]);
+  }
+  if(html!=null) e.innerHTML=html;
+  return e;
+}
+function sv(tag, attrs={}, parent){
+  const e=document.createElementNS(NS,tag);
+  for(const k in attrs) if(attrs[k]!=null) e.setAttribute(k, attrs[k]);
+  if(parent) parent.appendChild(e);
+  return e;
+}
+const rad=d=>d*Math.PI/180, deg=r=>r*180/Math.PI;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+function fmt(v,d=1){ let s=(Math.round(v*Math.pow(10,d))/Math.pow(10,d)).toFixed(d); if(/^-0\.?0*$/.test(s)) s=s.slice(1); return s.replace('-','−'); }
+function parseNum(str){
+  if(str==null) return NaN;
+  const s=String(str).trim().replace(/[−–—]/g,'-').replace(/,/g,'').replace(/\s+/g,'');
+  const m=s.match(/^[+-]?(\d+\.?\d*|\.\d+)/);
+  return m?parseFloat(m[0]):NaN;
+}
+function near(v, ans, kind){
+  if(isNaN(v)) return false;
+  if(kind==='angle') return Math.abs(v-ans)<=0.6;
+  if(kind==='time') return Math.abs(v-ans)<=Math.max(0.015, Math.abs(ans)*0.025);
+  return Math.abs(v-ans) <= Math.max(0.15, Math.abs(ans)*0.015);
+}
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function tween(ms, fn){
+  return new Promise(res=>{
+    if(RM || ms<=0){ fn(1); res(); return; }
+    const t0=performance.now();
+    function step(now){ const t=Math.min(1,(now-t0)/ms); fn(ease(t)); if(t<1) requestAnimationFrame(step); else res(); }
+    requestAnimationFrame(step);
+  });
+}
+const wait=ms=>new Promise(r=>setTimeout(r, RM?0:ms));
+function quad(x,y){ if(x>0&&y>0) return 'I'; if(x<0&&y>0) return 'II'; if(x<0&&y<0) return 'III'; if(x>0&&y<0) return 'IV'; return null; }
+function stdAngle(x,y){ let a=deg(Math.atan2(y,x)); if(a<0) a+=360; return a; }
+function compass(th){
+  th=((th%360)+360)%360; const t=Math.round(th*10)/10;
+  const ax={0:'straight east',90:'straight north',180:'straight west',270:'straight south'};
+  if(ax[t]!==undefined) return {h:ax[t], v:null};
+  const f=n=>(Math.round(n*10)/10).toString();
+  if(t<90)  return {h:`${f(t)}° north of east`,  v:`${f(90-t)}° east of north`};
+  if(t<180) return {h:`${f(180-t)}° north of west`, v:`${f(t-90)}° west of north`};
+  if(t<270) return {h:`${f(t-180)}° south of west`, v:`${f(270-t)}° west of south`};
+  return {h:`${f(360-t)}° south of east`, v:`${f(t-270)}° east of south`};
+}
+// colored symbols
+const V = {
+  Ax:'<span class="cx">A<sub>x</sub></span>', Ay:'<span class="cy">A<sub>y</sub></span>',
+  Bx:'<span class="cx">B<sub>x</sub></span>', By:'<span class="cy">B<sub>y</sub></span>',
+  Rx:'<span class="cx">R<sub>x</sub></span>', Ry:'<span class="cy">R<sub>y</sub></span>',
+  vx:'<span class="cx">v<sub>x</sub></span>', vy:'<span class="cy">v<sub>y</sub></span>',
+  A:'<span class="ca">A</span>', B:'<span class="cb">B</span>', R:'<span class="cr">R</span>',
+  tref:'θ<sub>ref</sub>'
+};
+
+/* ---------------- state ---------------- */
+function freshState(){
+  return {lesson:LESSON_ID, student:null, startedAt:null, sec:0, unlocked:0, reqs:{}, first:{}, solved:{}, misc:{},
+    final:{attempts:0, fails:0, best:0, passed:false, cur:null, history:[], reviewed:false},
+    leaves:0, locked:false, completedAt:null, sent:false, preview:false};
+}
+function load(){ try{ const s=JSON.parse(localStorage.getItem(STORE)); return (s && s.lesson===LESSON_ID)?s:null; }catch(e){ return null; } }
+let S = load() || freshState();
+let STORAGE_OK=true, saveBlocked=false, onConflict=()=>{}, onSaved=()=>{};
+try{ localStorage.setItem('__vecAdd_test','1'); STORAGE_OK=localStorage.getItem('__vecAdd_test')==='1'; localStorage.removeItem('__vecAdd_test'); }catch(e){ STORAGE_OK=false; }
+try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){}
+function save(){
+  if(saveBlocked) return;
+  if(S.preview){ onSaved(); return; }
+  try{
+    const raw=localStorage.getItem(STORE);
+    if(raw){ const st=JSON.parse(raw); if(st && st.lesson===LESSON_ID && (st.rev||0)>(S.rev||0)){ saveBlocked=true; onConflict(); return; } }
+    S.rev=(S.rev||0)+1; S.updatedAt=Date.now();
+    localStorage.setItem(STORE, JSON.stringify(S)); onSaved();
+  }catch(e){}
+}
+
+const ITEMS = new Set();          // ids that count toward the assignment score
+const reg = id => { ITEMS.add(id); return id; };
+function attempt(id, ok){ if(!(id in S.first)) S.first[id]=ok; if(ok) S.solved[id]=true; save(); }
+function assignScore(){ let c=0; ITEMS.forEach(id=>{ if(S.first[id]===true) c++; }); const t=ITEMS.size; return {c, t, pct:t?Math.round(100*c/t):0}; }
+
+let onReqChange = ()=>{};
+function reqDone(id){ if(S.reqs[id]) return; S.reqs[id]=true; save(); onReqChange(id); }
+function allSolved(ids){ return ids.every(i=>S.solved[i]); }
+
+/* ---------------- SVG helpers ---------------- */
+function arrow(g, x1,y1,x2,y2, color, o={}){
+  const w=o.w||3, hl=o.head||12, hw=o.hw||6.5;
+  const dx=x2-x1, dy=y2-y1, L=Math.hypot(dx,dy);
+  const grp=sv('g',{opacity:o.op!=null?o.op:null},g);
+  if(L<0.5) return grp;
+  const ux=dx/L, uy=dy/L, hh=Math.min(hl, L*0.55);
+  const bx=x2-ux*hh, by=y2-uy*hh;
+  sv('line',{x1,y1,x2:bx,y2:by,stroke:color,'stroke-width':w,'stroke-linecap':o.dash?'butt':'round','stroke-dasharray':o.dash||null},grp);
+  const k=hh/hl;
+  sv('polygon',{points:`${x2},${y2} ${bx-uy*hw*k},${by+ux*hw*k} ${bx+uy*hw*k},${by-ux*hw*k}`,fill:color},grp);
+  return grp;
+}
+function label(g, x, y, txt, color, o={}){
+  const t=sv('text',{x,y,fill:color||COL.text,'font-size':o.size||15,'font-weight':o.weight||600,'text-anchor':o.anchor||'middle',
+    'dominant-baseline':'middle','paint-order':'stroke',stroke:COL.bg,'stroke-width':o.halo==null?5:o.halo,'stroke-linejoin':'round'},g);
+  t.innerHTML=txt;
+  return t;
+}
+function arcPath(cx,cy,r,a0,a1){
+  const p=a=>[cx+r*Math.cos(rad(a)), cy-r*Math.sin(rad(a))];
+  const [x0,y0]=p(a0),[x1,y1]=p(a1); const large=Math.abs(a1-a0)>180?1:0; const sweep=a1>a0?0:1;
+  return `M${x0},${y0} A${r},${r} 0 ${large} ${sweep} ${x1},${y1}`;
+}
+function niceStep(span){ const raw=span/8; const p=Math.pow(10,Math.floor(Math.log10(raw))); const m=raw/p; return (m<1.5?1:m<3.5?2:m<7.5?5:10)*p; }
+
+function plane(o){
+  const pad=o.pad??24;
+  const xmin=o.xmin,xmax=o.xmax,ymin=o.ymin,ymax=o.ymax;
+  const s=o.scale || ((o.w||440)-2*pad)/(xmax-xmin);
+  const W=(xmax-xmin)*s+2*pad, H=(ymax-ymin)*s+2*pad;
+  const svg=sv('svg',{viewBox:`0 0 ${W} ${H}`,class:'fig',role:'img','aria-label':o.label||'Coordinate grid'});
+  const X=x=>pad+(x-xmin)*s, Y=y=>pad+(ymax-y)*s;
+  const gGrid=sv('g',{},svg), gDraw=sv('g',{},svg), gTop=sv('g',{},svg);
+  const step=o.grid||1;
+  if(o.grid!==0){
+    for(let x=Math.ceil(xmin/step)*step; x<=xmax+1e-9; x+=step) sv('line',{x1:X(x),y1:Y(ymin),x2:X(x),y2:Y(ymax),stroke:COL.grid,'stroke-width':1},gGrid);
+    for(let y=Math.ceil(ymin/step)*step; y<=ymax+1e-9; y+=step) sv('line',{x1:X(xmin),y1:Y(y),x2:X(xmax),y2:Y(y),stroke:COL.grid,'stroke-width':1},gGrid);
+  }
+  if(xmin<=0&&xmax>=0) sv('line',{x1:X(0),y1:Y(ymin),x2:X(0),y2:Y(ymax),stroke:COL.axis,'stroke-width':1.6},gGrid);
+  if(ymin<=0&&ymax>=0) sv('line',{x1:X(xmin),y1:Y(0),x2:X(xmax),y2:Y(0),stroke:COL.axis,'stroke-width':1.6},gGrid);
+  if(o.ticks){
+    const ts=o.ticks;
+    for(let x=Math.ceil(xmin/ts)*ts; x<=xmax; x+=ts) if(Math.abs(x)>1e-9 && x>xmin && x<xmax) label(gGrid,X(x),Y(0)+13,String(+x.toFixed(2)).replace('-','−'),COL.muted,{size:11,weight:400,halo:3});
+    for(let y=Math.ceil(ymin/ts)*ts; y<=ymax; y+=ts) if(Math.abs(y)>1e-9 && y>ymin && y<ymax) label(gGrid,X(0)-5,Y(y),String(+y.toFixed(2)).replace('-','−'),COL.muted,{size:11,weight:400,anchor:'end',halo:3});
+  }
+  if(o.names!==false){
+    if(ymin<=0&&ymax>=0) label(gGrid,X(xmax)-4,Y(0)-11,'+x',COL.muted,{size:13,anchor:'end',halo:3});
+    if(xmin<=0&&xmax>=0) label(gGrid,X(0)+8,Y(ymax)+10,'+y',COL.muted,{size:13,anchor:'start',halo:3});
+  }
+  function toData(e){
+    const pt=svg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY;
+    const p=pt.matrixTransform(svg.getScreenCTM().inverse());
+    return {x:(p.x-pad)/s+xmin, y:ymax-(p.y-pad)/s};
+  }
+  return {svg,X,Y,s,W,H,gGrid,gDraw,gTop,toData};
+}
+function autoPlane(points, o={}){
+  let xs=[0,...points.map(p=>p[0])], ys=[0,...points.map(p=>p[1])];
+  let x0=Math.min(...xs), x1=Math.max(...xs), y0=Math.min(...ys), y1=Math.max(...ys);
+  const span=Math.max(x1-x0, y1-y0, 1); const m=span*0.16;
+  x0-=m; x1+=m; y0-=m; y1+=m;
+  const room=span*0.24; x0=Math.min(x0,-room); x1=Math.max(x1,room); y0=Math.min(y0,-room); y1=Math.max(y1,room);
+  // make the window square so tall or wide vectors don't stretch the figure
+  const sx=x1-x0, sy=y1-y0;
+  if(sx<sy){ const d=(sy-sx)/2; x0-=d; x1+=d; } else if(sy<sx){ const d=(sx-sy)/2; y0-=d; y1+=d; }
+  const step=niceStep(Math.max(x1-x0,y1-y0));
+  return plane(Object.assign({xmin:Math.floor(x0/step)*step, xmax:Math.ceil(x1/step)*step, ymin:Math.floor(y0/step)*step, ymax:Math.ceil(y1/step)*step, grid:step, w:o.w||420}, o));
+}
+function rightMark(g, P, cx, cy, dx, dy, size){
+  // small square at corner (cx,cy) in data coords; dx,dy are signs pointing into the triangle
+  const s=size/P.s;
+  sv('path',{d:`M${P.X(cx+dx*s)},${P.Y(cy)} L${P.X(cx+dx*s)},${P.Y(cy+dy*s)} L${P.X(cx)},${P.Y(cy+dy*s)}`,fill:'none',stroke:COL.muted,'stroke-width':1.3},g);
+}
+// drag handles on a plane. handles: [{get:()=>[x,y], set:(x,y)=>{}, el}]
+function svgDrag(P, handles, maxDist){
+  let act=null;
+  P.svg.addEventListener('pointerdown',e=>{
+    const d=P.toData(e); let best=null, bd=1e9;
+    handles.forEach(hd=>{ const [hx,hy]=hd.get(); const dd=Math.hypot(hx-d.x,hy-d.y); if(dd<bd){bd=dd; best=hd;} });
+    if(!best || (maxDist && bd>maxDist)) return;
+    act=best; try{ P.svg.setPointerCapture(e.pointerId); }catch(_){}
+    act.set(d.x,d.y); e.preventDefault();
+  });
+  P.svg.addEventListener('pointermove',e=>{ if(!act) return; const d=P.toData(e); act.set(d.x,d.y); });
+  const end=()=>{ act=null; };
+  P.svg.addEventListener('pointerup',end); P.svg.addEventListener('pointercancel',end);
+  handles.forEach(hd=>{
+    if(!hd.el) return;
+    hd.el.addEventListener('keydown',e=>{
+      const [x,y]=hd.get(); const st=hd.step||1; let nx=x, ny=y;
+      if(e.key==='ArrowLeft') nx-=st; else if(e.key==='ArrowRight') nx+=st; else if(e.key==='ArrowUp') ny+=st; else if(e.key==='ArrowDown') ny-=st; else return;
+      e.preventDefault(); hd.set(nx,ny);
+    });
+  });
+}
+
+/* ---------------- word-help chips (tap a key word to see what it means) ---------------- */
+function wh(term, def){ return `<button type="button" class="wh" data-def="${def.replace(/"/g,'&quot;')}">${term}</button>`; }
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.wh'); const old=document.querySelector('.whpop');
+  if(old&&(!b||old.dataset.for===b.textContent)){ old.remove(); if(b) return; }
+  if(old) old.remove(); if(!b) return;
+  const p=document.createElement('div'); p.className='whpop'; p.dataset.for=b.textContent; p.innerHTML=`<b>${b.textContent}</b>: ${b.dataset.def}`;
+  document.body.appendChild(p); const r=b.getBoundingClientRect();
+  p.style.left=Math.max(8,Math.min(window.innerWidth-p.offsetWidth-8, r.left+window.scrollX))+'px'; p.style.top=(r.bottom+window.scrollY+6)+'px';
+});
+
+/* ---------------- UI components ---------------- */
+const ICON = {
+  read:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H2z"/><path d="M22 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8z"/></svg>',
+  try:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V5a2 2 0 0 1 4 0v6"/><path d="M13 10a2 2 0 0 1 4 0v2a2 2 0 0 1 3 1v2a7 7 0 0 1-7 7h-1a7 7 0 0 1-6-3l-2.5-4a2 2 0 0 1 3.4-2L9 15"/></svg>',
+  qc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg>',
+  phen:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>'
+};
+function card(parent, kind, title){
+  const names={read:'Read', try:'Try it', qc:'Quick check', phen:'Phenomenon'};
+  const c=h('div',{class:'card'+(kind==='qc'?' qc':'')});
+  c.innerHTML=`<span class="tag ${kind}">${ICON[kind]}${names[kind]}</span>${title?`<h3>${title}</h3>`:''}`;
+  parent.appendChild(c); return c;
+}
+
+function mcq(parent, o){
+  reg(o.id);
+  const w=h('div',{class:'mcq'}); w.innerHTML=`<div class="q">${o.q}</div>`;
+  const opts=h('div',{class:'opts'}), fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'});
+  const ordKey='ord_'+o.id;
+  let order=S.misc[ordKey]; if(!order||order.length!==o.opts.length){ order=shuffle(o.opts.map((_,i)=>i)); S.misc[ordKey]=order; }
+  const btns=[];
+  order.forEach((i,pos)=>{ const t=o.opts[i];
+    const b=h('button',{class:'opt',type:'button'},`<span class="L">${'ABCDEF'[pos]}</span><span>${t}</span>`);
+    if(i===o.ans) b.dataset.key='1';
+    b.addEventListener('click',()=>{
+      if(w.dataset.done) return;
+      const ok=i===o.ans; attempt(o.id, ok);
+      if(ok){ solvedUI(); o.onSolved && o.onSolved(); }
+      else {
+        b.classList.add('wrong','shake'); b.disabled=true; setTimeout(()=>b.classList.remove('shake'),400);
+        fb.className='fb no'; fb.innerHTML='<b>Not quite.</b> '+((o.wrong&&o.wrong[i])||'Look back at the reading and try again.'); fb.hidden=false;
+      }
+    });
+    opts.appendChild(b); btns[i]=b;
+  });
+  function solvedUI(){
+    w.dataset.done=1; btns.forEach(x=>x.disabled=true); btns[o.ans].classList.add('right');
+    fb.className='fb ok'; fb.innerHTML='<b>Correct.</b> '+(o.why||''); fb.hidden=false;
+  }
+  w.append(opts, fb); parent.appendChild(w);
+  if(S.solved[o.id]) solvedUI();
+  return w;
+}
+function qcGroup(parent, qs, reqId){
+  const ids=qs.map(q=>q.id);
+  qs.forEach(q=>{ q.onSolved=()=>{ if(allSolved(ids)) reqDone(reqId); }; mcq(parent,q); });
+}
+
+function numq(parent, o){
+  const counts=o.counts!==false; if(counts) reg(o.id);
+  const wrap=h('div',{class:'numq'});
+  const row=h('div',{class:'numrow'});
+  row.innerHTML=`<label for="in-${o.id}">${o.label}</label><span class="inwrap"><input class="ans" id="in-${o.id}" type="text" autocomplete="off" spellcheck="false" placeholder="?"><span class="unit">${o.unit||''}</span></span><button class="btn small ghost" type="button">Check</button>`;
+  const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'});
+  const inp=$('input',row), btn=$('button',row); let tries=0;
+  function solvedUI(v){
+    wrap.dataset.done=1; inp.value=fmt(v, o.dp??1).replace('−','-'); inp.classList.remove('no'); inp.classList.add('ok'); inp.readOnly=true; btn.disabled=true;
+    if(o.why){ fb.className='fb ok'; fb.innerHTML='<b>Correct.</b> '+o.why; fb.hidden=false; } else fb.hidden=true;
+  }
+  function go(){
+    if(wrap.dataset.done) return;
+    const v=parseNum(inp.value);
+    if(isNaN(v)){ fb.className='fb no'; fb.innerHTML='Type a number first.'; fb.hidden=false; return; }
+    const ok=o.check?o.check(v):near(v,o.ans,o.kind);
+    if(counts) attempt(o.id, ok); else if(ok){ S.solved[o.id]=true; save(); }
+    if(ok){ S.misc['v_'+o.id]=v; save(); solvedUI(v); o.onSolved && o.onSolved(v); }
+    else{
+      tries++; inp.classList.add('no'); inp.classList.remove('shake'); void inp.offsetWidth; inp.classList.add('shake');
+      let msg=o.hint||'Check your work and try again.';
+      if(o.ans!=null && o.kind!=='angle' && near(-v,o.ans) && Math.abs(o.ans)>0.2) msg='Right size, wrong sign. Which way does it point along that axis?';
+      else if(o.signHint && o.ans!=null && near(Math.abs(v),Math.abs(o.ans)) ) msg=o.signHint;
+      fb.className='fb no'; fb.innerHTML='<b>Not yet.</b> '+msg+(tries>=2&&o.how?`<div class="how"><b>Here's how:</b> ${o.how}</div>`:''); fb.hidden=false;
+    }
+  }
+  btn.addEventListener('click',go);
+  inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); go(); } });
+  inp.addEventListener('input',()=>{ inp.classList.remove('no'); if(!wrap.dataset.done){ S.misc['d_'+o.id]=inp.value; save(); } });
+  if(!S.solved[o.id] && S.misc['d_'+o.id]) inp.value=S.misc['d_'+o.id];
+  wrap.append(row, fb); parent.appendChild(wrap);
+  if(S.solved[o.id]) solvedUI(S.misc['v_'+o.id]!=null?S.misc['v_'+o.id]:o.ans);
+  return wrap;
+}
+
+function sorter(parent, o){
+  const key='sort_'+o.id; const st=S.misc[key]||(S.misc[key]={});
+  const w=h('div',{class:'sorter'});
+  w.innerHTML=`<p class="small muted" style="margin-bottom:8px">Tap an item, then tap the box it belongs in. You can also drag.</p>`;
+  const tray=h('div',{class:'chips'}); const bins=h('div',{class:'bins'}); const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'});
+  let sel=null; const binEls={};
+  o.bins.forEach(b=>{
+    const be=h('div',{class:'bin',tabindex:0,role:'button','aria-label':'Put the selected item in '+b.label});
+    be.innerHTML=`<h4>${b.html||b.label}</h4><div class="binchips"></div>`;
+    be.addEventListener('click',()=>{ if(sel!=null) place(sel,b.k); });
+    be.addEventListener('keydown',e=>{ if((e.key==='Enter'||e.key===' ')&&sel!=null){ e.preventDefault(); place(sel,b.k); } });
+    be.addEventListener('dragover',e=>{ e.preventDefault(); be.classList.add('over'); });
+    be.addEventListener('dragleave',()=>be.classList.remove('over'));
+    be.addEventListener('drop',e=>{ e.preventDefault(); be.classList.remove('over'); const i=+e.dataTransfer.getData('text/plain'); if(!isNaN(i)) place(i,b.k); });
+    bins.appendChild(be); binEls[b.k]=be;
+  });
+  const chips=[];
+  const order=S.misc[key+'_order']||(S.misc[key+'_order']=shuffle(o.items.map((_,i)=>i)));
+  order.forEach(i=>{
+    const it=o.items[i];
+    const c=h('button',{class:'chip',type:'button',draggable:'true','data-key':(o.bins.find(b=>b.k===it.k)||{}).label||''},it.html||it.t);
+    c.addEventListener('click',()=>{ if(c.classList.contains('placed')) return; chips.forEach(x=>x&&x.classList.remove('sel')); sel=i; c.classList.add('sel'); Object.values(binEls).forEach(b=>b.classList.add('ready')); });
+    c.addEventListener('dragstart',e=>{ if(c.classList.contains('placed')){ e.preventDefault(); return; } sel=i; e.dataTransfer.setData('text/plain',String(i)); });
+    chips[i]=c; tray.appendChild(c);
+  });
+  function settle(i,k){ const c=chips[i]; c.classList.remove('sel'); c.classList.add('placed'); c.draggable=false; c.disabled=true; $('.binchips',binEls[k]).appendChild(c); }
+  function place(i,k){
+    Object.values(binEls).forEach(b=>b.classList.remove('ready'));
+    const it=o.items[i], c=chips[i]; sel=null;
+    if(it.k===k){ st[i]=k; save(); settle(i,k); fb.hidden=true; check(); }
+    else{
+      c.classList.remove('sel','shake'); void c.offsetWidth; c.classList.add('shake');
+      fb.className='fb no'; fb.innerHTML='<b>Not that box.</b> '+(it.why||'Think about it again.'); fb.hidden=false;
+    }
+  }
+  function check(){ if(Object.keys(st).length===o.items.length){ fb.className='fb ok'; fb.innerHTML='<b>All sorted.</b> '+(o.doneMsg||''); fb.hidden=false; o.onDone&&o.onDone(); } }
+  Object.keys(st).forEach(i=>settle(+i, st[i]));
+  w.append(tray,bins,fb); parent.appendChild(w);
+  if(Object.keys(st).length===o.items.length){ fb.className='fb ok'; fb.innerHTML='<b>All sorted.</b> '+(o.doneMsg||''); fb.hidden=false; }
+  return w;
+}
+
+function missionBox(parent, key, list, reqId){
+  const box=h('div',{class:'missions'}); parent.appendChild(box);
+  let idx=S.misc[key]||0; let last='';
+  function render(){
+    box.innerHTML='<h4>Missions</h4><ol>'+list.map((m,i)=>`<li class="${i<idx?'done':i===idx?'cur':''}">${m.text}</li>`).join('')+'</ol>'
+      +(last?`<div class="fb ok">${last}</div>`:'')+(idx>=list.length&&!last?'<div class="fb ok">All missions complete.</div>':'');
+  }
+  render();
+  return function test(state){
+    if(idx>=list.length) return;
+    if(list[idx].test(state)){
+      last=list[idx].done||'Mission complete.'; idx++; S.misc[key]=idx; save(); render();
+      if(idx>=list.length) reqDone(reqId);
+    }
+  };
+}
+
+function stepper(parent, steps, onStep, reqId){
+  const box=h('div',{class:'stepbox'}); const nav=h('div',{class:'btnrow'});
+  const back=h('button',{class:'btn ghost small',type:'button'},'Back'); const next=h('button',{class:'btn primary small',type:'button'},'Next step');
+  nav.append(back,next); parent.append(box,nav);
+  let k=0;
+  function show(){
+    box.innerHTML=`<div class="k">Step ${k+1} of ${steps.length}</div>${steps[k]}`;
+    back.disabled=k===0; next.disabled=k===steps.length-1; next.textContent=k===steps.length-1?'Done':'Next step';
+    onStep&&onStep(k);
+    if(k===steps.length-1 && reqId) reqDone(reqId);
+  }
+  back.addEventListener('click',()=>{ if(k>0){k--; show();} });
+  next.addEventListener('click',()=>{ if(k<steps.length-1){k++; show();} });
+  show();
+  return {show:i=>{k=i; show();}};
+}
+// Section icons: ATP, the energy currency
+const PHYS_ICONS=[
+ {label:'Fireflies', svg:'<ellipse cx="12" cy="9" rx="3" ry="4"/><path d="M9 7.5C5 4 2.5 6 4 8.5s4.5 1.5 5-.5M15 7.5c4-3.5 6.5-1.5 5 1s-4.5 1.5-5-.5"/><path d="M12 13v2"/><circle cx="12" cy="18.5" r="3" fill="currentColor" opacity=".35"/><circle cx="12" cy="18.5" r="3"/>'},
+ {label:'ATP', svg:'<path d="M2 12l2.5-3 3 .5.8 3-2.3 2.4-3-.6z"/><path d="M8.3 12H10"/><circle cx="12" cy="12" r="2"/><path d="M14 12h.8"/><circle cx="16.8" cy="12" r="2"/><path d="M18.8 12h.6"/><circle cx="21.4" cy="12" r="1.8" fill="currentColor"/><path d="M19.4 5l-1 2.5h1.6l-1 2.5"/>'},
+ {label:'Recharge', svg:'<rect x="3" y="7" width="15" height="10" rx="2"/><path d="M18 10.5h2.5v3H18"/><path d="M11 8.5l-3 4h3l-2 3.5"/>'},
+ {label:'Currency', svg:'<ellipse cx="9" cy="7" rx="6" ry="2.5"/><path d="M3 7v4c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V7"/><path d="M3 11v4c0 1.4 2.7 2.5 6 2.5"/><circle cx="17" cy="16" r="4.5"/><path d="M17 13.5v5"/>'},
+ {label:'Jobs', svg:'<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/>'},
+ {label:'Mistake', svg:'<circle cx="10.5" cy="10.5" r="7"/><path d="M15.5 15.5L21 21"/><path d="M8 8l5 5M13 8l-5 5"/>'},
+ {label:'Final', svg:'<rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4V2.5h6V4"/><path d="M8.5 13l2.5 2.5 4.5-5"/>'},
+ {label:'Results', svg:'<path d="M3 21h18"/><rect x="5" y="12" width="3.5" height="9"/><rect x="10.25" y="7" width="3.5" height="14"/><rect x="15.5" y="3" width="3.5" height="18"/>'}
+];
+function iconSVG(i,size,color){ return `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="${color||'currentColor'}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PHYS_ICONS[i].svg}</svg>`; }
+
+/* =====================================================================
+   SECTION CONTENT: Cellular Respiration (Biology, freshman level)
+   ===================================================================== */
+const SECS=[];
+const PK='#f472b6', PKF='rgba(244,114,182,.16)', PK2='#f9a8d4', GLU='#5fe3a9', GOLD='#ffd35c', BLU='#45c8f0', TXT='#e8eef8', MUT='#a3b4cf', DIM='#4a5b7a';
+const WORDS={
+  atp:wh('ATP','The energy molecule cells "spend" to do work. Think of it as a charged battery.'),
+  glucose:wh('glucose','A sugar (C₆H₁₂O₆). The fuel that cells break down for energy.'),
+  mito:wh('mitochondrion','The organelle where the Krebs cycle and electron transport chain happen. Plural: mitochondria.'),
+  cyto:wh('cytoplasm','The jelly-like fluid inside the cell, outside the organelles.'),
+  matrix:wh('matrix','The fluid inside the inner membrane of a mitochondrion.'),
+  pyruvate:wh('pyruvate','The small molecule left after glycolysis splits glucose in half.'),
+  carrier:wh('electron carriers','NADH and FADH₂. They pick up electrons and carry them to the electron transport chain.'),
+  aerobic:wh('aerobic','With oxygen.'),
+  anaerobic:wh('anaerobic','Without oxygen.'),
+  ferment:wh('fermentation','What cells do without oxygen: keeps glycolysis running so it can still make 2 ATP.')
+};
+function star(x,y,r,txt,fs){ let p=''; for(let i=0;i<16;i++){ const a=Math.PI*i/8, rr=i%2?r*0.72:r; p+=(i?'L':'M')+(x+rr*Math.cos(a)).toFixed(1)+','+(y+rr*Math.sin(a)).toFixed(1); }
+  return `<path d="${p}Z" fill="${GOLD}" stroke="#c99a1e" stroke-width="1.5"/><text x="${x}" y="${y+5}" text-anchor="middle" font-size="${fs||14}" font-weight="700" fill="#231a00">${txt}</text>`; }
+function hexa(x,y,r,fill){ let p=''; for(let i=0;i<6;i++){ const a=Math.PI/3*i+Math.PI/6; p+=(i?'L':'M')+(x+r*Math.cos(a)).toFixed(1)+','+(y+r*Math.sin(a)).toFixed(1); } return `<path d="${p}Z" fill="${fill}" stroke="#2c8f66" stroke-width="2"/>`; }
+function arrowS(x1,y1,x2,y2,col,w,dash){ const a=Math.atan2(y2-y1,x2-x1), hl=10; const bx=x2-hl*Math.cos(a), by=y2-hl*Math.sin(a);
+  return `<line x1="${x1}" y1="${y1}" x2="${bx}" y2="${by}" stroke="${col}" stroke-width="${w||2.5}" ${dash?'stroke-dasharray="6 5"':''}/><path d="M${x2},${y2} L${bx-6*Math.sin(a)},${by+6*Math.cos(a)} L${bx+6*Math.sin(a)},${by-6*Math.cos(a)}Z" fill="${col}"/>`; }
+function tag(x,y,txt,col){ const w=txt.length*7+18; return `<rect x="${x-w/2}" y="${y-12}" width="${w}" height="24" rx="12" fill="#0d1626" stroke="${col||MUT}"/><text x="${x}" y="${y+5}" text-anchor="middle" font-size="12" fill="${col||MUT}">${txt}</text>`; }
+function box(x,y,w,h,txt,fill,stroke,fs,col){ const lines=txt.split('\n'); return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="${fill}" stroke="${stroke}" stroke-width="2"/>`+lines.map((l,i)=>`<text x="${x+w/2}" y="${y+h/2+5+(i-(lines.length-1)/2)*18}" text-anchor="middle" font-size="${fs||15}" font-weight="600" fill="${col||'#0d1626'}">${l}</text>`).join(''); }
+function cristae(cx,cy,rx,ry){ // folded inner membrane
+  let d=`M${cx-rx+22},${cy}`; const n=9; for(let i=0;i<n;i++){ const x0=cx-rx+22+i*((2*rx-44)/n), x1=x0+(2*rx-44)/n; const up=i%2?1:-1; d+=` C${x0+8},${cy+up*ry*0.75} ${x1-8},${cy+up*ry*0.75} ${x1},${cy}`; } return d; }
+
+/* ---------- the big map of cellular respiration (like the class diagram) ---------- */
+function respMap(o={}){
+  const o2=o.o2!==false, hl=o.hl||null;
+  const vis=(stage)=>{ const off=!o2&&(stage==='krebs'||stage==='etc'); return off?0.2:(hl&&hl!==stage?0.35:1); };
+  const badge=(x,y,n)=>`<circle cx="${x}" cy="${y}" r="13" fill="${GOLD}" stroke="#0d1626" stroke-width="2"/><text x="${x}" y="${y+5}" text-anchor="middle" font-size="14" font-weight="700" fill="#231a00">${n}</text>`;
+  const pill=(x,y,txt,fill,stroke,col)=>{ const w=txt.length*7.6+22; return `<rect x="${x-w/2}" y="${y-15}" width="${w}" height="30" rx="15" fill="${fill}" stroke="${stroke}" stroke-width="2"/><text x="${x}" y="${y+5}" text-anchor="middle" font-size="13" font-weight="700" fill="${col||'#0d1626'}">${txt}</text>`; };
+  let s=`<svg viewBox="0 0 900 500" class="fig" role="img" aria-label="${o2?'Cellular respiration map. 1 Glycolysis in the cytoplasm splits glucose into 2 pyruvate and makes 2 ATP. 2 The Krebs cycle in the mitochondrion matrix releases carbon dioxide and makes 2 ATP. 3 The electron transport chain on the inner membrane uses oxygen, makes water and about 32 ATP. Total about 36 ATP.':'Without oxygen, the Krebs cycle and electron transport chain stop. Glycolysis continues with fermentation, making 2 ATP.'}">`;
+  // the cell
+  s+=`<rect x="8" y="8" width="884" height="484" rx="26" fill="#121c30" stroke="#3a5580" stroke-width="2"/>`;
+  s+=`<text x="34" y="44" font-size="15" font-weight="700" fill="${MUT}">CYTOPLASM</text>`;
+  s+=`<text x="520" y="44" text-anchor="middle" font-size="16" font-weight="700" fill="${o2?GOLD:'#fb7185'}">${o2?'Total: about 36 ATP':'Total: only 2 ATP'}</text>`;
+  // mitochondrion: outer membrane, inner membrane, folds along the right side
+  s+=`<rect x="350" y="78" width="520" height="276" rx="138" fill="${PKF}" stroke="${PK}" stroke-width="6"/>`;
+  s+=`<rect x="372" y="98" width="476" height="236" rx="118" fill="none" stroke="${PK2}" stroke-width="2.5"/>`;
+  let f=''; [150,182,214,246,278].forEach(y=>{ const xe=(dy=>730+Math.sqrt(118*118-dy*dy))(y-216)-1, xe2=(dy=>730+Math.sqrt(118*118-dy*dy))(y+14-216)-1; f+=`<path d="M${xe.toFixed(1)},${y} H${Math.min(xe,xe2)-26} a7,7 0 0 0 0,14 H${xe2.toFixed(1)}" fill="none" stroke="${PK2}" stroke-width="2.5"/>`; }); s+=f;
+  s+=`<text x="372" y="70" font-size="14" font-weight="700" fill="${PK}">MITOCHONDRION</text>`;
+  // 1 glycolysis (cytoplasm)
+  s+=`<g opacity="${vis('gly')}">`+hexa(150,108,38,GLU)+`<text x="150" y="113" text-anchor="middle" font-size="14" font-weight="700" fill="#0d1626">Glucose</text>`;
+  s+=arrowS(150,148,150,176,TXT)+`<rect x="62" y="178" width="176" height="62" rx="12" fill="#e8eef8" stroke="#a3b4cf" stroke-width="2"/><text x="150" y="207" text-anchor="middle" font-size="18" font-weight="700" fill="#0d1626">Glycolysis</text><text x="150" y="228" text-anchor="middle" font-size="12" fill="#3a4a66">in the cytoplasm</text>`+badge(44,166,1);
+  s+=pill(150,262,'No O₂ needed','#0d1626',GLU,GLU);
+  s+=arrowS(120,280,104,306,GOLD)+star(96,338,32,'2 ATP',13)+arrowS(184,280,204,312,'#a3b4cf')+pill(214,330,'NADH','#e8eef8','#a3b4cf')+`</g>`;
+  // pyruvate into the mitochondrion
+  s+=`<g opacity="${o2?vis('krebs'):0.2}">`+arrowS(240,209,404,209,TXT)+`<text x="300" y="199" text-anchor="middle" font-size="13" fill="${TXT}">2 pyruvate</text></g>`;
+  // 2 Krebs cycle (matrix)
+  s+=`<g opacity="${vis('krebs')}"><circle cx="478" cy="209" r="64" fill="#e8eef8" stroke="#a3b4cf" stroke-width="2"/><text x="478" y="198" text-anchor="middle" font-size="17" font-weight="700" fill="#0d1626">Krebs</text><text x="478" y="219" text-anchor="middle" font-size="17" font-weight="700" fill="#0d1626">cycle</text><text x="478" y="238" text-anchor="middle" font-size="11" fill="#3a4a66">in the matrix</text>`+badge(410,146,2);
+  if(o2) s+=pill(478,124,'Needs O₂','#0d1626',PK,PK);
+  s+=arrowS(450,272,412,392,TXT)+pill(400,412,'CO₂ out','#bfe9f8','#45c8f0')+arrowS(504,272,524,382,GOLD)+star(530,418,32,'2 ATP',13)+`</g>`;
+  // electron carriers to the ETC
+  s+=`<g opacity="${o2?(hl&&hl!=='etc'&&hl!=='krebs'?0.35:1):0.2}">`+arrowS(545,209,622,209,'#7488a9',2,true)+`<text x="584" y="196" text-anchor="middle" font-size="11" fill="${MUT}">NADH,</text><text x="584" y="230" text-anchor="middle" font-size="11" fill="${MUT}">FADH₂</text></g>`;
+  // 3 electron transport chain (inner membrane)
+  s+=`<g opacity="${vis('etc')}"><rect x="626" y="166" width="168" height="86" rx="12" fill="#e8eef8" stroke="#a3b4cf" stroke-width="2"/><text x="710" y="194" text-anchor="middle" font-size="16" font-weight="700" fill="#0d1626">Electron</text><text x="710" y="215" text-anchor="middle" font-size="16" font-weight="700" fill="#0d1626">transport chain</text><text x="710" y="237" text-anchor="middle" font-size="11" fill="#3a4a66">on the inner membrane</text>`+badge(610,150,3);
+  if(o2) s+=pill(700,128,'Needs O₂','#0d1626',PK,PK);
+  s+=arrowS(800,26,772,164,BLU,2.5)+`<text x="812" y="30" font-size="14" font-weight="700" fill="${BLU}">O₂ in</text>`;
+  s+=arrowS(690,254,676,382,GOLD)+star(672,422,38,'≈ 32',14)+`<text x="672" y="474" text-anchor="middle" font-size="12" fill="${GOLD}">ATP (30–34)</text>`;
+  s+=arrowS(752,254,790,392,TXT)+pill(800,412,'Water out','#bfe9f8','#45c8f0')+`</g>`;
+  if(!o2){
+    s+=pill(494,124,'Stopped: no O₂','#3a0f1a','#fb7185','#fb7185')+pill(700,128,'Stopped: no O₂','#3a0f1a','#fb7185','#fb7185');
+    s+=`<path d="M778 56 l24 24 M802 56 l-24 24" stroke="#fb7185" stroke-width="4"/>`;
+    s+=arrowS(150,358,150,380,TXT)+`<rect x="40" y="382" width="220" height="80" rx="12" fill="#fde7c2" stroke="#f5a524" stroke-width="2"/><text x="150" y="410" text-anchor="middle" font-size="15" font-weight="700" fill="#0d1626">Fermentation</text><text x="150" y="430" text-anchor="middle" font-size="12.5" fill="#0d1626">lactic acid, or</text><text x="150" y="448" text-anchor="middle" font-size="12.5" fill="#0d1626">alcohol + CO₂</text>`;
+  }
+  return s+'</svg>';
+}
+
+/* ---------- mitochondrion diagram (labeled or numbered for labeling practice) ---------- */
+function mitoFig(mode){
+  const L=mode==='labels', N=mode==='numbers';
+  let s=`<svg viewBox="0 0 620 330" class="fig" role="img" aria-label="${L?'Mitochondrion with labels: outer membrane, inner membrane with folds, matrix, and the cytoplasm around it.':'Mitochondrion with numbered spots to label.'}">`;
+  s+=`<rect x="6" y="6" width="608" height="318" rx="18" fill="#121c30" stroke="#2a3d5f"/>`;
+  s+=`<ellipse cx="300" cy="170" rx="210" ry="115" fill="${PKF}" stroke="${PK}" stroke-width="7"/><path d="${cristae(300,170,210,115)}" fill="none" stroke="${PK2}" stroke-width="3.5"/>`;
+  for(let i=0;i<14;i++){ const a=i*1.9, r=50+((i*31)%60); s+=`<circle cx="${300+Math.cos(a)*r*1.9}" cy="${170+Math.sin(a)*r*0.9}" r="3" fill="${PK2}" opacity=".7"/>`; }
+  const pts=[{x:150,y:76,lx:96,ly:34,t:'Outer membrane'},{x:262,y:126,lx:150,ly:300,t:'Inner membrane (folds)'},{x:330,y:205,lx:470,ly:304,t:'Matrix (inside fluid)'},{x:560,y:110,lx:510,ly:34,t:'Cytoplasm (outside)'}];
+  pts.forEach((p,i)=>{
+    if(L){ s+=`<line x1="${p.x}" y1="${p.y}" x2="${p.lx}" y2="${p.ly}" stroke="${TXT}" stroke-width="1.5"/><circle cx="${p.x}" cy="${p.y}" r="4" fill="${TXT}"/>`;
+      const w=p.t.length*8+16; s+=`<rect x="${p.lx-w/2}" y="${p.ly-14}" width="${w}" height="26" rx="8" fill="#0d1626" stroke="${GOLD}"/><text x="${p.lx}" y="${p.ly+4}" text-anchor="middle" font-size="14" font-weight="600" fill="${GOLD}">${p.t}</text>`; }
+    if(N){ s+=`<circle cx="${p.x}" cy="${p.y}" r="15" fill="${GOLD}" stroke="#0d1626" stroke-width="2"/><text x="${p.x}" y="${p.y+5}" text-anchor="middle" font-size="15" font-weight="700" fill="#231a00">${i+1}</text>`; }
+  });
+  return s+'</svg>';
+}
+
+/* ---------- labeling with dropdowns (each spot checked on its own) ---------- */
+function labeler(parent, o){
+  const ids=o.spots.map((_,i)=>o.id+(i+1)); ids.forEach(reg);
+  const wrap=h('div',{class:'split'}); parent.appendChild(wrap);
+  const L=h('div'), R=h('div'); wrap.append(L,R); L.innerHTML=o.fig;
+  const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'});
+  o.spots.forEach((sp,i)=>{ const id=ids[i];
+    const row=h('div',{class:'numrow'}); row.innerHTML=`<label for="lb-${id}">Spot ${i+1}</label><select class="ans" id="lb-${id}" data-keyshow="${sp}"><option value="">choose a label</option>${o.choices.map(c=>`<option>${c}</option>`).join('')}</select>`;
+    R.appendChild(row); const sel=$('select',row);
+    const lock=()=>{ sel.value=sp; sel.classList.add('ok'); sel.disabled=true; };
+    if(S.solved[id]) lock();
+    sel.addEventListener('change',()=>{ if(!sel.value) return; const ok=sel.value===sp; attempt(id,ok);
+      if(ok){ lock(); fb.hidden=true; if(allSolved(ids)){ fb.className='fb ok'; fb.innerHTML='<b>All labeled.</b> '+(o.doneMsg||''); fb.hidden=false; reqDone(o.req); } }
+      else { sel.classList.add('no'); fb.className='fb no'; fb.innerHTML='<b>Not that one.</b> '+(o.hints[sp]||'Look back at the labeled diagram.'); fb.hidden=false; setTimeout(()=>sel.classList.remove('no'),600); } });
+  });
+  R.appendChild(fb);
+  if(allSolved(ids)){ fb.className='fb ok'; fb.innerHTML='<b>All labeled.</b> '+(o.doneMsg||''); fb.hidden=false; }
+}
+
+
+/* ===================== PHENOMENON: out of breath ===================== */
+const esc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const LEVELS=[
+ {k:'rest', label:'Rest', dur:'0s', bdur:'5s', breaths:12, co2:15, o2:95, burn:0, o2txt:'plenty', co2txt:'low', burntxt:'none', note:'Sitting still. Slow, easy breathing.'},
+ {k:'jog', label:'Jog', dur:'.55s', bdur:'2.4s', breaths:25, co2:50, o2:70, burn:5, o2txt:'enough', co2txt:'medium', burntxt:'none', note:'Steady jog. Breathing faster, but it feels fine.'},
+ {k:'sprint', label:'Sprint (60 s)', dur:'.26s', bdur:'1.1s', breaths:45, co2:92, o2:22, burn:90, o2txt:'running low', co2txt:'high', burntxt:'strong burn', note:'All-out sprint for a minute. Gasping for air, and the legs start to burn.'}
+];
+function runnerSVG(){
+  const puffs=[0,1,2,3].map(i=>`<circle class="puff" cx="176" cy="66" r="6" fill="#bfe9f8" style="animation-delay:calc(var(--bdur,4s) * ${i/4} * -1)"/>`).join('');
+  return `<svg viewBox="0 0 300 250" class="fig runner" id="runFig" role="img" aria-label="A person on a treadmill. Breath puffs come out faster as exercise gets harder.">
+    <rect x="6" y="6" width="288" height="238" rx="16" fill="#121c30" stroke="#2a3d5f"/>
+    <line class="belt" x1="40" y1="212" x2="250" y2="212" stroke="#5d7399" stroke-width="8" stroke-dasharray="12 12"/>
+    <rect x="36" y="206" width="218" height="14" rx="6" fill="none" stroke="#7488a9" stroke-width="2"/><line x1="236" y1="206" x2="252" y2="120" stroke="#7488a9" stroke-width="4"/><rect x="238" y="106" width="34" height="18" rx="4" fill="#2a3d5f" stroke="#7488a9"/>
+    <g stroke="#e8eef8" stroke-width="9" stroke-linecap="round" fill="none">
+      <line class="leg2" x1="150" y1="150" x2="150" y2="204" opacity=".55"/><line class="arm2" x1="150" y1="100" x2="150" y2="140" opacity=".55"/>
+      <line x1="150" y1="92" x2="150" y2="152"/>
+      <line class="leg1" x1="150" y1="150" x2="150" y2="204"/><line class="arm1" x1="150" y1="100" x2="150" y2="140"/>
+    </g>
+    <circle cx="152" cy="70" r="17" fill="#e8eef8"/>${puffs}
+    <g id="burnGlow" opacity="0"><ellipse cx="150" cy="178" rx="16" ry="30" fill="#fb7185" opacity=".45"/><text x="112" y="186" font-size="12" font-weight="700" fill="#fb7185" text-anchor="end">burn!</text></g>
+  </svg>`;
+}
+function phenomenon(body){
+  const c=card(body,'phen','Phenomenon: out of breath');
+  c.classList.add('phencard');
+  c.insertAdjacentHTML('beforeend',`<p>Watch what happens to a person's body as exercise gets harder. Try all three levels.</p>`);
+  const row=h('div',{class:'btnrow lvlbtns'}); c.appendChild(row);
+  const sp=h('div',{class:'split',style:'margin-top:12px'}); c.appendChild(sp); const L=h('div'), R=h('div'); sp.append(L,R);
+  L.innerHTML=runnerSVG();
+  R.innerHTML=`<p class="muted" id="lvlNote" style="min-height:3em"></p><div class="meters">
+    <div class="meter"><div class="lab"><span>Breaths per minute</span><b id="mB"></b></div><div class="track"><div class="fill" id="fB"></div></div></div>
+    <div class="meter"><div class="lab"><span>CO₂ breathed out</span><b id="mC"></b></div><div class="track"><div class="fill" id="fC"></div></div></div>
+    <div class="meter"><div class="lab"><span>Oxygen reaching the leg muscles</span><b id="mO"></b></div><div class="track"><div class="fill" id="fO"></div></div></div>
+    <div class="meter"><div class="lab"><span>Leg burn</span><b id="mL"></b></div><div class="track"><div class="fill" id="fL"></div></div></div></div>`;
+  const seen=new Set(S.misc.phenSeen||[]);
+  function setLevel(i){ const lv=LEVELS[i], fig=$('#runFig',L);
+    fig.style.setProperty('--dur',lv.dur==='0s'?'1s':lv.dur); fig.style.setProperty('--bdur',lv.bdur); fig.classList.toggle('still',lv.k==='rest'||RM);
+    $('#burnGlow',fig).setAttribute('opacity',lv.burn>50?'1':'0');
+    $('#lvlNote',R).textContent=lv.note;
+    const set=(id,f,val,txt,col)=>{ $('#'+id,R).textContent=txt; const el=$('#'+f,R); el.style.width=val+'%'; el.style.background=col; };
+    set('mB','fB',lv.breaths/50*100,lv.breaths,'#45c8f0'); set('mC','fC',lv.co2,lv.co2txt,'#a3b4cf'); set('mO','fO',lv.o2,lv.o2txt,lv.o2<40?'#fb7185':'#5fe3a9'); set('mL','fL',lv.burn,lv.burntxt,'#fb7185');
+    $$('.btn',row).forEach((b,j)=>b.classList.toggle('on',j===i));
+    seen.add(lv.k); S.misc.phenSeen=[...seen]; save(); if(seen.size>=3) reqDone('s1-phen'); }
+  LEVELS.forEach((lv,i)=>{ const b=h('button',{class:'btn ghost small',type:'button'},lv.label); b.addEventListener('click',()=>setLevel(i)); row.appendChild(b); });
+  setLevel(seen.has('sprint')?2:0);
+  c.insertAdjacentHTML('beforeend',`<h3 style="margin-top:18px">Your first idea</h3><p class="small muted">Why do you think we breathe harder when we exercise, and why do the legs burn? Just give your best guess. You'll come back to this at the end of the lesson.</p>`);
+  const ta=h('textarea',{class:'ans',rows:'3',style:'width:100%;min-height:80px;font:inherit;padding:10px;border-radius:10px;background:var(--bg);color:var(--text);border:1.5px solid var(--line2)','aria-label':'Your first idea'}); c.appendChild(ta);
+  const WB=[['oxygen',/oxygen|o2|o₂/],['energy',/energy|atp/],['muscles',/muscle/],['cells',/cell/],['carbon dioxide',/carbon dioxide|co2|co₂/]];
+  const wb=h('div',{class:'wbank'}); wb.innerHTML=WB.map(w=>`<span>${w[0]}</span>`).join(''); c.appendChild(wb);
+  ta.value=S.misc.phenIdea||'';
+  const light=()=>{ const t=ta.value.toLowerCase(); $$('span',wb).forEach((sp,i)=>sp.classList.toggle('on',WB[i][1].test(t))); };
+  function chkIdea(){ if((S.misc.phenIdea||'').trim().length>=15) reqDone('s1-idea'); }
+  ta.addEventListener('input',()=>{ S.misc.phenIdea=ta.value; save(); light(); chkIdea(); }); light(); chkIdea();
+}
+function backToPhenomenon(body, sec){
+  const c=card(body,'phen','Back to the phenomenon: out of breath'); c.classList.add('phencard');
+  c.insertAdjacentHTML('beforeend',`<p>At the start of the lesson, you watched a sprinter breathe harder and feel their legs burn. Here was your first idea:</p>
+    <div class="firstidea"></div><p>Now use what you learned.</p>`);
+  const fi=$('.firstidea',c); const showIdea=()=>{ fi.innerHTML=(S.misc.phenIdea||'').trim()?esc(S.misc.phenIdea):'(You didn\'t write a first idea.)'; };
+  showIdea(); if(sec) sec.onShow=showIdea;
+  qcGroup(c,[
+    {id:'s8p1', q:'<b>Part A:</b> Why does the sprinter breathe harder?', opts:['To bring in more oxygen for the electron transport chain and get rid of the extra CO₂ from the Krebs cycle','To bring in more glucose through the lungs','To breathe out extra oxygen the muscles made','Because glycolysis needs oxygen'], ans:0,
+      why:'Working muscles need more ATP. The ETC needs oxygen to make it, and the Krebs cycle makes more CO₂ to breathe out.', wrong:{1:'Glucose comes from food, not air.',2:'Muscles use oxygen; they don\'t make it.',3:'Glycolysis doesn\'t need oxygen.'}},
+    {id:'s8p2', q:'<b>Part B:</b> Why do the legs burn during the sprint?', opts:['The muscles run low on oxygen and switch to lactic acid fermentation','The muscles make too much oxygen','The Krebs cycle makes lactic acid','The muscles stop doing glycolysis'], ans:0,
+      why:'Without enough oxygen, the muscle cells use lactic acid fermentation. The lactic acid helps cause the burn.', wrong:{1:'Muscles use oxygen; they don\'t make it.',2:'Lactic acid comes from fermentation, not the Krebs cycle.',3:'Glycolysis keeps going; that\'s what fermentation keeps running.'}}
+  ],'s8-back');
+}
+
+/* ===================== SECTION 1: energy + the big equation ===================== */
+
+
+/* ===================== SECTION 2: mitochondria and where things happen ===================== */
+
+
+/* ---------- stage scene helper: a step-through with a drawing for each step ---------- */
+function scene(parent, steps, draw, req){
+  const sp=h('div',{class:'split'}); parent.appendChild(sp); const L=h('div'), R=h('div'); sp.append(L,R);
+  const fig=h('div'); L.appendChild(fig);
+  stepper(R, steps, k=>{ fig.innerHTML=draw(k); }, req);
+}
+function stageCard(title, rows){ return `<div class="wide"><table class="nb"><tr><th colspan="2">${title}</th></tr>${rows.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td></tr>`).join('')}</table></div>`; }
+
+/* ===================== SECTION 3: glycolysis ===================== */
+
+
+/* ===================== SECTION 4: Krebs cycle ===================== */
+
+
+/* ===================== SECTION 5: electron transport chain + ATP tally ===================== */
+function atpTally(parent){
+  const opts=['0','2','4','30–34'], want={gly:'2',krebs:'2',etc:'30–34'};
+  const names={gly:'Glycolysis',krebs:'Krebs cycle',etc:'Electron transport chain'};
+  const ids=['s5tal1','s5tal2','s5tal3']; ids.forEach(reg);
+  const sp=h('div',{class:'split'}); parent.appendChild(sp); const L=h('div'), R=h('div'); sp.append(L,R);
+  const fb=h('div',{class:'fb',hidden:true});
+  Object.keys(want).forEach((k,i)=>{ const id=ids[i]; const row=h('div',{class:'numrow'});
+    row.innerHTML=`<label for="tl-${k}">${names[k]}</label><select class="ans" id="tl-${k}" data-keyshow="${want[k]}"><option value="">ATP?</option>${opts.map(o=>`<option>${o}</option>`).join('')}</select>`; R.appendChild(row);
+    const sel=$('select',row); if(S.solved[id]){ sel.value=want[k]; sel.disabled=true; sel.classList.add('ok'); }
+    sel.addEventListener('change',()=>{ if(!sel.value) return; const ok=sel.value===want[k]; attempt(id,ok);
+      if(ok){ sel.disabled=true; sel.classList.add('ok'); fb.hidden=true; } else { fb.className='fb no'; fb.innerHTML='<b>Not quite.</b> '+(k==='etc'?'The ETC makes most of the ATP.':'Look back at the "at a glance" table for this stage.'); fb.hidden=false; }
+      draw(); if(allSolved(ids)){ fb.className='fb ok'; fb.innerHTML='<b>Total: about 36 ATP</b> (34–38) from one glucose when oxygen is present.'; fb.hidden=false; reqDone('s5-tally'); } }); });
+  R.appendChild(fb);
+  function draw(){ const val=k=>S.solved[ids[Object.keys(want).indexOf(k)]]?(k==='etc'?32:2):0;
+    const W=420,H=260,B=215,T=20,mx=34,sy=(B-T)/mx; let s=`<svg viewBox="0 0 ${W} ${H}" class="fig" role="img" aria-label="Bar graph of ATP made by each stage">`;
+    for(let v=0;v<=mx;v+=4){ const y=B-v*sy; s+=`<line x1="50" x2="${W-14}" y1="${y}" y2="${y}" stroke="#1b2a44"/><text x="42" y="${y+4}" text-anchor="end" font-size="11" fill="${MUT}">${v}</text>`; }
+    Object.keys(want).forEach((k,i)=>{ const x=80+i*112, v=val(k), hgt=v*sy; s+=`<rect x="${x}" y="${B-hgt}" width="70" height="${hgt}" fill="${GOLD}" rx="4" style="transition:all .5s"/><text x="${x+35}" y="${B-hgt-8}" text-anchor="middle" font-size="13" font-weight="700" fill="${GOLD}">${v?(k==='etc'?'30–34':'2'):''}</text><text x="${x+35}" y="${B+18}" text-anchor="middle" font-size="12" fill="${TXT}">${['Glycolysis','Krebs','ETC'][i]}</text>`; });
+    s+=`<line x1="50" x2="${W-14}" y1="${B}" y2="${B}" stroke="#5d7399"/><text x="16" y="${(B+T)/2}" font-size="12" fill="${MUT}" text-anchor="middle" transform="rotate(-90 16 ${(B+T)/2})">ATP made</text></svg>`;
+    L.innerHTML=s; }
+  draw();
+  if(allSolved(ids)){ fb.className='fb ok'; fb.innerHTML='<b>Total: about 36 ATP</b> (34–38) from one glucose when oxygen is present.'; fb.hidden=false; }
+}
+
+
+/* ===================== SECTION 6: fermentation ===================== */
+
+
+/* ===================== SECTION 7: aerobic vs anaerobic ===================== */
+
+
+/* ===================== SECTION 8: spot the mistake ===================== */
+function bioSpot(parent, list, reqId){
+  const ids=[]; list.forEach(m=>ids.push(m.id+'w', m.id+'f'));
+  parent.insertAdjacentHTML('beforeend','<p>Each tab shows a student\'s work with <b>one mistake</b>. Find what\'s wrong, then fix it.</p>');
+  const bar=h('div',{class:'btnrow mistabs',style:'margin-top:4px'}); parent.appendChild(bar);
+  const tabs=[], panes=[];
+  list.forEach((m,i)=>{
+    const b=h('button',{class:'btn ghost small',type:'button'},`Mistake ${i+1}`); b.addEventListener('click',()=>show(i)); bar.appendChild(b); tabs.push(b);
+    const pane=h('div'); parent.appendChild(pane); panes.push(pane);
+    pane.innerHTML=`<p style="margin:12px 0 6px"><b>${m.title}</b></p><div class="work"><div class="small muted" style="margin-bottom:4px">${m.who}'s work</div>${m.work}</div>`;
+    const fx=h('div',{class:'fixbox'});
+    mcq(pane,{id:m.id+'w', q:'What\'s wrong?', opts:m.opts, ans:m.ans, why:m.why, wrong:m.wrong, onSolved:()=>{ fx.hidden=false; upd(); }});
+    fx.hidden=!S.solved[m.id+'w']; pane.appendChild(fx);
+    mcq(fx,{id:m.id+'f', q:'<b>Now fix it.</b> '+m.fix.q, opts:m.fix.opts, ans:m.fix.ans, why:m.fix.why, onSolved:upd});
+  });
+  function show(i){ panes.forEach((p,j)=>p.hidden=j!==i); tabs.forEach((t,j)=>t.classList.toggle('on',j===i)); }
+  function upd(){ list.forEach((m,i)=>{ const d=S.solved[m.id+'w']&&S.solved[m.id+'f']; tabs[i].textContent=`Mistake ${i+1}${d?' ✓':''}`; }); if(allSolved(ids)) reqDone(reqId); }
+  show(0); upd();
+}
+
+
+
+/* =====================================================================
+   SECTION CONTENT: ATP, the Energy Currency (freshman level)
+   ===================================================================== */
+const W3={
+  atp:wh('ATP','Adenosine triphosphate: the small molecule every cell uses to pay for its work.'),
+  adp:wh('ADP','Adenosine diphosphate: ATP after it has given away one phosphate and its energy. "Di" means two.'),
+  phos:wh('phosphate group','A small group of atoms (P). ATP has three of them in a row.'),
+  bond:wh('chemical bond','The link that holds atoms together. Energy is stored in bonds.'),
+  active:wh('active transport','Moving molecules across the cell membrane from low to high concentration. It needs energy (ATP).'),
+  passive:wh('passive transport','Diffusion and osmosis: molecules move from high to low concentration on their own. No ATP needed.')
+};
+/* ---------- ATP / ADP drawings ---------- */
+function adenosine(x,y,s){ s=s||1;
+  const hx=(cx,cy,r)=>{ let p=''; for(let i=0;i<6;i++){ const a=Math.PI/3*i; p+=(i?'L':'M')+(cx+r*Math.cos(a)).toFixed(1)+','+(cy+r*Math.sin(a)).toFixed(1); } return p+'Z'; };
+  const pt=(cx,cy,r)=>{ let p=''; for(let i=0;i<5;i++){ const a=-Math.PI/2+i*2*Math.PI/5; p+=(i?'L':'M')+(cx+r*Math.cos(a)).toFixed(1)+','+(cy+r*Math.sin(a)).toFixed(1); } return p+'Z'; };
+  return `<path d="${hx(x,y-6*s,26*s)}" fill="#b996ff" stroke="#7c4dff" stroke-width="2"/><text x="${x}" y="${y-2*s}" text-anchor="middle" font-size="${11*s}" font-weight="700" fill="#1a1033">base</text>
+    <line x1="${x+20*s}" y1="${y+14*s}" x2="${x+34*s}" y2="${y+26*s}" stroke="#e8eef8" stroke-width="3"/>
+    <path d="${pt(x+50*s,y+36*s,22*s)}" fill="#7ee2b0" stroke="#2c8f66" stroke-width="2"/><text x="${x+50*s}" y="${y+40*s}" text-anchor="middle" font-size="${11*s}" font-weight="700" fill="#06210f">sugar</text>`; }
+function phosphates(x,y,n,opts){ opts=opts||{}; let s='';
+  for(let i=0;i<n;i++){ const cx=x+i*72; s+=`<line x1="${cx-50}" y1="${y}" x2="${cx-22}" y2="${y}" stroke="${i===n-1&&opts.hotLast?GOLD:'#e8eef8'}" stroke-width="${i===n-1&&opts.hotLast?6:3}"/>`;
+    s+=`<circle cx="${cx}" cy="${y}" r="22" fill="#ffb86b" stroke="#c96a12" stroke-width="2"/><text x="${cx}" y="${y+6}" text-anchor="middle" font-size="17" font-weight="700" fill="#3a1a00">P</text>`; }
+  return s; }
+function bolt(x,y,sz,col){ sz=sz||1; return `<path d="M${x} ${y} l${-8*sz} ${16*sz} h${8*sz} l${-6*sz} ${14*sz} l${16*sz} -${20*sz} h${-8*sz} l${6*sz} -${10*sz}z" fill="${col||GOLD}"/>`; }
+function atpFig(mode){
+  const N=mode==='numbers', L=mode==='labels';
+  let s=`<svg viewBox="0 0 640 250" class="fig" role="img" aria-label="${N?'ATP molecule with three numbered spots to label.':'ATP: a base and a sugar (together called adenosine) attached to a chain of three phosphate groups. Energy is stored in the bonds between phosphates; the last bond is the one the cell usually breaks.'}">`;
+  s+=`<rect x="6" y="6" width="628" height="238" rx="18" fill="#121c30" stroke="#2a3d5f"/>`;
+  s+=adenosine(90,110)+`<line x1="162" y1="146" x2="214" y2="146" stroke="#e8eef8" stroke-width="3"/>`+phosphates(236,146,3,{hotLast:true}).replace('<line x1="186"','<line x1="214"');
+  s+=bolt(404,98,1.1);
+  if(L){
+    s+=`<path d="M58 64 V54 H178 V64" fill="none" stroke="${TXT}" stroke-width="1.6"/><text x="118" y="46" text-anchor="middle" font-size="15" font-weight="700" fill="${TXT}">adenosine</text>`;
+    s+=`<path d="M210 186 V196 H404 V186" fill="none" stroke="${TXT}" stroke-width="1.6"/><text x="307" y="216" text-anchor="middle" font-size="15" font-weight="700" fill="${TXT}">3 phosphate groups ("tri-phosphate")</text>`;
+    s+=`<line x1="420" y1="110" x2="482" y2="80" stroke="${GOLD}" stroke-width="1.6"/><text x="488" y="76" font-size="14" font-weight="700" fill="${GOLD}">energy stored</text><text x="488" y="94" font-size="14" font-weight="700" fill="${GOLD}">in this bond</text>`;
+  }
+  if(N){ const nb=(x,y,n)=>`<circle cx="${x}" cy="${y}" r="15" fill="${GOLD}" stroke="#0d1626" stroke-width="2"/><text x="${x}" y="${y+5}" text-anchor="middle" font-size="15" font-weight="700" fill="#231a00">${n}</text>`;
+    s+=nb(118,42,1)+`<line x1="118" y1="58" x2="118" y2="80" stroke="${TXT}" stroke-width="1.5"/>`+nb(308,214,2)+`<line x1="308" y1="198" x2="308" y2="170" stroke="${TXT}" stroke-width="1.5"/>`+nb(470,78,3)+`<line x1="456" y1="86" x2="418" y2="112" stroke="${TXT}" stroke-width="1.5"/>`; }
+  return s+'</svg>';
+}
+
+/* ---------- phenomenon: the firefly glow test ---------- */
+function fireflyPhenomenon(body){
+  const c=card(body,'phen','Phenomenon: the firefly glow test'); c.classList.add('phencard');
+  c.insertAdjacentHTML('beforeend',`<p>Fireflies make light with chemicals in their tails. In 1947, scientists ground up firefly tails in water. The mixture glowed for a few minutes and then went <b>dark</b>.</p>
+    <p>Then they added different things to three tubes of the dark mixture. <b>Glucose holds much more energy than one molecule of ATP.</b> So which one will bring back the glow? Try all three.</p>`);
+  const row=h('div',{class:'ffrow'}); c.appendChild(row);
+  const tries=S.misc.ffTried||(S.misc.ffTried={});
+  [['water','Water','#9cc9f5'],['glucose','Glucose (sugar)','#7ee2b0'],['atp','ATP',GOLD]].forEach(([k,label,col])=>{
+    const cell=h('div',{class:'ffcell'});
+    cell.innerHTML=`<svg viewBox="0 0 120 210" class="fftube" role="img" aria-label="Tube of dark firefly extract"><defs><radialGradient id="gl-${k}"><stop offset="0" stop-color="#f4ff7a" stop-opacity="1"/><stop offset="1" stop-color="#7cff6b" stop-opacity="0"/></radialGradient></defs>
+      <circle class="glow" cx="60" cy="150" r="70" fill="url(#gl-${k})" opacity="0"/>
+      <rect x="38" y="20" width="44" height="10" rx="3" fill="#7488a9"/><path d="M42 30v130a18 18 0 0 0 36 0V30" fill="#26313f" stroke="#e8eef8" stroke-width="3"/>
+      <path class="liq" d="M44 110v50a16 16 0 0 0 32 0v-50z" fill="#3a4757"/></svg>
+      <button class="btn ghost small" type="button">Add ${label}</button><div class="small muted ffres">not tested</div>`;
+    const btn=$('button',cell), res=$('.ffres',cell), glow=$('.glow',cell), liq=$('.liq',cell);
+    const show=()=>{ const lit=k==='atp'; glow.setAttribute('opacity',lit?'1':'0'); glow.classList.toggle('pulse',lit&&!RM); liq.setAttribute('fill',lit?'#d9ff6b':'#3a4757'); res.innerHTML=lit?'<b style="color:#d9ff6b">It glows!</b>':'<b>Still dark.</b>'; };
+    btn.addEventListener('click',()=>{ tries[k]=1; save(); res.textContent='adding…'; setTimeout(()=>{ show(); if(Object.keys(tries).length>=3) reqDone('s1-tubes'); }, RM?10:700); });
+    if(tries[k]) show(); row.appendChild(cell); });
+  if(Object.keys(tries).length>=3) reqDone('s1-tubes');
+  c.insertAdjacentHTML('beforeend',`<h3 style="margin-top:16px">Your first idea</h3><p class="small muted">Glucose has more energy. So why did only ATP bring back the glow? Give your best guess. You'll come back to this at the end.</p>`);
+  const ta=h('textarea',{class:'ans',rows:'3',style:'width:100%;min-height:80px;font:inherit;padding:10px;border-radius:10px;background:var(--bg);color:var(--text);border:1.5px solid var(--line2)','aria-label':'Your first idea'}); c.appendChild(ta);
+  const WB=[['energy',/energy/],['ATP',/\batp\b/],['glucose',/glucose|sugar/],['use',/use|can't|cannot|need/],['cells',/cell/]];
+  const wb=h('div',{class:'wbank'}); wb.innerHTML=WB.map(w=>`<span>${w[0]}</span>`).join(''); c.appendChild(wb);
+  ta.value=S.misc.phenIdea||''; const light=()=>{ const t=ta.value.toLowerCase(); $$('span',wb).forEach((s,i)=>s.classList.toggle('on',WB[i][1].test(t))); };
+  const chk=()=>{ if((S.misc.phenIdea||'').trim().length>=15) reqDone('s1-idea'); };
+  ta.addEventListener('input',()=>{ S.misc.phenIdea=ta.value; save(); light(); chk(); }); light(); chk();
+}
+
+/* ===================== SECTION 1 ===================== */
+SECS.push({z:1, sym:'H', name:'Hydrogen', title:'The firefly glow test', min:7,
+ reqs:[{id:'s1-tubes',text:'Test all 3 tubes'},{id:'s1-idea',text:'Write your first idea'},{id:'s1-qc',text:'Answer the quick check question correctly'}],
+ build(body){
+  fireflyPhenomenon(body);
+  const c=card(body,'qc');
+  qcGroup(c,[{id:'s1q1', q:'Which one brought back the firefly glow?', opts:['ATP','Glucose','Water','All three'], ans:0,
+    why:'Only ATP made the extract glow, even though glucose holds more energy. The rest of the lesson explains why.', wrong:{1:'Glucose stayed dark.',2:'Water stayed dark.',3:'Only one tube glowed.'}}],'s1-qc');
+ }
+});
+
+/* ===================== SECTION 2 ===================== */
+SECS.push({z:2, sym:'He', name:'Helium', title:'What ATP is', min:6,
+ reqs:[{id:'s2-label',text:'Label all 3 parts of ATP'},{id:'s2-qc',text:'Answer both quick check questions correctly'}],
+ build(body){
+  const c1=card(body,'read','A molecule built to carry energy');
+  c1.insertAdjacentHTML('beforeend',`<p>${W3.atp} stands for <b>adenosine triphosphate</b>. It has two parts:</p>
+    <ul><li><b>Adenosine:</b> a base attached to a sugar.</li><li>A chain of <b>three</b> ${W3.phos}s. "Tri" means three.</li></ul>
+    <p>The energy in ATP is <b>chemical energy stored in the ${W3.bond}s</b> between the phosphate groups. The last bond, between the 2nd and 3rd phosphate, is the one the cell usually breaks to get energy.</p>${atpFig('labels')}`);
+  const c2=card(body,'try','Label ATP');
+  labeler(c2,{id:'s2lab', req:'s2-label', fig:atpFig('numbers'), spots:['Adenosine (base + sugar)','Phosphate groups','Bond that stores energy'], choices:['Adenosine (base + sugar)','Phosphate groups','Bond that stores energy','Glucose'],
+    hints:{'Adenosine (base + sugar)':'Spot 1 is the base and sugar together.','Phosphate groups':'Spot 2 points to the chain of three P circles.','Bond that stores energy':'Spot 3 is the glowing link between the last two phosphates.'},
+    doneMsg:'Energy is stored in the bonds, especially the last one.'});
+  const c3=card(body,'qc');
+  qcGroup(c3,[
+    {id:'s2q1', q:'Where is the energy in ATP stored?', opts:['In the chemical bonds between the phosphate groups','Inside the sugar only','In the water around ATP','In the cell\'s DNA'], ans:0,
+      why:'ATP stores chemical energy in the bonds between its phosphates.', wrong:{1:'The energy the cell uses is in the phosphate bonds.',2:'Water isn\'t part of ATP.',3:'DNA stores genetic information, not energy for work.'}},
+    {id:'s2q2', q:'What does "tri" in adenosine <b>tri</b>phosphate mean?', opts:['Three phosphate groups','Three sugars','Three bonds to glucose','Three cells'], ans:0,
+      why:'Tri = three. ATP has three phosphate groups.', wrong:{1:'There is one sugar.',2:'ATP isn\'t bonded to glucose.',3:'It\'s one molecule.'}}
+  ],'s2-qc');
+ }
+});
+
+/* ===================== SECTION 3 ===================== */
+SECS.push({z:3, sym:'Li', name:'Lithium', title:'Charging and spending ATP', min:7,
+ reqs:[{id:'s3-step',text:'Step through the ATP cycle'},{id:'s3-sort',text:'Sort: charging or spending?'},{id:'s3-qc',text:'Answer the quick check question correctly'}],
+ build(body){
+  const c1=card(body,'read','A rechargeable battery');
+  c1.insertAdjacentHTML('beforeend',`<div class="eqbox"><div class="eqlab" style="color:#fb7185">Spending (the cell does work)</div><div class="eqline">ATP → ADP + P + energy</div>
+    <div class="eqlab" style="color:${GLU}">Charging (cellular respiration)</div><div class="eqline">ADP + P + energy from food → ATP</div></div>
+    <p>When a cell needs energy, it breaks the last bond and pops off one phosphate. That releases energy, and ATP becomes ${W3.adp} ("di" means two phosphates).</p>
+    <p>Cellular respiration uses energy from glucose to stick the phosphate back on, recharging ADP into ATP. Your cells recycle each ATP over and over, about your whole body weight in ATP every day.</p>`);
+  const c2=card(body,'try','Watch the ATP cycle');
+  scene(c2,[
+    '<p><b>1. Charged:</b> ATP has three phosphates. Like a fully charged battery.</p>',
+    '<p><b>2. Spend:</b> the cell breaks the last bond to power a job. Energy is released.</p>',
+    '<p><b>3. Left over:</b> now it is ADP (two phosphates) plus a loose phosphate. Like a used battery.</p>',
+    '<p><b>4. Recharge:</b> cellular respiration in the mitochondria uses energy from glucose to reattach the phosphate. ADP becomes ATP again, and the cycle repeats.</p>'
+  ], k=>{ let s=`<svg viewBox="0 0 560 230" class="fig" role="img" aria-label="ATP cycle step ${k+1}"><rect x="6" y="6" width="548" height="218" rx="16" fill="#121c30" stroke="#2a3d5f"/>`;
+    const g=(inner,dx,dy,sc)=>`<g transform="translate(${dx} ${dy}) scale(${sc})">${inner}</g>`;
+    const mol=n=>adenosine(60,80)+`<line x1="132" y1="116" x2="184" y2="116" stroke="#e8eef8" stroke-width="3"/>`+phosphates(206,116,n,{hotLast:n===3&&k===0});
+    if(k===0){ s+=g(mol(3),20,10,0.95)+`<text x="300" y="214" text-anchor="middle" font-size="15" font-weight="700" fill="${GOLD}">ATP (charged)</text>`; }
+    if(k===1){ s+=g(mol(2),20,10,0.95)+`<circle cx="${20+0.95*350}" cy="${10+0.95*116}" r="21" fill="#ffb86b" stroke="#c96a12" stroke-width="2"/><text x="${20+0.95*350}" y="${10+0.95*116+6}" text-anchor="middle" font-size="16" font-weight="700" fill="#3a1a00">P</text>`+bolt(400,60,1.2)+bolt(430,90,0.9)+`<text x="470" y="80" font-size="15" font-weight="700" fill="${GOLD}">energy!</text><text x="300" y="214" text-anchor="middle" font-size="14" fill="${TXT}">bond breaks → energy powers a job</text>`; }
+    if(k===2){ s+=g(mol(2),20,10,0.95)+`<circle cx="430" cy="120" r="21" fill="#ffb86b" stroke="#c96a12" stroke-width="2"/><text x="430" y="126" text-anchor="middle" font-size="16" font-weight="700" fill="#3a1a00">P</text><text x="230" y="214" text-anchor="middle" font-size="15" font-weight="700" fill="#fb7185">ADP</text><text x="430" y="214" text-anchor="middle" font-size="15" font-weight="700" fill="#ffb86b">+ P</text>`; }
+    if(k===3){ s+=g(mol(3),20,10,0.95)+`<text x="300" y="214" text-anchor="middle" font-size="15" font-weight="700" fill="${GOLD}">ATP again (recharged)</text>`+hexa(480,52,22,GLU)+`<text x="480" y="56" text-anchor="middle" font-size="10" font-weight="700" fill="#0d1626">glucose</text>`+arrowS(462,74,374,108,GOLD,2.5)+`<text x="480" y="30" text-anchor="middle" font-size="11" fill="${MUT}">energy from food</text>`; }
+    return s+'</svg>'; }, 's3-step');
+  const c3=card(body,'try','Charging or spending?');
+  sorter(c3,{id:'s3', bins:[{k:'c',label:'Charges ADP → ATP'},{k:'s',label:'Spends ATP → ADP'}],
+    items:[{t:'Cellular respiration breaking down glucose',k:'c',why:'Respiration uses energy from glucose to make ATP.'},{t:'The light reactions of photosynthesis',k:'c',why:'Plants charge ADP into ATP with light energy.'},{t:'A muscle contracting',k:'s',why:'Muscles spend ATP to move.'},{t:'A firefly making light',k:'s',why:'The glow reaction spends ATP.'},{t:'A cell pumping molecules across its membrane',k:'s',why:'Active transport spends ATP.'},{t:'Building a protein',k:'s',why:'Building molecules spends ATP.'}],
+    doneMsg:'Respiration (and photosynthesis in plants) charges ATP. Almost every job a cell does spends it.', onDone:()=>reqDone('s3-sort')});
+  const c4=card(body,'qc');
+  qcGroup(c4,[{id:'s3q1', q:'When ATP releases its energy, what is left over?', opts:['ADP and a phosphate group','Glucose and oxygen','Nothing; ATP is destroyed','Carbon dioxide and water'], ans:0,
+    why:'ATP → ADP + P + energy. The ADP gets recharged later.', wrong:{1:'Those are inputs of respiration.',2:'ATP is recycled, not destroyed.',3:'Those are products of respiration.'}}],'s3-qc');
+ }
+});
+
+/* ===================== SECTION 4 ===================== */
+SECS.push({z:4, sym:'Be', name:'Beryllium', title:'Why ATP is the energy currency', min:5,
+ reqs:[{id:'s4-num',text:'Solve all 3 ATP counts'},{id:'s4-qc',text:'Answer the quick check question correctly'}],
+ build(body){
+  const c1=card(body,'read','A $100 bill vs. quarters');
+  c1.insertAdjacentHTML('beforeend',`<div class="moneyrow"><div class="bill">$100<br><span>glucose</span></div><div class="arrowtxt">cellular respiration<br>"makes change" →</div><div class="coins">${'<span>ATP</span>'.repeat(12)}<b>…about 36</b></div></div>
+    <p>Glucose holds a lot of energy, like a $100 bill. But a vending machine only takes quarters. The machines inside a cell (the proteins that move muscles, pump molecules, and make light) can only "take" ATP.</p>
+    <p>So cells break glucose down in cellular respiration and turn its energy into many small, easy-to-spend ATP molecules: about <b>36 ATP per glucose</b> with oxygen, or only <b>2</b> with fermentation. That is why ATP is called the cell's <b>energy currency</b>.</p>`);
+  const c2=card(body,'try','Count the ATP');
+  const ids=['s4n1','s4n2','s4n3'];
+  [['s4n1','A muscle cell breaks down <b>2 glucose</b> with oxygen. About how many ATP does it make?',72,'2 × 36 = 72 ATP'],
+   ['s4n2','Without oxygen, that cell uses fermentation on <b>2 glucose</b>. How many ATP?',4,'2 × 2 = 4 ATP'],
+   ['s4n3','A cell breaks down <b>5 glucose</b> with oxygen. About how many ATP?',180,'5 × 36 = 180 ATP']].forEach(([id,q,ans,how])=>{
+    c2.insertAdjacentHTML('beforeend',`<p style="margin:12px 0 4px">${q}</p>`);
+    numq(c2,{id, label:'ATP =', ans, unit:'ATP', check:v=>Math.abs(v-ans)<=Math.max(1,ans*0.03), hint:'Multiply the number of glucose by the ATP per glucose (about 36 with oxygen, 2 with fermentation).', how, onSolved:()=>{ if(allSolved(ids)) reqDone('s4-num'); }}); });
+  if(allSolved(ids)) reqDone('s4-num');
+  const c3=card(body,'qc');
+  qcGroup(c3,[{id:'s4q1', q:'Why is ATP called the "energy currency" of the cell?', opts:['It directly powers most cell processes with small, ready-to-use amounts of energy','It stores the cell\'s genetic information','It breaks down nutrients into smaller molecules','It is only used in muscle cells'], ans:0,
+    why:'Like money, ATP is the form of energy every cell job can spend.', wrong:{1:'That\'s DNA.',2:'Enzymes and respiration break down nutrients; ATP is what they produce.',3:'Every cell uses ATP.'}}],'s4-qc');
+ }
+});
+
+/* ===================== SECTION 5 ===================== */
+SECS.push({z:5, sym:'B', name:'Boron', title:'What cells spend ATP on', min:6,
+ reqs:[{id:'s5-sort',text:'Sort the cell jobs'},{id:'s5-qc',text:'Answer the quick check question correctly'}],
+ build(body){
+  const c1=card(body,'read','Jobs that cost ATP');
+  c1.insertAdjacentHTML('beforeend',`<p>Almost everything a cell <b>does</b> costs ATP:</p>
+    <ul><li><b>Moving:</b> muscles contracting, cilia beating</li><li><b>Building:</b> making proteins and DNA, growing</li><li><b>Dividing:</b> copying DNA and splitting into two cells</li>
+    <li><b>Pumping:</b> ${W3.active}, pushing molecules from low to high concentration</li><li><b>Signaling:</b> nerve cells sending messages</li><li><b>Making light:</b> fireflies!</li></ul>
+    <p>But some things happen <b>without</b> ATP. In ${W3.passive} (diffusion and osmosis), molecules spread from high to low concentration on their own, like a ball rolling downhill.</p>`);
+  const c2=card(body,'try','Does it cost ATP?');
+  sorter(c2,{id:'s5', bins:[{k:'y',label:'Needs ATP'},{k:'n',label:'No ATP needed'}],
+    items:[{t:'A muscle contracting',k:'y',why:'Muscle proteins spend ATP to pull.'},{t:'Pumping sodium out of a cell (low → high)',k:'y',why:'Moving against the gradient is active transport.'},{t:'Building a protein',k:'y',why:'Building big molecules costs energy.'},{t:'A cell dividing in two',k:'y',why:'Copying DNA and splitting cost ATP.'},{t:'A firefly glowing',k:'y',why:'The glow reaction spends ATP.'},{t:'Oxygen diffusing into a cell (high → low)',k:'n',why:'Diffusion is passive.'},{t:'Water moving by osmosis',k:'n',why:'Osmosis is passive.'}],
+    doneMsg:'Doing work costs ATP; moving "downhill" by diffusion or osmosis does not.', onDone:()=>reqDone('s5-sort')});
+  const c3=card(body,'qc');
+  qcGroup(c3,[{id:'s5q1', q:'Why is ATP essential for the survival of all living things?', opts:['It provides the energy for vital processes like cell division, building proteins, and moving','It is only needed for muscles in animals','It stores oxygen for the cell','It is only used during photosynthesis'], ans:0,
+    why:'Every organism needs ATP to run its cells.', wrong:{1:'Plants, fungi, and bacteria use ATP too.',2:'ATP doesn\'t store oxygen.',3:'Plants make ATP in photosynthesis, but all organisms use ATP.'}}],'s5-qc');
+ }
+});
+
+/* ===================== SECTION 6 ===================== */
+SECS.push({z:6, sym:'C', name:'Carbon', title:'Spot the mistake', min:6,
+ reqs:[{id:'s6-fix',text:'Find and fix all 3 mistakes'},{id:'s6-back',text:'Explain the firefly glow'}],
+ build(body, sec){
+  const c=card(body,'try','Spot the mistake');
+  bioSpot(c,[
+    {id:'s6x1', who:'Jordan', title:'Jordan\'s definition', work:'<p style="margin:0">"ATP stores the cell\'s genetic information."</p>',
+      opts:['ATP stores energy, not genetic information','ATP is only found in muscles','ATP has four phosphates','Nothing is wrong'], ans:0,
+      why:'DNA stores genetic information; ATP carries energy.', wrong:{1:'True or not, that isn\'t what Jordan said.',2:'ATP has three phosphates, but that\'s not Jordan\'s mistake.',3:'Think about what DNA does.'},
+      fix:{q:'Where is the energy in ATP stored?', opts:['In the bonds between its phosphate groups','In its DNA','In the water it carries','In the nucleus'], ans:0, why:'Chemical energy is stored in the phosphate bonds.'}},
+    {id:'s6x2', who:'Sam', title:'Sam\'s claim', work:'<p style="margin:0">"Once a cell uses ATP, that molecule is gone forever."</p>',
+      opts:['It becomes ADP + P and gets recharged into ATP','It turns into glucose','It turns into DNA','Nothing is wrong'], ans:0,
+      why:'ATP is recycled over and over.', wrong:{1:'ATP doesn\'t become glucose.',2:'ATP doesn\'t become DNA.',3:'ATP is reused.'},
+      fix:{q:'What recharges ADP back into ATP?', opts:['Cellular respiration, using energy from glucose','Diffusion','Osmosis','The nucleus'], ans:0, why:'Respiration uses energy from food to reattach the phosphate.'}},
+    {id:'s6x3', who:'Riley', title:'Riley\'s explanation', work:'<p style="margin:0">"A muscle cell uses the energy in glucose directly to contract."</p>',
+      opts:['The energy must be moved into ATP first; muscle proteins only use ATP','Muscles use DNA for energy','Muscles don\'t need energy','Nothing is wrong'], ans:0,
+      why:'Glucose is the $100 bill; ATP is the quarters the muscle machine takes.', wrong:{1:'DNA isn\'t an energy source.',2:'Muscles need lots of energy.',3:'Remember the vending machine.'},
+      fix:{q:'What process turns glucose energy into ATP?', opts:['Cellular respiration','Osmosis','Photosynthesis only','Diffusion'], ans:0, why:'Respiration "makes change" from glucose into ATP.'}}
+  ],'s6-fix');
+  const b=card(body,'phen','Back to the phenomenon: the firefly glow'); b.classList.add('phencard');
+  b.insertAdjacentHTML('beforeend',`<p>Here was your first idea:</p><div class="firstidea"></div><p>Now use what you learned.</p>`);
+  const fi=$('.firstidea',b); const show=()=>{ fi.innerHTML=(S.misc.phenIdea||'').trim()?esc(S.misc.phenIdea):'(You didn\'t write a first idea.)'; }; show(); if(sec) sec.onShow=show;
+  qcGroup(b,[
+    {id:'s6p1', q:'<b>Part A:</b> Why did ATP bring back the glow, but glucose didn\'t?', opts:['The glow reaction can only spend ATP, and the ground-up tails couldn\'t turn glucose into ATP','Glucose has less energy than ATP','Glucose blocks light','Water was mixed into the glucose'], ans:0,
+      why:'Cell machines take ATP. Without working cells doing respiration, the glucose energy couldn\'t be "changed" into ATP.', wrong:{1:'Glucose has more energy, but not in a form the glow reaction can use.',2:'Glucose doesn\'t block light.',3:'Every tube had water.'}},
+    {id:'s6p2', q:'<b>Part B:</b> After the glow faded again, what had the ATP become?', opts:['ADP and phosphate','Glucose','Light bulbs','DNA'], ans:0,
+      why:'The glow spent the ATP: ATP → ADP + P + energy (light).', wrong:{1:'ATP doesn\'t turn back into glucose.',2:'The light was energy released.',3:'ATP doesn\'t become DNA.'}}
+  ],'s6-back');
+ }
+});
+
+function bioHero(){ $('#heroFig').innerHTML=atpFig('labels'); }
+
+/* ===================== SECTION 9: final check ===================== */
+const FBANK=[
+ {id:'m1',t:'mc',q:'Why is ATP called the "energy currency" of the cell?',opts:['It directly powers most cell processes with small, ready-to-use amounts of energy','It stores genetic information','It breaks down nutrients into smaller molecules','It is only used in muscle cells'],ans:0,why:'Like money, ATP is what every cell job "pays" with.'},
+ {id:'m2',t:'mc',q:'Where is the energy in ATP stored?',opts:['In the chemical bonds between phosphate groups','In the sugar only','In the cell\'s DNA','In the water around it'],ans:0,why:'Chemical energy is stored in the phosphate bonds.'},
+ {id:'m3',t:'mc',q:'What does ATP become after it releases energy?',opts:['ADP + a phosphate','Glucose','DNA','Carbon dioxide'],ans:0,why:'ATP → ADP + P + energy.'},
+ {id:'m4',t:'mc',q:'Which process recharges ADP back into ATP in animal cells?',opts:['Cellular respiration','Diffusion','Osmosis','Cell division'],ans:0,why:'Respiration uses energy from glucose to reattach the phosphate.'},
+ {id:'m5',t:'mc',q:'How many phosphate groups does ATP have?',opts:['3','2','1','4'],ans:0,why:'Tri = three.'},
+ {id:'m6',t:'mc',q:'Which of these does NOT need ATP?',opts:['Oxygen diffusing into a cell','A muscle contracting','Building a protein','Pumping sodium out of a cell'],ans:0,why:'Diffusion is passive; it needs no ATP.'},
+ {id:'m7',t:'mc',q:'Why can\'t a muscle use glucose energy directly?',opts:['Cell machines can only use energy in the form of ATP','Glucose has no energy','Muscles don\'t need energy','Glucose is stored in DNA'],ans:0,why:'Glucose is the $100 bill; the machines only take ATP "quarters."'},
+ {id:'m8',t:'mc',q:'About how many ATP does a cell make from one glucose with oxygen?',opts:['About 36','2','1','About 1,000'],ans:0,why:'Aerobic respiration makes about 36 ATP per glucose.'},
+ {id:'m9',t:'mc',q:'Why is ATP essential for the survival of all living organisms?',opts:['It provides energy for vital processes like cell division and building proteins','It is only important for muscles in animals','It stores oxygen','It is only used in photosynthesis'],ans:0,why:'All organisms run their cells on ATP.'},
+ {id:'m10',t:'mc',q:'A firefly\'s glow uses which molecule directly for energy?',opts:['ATP','Glucose','Oxygen','Water'],ans:0,why:'The glow reaction spends ATP.'},
+ {id:'t1',t:'two',a:{q:'<b>Part A:</b> When a cell needs energy, which bond in ATP does it usually break?',opts:['The bond between the 2nd and 3rd phosphate','The bond in the sugar','The bond to the base','No bonds break'],ans:0},b:{q:'<b>Part B:</b> What happens to the energy in that bond?',opts:['It is released to power cell work','It turns into glucose','It is stored in DNA','It disappears with no effect'],ans:0},why:'Breaking the last phosphate bond releases energy for work.'},
+ {id:'t2',t:'two',a:{q:'<b>Part A:</b> Which equation shows ATP being spent?',opts:['ATP → ADP + P + energy','ADP + P + energy → ATP','Glucose → ATP + DNA','ATP + O₂ → glucose'],ans:0},b:{q:'<b>Part B:</b> Which equation shows ATP being recharged?',opts:['ADP + P + energy → ATP','ATP → ADP + P + energy','ATP → glucose','DNA → ATP'],ans:0},why:'Spending removes a phosphate; recharging adds it back.'},
+ {id:'t3',t:'two',a:{q:'<b>Part A:</b> A cell breaks down 3 glucose with oxygen. About how many ATP?',opts:['108','6','36','3'],ans:0},b:{q:'<b>Part B:</b> With fermentation instead, about how many ATP?',opts:['6','108','36','0'],ans:0},why:'3 × 36 = 108 with oxygen; 3 × 2 = 6 with fermentation.'},
+ {id:'t4',t:'two',a:{q:'<b>Part A:</b> Which molecule holds MORE energy?',opts:['One glucose','One ATP','They are equal','Water'],ans:0},b:{q:'<b>Part B:</b> Then why do cells use ATP instead?',opts:['ATP releases small amounts that cell machines can use directly','ATP is bigger than glucose','Glucose is poisonous','Cells can\'t store ATP'],ans:0},why:'Glucose has lots of energy; ATP delivers it in usable amounts.'},
+ {id:'t5',t:'two',a:{q:'<b>Part A:</b> What is ADP?',opts:['ATP with one fewer phosphate','A kind of sugar','A type of DNA','An organelle'],ans:0},b:{q:'<b>Part B:</b> What does "di" in diphosphate mean?',opts:['Two','Three','One','Four'],ans:0},why:'ADP = adenosine diphosphate: two phosphates.'},
+ {id:'t6',t:'two',a:{q:'<b>Part A:</b> Moving a molecule from LOW to HIGH concentration is called…',opts:['Active transport','Diffusion','Osmosis','Fermentation'],ans:0},b:{q:'<b>Part B:</b> Does it need ATP?',opts:['Yes','No','Only in plants','Only at night'],ans:0},why:'Active transport works "uphill" and spends ATP.'},
+ {id:'s1',t:'sel',q:'Select <b>all</b> the cell jobs that spend ATP.',opts:['Muscle contraction','Cell division','Building proteins','Water moving by osmosis'],ans:[0,1,2],why:'Osmosis is passive; the others cost ATP.'},
+ {id:'s2',t:'sel',q:'Select <b>all</b> the parts of an ATP molecule.',opts:['A base','A sugar','Phosphate groups','A chloroplast'],ans:[0,1,2],why:'Adenosine (base + sugar) plus three phosphates.'},
+ {id:'s3',t:'sel',q:'Select <b>all</b> the processes that charge ADP into ATP.',opts:['Cellular respiration','The light reactions of photosynthesis','Diffusion','A muscle contracting'],ans:[0,1],why:'Respiration and the light reactions make ATP; muscles spend it.'},
+ {id:'s4',t:'sel',q:'Select <b>all</b> the true statements about ATP.',opts:['It is recycled over and over','Its energy is stored in chemical bonds','It stores genetic information','It is only found in animals'],ans:[0,1],why:'ATP is reused and stores energy in bonds; DNA stores genes; all organisms use ATP.'},
+ {id:'s5',t:'sel',q:'Select <b>all</b> the things that happen WITHOUT ATP.',opts:['Diffusion','Osmosis','Active transport','A firefly glowing'],ans:[0,1],why:'Passive transport needs no ATP.'},
+ {id:'s6',t:'sel',q:'Select <b>all</b> the organisms whose cells use ATP.',opts:['Plants','Animals','Fungi','Bacteria'],ans:[0,1,2,3],why:'Every living thing uses ATP.'}
+];
+const FB=Object.fromEntries(FBANK.map(q=>[q.id,q]));
+function isAns(q,a){ if(a==null) return false; if(q.t==='mc') return true; if(q.t==='two') return a.a!=null&&a.b!=null; return Array.isArray(a)&&a.length>0; }
+function gradeQ(q,a){
+  if(!isAns(q,a)) return 0;
+  if(q.t==='mc') return a===q.ans?1:0;
+  if(q.t==='two') return (a.a===q.a.ans?0.5:0)+(a.b===q.b.ans?0.5:0);
+  const hit=a.filter(i=>q.ans.includes(i)).length, wrong=a.length-hit;
+  if(hit===q.ans.length&&wrong===0) return 1;
+  return (hit-wrong)/q.ans.length>=0.5?0.5:0;
+}
+function newAttempt(){
+  const prev=new Set((S.final.cur&&S.final.cur.ids)||[]);
+  const pick=(t,n)=>{ const pool=FBANK.filter(q=>q.t===t); const fresh=shuffle(pool.filter(q=>!prev.has(q.id))); const old=shuffle(pool.filter(q=>prev.has(q.id))); return fresh.concat(old).slice(0,n).map(q=>q.id); };
+  const ids=shuffle(pick('mc',4).concat(pick('two',3),pick('sel',3)));
+  const ord={}; ids.forEach(id=>{ const q=FB[id]; if(q.t==='two') ord[id]={a:shuffle(q.a.opts.map((_,i)=>i)),b:shuffle(q.b.opts.map((_,i)=>i))}; else ord[id]=shuffle(q.opts.map((_,i)=>i)); });
+  S.final.cur={ids, ord, answers:{}, idx:0, submitted:false, score:null}; save();
+}
+const fmtPts=p=>p===1?'1':p===0.5?'½':'0';
+function optText(q,a){ if(q.t==='mc') return q.opts[a]; if(q.t==='two') return `A: ${a&&a.a!=null?q.a.opts[a.a]:'blank'} · B: ${a&&a.b!=null?q.b.opts[a.b]:'blank'}`; return (a||[]).map(i=>q.opts[i]).join(', ')||'blank'; }
+function rightText(q){ if(q.t==='mc') return q.opts[q.ans]; if(q.t==='two') return `A: ${q.a.opts[q.a.ans]} · B: ${q.b.opts[q.b.ans]}`; return q.ans.map(i=>q.opts[i]).join(', '); }
+
+SECS.push({z:9, sym:'F', name:'Fluorine', title:'Final check', min:8,
+ reqs:[{id:'final-pass',text:`Score ${PASS_SCORE} out of 10 or better on the final check`}],
+ build(body, sec){
+  const wrap=h('div'); body.appendChild(wrap);
+  sec.onShow=()=>render();
+  function reviewNeeded(){ return S.final.fails>=3 && S.final.reviewedAt!==S.final.fails && !S.final.passed; }
+  function render(){
+    const F=S.final, cur=F.cur; wrap.innerHTML='';
+    if(cur && !cur.submitted) return renderQ();
+    if(cur && cur.submitted) return renderScore();
+    const c=card(wrap,'read','Show what you know');
+    c.insertAdjacentHTML('beforeend',`<p>You'll get <b>10 questions</b> picked at random: multiple choice, two-part, and select-all. You need <b>${PASS_SCORE} out of 10</b> to pass. Two-part and select-all questions can earn half credit.</p>
+      <p>You won't see right or wrong until you submit. If you don't pass, you'll get a new set of questions.</p>`);
+    const b=h('button',{class:'btn primary',type:'button'},'Start the final check'); b.addEventListener('click',()=>{ newAttempt(); render(); });
+    const row=h('div',{class:'btnrow'}); row.appendChild(b); c.appendChild(row);
+  }
+  function optList(ids, order, isSel, isPicked, onPick, keyIdx){
+    const box=h('div',{class:'opts'+(isSel?' selall':'')});
+    order.forEach((k,pos)=>{ const b=h('button',{class:'opt'+(isPicked(k)?' picked':''),type:'button','aria-pressed':isPicked(k)?'true':'false'},`<span class="L">${'ABCDEF'[pos]}</span><span>${ids[k]}</span>`);
+      if(keyIdx(k)) b.dataset.key='1'; b.addEventListener('click',()=>onPick(k)); box.appendChild(b); });
+    return box;
+  }
+  function renderQ(){
+    const cur=S.final.cur; const i=cur.idx; const id=cur.ids[i], q=FB[id];
+    const c=card(wrap,'qc',`Question ${i+1} of 10`);
+    const dots=h('div',{class:'dots','aria-hidden':'true'}); cur.ids.forEach((d,j)=>{ const el=h('span',{class:(j===i?'cur ':'')+(isAns(FB[d],cur.answers[d])?'ans':'')},String(j+1)); el.style.cursor='pointer'; el.addEventListener('click',()=>{ cur.idx=j; save(); render(); }); dots.appendChild(el); });
+    c.appendChild(dots);
+    const a=cur.answers[id];
+    if(q.t==='mc'){
+      c.insertAdjacentHTML('beforeend',`<p style="font-weight:500">${q.q}</p>`);
+      c.appendChild(optList(q.opts,cur.ord[id],false,k=>a===k,k=>{ cur.answers[id]=k; save(); render(); },k=>k===q.ans));
+    } else if(q.t==='two'){
+      const tp=h('div',{class:'twopart'}); c.appendChild(tp);
+      ['a','b'].forEach(part=>{ tp.insertAdjacentHTML('beforeend',`<h4>${q[part].q}</h4>`);
+        tp.appendChild(optList(q[part].opts,cur.ord[id][part],false,k=>a&&a[part]===k,k=>{ cur.answers[id]=Object.assign({},cur.answers[id]||{},{[part]:k}); save(); render(); },k=>k===q[part].ans)); });
+    } else {
+      c.insertAdjacentHTML('beforeend',`<p style="font-weight:500">${q.q}</p><p class="small muted" style="margin-top:-6px">Select all that apply.</p>`);
+      c.appendChild(optList(q.opts,cur.ord[id],true,k=>(a||[]).includes(k),k=>{ const s=new Set(cur.answers[id]||[]); s.has(k)?s.delete(k):s.add(k); cur.answers[id]=[...s].sort(); save(); render(); },k=>q.ans.includes(k)));
+    }
+    const msg=h('div',{class:'fb no',hidden:true}); c.appendChild(msg);
+    const nav=h('div',{class:'btnrow'});
+    const back=h('button',{class:'btn ghost',type:'button'},'Back'); back.disabled=i===0;
+    back.addEventListener('click',()=>{ cur.idx=Math.max(0,i-1); save(); render(); });
+    const last=i===9; const nextB=h('button',{class:'btn primary',type:'button'},last?'Submit the final check':'Next');
+    nextB.addEventListener('click',()=>{
+      if(!last){ cur.idx=i+1; save(); render(); return; }
+      const missing=cur.ids.map((d,j)=>isAns(FB[d],cur.answers[d])?null:j+1).filter(Boolean);
+      if(missing.length){ msg.innerHTML='Answer every question before you submit. Still blank: '+missing.join(', ')+'.'; msg.hidden=false; return; }
+      submit();
+    });
+    nav.append(back,nextB); c.appendChild(nav);
+  }
+  function submit(){
+    const F=S.final, cur=F.cur;
+    const pts=cur.ids.map(id=>gradeQ(FB[id],cur.answers[id])); const score=pts.reduce((x,y)=>x+y,0);
+    cur.submitted=true; cur.score=score; F.attempts++; F.best=Math.max(F.best,score); F.history.push({score,at:Date.now(),pts});
+    if(score>=PASS_SCORE){
+      F.passed=true; if(!S.completedAt) S.completedAt=Date.now(); save();
+      reqDone('final-pass'); disarm(); saveRecord(); sendSheet();
+    } else { F.fails++; save(); cloudSave(true); }
+    render(); window.scrollTo({top:0,behavior:RM?'auto':'smooth'});
+  }
+  function renderScore(){
+    const F=S.final, cur=F.cur, pass=cur.score>=PASS_SCORE;
+    const c=card(wrap,'qc',pass?'You passed the final check':'Not quite there yet');
+    c.insertAdjacentHTML('beforeend',`<div class="bigscore">${cur.score}/10</div><p class="muted" style="margin-top:6px">${pass?`Best score: ${F.best}/10. Your results are ready.`:`You need ${PASS_SCORE} out of 10. Look over what you missed, then try a new set of questions.`}</p>${pass?`<p class="fb info sheetStatus" aria-live="polite">${sendMsg()}</p>`:''}`);
+    const ul=h('ul',{class:'reviewlist'});
+    cur.ids.forEach((id,j)=>{ const q=FB[id], a=cur.answers[id], p=gradeQ(q,a);
+      const qtext=q.t==='two'?`${q.a.q} ${q.b.q}`:q.q;
+      ul.insertAdjacentHTML('beforeend',`<li><span class="${p===1?'yes':'nope'}">${p===1?'✓':p===0.5?'½':'✗'} ${j+1}.</span> ${qtext}<br><span class="muted">Your answer:</span> ${optText(q,a)}${p===1?'':` <span class="muted">· Correct:</span> ${rightText(q)}`}<br><span class="muted small">${q.why}</span></li>`); });
+    c.appendChild(ul);
+    const row=h('div',{class:'btnrow'});
+    if(pass){ const b=h('button',{class:'btn primary',type:'button'},'See your results'); b.addEventListener('click',()=>go(RI)); row.appendChild(b); }
+    else if(reviewNeeded()){
+      c.appendChild(row);
+      const r=card(wrap,'read','Quick review before your next try');
+      r.insertAdjacentHTML('beforeend',`<p>You've tried ${F.fails} times. Here is the whole lesson on one card. Read it, then go again.</p>
+        <div class="wide"><table class="nb"><tr><th>Idea</th><th>Key point</th></tr>
+        <tr><td>What ATP is</td><td>Adenosine (base + sugar) + 3 phosphate groups</td></tr>
+        <tr><td>Where the energy is</td><td>In the chemical bonds between phosphates (the last bond is broken)</td></tr>
+        <tr><td>Spending</td><td>ATP → ADP + P + energy</td></tr>
+        <tr><td>Recharging</td><td>ADP + P + energy from food (respiration) → ATP</td></tr>
+        <tr><td>Why "currency"</td><td>Glucose = $100 bill; ATP = quarters the cell's machines take (about 36 ATP per glucose)</td></tr>
+        <tr><td>Needs ATP</td><td>Muscles, active transport, building proteins, cell division, nerve signals</td></tr>
+        <tr><td>No ATP needed</td><td>Diffusion and osmosis (passive transport)</td></tr></table></div>
+        <p class="small muted">Want more practice first? Sections 2 to 5 each have their own practice.</p>`);
+      const rb=h('button',{class:'btn primary',type:'button'},'I reviewed it. Give me a new set');
+      rb.addEventListener('click',()=>{ F.reviewedAt=F.fails; newAttempt(); save(); render(); });
+      const rr=h('div',{class:'btnrow'}); rr.appendChild(rb); r.appendChild(rr); return;
+    } else { const b=h('button',{class:'btn primary',type:'button'},'Try a new set of questions'); b.addEventListener('click',()=>{ newAttempt(); render(); }); row.appendChild(b); }
+    c.appendChild(row);
+  }
+ }
+});
+
+/* ===================== RESULTS (Ne) ===================== */
+SECS.push({z:10, sym:'Ne', name:'Neon', title:'Your results', results:true, reqs:[],
+ build(body, sec){
+  const wrap=h('div'); body.appendChild(wrap);
+  sec.onShow=()=>render();
+  function render(){
+    wrap.innerHTML='';
+    if(!S.final.passed && !S.preview){ const c=card(wrap,'read','Almost there'); c.insertAdjacentHTML('beforeend','<p>Pass the final check to see your results.</p>'); return; }
+    const st=S.student||{}; const a=assignScore(); const mins=S.startedAt?Math.round(((S.completedAt||Date.now())-S.startedAt)/60000):0;
+    const c=h('div',{class:'card'}); wrap.appendChild(c);
+    c.innerHTML=`<h3>${st.first||''} ${st.last||''}</h3><p class="muted">${LESSON_NAME} · Biology Unit 2</p>
+      <table class="res">
+        <tr><th>Student ID</th><td>${st.id||''}</td></tr>
+        <tr><th>Period</th><td>${st.period||''}</td></tr>
+        <tr><th>Teacher</th><td>${st.teacher||''}</td></tr>
+        <tr><th>Lesson score (practice and quick checks right on the first try)</th><td><b>${a.c} of ${a.t}</b> <span class="muted">(${a.pct}%)</span></td></tr>
+        <tr><th>Final check (best score)</th><td><b>${S.final.best}/10</b> <span class="muted">(${S.final.best*10}%)</span></td></tr>
+        <tr><th>Final check tries</th><td>${S.final.attempts}</td></tr>
+        <tr><th>Times the lesson locked</th><td>${S.leaves}</td></tr>
+        <tr><th>Time in lesson</th><td>about ${mins} min</td></tr>
+        <tr><th>Finished</th><td>${S.completedAt?new Date(S.completedAt).toLocaleString():''}</td></tr>
+      </table>
+      <div class="btnrow noprint">
+        <button class="btn primary" type="button" id="csvBtn">Download CSV</button>
+        <button class="btn ghost" type="button" id="printBtn">Print</button>
+        <button class="btn ghost" type="button" id="sendBtn">Send my scores to my teacher</button>
+      </div>
+      <div class="fb info noprint sheetStatus" aria-live="polite">${sendMsg()}</div>`;
+    $('#csvBtn',c).addEventListener('click',()=>downloadCSV([recordFromState()],`ATP_${(st.last||'student').replace(/\W+/g,'')}_${(st.first||'').replace(/\W+/g,'')}_P${st.period||''}.csv`));
+    $('#printBtn',c).addEventListener('click',()=>window.print());
+    $('#sendBtn',c).addEventListener('click',()=>sendSheet());
+    const g=h('div',{class:'card goals'}); g.innerHTML='<h3>Goals</h3><ul></ul>'; wrap.appendChild(g); renderGoals($('ul',g));
+  }
+ }
+});
+
+/* ===================== records, CSV, Google Sheets ===================== */
+const CSV_HEAD=['Student ID','Last Name','First Name','Period','Teacher','Activity','Lesson Score (practice + quick checks right on first try)','Lesson Total','Final Check Score (best)','Final Check Total','Final Check Passed','Final Check Attempts','Sections Completed','Times Locked','Date'];
+function recordFromState(){
+  const st=S.student||{}, a=assignScore();
+  let secs=0; for(let i=0;i<=FI;i++) if(secDone(i)) secs++;
+  return [st.id||'',st.last||'',st.first||'',st.period||'',st.teacher||'',LESSON_NAME,a.c,a.t,S.final.best,10,S.final.passed?'Yes':'No',S.final.attempts,secs,S.leaves,new Date(S.completedAt||Date.now()).toLocaleString()];
+}
+function csvText(rows){ const esc=v=>{ v=String(v??''); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }; return [CSV_HEAD,...rows].map(r=>r.map(esc).join(',')).join('\r\n')+'\r\n'; }
+function downloadCSV(rows, name){
+  const blob=new Blob([csvText(rows)],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500);
+}
+function loadRecs(){ try{ const r=JSON.parse(localStorage.getItem(RECS))||[]; return r.filter(x=>Array.isArray(x)&&x.length===CSV_HEAD.length); }catch(e){ return []; } }
+function saveRecord(){
+  if(S.preview) return;
+  const recs=loadRecs(); const row=recordFromState();
+  const i=recs.findIndex(r=>r[0]===row[0]&&r[1]===row[1]&&r[2]===row[2]);
+  if(i>=0) recs[i]=row; else recs.push(row);
+  try{ localStorage.setItem(RECS,JSON.stringify(recs)); }catch(e){}
+}
+/* Two rows, same as the Bohr model lesson: one for the lesson, one for the final check */
+const SEC_LABELS=['S1 Fireflies','S2 What ATP is','S3 ATP cycle','S4 Currency','S5 Cell jobs','S6 Spot the mistake'];
+function sheetBodies(){
+  const st=S.student||{}, F=S.final;
+  const base={studentId:st.id||'', firstName:st.first||'', lastName:st.last||'', period:st.period||'', teacher:st.teacher||'', locks:String(S.leaves), when:new Date().toString()};
+  const pts=SEC_LABELS.map(()=>0), max=SEC_LABELS.map(()=>0);
+  ITEMS.forEach(id=>{ const m=id.match(/^s(\d)/); if(!m) return; const n=+m[1]-1; max[n]++; if(S.first[id]===true) pts[n]++; });
+  const a=assignScore();
+  const lesson=Object.assign({},base,{activity:`${LESSON_NAME}: Lesson`, score:String(a.c), total:String(a.t), qlabels:SEC_LABELS.join('|'), qpoints:pts.join('|'), qmax:max.join('|')});
+  let best=null; F.history.forEach(x=>{ if(!best||x.score>=best.score) best=x; });
+  const fin=Object.assign({},base,{activity:`${LESSON_NAME}: Final Check`, score:String(F.best), total:'10'},
+    best&&best.pts?{qlabels:best.pts.map((_,i)=>'Q'+(i+1)).join('|'), qpoints:best.pts.join('|'), qmax:best.pts.map(()=>1).join('|')}
+                  :{qlabels:'Final Check', qpoints:String(F.best), qmax:'10'});
+  return [lesson,fin];
+}
+function sendMsg(){
+  if(S.preview) return 'Preview mode: scores are not sent.';
+  if(S.sentAt) return `Sent to your teacher ${new Date(S.sentAt).toLocaleString()}.`;
+  return S.final.passed?'Sending your scores to your teacher...':'';
+}
+function sendSheet(){
+  const msg=t=>$$('.sheetStatus').forEach(e=>{ e.textContent=t; });
+  if(S.preview){ msg('Preview mode: scores are not sent.'); return; }
+  if(!S.student){ msg('Sign in on the start page first.'); return; }
+  const url=sheetURL();
+  if(!url){ msg("This lesson isn't connected to your teacher's gradebook sheet yet. Download the CSV instead."); return; }
+  msg('Sending...');
+  Promise.all(sheetBodies().map(b=>fetch(url,{method:'POST',mode:'no-cors',body:new URLSearchParams(b)})))
+    .then(()=>{ S.sent=true; S.sentAt=new Date().toISOString(); save(); msg('Sent! Your teacher will see your scores.'); })
+    .catch(()=>msg("Couldn't send. Check your internet connection and try again, or download the CSV."));
+}
+
+/* ===================== goals ===================== */
+const GOALS=[
+  {t:'I can label the parts of ATP and say where its energy is stored.',secs:[1]},
+  {t:'I can explain how ATP is spent (ATP → ADP + P) and recharged by cellular respiration.',secs:[2]},
+  {t:'I can explain why ATP is called the energy currency of the cell.',secs:[3,0]},
+  {t:'I can tell which cell jobs need ATP and which do not.',secs:[4,5]}
+];
+function secDone(i){ const r=SECS[i].reqs; return r.length>0 && r.every(q=>S.reqs[q.id]); }
+function renderGoals(ul){ ul.innerHTML=GOALS.map(g=>{ const d=g.secs.every(secDone); return `<li class="${d?'done':''}"><span class="box">${d?'✓':''}</span><span>${g.t}</span></li>`; }).join(''); }
+
+/* ===================== navigation ===================== */
+const tilesEl=$('#navtiles'), secsEl=$('#sections');
+const NC=SECS.length-2, FI=NC, RI=NC+1;   // content sections, final check index, results index
+function canOpen(i){ if(S.preview) return true; if(i===RI) return S.final.passed; return i<=S.unlocked; }
+function buildAll(){
+  SECS.forEach((s,i)=>{
+    const t=h('button',{class:'tile'+(i===RI?' ne':''),type:'button','aria-label':`${s.results?'Results':'Section '+(i+1)}: ${s.title}`},`<span class="z">${i+1}</span><span class="ic">${iconSVG(i,22)}</span><span class="nm">${PHYS_ICONS[i].label}</span>`);
+    t.addEventListener('click',()=>{ if(canOpen(i)) go(i); }); tilesEl.appendChild(t); s.tile=t;
+    const sec=h('section',{class:'page',id:'sec'+i,hidden:true});
+    sec.innerHTML=`<div class="sechead"><div class="badge" aria-hidden="true"><span class="z">${i+1}</span><span class="ic">${iconSVG(i,42)}</span><span class="nm">${PHYS_ICONS[i].label}</span></div><div><div class="meta">${s.results?'Results':`Section ${i+1} of ${FI+1} · about ${s.min} min`}</div><h2>${s.title}</h2></div></div>`;
+    const body=h('div'); sec.appendChild(body); secsEl.appendChild(sec); s.el=sec;
+    s.build(body,s);
+    if(s.reqs.length){
+      const u=h('div',{class:'unlock'}); u.innerHTML=`<h3>${i<NC?'To unlock the next section':'To finish the lesson'}</h3><ul>${s.reqs.map(r=>`<li data-req="${r.id}"><span class="box"></span><span>${r.text}</span></li>`).join('')}</ul>`;
+      sec.appendChild(u); s.unlockEl=u;
+    }
+    const nav=h('div',{class:'secnav noprint'});
+    const back=h('button',{class:'btn ghost',type:'button'},i===0?'Back to start':'Back'); back.addEventListener('click',()=>i===0?showStart():go(i-1));
+    nav.appendChild(back);
+    if(i<RI){ const nx=h('button',{class:'btn primary',type:'button'},i===FI?'See your results':`Next: ${SECS[i+1].title}`); nx.addEventListener('click',()=>go(i+1)); nav.appendChild(nx); s.nextBtn=nx; }
+    sec.appendChild(nav);
+  });
+}
+function refreshAll(){
+  let u=0; while(u<NC && secDone(u)) u++; if(u>S.unlocked){ S.unlocked=u; save(); }
+  let tot=0, dn=0;
+  SECS.forEach((s,i)=>{
+    if(!s.tile) return;
+    s.reqs.forEach(r=>{ tot++; if(S.reqs[r.id]) dn++; });
+    if(s.unlockEl) $$('li',s.unlockEl).forEach(li=>{ const d=!!S.reqs[li.dataset.req]; li.classList.toggle('done',d); $('.box',li).textContent=d?'✓':''; });
+    if(s.nextBtn) s.nextBtn.disabled=!(S.preview || (i<NC?secDone(i):S.final.passed));
+    s.tile.classList.toggle('done', i<RI ? secDone(i) : S.final.passed);
+    s.tile.classList.toggle('locked', !canOpen(i));
+    s.tile.classList.toggle('cur', !s.el.hidden);
+  });
+  $('#progbar').style.width=(tot?Math.round(100*dn/tot):0)+'%';
+  renderGoals($('#goalsList'));
+}
+onReqChange=()=>{ refreshAll(); cloudSave(true); };
+function go(i){
+  if(!canOpen(i)) return;
+  $('#start').hidden=true; $('#topbar').hidden=false;
+  SECS.forEach((s,j)=>{ s.el.hidden=j!==i; s.tile.classList.toggle('cur',j===i); });
+  S.sec=i; save(); refreshAll();
+  $('#whoami').textContent=S.student?`${S.student.first} ${S.student.last}`:'';
+  window.scrollTo(0,0);
+  SECS[i].tile.scrollIntoView({block:'nearest',inline:'center'});
+  SECS[i].onShow && SECS[i].onShow();
+}
+function showStart(){
+  SECS.forEach(s=>s.el.hidden=true); $('#start').hidden=false; $('#topbar').hidden=true; renderStart(); window.scrollTo(0,0);
+}
+
+/* ===================== cloud backup (save code = student ID + last name) ===================== */
+const SAVE_URL_BUILTIN='https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';   // Saved Work web-app link (ends in /exec)
+function saveURL(){ try{ if(typeof SAVE_WEBHOOK_URL!=='undefined' && SAVE_WEBHOOK_URL && String(SAVE_WEBHOOK_URL).indexOf('PASTE')<0) return String(SAVE_WEBHOOK_URL); }catch(e){} return SAVE_URL_BUILTIN.indexOf('PASTE')<0?SAVE_URL_BUILTIN:''; }
+const CLOUD=()=>!!saveURL();
+function saveKey(st){ return (String(st.id||'').replace(/\s+/g,'')+'-'+String(st.last||'').toLowerCase().replace(/[^a-z]/g,'')).toLowerCase(); }
+function progressOf(st){ if(!st) return 0; return Object.keys(st.reqs||{}).length*1000+Object.keys(st.solved||{}).length*10+((st.final&&st.final.attempts)||0); }
+let cloudTimer=null, cloudDirty=false, cloudBusy=false, cloudAt=null, cloudErr=false;
+function cloudOK(){ return CLOUD() && S.student && !S.preview && !saveBlocked; }
+function cloudBody(){ const st=S.student||{}; return new URLSearchParams({code:saveKey(st), lesson:LESSON_ID, ver:String(S.updatedAt||Date.now()), prog:String(progressOf(S)),
+  studentId:st.id||'', lastName:st.last||'', firstName:st.first||'', period:st.period||'', teacher:st.teacher||'', summary:progressSummary(), data:JSON.stringify(S)}); }
+function progressSummary(){ let n=0; for(let i=0;i<=FI;i++) if(secDone(i)) n++; return `${n} of ${FI+1} sections done`+(S.final.attempts?` · final check best ${S.final.best}/10`+(S.final.passed?' (passed)':''):''); }
+function cloudSave(soon){
+  if(!cloudOK()) return; cloudDirty=true;
+  if(soon){ clearTimeout(cloudTimer); cloudTimer=setTimeout(cloudFlush,1200); }
+  else if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000);
+}
+async function cloudFlush(){
+  cloudTimer=null;
+  if(!cloudOK()||!cloudDirty) return;
+  if(cloudBusy){ cloudTimer=setTimeout(cloudFlush,4000); return; }
+  cloudBusy=true; cloudDirty=false;
+  try{ await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); cloudAt=new Date(); cloudErr=false; }
+  catch(e){ cloudDirty=true; cloudErr=true; if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); }
+  finally{ cloudBusy=false; showNote(); }
+}
+function cloudBeacon(){ if(!cloudOK()||!cloudDirty) return; try{ if(navigator.sendBeacon && navigator.sendBeacon(saveURL(),cloudBody())) cloudDirty=false; }catch(e){} }
+async function cloudLoad(st){
+  if(!CLOUD()) return {status:'off'};
+  const ctrl=new AbortController(), t=setTimeout(()=>ctrl.abort(),5000);
+  try{
+    const u=saveURL(); const r=await fetch(u+(u.indexOf('?')<0?'?':'&')+new URLSearchParams({code:saveKey(st), lesson:LESSON_ID}).toString(),{signal:ctrl.signal});
+    const j=await r.json();
+    if(j && j.found && j.data){ const d=JSON.parse(j.data); if(d && d.lesson===LESSON_ID) return {status:'found', data:d}; }
+    return {status:'none'};
+  }catch(e){ return {status:'error'}; }finally{ clearTimeout(t); }
+}
+function adoptState(ns){
+  let storedRev=0; try{ const raw=localStorage.getItem(STORE); if(raw) storedRev=JSON.parse(raw).rev||0; }catch(e){}
+  ns.rev=Math.max(ns.rev||0,storedRev); S=ns; saveBlocked=false; save();
+  ITEMS.clear(); tilesEl.innerHTML=''; secsEl.innerHTML=''; buildAll(); refreshAll();
+}
+function showNote(extra){
+  const n=$('#saveNote'); if(!n) return;
+  const tm=d=>d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+  if(extra){ n.textContent=extra; return; }
+  if(cloudErr) n.textContent='✓ Saved on this Chromebook (backup will retry)';
+  else n.textContent='✓ Work saved '+tm(new Date())+(cloudAt?' · backed up '+tm(cloudAt):'');
+}
+function resumeTarget(){ return Math.min(S.sec||0, S.final.passed?9:S.unlocked); }
+function afterAdopt(msg){ if(LOCKDOWN && S.locked && !S.completedAt && !S.preview){ showLock('left the lesson page'); } go(resumeTarget()); if(msg) showNote(msg); }
+
+/* ===================== start page ===================== */
+function renderStart(){
+  renderGoals($('#goalsList'));
+  const has=!!S.student;
+  $('#resumeBox').hidden=!has; $('#startForm').hidden=has;
+  $('#signinTitle').textContent=has?'Welcome back':'Sign in to start';
+  if(has) $('#resumeText').innerHTML=`Signed in as <b>${S.student.first} ${S.student.last}</b>, period ${S.student.period}.`;
+  $('#notMeBtn').textContent=CLOUD()?'Not you? Sign in as a different student':'Not you? Ask your teacher to reset this device.';
+  if(CLOUD()) $('#saveInfo').innerHTML='You\'ll need about 45 minutes. <b>Your work is backed up.</b> On any Chromebook, sign in with the same <b>student ID and last name</b> to pick up where you left off.';
+}
+function fillSelects(){
+  $('#fPeriod').innerHTML='<option value="">Choose your period</option>'+periodList().map(p=>`<option>${p}</option>`).join('');
+  $('#fTeacher').innerHTML='<option value="">Choose your teacher</option>'+teacherList().map(t=>`<option>${t}</option>`).join('');
+}
+let skipCloud=false;
+$('#startForm').addEventListener('submit',e=>{ e.preventDefault(); startLesson(); });
+$('#startForm').addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.tagName==='INPUT'){ e.preventDefault(); startLesson(); } });
+$('#startBtn').addEventListener('click',()=>startLesson());
+let starting=false;
+async function startLesson(){
+  if(starting) return; starting=true; try{ await startLessonInner(); } catch(ex){ const er=$('#formErr'); er.className='fb no'; er.textContent='Something went wrong starting the lesson ('+(ex&&ex.message||ex)+'). Reload the page and try again.'; er.hidden=false; } finally{ starting=false; }
+}
+async function startLessonInner(){
+  const v={first:$('#fFirst').value.trim(), last:$('#fLast').value.trim(), id:$('#fId').value.trim(), period:$('#fPeriod').value, teacher:$('#fTeacher').value};
+  const miss=[]; if(!v.first) miss.push('first name'); if(!v.last) miss.push('last name'); if(!v.id) miss.push('student ID'); if(!v.period) miss.push('period'); if(!v.teacher) miss.push('teacher');
+  const err=$('#formErr'), btn=$('#startBtn');
+  if(miss.length){ err.className='fb no'; err.textContent='Fill in your '+miss.join(', ')+'.'; err.hidden=false; return; }
+  arm();
+  if(CLOUD() && !skipCloud){
+    btn.disabled=true; err.className='fb info'; err.textContent='Checking for your saved work...'; err.hidden=false;
+    const res=await cloudLoad(v);
+    btn.disabled=false;
+    if(res.status==='found'){
+      err.hidden=true;
+      const d=res.data; d.student=Object.assign({},d.student||{},{first:v.first, period:v.period, teacher:v.teacher});
+      adoptState(d); afterAdopt('✓ Your saved work was loaded'); return;
+    }
+    err.hidden=true;
+    if(res.status==='error'){ const ns=freshState(); ns.student=v; ns.startedAt=Date.now(); adoptState(ns); go(0); showNote('✓ Saving on this Chromebook'); cloudSave(true); return; }
+  }
+  const ns=freshState(); ns.student=v; ns.startedAt=Date.now(); adoptState(ns); go(0); cloudSave(true);
+}
+$('#resumeBtn').addEventListener('click',async()=>{
+  arm();
+  const btn=$('#resumeBtn');
+  if(CLOUD() && !S.preview){
+    btn.disabled=true; btn.textContent='Loading your work...';
+    const res=await cloudLoad(S.student);
+    btn.disabled=false; btn.textContent='Continue the lesson';
+    if(res.status==='found'){
+      const d=res.data, cp=progressOf(d), lp=progressOf(S);
+      if(cp>lp || (cp===lp && (d.updatedAt||0)>(S.updatedAt||0))){ d.student=S.student; adoptState(d); afterAdopt('✓ Your newest saved work was loaded'); return; }
+    }
+    cloudSave(true);
+  }
+  go(resumeTarget());
+});
+$('#notMeBtn').addEventListener('click',async()=>{
+  if(!CLOUD()) return openTeacher();
+  const btn=$('#notMeBtn'), err=$('#resumeErr'), who=S.student?`${S.student.first} ${S.student.last}`:'the last student';
+  btn.disabled=true; btn.textContent=`Backing up ${who}'s work...`;
+  try{ await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); }
+  catch(e){ btn.disabled=false; btn.textContent='Not you? Sign in as a different student'; err.textContent=`Can't back up ${who}'s work right now. Check the Wi-Fi and try again, or ask your teacher.`; err.hidden=false; return; }
+  btn.disabled=false; err.hidden=true;
+  const ns=freshState(); adoptState(ns); renderStart();
+  $('#fFirst').value=''; $('#fLast').value=''; $('#fId').value=''; $('#fPeriod').value=''; $('#fTeacher').value='';
+});
+
+/* ===================== lockdown ===================== */
+const LOCKDOWN = /github\.io$/i.test(location.hostname) || /[?&]lockdown=on/i.test(location.search);
+let armed=false, teacherOpen=false;
+const fsOK=()=>!!(document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen);
+const inFS=()=>!!(document.fullscreenElement||document.webkitFullscreenElement);
+function enterFS(){ const d=document.documentElement; try{ const p=(d.requestFullscreen||d.webkitRequestFullscreen).call(d); return (p&&p.then)?p.catch(()=>{}):Promise.resolve(); }catch(e){ return Promise.resolve(); } }
+function arm(){ if(!LOCKDOWN||S.preview||S.completedAt||S.lockOff) return; enterFS().then(()=>setTimeout(()=>{ armed=true; },500)); }
+function disarm(){ armed=false; }
+function trip(reason){
+  if(!armed||S.locked||S.completedAt||S.preview||S.lockOff||teacherOpen) return;
+  armed=false; S.leaves++; S.locked=true; save(); showLock(reason);
+}
+function showLock(reason){ $('#lockMsg').textContent=`The lesson locked because you ${reason||'left the lesson page'}. Raise your hand so your teacher can unlock it. Your work is saved.`; $('#lockErr').hidden=true; $('#lockCode').value=''; $('#lockOv').classList.add('show'); setTimeout(()=>$('#lockCode').focus(),50); }
+$('#lockBtn').addEventListener('click',()=>{
+  if(codeIs($('#lockCode').value,UNLOCK_CODE)||codeIs($('#lockCode').value,TEACHER_CODE)){ S.locked=false; save(); $('#lockOv').classList.remove('show'); arm(); }
+  else $('#lockErr').hidden=false;
+});
+$('#lockCode').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#lockBtn').click(); });
+$('#gateBtn').addEventListener('click',()=>{ $('#gateOv').classList.remove('show'); arm(); });
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) trip('left the lesson page'); });
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>{ if(!inFS()&&fsOK()) trip('exited full screen'); }));
+window.addEventListener('blur',()=>setTimeout(()=>{ if(!document.hasFocus()) trip('switched to another window'); },300));
+
+/* ===================== teacher view ===================== */
+function openTeacher(){
+  teacherOpen=true; $('#teachLogin').hidden=false; $('#teachPanel').hidden=true; $('#teachErr').hidden=true; $('#teachCode').value='';
+  $('#teachModal').classList.remove('wide'); $('#teachOv').classList.add('show'); setTimeout(()=>$('#teachCode').focus(),50);
+}
+function closeTeacher(){ $('#teachOv').classList.remove('show'); teacherOpen=false; }
+$('#teacherLink').addEventListener('click',openTeacher);
+$('#teachBtn').addEventListener('click',openTeacher);
+$('#teachCancel').addEventListener('click',closeTeacher);
+$('#teachCode').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#teachGo').click(); });
+$('#teachGo').addEventListener('click',()=>{
+  if(!codeIs($('#teachCode').value,TEACHER_CODE)){ $('#teachErr').hidden=false; return; }
+  $('#teachLogin').hidden=true; $('#teachPanel').hidden=false; $('#teachModal').classList.add('wide'); renderTeacher();
+});
+function renderTeacher(){
+  const recs=loadRecs(); const p=$('#teachPanel');
+  const rows=recs.map(r=>`<tr><td>${r[1]}, ${r[2]}</td><td>${r[0]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[6]}/${r[7]}</td><td>${r[8]}/10</td><td>${r[11]}</td><td>${r[13]}</td><td>${r[14]}</td></tr>`).join('');
+  p.innerHTML=`<h2>Teacher view</h2>
+    <h3 style="margin-top:14px">Results saved on this device (${recs.length})</h3>
+    <div class="wide">${recs.length?`<table class="nb"><tr><th>Student</th><th>ID</th><th>Period</th><th>Teacher</th><th>Lesson</th><th>Final</th><th>Tries</th><th>Locked</th><th>Date</th></tr>${rows}</table>`:'<p class="muted">No finished lessons on this device yet. Each student\'s results page also has its own CSV download.</p>'}</div>
+    <div class="btnrow">
+      <button class="btn primary" type="button" id="tCsv" ${recs.length?'':'disabled'}>Download these results (CSV)</button>
+      <button class="btn ghost" type="button" id="tClear" ${recs.length?'':'disabled'}>Clear saved results</button>
+    </div>
+    <h3 style="margin-top:22px">This device</h3>
+    <p class="small muted">Student signed in: ${S.student?`${S.student.first} ${S.student.last} (period ${S.student.period})`:'nobody'}. Lockdown is ${LOCKDOWN?'on (opened from GitHub)':'off (only on when opened from GitHub)'}. Unlock code: the last word of the lesson title. Saved-work backup is ${CLOUD()?'on':'off (link not added yet)'}.</p>
+    <div class="btnrow">
+      ${S.locked?'<button class="btn primary" type="button" id="tUnlock">Unlock the lesson</button>':''}
+      ${S.student&&!S.preview?'<button class="btn ghost" type="button" id="tSend">Send this student\'s scores to the sheet</button>':''}
+      <button class="btn ghost" type="button" id="tKey">${document.body.classList.contains('keyon')?'Hide answer key':'Answer key'}</button>
+      ${S.student?'<button class="btn ghost" type="button" id="tUnlockAll">Unlock all sections</button>':''}
+      ${LOCKDOWN&&!S.lockOff?'<button class="btn ghost" type="button" id="tEndLock">End lockdown for this student</button>':''}
+      <button class="btn ghost" type="button" id="tPreview">${S.preview?'Turn off preview mode':'Preview: open every section'}</button>
+      <button class="btn ghost" type="button" id="tReset">Reset this device's lesson</button>
+      <button class="btn ghost" type="button" id="tClose">Close</button>
+    </div>
+    ${CLOUD()?`<h3 style="margin-top:22px">Load a student's saved work onto this device</h3>
+    <div class="btnrow"><input class="ans" id="tLoadId" placeholder="Student ID" style="width:150px"><input class="ans" id="tLoadLast" placeholder="Last name" style="width:170px"><button class="btn ghost" type="button" id="tLoad">Load work</button></div>`:''}
+    <p class="fb info sheetStatus" aria-live="polite" style="min-height:1em"></p>
+    <div class="fb info" id="tMsg" hidden></div>`;
+  const msg=t=>{ $('#tMsg').textContent=t; $('#tMsg').hidden=false; };
+  $('#tCsv').addEventListener('click',()=>downloadCSV(recs,`ATP_results_${new Date().toISOString().slice(0,10)}.csv`));
+  $('#tClear').addEventListener('click',()=>{ if(confirm('Delete the saved results list on this device? Students\' own lesson progress is not affected.')){ localStorage.removeItem(RECS); renderTeacher(); } });
+  if($('#tUnlock')) $('#tUnlock').addEventListener('click',()=>{ S.locked=false; save(); $('#lockOv').classList.remove('show'); closeTeacher(); arm(); });
+  $('#tPreview').addEventListener('click',()=>{
+    S.preview=!S.preview;
+    if(S.preview && !S.student){ S.student={first:'Teacher',last:'Preview',id:'0',period:'-',teacher:teacherList()[0]||''}; S.startedAt=Date.now(); }
+    save(); closeTeacher(); disarm(); $('#lockOv').classList.remove('show'); refreshAll(); if(S.preview) go(0); else location.reload();
+  });
+  $('#tReset').addEventListener('click',()=>{ if(confirm('Erase all lesson progress on this device and return to the sign-in page?')){ try{ localStorage.removeItem(STORE); }catch(e){} location.reload(); } });
+  $('#tClose').addEventListener('click',closeTeacher);
+  $('#tKey').addEventListener('click',()=>{ document.body.classList.toggle('keyon'); renderTeacher(); msg(document.body.classList.contains('keyon')?'Answer key is on: correct answers have a dashed gold outline, and sort chips show their box.':'Answer key is off.'); });
+  if($('#tUnlockAll')) $('#tUnlockAll').addEventListener('click',()=>{ S.unlocked=NC; save(); refreshAll(); msg('All sections are unlocked for this student.'); });
+  if($('#tEndLock')) $('#tEndLock').addEventListener('click',()=>{ S.lockOff=true; S.locked=false; save(); disarm(); $('#lockOv').classList.remove('show'); renderTeacher(); msg('Lockdown is off for this student on this Chromebook.'); });
+  if($('#tSend')) $('#tSend').addEventListener('click',()=>sendSheet());
+  if($('#tLoad')) $('#tLoad').addEventListener('click',async()=>{
+    const st={id:$('#tLoadId').value.trim(), last:$('#tLoadLast').value.trim()};
+    if(!st.id||!st.last){ msg('Type the student ID and last name.'); return; }
+    msg('Looking up saved work...');
+    const res=await cloudLoad(st);
+    if(res.status==='found'){ const d=res.data; d.locked=false; adoptState(d); closeTeacher(); showStart(); }
+    else msg(res.status==='none'?'No saved work found for that student ID and last name.':"Couldn't reach the saved-work sheet. Check the Wi-Fi.");
+  });
+}
+
+/* ===================== calculator ===================== */
+(function(){
+  const keys=[['sin','sin(','fn'],['cos','cos(','fn'],['tan','tan(','fn'],['tan⁻¹','tan⁻¹(','fn'],['√','√(','fn'],
+    ['7','7'],['8','8'],['9','9'],['(','('],[')',')'],
+    ['4','4'],['5','5'],['6','6'],['×','×'],['÷','÷'],
+    ['1','1'],['2','2'],['3','3'],['+','+'],['−','−'],
+    ['0','0'],['.','.'],['x²','^2'],['C','C'],['=','=','eq']];
+  const kEl=$('#calcKeys'), inp=$('#calcIn'), out=$('#calcOut'); let ans=0;
+  keys.forEach(([t,v,c])=>{ const b=h('button',{type:'button',class:c||''},t); b.addEventListener('click',()=>{
+    if(v==='C'){ inp.value=''; out.textContent=''; }
+    else if(v==='='){ calc(); }
+    else { const s=inp.selectionStart??inp.value.length; inp.value=inp.value.slice(0,s)+v+inp.value.slice(inp.selectionEnd??s); inp.focus(); const p=s+v.length; inp.setSelectionRange(p,p); }
+  }); kEl.appendChild(b); });
+  function calc(){
+    let e=inp.value;
+    e=e.replace(/tan⁻¹|tan\^-1|tan-1|arctan|atan/gi,'AT').replace(/arcsin|asin/gi,'AS').replace(/arccos|acos/gi,'AC')
+       .replace(/sin/gi,'S').replace(/cos/gi,'C').replace(/tan/gi,'T').replace(/√|sqrt/gi,'Q').replace(/π|pi/gi,'PI').replace(/ans/gi,'ANS')
+       .replace(/×/g,'*').replace(/÷/g,'/').replace(/[−–]/g,'-').replace(/²/g,'^2').replace(/\^/g,'**');
+    e=e.replace(/(\d|\))\s*(?=[A-Z(])/g,'$1*');
+    const tokens=e.match(/[A-Z]+/g)||[]; const okT=['S','C','T','AT','AS','AC','Q','PI','ANS'];
+    if(!/^[0-9+\-*/().\sA-Z]*$/.test(e) || tokens.some(t=>!okT.includes(t))){ out.textContent='Check the expression'; return; }
+    try{
+      const f=new Function('S','C','T','AT','AS','AC','Q','PI','ANS','"use strict";return ('+e+');');
+      const r=f(x=>Math.sin(rad(x)),x=>Math.cos(rad(x)),x=>Math.tan(rad(x)),x=>deg(Math.atan(x)),x=>deg(Math.asin(x)),x=>deg(Math.acos(x)),Math.sqrt,Math.PI,ans);
+      if(typeof r!=='number'||!isFinite(r)){ out.textContent='Not a number'; return; }
+      ans=r; out.textContent=String(+r.toFixed(5)).replace('-','−');
+    }catch(err){ out.textContent='Check the expression'; }
+  }
+  inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); calc(); } });
+  $('#calcBtn').addEventListener('click',()=>{ const c=$('#calc'); c.hidden=!c.hidden; $('#calcBtn').setAttribute('aria-expanded',String(!c.hidden)); if(!c.hidden) inp.focus(); });
+  $('#calcClose').addEventListener('click',()=>{ $('#calc').hidden=true; $('#calcBtn').setAttribute('aria-expanded','false'); });
+})();
+
+/* ===================== hero + init ===================== */
+function hero(){ bioHero(); }
+onSaved=()=>{ showNote(); cloudSave(false); };
+document.addEventListener('visibilitychange',()=>{ if(document.hidden){ save(); cloudBeacon(); } });
+onConflict=()=>{ $('#tabOv').classList.add('show'); };
+$('#tabReload').addEventListener('click',()=>location.reload());
+window.addEventListener('storage',e=>{
+  if(e.key!==STORE || !e.newValue) return;
+  try{ const st=JSON.parse(e.newValue); if(st && (st.rev||0)>(S.rev||0)){ saveBlocked=true; onConflict(); } }catch(_){}
+});
+window.addEventListener('pagehide',()=>{ save(); cloudBeacon(); });
+if(!STORAGE_OK) $('#noStore').hidden=false;
+['copy','cut','paste','contextmenu'].forEach(ev=>document.addEventListener(ev,e=>{ if(teacherOpen||S.preview) return; if(e.target&&e.target.closest&&e.target.closest('#lockOv')) return; e.preventDefault(); }));
+fillSelects();
+buildAll();
+refreshAll();
+hero();
+showStart();
+if(S.student){
+  if(S.preview){ /* preview: no lockdown */ }
+  else if(LOCKDOWN && S.locked && !S.completedAt) showLock('left the lesson page');
+  else if(LOCKDOWN && !S.completedAt) { /* resume button arms full screen */ }
+}
+})();
+</script>
+</body>
+</html>
