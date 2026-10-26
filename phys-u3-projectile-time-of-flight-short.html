@@ -1101,6 +1101,7 @@ document.addEventListener('fullscreenchange', () => { if (!isFull() && !unlockin
 document.addEventListener('webkitfullscreenchange', () => { if (!isFull() && !unlocking) lockNow(); });
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') lockNow(); });
 
+function showUnlockCode(box) { const old = document.getElementById('unlockInfo'); if (old) old.remove(); box.insertAdjacentHTML('afterbegin', `<div id="unlockInfo" style="border:2px solid #ffcf5a;background:rgba(255,207,90,.12);border-radius:10px;padding:10px 12px;margin:0 0 10px;font-size:.95rem">🔑 Code to end lockdown on this activity: <b style="font-size:1.15rem;letter-spacing:.03em">${UNLOCK_CODE}</b><div style="font-size:.8rem;opacity:.8;margin-top:2px">Give this to absent students. It ends lockdown only; it does not open the teacher view.</div></div>`); }
 /* =========================================================
    TEACHER TOOLS (code = last word of the lesson title)
    ========================================================= */
@@ -1108,7 +1109,7 @@ let keyOn = false;
 $('#teachBtn').addEventListener('click', () => { $('#teachOv').hidden = false; $('#teachLogin').hidden = false; $('#teachTools').hidden = true; $('#teachCode').value = ''; $('#teachMsg').textContent = ''; setTimeout(() => $('#teachCode').focus(), 50); });
 $('#teachGo').addEventListener('click', () => {
   if (!isTeacherCode($('#teachCode').value)) { $('#teachMsg').textContent = 'That code isn\u2019t right.'; return; }
-  $('#teachLogin').hidden = true; $('#teachTools').hidden = false; $('#teachNote').textContent = S.student ? `Signed in: ${S.student.first} ${S.student.last} (ID ${S.student.id}). Save code: ${saveKey(S.student)}` : 'No student is signed in on this Chromebook.';
+  $('#teachLogin').hidden = true; $('#teachTools').hidden = false; showUnlockCode($('#teachTools')); $('#teachNote').textContent = S.student ? `Signed in: ${S.student.first} ${S.student.last} (ID ${S.student.id}). Save code: ${saveKey(S.student)}` : 'No student is signed in on this Chromebook.';
 });
 $('#teachCode').addEventListener('keydown', e => { if (e.key === 'Enter') $('#teachGo').click(); });
 $('#tKey').addEventListener('click', () => { keyOn = !keyOn; document.body.classList.toggle('key', keyOn); $('#tKey').textContent = keyOn ? 'Hide answer key' : 'Show answer key'; $('#tKey').classList.toggle('on', keyOn); if (S.cur === FIN) renderFinal(); });

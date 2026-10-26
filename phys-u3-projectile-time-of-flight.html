@@ -36,7 +36,7 @@ sub{font-size:.7em}
 .top-tools{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .savenote{font-size:.78rem;color:var(--muted);min-width:90px;text-align:right}
 .savenote.err{color:var(--orange)}
-.nav{max-width:1180px;margin:0 auto;padding:0 16px 10px;display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:8px}
+.nav{max-width:1180px;margin:0 auto;padding:0 16px 10px;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
 .tile{position:relative;height:62px;border-radius:10px;border:2px solid var(--line2);background:var(--panel);color:var(--muted);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px;transition:border-color .15s,transform .15s}
 .tile .n{position:absolute;top:3px;left:6px;font-size:.68rem;color:var(--dim)}
 .tile svg{width:26px;height:26px}
@@ -241,6 +241,7 @@ body.key .keyonly{display:block!important}
 #calc .chead{display:flex;justify-content:space-between;align-items:center;font-size:.85rem;color:var(--muted)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media print{.top,#calc{display:none}}
+.phbox{width:100%;min-height:60px;border:1px solid var(--line2);border-radius:8px;padding:8px;background:var(--bg2);color:var(--ink);font-family:inherit;font-size:.92rem;resize:vertical;margin-top:3px}
 </style>
 </head>
 <body>
@@ -283,10 +284,10 @@ body.key .keyonly{display:block!important}
           <h3>How the lesson works</h3>
           <div class="howgrid">
             <div class="how"><b>Read</b>Short readings with diagrams. The equations live here.</div>
-            <div class="how"><b>Try it</b>Launchers, a target game, missions, and practice.</div>
+            <div class="how"><b>Try it</b>A launcher, a peak finder, a race, target missions, and a cliff launch.</div>
             <div class="how qc"><b>Quick check</b>Multiple choice. Answer correctly to unlock the next section.</div>
           </div>
-          <p class="muted" style="font-size:.88rem;margin-top:10px">Sections 1 to 8 teach and practice. Section 9 is the final check: 10 random questions, 8 out of 10 to pass. Use a<sub>y</sub> = −9.8 m/s² and the built-in calculator. Round to one decimal place (two for times). About 60 minutes.</p>
+          <p class="muted" style="font-size:.88rem;margin-top:10px">Sections 1 to 5 teach the ideas with a simulator in each. Section 6 is a short exit check: 5 questions, 4 out of 5 to pass. About 30 minutes. Then do the <b>practice</b> to build your skills.</p>
         </div>
       </div>
       <div>
@@ -320,9 +321,7 @@ body.key .keyonly{display:block!important}
   <section class="page" id="page5"></section>
   <section class="page" id="page6"></section>
   <section class="page" id="page7"></section>
-  <section class="page" id="page8"></section>
-  <section class="page" id="page9"></section>
-  <section class="page" id="page10"></section>
+
 </main>
 
 <!-- full screen gate -->
@@ -391,14 +390,15 @@ body.key .keyonly{display:block!important}
    SETTINGS
    ========================================================= */
 const LESSON = 'Projectile Motion and Time of Flight';
-const LESSON_ID = 'phys-u3-projectile-time-of-flight';
-const KEY = 'fate_phys_u3_projectile_tof_v1';
+const LESSON_ID = 'phys-u3-projectile-time-of-flight-lesson30';
+const KEY = 'fate_phys_u3_projectile_tof_lesson30_v1';
 const RECS = KEY + '_records';
 const UNLOCK_CODE = 'flight';           // last word of the lesson title: unlocks the lockdown screen only
 const TEACHER_CODE = 'teacher007';        // opens the teacher tools only
 const isTeacherCode = v => String(v || '').trim().toLowerCase() === TEACHER_CODE.toLowerCase();
 const G = 9.8;                            // a_y = -9.8 m/s^2 (up is positive)
-const PASS_SCORE = 8, FC_LEN = 10;
+const PASS_SCORE = 4, FC_LEN = 5;
+const NSEC = 5, FIN = 6, RES = 7, ALLN = [1, 2, 3, 4, 5, 6, 7];
 /* Google Sheets + teacher list: if sheets-config.js (next to this file on the site) defines these, they win. */
 const BACKUP_URL = 'https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
 const SAVE_URL_BUILTIN = 'https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';
@@ -463,15 +463,12 @@ const IC = {
 };
 const icon = (k, col = 'var(--amber)') => `<svg viewBox="0 0 24 24" fill="none" stroke="${col}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[k]}</svg>`;
 const TILES = [null,
-  { ic: 'launch', name: 'Launch', title: 'Launching at an angle', min: 6 },
-  { ic: 'updown', name: 'Up & down', title: 'Rising and falling', min: 6 },
-  { ic: 'peak', name: 'Peak', title: 'Time to the top and maximum height', min: 8 },
-  { ic: 'time', name: 'Flight time', title: 'Time of flight on level ground', min: 7 },
-  { ic: 'range', name: 'Range', title: 'How far does it go?', min: 8 },
-  { ic: 'angle', name: 'Angles', title: 'Launch angle, time, and range', min: 6 },
-  { ic: 'cliff', name: 'Cliff', title: 'Launched from a height', min: 8 },
-  { ic: 'mistake', name: 'Mistakes', title: 'What is wrong with this?', min: 5 },
-  { ic: 'final', name: 'Final', title: 'Final check', min: 8 },
+  { ic: 'launch', name: 'Launch', title: 'Launching at an angle', min: 7 },
+  { ic: 'peak', name: 'Peak', title: 'Time to the top and maximum height', min: 5 },
+  { ic: 'time', name: 'Flight time', title: 'Time of flight on level ground', min: 4 },
+  { ic: 'range', name: 'Range', title: 'How far does it go?', min: 5 },
+  { ic: 'cliff', name: 'Cliff', title: 'Launched from a height', min: 7 },
+  { ic: 'final', name: 'Exit check', title: 'Exit check', min: 4 },
   { ic: 'results', name: 'Results', title: 'Your results', min: 0 }
 ];
 
@@ -530,7 +527,7 @@ window.addEventListener('storage', e => { if (e.key !== KEY || !e.newValue) retu
 /* ---------- cloud backup (save code = student ID + last name) ---------- */
 function saveKey(st) { return (String(st.id || '').replace(/\s+/g, '') + '-' + String(st.last || '').toLowerCase().replace(/[^a-z]/g, '')).toLowerCase(); }
 function progressOf(st) { return Object.keys(st.reqs || {}).length * 1000 + Object.keys(st.qc || {}).length * 10 + ((st.final && st.final.attempts && st.final.attempts.length) || 0); }
-function progressSummary() { const n = [1, 2, 3, 4, 5, 6, 7, 8].filter(k => S.secDone[k]).length; return `${n} of 8 sections done` + (S.final.attempts.length ? `, final check best ${S.final.best}/${S.final.bestMax}` + (S.final.passed ? ' (passed)' : '') : ''); }
+function progressSummary() { const n = [1, 2, 3, 4, 5].filter(k => S.secDone[k]).length; return `${n} of 5 sections done` + (S.final.attempts.length ? `, final check best ${S.final.best}/${S.final.bestMax}` + (S.final.passed ? ' (passed)' : '') : ''); }
 let cloudTimer = null, cloudDirty = false, cloudBusy = false, cloudAt = null, cloudErr = false;
 function cloudOK() { return CLOUD() && S.student && !S.preview && !saveBlocked; }
 function cloudBody() { const st = S.student || {}; return new URLSearchParams({ code: saveKey(st), lesson: LESSON_ID, ver: String(S.updatedAt || Date.now()), prog: String(progressOf(S)),
@@ -628,39 +625,36 @@ function run(key, dur, frame, done, speed = 1) {
    SECTION REQUIREMENTS + PROGRESS
    ========================================================= */
 const REQS = {
-  1: [['sim', 'Try 3 different launches in the launcher'], ['prac', 'Finish the 3 practice problems'], ['q1', 'Answer quick check 1'], ['q2', 'Answer quick check 2']],
-  2: [['sim', 'Find the top of the path in the simulator'], ['tbl', 'Fill in the velocity table'], ['q1', 'Answer quick check 1'], ['q2', 'Answer quick check 2']],
-  3: [['sim', 'Launch 3 different up-speeds'], ['prac', 'Finish the 3 practice problems'], ['q1', 'Answer quick check 1'], ['q2', 'Answer quick check 2']],
-  4: [['sim', 'Race two balls twice, with different sideways speeds'], ['prac', 'Finish the 3 practice problems'], ['q1', 'Answer quick check 1'], ['q2', 'Answer quick check 2']],
-  5: [['sim', 'Complete the 3 target missions'], ['prac', 'Finish the 3 practice problems'], ['q1', 'Answer quick check 1'], ['q2', 'Answer quick check 2']],
-  6: [['sim', 'Complete all 3 angle missions'], ['q1', 'Answer quick check 1'], ['q2', 'Answer quick check 2']],
-  7: [['sim', 'Step through all 4 steps of the cliff launch'], ['prac', 'Finish the 5 practice problems'], ['q1', 'Answer quick check 1'], ['q2', 'Answer quick check 2']],
-  8: [['mis', 'Find and explain all 5 mistakes']],
-  9: [['pass', 'Score 8 out of 10 on the final check']]
+  1: [['phen', 'Write your first explanation of the phenomenon'], ['sim', 'Try 3 different launches in the launcher'], ['prac', 'Solve the practice problem'], ['q1', 'Answer the quick check']],
+  2: [['sim', 'Launch 3 different up-speeds in the peak finder'], ['prac', 'Solve the practice problem'], ['q1', 'Answer the quick check']],
+  3: [['sim', 'Race the two balls twice, with different sideways speeds'], ['prac', 'Solve the practice problem'], ['q1', 'Answer the quick check']],
+  4: [['sim', 'Complete the 3 target missions'], ['prac', 'Solve the practice problem'], ['q1', 'Answer the quick check']],
+  5: [['sim', 'Step through all 4 steps of the cliff launch'], ['prac', 'Solve the practice problem'], ['q1', 'Answer quick check 1'], ['q2', 'Answer quick check 2'], ['phen2', 'Revise your explanation of the phenomenon']],
+  6: [['pass', 'Score 4 out of 5 on the exit check']]
 };
 const GOALS = [
   { t: 'I can split a launch into its sideways and up parts and find the launch angle.', sec: [1] },
-  { t: 'I can find the time to the top and the maximum height.', sec: [2, 3] },
-  { t: 'I can find the time of flight and range on level ground and from a height.', sec: [4, 5, 7] },
-  { t: 'I can explain how the launch angle changes the time of flight and range.', sec: [6] }
+  { t: 'I can find the time to the top and the maximum height.', sec: [2] },
+  { t: 'I can find the time of flight and range on level ground.', sec: [3, 4] },
+  { t: 'I can find the time of flight and range when a projectile starts above the ground.', sec: [5] }
 ];
-function secDone(n) { if (n === 9) return !!S.final.passed; return (REQS[n] || []).every(([id]) => S.reqs[n + '.' + id]); }
+function secDone(n) { if (n === FIN) return !!S.final.passed; return (REQS[n] || []).every(([id]) => S.reqs[n + '.' + id]); }
 function accessible(n) {
   if (n === 0) return true;
   if (!S.student && !S.preview) return false;
   if (S.teacherUnlock || S.preview) return true;
   if (n === 1) return true;
-  if (n <= 9) return secDone(n - 1);
-  if (n === 10) return S.final.attempts.length > 0;
+  if (n <= FIN) return secDone(n - 1);
+  if (n === RES) return S.final.attempts.length > 0;
   return false;
 }
 function req(n, id) {
   const k = n + '.' + id; if (S.reqs[k]) return;
-  const before = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(accessible);
+  const before = ALLN.map(accessible);
   S.reqs[k] = true;
-  if (secDone(n) && !S.secDone[n]) { S.secDone[n] = true; toast(n < 8 ? `Section ${n} done. Section ${n + 1} is unlocked.` : n === 8 ? 'Section 8 done. The final check is unlocked.' : 'Done!'); }
+  if (secDone(n) && !S.secDone[n]) { S.secDone[n] = true; toast(n < NSEC ? `Section ${n} done. Section ${n + 1} is unlocked.` : n === NSEC ? 'Section 8 done. The final check is unlocked.' : 'Done!'); }
   renderReqs(n, id); renderGoals();
-  const after = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(accessible); const pop = after.findIndex((a, i) => a && !before[i]);
+  const after = ALLN.map(accessible); const pop = after.findIndex((a, i) => a && !before[i]);
   renderNav(pop >= 0 ? pop + 1 : null); save(true);
 }
 function renderReqs(n, justId) {
@@ -669,24 +663,24 @@ function renderReqs(n, justId) {
   const nb = $('.nextbtn', box); if (nb) nb.disabled = !accessible(n + 1);
 }
 function unlockBox(n) {
-  return `<div class="unlock" id="unlock-${n}"><h4>To unlock ${n < 8 ? 'section ' + (n + 1) : 'the final check'}</h4><ul class="reqs"></ul>
-    <button class="btn primary nextbtn" type="button" data-go="${n + 1}" disabled>${n < 8 ? 'Next: ' + TILES[n + 1].title : 'Go to the final check'}</button></div>`;
+  return `<div class="unlock" id="unlock-${n}"><h4>To unlock ${n < NSEC ? 'section ' + (n + 1) : 'the exit check'}</h4><ul class="reqs"></ul>
+    <button class="btn primary nextbtn" type="button" data-go="${n + 1}" disabled>${n < NSEC ? 'Next: ' + TILES[n + 1].title : 'Go to the exit check'}</button></div>`;
 }
 function renderGoals() {
   $('#goals').innerHTML = GOALS.map(g => `<li class="${g.sec.every(n => S.secDone[n]) ? 'ok' : ''}">${g.t}</li>`).join('');
 }
 function renderNav(popN) {
   $('#nav').innerHTML = TILES.slice(1).map((t, i) => {
-    const n = i + 1, dn = n <= 9 ? secDone(n) && (n < 9 || S.final.passed) : false, ok = accessible(n);
-    return `<button type="button" class="tile ${S.cur === n ? 'current' : ''} ${dn ? 'done' : ''} ${n === popN && !REDUCED ? 'unlocking' : ''}" data-go="${n}" ${ok ? '' : 'disabled'} title="${esc(t.title)}" aria-label="Section ${n}: ${esc(t.title)}${ok ? '' : ' (locked)'}"><span class="n">${n === 10 ? '' : n}</span>${icon(t.ic)}<span class="lb">${t.name}</span><span class="ck" aria-hidden="true">✓</span></button>`;
+    const n = i + 1, dn = n <= FIN ? secDone(n) && (n < FIN || S.final.passed) : false, ok = accessible(n);
+    return `<button type="button" class="tile ${S.cur === n ? 'current' : ''} ${dn ? 'done' : ''} ${n === popN && !REDUCED ? 'unlocking' : ''}" data-go="${n}" ${ok ? '' : 'disabled'} title="${esc(t.title)}" aria-label="Section ${n}: ${esc(t.title)}${ok ? '' : ' (locked)'}"><span class="n">${n === RES ? '' : n}</span>${icon(t.ic)}<span class="lb">${t.name}</span><span class="ck" aria-hidden="true">✓</span></button>`;
   }).join('');
 }
 function go(n) {
-  if (n < 0 || n > 10) return;
+  if (n < 0 || n > RES) return;
   if (!accessible(n)) { toast(S.student ? 'Finish the section before this one to unlock it.' : 'Sign in to start.'); return; }
   S.cur = n;
   $$('.page').forEach(p => p.classList.remove('show')); $('#page' + n).classList.add('show');
-  renderNav(); if (n === 9) renderFinal(); if (n === 10) renderResults(); if (n === 0) renderStart();
+  renderNav(); if (n === FIN) renderFinal(); if (n === RES) renderResults(); if (n === 0) renderStart();
   window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
   if (S.student) save();
 }
@@ -694,7 +688,7 @@ document.addEventListener('click', e => { const b = e.target.closest('[data-go]'
 function secHead(n) {
   const t = TILES[n];
   return `<div class="sechead"><div class="bigtile"><span class="n">${n}</span>${icon(t.ic)}<span>${t.name}</span></div>
-    <div><div class="meta">Section ${n} of 9 · about ${t.min} min</div><h2>${t.title}</h2></div></div>`;
+    <div><div class="meta">Section ${n} of ${FIN} · about ${t.min} min</div><h2>${t.title}</h2></div></div>`;
 }
 
 /* =========================================================
@@ -811,19 +805,86 @@ function vecFig() {
 /* =========================================================
    SECTION 1: LAUNCHING AT AN ANGLE
    ========================================================= */
+
+/* =========================================================
+   ANCHORING PHENOMENON: two kicks, same landing spot
+   ========================================================= */
+const KICK = [{ a: 30, col: '#ffcf5a', name: 'Low kick (30°)' }, { a: 60, col: '#6cb8ff', name: 'High kick (60°)' }].map(k => { const r = k.a * Math.PI / 180; k.vx = 20 * Math.cos(r); k.vy = 20 * Math.sin(r); k.T = 2 * k.vy / G; return k; });
+function phenomenonCard() {
+  const st = S.sim[1] || {};
+  return `<div class="card" style="border-color:var(--amber)"><span class="chip qc">Phenomenon</span><h3>Two kicks, one spot</h3>
+    <p>Two players kick identical soccer balls at the same moment and the <b>same speed</b>. One kicks low and fast, one kicks a high, floating punt. Watch where they land, and when.</p>
+    <div class="fig" id="phFig"></div><div class="row" style="margin-top:8px"><button class="btn primary" type="button" id="phGo">Kick both</button></div>
+    <div class="cols" style="margin-top:12px"><div><label class="muted" for="phN" style="font-size:.86rem">What do you <b>notice</b>?</label><textarea id="phN" data-ph-t="notice" class="phbox">${esc(st.notice || '')}</textarea></div>
+      <div><label class="muted" for="phW" style="font-size:.86rem">What do you <b>wonder</b>?</label><textarea id="phW" data-ph-t="wonder" class="phbox">${esc(st.wonder || '')}</textarea></div></div>
+    <label class="muted" for="phE" style="font-size:.86rem;display:block;margin-top:8px"><b>Your first explanation:</b> How can the high kick stay in the air so much longer and still land in the same spot? (A guess is fine. You\u2019ll come back to this.)</label>
+    <textarea id="phE" data-ph-t="init" class="phbox" style="min-height:80px">${esc(st.init || '')}</textarea>
+    <div class="row" style="margin-top:6px"><button class="btn" type="button" id="phSave">Save my first explanation</button><span class="fb" id="phMsg" style="margin:0"></span></div></div>`;
+}
+function initPhenomenon() {
+  const A = arena($('#phFig'), { xmax: 40, ymax: 17, W: 640, H: 230, xstep: 5, ystep: 5, label: 'Two soccer kicks' });
+  const balls = KICK.map(k => { const b = A.ball(k.col); b.setAttribute('cx', A.X(0)); b.setAttribute('cy', A.Y(0)); return b; });
+  const clock = A.text(A.W - 24, 28, '0.00 s', '#e9eefb', 16, 'end');
+  $('#phGo').addEventListener('click', () => {
+    A.layer.innerHTML = ''; $('#phGo').disabled = true; const landed = [false, false];
+    run('ph', KICK[1].T + 0.3, t => {
+      KICK.forEach((k, i) => { const tt = Math.min(t, k.T); balls[i].setAttribute('cx', A.X(k.vx * tt)); balls[i].setAttribute('cy', A.Y(Math.max(0, k.vy * tt - 4.9 * tt * tt)));
+        if (t >= k.T && !landed[i]) { landed[i] = true; A.text(A.X(k.vx * k.T), A.Y(0) - 12 - i * 16, `${k.name}: landed at ${k.T.toFixed(2)} s`, k.col, 12, 'end', A.layer); } });
+      clock.textContent = Math.min(t, KICK[1].T).toFixed(2) + ' s';
+      if (Math.random() < 0.25) KICK.forEach((k, i) => { const tt = Math.min(t, k.T); A.dot(k.vx * tt, Math.max(0, k.vy * tt - 4.9 * tt * tt), k.col, 2.5); });
+    }, () => { $('#phGo').disabled = false; });
+  });
+  $$('[data-ph-t]').forEach(t => t.addEventListener('input', () => { simSet(1, t.dataset.phT, t.value); const pi = document.getElementById('phInit'); if (pi && t.dataset.phT === 'init') pi.textContent = t.value; clearTimeout(initPhenomenon.T); initPhenomenon.T = setTimeout(save, 600); }));
+  $('#phSave').addEventListener('click', () => {
+    const w = String(simGet(1, 'init', '')).trim().split(/\s+/).filter(Boolean).length, m = $('#phMsg');
+    if (w < 8) { m.className = 'fb no'; m.textContent = 'Write at least a sentence or two (8+ words) with your best idea.'; return; }
+    m.className = 'fb ok'; m.textContent = 'Saved. You\u2019ll revisit this at the end of the lesson.'; req(1, 'phen');
+  });
+  if (S.reqs['1.phen']) { $('#phMsg').className = 'fb ok'; $('#phMsg').textContent = 'Saved. You\u2019ll revisit this at the end of the lesson.'; }
+}
+function phenRevisit() {
+  const init = simGet(1, 'init', ''), fin = simGet(5, 'final', '');
+  return `<div class="card" style="border-color:var(--amber)"><span class="chip qc">Revisit the phenomenon</span><h3>Two kicks, one spot, again</h3>
+    <p class="muted" style="font-size:.86rem">Your first explanation:</p><div class="callout" id="phInit" style="white-space:pre-wrap">${init ? esc(init) : '(You haven\u2019t written one yet. Go back to section 1.)'}</div>
+    <p>Both kicks were 20 m/s. The 30° kick had ${vix} = 17.3 m/s and ${viy} = 10.0 m/s. The 60° kick had ${vix} = 10.0 m/s and ${viy} = 17.3 m/s.</p>
+    <label class="muted" for="phF" style="font-size:.86rem;display:block">Explain it again using ${vix}, ${viy}, <b>time of flight</b>, and <b>range</b>.</label>
+    <textarea id="phF" class="phbox" style="min-height:100px">${esc(fin)}</textarea>
+    <div class="row" style="margin-top:6px"><button class="btn" type="button" id="phSave2">Save my revised explanation</button><span class="fb" id="phMsg2" style="margin:0"></span></div></div>`;
+}
+function initRevisit() {
+  $('#phF').addEventListener('input', e => { simSet(5, 'final', e.target.value); clearTimeout(initRevisit.T); initRevisit.T = setTimeout(save, 600); });
+  $('#phSave2').addEventListener('click', () => {
+    const t = String(simGet(5, 'final', '')).toLowerCase().replace(/_/g, ''), w = t.trim().split(/\s+/).filter(Boolean).length, m = $('#phMsg2');
+    const used = [/vix|sideways|horizontal/, /viy|vertical|up/, /time/, /range|distance|far/].filter(r => r.test(t)).length;
+    if (w < 15) { m.className = 'fb no'; m.textContent = 'Write a few sentences (15+ words).'; return; }
+    if (used < 3) { m.className = 'fb no'; m.textContent = 'Use the ideas of the sideways part, the up part, time in the air, and range.'; return; }
+    m.className = 'fb ok'; m.textContent = 'Saved. Compare it to your first explanation: what changed?'; req(5, 'phen2');
+  });
+  if (S.reqs['5.phen2']) { $('#phMsg2').className = 'fb ok'; $('#phMsg2').textContent = 'Saved.'; }
+}
+const MIS5 = [
+  { lockY: 9.8, target: 20, text: `Mission 1: ${viy} is locked at 9.8 m/s. Set ${vix} to land on the target at 20.0 m.` },
+  { lockX: 8.0, target: 24, text: `Mission 2: ${vix} is locked at 8.0 m/s. Set ${viy} to land on the target at 24.0 m.` },
+  { target: 30, maxT: 2.0, text: 'Mission 3: Land on the target at 30.0 m with a time of flight under 2.00 s. (Hint: a low, fast shot.)' }
+];
+const C7 = { h: 20, vy: 9.8, vx: 6.0 }; C7.tu = C7.vy / G; C7.rise = C7.vy * C7.vy / (2 * G); C7.drop = C7.h + C7.rise; C7.td = Math.sqrt(2 * C7.drop / G); C7.T = C7.tu + C7.td; C7.R = C7.vx * C7.T;
+
+/* =========================================================
+   SHORT LESSON SECTIONS (reteach, about 20 minutes)
+   ========================================================= */
+const KNOWN_TOP = v => `<p class="known">Known: ${k('vi', viy)} = ${k('vi', v + ' m/s')}, ${k('vf', vfy)} = ${k('vf', '0')} (at the top), ${k('a', ay)} = ${k('a', '−9.8 m/s²')}</p>`;
+const UPWORK = (v, ans, title) => work(title || 'Time to the top', [['Equation', `${k('vf', vfy)} = ${k('vi', viy)} + ${k('a', ay)}${t_}`], ['Plug in', `${k('vf', '0')} = ${k('vi', v)} + ${k('a', '(−9.8)')}${t_}`], ['Solve', `${t_} = ${v} ÷ 9.8 = <b>${ans} s</b>`]]);
+
 function build1() {
-  $('#page1').innerHTML = secHead(1) + `
+  $('#page1').innerHTML = secHead(1) + phenomenonCard() + `
   <div class="card"><span class="chip read">Read</span><h3>Up and sideways at the same time</h3>
     <div class="cols"><div>
-      <p>Last lesson, the ball rolled off the table straight sideways, so it started with no up-or-down velocity. Now the ball is kicked or thrown at an angle. Its starting velocity ${V('v', 'i')} points up <i>and</i> sideways at the same time. It is a ${wh('projectile')}.</p>
-      <p>We split ${V('v', 'i')} into two ${wh('components')}: ${vix}, the sideways part, and ${viy}, the up part. The big idea from last lesson still holds: the two motions are independent. ${vix} runs the sideways motion. ${viy} runs the up-and-down motion.</p>
-      <p>The ${wh('launch angle')} <span class="v">θ</span> is measured up from the ground. Because the two components make a right triangle, the ${wh('inverse tangent')} turns them into the angle:</p>
+      <p>A ball kicked at an angle moves up <i>and</i> sideways at the same time. We split its launch velocity into two ${wh('components')}: ${vix}, the sideways part, and ${viy}, the up part. The two motions are independent.</p>
+      <p>The ${wh('launch angle')} <span class="v">θ</span> is measured up from the ground. The two parts make a right triangle, so the ${wh('inverse tangent')} gives the angle.</p>
       ${EQ_TAN}
       <div class="callout"><b>Example.</b> A ball is launched with ${vix} = 10.0 m/s and ${viy} = 10.0 m/s. Find the launch angle.
-        ${work('', [['Equation', `<span class="v">θ</span> = tan⁻¹(${k('vi', viy)} ÷ ${k('vx', vix)})`], ['Plug in', `<span class="v">θ</span> = tan⁻¹(${k('vi', '10.0')} ÷ ${k('vx', '10.0')})`], ['Solve', `<span class="v">θ</span> = tan⁻¹(1) = <b>45.0°</b>`]])}${COLORNOTE}
-        <p style="margin:8px 0 0;font-size:.9rem">In the calculator, press <b>tan⁻¹</b>, then type the division, then <b>)</b> and <b>=</b>.</p></div>
+        ${work('', [['Equation', `<span class="v">θ</span> = tan⁻¹(${k('vi', viy)} ÷ ${k('vx', vix)})`], ['Plug in', `<span class="v">θ</span> = tan⁻¹(${k('vi', '10.0')} ÷ ${k('vx', '10.0')})`], ['Solve', `<span class="v">θ</span> = tan⁻¹(1) = <b>45.0°</b>`]])}${COLORNOTE}</div>
     </div><div>${vecFig()}</div></div></div>
-
   <div class="card"><span class="chip try">Try it</span><h3>The launcher</h3>
     <p>Set the sideways part and the up part, then launch. Watch how the arrow and the path change. Try at least 3 different launches.</p>
     <div class="fig" id="l1fig"></div>
@@ -833,16 +894,11 @@ function build1() {
     </div>
     <div class="row"><button class="btn primary" id="l1go" type="button">Launch</button><button class="btn" id="l1clr" type="button">Clear paths</button><span class="muted" id="l1n"></span></div>
   </div>
-  ${pracCard(1, 'Practice: launch angle', 'Use the reading above. Round angles to one decimal place.', [
-    { id: 'p1a', q: `A soccer ball is kicked with ${vix} = 8.0 m/s and ${viy} = 8.0 m/s. What is its launch angle?`, ans: 45, show: '45.0', unit: '°', tol: 0.6, hint: 'The up part goes on top of the ratio. Use tan⁻¹ on the calculator.', sol: 'θ = tan⁻¹(8.0 ÷ 8.0) = tan⁻¹(1) = 45.0°' },
-    { id: 'p1b', q: `A frisbee is thrown with ${vix} = 12.0 m/s and ${viy} = 5.0 m/s. What is its launch angle?`, ans: 22.62, show: '22.6', unit: '°', tol: 0.6, hint: 'Which component is the up part? Put that one on top.', sol: 'θ = tan⁻¹(5.0 ÷ 12.0) = tan⁻¹(0.417) = 22.6°' },
-    { id: 'p1c', q: `A basketball shot has ${vix} = 6.0 m/s and ${viy} = 15.0 m/s. What is its launch angle?`, ans: 68.2, show: '68.2', unit: '°', tol: 0.6, hint: 'A big up part and a small sideways part should give a steep angle, more than 45°.', sol: 'θ = tan⁻¹(15.0 ÷ 6.0) = tan⁻¹(2.5) = 68.2°' }
-  ])}
-  ${qcCard(1,
-    { q: 'A ball is kicked at an angle. Which part of its starting velocity makes it go up?', opts: [`${vix}`, 'The launch angle θ', `${viy}`, 'Its mass'], a: 2, why: `${viy} is the up part. It runs the up-and-down motion.`, hint: 'Which subscript means the vertical (y) direction?' },
-    { q: `Ball P has ${vix} = 5 m/s and ${viy} = 12 m/s. Ball Q has ${vix} = 12 m/s and ${viy} = 5 m/s. Which is launched at the steeper angle?`, opts: ['Ball Q', 'Ball P', 'They have the same angle', 'You can\u2019t tell without the launch speed'], a: 1, why: 'P has more up than sideways, so its arrow points more steeply. tan⁻¹(12 ÷ 5) = 67.4°, while Q is 22.6°.', hint: 'Sketch both arrows. Which one has more up than sideways?' })}
+  ${pracCard(1, 'Practice', 'A little different from the example: this time you know the angle.', [
+    { id: 'p1x', q: `A ball is launched at exactly 45° with ${vix} = 7.0 m/s. What is ${viy}?`, ans: 7, show: '7.0', unit: 'm/s', tol: 0.1, hint: 'At 45°, tan⁻¹ of the ratio is 45°. What ratio gives that? So how do the two parts compare?', sol: 'tan⁻¹(v<sub>iy</sub> ÷ 7.0) = 45° only when v<sub>iy</sub> ÷ 7.0 = 1, so v<sub>iy</sub> = 7.0 m/s' }])}
+  <div class="card"><span class="chip qc">Quick check</span>${qcHTML(1, 'q1', { q: `Ball P has ${vix} = 5 m/s and ${viy} = 12 m/s. Ball Q has ${vix} = 12 m/s and ${viy} = 5 m/s. Which is launched at the steeper angle?`, opts: ['Ball Q', 'Ball P', 'They have the same angle', 'You can\u2019t tell without the launch speed'], a: 1, why: 'P has more up than sideways, so its arrow points more steeply: 67.4° vs 22.6°.', hint: 'Which one has more up than sideways?' })}</div>
   ${unlockBox(1)}`;
-
+  initPhenomenon();
   const A = arena($('#l1fig'), { xmax: 48, ymax: 13, W: 640, H: 230, xstep: 5, ystep: 5, label: 'Launcher: path of the ball' });
   const paths = mk('g', {}, A.layer);
   const sx = $('#l1x'), sy = $('#l1y'); let ballEl = null;
@@ -870,97 +926,16 @@ function build1() {
   drawVec();
 }
 
-/* =========================================================
-   SECTION 2: RISING AND FALLING
-   ========================================================= */
-const TBL2 = [0.5, 1.0, 1.5, 2.0, 2.5, 3.0].map(t => ({ t, ans: r2(14.7 - G * t) }));
 function build2() {
   $('#page2').innerHTML = secHead(2) + `
-  <div class="card"><span class="chip read">Read</span><h3>Gravity never turns off</h3>
-    <div class="cols"><div>
-      <p>Pick <b>up as positive</b>. Then gravity gives an ${wh('acceleration')} of ${ay} = −9.8 m/s² the whole flight: going up, at the top, and coming down. Sideways, nothing pushes, so ${ax} = 0 and ${vx} stays the same.</p>
-      <ul>
-        <li><b>Going up:</b> ${vy} is positive and shrinks by 9.8 m/s every second.</li>
-        <li><b>At the ${wh('peak')}:</b> ${vy} = 0 for an instant. The ball is still moving sideways at ${vx}, so its velocity is <i>not</i> zero.</li>
-        <li><b>Coming down:</b> ${vy} is negative and grows by 9.8 m/s every second.</li>
-      </ul>
-      <div class="tablewrap"><table class="dt"><tr><th>Time <span class="v">Δt</span> (s)</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th></tr>
-        <tr><th>${vy} (m/s)</th><td>19.6</td><td>9.8</td><td>0</td><td>−9.8</td><td>−19.6</td></tr></table></div>
-      <p class="muted" style="font-size:.88rem">A ball launched with ${viy} = 19.6 m/s.</p>
-      <div class="callout teal"><b>${wh('symmetry', 'Symmetry')}.</b> On level ground, the ball lands with the same vertical speed it left with, just pointing down: ${vy} = −19.6 m/s. The trip up and the trip down take the same time.</div>
-    </div><div><div class="fig" id="s2fig"></div><p class="figcap">One dot every 0.5 s. The blue arrows (${vx}) never change. The purple arrows (${vy}) shrink, vanish at the top, then grow pointing down.</p></div></div></div>
-
-  <div class="card"><span class="chip try">Try it</span><h3>Find the top</h3>
-    <p>Drag the time slider. Watch ${vx} and ${vy}. When the ball is at the very top of its path, press <b>This is the top</b>.</p>
-    <div class="fig" id="s2sim"></div>
-    <div class="ctrls"><div class="ctrl"><label for="s2t"><span>Time <span class="v">Δt</span></span> <b id="s2tv"></b></label><input type="range" id="s2t" min="0" max="4" step="0.1" value="0"></div></div>
-    <div class="readouts" id="s2ro"></div>
-    <div class="row"><button class="btn primary" id="s2top" type="button">This is the top</button><span class="muted" id="s2msg"></span></div>
-  </div>
-
-  <div class="card"><span class="chip try">Try it</span><h3>The velocity table</h3>
-    <p>A ball is launched with ${viy} = 14.7 m/s. Fill in ${vy} at each time. Remember: up is positive, down is negative. Round to one decimal place.</p>
-    <div class="tablewrap"><table class="dt"><tr><th>Time <span class="v">Δt</span> (s)</th>${TBL2.map(r => `<th>${r.t.toFixed(1)}</th>`).join('')}</tr>
-      <tr><th>${vy} (m/s)</th>${TBL2.map((r, i) => `<td><input class="tblin" data-tbl="${i}" inputmode="decimal" autocomplete="off" aria-label="v_y at ${r.t} s"></td>`).join('')}</tr></table></div>
-    <div class="row"><button class="btn" id="s2chk" type="button">Check the table</button><span class="fb" id="s2fb" style="margin:0"></span></div>
-    <div class="keyonly keytag">Answer: ${TBL2.map(r => f1(r.ans)).join(', ')}</div>
-  </div>
-  ${qcCard(2,
-    { q: 'At the very top of its path, a kicked ball\u2019s velocity is…', opts: ['zero', 'only sideways', 'only downward', 'only upward'], a: 1, why: `${vy} = 0 at the top, but ${vx} is still there, so the ball keeps moving sideways.`, hint: `At the top ${vy} is zero. What about ${vx}?` },
-    { q: 'While the ball is at the top of its path, its acceleration is…', opts: ['zero', '9.8 m/s² up', 'getting smaller', '9.8 m/s² down'], a: 3, why: `Gravity never turns off. ${ay} = −9.8 m/s² at every point, including the top.`, hint: 'Does gravity stop pulling at the top?' })}
-  ${unlockBox(2)}`;
-
-  /* static strobe figure */
-  const F = arena($('#s2fig'), { xmax: 22, ymax: 21, W: 420, H: 360, xstep: 5, ystep: 5, label: 'Strobe picture of a ball launched at an angle' });
-  trail(F, 0, 5, 19.6, '#7385aa');
-  for (let i = 0; i <= 8; i++) { const t = i * 0.5, x = 5 * t, y = posY(0, 19.6, t), vyy = 19.6 - G * t; F.dot(x, y, '#ffcf5a', 4.5);
-    if (i % 2 === 0) { const X0 = F.X(x), Y0 = F.Y(y), k = .35; F.arrow(X0, Y0, X0 + 5 * k * F.s, Y0, '#6cb8ff', 's'); if (Math.abs(vyy) > .1) F.arrow(X0, Y0, X0, Y0 - vyy * k * F.s, '#b19bff', 'v'); } }
-  /* slider sim */
-  const A = arena($('#s2sim'), { xmax: 22, ymax: 21, W: 560, H: 360, xstep: 5, ystep: 5, label: 'Time slider simulation' });
-  trail(A, 0, 5, 19.6, '#5d6f96'); const ball = A.ball(); const sl = $('#s2t');
-  function draw() {
-    const t = +sl.value, x = 5 * t, y = Math.max(0, posY(0, 19.6, t)), vyy = 19.6 - G * t;
-    $$('line,text', A.top).forEach(e => e.remove());
-    const X0 = A.X(x), Y0 = A.Y(y), k = .5; ball.setAttribute('cx', X0); ball.setAttribute('cy', Y0);
-    A.arrow(X0, Y0, X0 + 5 * k * A.s, Y0, '#6cb8ff', 's'); if (Math.abs(vyy) > .05) A.arrow(X0, Y0, X0, Y0 - vyy * k * A.s, '#b19bff', 'v');
-    $('#s2tv').textContent = t.toFixed(1) + ' s';
-    $('#s2ro').innerHTML = ro('<span class="v">Δt</span> =', t.toFixed(1) + ' s') + ro(`${vx} =`, '5.0 m/s') + ro(`${vy} =`, f1(vyy).replace('-', '−') + ' m/s') + ro(`${ay} =`, '−9.8 m/s²') + ro('height =', f1(y) + ' m');
-  }
-  sl.addEventListener('input', draw); draw();
-  $('#s2top').addEventListener('click', () => {
-    const t = +sl.value;
-    if (Math.abs(t - 2.0) < 0.05) { $('#s2msg').innerHTML = `Yes: at <span class="v">Δt</span> = 2.0 s, ${vy} = 0 and the ball is at its peak.`; $('#s2msg').className = 'fb ok'; req(2, 'sim'); }
-    else { $('#s2msg').className = 'fb no'; $('#s2msg').innerHTML = t < 2 ? `Not yet. The ball is still rising. Look at ${vy}.` : `Too far. The ball is already coming down. Look at ${vy}.`; }
-  });
-  /* table */
-  $$('[data-tbl]').forEach(inp => { const v = S.tbl[inp.dataset.tbl]; if (v != null) inp.value = v; });
-  document.addEventListener('input', e => { if (e.target.matches('[data-tbl]')) { S.tbl[e.target.dataset.tbl] = e.target.value; e.target.classList.remove('no'); clearTimeout(save.T); save.T = setTimeout(save, 800); } });
-  $('#s2chk').addEventListener('click', () => {
-    let right = 0; $$('[data-tbl]').forEach(inp => { const i = +inp.dataset.tbl, ok = close(TBL2[i].ans, parseNum(inp.value), 0.06); inp.classList.toggle('ok', ok); inp.classList.toggle('no', !ok); if (ok) right++; });
-    const fb = $('#s2fb');
-    if (right === TBL2.length) { fb.className = 'fb ok'; fb.textContent = 'All correct. Notice it goes 9.8, 4.9, 0, then negative.'; req(2, 'tbl'); }
-    else { fb.className = 'fb no'; fb.innerHTML = `${right} of ${TBL2.length} right. Each 0.5 s, ${vy} drops by 4.9 m/s. After the top, the numbers are negative.`; save(); }
-  });
-  if (S.reqs['2.tbl']) $$('[data-tbl]').forEach(i => i.classList.add('ok'));
-}
-
-/* =========================================================
-   SECTION 3: TIME TO THE TOP AND MAXIMUM HEIGHT
-   ========================================================= */
-function build3() {
-  $('#page3').innerHTML = secHead(3) + `
   <div class="card"><span class="chip read">Read</span><h3>At the peak, ${vfy} = 0</h3>
     <div class="cols"><div>
-      <p>At the ${wh('peak')}, the vertical velocity has run out: ${vfy} = 0. That one fact gives you two answers, using the y-form equations.</p>
-      <p><b>Time to the top.</b> Use the equation that connects ${viy}, ${vfy}, ${ay}, and <span class="v">Δt</span>.</p>
-      <p><b>Maximum height.</b> Use the equation that connects ${viy}, ${vfy}, ${ay}, and ${Dy}. It has no <span class="v">Δt</span> in it.</p>
-      <div class="callout"><b>Example.</b> A ball is launched with ${viy} = 14.7 m/s. Find its time to the top and its maximum height.
-        <p class="known">Known: ${k('vi', viy)} = ${k('vi', '14.7 m/s')}, ${k('vf', vfy)} = ${k('vf', '0')} (at the top), ${k('a', ay)} = ${k('a', '−9.8 m/s²')}</p>
-        ${work('Time to the top', [['Equation', `${k('vf', vfy)} = ${k('vi', viy)} + ${k('a', ay)}${t_}`], ['Plug in', `${k('vf', '0')} = ${k('vi', '14.7')} + ${k('a', '(−9.8)')}${t_}`], ['Solve', `${t_} = 14.7 ÷ 9.8 = <b>1.50 s</b>`]])}
+      <p>Up is positive, so gravity is ${ay} = −9.8 m/s² the whole flight. Going up, ${vy} shrinks by 9.8 m/s every second. At the ${wh('peak')}, ${vy} = 0 for an instant, but ${vx} is still there, so the ball keeps moving sideways.</p>
+      <p>${vfy} = 0 at the top gives two answers: the <b>time to the top</b> (equation with ${t_}) and the <b>maximum height</b> (equation with ${Dy} and no ${t_}).</p>
+      <div class="callout"><b>Example.</b> A ball is launched with ${viy} = 14.7 m/s. Find its time to the top and maximum height.
+        ${KNOWN_TOP('14.7')}${UPWORK('14.7', '1.50')}
         ${work('Maximum height', [['Equation', `${k('vf', vfy)}² = ${k('vi', viy)}² + 2${k('a', ay)}${Dy}`], ['Plug in', `${k('vf', '0')}² = ${k('vi', '14.7')}² + 2${k('a', '(−9.8)')}${Dy}`], ['Solve', `0 = 216.09 − 19.6${Dy}, so ${Dy} = 216.09 ÷ 19.6 = <b>11.0 m</b>`]])}${COLORNOTE}</div>
-      <p>Notice: you never needed ${vix}. The sideways part doesn't change how high or how long the ball rises.</p>
-    </div><div>${EQ_Y}<div class="fig" id="s3fig"></div></div></div></div>
-
+    </div><div>${EQ_Y}</div></div></div>
   <div class="card"><span class="chip try">Try it</span><h3>Peak finder</h3>
     <p>Pick an up-speed and launch. The ball pauses at its peak and shows the time and height. Try 3 different up-speeds. What happens to the time and the height when you double ${viy}?</p>
     <div class="fig" id="s3sim"></div>
@@ -968,25 +943,12 @@ function build3() {
     <div class="row"><button class="btn primary" id="s3go" type="button">Launch</button><span class="muted" id="s3n"></span></div>
     <div class="readouts" id="s3ro"></div>
   </div>
-  ${pracCard(3, 'Practice: time to the top and maximum height', 'Use the reading above. Round to one decimal place (two for times).', [
-    { id: 'p3b', q: `A football is kicked with ${vix} = 15.0 m/s and ${viy} = 24.5 m/s. How long does it take to reach the top?`, ans: 2.5, show: '2.50', unit: 's', hint: `Only the up part matters for the time to the top. Ignore ${vix}.`, sol: '0 = 24.5 + (−9.8)Δt, so Δt = 24.5 ÷ 9.8 = 2.50 s' },
-    { id: 'p3c', q: `A ball is launched with ${viy} = 19.6 m/s. What is its maximum height above the launch point?`, ans: 19.6, show: '19.6', unit: 'm', tol: 0.15, hint: `At the top, ${vfy} = 0. Pick the equation that has ${viy}, ${vfy}, ${ay}, and ${Dy}, with no <span class="v">Δt</span>.`, sol: '0² = 19.6² + 2(−9.8)D_y, so D_y = 384.16 ÷ 19.6 = 19.6 m' },
-    { id: 'p3e', q: 'A basketball takes 0.80 s to reach the top of its arc. What was its up part of velocity at launch?', ans: 7.84, show: '7.8', unit: 'm/s', tol: 0.1, hint: `Use the same equation as the time-to-the-top example, but this time you know <span class="v">Δt</span> and want ${viy}.`, sol: '0 = v_iy + (−9.8)(0.80), so v_iy = 7.84 ≈ 7.8 m/s' }
-  ])}
-  ${qcCard(3,
-    { q: 'Which part of the launch decides how long the ball takes to reach the top?', opts: [`${vix}`, 'The ball\u2019s mass', 'How far away it lands', `${viy}`], a: 3, why: `The ball reaches the top when ${vy} runs out. Only ${viy} and gravity control that.`, hint: 'At the top, which velocity has run out?' },
-    { q: `Ball A is launched with ${viy} = 10 m/s. Ball B is launched with ${viy} = 20 m/s. How does B\u2019s time to the top compare to A\u2019s?`, opts: ['The same', 'Twice as long', 'Half as long', 'Four times as long'], a: 1, why: 'Gravity removes 9.8 m/s every second, so twice the up-speed takes twice as long to use up. (The height is four times as much.)', hint: 'How many seconds does gravity need to remove 20 m/s instead of 10 m/s?' })}
-  ${unlockBox(3)}`;
-
-  /* reading figure */
-  const F = arena($('#s3fig'), { xmax: 16, ymax: 13, W: 420, H: 300, xstep: 5, ystep: 5, label: 'Peak of a launch with v_iy = 14.7 m/s' });
-  trail(F, 0, 4, 14.7, '#ffcf5a'); const pk = 14.7 * 14.7 / (2 * G);
-  F.arrow(F.X(6), F.Y(0), F.X(6), F.Y(pk), '#3fd6a0', 't'); F.text(F.X(6) + 10, F.Y(pk / 2), 'max height 11.0 m', '#3fd6a0', 12);
-  mk('line', { x1: F.X(0), x2: F.X(16), y1: F.Y(pk), y2: F.Y(pk), stroke: '#3fd6a0', 'stroke-dasharray': '4 4' }, F.top);
-  F.dot(4 * 1.5, pk, '#ffcf5a', 5); F.text(F.X(6) + 8, F.Y(pk) - 8, 'peak: v<tspan font-size="9" dy="3">fy</tspan><tspan dy="-3"> = 0 at Δt = 1.50 s</tspan>', '#e9eefb', 12);
-  /* sim */
+  ${pracCard(2, 'Practice', 'A little different from the example: you know the height, not the launch.', [
+    { id: 'p2x', q: `A ball rises to a maximum height of 4.9 m above where it was launched. What was ${viy}?`, ans: 9.8, show: '9.8', unit: 'm/s', tol: 0.12, hint: `At the top ${vfy} = 0. Use the equation without time, and solve for ${viy}.`, sol: '0² = v_iy² + 2(−9.8)(4.9), so v_iy² = 96.04 and v<sub>iy</sub> = 9.8 m/s' }])}
+  <div class="card"><span class="chip qc">Quick check</span>${qcHTML(2, 'q1', { q: 'At the very top of its path, a kicked ball\u2019s velocity is…', opts: ['zero', 'only sideways', 'only downward', 'only upward'], a: 1, why: `${vy} = 0 at the top, but ${vx} is still there.`, hint: `At the top ${vy} is zero. What about ${vx}?` })}</div>
+  ${unlockBox(2)}`;
   const A = arena($('#s3sim'), { xmax: 16, ymax: 33, W: 560, H: 380, xstep: 5, ystep: 5, label: 'Peak finder simulation' });
-  const tried = new Set(simGet(3, 'tried', [])), sl = $('#s3y'); let ball = A.ball();
+  const tried = new Set(simGet(2, 'tried', [])), sl = $('#s3y'); let ball = A.ball();
   const upd = () => { $('#s3yv').textContent = sl.value + '.0 m/s'; $('#s3n').textContent = `${Math.min(tried.size, 3)} of 3 up-speeds tried`; };
   sl.addEventListener('input', upd); upd(); ball.setAttribute('cx', A.X(0)); ball.setAttribute('cy', A.Y(0));
   $('#s3go').addEventListener('click', () => {
@@ -996,29 +958,21 @@ function build3() {
     run('s3a', tu, t => { ball.setAttribute('cx', A.X(vx0 * t)); ball.setAttribute('cy', A.Y(posY(0, vy0, t))); }, () => {
       mk('line', { x1: A.X(0), x2: A.X(16), y1: A.Y(H), y2: A.Y(H), stroke: '#3fd6a0', 'stroke-dasharray': '4 4' }, A.layer);
       $('#s3ro').innerHTML = ro(`${viy} =`, vy0.toFixed(1) + ' m/s') + ro('time to the top =', f2(tu) + ' s') + ro('max height =', f1(H) + ' m');
-      tried.add(vy0); simSet(3, 'tried', [...tried]); upd(); if (tried.size >= 3) req(3, 'sim'); else save();
+      tried.add(vy0); simSet(2, 'tried', [...tried]); upd(); if (tried.size >= 3) req(2, 'sim'); else save();
       setTimeout(() => run('s3b', T - tu, t => { const tt = tu + t; ball.setAttribute('cx', A.X(vx0 * tt)); ball.setAttribute('cy', A.Y(Math.max(0, posY(0, vy0, tt)))); }, () => { $('#s3go').disabled = false; }), REDUCED ? 0 : 900);
     });
   });
 }
 
-/* =========================================================
-   SECTION 4: TIME OF FLIGHT ON LEVEL GROUND
-   ========================================================= */
-function build4() {
-  $('#page4').innerHTML = secHead(4) + `
+function build3() {
+  $('#page3').innerHTML = secHead(3) + `
   <div class="card"><span class="chip read">Read</span><h3>Up and back down</h3>
     <div class="cols"><div>
-      <p>The ${wh('time of flight')} is the total time the ball is in the air, from launch until it lands.</p>
-      <p>On level ground, the ball lands at the same height it started. The path has ${wh('symmetry')}: the trip down takes exactly as long as the trip up. So the time of flight is <b>twice the time to the top</b>.</p>
-      <p>You can also get it in one step. When the ball lands, ${Dy} = 0. Put ${Dy} = 0 into the equation that has ${Dy}, ${viy}, ${ay}, and <span class="v">Δt</span>, and solve for the <span class="v">Δt</span> that isn't zero.</p>
+      <p>The ${wh('time of flight')} is the total time in the air. On level ground the path has ${wh('symmetry')}: the trip down takes as long as the trip up, so <b>time of flight = 2 × time to the top</b>. Only ${viy} decides it; ${vix} changes how far, not how long.</p>
       <div class="callout"><b>Example.</b> A ball is launched with ${viy} = 14.7 m/s on a flat field. Find its time of flight.
-        <p class="known">Known: ${k('vi', viy)} = ${k('vi', '14.7 m/s')}, ${k('vf', vfy)} = ${k('vf', '0')} (at the top), ${k('a', ay)} = ${k('a', '−9.8 m/s²')}</p>
-        ${work('Step 1: time to the top', [['Equation', `${k('vf', vfy)} = ${k('vi', viy)} + ${k('a', ay)}${t_}`], ['Plug in', `${k('vf', '0')} = ${k('vi', '14.7')} + ${k('a', '(−9.8)')}${t_}`], ['Solve', `${t_} = 14.7 ÷ 9.8 = <b>1.50 s</b>`]])}
+        ${KNOWN_TOP('14.7')}${UPWORK('14.7', '1.50', 'Step 1: time to the top')}
         ${work('Step 2: double it (level ground)', [['Solve', `time of flight = 2 × 1.50 = <b>3.00 s</b>`]])}${COLORNOTE}</div>
-      <div class="callout teal">Only ${viy} decides the time in the air. ${vix} changes how <i>far</i> the ball goes, not how <i>long</i> it flies.</div>
-    </div><div>${EQ_Y}<div class="fig" id="s4fig"></div><p class="figcap">Same height, same speed, same time: the trip up mirrors the trip down.</p></div></div></div>
-
+    </div><div>${EQ_Y}</div></div></div>
   <div class="card"><span class="chip try">Try it</span><h3>Same up-speed race</h3>
     <p>Both balls launch with ${viy} = 12.0 m/s. Give them different sideways speeds and race them. Which lands first? Race at least twice, with different sideways speeds.</p>
     <div class="fig" id="s4sim"></div>
@@ -1029,22 +983,12 @@ function build4() {
     <div class="row"><button class="btn primary" id="s4go" type="button">Race</button><span class="muted" id="s4n"></span></div>
     <div class="readouts" id="s4ro"></div>
   </div>
-  ${pracCard(4, 'Practice: time of flight on level ground', 'Each ball lands at the same height it was launched from. Round to two decimal places for times, one for speeds.', [
-    { id: 'p4b', q: `A soccer ball is kicked on a flat field with ${vix} = 6.0 m/s and ${viy} = 14.7 m/s. What is its time of flight?`, ans: 3.0, show: '3.00', unit: 's', hint: `${vix} doesn't change the time in the air.`, sol: 'Time to the top = 14.7 ÷ 9.8 = 1.50 s. Time of flight = 2 × 1.50 = 3.00 s' },
-    { id: 'p4d', q: `A ball is launched with ${viy} = 15.0 m/s on level ground. What is its time of flight?`, ans: 3.061, show: '3.06', unit: 's', tol: 0.03, hint: 'Same steps. The numbers just aren\u2019t as round.', sol: 'Time to the top = 15.0 ÷ 9.8 = 1.53 s. Time of flight = 2 × 1.53 = 3.06 s' },
-    { id: 'p4e', q: 'A ball is in the air for 4.0 s on level ground. What was its up part of velocity at launch?', ans: 19.6, show: '19.6', unit: 'm/s', tol: 0.15, hint: 'Half of the flight is the trip up. At the top, the vertical velocity is zero.', sol: 'Time to the top = 4.0 ÷ 2 = 2.0 s. 0 = v_iy + (−9.8)(2.0), so v_iy = 19.6 m/s' }
-  ])}
-  ${qcCard(4,
-    { q: `Two balls are launched at the same moment on level ground with the same ${viy}. Ball A has a bigger ${vix}. Which lands first?`, opts: ['They land at the same time', 'Ball A', 'Ball B', 'It depends on the angle'], a: 0, why: `The time in the air depends only on ${viy}. A just lands farther away.`, hint: 'Which part of the velocity decides the time in the air?' },
-    { q: 'A ball takes 1.2 s to reach the top of its path. On level ground, what is its time of flight?', opts: ['0.6 s', '1.2 s', '2.4 s', '4.8 s'], a: 2, why: 'The trip down takes as long as the trip up: 2 × 1.2 = 2.4 s.', hint: 'How long is the trip back down on level ground?' })}
-  ${unlockBox(4)}`;
-
-  const F = arena($('#s4fig'), { xmax: 18, ymax: 12, W: 420, H: 250, xstep: 5, ystep: 5, label: 'Symmetric path' });
-  trail(F, 0, 6, 14.7, '#ffcf5a');
-  F.arrow(F.X(1), F.Y(.3), F.X(8.4), F.Y(.3), '#b19bff', 'v'); F.arrow(F.X(17), F.Y(.3), F.X(9.6), F.Y(.3), '#b19bff', 'v');
-  F.text(F.X(4.5), F.Y(1.4), 'up: 1.50 s', '#b19bff', 12, 'middle'); F.text(F.X(13.5), F.Y(1.4), 'down: 1.50 s', '#b19bff', 12, 'middle');
+  ${pracCard(3, 'Practice', 'A little different from the example: you know the time in the air.', [
+    { id: 'p3x', q: `A ball on level ground is in the air for 2.0 s. What was ${viy}?`, ans: 9.8, show: '9.8', unit: 'm/s', tol: 0.12, hint: 'How long was the trip up? At the top the vertical velocity is zero.', sol: 'Time up = 2.0 ÷ 2 = 1.0 s. 0 = v<sub>iy</sub> + (−9.8)(1.0), so v<sub>iy</sub> = 9.8 m/s' }])}
+  <div class="card"><span class="chip qc">Quick check</span>${qcHTML(3, 'q1', { q: `Two balls are launched at the same moment on level ground with the same ${viy}. Ball A has a bigger ${vix}. Which lands first?`, opts: ['They land at the same time', 'Ball A', 'Ball B', 'It depends on the angle'], a: 0, why: `The time in the air depends only on ${viy}. A just lands farther away.`, hint: 'Which part of the velocity decides the time in the air?' })}</div>
+  ${unlockBox(3)}`;
   const A = arena($('#s4sim'), { xmax: 36, ymax: 8, W: 640, H: 220, xstep: 5, ystep: 2, label: 'Race of two balls' });
-  const races = simGet(4, 'races', []), sa = $('#s4a'), sb = $('#s4b');
+  const races = simGet(3, 'races', []), sa = $('#s4a'), sb = $('#s4b');
   const upd = () => { $('#s4av').textContent = sa.value + '.0 m/s'; $('#s4bv').textContent = sb.value + '.0 m/s'; $('#s4n').textContent = `${Math.min(races.length, 2)} of 2 races`; };
   sa.addEventListener('input', upd); sb.addEventListener('input', upd); upd();
   $('#s4go').addEventListener('click', () => {
@@ -1055,40 +999,23 @@ function build4() {
     run('s4', T, t => { ba.setAttribute('cx', A.X(a * t)); ba.setAttribute('cy', A.Y(Math.max(0, posY(0, vy0, t)))); bb.setAttribute('cx', A.X(b * t)); bb.setAttribute('cy', A.Y(Math.max(0, posY(0, vy0, t)))); clock.textContent = f2(t) + ' s'; }, () => {
       $('#s4go').disabled = false;
       $('#s4ro').innerHTML = ro('Ball A landed at', f2(T) + ' s, ' + f1(a * T) + ' m') + ro('Ball B landed at', f2(T) + ' s, ' + f1(b * T) + ' m');
-      const key = a + ',' + b; if (!races.includes(key)) races.push(key); simSet(4, 'races', races); upd();
-      if (races.length >= 2 && races.some(k => { const [p, q] = k.split(','); return p !== q; })) req(4, 'sim'); else save();
+      const key = a + ',' + b; if (!races.includes(key)) races.push(key); simSet(3, 'races', races); upd();
+      if (races.length >= 2 && races.some(k => { const [p, q] = k.split(','); return p !== q; })) req(3, 'sim'); else save();
     });
   });
 }
 
-/* =========================================================
-   SECTION 5: RANGE
-   ========================================================= */
-const MIS5 = [
-  { lockY: 9.8, target: 20, text: `Mission 1: ${viy} is locked at 9.8 m/s. Set ${vix} to land on the target at 20.0 m.` },
-  { lockX: 8.0, target: 24, text: `Mission 2: ${vix} is locked at 8.0 m/s. Set ${viy} to land on the target at 24.0 m.` },
-  { target: 30, maxT: 2.0, text: 'Mission 3: Land on the target at 30.0 m with a time of flight under 2.00 s. (Hint: a low, fast shot.)' }
-];
-function build5() {
-  $('#page5').innerHTML = secHead(5) + `
+function build4() {
+  $('#page4').innerHTML = secHead(4) + `
   <div class="card"><span class="chip read">Read</span><h3>Time links the two sides</h3>
     <div class="cols"><div>
-      <p>The ${wh('range')} is the sideways ${wh('displacement')} ${Dx} from where the ball is launched to where it lands.</p>
-      <p>Sideways, nothing pushes, so ${ax} = 0. Put that into the x-form equations and the ½${ax}${t_}² part disappears. The sideways motion is just steady speed.</p>
-      <p>The x side and the y side never mix, except for one thing: they share the same time <span class="v">Δt</span>. So to find the range:</p>
-      <ol><li>Use ${viy} (the y side) to find the time of flight.</li><li>Use ${vix} and that same time (the x side) to find ${Dx}.</li></ol>
+      <p>The ${wh('range')} is the sideways ${wh('displacement')} ${Dx}. Sideways, ${ax} = 0, so the ball moves at a steady ${vix}. The x side and y side share the same ${t_}: find the time of flight from ${viy}, then use it with ${vix}.</p>
       <div class="callout"><b>Example.</b> A ball is launched on level ground with ${vix} = 8.0 m/s and ${viy} = 9.8 m/s. Find its range.
-        <p class="known">Known: ${k('vx', vix)} = ${k('vx', '8.0 m/s')}, ${k('vi', viy)} = ${k('vi', '9.8 m/s')}, ${k('vf', vfy)} = ${k('vf', '0')} (at the top), ${k('a', ay)} = ${k('a', '−9.8 m/s²')}, ${k('a', ax)} = ${k('a', '0')}</p>
-        ${work('Step 1 (y side): time to the top', [['Equation', `${k('vf', vfy)} = ${k('vi', viy)} + ${k('a', ay)}${t_}`], ['Plug in', `${k('vf', '0')} = ${k('vi', '9.8')} + ${k('a', '(−9.8)')}${t_}`], ['Solve', `${t_} = 9.8 ÷ 9.8 = <b>1.00 s</b>`]])}
+        ${KNOWN_TOP('9.8')}${UPWORK('9.8', '1.00', 'Step 1 (y side): time to the top')}
         <p style="margin:2px 0 6px;font-size:.92rem">Level ground, so time of flight = 2 × 1.00 = <b>2.00 s</b>.</p>
-        ${work('Step 2 (x side): range, using that time', [['Equation', `${Dx} = ${k('vx', vix)}${k('t', 'Δt')} + ½${k('a', ax)}${k('t', 'Δt')}²`], ['Plug in', `${Dx} = ${k('vx', '8.0')}${k('t', '(2.00)')} + ½${k('a', '(0)')}${k('t', '(2.00)')}²`], ['Solve', `${Dx} = 8.0 × 2.00 = <b>16.0 m</b>`]])}${COLORNOTE}</div>
-    </div><div>${EQ_X}
-      <div class="tablewrap"><table class="dt" style="width:100%"><tr><th></th><th>Sideways (x)</th><th>Up and down (y)</th></tr>
-      <tr><th>Acceleration</th><td>${ax} = 0</td><td>${ay} = −9.8 m/s²</td></tr>
-      <tr><th>Velocity</th><td>${vx} stays ${vix}</td><td>${vy} changes</td></tr>
-      <tr><th>Decides</th><td>how far</td><td>how long</td></tr>
-      <tr><th>Shared</th><td colspan="2">the same time <span class="v">Δt</span></td></tr></table></div></div></div></div>
-
+        ${work('Step 2 (x side): range', [['Equation', `${Dx} = ${k('vx', vix)}${k('t', 'Δt')} + ½${k('a', ax)}${k('t', 'Δt')}²`], ['Plug in', `${Dx} = ${k('vx', '8.0')}${k('t', '(2.00)')} + ½${k('a', '(0)')}${k('t', '(2.00)')}²`], ['Solve', `${Dx} = 8.0 × 2.00 = <b>16.0 m</b>`]])}${COLORNOTE}</div>
+      <div class="callout teal"><b>What about the launch angle?</b> At the same launch speed, a steeper launch puts more into ${viy} (longer time in the air, higher peak) and less into ${vix}. On level ground, <b>45° goes the farthest</b>, and angles that add to 90° (like 30° and 60°) land at the same spot. That’s the phenomenon!</div>
+    </div><div>${EQ_X}</div></div></div>
   <div class="card"><span class="chip try">Try it</span><h3>Target missions</h3>
     <p>Pick a mission, set the launch, and fire. Land within 0.6 m of the target to complete it. Use the reading to plan before you fire.</p>
     <div class="row" id="t5pick">${MIS5.map((m, i) => `<button class="btn small" type="button" data-t5="${i}">Mission ${i + 1}</button>`).join('')}</div>
@@ -1100,21 +1027,15 @@ function build5() {
     </div>
     <div class="row"><button class="btn primary" id="t5go" type="button">Fire</button><span class="fb" id="t5msg" style="margin:0"></span></div>
     <div class="readouts" id="t5ro"></div>
-    ${missionsHTML(5, MIS5.map(m => m.text.split(':')[0] + ': target at ' + m.target.toFixed(1) + ' m'))}
+    ${missionsHTML(4, MIS5.map(m => m.text.split(':')[0] + ': target at ' + m.target.toFixed(1) + ' m'))}
   </div>
-  ${pracCard(5, 'Practice: range on level ground', 'Each ball lands at the same height it was launched from. Round to one decimal place.', [
-    { id: 'p5b', q: `A golf ball is hit with ${vix} = 12.0 m/s and ${viy} = 14.7 m/s. What is its range?`, ans: 36.0, show: '36.0', unit: 'm', tol: 0.4, hint: 'Time from the y side, distance from the x side.', sol: 'Time of flight = 2 × (14.7 ÷ 9.8) = 3.00 s. D_x = 12.0 × 3.00 = 36.0 m' },
-    { id: 'p5d', q: `A ball is launched with ${vix} = 10.0 m/s and ${viy} = 10.0 m/s. What is its range?`, ans: 20.41, show: '20.4', unit: 'm', tol: 0.3, hint: 'Keep two decimal places in the time before you multiply.', sol: 'Time of flight = 2 × (10.0 ÷ 9.8) = 2.04 s. D_x = 10.0 × 2.04 = 20.4 m' },
-    { id: 'p5e', q: 'A ball lands 18.0 m away after 3.0 s in the air on level ground. What was its sideways part of velocity?', ans: 6.0, show: '6.0', unit: 'm/s', tol: 0.1, hint: `${vx} never changes. How far does it go each second?`, sol: '18.0 = v_ix × 3.0, so v_ix = 18.0 ÷ 3.0 = 6.0 m/s' }
-  ])}
-  ${qcCard(5,
-    { q: `A ball is launched on level ground. If you double ${vix} and keep ${viy} the same, the range…`, opts: ['stays the same', 'is cut in half', 'doubles', 'is four times as far'], a: 2, why: 'Same time in the air, but twice as far each second, so twice the range.', hint: `Doubling ${vix} doesn't change the time in the air. What does it change?` },
-    { q: 'To find the range of a ball on level ground, what do you usually find first?', opts: ['The maximum height', 'The time of flight', 'The ball\u2019s mass', 'The launch angle'], a: 1, why: 'The time of flight is the link between the y side and the x side.', hint: 'What do the x side and the y side share?' })}
-  ${unlockBox(5)}`;
-
+  ${pracCard(4, 'Practice', 'A little different from the example: you know the range and the time.', [
+    { id: 'p4x', q: `A ball lands 24.0 m away after 3.0 s in the air on level ground. What was ${vix}?`, ans: 8, show: '8.0', unit: 'm/s', tol: 0.1, hint: 'The sideways speed never changes. How far does it go each second?', sol: '24.0 = v<sub>ix</sub> × 3.0, so v<sub>ix</sub> = 8.0 m/s' }])}
+  <div class="card"><span class="chip qc">Quick check</span>${qcHTML(4, 'q1', { q: 'Two balls are launched at the same speed on level ground, one at 30° and one at 60°. How do their ranges compare?', opts: ['The 30° ball goes much farther', 'The 60° ball goes much farther', 'You can\u2019t tell without the time', 'They land at about the same spot'], a: 3, why: 'Angles that add to 90° land at the same spot. The 60° ball has more v<sub>iy</sub> (longer time) but less v<sub>ix</sub> (slower sideways), and the two effects balance.', hint: 'The steeper one stays up longer but moves sideways slower. What do 30° and 60° add up to?' })}</div>
+  ${unlockBox(4)}`;
   const A = arena($('#s5sim'), { xmax: 42, ymax: 12, W: 640, H: 230, xstep: 5, ystep: 4, label: 'Target game' });
   const sx = $('#t5x'), sy = $('#t5y'); let mi = 0;
-  const done = simGet(5, 'done', [false, false, false]);
+  const done = simGet(4, 'done', [false, false, false]);
   function setup() {
     const m = MIS5[mi];
     $$('[data-t5]').forEach((b, i) => b.classList.toggle('on', i === mi));
@@ -1140,103 +1061,37 @@ function build5() {
       $('#t5go').disabled = false;
       $('#t5ro').innerHTML = ro('time of flight =', f2(T) + ' s') + ro('landed at', f1(R) + ' m');
       const hit = Math.abs(R - m.target) <= 0.6, fast = !m.maxT || T < m.maxT, msg = $('#t5msg');
-      if (hit && fast) { msg.className = 'fb ok'; msg.textContent = 'Bullseye! Mission complete.'; done[mi] = true; simSet(5, 'done', done); paintMissions(5, done); $('#t5text').innerHTML = m.text + ' <span class="keytag">Done ✓</span>'; if (done.every(Boolean)) req(5, 'sim'); else save(); }
+      if (hit && fast) { msg.className = 'fb ok'; msg.textContent = 'Bullseye! Mission complete.'; done[mi] = true; simSet(4, 'done', done); paintMissions(4, done); $('#t5text').innerHTML = m.text + ' <span class="keytag">Done ✓</span>'; if (done.every(Boolean)) req(4, 'sim'); else save(); }
       else if (hit) { msg.className = 'fb no'; msg.textContent = `On target, but the flight took ${f2(T)} s. It needs to be under 2.00 s: less up, more sideways.`; }
       else { msg.className = 'fb no'; msg.textContent = R < m.target ? `Short by ${f1(m.target - R)} m.` : `Long by ${f1(R - m.target)} m.`; }
     });
   });
-  setup(); paintMissions(5, done);
+  setup(); paintMissions(4, done);
 }
 
-/* =========================================================
-   SECTION 6: LAUNCH ANGLE
-   ========================================================= */
-const ANG6 = [15, 30, 45, 60, 75].map(a => { const r = a * Math.PI / 180, x = 20 * Math.cos(r), y = 20 * Math.sin(r), T = 2 * y / G; return { a, x, y, T, R: x * T }; });
-function build6() {
-  $('#page6').innerHTML = secHead(6) + `
-  <div class="card"><span class="chip read">Read</span><h3>Steeper means longer, but not always farther</h3>
-    <div class="cols"><div>
-      <p>Launch the same ball at the same speed, but change the ${wh('launch angle')}. A steeper launch puts more of the speed into ${viy} and less into ${vix}.</p>
-      <ul>
-        <li><b>More ${viy}</b> means a longer time of flight and a higher peak.</li>
-        <li><b>Less ${vix}</b> means it covers less ground each second.</li>
-        <li>The best trade on level ground is <b>45°</b>. It goes the farthest.</li>
-        <li>Angles that add up to 90°, like 30° and 60°, land at the same spot. The steeper one goes higher and stays up longer.</li>
-      </ul>
-    </div><div><div class="tablewrap"><table class="dt" style="width:100%"><tr><th>Angle</th><th>${vix} (m/s)</th><th>${viy} (m/s)</th><th>Time (s)</th><th>Range (m)</th></tr>
-      ${ANG6.map(r => `<tr><td>${r.a}°</td><td>${f1(r.x)}</td><td>${f1(r.y)}</td><td>${f2(r.T)}</td><td>${f1(r.R)}</td></tr>`).join('')}</table></div>
-      <p class="figcap">Every launch here has the same speed: 20 m/s.</p></div></div></div>
-
-  <div class="card"><span class="chip try">Try it</span><h3>Angle lab</h3>
-    <p>Every launch is 20 m/s. Change only the angle. Paths stay on the screen so you can compare them.</p>
-    <div class="fig" id="s6sim"></div>
-    <div class="ctrls"><div class="ctrl"><label for="s6a"><span>Launch angle <span class="v">θ</span></span> <b id="s6av"></b></label><input type="range" id="s6a" min="10" max="80" step="5" value="30"></div></div>
-    <div class="row"><button class="btn primary" id="s6go" type="button">Launch</button><button class="btn" id="s6clr" type="button">Clear paths</button></div>
-    <div class="readouts" id="s6ro"></div>
-    ${missionsHTML(6, ['Launch at 5 different angles.', 'Find two different angles that land at the same spot.', 'Find the angle that goes the farthest.'])}
-  </div>
-  ${qcCard(6,
-    { q: 'One ball is launched at 30° and an identical ball at 60°, both at the same speed. Which stays in the air longer?', opts: ['The 30° ball', 'They are in the air the same time', 'The 60° ball', 'It depends on their mass'], a: 2, why: `The 60° launch has a bigger ${viy}, so it rises higher and takes longer. They do land at the same spot.`, hint: `Which launch has the bigger up part, ${viy}?` },
-    { q: 'Two balls are launched at the same speed on level ground, one at 20° and one at 70°. How do their ranges compare?', opts: ['The 20° ball goes much farther', 'The 70° ball goes much farther', 'You can\u2019t tell without the time', 'They land at about the same spot'], a: 3, why: '20° + 70° = 90°, so they land at the same spot. The 70° ball just takes a higher, longer path.', hint: 'What do 20° and 70° add up to?' })}
-  ${unlockBox(6)}`;
-
-  const A = arena($('#s6sim'), { xmax: 42, ymax: 21, W: 640, H: 360, xstep: 5, ystep: 5, label: 'Angle lab' });
-  const paths = mk('g', {}, A.layer), sl = $('#s6a');
-  const angs = new Set(simGet(6, 'angs', [])); let ball = A.ball(); ball.setAttribute('cx', A.X(0)); ball.setAttribute('cy', A.Y(0));
-  const lbl = () => { $('#s6av').textContent = sl.value + '°'; }; sl.addEventListener('input', lbl); lbl();
-  function missions() {
-    const arr = [...angs], m1 = arr.length >= 5, m2 = arr.some(a => a !== 45 && arr.includes(90 - a)), m3 = arr.includes(45);
-    paintMissions(6, [m1, m2, m3]); return m1 && m2 && m3;
-  }
-  missions();
-  $('#s6clr').addEventListener('click', () => { paths.innerHTML = ''; });
-  $('#s6go').addEventListener('click', () => {
-    const a = +sl.value, r = a * Math.PI / 180, x = 20 * Math.cos(r), y = 20 * Math.sin(r), T = 2 * y / G, R = x * T;
-    const col = ['#ffcf5a', '#3fd6a0', '#6cb8ff', '#b19bff', '#ff9f5a', '#ff7f86'][paths.childNodes.length % 6];
-    const g = mk('g', {}, paths); $('#s6go').disabled = true;
-    run('s6', T, t => { ball.setAttribute('cx', A.X(x * t)); ball.setAttribute('cy', A.Y(Math.max(0, posY(0, y, t)))); }, () => {
-      $('#s6go').disabled = false; const pts = []; for (let i = 0; i <= 50; i++) { const t = T * i / 50; pts.push([x * t, Math.max(0, posY(0, y, t))]); } A.path(pts, col, 'none', g);
-      const tx = A.text(A.X(R), A.Y(0) - 8 - (paths.childNodes.length % 3) * 13, a + '°', col, 11, 'middle', g);
-      $('#s6ro').innerHTML = ro(`${vix} =`, f1(x) + ' m/s') + ro(`${viy} =`, f1(y) + ' m/s') + ro('time of flight =', f2(T) + ' s') + ro('range =', f1(R) + ' m');
-      angs.add(a); simSet(6, 'angs', [...angs]); if (missions()) req(6, 'sim'); else save();
-    });
-  });
-}
-
-/* =========================================================
-   SECTION 7: LAUNCHED FROM A HEIGHT
-   ========================================================= */
-const C7 = { h: 20, vy: 9.8, vx: 6.0 }; C7.tu = C7.vy / G; C7.rise = C7.vy * C7.vy / (2 * G); C7.drop = C7.h + C7.rise; C7.td = Math.sqrt(2 * C7.drop / G); C7.T = C7.tu + C7.td; C7.R = C7.vx * C7.T;
-function build7() {
-  $('#page7').innerHTML = secHead(7) + `
+function build5() {
+  $('#page5').innerHTML = secHead(5) + `
   <div class="card"><span class="chip read">Read</span><h3>Farther to fall, longer in the air</h3>
     <div class="cols"><div>
-      <p>When a ball is launched from the top of a cliff or a building, it lands lower than where it started. It has farther to fall, so the time of flight is <b>longer</b> than twice the time to the top. Symmetry only works on level ground.</p>
-      <p>Split the flight at the ${wh('peak')}:</p>
-      <ol>
-        <li><b>Up to the peak.</b> Find the time to the top and how high it rises, just like section 3.</li>
-        <li><b>Down from the peak.</b> At the peak ${vy} = 0, so the ball falls from rest. It falls the whole height: the cliff plus the rise. Use the y-form equation with ${Dy}, ${viy}, ${ay}, and <span class="v">Δt</span>, with the starting ${vy} = 0.</li>
-        <li><b>Add them up.</b> Time of flight = time up + time down. Then ${Dx} uses ${vix} and that total time.</li>
-      </ol>
-      <div class="callout sky">If the ball is launched straight sideways (${viy} = 0), step 1 takes no time. That is the table-top launch from last lesson.</div>
+      <p>From the top of a cliff, the ball lands lower than it started, so it is in the air <b>longer</b> than 2 × time to the top. Split the flight at the ${wh('peak')}: time up, then a fall <b>from rest</b> through the cliff height plus the rise. Add the two times, then multiply by ${vix}.</p>
+      <div class="callout"><b>Example.</b> A ball is launched from a 20.0 m cliff with ${vix} = 6.0 m/s and ${viy} = 9.8 m/s.
+        ${UPWORK('9.8', '1.00', 'Step 1: time up')}
+        ${work('Step 2: rise above the cliff', [['Equation', `${k('vf', vfy)}² = ${k('vi', viy)}² + 2${k('a', ay)}${Dy}`], ['Plug in', `${k('vf', '0')}² = ${k('vi', '9.8')}² + 2${k('a', '(−9.8)')}${Dy}`], ['Solve', `${Dy} = 96.04 ÷ 19.6 = <b>4.9 m</b>, so the peak is 20.0 + 4.9 = 24.9 m up`]])}
+        ${work('Step 3: fall from rest', [['Equation', `${k('D', Dy)} = ${k('vi', viy)}${k('t', 'Δt')} + ½${k('a', ay)}${k('t', 'Δt')}²`], ['Plug in', `${k('D', '−24.9')} = ${k('vi', '0')}${k('t', 'Δt')} + ½${k('a', '(−9.8)')}${k('t', 'Δt')}²`], ['Solve', `${t_}² = 24.9 ÷ 4.9 = 5.08, so ${t_} = <b>2.25 s</b>`]])}
+        ${work('Step 4: add up, then go sideways', [['Solve', `time of flight = 1.00 + 2.25 = 3.25 s; ${Dx} = 6.0 × 3.25 = <b>19.5 m</b>`]])}${COLORNOTE}</div>
     </div><div>${EQ_Y}</div></div></div>
-
   <div class="card"><span class="chip try">Try it</span><h3>Step through a cliff launch</h3>
     <p>A ball is launched from a ${C7.h.toFixed(1)} m cliff with ${vix} = ${f1(C7.vx)} m/s and ${viy} = ${f1(C7.vy)} m/s. Press <b>Next step</b> to walk through it.</p>
     <div class="cols"><div class="fig" id="s7sim"></div><div><div id="s7steps"></div><div class="row" style="margin-top:8px"><button class="btn primary" id="s7next" type="button">Next step</button><button class="btn" id="s7reset" type="button">Start over</button></div></div></div>
   </div>
-  ${pracCard(7, 'Practice: launched from a height', 'Problems 2 to 5 are the same ball, one step at a time. Round to one decimal place (two for times).', [
-    { id: 'p7a', q: `A ball rolls off the top of a 4.9 m wall straight sideways (${viy} = 0). How long is it in the air?`, ans: 1.0, show: '1.00', unit: 's', hint: `It falls from rest the whole 4.9 m. Down is negative, so ${Dy} = −4.9 m.`, sol: '−4.9 = 0·Δt + ½(−9.8)Δt², so Δt² = 1.00 and Δt = 1.00 s' },
-    { id: 'p7b', q: `A ball is launched from the edge of a 14.7 m tall building with ${viy} = 9.8 m/s. How far above the ground is its peak?`, ans: 19.6, show: '19.6', unit: 'm', tol: 0.15, hint: 'Find how much it rises above the roof, then add the building.', sol: 'Rise: 0² = 9.8² + 2(−9.8)D_y, so D_y = 4.9 m. Peak = 14.7 + 4.9 = 19.6 m above the ground' },
-    { id: 'p7c', q: 'Same ball. How long does it take to fall from the peak to the ground?', ans: 2.0, show: '2.00', unit: 's', hint: 'At the peak it starts from rest and falls the whole height you just found.', sol: '−19.6 = 0·Δt + ½(−9.8)Δt², so Δt² = 4.00 and Δt = 2.00 s' },
-    { id: 'p7d', q: 'Same ball. What is its total time of flight?', ans: 3.0, show: '3.00', unit: 's', hint: 'Add the time up to the peak and the time down from it.', sol: 'Time up = 9.8 ÷ 9.8 = 1.00 s. Total = 1.00 + 2.00 = 3.00 s' },
-    { id: 'p7e', q: `Same ball. It was launched with ${vix} = 5.0 m/s. How far from the base of the building does it land?`, ans: 15.0, show: '15.0', unit: 'm', tol: 0.2, hint: 'Sideways is steady speed for the whole flight.', sol: 'D_x = 5.0 × 3.00 = 15.0 m' }
-  ])}
-  ${qcCard(7,
-    { q: 'Ball A is launched from the top of a cliff. Ball B is launched exactly the same way on level ground. Which is in the air longer?', opts: ['Ball B', 'They are in the air the same time', 'Ball A', 'You can\u2019t tell'], a: 2, why: 'Both take the same time to reach the peak, but after that A has farther to fall.', hint: 'Which ball has farther to fall after its peak?' },
-    { q: 'At the peak of its path, a ball starts falling with a vertical velocity of…', opts: ['0 m/s', '9.8 m/s down', `${viy} down`, `${vix}`], a: 0, why: `At the peak ${vy} = 0, so the fall starts from rest (vertically).`, hint: 'What is true about the vertical velocity at the very top?' })}
-  ${unlockBox(7)}`;
-
+  ${pracCard(5, 'Practice', 'A little different from the example: this ball leaves the ledge moving straight sideways.', [
+    { id: 'p5x', q: `A ball rolls straight sideways off a 19.6 m ledge at ${vix} = 4.0 m/s (so ${viy} = 0). How far from the base does it land?`, ans: 8, show: '8.0', unit: 'm', tol: 0.12, hint: 'There is no rise. Find the time to fall 19.6 m from rest first, then go sideways.', sol: '−19.6 = ½(−9.8)Δt², so Δt = 2.00 s. ΔD<sub>x</sub> = 4.0 × 2.00 = 8.0 m' }])}
+  ${qcCard(5,
+    { q: 'Ball A is launched from the top of a cliff. Ball B is launched exactly the same way on level ground. Which is in the air longer?', opts: ['Ball B', 'They are in the air the same time', 'Ball A', 'You can\u2019t tell'], a: 2, why: 'Both reach the peak in the same time, but after that A has farther to fall.', hint: 'Which ball has farther to fall after its peak?' },
+    { q: `What is wrong with this? For a ball with ${vix} = 8.0 m/s and ${viy} = 9.8 m/s, a student writes "time of flight = 2.00 s, so ${Dx} = 9.8 × 2.00 = 19.6 m."`, opts: ['The time of flight should be 1.00 s', `The range uses ${vix}: ${Dx} = 8.0 × 2.00 = 16.0 m`, 'They forgot the ½', 'Nothing is wrong'], a: 1, why: 'Range is a sideways distance, so it uses the sideways part.', hint: 'Which velocity part goes with a sideways distance?' })}
+  ${phenRevisit()}
+  ${unlockBox(5)}`;
+  initRevisit();
   const A = arena($('#s7sim'), { xmin: -6, xmax: 22, ymax: 28, W: 460, H: 440, xstep: 5, ystep: 5, label: 'Cliff launch step-through' });
   const STEPS = [
     { h: 'Step 1: Up to the peak', b: work('Time up', [['Equation', `${k('vf', vfy)} = ${k('vi', viy)} + ${k('a', ay)}${t_}`], ['Plug in', `${k('vf', '0')} = ${k('vi', '9.8')} + ${k('a', '(−9.8)')}${t_}`], ['Solve', `${t_} = 9.8 ÷ 9.8 = <b>1.00 s</b>`]]) + work('Rise above the cliff', [['Equation', `${k('vf', vfy)}² = ${k('vi', viy)}² + 2${k('a', ay)}${Dy}`], ['Plug in', `${k('vf', '0')}² = ${k('vi', '9.8')}² + 2${k('a', '(−9.8)')}${Dy}`], ['Solve', `0 = 96.04 − 19.6${Dy}, so ${Dy} = 96.04 ÷ 19.6 = <b>4.9 m</b>`]]) },
@@ -1244,7 +1099,7 @@ function build7() {
     { h: 'Step 3: Down from the peak', b: `It starts from rest, so the starting ${vy} is 0.` + work('Time down', [['Equation', `${k('D', Dy)} = ${k('vi', viy)}${t_} + ½${k('a', ay)}${t_}²`], ['Plug in', `${k('D', '−24.9')} = ${k('vi', '0')}${t_} + ½${k('a', '(−9.8)')}${t_}²`], ['Solve', `−24.9 = −4.9${t_}², so ${t_}² = 5.08 and ${t_} = <b>2.25 s</b>`]]) },
     { h: 'Step 4: Add up, then go sideways', b: `Time of flight = 1.00 + 2.25 = <b>3.25 s</b>.` + work('Range', [['Equation', `${Dx} = ${k('vx', vix)}${k('t', 'Δt')} + ½${k('a', ax)}${k('t', 'Δt')}²`], ['Plug in', `${Dx} = ${k('vx', '6.0')}${k('t', '(3.25)')} + ½${k('a', '(0)')}${k('t', '(3.25)')}²`], ['Solve', `${Dx} = 6.0 × 3.25 = <b>19.5 m</b>`]]) + `On level ground it would have been only 2.00 s.` + COLORNOTE }
   ];
-  let step = simGet(7, 'k', 0); let ball;
+  let step = simGet(5, 'k', 0); let ball;
   function scene(animate) {
     A.clear(); mk('rect', { x: A.X(-6), y: A.Y(C7.h), width: 6 * A.s, height: C7.h * A.s, fill: '#2a3a60', stroke: '#5d6f96' }, A.layer); A.text(A.X(-3), A.Y(C7.h / 2), '20.0 m', '#a3b2d2', 12, 'middle', A.layer); ball = A.ball();
     const at = t => [C7.vx * t, Math.max(0, posY(C7.h, C7.vy, t))];
@@ -1260,66 +1115,10 @@ function build7() {
     $('#s7steps').innerHTML = STEPS.map((s, i) => `<div class="callout ${i < step ? 'teal' : ''}" style="${i < step ? '' : 'opacity:.4'}"><b>${s.h}</b><br>${i < step ? s.b : 'Press Next step.'}</div>`).join('');
     $('#s7next').disabled = step >= 4;
   }
-  $('#s7next').addEventListener('click', () => { step = Math.min(4, step + 1); simSet(7, 'k', step); scene(true); if (step >= 4) req(7, 'sim'); else save(); });
+  $('#s7next').addEventListener('click', () => { step = Math.min(4, step + 1); simSet(5, 'k', step); scene(true); if (step >= 4) req(5, 'sim'); else save(); });
   $('#s7reset').addEventListener('click', () => { step = 0; scene(false); });
   scene(false);
 }
-
-/* =========================================================
-   SECTION 8: WHAT IS WRONG WITH THIS? (spot the mistake)
-   ========================================================= */
-const MIS8 = [
-  { id: 'm1', q: `A soccer ball is kicked on a flat field with ${vix} = 6.0 m/s and ${viy} = 14.7 m/s. Find its time of flight.`,
-    steps: ['At the top, v<sub>fy</sub> = 0, so 0 = 14.7 + (−9.8)Δt.', 'Δt = 14.7 ÷ 9.8 = 1.50 s.', 'So the time of flight is 1.50 s.'], bad: 2,
-    why: ['1.50 s is only the trip up. The trip down takes as long, so it should be 3.00 s.', 'They should have used v<sub>ix</sub> = 6.0 m/s instead of v<sub>iy</sub>.', 'The acceleration should have been +9.8 m/s².'], wa: 0 },
-  { id: 'm2', q: `A ball is launched on level ground with ${vix} = 8.0 m/s and ${viy} = 9.8 m/s. Find its range.`,
-    steps: ['Time to the top: 9.8 ÷ 9.8 = 1.00 s.', 'Time of flight: 2 × 1.00 = 2.00 s.', 'ΔD<sub>x</sub> = 9.8 × 2.00 = 19.6 m.'], bad: 2,
-    why: ['The time of flight should be 1.00 s, not 2.00 s.', 'The range uses the sideways part: ΔD<sub>x</sub> = 8.0 × 2.00 = 16.0 m.', 'They forgot the ½ in front of the time.'], wa: 1 },
-  { id: 'm3', q: `A ball is thrown with ${viy} = 19.6 m/s. Find its maximum height.`,
-    steps: ['At the top, v<sub>fy</sub> = 0.', 'The ball is going up, so a<sub>y</sub> = +9.8 m/s².', '0² = 19.6² + 2(9.8)ΔD<sub>y</sub>, so ΔD<sub>y</sub> = −19.6 m.'], bad: 1,
-    why: ['At the top, v<sub>fy</sub> should be 19.6 m/s.', 'Maximum height has to be found with the time, not v<sub>fy</sub>.', 'Gravity pulls down the whole time, so a<sub>y</sub> = −9.8 m/s² even while the ball rises.'], wa: 2 },
-  { id: 'm4', q: 'A student explains what happens at the top of a kicked ball\u2019s path.',
-    steps: ['At the top, the vertical velocity v<sub>y</sub> is 0.', 'So the ball\u2019s whole velocity is 0 at the top.', 'Then gravity pulls it down, and v<sub>y</sub> becomes negative.'], bad: 1,
-    why: ['v<sub>x</sub> is still there at the top, so the ball is still moving sideways.', 'v<sub>y</sub> at the top is really 9.8 m/s.', 'Gravity stops pulling at the top, so nothing pulls it down.'], wa: 0 },
-  { id: 'm5', q: `A ball is launched with ${vix} = 12.0 m/s and ${viy} = 5.0 m/s. Find the launch angle.`,
-    steps: ['Draw the triangle: v<sub>ix</sub> along the ground, v<sub>iy</sub> straight up.', 'θ = tan⁻¹(12.0 ÷ 5.0)', 'θ = 67.4°'], bad: 1,
-    why: ['They should have multiplied: v<sub>ix</sub> × v<sub>iy</sub>.', 'The ratio is upside down. It should be tan⁻¹(5.0 ÷ 12.0) = 22.6°.', 'An angle can only be found from the time of flight.'], wa: 1 }
-];
-function build8() {
-  $('#page8').innerHTML = secHead(8) + `
-  <div class="card"><span class="chip mis">Spot the mistake</span><h3>What is wrong with this?</h3>
-    <p>Each student made one mistake. Click the step that is wrong, pick why it is wrong, then press <b>Check</b>. You get points for each part you get right on the first try.</p>
-    ${MIS8.map((m, i) => `<div class="mis" id="mis8-${m.id}"><p><b>${i + 1}.</b> ${m.q}</p>
-      <div class="steps">${m.steps.map((s, j) => `<button type="button" class="stepbtn" data-ms="${m.id}" data-j="${j}"><span class="sn">Step ${j + 1}</span><span>${s}</span></button>`).join('')}</div>
-      <p class="muted" style="margin:8px 0 4px;font-size:.9rem">Why is that step wrong?</p>
-      <div class="opts">${m.why.map((w, j) => `<button type="button" class="opt" data-mw="${m.id}" data-j="${j}"><span class="L">${LET[j]}</span><span>${w}</span></button>`).join('')}</div>
-      <div class="row"><button class="btn small" type="button" data-mchk="${m.id}">Check</button><span class="fb" data-fb style="margin:0"></span></div>
-      <div class="keyonly keytag">Answer: step ${m.bad + 1}, ${LET[m.wa]}</div></div>`).join('')}
-  </div>
-  ${unlockBox(8)}`;
-  MIS8.forEach(m => paintMis(m.id));
-}
-const MISPICK = {};
-function paintMis(id) {
-  const m = MIS8.find(x => x.id === id), st = S.mis[id], box = $('#mis8-' + id), pk = MISPICK[id] || {};
-  $$('[data-ms]', box).forEach((b, j) => { b.classList.toggle('picked', pk.s === j); b.classList.toggle('right', !!(st && st.done && j === m.bad)); b.disabled = !!(st && st.done); });
-  $$('[data-mw]', box).forEach((b, j) => { b.classList.toggle('picked', pk.w === j); b.classList.toggle('right', !!(st && st.done && j === m.wa)); b.disabled = !!(st && st.done); });
-  if (st && st.done) { const fb = $('[data-fb]', box); fb.className = 'fb ok'; fb.textContent = `Found it. First-try points: ${st.pts} of 1.`; $('[data-mchk]', box).disabled = true; }
-}
-document.addEventListener('click', e => {
-  const s = e.target.closest('[data-ms]'), w = e.target.closest('[data-mw]'), c = e.target.closest('[data-mchk]');
-  if (s) { const id = s.dataset.ms; (MISPICK[id] = MISPICK[id] || {}).s = +s.dataset.j; paintMis(id); }
-  if (w) { const id = w.dataset.mw; (MISPICK[id] = MISPICK[id] || {}).w = +w.dataset.j; paintMis(id); }
-  if (c) {
-    const id = c.dataset.mchk, m = MIS8.find(x => x.id === id), pk = MISPICK[id] || {}, box = $('#mis8-' + id), fb = $('[data-fb]', box);
-    if (pk.s == null || pk.w == null) { fb.className = 'fb no'; fb.textContent = 'Pick a step and a reason first.'; return; }
-    const st = S.mis[id] || (S.mis[id] = { done: false, pts: null, tries: 0 }); st.tries++;
-    const okS = pk.s === m.bad, okW = pk.w === m.wa;
-    if (st.pts === null) st.pts = (okS ? 0.5 : 0) + (okW ? 0.5 : 0);
-    if (okS && okW) { st.done = true; paintMis(id); if (MIS8.every(x => S.mis[x.id] && S.mis[x.id].done)) req(8, 'mis'); else save(); }
-    else { fb.className = 'fb no'; fb.textContent = !okS ? 'That step is actually fine. Check each step again.' : 'Right step. Now look again at why it is wrong.'; save(); }
-  }
-});
 
 /* =========================================================
    FINAL CHECK (10 random questions, 8/10 to pass)
@@ -1328,35 +1127,33 @@ const BANK = [
   { id: 'f1', type: 'mc', q: 'At the top of its path, a kicked ball\u2019s vertical velocity is…', opts: ['0 m/s', `equal to ${vix}`, '9.8 m/s down', `equal to ${viy}`], a: 0, why: `At the peak, ${vy} has run out for an instant.`, sec: 2 },
   { id: 'f2', type: 'mc', q: 'While a projectile is rising, its acceleration is…', opts: ['0', '9.8 m/s² up', '9.8 m/s² down', 'getting bigger'], a: 2, why: `Gravity pulls down the whole flight: ${ay} = −9.8 m/s².`, sec: 2 },
   { id: 'f3', type: 'mc', q: `A ball is launched with ${vix} = 9.0 m/s and ${viy} = 12.0 m/s. What is its launch angle?`, opts: ['53.1°', '36.9°', '75.0°', '1.3°'], a: 0, why: 'θ = tan⁻¹(12.0 ÷ 9.0) = 53.1°. 36.9° comes from flipping the ratio.', sec: 1 },
-  { id: 'f4', type: 'mc', q: `A ball is launched with ${viy} = 19.6 m/s. How long does it take to reach the top?`, opts: ['1.00 s', '2.00 s', '4.00 s', '19.6 s'], a: 1, why: '0 = 19.6 + (−9.8)Δt, so Δt = 2.00 s.', sec: 3 },
-  { id: 'f5', type: 'mc', q: `A ball is launched with ${viy} = 19.6 m/s on level ground. What is its time of flight?`, opts: ['2.00 s', '1.00 s', '8.00 s', '4.00 s'], a: 3, why: 'Time up is 2.00 s, and the trip down takes as long: 4.00 s.', sec: 4 },
-  { id: 'f6', type: 'mc', q: `A ball is launched with ${viy} = 9.8 m/s. What is its maximum height above the launch point?`, opts: ['9.8 m', '4.9 m', '2.5 m', '19.6 m'], a: 1, why: '0² = 9.8² + 2(−9.8)D_y, so D_y = 96.04 ÷ 19.6 = 4.9 m.', sec: 3 },
-  { id: 'f7', type: 'mc', q: `A ball is launched on level ground with ${vix} = 7.0 m/s and ${viy} = 14.7 m/s. What is its range?`, opts: ['10.5 m', '44.1 m', '21.0 m', '14.7 m'], a: 2, why: 'Time of flight = 2 × 1.50 = 3.00 s. D_x = 7.0 × 3.00 = 21.0 m.', sec: 5 },
+  { id: 'f4', type: 'mc', q: `A ball is launched with ${viy} = 19.6 m/s. How long does it take to reach the top?`, opts: ['1.00 s', '2.00 s', '4.00 s', '19.6 s'], a: 1, why: '0 = 19.6 + (−9.8)Δt, so Δt = 2.00 s.', sec: 2 },
+  { id: 'f5', type: 'mc', q: `A ball is launched with ${viy} = 19.6 m/s on level ground. What is its time of flight?`, opts: ['2.00 s', '1.00 s', '8.00 s', '4.00 s'], a: 3, why: 'Time up is 2.00 s, and the trip down takes as long: 4.00 s.', sec: 3 },
+  { id: 'f6', type: 'mc', q: `A ball is launched with ${viy} = 9.8 m/s. What is its maximum height above the launch point?`, opts: ['9.8 m', '4.9 m', '2.5 m', '19.6 m'], a: 1, why: '0² = 9.8² + 2(−9.8)D_y, so D_y = 96.04 ÷ 19.6 = 4.9 m.', sec: 2 },
+  { id: 'f7', type: 'mc', q: `A ball is launched on level ground with ${vix} = 7.0 m/s and ${viy} = 14.7 m/s. What is its range?`, opts: ['10.5 m', '44.1 m', '21.0 m', '14.7 m'], a: 2, why: 'Time of flight = 2 × 1.50 = 3.00 s. D_x = 7.0 × 3.00 = 21.0 m.', sec: 4 },
   { id: 'f8', type: 'two', q: `Two balls are launched on level ground with the same ${viy}. Ball B has twice the ${vix} of ball A.`,
     A: { q: 'How does B\u2019s time of flight compare to A\u2019s?', opts: ['Twice as long', 'The same', 'Half as long'], a: 1 },
-    B: { q: 'How does B\u2019s range compare to A\u2019s?', opts: ['The same', 'Half as far', 'Twice as far'], a: 2 }, why: `${viy} sets the time, so the times match. B covers twice the ground each second.`, sec: 5 },
+    B: { q: 'How does B\u2019s range compare to A\u2019s?', opts: ['The same', 'Half as far', 'Twice as far'], a: 2 }, why: `${viy} sets the time, so the times match. B covers twice the ground each second.`, sec: 4 },
   { id: 'f9', type: 'multi', q: 'Ignoring air, which of these stay the same during a projectile\u2019s whole flight? Select all that apply.', opts: [`${vx}`, `${vy}`, `${ay}`, 'the height'], a: [0, 2], why: `${vx} and ${ay} never change. ${vy} and the height change the whole time.`, sec: 2 },
-  { id: 'f10', type: 'mc', q: 'One ball is launched at 30° and another at 60°, at the same speed on level ground. Which lands farther away?', opts: ['The 30° ball', 'The 60° ball', 'Neither leaves the ground', 'They land at the same spot'], a: 3, why: '30° + 60° = 90°, so they land at the same spot. The 60° ball stays up longer.', sec: 6 },
-  { id: 'f11', type: 'mc', q: 'At the same launch speed, which angle gives the longest range on level ground?', opts: ['30°', '45°', '60°', '90°'], a: 1, why: '45° balances the sideways part and the up part.', sec: 6 },
   { id: 'f12', type: 'two', q: 'Ball A is launched from the top of a cliff. Ball B is launched exactly the same way on level ground.',
     A: { q: 'Which is in the air longer?', opts: ['Ball A', 'Ball B', 'Same time'], a: 0 },
-    B: { q: 'Why?', opts: ['A gets a bigger push from gravity', 'After the peak, A falls a greater height', 'A moves faster sideways'], a: 1 }, why: 'Both reach the peak in the same time, but A has farther to fall after it.', sec: 7 },
-  { id: 'f13', type: 'mc', q: `A ball is in the air for 3.0 s on level ground. What was its ${viy}?`, opts: ['29.4 m/s', '9.8 m/s', '14.7 m/s', '4.9 m/s'], a: 2, why: 'Time up = 1.5 s. 0 = v_iy + (−9.8)(1.5), so v_iy = 14.7 m/s.', sec: 4 },
-  { id: 'f14', type: 'mc', q: `A ball lands 24.0 m away after 3.0 s in the air. What was its ${vix}?`, opts: ['8.0 m/s', '72.0 m/s', '21.0 m/s', '4.0 m/s'], a: 0, why: '24.0 = v_ix × 3.0, so v_ix = 8.0 m/s.', sec: 5 },
-  { id: 'f15', type: 'multi', q: 'Which of these would make a ball stay in the air longer? Select all that apply.', opts: [`A bigger ${vix}`, `A bigger ${viy}`, 'Launching it from a cliff', 'Using a heavier ball'], a: [1, 2], why: `Only ${viy} and how far it has to fall change the time. ${vix} and mass don't.`, sec: 7 },
-  { id: 'f16', type: 'mc', q: 'The peak of a ball\u2019s path is 19.6 m above the ground. How long does it take to fall from the peak to the ground?', opts: ['4.00 s', '1.41 s', '2.00 s', '19.6 s'], a: 2, why: '−19.6 = ½(−9.8)Δt², so Δt² = 4.00 and Δt = 2.00 s.', sec: 7 },
+    B: { q: 'Why?', opts: ['A gets a bigger push from gravity', 'After the peak, A falls a greater height', 'A moves faster sideways'], a: 1 }, why: 'Both reach the peak in the same time, but A has farther to fall after it.', sec: 5 },
+  { id: 'f13', type: 'mc', q: `A ball is in the air for 3.0 s on level ground. What was its ${viy}?`, opts: ['29.4 m/s', '9.8 m/s', '14.7 m/s', '4.9 m/s'], a: 2, why: 'Time up = 1.5 s. 0 = v<sub>iy</sub> + (−9.8)(1.5), so v<sub>iy</sub> = 14.7 m/s.', sec: 3 },
+  { id: 'f14', type: 'mc', q: `A ball lands 24.0 m away after 3.0 s in the air. What was its ${vix}?`, opts: ['8.0 m/s', '72.0 m/s', '21.0 m/s', '4.0 m/s'], a: 0, why: '24.0 = v<sub>ix</sub> × 3.0, so v<sub>ix</sub> = 8.0 m/s.', sec: 4 },
+  { id: 'f15', type: 'multi', q: 'Which of these would make a ball stay in the air longer? Select all that apply.', opts: [`A bigger ${vix}`, `A bigger ${viy}`, 'Launching it from a cliff', 'Using a heavier ball'], a: [1, 2], why: `Only ${viy} and how far it has to fall change the time. ${vix} and mass don't.`, sec: 5 },
+  { id: 'f16', type: 'mc', q: 'The peak of a ball\u2019s path is 19.6 m above the ground. How long does it take to fall from the peak to the ground?', opts: ['4.00 s', '1.41 s', '2.00 s', '19.6 s'], a: 2, why: '−19.6 = ½(−9.8)Δt², so Δt² = 4.00 and Δt = 2.00 s.', sec: 5 },
   { id: 'f17', type: 'mc', q: 'At the top of its path, a kicked ball is moving…', opts: ['only sideways', 'only down', 'not at all', 'only up'], a: 0, why: `${vy} = 0 at the top, but ${vx} is still there.`, sec: 2 },
   { id: 'f18', type: 'two', q: `A ball is launched with ${viy} = 14.7 m/s on level ground.`,
     A: { q: 'Time to the top?', opts: ['1.50 s', '3.00 s', '0.67 s'], a: 0 },
-    B: { q: 'Time of flight?', opts: ['1.50 s', '0.75 s', '3.00 s'], a: 2 }, why: '14.7 ÷ 9.8 = 1.50 s up, and 2 × 1.50 = 3.00 s total.', sec: 4 },
-  { id: 'f19', type: 'mc', q: 'What is wrong with this? A student finds the range with ΔD<sub>x</sub> = v<sub>iy</sub> × (time of flight).', opts: ['They should use the maximum height', 'They should use v<sub>ix</sub>, the sideways part', 'They should use half the time', 'Nothing is wrong'], a: 1, why: 'Range is a sideways distance, so it uses the sideways part.', sec: 8 },
-  { id: 'f20', type: 'mc', q: 'What is wrong with this? While the ball rises, a student uses a<sub>y</sub> = +9.8 m/s².', opts: ['Nothing, it\u2019s going up', 'It should be 0 while rising', 'It should be −9.8 m/s², because gravity always pulls down', 'It should be +4.9 m/s²'], a: 2, why: 'With up as positive, gravity is always −9.8 m/s².', sec: 8 },
+    B: { q: 'Time of flight?', opts: ['1.50 s', '0.75 s', '3.00 s'], a: 2 }, why: '14.7 ÷ 9.8 = 1.50 s up, and 2 × 1.50 = 3.00 s total.', sec: 3 },
+  { id: 'f19', type: 'mc', q: 'What is wrong with this? A student finds the range with ΔD<sub>x</sub> = v<sub>iy</sub> × (time of flight).', opts: ['They should use the maximum height', 'They should use v<sub>ix</sub>, the sideways part', 'They should use half the time', 'Nothing is wrong'], a: 1, why: 'Range is a sideways distance, so it uses the sideways part.', sec: 5 },
+  { id: 'f20', type: 'mc', q: 'What is wrong with this? While the ball rises, a student uses a<sub>y</sub> = +9.8 m/s².', opts: ['Nothing, it\u2019s going up', 'It should be 0 while rising', 'It should be −9.8 m/s², because gravity always pulls down', 'It should be +4.9 m/s²'], a: 2, why: 'With up as positive, gravity is always −9.8 m/s².', sec: 5 },
   { id: 'f21', type: 'mc', q: `A ball leaves level ground with ${viy} = 12 m/s. What is its ${vy} just before it lands?`, opts: ['0 m/s', '12 m/s up', '24 m/s down', '12 m/s down'], a: 3, why: 'Symmetry: same speed as launch, pointing down: −12 m/s.', sec: 2 },
-  { id: 'f22', type: 'multi', q: 'For a ball kicked at an angle on level ground, which are true? Select all that apply.', opts: ['The time up equals the time down', `At the top, ${vy} = 0`, `At the top, ${vx} = 0`, 'At the top, the acceleration is 0'], a: [0, 1], why: `Only ${vy} is zero at the top. ${vx} stays, and gravity keeps pulling.`, sec: 4 },
+  { id: 'f22', type: 'multi', q: 'For a ball kicked at an angle on level ground, which are true? Select all that apply.', opts: ['The time up equals the time down', `At the top, ${vy} = 0`, `At the top, ${vx} = 0`, 'At the top, the acceleration is 0'], a: [0, 1], why: `Only ${vy} is zero at the top. ${vx} stays, and gravity keeps pulling.`, sec: 3 },
   { id: 'f23', type: 'mc', q: `A ball is launched with ${vix} = 5.0 m/s and ${viy} = 5.0 m/s. What is its launch angle?`, opts: ['30.0°', '60.0°', '45.0°', '1.0°'], a: 2, why: 'θ = tan⁻¹(5.0 ÷ 5.0) = tan⁻¹(1) = 45.0°.', sec: 1 },
   { id: 'f24', type: 'two', q: `A ball rolls straight sideways (${viy} = 0) off a 19.6 m cliff at ${vix} = 3.0 m/s.`,
     A: { q: 'How long is it in the air?', opts: ['4.00 s', '2.00 s', '1.00 s'], a: 1 },
-    B: { q: 'How far from the base does it land?', opts: ['6.0 m', '12.0 m', '58.8 m'], a: 0 }, why: '−19.6 = ½(−9.8)Δt² gives Δt = 2.00 s. D_x = 3.0 × 2.00 = 6.0 m.', sec: 7 }
+    B: { q: 'How far from the base does it land?', opts: ['6.0 m', '12.0 m', '58.8 m'], a: 0 }, why: '−19.6 = ½(−9.8)Δt² gives Δt = 2.00 s. D_x = 3.0 × 2.00 = 6.0 m.', sec: 5 }
 ];
 const BQ = id => BANK.find(b => b.id === id);
 function scoreQ(q, ans) {
@@ -1380,11 +1177,11 @@ function optList(id, part, opts, ord, isMulti, cur, correct) {
     return `<button type="button" class="opt ${sel ? 'picked' : ''} ${ok ? 'right' : ''}" data-fc="${id}" data-part="${part}" data-oi="${oi}" aria-pressed="${sel}"><span class="L">${isMulti ? (sel ? '✓' : '') : LET[k]}</span><span>${opts[oi]}</span></button>`; }).join('')}</div>`;
 }
 function renderFinal() {
-  const pg = $('#page9'), F = S.final;
-  let body = secHead(9);
+  const pg = $('#page' + FIN), F = S.final;
+  let body = secHead(FIN);
   if (F.cur) {
     const c = F.cur, id = c.qs[c.i], q = BQ(id), a = c.ans[id];
-    body += `<div class="card"><span class="chip qc">Final check</span>
+    body += `<div class="card"><span class="chip qc">Exit check</span>
       <div class="fcnav">${c.qs.map((qid, k) => `<button type="button" class="dot ${answered(BQ(qid), c.ans[qid]) ? 'ans' : ''} ${k === c.i ? 'cur' : ''}" data-fcgo="${k}" aria-label="Question ${k + 1}">${k + 1}</button>`).join('')}</div>
       <div class="fcq"><p><b>Question ${c.i + 1} of ${FC_LEN}.</b> ${q.q}</p>`;
     if (q.type === 'two') body += ['A', 'B'].map(P => `<div class="part"><h5>Part ${P}</h5><p style="margin:0 0 4px">${q[P].q}</p>${optList(id, P, q[P].opts, c.order[id][P], false, a && a[P], q[P].a)}</div>`).join('');
@@ -1392,12 +1189,12 @@ function renderFinal() {
     const all = c.qs.every(qid => answered(BQ(qid), c.ans[qid]));
     body += `</div><div class="row"><button class="btn" type="button" data-fcgo="${c.i - 1}" ${c.i === 0 ? 'disabled' : ''}>Back</button>
       ${c.i < FC_LEN - 1 ? `<button class="btn primary" type="button" data-fcgo="${c.i + 1}">Next</button>` : ''}
-      <button class="btn ${all ? 'teal' : ''}" type="button" id="fcSubmit" ${all ? '' : 'disabled'}>Submit final check</button>
+      <button class="btn ${all ? 'teal' : ''}" type="button" id="fcSubmit" ${all ? '' : 'disabled'}>Submit exit check</button>
       <span class="muted" style="font-size:.85rem">${all ? 'All answered.' : `${c.qs.filter(qid => answered(BQ(qid), c.ans[qid])).length} of ${FC_LEN} answered`}</span></div>
       <p class="muted" style="font-size:.85rem;margin-top:10px">You won't see right or wrong until you submit. Use ${ay} = −9.8 m/s² and the calculator. Round to one decimal place (two for times).</p></div>`;
   } else {
     const last = F.attempts[F.attempts.length - 1];
-    body += `<div class="card"><h3>${F.attempts.length ? (F.passed ? 'You passed the final check' : 'Final check results') : 'Ready for the final check?'}</h3>`;
+    body += `<div class="card"><h3>${F.attempts.length ? (F.passed ? 'You passed the exit check' : 'Exit check results') : 'Ready for the exit check?'}</h3>`;
     if (!F.attempts.length) body += `<p>10 random questions about everything in this lesson. You need 8 out of 10 to pass. Some questions have two parts or ask you to select all that apply; those give partial credit. If you don't pass, you can retake it with new questions.</p>`;
     if (last) {
       body += `<div class="row" style="gap:24px;margin:8px 0 12px"><div><div class="scorebig">${last.score}<span class="muted" style="font-size:1.2rem"> / ${FC_LEN}</span></div><div class="muted">this attempt</div></div><div><div class="scorebig" style="font-size:1.6rem">${F.best}</div><div class="muted">best of ${F.attempts.length} attempt${F.attempts.length > 1 ? 's' : ''}</div></div></div>`;
@@ -1407,7 +1204,7 @@ function renderFinal() {
         if (missed.length) body += `<h3 style="margin-top:14px">${F.passed ? 'Look back at what you missed' : 'Review before you try again'}</h3><ul class="review">${missed.map(x => `<li><b>Q${x.k + 1}.</b> ${x.q.q}<br><span class="muted">${subs(x.q.why)}</span> <button class="btn small ghost" type="button" data-go="${x.q.sec}">Review section ${x.q.sec}</button></li>`).join('')}</ul>`;
       } else body += `<p class="muted">Not quite 8 yet. Look back at the sections you were unsure about, then try again. You will get new questions.</p>`;
     }
-    body += `<div class="row">${!F.passed ? `<button class="btn primary" type="button" id="fcStart">${F.attempts.length ? 'Try again with new questions' : 'Start the final check'}</button>` : ''}${F.attempts.length ? '<button class="btn teal" type="button" data-go="10">See my results</button>' : ''}</div></div>`;
+    body += `<div class="row">${!F.passed ? `<button class="btn primary" type="button" id="fcStart">${F.attempts.length ? 'Try again with new questions' : 'Start the exit check'}</button>` : ''}${F.attempts.length ? `<button class="btn teal" type="button" data-go="${RES}">See my results</button>` : ''}</div></div>`;
   }
   pg.innerHTML = body;
 }
@@ -1422,14 +1219,14 @@ document.addEventListener('click', e => {
   }
   const g = e.target.closest('[data-fcgo]'); if (g && S.final.cur && !g.disabled) { S.final.cur.i = clamp(+g.dataset.fcgo, 0, FC_LEN - 1); renderFinal(); return; }
   if (e.target.closest('#fcStart')) { newAttempt(); return; }
-  if (e.target.closest('#fcSubmit')) { confirmBox('Submit your final check?', 'You can\u2019t change your answers after you submit.', submitFinal); }
+  if (e.target.closest('#fcSubmit')) { confirmBox('Submit your exit check?', 'You can\u2019t change your answers after you submit.', submitFinal); }
 });
 function submitFinal() {
   const F = S.final, c = F.cur; if (!c) return;
   const pts = c.qs.map(id => scoreQ(BQ(id), c.ans[id])), score = Math.round(sum(pts) * 100) / 100;
   F.attempts.push({ qs: c.qs, ans: c.ans, pts, score, at: new Date().toISOString() });
   F.best = Math.max(F.best, score); F.cur = null;
-  if (score >= PASS_SCORE) { if (!F.passed) { F.passed = true; S.secDone[9] = true; S.reqs['9.pass'] = true; S.completedAt = Date.now(); S.lockActive = false; endFullscreen(); } toast('You passed!'); }
+  if (score >= PASS_SCORE) { if (!F.passed) { F.passed = true; S.secDone[FIN] = true; S.reqs[FIN + '.pass'] = true; S.completedAt = Date.now(); S.lockActive = false; endFullscreen(); } toast('You passed!'); }
   else F.failCount = (F.failCount || 0) + 1;
   storeRecord(); save(true); renderNav(); renderGoals(); renderFinal();
 }
@@ -1440,17 +1237,17 @@ function submitFinal() {
 const QC_IDS = () => Object.keys(QC);
 function lessonParts() {
   const qc = QC_IDS().map(id => ({ l: 'QC' + id.replace('s', '').replace('q', '-'), p: S.qc[id] && S.qc[id].first === true ? 1 : 0, m: 1 }));
-  const mi = MIS8.map((m, i) => ({ l: 'Mistake' + (i + 1), p: S.mis[m.id] && S.mis[m.id].pts != null ? S.mis[m.id].pts : 0, m: 1 }));
+  const mi = Object.keys(PR).map(id => ({ l: 'Practice' + PR[id].n, p: S.prac[id] && S.prac[id].first === true ? 1 : 0, m: 1 }));
   return qc.concat(mi);
 }
 function sheetBodies() {
   const st = S.student || {}, F = S.final;
   const base = { studentId: st.id || '', firstName: st.first || '', lastName: st.last || '', period: st.period || '', teacher: st.teacher || '', locks: String(S.lockouts), when: new Date().toString() };
   const lp = lessonParts();
-  const lesson = Object.assign({}, base, { activity: `${LESSON}: Lesson`, score: String(Math.round(sum(lp.map(x => x.p)) * 100) / 100), total: String(sum(lp.map(x => x.m))),
+  const lesson = Object.assign({}, base, { activity: 'Projectile Motion and Time of Flight: Lesson', score: String(Math.round(sum(lp.map(x => x.p)) * 100) / 100), total: String(sum(lp.map(x => x.m))),
     qlabels: lp.map(x => x.l).join('|'), qpoints: lp.map(x => x.p).join('|'), qmax: lp.map(x => x.m).join('|') });
   let best = null; F.attempts.forEach(a => { if (!best || a.score >= best.score) best = a; });
-  const fin = Object.assign({}, base, { activity: `${LESSON}: Final Check`, score: String(F.best), total: String(FC_LEN) },
+  const fin = Object.assign({}, base, { activity: 'Projectile Motion and Time of Flight: Exit Check', score: String(F.best), total: String(FC_LEN) },
     best ? { qlabels: best.pts.map((_, i) => 'Q' + (i + 1)).join('|'), qpoints: best.pts.join('|'), qmax: best.pts.map(() => 1).join('|') } : { qlabels: 'Final Check', qpoints: '0', qmax: String(FC_LEN) });
   return [lesson, fin];
 }
@@ -1479,17 +1276,17 @@ function sendScores() {
 }
 function renderResults() {
   const [L, Fb] = sheetBodies(), F = S.final;
-  $('#page10').innerHTML = `<div class="sechead"><div class="bigtile"><span class="n"></span>${icon('results')}<span>Results</span></div><div><div class="meta">${esc(S.student ? S.student.first + ' ' + S.student.last + ', period ' + S.student.period : '')}</div><h2>Your results</h2></div></div>
+  $('#page' + RES).innerHTML = `<div class="sechead"><div class="bigtile"><span class="n"></span>${icon('results')}<span>Results</span></div><div><div class="meta">${esc(S.student ? S.student.first + ' ' + S.student.last + ', period ' + S.student.period : '')}</div><h2>Your results</h2></div></div>
   <div class="cols"><div class="card"><h3>Scores</h3>
-    <div class="row" style="gap:28px"><div><div class="scorebig">${Fb.score}<span class="muted" style="font-size:1.1rem"> / ${FC_LEN}</span></div><div class="muted">Final check (best)${F.passed ? ' · passed' : ''}</div></div>
-    <div><div class="scorebig" style="font-size:1.8rem">${L.score}<span class="muted" style="font-size:1rem"> / ${L.total}</span></div><div class="muted">Lesson: quick checks and mistakes, first try</div></div></div>
-    <p class="muted" style="font-size:.86rem;margin-top:10px">Final check attempts: ${F.attempts.length}. Times the lesson locked: ${S.lockouts}.</p>
+    <div class="row" style="gap:28px"><div><div class="scorebig">${Fb.score}<span class="muted" style="font-size:1.1rem"> / ${FC_LEN}</span></div><div class="muted">Exit check (best)${F.passed ? ' · passed' : ''}</div></div>
+    <div><div class="scorebig" style="font-size:1.8rem">${L.score}<span class="muted" style="font-size:1rem"> / ${L.total}</span></div><div class="muted">Lesson: quick checks and practice, first try</div></div></div>
+    <p class="muted" style="font-size:.86rem;margin-top:10px">Exit check attempts: ${F.attempts.length}. Times the lesson locked: ${S.lockouts}.</p>
     <div class="row"><button class="btn primary" type="button" id="sendBtn">Send my scores to my teacher</button><button class="btn" type="button" id="csvBtn">Download my scores (CSV)</button></div>
     <p class="sheetStatus muted" style="margin-top:8px">${S.sentAt ? 'Sent ' + new Date(S.sentAt).toLocaleString() + '. You can send again to update.' : ''}</p></div>
   <div class="card"><h3>Goals</h3><ul class="goals">${GOALS.map(g => `<li class="${g.sec.every(n => S.secDone[n]) ? 'ok' : ''}">${g.t}</li>`).join('')}</ul>
-    ${F.passed ? '' : '<p class="muted">Pass the final check to finish the lesson.</p><button class="btn" type="button" data-go="9">Back to the final check</button>'}</div></div>`;
+    ${F.passed ? '' : '<p class="muted">Pass the exit check to finish the lesson.</p><button class="btn" type="button" data-go="' + FIN + '">Back to the exit check</button>'}</div></div>`;
   $('#sendBtn').addEventListener('click', sendScores);
-  $('#csvBtn').addEventListener('click', () => downloadCSV(csvRows(sheetBodies()), `ProjectileMotion_${(S.student && S.student.last || 'student').replace(/\W+/g, '')}_${(S.student && S.student.first || '').replace(/\W+/g, '')}.csv`));
+  $('#csvBtn').addEventListener('click', () => downloadCSV(csvRows(sheetBodies()), `ProjectileLesson_${(S.student && S.student.last || 'student').replace(/\W+/g, '')}_${(S.student && S.student.first || '').replace(/\W+/g, '')}.csv`));
 }
 
 /* =========================================================
@@ -1521,6 +1318,7 @@ document.addEventListener('fullscreenchange', () => { if (!isFull() && !unlockin
 document.addEventListener('webkitfullscreenchange', () => { if (!isFull() && !unlocking) lockNow(); });
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') lockNow(); });
 
+function showUnlockCode(box) { const old = document.getElementById('unlockInfo'); if (old) old.remove(); box.insertAdjacentHTML('afterbegin', `<div id="unlockInfo" style="border:2px solid #ffcf5a;background:rgba(255,207,90,.12);border-radius:10px;padding:10px 12px;margin:0 0 10px;font-size:.95rem">🔑 Code to end lockdown on this activity: <b style="font-size:1.15rem;letter-spacing:.03em">${UNLOCK_CODE}</b><div style="font-size:.8rem;opacity:.8;margin-top:2px">Give this to absent students. It ends lockdown only; it does not open the teacher view.</div></div>`); }
 /* =========================================================
    TEACHER TOOLS (code = last word of the lesson title)
    ========================================================= */
@@ -1528,10 +1326,10 @@ let keyOn = false;
 $('#teachBtn').addEventListener('click', () => { $('#teachOv').hidden = false; $('#teachLogin').hidden = false; $('#teachTools').hidden = true; $('#teachCode').value = ''; $('#teachMsg').textContent = ''; setTimeout(() => $('#teachCode').focus(), 50); });
 $('#teachGo').addEventListener('click', () => {
   if (!isTeacherCode($('#teachCode').value)) { $('#teachMsg').textContent = 'That code isn\u2019t right.'; return; }
-  $('#teachLogin').hidden = true; $('#teachTools').hidden = false; $('#teachNote').textContent = S.student ? `Signed in: ${S.student.first} ${S.student.last} (ID ${S.student.id}). Save code: ${saveKey(S.student)}` : 'No student is signed in on this Chromebook.';
+  $('#teachLogin').hidden = true; $('#teachTools').hidden = false; showUnlockCode($('#teachTools')); $('#teachNote').textContent = S.student ? `Signed in: ${S.student.first} ${S.student.last} (ID ${S.student.id}). Save code: ${saveKey(S.student)}` : 'No student is signed in on this Chromebook.';
 });
 $('#teachCode').addEventListener('keydown', e => { if (e.key === 'Enter') $('#teachGo').click(); });
-$('#tKey').addEventListener('click', () => { keyOn = !keyOn; document.body.classList.toggle('key', keyOn); $('#tKey').textContent = keyOn ? 'Hide answer key' : 'Show answer key'; $('#tKey').classList.toggle('on', keyOn); if (S.cur === 9) renderFinal(); });
+$('#tKey').addEventListener('click', () => { keyOn = !keyOn; document.body.classList.toggle('key', keyOn); $('#tKey').textContent = keyOn ? 'Hide answer key' : 'Show answer key'; $('#tKey').classList.toggle('on', keyOn); if (S.cur === FIN) renderFinal(); });
 $('#tUnlock').addEventListener('click', () => { if (!S.student) { toast('Sign a student in first, or use preview mode.'); return; } S.teacherUnlock = true; save(true); renderNav(); $$('.nextbtn').forEach(b => { b.disabled = false; }); toast('All sections are unlocked for this student.'); $('#teachOv').hidden = true; });
 $('#tPreview').addEventListener('click', () => {
   S = freshState(); S.preview = true; S.student = { first: 'Teacher', last: 'Preview', id: '0', period: '0', teacher: 'Preview' };
@@ -1541,7 +1339,7 @@ $('#tEndLock').addEventListener('click', () => { S.lockActive = false; S.locked 
 $('#tScores').addEventListener('click', () => {
   let recs = []; try { recs = JSON.parse(localStorage.getItem(RECS) || '[]'); } catch (e) {}
   if (!recs.length) { toast('No scores are saved on this Chromebook yet.'); return; }
-  downloadCSV(csvRows(recs.flatMap(r => r.bodies)), 'ProjectileMotion_scores.csv');
+  downloadCSV(csvRows(recs.flatMap(r => r.bodies)), 'ProjectileLesson_scores.csv');
 });
 $('#tReset').addEventListener('click', () => {
   if (!S.student) { toast('No student is signed in.'); return; }
@@ -1588,8 +1386,8 @@ document.addEventListener('keydown', e => {
    ========================================================= */
 $('#fTeacher').innerHTML = '<option value="">Choose</option>' + teacherList().map(t => `<option>${esc(t)}</option>`).join('');
 $('#fPeriod').innerHTML = '<option value="">Choose</option>' + periodList().map(x => `<option>${esc(x)}</option>`).join('');
-const TITLE_OF = n => n === 10 ? 'Results' : n === 9 ? 'Final check' : `Section ${n}: ${TILES[n].title}`;
-const resumeTarget = () => { if (S.cur >= 1 && S.cur <= 10 && accessible(S.cur)) return S.cur; let n = 1; for (let k = 1; k <= 9; k++) if (accessible(k)) n = k; return n; };
+const TITLE_OF = n => n === RES ? 'Results' : n === FIN ? 'Exit check' : `Section ${n}: ${TILES[n].title}`;
+const resumeTarget = () => { if (S.cur >= 1 && S.cur <= RES && accessible(S.cur)) return S.cur; let n = 1; for (let k = 1; k <= FIN; k++) if (accessible(k)) n = k; return n; };
 function renderStart() {
   const has = !!(S.student && !S.preview);
   $('#signCard').hidden = has; $('#resumeCard').hidden = !has; renderGoals();
@@ -1639,10 +1437,10 @@ function heroFig() {
 }
 function buildAll() {
   Object.keys(QC).forEach(k => delete QC[k]); Object.keys(PR).forEach(k => delete PR[k]);
-  [build1, build2, build3, build4, build5, build6, build7, build8].forEach(f => f());
+  [build1, build2, build3, build4, build5].forEach(f => f());
   Object.keys(QC).forEach(paintQC); Object.keys(PR).forEach(paintPR);
-  for (let n = 1; n <= 8; n++) renderReqs(n);
-  renderNav(); renderGoals(); if (S.cur === 9) renderFinal(); if (S.cur === 10) renderResults();
+  for (let n = 1; n <= NSEC; n++) renderReqs(n);
+  renderNav(); renderGoals(); if (S.cur === FIN) renderFinal(); if (S.cur === RES) renderResults();
 }
 if (!STORAGE_OK) $('#noStore').classList.add('show');
 if (S.preview) S = freshState();
