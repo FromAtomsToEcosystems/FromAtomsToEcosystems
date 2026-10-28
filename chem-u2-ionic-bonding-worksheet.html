@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ionic Bonding Worksheet | Chemistry Unit 2</title>
+<style>
+:root{
+  --bg:#0c1424; --bg2:#101b30; --panel:#14203a; --panel2:#1b2a49; --panel3:#223358;
+  --line:#26375a; --line2:#35496f;
+  --text:#e8eef8; --muted:#a3b4d1; --dim:#7488ab;
+  --e:#5fe1ff; --e-glow:rgba(95,225,255,.55); --p:#ff7d66; --n:#aab6cc; --val:#ffd36b; --gain:#ff8fd0;
+  --amber:#f6b93b; --good:#4ade80; --bad:#fb7185;
+  --c-nonmetal:#45c08f; --c-noble:#a084ff; --c-alkali:#ff8f5e; --c-alkaline:#ffcb5c;
+  --c-metalloid:#46c7d8; --c-post:#8ea8cc; --c-halogen:#f477b8;
+  --r-lg:16px; --r-md:12px; --r-sm:8px;
+  --font:"Lexend","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 110px)}
+*,*::before,*::after{box-sizing:inherit}
+body{
+  margin:0; min-height:100vh; color:var(--text); font-family:var(--font);
+  font-size:17px; line-height:1.6; font-weight:300;
+  background:
+    radial-gradient(900px 520px at 85% -8%, #1a2d52 0%, transparent 62%),
+    radial-gradient(700px 420px at -10% 30%, #13233f 0%, transparent 60%),
+    var(--bg);
+  background-attachment:fixed;
+}
+b,strong{font-weight:600}
+h1,h2,h3{font-weight:600;line-height:1.2;margin:0}
+p{margin:.5em 0}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--e);outline-offset:2px;border-radius:6px}
+.small{font-size:14px}
+.muted{color:var(--muted)}
+.hidden{display:none!important}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:sticky; top:0; z-index:40;
+  padding-top:env(safe-area-inset-top,0px);
+  background:rgba(12,20,36,.9); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.topbar-in{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:14px;padding:10px 18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:16px;white-space:nowrap}
+.brand svg{width:30px;height:30px}
+.navtiles{display:flex;gap:6px;overflow-x:auto;padding:4px 2px;flex:1;scrollbar-width:thin}
+.top-actions{display:flex;gap:8px}
+.top-btn{background:var(--panel2);border:1px solid var(--line2);border-radius:999px;padding:6px 14px;font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap}
+.top-btn:hover{background:var(--panel3)}
+
+/* ---------- element tiles ---------- */
+.tile{
+  --c:var(--c-nonmetal);
+  position:relative; flex:0 0 auto; width:46px; height:52px; border-radius:8px;
+  background:var(--panel2);
+  background:color-mix(in srgb, var(--c) 20%, var(--panel));
+  border:1.5px solid var(--c);
+  border-color:color-mix(in srgb, var(--c) 75%, transparent);
+  display:grid; place-items:center; font-weight:700; font-size:19px; line-height:1;
+  color:var(--text); cursor:pointer; padding:0;
+  transition:transform .2s, box-shadow .2s, opacity .2s;
+}
+.tile .z{position:absolute;top:4px;left:5px;font-size:10px;font-weight:500;color:var(--muted)}
+.tile:hover:not(:disabled){transform:translateY(-2px)}
+.tile.current{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--c)}
+.tile:disabled{cursor:not-allowed;opacity:.32;filter:saturate(.3)}
+.tile .ck{position:absolute;right:-5px;bottom:-5px;width:17px;height:17px;border-radius:50%;background:var(--good);color:#06240f;font-size:11px;display:grid;place-items:center;font-weight:700;opacity:0;transform:scale(.4);transition:.25s}
+.tile.done .ck{opacity:1;transform:scale(1)}
+.tile.unlocking{animation:unlockPop .7s cubic-bezier(.2,1.6,.4,1)}
+@keyframes unlockPop{0%{transform:scale(.7)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
+.tile.big{width:74px;height:82px;font-size:32px;border-width:2px;cursor:default}
+.tile.big .z{font-size:13px;top:6px;left:8px}
+.cat-nonmetal{--c:var(--c-nonmetal)} .cat-noble{--c:var(--c-noble)} .cat-alkali{--c:var(--c-alkali)}
+.cat-alkaline{--c:var(--c-alkaline)} .cat-metalloid{--c:var(--c-metalloid)} .cat-post{--c:var(--c-post)} .cat-halogen{--c:var(--c-halogen)}
+
+/* ---------- layout ---------- */
+main{max-width:980px;margin:0 auto;padding:22px 18px 80px}
+.screen{display:none}
+.screen.on{display:block;animation:screenIn .35s ease-out}
+@keyframes screenIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sec-head{display:flex;align-items:center;gap:18px;margin:8px 0 10px}
+.sec-meta{color:var(--muted);font-size:15px;margin:0 0 4px}
+.sec-head h2{font-size:clamp(26px,4vw,36px);letter-spacing:-.01em}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px 24px;margin:18px 0}
+.card h3{font-size:21px;margin:2px 0 10px}
+.tag{display:inline-block;font-size:13px;font-weight:600;color:var(--muted);background:var(--panel2);border-radius:999px;padding:3px 12px;margin-bottom:8px}
+.k-read .tag{color:#c3cffc;background:#25305a}
+.k-try .tag{color:#0b2630;background:var(--e)}
+.k-qc{border:2px solid var(--amber)}
+.k-qc .tag{color:#241703;background:var(--amber)}
+.read-text{max-width:68ch}
+
+.btn{border:0;border-radius:10px;padding:11px 20px;font-weight:600;font-size:16px;cursor:pointer;transition:transform .15s, background .2s, opacity .2s}
+.btn:active:not(:disabled){transform:scale(.97)}
+.btn.primary{background:var(--e);color:#062430}
+.btn.primary:hover:not(:disabled){background:#8eebff}
+.btn.ghost{background:transparent;border:1.5px solid var(--line2);color:var(--text)}
+.btn.ghost:hover:not(:disabled){background:var(--panel2)}
+.btn.amber{background:var(--amber);color:#241703}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.sm{padding:7px 14px;font-size:14px;border-radius:8px}
+.btn-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}
+
+.sec-foot{display:flex;justify-content:space-between;gap:12px;margin-top:22px}
+
+/* word-help chips */
+.chip{display:inline;background:rgba(95,225,255,.1);border:0;border-bottom:1.5px dotted var(--e);color:#bff3ff;padding:0 4px;border-radius:4px;cursor:help;font-weight:400}
+.chip:hover{background:rgba(95,225,255,.2)}
+#pop{position:fixed;z-index:80;max-width:300px;background:var(--panel3);border:1px solid var(--line2);border-radius:12px;padding:12px 14px;box-shadow:0 14px 40px rgba(0,0,0,.45);font-size:15px}
+#pop b{display:block;color:var(--e);margin-bottom:2px;text-transform:capitalize}
+#pop p{margin:0}
+
+/* particle dots + small tables */
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px;vertical-align:-1px}
+.dot.p{background:var(--p)} .dot.n{background:var(--n)} .dot.e{background:var(--e);box-shadow:0 0 8px var(--e-glow)}
+.mini-table{border-collapse:collapse;margin:14px 0 4px;font-size:15px;min-width:300px}
+.mini-table th,.mini-table td{padding:7px 16px 7px 0;border-bottom:1px solid var(--line);text-align:left}
+.mini-table th{color:var(--muted);font-weight:500}
+.table-scroll{overflow-x:auto}
+.rules{display:grid;gap:8px;margin:12px 0}
+.rule{background:var(--panel2);border-radius:10px;padding:10px 14px}
+.rule small{color:var(--muted)}
+
+/* ---------- Bohr SVG ---------- */
+svg.bohr{width:100%;max-width:340px;height:auto;display:block;margin:0 auto;overflow:visible}
+.bohr .ring{fill:none;stroke:var(--line2);stroke-width:2}
+.bohr .ring.outer{stroke:rgba(255,211,107,.55);stroke-width:2.5}
+.bohr .ring-in{animation:ringIn .45s ease-out}
+@keyframes ringIn{from{opacity:0;stroke-width:8}to{opacity:1}}
+.bohr .nucleus{fill:url(#nucGrad);stroke:rgba(255,125,102,.6);stroke-width:1.5}
+.bohr .nt{fill:#fff;font-size:12.5px;font-weight:600;text-anchor:middle;font-family:var(--font)}
+.bohr .e{fill:var(--e);filter:drop-shadow(0 0 4px var(--e-glow));transform-box:view-box;transform-origin:0 0;
+  transition:transform .55s cubic-bezier(.2,.85,.25,1), opacity .35s, fill .3s}
+.bohr .e.val{fill:var(--val);filter:drop-shadow(0 0 5px rgba(255,211,107,.7))}
+.bohr .e.gain{fill:var(--gain);filter:drop-shadow(0 0 5px rgba(255,143,208,.75))}
+.bohr .ring-out{opacity:0;transition:opacity .45s}
+.bohr .bracket{fill:none;stroke:var(--text);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+.bohr .charge{fill:var(--text);font-size:28px;font-weight:700;font-family:var(--font)}
+.bohr .ion-in{animation:ionIn .6s ease-out}
+@keyframes ionIn{from{opacity:0;transform:scale(1.08)}to{opacity:1;transform:none}}
+.bohr .ionmark{transform-box:view-box;transform-origin:150px 150px}
+.ion{white-space:nowrap;font-weight:600}
+.ion sup{font-size:.62em;margin-left:1px}
+.dot.g{background:var(--gain);box-shadow:0 0 8px rgba(255,143,208,.7)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;color:var(--muted);margin:8px 0 0;justify-content:center}
+.token .tok-model{display:block;width:70px;margin:0 auto 2px}
+.token.model-token{display:inline-flex;flex-direction:column;align-items:center;padding:6px 10px;font-size:14px}
+.big-ion{font-size:clamp(48px,9vw,80px);font-weight:700;line-height:1;text-align:center;margin:8px 0}
+.big-ion sup{font-size:.45em;vertical-align:1.1em;margin-left:2px}
+.arrow-cap{text-align:center;color:var(--muted);font-size:14px}
+.atom-ion{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center}
+.atom-ion .arr{font-size:30px;color:var(--amber);font-weight:700}
+.atom-ion figure{margin:0;text-align:center}
+.atom-ion figcaption{font-size:14px;color:var(--muted);margin-top:4px}
+.atom-ion svg{max-width:220px}
+.meter{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.meter div{background:var(--panel2);border-radius:10px;padding:8px;text-align:center}
+.meter .k{font-size:13px;color:var(--muted)} .meter .v{font-size:24px;font-weight:600}
+.meter .v.pos{color:var(--p)} .meter .v.neg{color:var(--e)}
+.hero-ion svg{max-width:460px;width:100%;height:auto;display:block;margin:0 auto;overflow:visible}
+.hero-ion .travel{transition:transform 1.3s cubic-bezier(.45,0,.25,1)}
+.hero-fig.hero-ion svg{max-width:470px}
+.hero-ion .ionmark{animation:fadeIn .7s ease-out}
+@keyframes fadeIn{from{opacity:0}}
+.bohr.static .e{transition:none}
+.bohr .zone{fill:rgba(95,225,255,.06);stroke:var(--e);stroke-width:1.5;stroke-dasharray:4 3;cursor:pointer;opacity:.75;transition:fill .2s,opacity .2s}
+.bohr .zone:hover,.bohr .zone:focus{fill:rgba(95,225,255,.22);opacity:1;outline:none}
+.bohr .zone.bad{stroke:var(--bad);fill:rgba(251,113,133,.25)}
+.bohr.pulse .zone{animation:zonePulse 1.6s ease-in-out infinite}
+@keyframes zonePulse{50%{fill:rgba(95,225,255,.2)}}
+.bohr.mode-add .e{pointer-events:none}
+.bohr.mode-erase .zone{pointer-events:none;opacity:.25}
+.bohr.mode-erase .e{cursor:pointer}
+.bohr.mode-erase .e:hover{fill:var(--bad)}
+.bohr .sh{transform-box:view-box;transform-origin:150px 150px}
+.bohr.orbit .sh0{animation:spin 14s linear infinite}
+.bohr.orbit .sh1{animation:spin 24s linear infinite}
+.bohr.orbit .sh2{animation:spin 36s linear infinite}
+.bohr.orbit .sh3{animation:spin 50s linear infinite}
+.bohr.celebrate .sh{animation:spin 1.1s cubic-bezier(.3,0,.2,1) 1}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pin circle{fill:var(--panel3);stroke:var(--amber);stroke-width:2}
+.pin text{fill:var(--text);font-size:14px;font-weight:700;text-anchor:middle;font-family:var(--font)}
+.leader{stroke:var(--amber);stroke-width:1.5;stroke-dasharray:4 4;opacity:.8}
+
+/* ---------- start / hero ---------- */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center;margin:12px 0 6px}
+.hero h1{font-size:clamp(40px,7vw,72px);letter-spacing:-.025em;font-weight:700;line-height:1.02;margin:6px 0 14px}
+.hero .unit{color:var(--muted);margin:0;font-size:16px}
+.hero .lede{font-size:19px;max-width:44ch;color:#d3def0}
+.hero-fig{position:relative}
+.hero-fig svg{max-width:360px}
+.hero-cap{text-align:center;color:var(--muted);margin:4px 0 0;font-size:15px;min-height:1.6em}
+.hero-cap b{color:var(--text)}
+.start-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.start-grid .card{margin:0}
+.start-grid + .start-grid{margin-top:18px}
+.obj{border-left:4px solid var(--e)}
+.std{border-left:4px solid var(--c-noble)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;margin:8px 0 6px}
+.form-grid label{display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--muted);font-weight:500}
+input[type=text],input[type=number],input[type=password],select,.inp{
+  background:var(--bg2);border:1.5px solid var(--line2);border-radius:9px;padding:9px 11px;color:var(--text);font-size:16px;width:100%}
+input:focus,select:focus{border-color:var(--e);outline:none}
+.form-msg{color:var(--bad);min-height:1.4em;font-size:15px;margin:4px 0}
+.welcome{background:var(--panel2);border-radius:12px;padding:14px 16px}
+
+/* goals checklist */
+.goals{list-style:none;margin:6px 0;padding:0;display:grid;gap:8px}
+.goals li{display:flex;gap:10px;align-items:flex-start;font-size:15.5px}
+.box{flex:0 0 22px;width:22px;height:22px;border-radius:6px;border:2px solid var(--line2);display:grid;place-items:center;margin-top:1px;transition:.25s}
+.ok > .box,.mission.ok .mt > .box{background:var(--good);border-color:var(--good)}
+.ok > .box::after,.mission.ok .mt > .box::after{content:"";width:6px;height:11px;border:solid #06240f;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.ok{color:var(--text)}
+.goals li:not(.ok){color:var(--muted)}
+.just-ok > .box{animation:tickPop .6s cubic-bezier(.2,1.7,.4,1)}
+@keyframes tickPop{0%{transform:scale(.5)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
+
+/* unlock checklist */
+.unlock{background:var(--bg2);border-style:dashed}
+.unlock h3{font-size:17px;color:var(--muted);font-weight:500}
+.reqs{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.reqs li{display:flex;gap:10px;align-items:flex-start}
+.reqs li:not(.ok){color:var(--muted)}
+.unlock.all-done{border-color:var(--good);border-style:solid}
+
+/* ---------- quick checks ---------- */
+.qc-q{font-weight:500;font-size:18px;margin:4px 0 12px}
+.opts{display:grid;gap:9px}
+.opts.grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+.opt{display:flex;gap:12px;align-items:center;text-align:left;background:var(--panel2);border:1.5px solid var(--line2);border-radius:11px;padding:10px 14px;cursor:pointer;transition:border-color .2s, background .2s, transform .15s;width:100%}
+.opt:hover:not(:disabled){border-color:var(--e)}
+.opt .L{flex:0 0 30px;height:30px;border-radius:8px;background:var(--panel3);display:grid;place-items:center;font-weight:600}
+.opts.grid .opt{flex-direction:column;align-items:stretch;padding:10px}
+.opts.grid .opt .L{align-self:flex-start}
+.opts.grid .opt svg{max-width:170px;stroke-width:1}
+.opts.grid .ring{stroke-width:3}
+.opt.right{border-color:var(--good);background:rgba(74,222,128,.12)}
+.opt.right .L{background:var(--good);color:#06240f}
+.opt.wrong{border-color:var(--bad);background:rgba(251,113,133,.1);opacity:.75}
+.opt.wrong .L{background:var(--bad);color:#2a0710}
+.opt.picked{border-color:var(--e);background:rgba(95,225,255,.12)}
+.opt.picked .L{background:var(--e);color:#062430}
+.opt:disabled{cursor:default}
+body.show-key .opt[data-key]{box-shadow:0 0 0 2px var(--amber)}
+body.show-key .opt[data-key]::after{content:"key";margin-left:auto;font-size:12px;color:var(--amber);font-weight:600}
+.qc-fb{min-height:1.5em;margin:12px 0 0}
+.qc-fb.good{color:#b9f5cf} .qc-fb.bad{color:#ffc2cd}
+.qc-fig{margin:4px 0 10px}
+.qc-fig svg{max-width:280px;margin:0}
+.shake{animation:shake .45s}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+
+/* ---------- sorter (tap or drag) ---------- */
+.sorter .tray{display:flex;flex-wrap:wrap;gap:8px;min-height:50px;padding:10px;background:var(--bg2);border-radius:12px;border:1px dashed var(--line2)}
+.sorter .tray:empty::after{content:"All sorted";color:var(--good);font-size:14px;padding:6px}
+.token{background:var(--panel3);border:1.5px solid var(--line2);border-radius:9px;padding:8px 14px;font-weight:500;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;transition:transform .15s, border-color .15s, background .2s}
+.token.sel{border-color:var(--e);background:#20456a;transform:translateY(-2px)}
+.token.placed{cursor:default;border-color:var(--good);background:rgba(74,222,128,.14);animation:tickPop .45s}
+.token.el-token{display:inline-flex;gap:8px;align-items:center}
+.token.el-token .sym{font-weight:700;font-size:18px}
+.token.el-token .nm{font-size:13px;color:var(--muted)}
+.ghost-token{position:fixed;z-index:90;pointer-events:none;opacity:.92;transform:translate(-50%,-50%) rotate(-3deg);box-shadow:0 12px 28px rgba(0,0,0,.5)}
+.sorter .bins{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:12px}
+.bin{background:var(--panel2);border:1.5px solid var(--line2);border-radius:12px;padding:10px;min-height:96px;cursor:pointer;transition:border-color .2s, background .2s}
+.bin.hover,.bin:focus-visible{border-color:var(--e);background:#1f3a5e}
+.bin-label{font-size:14px;font-weight:600;color:var(--muted);margin-bottom:6px}
+.bin-drop{display:flex;flex-wrap:wrap;gap:6px}
+.sorter.rows .bins{grid-template-columns:1fr;gap:8px}
+.sorter.six .bins{grid-template-columns:repeat(3,1fr)}
+.sorter.rows .bin{display:flex;align-items:center;gap:12px;min-height:54px;padding:8px 10px}
+.sorter.rows .bin-label{margin:0;width:32px;height:32px;border-radius:50%;border:2px solid var(--amber);display:grid;place-items:center;color:var(--text);flex:0 0 32px}
+.sorter.rows .bin-drop:empty::before{content:"Drop a label here";color:var(--dim);font-size:14px}
+.sort-msg{min-height:1.4em;margin:8px 0 0;font-size:15px}
+.label-wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center}
+.label-fig svg{max-width:360px}
+
+/* ---------- element tile explorer ---------- */
+.tile-explore{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center}
+.big-tile{--c:var(--c-alkali);width:190px;height:220px;border-radius:16px;background:color-mix(in srgb,var(--c) 18%,var(--panel));border:2.5px solid var(--c);position:relative;display:grid;grid-template-rows:auto 1fr auto auto;padding:12px;gap:2px}
+.part{background:transparent;border:2px dashed transparent;border-radius:8px;cursor:pointer;padding:2px 6px;transition:border-color .2s, background .2s}
+.part:hover{border-color:rgba(255,255,255,.35)}
+.part.seen{border-color:var(--good)}
+.part.active{background:rgba(255,255,255,.1);border-color:var(--e)}
+.p-z{justify-self:start;font-size:24px;font-weight:600}
+.p-sym{font-size:64px;font-weight:700;line-height:1;justify-self:center;align-self:center}
+.p-name{font-size:18px;justify-self:center}
+.p-mass{font-size:18px;justify-self:center;color:#d5def0}
+.part-info{background:var(--panel2);border-radius:12px;padding:14px 16px;min-height:120px}
+.part-info h4{margin:0 0 4px;color:var(--e);font-size:17px;font-weight:600}
+
+/* notebook tables */
+.notebook{width:100%;border-collapse:collapse;font-size:15px;margin-top:8px}
+.notebook th{color:var(--muted);font-weight:500;text-align:left;padding:6px 8px;border-bottom:1px solid var(--line2)}
+.notebook td{padding:7px 8px;border-bottom:1px solid var(--line)}
+.notebook input{width:76px;text-align:center;padding:7px}
+.notebook input.good{border-color:var(--good);background:rgba(74,222,128,.1)}
+.notebook input.badv{border-color:var(--bad);background:rgba(251,113,133,.1)}
+.mtile{display:inline-grid;grid-template-columns:auto auto;gap:0 8px;align-items:center;background:color-mix(in srgb,var(--c) 18%,var(--panel));border:1.5px solid var(--c);border-radius:8px;padding:4px 9px;font-size:12px;color:var(--muted);line-height:1.25}
+.mtile .s{grid-row:span 2;font-size:20px;font-weight:700;color:var(--text)}
+.fb-line{min-height:1.4em;margin:10px 0 0}
+.fb-line.good{color:#b9f5cf} .fb-line.bad{color:#ffc2cd}
+
+/* ---------- simulators ---------- */
+.sim{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+.sim-el{display:flex;gap:14px;align-items:center;background:var(--panel2);border-radius:12px;padding:12px}
+.sim-el .nm{font-size:20px;font-weight:600}
+.sim-el .ar{color:var(--muted);font-size:15px}
+.sim-el .ar b{color:var(--e);font-size:18px}
+.missions{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:10px}
+.mission{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.mission.ok{border-color:var(--good)}
+.mission .mt{display:flex;gap:10px;align-items:flex-start}
+.mission .mfb{font-size:14px;margin:6px 0 0 32px;min-height:0}
+.mission .btn{margin:8px 0 0 32px}
+.mission.ok .lockin{display:none}
+.counter{font-size:14px;color:var(--muted)}
+
+/* flipchart */
+.flip{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center;background:var(--bg2);border-radius:14px;padding:16px;margin-top:12px}
+.flip-step{color:var(--amber);font-weight:600;font-size:14px;margin:0}
+.flip-text{font-size:18px;min-height:3.4em}
+.flip-left{background:var(--panel2);border-radius:10px;padding:8px 12px;display:inline-block}
+.flip-left b{color:var(--e);font-size:20px}
+.flip-dots{display:flex;gap:6px;margin-top:10px}
+.flip-dots i{width:9px;height:9px;border-radius:50%;background:var(--line2);transition:.3s}
+.flip-dots i.on{background:var(--amber);transform:scale(1.25)}
+
+/* steppers */
+.steppers{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+.stp{background:var(--panel2);border-radius:10px;padding:8px;text-align:center}
+.stp .lab{font-size:13px;color:var(--muted)}
+.stp .row{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:4px}
+.stp button{width:32px;height:32px;border-radius:8px;border:1px solid var(--line2);background:var(--panel3);cursor:pointer;font-size:18px;font-weight:600;line-height:1}
+.stp output{min-width:26px;font-size:20px;font-weight:600}
+.target{display:flex;gap:14px;align-items:center;margin:4px 0 6px}
+.target .t-name{font-size:20px;font-weight:600}
+.progress-pips{display:flex;gap:6px}
+.progress-pips i{width:26px;height:8px;border-radius:4px;background:var(--line2);transition:.3s}
+.progress-pips i.on{background:var(--good)}
+
+/* builder */
+.builder{display:grid;grid-template-columns:1.05fr .95fr;gap:22px;align-items:start}
+.b-fig{background:var(--bg2);border-radius:14px;padding:12px;position:sticky;top:96px}
+.b-fig svg{max-width:420px}
+.b-note{text-align:center;color:var(--muted);font-size:14px;margin:6px 0 0}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.tab{background:var(--panel2);border:1.5px solid var(--line2);border-radius:999px;padding:6px 14px;font-weight:500;cursor:pointer;font-size:15px}
+.tab[aria-selected=true]{border-color:var(--e);background:#1f3a5e}
+.tab.ok::after{content:" ✓";color:var(--good);font-weight:700}
+fieldset{border:1px solid var(--line);border-radius:12px;padding:10px 12px 12px;margin:0 0 10px}
+legend{padding:0 6px;color:var(--muted);font-size:14px;font-weight:500}
+.nuc-in{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.nuc-in label{font-size:14px;color:var(--muted);display:flex;flex-direction:column;gap:3px}
+.seg{display:inline-flex;background:var(--bg2);border-radius:10px;padding:3px;border:1px solid var(--line2)}
+.seg button{border:0;background:transparent;padding:7px 16px;border-radius:8px;cursor:pointer;font-weight:500}
+.seg button[aria-pressed=true]{background:var(--e);color:#062430}
+.inline-stepper{display:inline-flex;align-items:center;gap:8px}
+.inline-stepper button{width:34px;height:34px;border-radius:8px;border:1px solid var(--line2);background:var(--panel3);cursor:pointer;font-size:18px;font-weight:600}
+.inline-stepper output{font-size:20px;font-weight:600;min-width:24px;text-align:center}
+.report{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:7px}
+.report li{display:flex;gap:10px;align-items:flex-start;font-size:15px}
+.report .ic{flex:0 0 22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700}
+.report .y .ic{background:var(--good);color:#06240f}
+.report .x .ic{background:var(--bad);color:#2a0710}
+.report .w .ic{background:var(--line2);color:var(--muted)}
+
+/* placement game */
+.place-prompt{font-size:17px;background:var(--bg2);border-radius:10px;padding:10px 14px;margin:8px 0}
+.place-prompt b{color:var(--e)}
+.num-fig svg{max-width:280px}
+.demo-cap{text-align:center;font-size:16px;min-height:2.8em;margin:6px 0}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:center}
+
+/* periodic table */
+.pt{display:grid;grid-template-columns:repeat(8,minmax(38px,1fr));gap:5px;max-width:460px}
+.pt .gh{text-align:center;font-size:12px;color:var(--muted);font-weight:500}
+.pt .tile{width:auto;height:48px;font-size:17px}
+.pt .tile.same{box-shadow:0 0 0 2px var(--val)}
+.pt .tile.seen::before{content:"";position:absolute;right:4px;top:4px;width:6px;height:6px;border-radius:50%;background:var(--good)}
+.pt-wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:center}
+.pt-info{text-align:center;min-height:3em;margin:4px 0 0}
+.pt-info b.v{color:var(--val)}
+.ans-grid{display:grid;grid-template-columns:repeat(10,minmax(34px,1fr));gap:5px;margin-top:10px}
+.ans-grid .tile{width:auto;height:44px;font-size:16px}
+
+/* final check */
+.fc-dots{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 14px}
+.fc-dots button{width:32px;height:32px;border-radius:8px;border:1.5px solid var(--line2);background:var(--panel2);cursor:pointer;font-size:13px;font-weight:600}
+.fc-dots button.ans{background:#1f3a5e;border-color:var(--e)}
+.fc-dots button.cur{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--amber)}
+.score-big{font-size:64px;font-weight:700;line-height:1;margin:6px 0}
+.score-big.pass{color:var(--good)} .score-big.fail{color:var(--amber)}
+.review-item{border-top:1px solid var(--line);padding:12px 0}
+.review-item .yours{color:#ffc2cd} .review-item .right{color:#b9f5cf}
+.attempts{font-size:15px;color:var(--muted)}
+.lock-note{background:rgba(246,185,59,.1);border:1px solid rgba(246,185,59,.5);border-radius:10px;padding:10px 14px;font-size:15px}
+.review-box{background:var(--bg2);border-radius:12px;padding:12px 16px;margin:10px 0}
+.review-box li{margin:4px 0}
+
+/* results */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:12px 0}
+.stat{background:var(--panel2);border-radius:12px;padding:12px 14px}
+.stat .k{font-size:13px;color:var(--muted)}
+.stat .v{font-size:26px;font-weight:600}
+.who{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 16px;font-size:15px}
+.who span{color:var(--muted);display:block;font-size:13px}
+
+/* overlays */
+.overlay{position:fixed;inset:0;z-index:100;background:rgba(6,11,22,.86);backdrop-filter:blur(6px);display:grid;place-items:center;padding:20px}
+.overlay[hidden]{display:none}
+.modal{background:var(--panel);border:1px solid var(--line2);border-radius:18px;padding:24px;max-width:460px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.modal h3{font-size:22px;margin-bottom:6px}
+.lock-modal{border:2px solid var(--amber);text-align:center}
+.lock-icon{font-size:44px;line-height:1}
+.teacher-tools{display:grid;gap:8px;margin-top:12px}
+.drawer{position:fixed;right:16px;top:76px;z-index:60;width:min(360px,calc(100vw - 32px));background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.55)}
+.drawer[hidden]{display:none}
+.sheetbox{font-size:15px;color:var(--muted);margin:8px 0 0;min-height:1.4em}
+#toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);opacity:0;z-index:120;background:var(--panel3);border:1px solid var(--good);color:var(--text);border-radius:12px;padding:10px 18px;font-weight:500;transition:.35s;pointer-events:none;max-width:90vw;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:820px){
+  .hero,.start-grid,.sim,.builder,.flip,.two-col,.pt-wrap,.label-wrap,.tile-explore{grid-template-columns:1fr}
+  .b-fig{position:static}
+  .brand span{display:none}
+  .form-grid{grid-template-columns:1fr}
+  .big-tile{margin:0 auto}
+  .ans-grid{grid-template-columns:repeat(5,1fr)}
+  .steppers{grid-template-columns:repeat(2,1fr)}
+  .card{padding:18px 16px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .bohr.orbit .sh{animation:none!important}
+}
+@media print{
+  body{background:#fff;color:#000}
+  .topbar,.sec-foot,#toast,.drawer,.overlay,.no-print{display:none!important}
+  .screen{display:none!important}
+  #scr-10{display:block!important}
+  .card,.stat{background:#fff;border:1px solid #999;color:#000}
+  .stat .k,.who span,.muted{color:#333}
+  .goals li:not(.ok){color:#333}
+}
+
+/* ion-themed tiles */
+.tile.ion{font-size:15px;letter-spacing:-.3px}
+.tile.ion .lab{white-space:nowrap}.tile.ion sup{font-size:.62em;margin-left:1px;vertical-align:.55em;line-height:0}
+.tile.ion.pos{--c:#60a5fa}.tile.ion.neg{--c:#f472b6}.tile.ion.neu{--c:#f6b93b}
+.tile.ion.big{font-size:22px}
+.tile.ion.long{font-size:11.5px;letter-spacing:-.5px}.tile.ion.big.long{font-size:17px}
+/* section 9: balance the charges */
+.combo-ex{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;margin:12px 0;font-size:22px;font-weight:700}
+.cx-side,.cx-res{display:grid;justify-items:center;gap:2px;padding:8px 14px;border-radius:12px;background:color-mix(in srgb,#60a5fa 18%,var(--panel));border:1.5px solid #60a5fa}
+.cx-side.neg{background:color-mix(in srgb,#f472b6 18%,var(--panel));border-color:#f472b6}
+.cx-row{display:flex;gap:10px}
+.cx-res{background:color-mix(in srgb,#f6b93b 18%,var(--panel));border-color:#f6b93b}
+.combo-ex small{font-size:12px;font-weight:500;color:var(--muted)}
+.cx-op{color:var(--muted)}
+.bal-grid{display:grid;grid-template-columns:1fr 1.1fr 1fr;gap:12px;align-items:center;margin-top:8px}
+.bal-col{background:var(--panel2);border-radius:14px;padding:10px;display:grid;gap:8px;justify-items:center;border:1.5px solid #60a5fa;min-height:190px}
+.bal-col.neg{border-color:#f472b6}
+.bal-head{font-weight:700;text-align:center}
+.bal-ions{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-height:56px;align-content:center}
+.ichip{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:15px}
+.ichip.pos{background:color-mix(in srgb,#60a5fa 30%,var(--panel));border:2px solid #60a5fa}
+.ichip.neg{background:color-mix(in srgb,#f472b6 30%,var(--panel));border:2px solid #f472b6}
+.ichip.pop{animation:unlockPop .45s cubic-bezier(.2,1.6,.4,1)}
+.bal-btns{display:flex;align-items:center;gap:10px}.bal-btns b{font-size:22px;min-width:20px;text-align:center}
+.bal-tot{font-weight:700;color:var(--muted)}
+.bal-mid{text-align:center}.beam{width:100%;max-width:220px}
+.beam-g{transform-origin:100px 76px;transition:transform .6s cubic-bezier(.3,1.4,.5,1)}
+.beam-t{fill:var(--text);font:700 15px var(--font)}
+.bal-status{font-size:15px}.ok-t{color:var(--good)}
+.formula{font-size:1.15em;color:var(--amber)}
+@media (max-width:720px){.bal-grid{grid-template-columns:1fr}.bal-mid{order:-1}}
+
+/* worksheet */
+#app{max-width:1000px;margin:0 auto;padding:18px 16px 80px}
+.topbar .prog{color:var(--muted);font-size:13px;font-weight:700;margin-left:auto}
+.ws-strip{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 12px}
+.qn{position:relative;width:38px;height:38px;border-radius:10px;border:1.5px solid var(--line2);background:var(--panel2);color:var(--text);font-weight:800}
+.qn.cur{border-color:var(--e);box-shadow:0 0 0 2px rgba(95,225,255,.3)}
+.qn.done{border-color:var(--good)} .qn.part{border-color:var(--amber)}
+.qn i{position:absolute;right:-5px;bottom:-5px;font-style:normal;font-size:10px;background:var(--good);color:#06240f;border-radius:50%;width:15px;height:15px;display:grid;place-items:center}
+.wcard .ptag{float:right;color:var(--muted);font-size:13px;font-weight:700}
+.wvis{display:flex;justify-content:center;margin:12px 0}
+.wfig{margin:0;text-align:center}.wfig svg{width:230px;height:230px}.wfig figcaption{color:var(--muted);font-size:14px}
+.two-model{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center}.two-model .arrow{font-size:30px;color:var(--amber)}
+.formula{background:var(--panel2);border-radius:12px;padding:10px 16px;font-size:18px;font-weight:700}
+.opts{display:grid;gap:8px;margin:10px 0}
+.opt{display:flex;align-items:center;gap:12px;text-align:left;background:var(--panel2);border:1.5px solid var(--line2);border-radius:12px;padding:10px 14px;color:var(--text);font:inherit;font-size:16px}
+.opt.on{border-color:var(--e);background:color-mix(in srgb,var(--e) 14%,var(--panel2))}
+.opt .rb{flex:0 0 18px;height:18px;border-radius:50%;border:2px solid var(--muted)}.opt.on .rb{border:6px solid var(--e)}
+.opt .cbx{flex:0 0 18px;height:18px;border-radius:4px;border:2px solid var(--muted)}.opt.on .cbx{background:var(--e);border-color:var(--e)}
+.opt.right{border-color:var(--good)!important}.opt.wrong{border-color:var(--bad)!important;opacity:.85}
+.opt:disabled{cursor:default}
+.dpool{display:flex;flex-wrap:wrap;gap:8px;min-height:52px;padding:10px;border:1.5px dashed var(--line2);border-radius:12px;margin:10px 0}
+.dbins{display:grid;gap:10px}.dbins.b2{grid-template-columns:1fr 1fr}.dbins.b6{grid-template-columns:repeat(3,1fr)}
+.dbin{background:var(--panel2);border:1.5px solid var(--line2);border-radius:12px;padding:10px;min-height:96px;display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start}
+.dbh{width:100%;font-weight:800;color:var(--e);font-size:14px;margin-bottom:2px}
+.dtok{background:var(--bg2);border:1.5px solid var(--line2);border-radius:10px;padding:7px 12px;color:var(--text);font-weight:700;cursor:grab}
+.dtok.sel{border-color:var(--amber);box-shadow:0 0 0 2px rgba(246,185,59,.35)}
+.dtok.right{border-color:var(--good)}.dtok.wrong{border-color:var(--bad)}
+.fills{display:grid;gap:10px;margin:10px 0}
+.fl{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--panel2);border-radius:12px;padding:8px 12px;font-size:15px}
+.fl input{width:130px;font:inherit;font-size:17px;padding:6px 8px;border-radius:8px;border:1.5px solid var(--line2);background:var(--bg2);color:var(--text);text-align:center}
+.fl input.right{border-color:var(--good)}.fl input.wrong{border-color:var(--bad)}
+textarea.wbox{width:100%;min-height:110px;font:inherit;font-size:16px;line-height:1.5;padding:10px 12px;border-radius:12px;border:1.5px solid var(--line2);background:var(--bg2);color:var(--text);resize:vertical}
+.bank{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0 2px}
+.bank-l{font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.3px}.bank-l b{color:var(--e)}
+.wchip{font-size:12.5px;padding:3px 10px;border-radius:999px;border:1.5px dashed var(--line2);color:var(--muted);transition:all .25s}
+.wchip.used{border-style:solid;border-color:var(--good);color:#06240f;background:var(--good)}
+.model{margin-top:10px;background:var(--panel2);border-left:4px solid var(--good);border-radius:10px;padding:10px 14px;font-size:15px}
+.why{margin-top:10px;background:var(--panel2);border-left:4px solid var(--amber);border-radius:10px;padding:10px 14px;font-size:15px}.why.ok{border-left-color:var(--good)}
+.pts{margin:8px 0 0;color:var(--muted)}.pts b{color:var(--text)}
+.keybar{background:color-mix(in srgb,var(--amber) 20%,var(--panel));border:1px solid var(--amber);border-radius:10px;padding:8px 12px;font-weight:700}
+.gt{display:grid;gap:4px;font-size:13px}.gt-row{display:grid;grid-template-columns:50px repeat(8,44px);gap:4px}
+.gt-row span{display:grid;place-items:center;height:34px;border-radius:6px}.gt-h span{height:22px;color:var(--muted)}
+.gt-c{background:var(--panel2);border:1px solid var(--line2);font-weight:700}.gt-c.on{background:color-mix(in srgb,var(--amber) 35%,var(--panel2));border-color:var(--amber)}
+.gt-h .on{color:var(--amber);font-weight:800}.gt-p{color:var(--muted)}
+.combo{display:flex;align-items:center;gap:14px}.ichip{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-weight:800}
+.ichip.pos{background:color-mix(in srgb,#60a5fa 30%,var(--panel));border:2px solid #60a5fa}.ichip.neg{background:color-mix(in srgb,#f472b6 30%,var(--panel));border:2px solid #f472b6}
+.intro .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;align-items:center}.intro .hero-fig{display:flex}.intro .hero-fig svg{width:50%}
+.form-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.form-grid label{display:grid;gap:4px;font-size:13px;color:var(--muted)}
+.form-grid input,.form-grid select{font:inherit;padding:8px 10px;border-radius:10px;border:1.5px solid var(--line2);background:var(--bg2);color:var(--text)}
+.who{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}.who span{display:block;color:var(--muted);font-size:12px}
+.stats{display:flex;gap:12px}.stat{background:var(--panel2);border-radius:12px;padding:10px 16px}.stat .k{color:var(--muted);font-size:13px}.stat .v{font-size:26px;font-weight:800}
+.overlay{position:fixed;inset:0;background:rgba(3,7,15,.75);display:grid;place-items:center;z-index:100;padding:16px}.overlay[hidden]{display:none}
+.modal{background:var(--panel);border:1px solid var(--line2);border-radius:18px;padding:20px;max-width:560px;width:100%}
+.hidden{display:none!important}
+@media (max-width:760px){.dbins.b6{grid-template-columns:1fr 1fr}.form-grid{grid-template-columns:1fr 1fr}.intro .hero{grid-template-columns:1fr}}
+.wvis svg.wpair{width:100%;max-width:520px;height:auto}
+.wvis svg.wlewis{width:100%;max-width:560px;height:auto}
+.lat-pair{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}.lat-pair figure{margin:0;text-align:center}.lat-pair svg{width:300px;height:auto}.lat-pair figcaption{color:var(--muted);font-size:14px}
+.ide-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}.ide-row span{background:var(--panel2);border-radius:10px;padding:6px 12px}
+.intro .hero-fig.hero-pair svg{width:100%}
+.dbins.b4{grid-template-columns:1fr 1fr}
+</style></head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <radialGradient id="nucGrad" cx="40%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#ff9b84"/>
+      <stop offset="55%" stop-color="#d9563f"/>
+      <stop offset="100%" stop-color="#7a2c22"/>
+    </radialGradient>
+  </defs>
+</svg>
+<header class="topbar"><div class="top-in" style="display:flex;align-items:center;gap:12px;max-width:1000px;margin:0 auto;padding:10px 16px">
+  <div class="brand" style="font-weight:800">Ionic Bonding Worksheet</div><span class="prog" id="prog"></span>
+  <button class="top-btn" id="teacherBtn" type="button">Teacher</button></div></header>
+<main id="app"></main>
+<div class="overlay" id="tOv" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="tT"><h3 id="tT" style="margin-top:0">Teacher tools</h3>
+  <div id="tLogin"><p class="small muted">Enter the unlock code.</p><input type="password" id="tCode" autocomplete="off" aria-label="Unlock code" style="font:inherit;padding:8px 10px;border-radius:10px;width:100%"><p class="fb-line bad" id="tMsg"></p>
+  <div class="btn-row"><button class="btn primary" id="tGo" type="button">Open</button><button class="btn ghost" id="tCancel" type="button">Cancel</button></div></div>
+  <div id="tPanel" class="hidden"><p class="small muted" id="tInfo"></p><div class="btn-row"><button class="btn amber" id="tKey" type="button">Show answer key</button><button class="btn ghost" id="tCsv" type="button">Download scores (CSV)</button><button class="btn ghost" id="tReset" type="button">Reset this device</button><button class="btn primary" id="tClose" type="button">Close</button></div></div>
+</div></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="sheets-config.js"></script>
+<script>
+(() => {
+const BACKUP_URL = 'https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const BACKUP_TEACHERS = ['Austin', 'Mueller', 'McCue', 'Arce', 'Trimm', 'Garcia', 'Trimm/Callanan', 'Callanan'];
+function teacherList() { try { if (typeof TEACHERS !== 'undefined' && Array.isArray(TEACHERS) && TEACHERS.length) return TEACHERS.map(String).filter(Boolean); } catch (e) {} return BACKUP_TEACHERS; }
+function sheetURL() { try { if (typeof SHEETS_WEBHOOK_URL !== 'undefined' && SHEETS_WEBHOOK_URL && String(SHEETS_WEBHOOK_URL).indexOf('PASTE') < 0) return String(SHEETS_WEBHOOK_URL); } catch (e) {} return BACKUP_URL; }
+const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const sum = a => a.reduce((x, y) => x + y, 0);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+/* =========================================================
+   ELEMENT DATA (first 20)
+   ========================================================= */
+const EL = [
+  ['H', 'Hydrogen', '1.008', 1, 1, 'nonmetal'], ['He', 'Helium', '4.003', 18, 1, 'noble'],
+  ['Li', 'Lithium', '6.94', 1, 2, 'alkali'], ['Be', 'Beryllium', '9.012', 2, 2, 'alkaline'],
+  ['B', 'Boron', '10.81', 13, 2, 'metalloid'], ['C', 'Carbon', '12.011', 14, 2, 'nonmetal'],
+  ['N', 'Nitrogen', '14.007', 15, 2, 'nonmetal'], ['O', 'Oxygen', '15.999', 16, 2, 'nonmetal'],
+  ['F', 'Fluorine', '18.998', 17, 2, 'halogen'], ['Ne', 'Neon', '20.180', 18, 2, 'noble'],
+  ['Na', 'Sodium', '22.990', 1, 3, 'alkali'], ['Mg', 'Magnesium', '24.305', 2, 3, 'alkaline'],
+  ['Al', 'Aluminum', '26.982', 13, 3, 'post'], ['Si', 'Silicon', '28.086', 14, 3, 'metalloid'],
+  ['P', 'Phosphorus', '30.974', 15, 3, 'nonmetal'], ['S', 'Sulfur', '32.06', 16, 3, 'nonmetal'],
+  ['Cl', 'Chlorine', '35.45', 17, 3, 'halogen'], ['Ar', 'Argon', '39.948', 18, 3, 'noble'],
+  ['K', 'Potassium', '39.098', 1, 4, 'alkali'], ['Ca', 'Calcium', '40.078', 2, 4, 'alkaline']
+].map((a, i) => ({ z: i + 1, sym: a[0], name: a[1], massStr: a[2], mass: parseFloat(a[2]), group: a[3], period: a[4], cat: a[5] }));
+const E = z => EL[z - 1];
+/* usual ion charge for the first 20 (null = usually shares electrons instead) */
+const ION = { H: 1, He: 0, Li: 1, Be: 2, B: null, C: null, N: -3, O: -2, F: -1, Ne: 0, Na: 1, Mg: 2, Al: 3, Si: null, P: -3, S: -2, Cl: -1, Ar: 0, K: 1, Ca: 2 };
+const ionCharge = z => ION[E(z).sym];
+const chargeText = c => c > 0 ? (c > 1 ? c : '') + '+' : c < 0 ? (c < -1 ? -c : '') + '−' : '';
+const ionHTML = (sym, c) => `<span class="ion">${sym}${c ? `<sup>${chargeText(c)}</sup>` : ''}</span>`;
+const IDE = { F: 'fluoride', Cl: 'chloride', O: 'oxide', S: 'sulfide', N: 'nitride', P: 'phosphide' };
+const ionName = z => { const e = E(z), c = ionCharge(z); return c < 0 ? IDE[e.sym] : e.name.toLowerCase() + ' ion'; };
+const bySym = s => EL.find(e => e.sym === s);
+const massNum = z => Math.round(E(z).mass);
+const neutrons = z => massNum(z) - z;
+function arr(z) { const caps = [2, 8, 8, 8], out = []; let left = z; for (const c of caps) { if (left <= 0) break; const k = Math.min(c, left); out.push(k); left -= k; } return out; }
+const valence = z => arr(z)[arr(z).length - 1];
+/* Class rule: one at a time top, right, bottom, left; the 5th pairs with the 1st, and so on. */
+function conv(n) { n = Math.max(0, Math.min(8, n)); const b = Math.floor(n / 4), r = n % 4; return [0, 1, 2, 3].map(s => b + (s < r ? 1 : 0)); }
+const norm = s => Array.isArray(s) ? s : conv(s);
+const SIDE = ['top', 'right', 'bottom', 'left'];
+const CAP = [2, 8, 8, 8];
+
+/* =========================================================
+   GLOSSARY (word-help chips)
+   ========================================================= */
+const GLOSS = {
+  'ionic compound': 'A compound made of positive and negative ions stuck together. Its total charge is zero.',
+  nucleus: 'The tiny, dense center of an atom. It holds the protons and neutrons.',
+  proton: 'A particle in the nucleus with a positive (+) charge. The number of protons tells you which element it is.',
+  neutron: 'A particle in the nucleus with no charge.',
+  electron: 'A tiny particle with a negative (−) charge. Electrons are found in shells around the nucleus.',
+  shell: 'One of the circles around the nucleus where electrons are found. Also called an energy level.',
+  'energy level': 'Another name for a shell. Shells closer to the nucleus have lower energy.',
+  'Bohr model': 'A simple drawing of an atom: nucleus in the middle, circles for shells, dots for electrons.',
+  'atomic number': 'The whole number on a periodic table tile. It equals the number of protons.',
+  'atomic mass': 'The decimal number on a periodic table tile. Round it to get the mass number.',
+  'mass number': 'Protons + neutrons. Find it by rounding the atomic mass to the nearest whole number.',
+  neutral: 'Having no overall charge. A neutral atom has the same number of electrons as protons.',
+  'electron arrangement': 'The number of electrons in each shell, written from the inside out, like 2, 8, 1.',
+  'valence electrons': 'The electrons in the outermost shell. They decide how an atom reacts with other atoms.',
+  group: 'A column of the periodic table. Elements in the same group have the same number of valence electrons.',
+  'octet rule': 'Atoms are most stable with 8 electrons in their outer shell, so they gain or lose electrons to get there.',
+  'noble gases': 'The elements in group 18, like neon and argon. Their outer shells are already full.',
+  ion: 'An atom that has gained or lost electrons, so it has a charge.',
+  cation: 'A positive ion. It formed by losing electrons.',
+  anion: 'A negative ion. It formed by gaining electrons.'
+};
+const c = (term, label) => `<button type="button" class="chip" data-term="${term}">${label || term}</button>`;
+
+/* =========================================================
+   STATE (saved on this device)
+   ========================================================= */
+/* =========================================================
+   BOHR MODEL RENDERING
+   ========================================================= */
+const R = [48, 78, 106, 134], CX = 150, CY = 150, SIDE_ANG = [-90, 0, 90, 180];
+function ePos(r, side, k, count, gap = 8.8) {
+  let a = SIDE_ANG[side] * Math.PI / 180;
+  if (count === 2) { const off = gap / r; a += (k === 0 ? -off : off); }
+  return [CX + r * Math.cos(a), CY + r * Math.sin(a)];
+}
+const NS = 'http://www.w3.org/2000/svg';
+function svgEl(tag, attrs) { const el = document.createElementNS(NS, tag); for (const k in attrs) el.setAttribute(k, attrs[k]); return el; }
+
+/* Static Bohr model as an SVG string */
+function bohrInner(spec) {
+  const radii = spec.radii || R;
+  const shells = (spec.shells || []).map(norm);
+  const nr = spec.rings != null ? spec.rings : shells.length;
+  let s = '';
+  for (let i = 0; i < nr; i++) s += `<circle class="ring${spec.val && i === nr - 1 ? ' outer' : ''}" cx="150" cy="150" r="${radii[i]}"/>`;
+  if (!spec.noNucleus) {
+    const nrad = spec.nucR || 31;
+    s += `<circle class="nucleus" cx="150" cy="150" r="${nrad}"/>`;
+    const l1 = spec.l1 != null ? spec.l1 : (spec.p == null ? '?' : spec.p + ' p⁺');
+    const l2 = spec.l2 != null ? spec.l2 : (spec.n == null ? '' : spec.n + ' n⁰');
+    s += `<text class="nt" x="150" y="${l2 ? 146 : 154}">${l1}</text>`;
+    if (l2) s += `<text class="nt" x="150" y="163">${l2}</text>`;
+  }
+  shells.forEach((sides, i) => {
+    if (i >= nr) return;
+    const er = spec.er || 6.5;
+    sides.forEach((cnt, sd) => { for (let k = 0; k < cnt; k++) { const [x, y] = ePos(radii[i], sd, k, cnt, er + 2.6); const g = isGained(spec.orig, i, sd, k, cnt); s += `<circle class="e${g ? ' gain' : ''}${spec.val && i === nr - 1 ? ' val' : ''}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${er}"/>`; } });
+  });
+  if (spec.charge) s += ionMarks(nr, spec.charge, radii);
+  return s;
+}
+/* which electrons were gained (order index past the neutral atom's count in that shell) */
+function isGained(orig, i, sd, k, cnt) {
+  if (!orig) return false;
+  const j = cnt === 2 && k === 1 ? sd + 4 : sd;
+  return i >= orig.length ? true : j >= orig[i];
+}
+function ionMarks(nr, charge, radii = R) {
+  const ro = radii[Math.max(0, nr - 1)] + 16, L = 150 - ro, Rr = 150 + ro, T = 150 - ro, B = 150 + ro, t = 13;
+  return `<g class="ionmark"><path class="bracket" d="M${L + t} ${T} H${L} V${B} H${L + t}"/><path class="bracket" d="M${Rr - t} ${T} H${Rr} V${B} H${Rr - t}"/><text class="charge" x="${Rr + 5}" y="${T + 10}">${chargeText(charge)}</text></g>`;
+}
+function bohrSVG(spec, cls = '') {
+  return `<svg viewBox="0 0 300 300" class="bohr static ${cls}" role="img" aria-label="${esc(spec.aria || 'Bohr model')}">${bohrInner(spec)}</svg>`;
+}
+
+/* Live, animated Bohr model */
+class BohrView {
+  constructor(svg, o = {}) {
+    this.svg = svg; this.o = o;
+    svg.setAttribute('viewBox', '0 0 300 300');
+    svg.classList.add('bohr');
+    svg.innerHTML = '<g class="rings"></g><g class="zones"></g><g class="nuc"><circle class="nucleus" cx="150" cy="150" r="31"></circle><text class="nt" x="150" y="146"></text><text class="nt" x="150" y="163"></text></g><g class="els"><g class="sh sh0"></g><g class="sh sh1"></g><g class="sh sh2"></g><g class="sh sh3"></g></g><g class="ionwrap"></g>';
+    this.ionG = $('.ionwrap', svg); this.ringEls = []; this._ionKey = '';
+    this.ringsG = $('.rings', svg); this.zonesG = $('.zones', svg);
+    this.nt = $$('.nt', svg); this.shG = $$('.sh', svg);
+    this.map = new Map();
+    this.st = { p: null, n: null, shells: [], rings: null, val: false, zones: null };
+    const act = (e) => {
+      const z = e.target.closest && e.target.closest('.zone');
+      if (z && this.o.onZone) { this.o.onZone(+z.dataset.shell, +z.dataset.side, z); return true; }
+      const el = e.target.closest && e.target.closest('.e');
+      if (el && el.dataset.gone) return true;
+      if (el && this.o.onElectron) { this.o.onElectron(+el.dataset.shell, +el.dataset.side, el); return true; }
+      return false;
+    };
+    svg.addEventListener('click', act);
+    svg.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && act(e)) e.preventDefault(); });
+  }
+  set(p) { Object.assign(this.st, p); this.draw(); }
+  draw() {
+    const st = this.st, shells = (st.shells || []).map(norm);
+    const nr = st.rings != null ? st.rings : shells.length;
+    // rings
+    while (this.ringEls.length < nr) {
+      const i = this.ringEls.length, c = svgEl('circle', { cx: 150, cy: 150, r: R[i], class: 'ring ring-in' });
+      this.ringsG.appendChild(c); this.ringEls.push(c);
+    }
+    while (this.ringEls.length > nr) { const c = this.ringEls.pop(); c.classList.add('ring-out'); setTimeout(() => c.remove(), REDUCED ? 0 : 500); }
+    this.ringEls.forEach((ci, i) => ci.classList.toggle('outer', !!st.val && i === nr - 1));
+    // ion brackets + charge
+    const ik = st.charge ? `${nr}|${st.charge}` : '';
+    if (ik !== this._ionKey) {
+      this._ionKey = ik;
+      this.ionG.innerHTML = ik ? ionMarks(nr, st.charge) : '';
+      if (ik && !this.o.instant) { const g = this.ionG.firstChild; g.classList.add('ion-in'); }
+    }
+    // nucleus labels
+    const l1 = st.l1 != null ? st.l1 : (st.p == null ? '?' : st.p + ' p⁺');
+    const l2 = st.l2 != null ? st.l2 : (st.n == null ? '' : st.n + ' n⁰');
+    this.nt[0].textContent = l1; this.nt[1].textContent = l2;
+    this.nt[0].setAttribute('y', l2 ? 146 : 154);
+    // zones
+    this.zonesG.innerHTML = '';
+    if (st.zones) {
+      const list = st.zones === 'all' ? [...Array(nr).keys()] : st.zones;
+      for (const i of list) {
+        if (i >= nr) continue;
+        for (let s = 0; s < 4; s++) {
+          const [x, y] = ePos(R[i], s, 0, 1);
+          this.zonesG.appendChild(svgEl('circle', { cx: x, cy: y, r: 16, class: 'zone', 'data-shell': i, 'data-side': s, tabindex: 0, role: 'button', 'aria-label': `Shell ${i + 1}, ${SIDE[s]}` }));
+        }
+      }
+    }
+    // electrons (diffed so moves animate)
+    const want = new Map();
+    shells.forEach((sides, i) => { if (i >= nr) return; sides.forEach((cnt, sd) => { for (let k = 0; k < cnt; k++) want.set(`${i}-${sd}-${k}`, ePos(R[i], sd, k, cnt)); }); });
+    for (const [key, el] of this.map) {
+      if (!want.has(key)) {
+        this.map.delete(key);
+        const a = Math.atan2(el._y - 150, el._x - 150);
+        el.dataset.gone = '1';
+        el.style.opacity = '0';
+        el.style.transform = `translate(${el._x + 80 * Math.cos(a)}px,${el._y + 80 * Math.sin(a)}px) scale(.7)`;
+        setTimeout(() => el.remove(), 480);
+      }
+    }
+    const instant = REDUCED || this.o.instant;
+    for (const [key, [x, y]] of want) {
+      const [i, sd] = key.split('-').map(Number);
+      let el = this.map.get(key);
+      if (!el) {
+        el = svgEl('circle', { r: 6.5, cx: 0, cy: 0, class: 'e', 'data-shell': i, 'data-side': sd });
+        if (this.o.erasable) { el.setAttribute('tabindex', '0'); el.setAttribute('role', 'button'); el.setAttribute('aria-label', `Electron, shell ${i + 1}, ${SIDE[sd]}`); }
+        const a = SIDE_ANG[sd] * Math.PI / 180, rr = R[i] + 46;
+        if (!instant) {
+          el.style.transform = `translate(${CX + rr * Math.cos(a)}px,${CY + rr * Math.sin(a)}px) scale(.6)`;
+          el.style.opacity = '0';
+        }
+        this.shG[i].appendChild(el);
+        this.map.set(key, el);
+        if (!instant) el.getBoundingClientRect();
+      }
+      el._x = x; el._y = y;
+      el.style.transform = `translate(${x}px,${y}px)`;
+      el.style.opacity = '1';
+      el.classList.toggle('val', !!st.val && i === nr - 1);
+      const cnt = shells[i][sd], k = +key.split('-')[2];
+      el.classList.toggle('gain', isGained(st.orig, i, sd, k, cnt));
+    }
+  }
+  celebrate() {
+    if (REDUCED) return;
+    this.svg.classList.remove('celebrate'); void this.svg.getBoundingClientRect();
+    this.svg.classList.add('celebrate');
+    setTimeout(() => this.svg.classList.remove('celebrate'), 1200);
+  }
+}
+
+/* small element tile chip */
+const mtile = (z) => { const e = E(z); return `<span class="mtile cat-${e.cat}"><span class="s">${e.sym}</span><span>${e.z}</span><span>${e.massStr}</span></span>`; };
+
+/* =========================================================
+   UI HELPERS
+   ========================================================= */
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('on');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('on'), 2600);
+}
+function shake(el) { if (!el) return; el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); setTimeout(() => el.classList.remove('shake'), 500); }
+const card = (kind, title, body, extra = '') => {
+  const label = { read: 'Read', try: 'Try it', qc: 'Quick check', final: 'Final check' }[kind];
+  const cls = kind === 'final' ? 'qc' : kind;
+  return `<section class="card k-${cls}" ${extra}><span class="tag">${label}</span>${title ? `<h3>${title}</h3>` : ''}${body}</section>`;
+};
+
+/* Quick check (A–D) */
+const gainLegend = '<p class="legend"><span><span class="dot e"></span>electron</span><span><span class="dot g"></span>electron gained</span></p>';
+
+
+/* =========================================================
+   IONS AND THE OCTET RULE WORKSHEET
+   One check per problem for choice, multi-select, drag, and written answers (they lock).
+   Fill-in blanks and Bohr builds can be fixed and rechecked; they score on the first check.
+   ========================================================= */
+const WKEY = 'fate_chem_ionic_bonding_worksheet_v1';
+const WCODE = 'teacher007'; /* teacher tools code, any capitalization */
+const ACTIVITY = 'Ionic Bonding Worksheet';
+const periodList = () => { try { if (typeof PERIODS !== 'undefined' && Array.isArray(PERIODS) && PERIODS.length) return PERIODS.map(String); } catch (e) {} return ['1', '2', '3', '4', '5', '6', '7', '8']; };
+const normQ = s => subFix(s).toLowerCase().replace(/\s+/g, '').replace(/[−–—]/g, '-').replace(/^\+(\d)$/, '$1+').replace(/^-(\d)$/, '$1-').replace(/^\+$/, '1+').replace(/^-$/, '1-').replace(/^1([+-])$/, '1$1');
+const normArr = s => String(s || '').replace(/[^0-9]+/g, ',').replace(/^,|,$/g, '');
+
+/* ---------- small diagrams ---------- */
+function groupTable(hlGroup) {
+  const cols = [1, 2, 13, 14, 15, 16, 17, 18], rows = { 1: ['H', '', '', '', '', '', '', 'He'], 2: ['Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne'], 3: ['Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl', 'Ar'], 4: ['K', 'Ca', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr'] };
+  let h = `<div class="gt" role="img" aria-label="Main-group periodic table with group ${hlGroup} highlighted"><div class="gt-row gt-h"><span></span>${cols.map(c => `<span class="${c === hlGroup ? 'on' : ''}">${c}</span>`).join('')}</div>`;
+  for (let p = 1; p <= 4; p++) h += `<div class="gt-row"><span class="gt-p">${p}</span>${rows[p].map((s, i) => s ? `<span class="gt-c ${cols[i] === hlGroup ? 'on' : ''}">${s}</span>` : '<span></span>').join('')}</div>`;
+  return h + '</div>';
+}
+const model = (spec, cap) => `<figure class="wfig">${bohrSVG(spec)}${cap ? `<figcaption>${cap}</figcaption>` : ''}</figure>`;
+
+/* ---------- ionic bonding diagrams ---------- */
+const subFix = s => String(s || '').replace(/[₀-₉]/g, d => String('₀₁₂₃₄₅₆₇₈₉'.indexOf(d)));
+/* two Bohr models side by side, with an optional electron-transfer arrow */
+function pairSVG(a, b, o = {}) {
+  const sc = 0.62, W = 520, H = 230, xa = 30, xb = 300;
+  const g = (spec, x) => `<g transform="translate(${x} 10) scale(${sc})">${bohrInner(spec)}</g>`;
+  let arr = '';
+  if (o.arrow) arr = `<defs><marker id="wah${o.id || ''}" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9z" fill="#fde047"/></marker></defs>
+    <path d="M${xa + 150 * sc + 70} 40 Q${(xa + xb) / 2 + 95} -8 ${xb + 150 * sc - 60} 40" fill="none" stroke="#fde047" stroke-width="3" stroke-dasharray="7 5" marker-end="url(#wah${o.id || ''})"/>`;
+  const lab = (t, x) => `<text x="${x + 150 * sc}" y="${H - 6}" fill="#9fb1c7" font-size="15" font-weight="700" text-anchor="middle">${t}</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}" class="bohr static wpair" role="img" aria-label="${esc(o.aria || '')}">${arr}${g(a, xa)}${g(b, xb)}${o.attract ? `<line x1="${xa + 300 * sc - 4}" y1="${10 + 150 * sc}" x2="${xb + 6}" y2="${10 + 150 * sc}" stroke="#4ade80" stroke-width="3" stroke-dasharray="8 6"/><text x="${(xa + 300 * sc + xb) / 2}" y="${150 * sc}" fill="#4ade80" font-size="16" font-weight="800" text-anchor="middle">+ −</text>` : ''}${lab(o.la || '', xa)}${lab(o.lb || '', xb)}</svg>`;
+}
+/* electron-dot row: items {s, n, pink, q, gold}, arrows [[from, to], ...] */
+function lewisSVG(items, arrows = [], aria = '') {
+  const W = 130 * items.length + 40, H = 150, X = i => 70 + i * 130, Y = 80;
+  let s = '';
+  items.forEach((it, i) => {
+    const x = X(i), n = it.n, P = [[0, -30], [30, 0], [0, 30], [-30, 0]];
+    s += `<text x="${x}" y="${Y + 12}" font-size="34" font-weight="800" text-anchor="middle" fill="#e6edf7">${it.s}</text>`;
+    for (let k = 0; k < n; k++) { const side = k < 4 ? k : k - 4, paired = n > side + 4, off = paired ? (k < 4 ? -6 : 6) : 0, [dx, dy] = P[side];
+      const col = it.gold ? '#fde047' : (k >= n - (it.pink || 0) ? '#f472b6' : '#5fe1ff');
+      s += `<circle cx="${x + dx + (dy ? off : 0)}" cy="${Y + dy + (dx ? off : 0)}" r="5" fill="${col}"/>`; }
+    if (it.q) s += `<path d="M${x - 42} ${Y - 44} h-8 v88 h8 M${x + 42} ${Y - 44} h8 v88 h-8" fill="none" stroke="#e6edf7" stroke-width="2.5"/><text x="${x + 56}" y="${Y - 34}" font-size="18" font-weight="800" fill="#e6edf7">${it.q}</text>`;
+  });
+  arrows.forEach(([a, b], k) => { const x1 = X(a), x2 = X(b), up = k % 2 === 0;
+    s += `<path d="M${x1 + (x2 > x1 ? 20 : -20)} ${up ? Y - 40 : Y + 40} Q${(x1 + x2) / 2} ${up ? Y - 80 : Y + 80} ${x2 + (x2 > x1 ? -26 : 26)} ${up ? Y - 40 : Y + 40}" fill="none" stroke="#fde047" stroke-width="2.5" marker-end="url(#lah)"/>`; });
+  return `<svg viewBox="0 0 ${W} ${H}" class="wlewis" role="img" aria-label="${esc(aria)}"><defs><marker id="lah" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9z" fill="#fde047"/></marker></defs>${s}</svg>`;
+}
+function latticeSVG(free) {
+  let s = `<rect x="20" y="20" width="300" height="200" rx="10" fill="none" stroke="#2a3a55" stroke-width="2" stroke-dasharray="6 6"/>`;
+  for (let r = 0; r < 4; r++) for (let c = 0; c < 6; c++) { const pos = (r + c) % 2 === 0, x = free ? 45 + ((c * 53 + r * 37) % 250) : 50 + c * 48, y = free ? 45 + ((r * 59 + c * 29) % 160) : 50 + r * 47;
+    s += `<circle cx="${x}" cy="${y}" r="${pos ? 12 : 17}" fill="${pos ? '#25406b' : '#5a2747'}" stroke="${pos ? '#60a5fa' : '#f472b6'}" stroke-width="2"/><text x="${x}" y="${y + 4}" font-size="10" font-weight="700" fill="#fff" text-anchor="middle">${pos ? 'Na⁺' : 'Cl⁻'}</text>`; }
+  s += `<path d="M320 120 H380 V60 H420" fill="none" stroke="#94a3b8" stroke-width="3"/><path d="M20 120 H8 V250 H420 V170" fill="none" stroke="#94a3b8" stroke-width="3"/><circle cx="420" cy="115" r="24" fill="${free ? '#fde047' : '#334155'}" stroke="#94a3b8" stroke-width="2"/>`;
+  return `<svg viewBox="0 0 450 260" class="wlat" role="img" aria-label="${free ? 'Dissolved: ions spread out and the bulb is lit' : 'Solid crystal: ions in a grid and the bulb is off'}">${s}</svg>`;
+}
+const ions = (sym, q) => ionHTML(sym, q);
+
+/* ---------- the problems ---------- */
+const P = [
+  { id: 'p1', type: 'mc', title: 'Which way?', pts: 1,
+    vis: () => pairSVG({ l1: 'Na', l2: '', shells: [2, 8, 1], val: true }, { l1: 'Cl', l2: '', shells: [2, 8, 7] }, { la: 'Sodium (2, 8, 1)', lb: 'Chlorine (2, 8, 7)', aria: 'Sodium and chlorine atoms side by side' }),
+    q: 'Sodium and chlorine are about to form an ionic bond. What happens to the electrons?', opts: ['Chlorine gives 7 electrons to sodium', 'Sodium gives 1 electron to chlorine', 'They share 1 electron', 'Sodium gives 8 electrons to chlorine'], a: 1,
+    why: 'The metal (sodium) gives its single valence electron to the nonmetal (chlorine), which needs exactly one more for a full outer shell.' },
+  { id: 'p2', type: 'drag', title: 'Ionic or not?', pts: 6, q: 'Drag each pair to show whether it forms an ionic compound.',
+    bins: [['ion', 'Ionic (metal + nonmetal)'], ['not', 'Not ionic (two nonmetals)']],
+    tokens: [['kcl', 'K + Cl', 'ion'], ['no', 'N + O', 'not'], ['cao', 'Ca + O', 'ion'], ['lif', 'Li + F', 'ion'], ['so', 'S + O', 'not'], ['alcl', 'Al + Cl', 'ion']],
+    why: 'K, Ca, Li, and Al are metals, so those pairs are ionic. N, S, and O are all nonmetals, so N + O and S + O share electrons instead.' },
+  { id: 'p3', type: 'fill', title: 'Sodium chloride', pts: 3,
+    vis: () => pairSVG({ l1: 'Na', l2: '', shells: [2, 8], charge: 1 }, { l1: 'Cl', l2: '', shells: [2, 8, 8], orig: [2, 8, 7], charge: -1 }, { la: '?', lb: '?', attract: true, aria: 'Sodium ion and chloride ion after the transfer; one pink gained electron on chlorine' }),
+    q: 'This shows sodium chloride after the electron moved. Fill in the blanks. Type charges like 1+ or 2−.', blanks: [['Electrons sodium lost', '1'], ['Charge on the sodium ion', '1+'], ['Chlorine\'s new arrangement (like 2, 8)', '2,8,8', 'arr']],
+    why: 'Sodium lost its 1 valence electron, so it is Na⁺ (11 protons, 10 electrons). Chlorine gained it: 2, 8, 8.' },
+  { id: 'p4', type: 'mc', title: 'Name the picture', pts: 1,
+    vis: () => pairSVG({ l1: 'K', l2: '', shells: [2, 8, 8], charge: 1 }, { l1: 'F', l2: '', shells: [2, 8], orig: [2, 7], charge: -1 }, { la: '19 protons', lb: '9 protons', attract: true, aria: 'An ion with 19 protons and a 1 plus charge next to an ion with 9 protons and a 1 minus charge' }),
+    q: 'Which compound is shown?', opts: ['KF, potassium fluoride', 'NaCl, sodium chloride', 'KF₂, potassium difluoride', 'FK, fluorine potassium'], a: 0,
+    why: '19 protons is potassium (K⁺) and 9 protons is fluorine (F⁻). One of each: KF, potassium fluoride.' },
+  { id: 'p5', type: 'fill', title: 'Dots: magnesium and oxygen', pts: 3,
+    vis: () => lewisSVG([{ s: 'Mg', n: 2, gold: true }, { s: 'O', n: 6 }], [[0, 1], [0, 1]], 'Magnesium with 2 dots and oxygen with 6 dots, with arrows from magnesium to oxygen'),
+    q: 'Fill in the blanks for the electron-dot diagram.', blanks: [['How many dots move from Mg to O?', '2'], ['Charge on the magnesium ion', '2+'], ['Charge on the oxide ion', '2-']],
+    why: 'Magnesium has 2 valence dots and oxygen needs 2. Both move: Mg²⁺ and O²⁻.' },
+  { id: 'p6', type: 'ms', title: 'Calcium sulfide', pts: 3,
+    vis: () => lewisSVG([{ s: 'Ca', n: 0, q: '2+' }, { s: 'S', n: 8, pink: 2, q: '2−' }], [], 'Calcium ion with no dots and sulfide ion with eight dots, two of them pink'),
+    q: 'This is the electron-dot diagram of CaS <b>after</b> the bond formed. Select <b>all</b> the true statements.',
+    opts: [['Calcium gave away 2 electrons', true], ['Sulfur gave 2 electrons to calcium', false], ['Sulfur now has 8 valence electrons', true], ['The pink dots are the electrons sulfur gained', true], ['Calcium still has 2 dots', false]],
+    why: 'Calcium (group 2) gives its 2 dots to sulfur, which goes from 6 to 8. The pink dots show what sulfur gained. Calcium ends with none.' },
+  { id: 'p7', type: 'fill', title: 'Aluminum fluoride', pts: 3,
+    vis: () => lewisSVG([{ s: 'F', n: 7 }, { s: 'Al', n: 3, gold: true }, { s: 'F', n: 7 }, { s: 'F', n: 7 }], [[1, 0], [1, 2], [1, 3]], 'Aluminum with 3 dots giving one dot to each of three fluorine atoms'),
+    q: 'Aluminum bonds with fluorine. Fill in the blanks.', blanks: [['Electrons one Al gives', '3'], ['Electrons one F takes', '1'], ['F atoms needed for one Al', '3']],
+    why: 'Aluminum gives 3 electrons and each fluorine takes 1, so three fluorines are needed: AlF₃.' },
+  { id: 'p8', type: 'drag', title: 'Match the formula', pts: 6, q: 'Drag each pair of elements to the formula it makes. Electrons given = electrons taken.',
+    bins: [['nacl', 'NaCl'], ['mgcl2', 'MgCl₂'], ['na2o', 'Na₂O'], ['alf3', 'AlF₃'], ['cao', 'CaO'], ['k2s', 'K₂S']],
+    tokens: [['a', 'Mg + Cl', 'mgcl2'], ['b', 'Na + O', 'na2o'], ['c', 'Ca + O', 'cao'], ['d', 'Na + Cl', 'nacl'], ['e', 'K + S', 'k2s'], ['f', 'Al + F', 'alf3']],
+    why: 'Mg gives 2 → 2 Cl. O takes 2 → 2 Na. Ca gives 2 and O takes 2 → 1 : 1. Na and Cl → 1 : 1. S takes 2 → 2 K. Al gives 3 → 3 F.' },
+  { id: 'p9', type: 'fill', title: 'Write the formulas', pts: 3,
+    vis: () => `<div class="formula">Metal first · total charge = 0 · subscripts show how many</div>`,
+    q: 'Write the formula for each pair of ions. Type subscripts as plain numbers (CaCl2).', blanks: [['Ca²⁺ and Br⁻', 'CaBr2'], ['Li⁺ and N³⁻', 'Li3N'], ['Al³⁺ and S²⁻', 'Al2S3']],
+    why: 'CaBr₂: +2 and 2 × (−1). Li₃N: 3 × (+1) and −3. Al₂S₃: 2 × (+3) = +6 and 3 × (−2) = −6.' },
+  { id: 'p10', type: 'mc', title: 'Magnesium nitride', pts: 1,
+    vis: () => `<div class="combo"><span class="ichip pos">Mg<sup>2+</sup></span><span class="ichip neg">N<sup>3−</sup></span><span class="small muted">The total charge must be 0.</span></div>`,
+    q: 'What is the formula of magnesium nitride?', opts: ['MgN', 'Mg₂N₃', 'Mg₃N₂', 'MgN₂'], a: 2,
+    why: '3 × (+2) = +6 and 2 × (−3) = −6, so Mg₃N₂. Criss-cross: Mg gets the 3, N gets the 2.' },
+  { id: 'p11', type: 'drag', title: 'Formula to name', pts: 4, q: 'Drag each formula to its name.',
+    bins: [['kcl', 'potassium chloride'], ['mgo', 'magnesium oxide'], ['caf', 'calcium fluoride'], ['nas', 'sodium sulfide']],
+    tokens: [['t1', 'CaF₂', 'caf'], ['t2', 'Na₂S', 'nas'], ['t3', 'KCl', 'kcl'], ['t4', 'MgO', 'mgo']],
+    why: 'Metal name, then the nonmetal ending in -ide. Subscripts are not part of the name.' },
+  { id: 'p12', type: 'fill', title: 'Finish the name', pts: 2, vis: () => `<div class="ide-row"><span>chlorine → chloride</span><span>oxygen → oxide</span><span>sulfur → sulfide</span><span>nitrogen → nitride</span></div>`,
+    q: 'Finish each name with one word.', blanks: [['Li₂O is lithium ___', 'oxide'], ['AlCl₃ is aluminum ___', 'chloride']],
+    why: 'Oxygen → oxide and chlorine → chloride. No number words.' },
+  { id: 'p13', type: 'ms', title: 'Correct names', pts: 3, q: 'Select <b>all</b> the names that are written correctly.',
+    opts: [['sodium chloride (NaCl)', true], ['magnesium dioxide (MgO)', false], ['calcium bromide (CaBr₂)', true], ['potassium sulfur (K₂S)', false], ['aluminum oxide (Al₂O₃)', true]],
+    why: 'Ionic names never use number words (MgO is magnesium oxide), and the nonmetal always ends in -ide (K₂S is potassium sulfide).' },
+  { id: 'p14', type: 'mc', title: 'Solid salt', pts: 1, vis: () => `<div class="lat-pair"><figure>${latticeSVG(false)}<figcaption>Solid salt</figcaption></figure></div>`,
+    q: 'Solid table salt is placed in a circuit and the bulb stays off. Why?', opts: ['Salt has no charged particles', 'The ions are locked in place and cannot move', 'Salt is a metal', 'The electrons are shared'], a: 1,
+    why: 'Salt is made of Na⁺ and Cl⁻ ions, but in a solid they are locked in the lattice. Current needs moving charges.' },
+  { id: 'p15', type: 'drag', title: 'True or false?', pts: 4, q: 'Sort each statement about ionic compounds.',
+    vis: () => `<div class="lat-pair"><figure>${latticeSVG(false)}<figcaption>Solid</figcaption></figure><figure>${latticeSVG(true)}<figcaption>Dissolved</figcaption></figure></div>`,
+    bins: [['t', 'True'], ['f', 'False']],
+    tokens: [['hm', 'They have high melting points', 't'], ['cs', 'They conduct as solids', 'f'], ['cd', 'They conduct when dissolved', 't'], ['br', 'They are brittle', 't']],
+    why: 'Strong attractions in the lattice give high melting points and brittleness. They conduct only when the ions can move (melted or dissolved).' },
+  { id: 'p16', type: 'mc', title: 'Spot the mistake', pts: 1,
+    vis: () => lewisSVG([{ s: 'Mg', n: 2 }, { s: 'O', n: 6 }], [[1, 0], [1, 0]], 'A student drawing with arrows from oxygen to magnesium'),
+    q: 'A student drew arrows showing electrons moving from oxygen to magnesium. What is wrong?', opts: ['Nothing is wrong', 'The electrons should move from magnesium (the metal) to oxygen', 'There should be 6 arrows', 'Oxygen should keep its electrons and share them'], a: 1,
+    why: 'Metals give electrons; nonmetals take them. Magnesium gives its 2 electrons to oxygen.' },
+  { id: 'p17', type: 'mc', title: 'Spot the mistake', pts: 1, q: 'A student wrote the formula for calcium chloride as <b>CaCl</b>. What is wrong?',
+    opts: ['It should be Ca₂Cl', 'It should be ClCa', 'Nothing is wrong', 'It should be CaCl₂ because Ca²⁺ needs two Cl⁻'], a: 3,
+    why: 'Ca²⁺ (+2) needs two Cl⁻ (−1 each) for a total charge of zero: CaCl₂.' },
+  { id: 'p18', type: 'mc', title: 'Spot the mistake', pts: 1, q: 'A student wrote <b>Na₂Cl₂</b> for sodium chloride. What is wrong?',
+    opts: ['Use the smallest numbers: NaCl', 'It should be Na₂Cl', 'Chlorine should come first', 'Nothing is wrong'], a: 0,
+    why: 'Na⁺ and Cl⁻ already cancel one to one. Always reduce to the smallest numbers: NaCl.' },
+  { id: 'p19', type: 'write', title: 'Explain it', pts: 3,
+    vis: () => lewisSVG([{ s: 'F', n: 7 }, { s: 'Al', n: 3, gold: true }, { s: 'F', n: 7 }, { s: 'F', n: 7 }], [[1, 0], [1, 2], [1, 3]], 'Aluminum giving one dot to each of three fluorine atoms'),
+    q: 'Explain why the formula of aluminum fluoride is AlF₃ and not AlF. Use the words valence electrons, gives, takes, and charge.',
+    groups: [['Aluminum has 3 valence electrons to give', [/3|three/i, /give|gives|lose|transfer/i]], ['Each fluorine takes only 1 electron', [/take|takes|gain|accept|need/i, /\b1\b|one/i]], ['Electrons given = taken, so the +3 and three −1 charges cancel to zero', [/charge|cancel|zero|\b0\b|equal|balance/i]]],
+    bank: [['valence electrons', /valence/i], ['3', /\b3\b|three/i], ['gives', /give|lose|transfer/i], ['takes', /take|gain|accept/i], ['1', /\b1\b|one/i], ['charge', /charge/i], ['cancel', /cancel|zero|balance|equal/i]],
+    model: 'Aluminum has 3 valence electrons to give, but each fluorine takes only 1 electron to fill its outer shell. So one aluminum needs three fluorine atoms to take all 3 electrons. Al³⁺ (+3) and three F⁻ (−1 each) cancel to a total charge of zero, so the formula is AlF₃.' }
+];
+
+const N = P.length, TOTAL = P.reduce((a, p) => a + p.pts, 0);
+
+/* ---------- state ---------- */
+const WDEF = () => ({ screen: 'intro', student: { first: '', last: '', period: '', teacher: '', sid: '' }, cur: 0, items: {}, completedAt: null, sentAt: null });
+let W; try { W = Object.assign(WDEF(), JSON.parse(localStorage.getItem(WKEY) || 'null') || {}); } catch (e) { W = WDEF(); }
+let KEYMODE = false;
+const wsave = () => { try { localStorage.setItem(WKEY, JSON.stringify(W)); } catch (e) {} };
+const item = i => W.items[P[i].id] || (W.items[P[i].id] = { a: {}, done: false, first: null, pts: 0 });
+const peek = i => W.items[P[i].id] || { a: {}, done: false, pts: 0 };
+const doneCount = () => P.filter((p, i) => peek(i).done).length;
+const score = () => P.reduce((s, p, i) => s + (peek(i).done ? peek(i).pts : 0), 0);
+
+/* ---------- grading ---------- */
+function grade(i) {
+  const p = P[i], a = item(i).a;
+  if (p.type === 'mc') return a.v === p.a ? 1 : 0;
+  if (p.type === 'ms') { const sel = a.sel || []; const good = p.opts.filter((o, k) => o[1] && sel.includes(k)).length, bad = p.opts.filter((o, k) => !o[1] && sel.includes(k)).length; return Math.max(0, good - bad); }
+  if (p.type === 'drag') return p.tokens.filter(t => (a.place || {})[t[0]] === t[2]).length;
+  if (p.type === 'fill') return p.blanks.filter((b, k) => b[2] === 'arr' ? normArr((a.v || {})[k]) === b[1] : normQ((a.v || {})[k]) === normQ(b[1])).length;
+  if (p.type === 'write') return p.groups.filter(([, res]) => res.every(re => re.test(a.text || ''))).length;
+  if (p.type === 'build') return buildReport(p, a).filter(x => x[0] === 'y').length;
+  return 0;
+}
+const relockable = p => p.type === 'fill' || p.type === 'build';
+function check(i) {
+  const p = P[i], it = item(i);
+  if (it.done && !relockable(p)) return;
+  if (!answered(i)) { msg(p.type === 'build' ? 'Fill in the nucleus and place your electrons before you check.' : 'Answer every part before you check.' + (relockable(p) ? '' : ' You only get one check.')); return; }
+  const g = grade(i);
+  if (it.first === null) { it.first = g; it.pts = g; }
+  it.checked = true;
+  if (!relockable(p) || g === p.pts) it.done = true;
+  if (relockable(p) && g < p.pts) it.tries = (it.tries || 0) + 1;
+  if (doneCount() === N && !W.completedAt) { W.completedAt = new Date().toISOString(); sendToSheet(true); }
+  wsave(); render();
+}
+function answered(i) {
+  const p = P[i], a = item(i).a;
+  if (p.type === 'mc') return a.v != null;
+  if (p.type === 'ms') return (a.sel || []).length > 0;
+  if (p.type === 'drag') return p.tokens.every(t => (a.place || {})[t[0]]);
+  if (p.type === 'fill') return p.blanks.every((b, k) => String((a.v || {})[k] || '').trim());
+  if (p.type === 'write') return String(a.text || '').trim().length >= 30;
+  if (p.type === 'build') { const b = a.b || {}; return b.p !== '' && b.p != null && b.n !== '' && b.n != null && sum((b.sides || []).slice(0, b.shells || 0).map(sum)) > 0; }
+  return false;
+}
+const msg = t => { const e = $('#wmsg'); if (e) { e.innerHTML = t; e.className = 'fb-line bad'; shake(e); } };
+
+/* ---------- Bohr builder ---------- */
+const blankBuild = () => ({ p: '', n: '', q: 0, shells: 1, sides: [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], tool: 'add' });
+function buildReport(p, a) {
+  const st = a.b || blankBuild(), z = p.z, e = E(z), q = ionCharge(z), eTot = z - q, want = arr(eTot), out = [];
+  const pOk = +st.p === z && st.p !== '', nOk = +st.n === neutrons(z) && st.n !== '';
+  out.push(pOk && nOk ? ['y', `Nucleus: ${z} p⁺ and ${neutrons(z)} n⁰.`] : ['x', !pOk ? `Nucleus: an ion keeps all its protons. Use the atomic number.` : `Nucleus: neutrons = mass number − atomic number. Round ${e.massStr} first.`]);
+  const shOk = st.shells === want.length;
+  out.push(shOk ? ['y', `Shells: ${want.length}.`] : ['x', q > 0 && st.shells === arr(z).length ? 'Shells: the outer shell is empty after losing electrons, so don\'t draw it.' : `Shells: this ion needs ${want.length}.`]);
+  const tot = st.sides.map(sum), cntOk = shOk && want.every((v, k) => tot[k] === v);
+  if (cntOk) { const bad = want.findIndex((v, k) => st.sides[k].join() !== conv(v).join()); out.push(bad < 0 ? ['y', `Electrons: ${want.join(', ')} in the class order.`] : ['x', `Electrons: right number, but in shell ${bad + 1} go top, right, bottom, left before pairing.`]); }
+  else { const placed = sum(tot.slice(0, st.shells)); out.push(['x', placed !== eTot ? `Electrons: you placed ${placed}. ${e.name} ${q > 0 ? 'loses' : 'gains'} ${Math.abs(q)}, so the ion has ${eTot}.` : 'Electrons: fill each shell before starting the next one.']); }
+  out.push(st.q === q ? ['y', `Charge: ${chargeText(q)}.`] : ['x', `Charge: ${e.name} ${q > 0 ? 'loses' : 'gains'} ${Math.abs(q)} electron${Math.abs(q) > 1 ? 's' : ''}.`]);
+  return out;
+}
+let bview = null;
+function mountBuilder(i) {
+  const p = P[i], it = item(i), a = it.a; if (!a.b) a.b = blankBuild();
+  const st = a.b, locked = it.done || KEYMODE, z = p.z, q = ionCharge(z);
+  if (KEYMODE) { const want = arr(z - q); Object.assign(st, { p: String(z), n: String(neutrons(z)), q, shells: want.length, sides: [0, 1, 2, 3].map(k => k < want.length ? conv(want[k]) : [0, 0, 0, 0]) }); }
+  const svg = $('#bsvg');
+  bview = new BohrView(svg, {
+    erasable: !locked,
+    onZone: (k, s) => { if (locked || st.tool !== 'add') return; if (st.sides[k][s] >= 2) return; st.sides[k][s]++; wsave(); draw(); },
+    onElectron: (k, s) => { if (locked || st.tool !== 'erase') return; st.sides[k][s] = Math.max(0, st.sides[k][s] - 1); wsave(); draw(); }
+  });
+  function draw() {
+    bview.set({ l1: `${st.p === '' ? '?' : st.p} p⁺`, l2: `${st.n === '' ? '?' : st.n} n⁰`, shells: st.sides.slice(0, st.shells), rings: st.shells, zones: locked ? null : 'all', charge: st.shells ? st.q : 0, orig: q < 0 ? arr(z) : null });
+    svg.classList.toggle('mode-add', st.tool === 'add' && !locked); svg.classList.toggle('mode-erase', st.tool === 'erase' && !locked);
+    $('#bsc').textContent = st.shells; $('#bsm').disabled = locked || st.shells <= 0; $('#bsp').disabled = locked || st.shells >= 4;
+    $('#bcount').textContent = `${sum(st.sides.slice(0, st.shells).map(sum))} electrons placed`;
+  }
+  $('#bp').value = st.p; $('#bn').value = st.n; $('#bq').value = String(st.q);
+  ['#bp', '#bn', '#bq'].forEach(s => { $(s).disabled = locked; });
+  $('#bp').addEventListener('input', ev => { st.p = ev.target.value.trim(); wsave(); draw(); });
+  $('#bn').addEventListener('input', ev => { st.n = ev.target.value.trim(); wsave(); draw(); });
+  $('#bq').addEventListener('change', ev => { st.q = +ev.target.value; wsave(); draw(); });
+  $('#bsp').addEventListener('click', () => { if (st.shells < 4) { st.shells++; wsave(); draw(); } });
+  $('#bsm').addEventListener('click', () => { if (st.shells > 0) { st.shells--; st.sides[st.shells] = [0, 0, 0, 0]; wsave(); draw(); } });
+  $$('.seg button[data-tool]').forEach(b => { b.disabled = locked; b.setAttribute('aria-pressed', b.dataset.tool === st.tool); b.addEventListener('click', () => { st.tool = b.dataset.tool; $$('.seg button[data-tool]').forEach(x => x.setAttribute('aria-pressed', x === b)); draw(); }); });
+  $('#bclear').disabled = locked; $('#bclear').addEventListener('click', () => { st.sides = st.sides.map(() => [0, 0, 0, 0]); wsave(); draw(); });
+  draw();
+}
+
+/* ---------- rendering ---------- */
+function stripHTML() { return P.map((p, i) => { const it = peek(i); return `<button type="button" class="qn ${i === W.cur ? 'cur' : ''} ${it.done ? 'done' : it.checked ? 'part' : ''}" data-i="${i}" aria-label="Problem ${i + 1}${it.done ? ', done' : ''}">${i + 1}${it.done ? '<i>✓</i>' : ''}</button>`; }).join(''); }
+function problemHTML(i) {
+  const p = P[i], it = item(i), a = it.a, lock = it.done || KEYMODE, chk = it.checked || KEYMODE;
+  let body = '';
+  if (p.type === 'mc') body = `<div class="opts">${p.opts.map((o, k) => { const right = k === p.a, picked = (KEYMODE ? p.a : a.v) === k;
+    return `<button type="button" class="opt ${picked ? 'on' : ''} ${chk ? (right ? 'right' : picked ? 'wrong' : '') : ''}" data-k="${k}" ${lock ? 'disabled' : ''}><span class="rb"></span>${o}</button>`; }).join('')}</div>`;
+  if (p.type === 'ms') { const sel = KEYMODE ? p.opts.map((o, k) => o[1] ? k : -1).filter(k => k >= 0) : (a.sel || []);
+    body = `<div class="opts">${p.opts.map((o, k) => { const picked = sel.includes(k);
+      return `<button type="button" class="opt cb ${picked ? 'on' : ''} ${chk ? (o[1] ? 'right' : picked ? 'wrong' : '') : ''}" data-k="${k}" ${lock ? 'disabled' : ''}><span class="cbx"></span>${o[0]}</button>`; }).join('')}</div>`; }
+  if (p.type === 'drag') { const pl = KEYMODE ? Object.fromEntries(p.tokens.map(t => [t[0], t[2]])) : (a.place || {});
+    const tok = t => `<button type="button" class="dtok ${W.sel === t[0] ? 'sel' : ''} ${chk ? (pl[t[0]] === t[2] ? 'right' : 'wrong') : ''}" draggable="${!lock}" data-t="${t[0]}" ${lock ? 'disabled' : ''}>${t[1]}</button>`;
+    body = `<div class="dpool" data-b="">${p.tokens.filter(t => !pl[t[0]]).map(tok).join('') || '<span class="small muted">All placed. Tap a card to move it.</span>'}</div>
+      <div class="dbins b${p.bins.length}">${p.bins.map(([k, l]) => `<div class="dbin" data-b="${k}"><div class="dbh">${l}</div>${p.tokens.filter(t => pl[t[0]] === k).map(tok).join('')}</div>`).join('')}</div>
+      <p class="small muted">Drag a card, or tap a card and then tap a box.</p>`; }
+  if (p.type === 'fill') body = `<div class="fills">${p.blanks.map((b, k) => { const v = KEYMODE ? b[1] : ((a.v || {})[k] || ''), ok = b[2] === 'arr' ? normArr(v) === b[1] : normQ(v) === normQ(b[1]);
+    return `<label class="fl">${b[0]}<input type="text" data-k="${k}" value="${esc(v)}" autocomplete="off" ${lock ? 'disabled' : ''} class="${chk ? (ok ? 'right' : 'wrong') : ''}"></label>`; }).join('')}</div>
+    ${!lock && it.checked ? '<p class="small muted">Fix the red boxes and check again. Your score counts your first check.</p>' : ''}`;
+  if (p.type === 'write') { const t = KEYMODE ? p.model : (a.text || '');
+    body = `<textarea id="wtext" class="wbox" ${lock ? 'disabled' : ''} placeholder="Write 2 to 4 sentences.">${esc(t)}</textarea>
+      <div class="bank" id="wbank">${bankChips(p, t)}</div>
+      ${chk ? `<div class="model"><b>Model answer:</b> ${p.model}</div><ul class="report">${p.groups.map(([lab, res]) => { const ok = res.every(re => re.test(t)); return `<li class="${ok ? 'y' : 'x'}"><span class="ic">${ok ? '✓' : '✗'}</span><span>${lab}</span></li>`; }).join('')}</ul>` : ''}`; }
+  if (p.type === 'build') body = `<div class="builder"><div class="b-fig"><svg id="bsvg"></svg><p class="b-note" id="bcount"></p>${gainLegend}</div><div>
+      <fieldset><legend>Nucleus</legend><div class="nuc-in"><label>Protons<input type="number" id="bp" min="0" max="40" inputmode="numeric"></label><label>Neutrons<input type="number" id="bn" min="0" max="40" inputmode="numeric"></label></div></fieldset>
+      <fieldset><legend>Shells</legend><div class="inline-stepper"><button type="button" id="bsm" aria-label="Remove a shell">−</button><output id="bsc">1</output><button type="button" id="bsp" aria-label="Add a shell">+</button></div></fieldset>
+      <fieldset><legend>Electrons</legend><div class="seg" role="group" aria-label="Electron tool"><button type="button" data-tool="add">Add</button><button type="button" data-tool="erase">Erase</button></div>
+        <button type="button" class="btn ghost sm" id="bclear" style="margin-left:6px">Clear</button><p class="small muted" style="margin:8px 0 0">Add: tap a dashed spot (each holds up to 2). Erase: tap an electron. Gained electrons show pink.</p></fieldset>
+      <fieldset><legend>Charge</legend><select id="bq" aria-label="Charge"><option value="0">No charge (atom)</option><option value="1">1+</option><option value="2">2+</option><option value="3">3+</option><option value="-1">1−</option><option value="-2">2−</option><option value="-3">3−</option></select></fieldset>
+      ${chk ? `<ul class="report">${buildReport(p, a).map(([k, t]) => `<li class="${k}"><span class="ic">${k === 'y' ? '✓' : '✗'}</span><span>${t}</span></li>`).join('')}</ul>` : ''}
+      ${!it.done && it.checked && !KEYMODE ? '<p class="small muted">Fix your model and check again. Your score counts your first check.</p>' : ''}</div></div>`;
+  const fb = (it.checked || KEYMODE) && p.type !== 'build' && p.type !== 'write' ? `<div class="why ${it.done && it.pts === p.pts ? 'ok' : ''}">${p.why}</div>` : '';
+  const scoreLine = it.checked && !KEYMODE ? `<p class="pts">${it.done ? 'Score' : 'First-check score'}: <b>${it.pts} of ${p.pts}</b>${!relockable(p) || it.done ? ' · locked' : ''}</p>` : '';
+  return `<section class="card k-try wcard"><span class="tag">Problem ${i + 1} of ${N}</span><span class="ptag">${({ mc: 'Multiple choice', ms: 'Select all that apply', drag: 'Drag and drop', fill: 'Fill in the blank', build: 'Build a Bohr model', write: 'Written response' })[p.type]} · ${p.pts} pt${p.pts > 1 ? 's' : ''}</span>
+    <h3>${p.title}</h3><p class="place-prompt">${p.q}</p>${p.vis ? `<div class="wvis">${p.vis()}</div>` : ''}${body}${fb}${scoreLine}
+    <p class="fb-line" id="wmsg" aria-live="polite"></p>
+    <div class="btn-row">${it.done || KEYMODE ? '' : `<button type="button" class="btn primary" id="wcheck">${relockable(p) ? 'Check' : 'Check (one try)'}</button>`}
+      ${!relockable(p) && !it.done && !KEYMODE ? '<span class="small muted">Your answer locks after you check.</span>' : ''}
+      ${it.checked || KEYMODE ? `<button type="button" class="btn amber" id="wnext">${doneCount() === N ? 'See your results' : 'Next problem'}</button>` : ''}</div></section>`;
+}
+function bankChips(p, t) { const u = p.bank.filter(([, re]) => re.test(t)).length; return `<span class="bank-l">Word bank <b>${u}/${p.bank.length}</b></span>` + p.bank.map(([w, re]) => `<span class="wchip ${re.test(t) ? 'used' : ''}">${w}</span>`).join(''); }
+
+function render() {
+  const app = $('#app');
+  $('#prog').textContent = W.screen === 'intro' ? '' : `${doneCount()} of ${N} done · ${score()}/${TOTAL} pts`;
+  if (W.screen === 'intro') { app.innerHTML = introHTML(); wireIntro(); return; }
+  if (W.screen === 'results') { app.innerHTML = resultsHTML(); wireResults(); return; }
+  app.innerHTML = `<div class="ws-strip">${stripHTML()}</div>${KEYMODE ? '<p class="keybar">Answer key is showing. Nothing you do here is saved.</p>' : ''}${problemHTML(W.cur)}`;
+  wireWork();
+}
+function wireWork() {
+  const i = W.cur, p = P[i], it = item(i), a = it.a, lock = it.done || KEYMODE;
+  $$('.qn').forEach(b => b.addEventListener('click', () => { W.cur = +b.dataset.i; W.sel = null; wsave(); render(); window.scrollTo(0, 0); }));
+  if ($('#wcheck')) $('#wcheck').addEventListener('click', () => check(i));
+  if ($('#wnext')) $('#wnext').addEventListener('click', () => { if (doneCount() === N) { W.screen = 'results'; wsave(); render(); return; } let k = P.findIndex((x, j) => j > i && !peek(j).done); if (k < 0) k = P.findIndex((x, j) => !peek(j).done); W.cur = k < 0 ? i : k; W.sel = null; wsave(); render(); window.scrollTo(0, 0); });
+  if (lock && p.type !== 'build') return;
+  if (p.type === 'mc') $$('.opt').forEach(b => b.addEventListener('click', () => { a.v = +b.dataset.k; wsave(); render(); }));
+  if (p.type === 'ms') $$('.opt').forEach(b => b.addEventListener('click', () => { a.sel = a.sel || []; const k = +b.dataset.k, j = a.sel.indexOf(k); if (j < 0) a.sel.push(k); else a.sel.splice(j, 1); wsave(); render(); }));
+  if (p.type === 'drag') {
+    a.place = a.place || {};
+    const put = (t, b) => { if (b) a.place[t] = b; else delete a.place[t]; W.sel = null; wsave(); render(); };
+    $$('.dtok').forEach(t => { t.addEventListener('click', ev => { ev.stopPropagation(); if (W.sel && W.sel !== t.dataset.t) { put(W.sel, t.closest('[data-b]').dataset.b); return; } W.sel = W.sel === t.dataset.t ? null : t.dataset.t; render(); }); t.addEventListener('dragstart', ev => { ev.dataTransfer.setData('text/plain', t.dataset.t); }); });
+    $$('.dbin, .dpool').forEach(b => { b.addEventListener('click', () => { if (W.sel) put(W.sel, b.dataset.b); }); b.addEventListener('dragover', ev => ev.preventDefault()); b.addEventListener('drop', ev => { ev.preventDefault(); put(ev.dataTransfer.getData('text/plain'), b.dataset.b); }); });
+  }
+  if (p.type === 'fill') $$('.fills input').forEach(inp => inp.addEventListener('input', () => { a.v = a.v || {}; a.v[inp.dataset.k] = inp.value; inp.classList.remove('right', 'wrong'); wsave(); }));
+  if (p.type === 'write') $('#wtext').addEventListener('input', ev => { a.text = ev.target.value; $('#wbank').innerHTML = bankChips(p, a.text); wsave(); });
+  if (p.type === 'write') $('#wtext').addEventListener('paste', ev => ev.preventDefault());
+  if (p.type === 'build') mountBuilder(i);
+}
+
+function introHTML() {
+  const s = W.student, started = s.first && s.last;
+  return `<section class="intro">
+    <div class="hero"><div><p class="unit">Chemistry, Unit 2 worksheet</p><h1>Ionic Bonding Worksheet</h1>
+      <p class="lede">19 problems: electron transfer in Bohr and electron-dot diagrams, how many of each atom, writing and naming formulas, properties of ionic compounds, and spot the mistake. About 25 minutes.</p></div>
+      <div class="hero-fig hero-pair">${pairSVG({ l1: 'Na', l2: '', shells: [2, 8], charge: 1 }, { l1: 'Cl', l2: '', shells: [2, 8, 8], orig: [2, 8, 7], charge: -1 }, { la: 'Na⁺', lb: 'Cl⁻', attract: true, aria: 'Sodium ion and chloride ion attracting' })}</div></div>
+    <div class="two-col">
+      <section class="card"><span class="tag">Objective</span><p>I can show electrons moving from a metal to a nonmetal, figure out how many of each atom are needed, write and name ionic compounds, and describe their properties.</p></section>
+      <section class="card"><span class="tag">How it works</span><p class="small" style="margin-top:0">Multiple choice, select-all, drag-and-drop, and written answers get <b>one check</b>, and then they lock. Fill-in blanks can be fixed and checked again, but your score counts your <b>first</b> check. Your work saves on this device.</p></section>
+    </div>
+    <section class="card"><span class="tag">Before you start</span>
+      <div class="form-grid">
+        <label>First name<input id="fFirst" value="${esc(s.first)}" autocomplete="given-name"></label>
+        <label>Last name<input id="fLast" value="${esc(s.last)}" autocomplete="family-name"></label>
+        <label>Period<select id="fPeriod"><option value="">Choose</option>${periodList().map(p => `<option ${String(p) === String(s.period) ? 'selected' : ''}>${esc(p)}</option>`).join('')}</select></label>
+        <label>Teacher<select id="fTeacher"><option value="">Choose your teacher</option>${teacherList().map(t => `<option ${t === s.teacher ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select></label>
+        <label>Student ID<input id="fSid" value="${esc(s.sid)}" inputmode="numeric" autocomplete="off"></label>
+      </div><p class="fb-line bad" id="smsg"></p>
+      <div class="btn-row"><button type="button" class="btn primary" id="start">${started ? 'Continue' : 'Start the worksheet'}</button></div></section></section>`;
+}
+function wireIntro() {
+  $('#start').addEventListener('click', () => {
+    const v = id => $(id).value.trim(), s = { first: v('#fFirst'), last: v('#fLast'), period: v('#fPeriod'), teacher: v('#fTeacher'), sid: v('#fSid') };
+    if (Object.values(s).some(x => !x)) { $('#smsg').textContent = 'Fill in all five boxes.'; return; }
+    W.student = s; W.screen = 'work'; wsave(); render();
+  });
+}
+function resultsHTML() {
+  const s = W.student;
+  return `<section class="intro"><p class="unit">Results</p><h1>${doneCount() === N ? 'Worksheet complete' : 'Your progress'}</h1>
+    <section class="card"><div class="who"><div><span>Name</span>${esc(s.first)} ${esc(s.last)}</div><div><span>Period</span>${esc(s.period)}</div><div><span>Teacher</span>${esc(s.teacher)}</div><div><span>Student ID</span>${esc(s.sid)}</div></div>
+      <div class="stats"><div class="stat"><div class="k">Score</div><div class="v">${score()}/${TOTAL}</div></div><div class="stat"><div class="k">Problems done</div><div class="v">${doneCount()}/${N}</div></div></div>
+      <div class="btn-row"><button type="button" class="btn primary" id="sendBtn">Send my score to my teacher</button><button type="button" class="btn ghost" id="csvBtn">Download CSV</button><button type="button" class="btn ghost" id="backBtn">Back to the worksheet</button></div>
+      <p class="fb-line" id="sendMsg" aria-live="polite">${W.sentAt ? `Sent ${new Date(W.sentAt).toLocaleString()}.` : ''}</p></section>
+    <section class="card"><div class="table-scroll"><table class="mini-table"><thead><tr><th>#</th><th>Problem</th><th>Type</th><th>Points</th></tr></thead><tbody>
+    ${P.map((p, i) => `<tr><td>${i + 1}</td><td>${p.title}</td><td>${({ mc: 'Multiple choice', ms: 'Select all', drag: 'Drag and drop', fill: 'Fill in', build: 'Bohr model', write: 'Written' })[p.type]}</td><td>${peek(i).checked ? `${peek(i).pts}/${p.pts}` : '—'}</td></tr>`).join('')}</tbody></table></div></section></section>`;
+}
+function wireResults() {
+  $('#sendBtn').addEventListener('click', () => sendToSheet(false));
+  $('#csvBtn').addEventListener('click', downloadCSV);
+  $('#backBtn').addEventListener('click', () => { W.screen = 'work'; wsave(); render(); });
+}
+function sendToSheet(auto) {
+  if (KEYMODE) return;
+  const s = W.student, m = $('#sendMsg');
+  const body = new URLSearchParams({ studentId: s.sid, firstName: s.first, lastName: s.last, period: s.period, teacher: s.teacher, activity: ACTIVITY, score: String(score()), total: String(TOTAL), locks: '0',
+    qlabels: P.map((p, i) => 'P' + (i + 1)).join('|'), qpoints: P.map((p, i) => peek(i).checked ? peek(i).pts : 0).join('|'), qmax: P.map(p => p.pts).join('|'), when: new Date().toString() });
+  if (m) m.textContent = 'Sending...';
+  fetch(sheetURL(), { method: 'POST', mode: 'no-cors', body }).then(() => { W.sentAt = new Date().toISOString(); wsave(); const mm = $('#sendMsg'); if (mm) mm.textContent = 'Sent! Your teacher will see your score.'; if (auto) toast('Worksheet complete. Your score was sent.'); })
+    .catch(() => { const mm = $('#sendMsg'); if (mm) mm.textContent = "Couldn't send. Check your internet and try again."; });
+}
+function downloadCSV() {
+  const s = W.student, cell = v => { v = String(v == null ? '' : v); return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  const head = ['Student ID', 'Last Name', 'First Name', 'Period', 'Teacher', 'Activity', 'Score', 'Total', 'Problems Done', 'Date'], row = [s.sid, s.last, s.first, s.period, s.teacher, ACTIVITY, score(), TOTAL, `${doneCount()} of ${N}`, new Date().toLocaleString()];
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([head.map(cell).join(',') + '\r\n' + row.map(cell).join(',') + '\r\n'], { type: 'text/csv' }));
+  a.download = `IonicBondingWorksheet_${(s.last || 'student').replace(/\W+/g, '')}_${(s.first || '').replace(/\W+/g, '')}.csv`; document.body.appendChild(a); a.click(); setTimeout(() => a.remove(), 500);
+}
+
+/* ---------- teacher tools ---------- */
+const tOv = $('#tOv');
+$('#teacherBtn').addEventListener('click', () => { tOv.hidden = false; $('#tLogin').classList.remove('hidden'); $('#tPanel').classList.add('hidden'); $('#tCode').value = ''; $('#tMsg').textContent = ''; setTimeout(() => $('#tCode').focus(), 50); });
+const tGo = () => { if ($('#tCode').value.trim().toLowerCase() !== WCODE) { $('#tMsg').textContent = 'That code is not correct.'; return; }
+  $('#tLogin').classList.add('hidden'); $('#tPanel').classList.remove('hidden');
+  $('#tInfo').textContent = `${W.student.first ? `${W.student.first} ${W.student.last}, period ${W.student.period}. ` : ''}${doneCount()} of ${N} done, ${score()}/${TOTAL} points.`; $('#tKey').textContent = KEYMODE ? 'Hide answer key' : 'Show answer key'; };
+$('#tGo').addEventListener('click', tGo); $('#tCode').addEventListener('keydown', e => { if (e.key === 'Enter') tGo(); });
+$('#tCancel').addEventListener('click', () => { tOv.hidden = true; }); $('#tClose').addEventListener('click', () => { tOv.hidden = true; });
+$('#tKey').addEventListener('click', () => { KEYMODE = !KEYMODE; tOv.hidden = true; if (W.screen === 'intro') W.screen = 'work'; render(); });
+$('#tCsv').addEventListener('click', downloadCSV);
+$('#tReset').addEventListener('click', () => { if (!confirm('Erase this worksheet on this device?')) return; try { localStorage.removeItem(WKEY); } catch (e) {} location.reload(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') tOv.hidden = true; });
+render();
+
+})();
+</script>
+</body></html>

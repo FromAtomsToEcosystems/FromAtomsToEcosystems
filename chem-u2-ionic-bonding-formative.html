@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ionic Bonding Formative</title>
+<style>
+:root{
+ --navy:#17365d; --blue:#2a6fb5; --pale:#eef4fa; --line:#c5d3e2; --ink:#1c2733; --muted:#586878;
+ --ok:#1b7f4b; --okbg:#e6f4ec; --bad:#b3261e; --badbg:#fbeceb; --flag:#d99a00; --paper:#fff; --hl:#fff3c4;
+ --fs:17px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:"Segoe UI",Helvetica,Arial,sans-serif;color:var(--ink);background:#dfe7f0;font-size:var(--fs);line-height:1.45}
+button{font:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:3px solid #f2b705;outline-offset:2px}
+
+.top{background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:10px 18px;gap:12px}
+.top h1{font-size:1.05rem;margin:0;font-weight:600;letter-spacing:.2px}
+.top small{display:block;font-weight:400;color:#b8cbe2;font-size:.78rem}
+.tools button{background:transparent;color:#fff;border:1px solid #6d8bb0;border-radius:4px;padding:3px 10px;margin-left:6px}
+.tools button:hover{background:#25497a}
+#root{height:calc(100% - 58px)}
+
+.screen{max-width:860px;margin:26px auto;background:var(--paper);border:1px solid var(--line);padding:30px 36px;border-radius:4px}
+.screen h2{margin:0 0 6px;color:var(--navy);font-size:1.6rem}
+.screen h3{color:var(--navy);margin:22px 0 6px;font-size:1.1rem}
+.phen{background:var(--pale);border-left:6px solid var(--blue);padding:14px 18px;margin:16px 0}
+.phen b{color:var(--navy)}
+.btn{background:var(--blue);color:#fff;border:0;border-radius:4px;padding:10px 22px;font-weight:600}
+.btn:hover{background:#215c98}
+.btn.ghost{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
+.btn.ghost:hover{background:var(--pale)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.namebox{margin:14px 0}
+.namebox input{font:inherit;padding:8px 10px;border:1.5px solid #8ea4bc;border-radius:4px}
+.namebox .row{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
+.namebox .fld{display:flex;flex-direction:column;gap:4px}
+.namebox .fld label{font-size:.85rem;color:var(--muted)}
+.namebox .fld input,.namebox .fld select{width:200px;max-width:100%}
+.namebox select{font:inherit;padding:8px 10px;border:1.5px solid #8ea4bc;border-radius:4px;background:#fff}
+.namebox .fld.pd input{width:80px}
+.namebox .err{color:var(--bad);font-size:.88rem;margin-top:8px;display:none}
+.namebox .fld input[type=password]{width:200px}
+.sheetbox{font-size:.9rem;color:var(--muted);margin-top:6px}
+.lockinfo{background:#fff8e1;border:1px solid #e6cf7a;border-radius:4px;padding:8px 12px;font-size:.92rem;margin:12px 0}
+
+.app{display:grid;grid-template-columns:1.12fr 1fr;height:calc(100% - 62px)}
+.stim,.qp{overflow:auto;padding:0}
+.stim{background:#f6f9fc;border-right:3px solid var(--navy)}
+.qp{background:var(--paper)}
+.tabs{display:flex;gap:4px;padding:8px 12px 0;background:#e3ecf5;position:sticky;top:0;z-index:2;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.tab{border:1px solid var(--line);border-bottom:none;background:#cfdcea;color:var(--navy);padding:7px 14px;border-radius:5px 5px 0 0;font-weight:600;font-size:.9rem}
+.tab[aria-selected="true"]{background:#fff;border-color:var(--navy);border-bottom:2px solid #fff;margin-bottom:-1px}
+.tabbody{padding:18px 22px 40px}
+.tabbody h2{font-size:1.1rem;color:var(--navy);margin:0 0 8px}
+.passage p{font-family:Georgia,"Times New Roman",serif;font-size:1.02em;line-height:1.62;margin:0 0 12px;max-width:66ch}
+.passage mark{background:var(--hl)}
+.cap{font-size:.85rem;color:var(--muted);margin-top:6px}
+figure{margin:0 0 18px}
+svg text{font-family:"Segoe UI",Helvetica,Arial,sans-serif}
+table.data{border-collapse:collapse;width:100%;background:#fff;font-size:.93rem;margin:6px 0 16px}
+table.data th,table.data td{border:1px solid #9db2c9;padding:6px 9px;text-align:left;vertical-align:top}
+table.data th{background:#dbe6f2;color:var(--navy)}
+
+.qbody{padding:18px 24px 40px}
+.qnum{font-weight:700;color:#fff;background:var(--navy);display:inline-block;padding:2px 10px;border-radius:3px;margin-right:8px}
+.qtype{font-size:.82rem;color:var(--muted);margin:4px 0 10px}
+.prompt{font-size:1.02em;margin:10px 0 14px}
+.hint{background:var(--hl);border:1px solid #e6cf7a;border-radius:4px;padding:6px 10px;font-size:.88rem;margin-bottom:12px}
+.cerbox{margin:12px 0}
+.cerbox label{font-weight:700;color:var(--navy);display:block;margin-bottom:3px}
+.cerbox textarea{width:100%;font:inherit;min-height:88px;padding:8px 10px;border:1.5px solid #8ea4bc;border-radius:4px;resize:vertical}
+
+/* Q1 sentence builder */
+.sent{border:1.5px solid var(--line);border-left:6px solid var(--blue);border-radius:6px;padding:10px 14px;margin:12px 0;background:#fff;line-height:2.35}
+.sent .tn{color:var(--navy);font-weight:700}
+select.blank{font:inherit;font-size:.93em;padding:3px 6px;border:1.5px solid #6f89a6;border-radius:4px;background:#fffbe8;color:var(--ink);max-width:100%}
+select.blank.filled{background:#e4effb;border-color:var(--blue)}
+
+/* moving images */
+.clips{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.clip{background:#fff;border:2px solid var(--navy);border-radius:6px;padding:8px 10px 10px}
+.cliptop{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.cliptop b{color:var(--navy);font-size:1.05rem}
+.clip canvas{width:100%;height:auto;display:block;border-radius:4px;border:1px solid var(--line)}
+.mini{font-size:.8rem;padding:3px 10px;border:1.5px solid var(--navy);background:#fff;color:var(--navy);border-radius:14px;font-weight:600;margin-left:4px}
+.mini:hover{background:var(--pale)}
+.key{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.82rem;color:var(--muted);margin-top:6px}
+.key svg{vertical-align:-3px;margin-right:4px}
+
+/* Q2 answer rows */
+.cliprow{border:1.5px solid var(--line);border-radius:6px;padding:10px 12px;margin:10px 0;background:#fff}
+.cliprow h4{margin:0 0 4px;color:var(--navy)}
+.picks{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}
+.pick{border:1.5px solid #8ea4bc;background:#fff;color:var(--navy);padding:6px 12px;border-radius:18px;font-weight:600;font-size:.88rem}
+.pick:hover{background:var(--pale)}
+.pick.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.sub{font-size:.85rem;color:var(--muted);font-weight:600}
+
+/* Q3 sort */
+.pool{border:2px dashed #8ea4bc;border-radius:6px;padding:8px 10px;background:#f6f9fc;min-height:64px}
+.pooltitle{font-size:.85rem;font-weight:700;color:var(--muted)}
+.bins{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+.bin{border:2px solid var(--navy);border-radius:6px;padding:8px;min-height:104px;background:#fff;cursor:pointer}
+.bin.ready{background:#fffbe8;border-color:var(--flag)}
+.bin.over{background:#e4effb}
+.binhead{font-weight:700;color:var(--navy);font-size:.92rem;margin-bottom:4px;text-align:center}
+.card{background:#fff;border:1.5px solid #8ea4bc;border-left:5px solid var(--blue);border-radius:5px;padding:8px 10px;margin:6px 0;font-size:.9rem;cursor:grab;user-select:none;-webkit-user-select:none}
+.card.sel{outline:3px solid var(--flag);background:#fff8e1}
+
+/* footer nav */
+.foot{height:62px;background:#fff;border-top:3px solid var(--navy);display:flex;align-items:center;justify-content:space-between;padding:0 14px;gap:10px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.chip{width:34px;height:34px;border-radius:50%;border:2px solid #8ea4bc;background:#fff;color:var(--navy);font-weight:700;position:relative;padding:0}
+.chip.done{background:#cfe3f7;border-color:var(--blue)}
+.chip.cur{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chip.flag::after{content:"";position:absolute;top:-4px;right:-4px;width:12px;height:12px;background:var(--flag);border:2px solid #fff;border-radius:50%}
+.flagbtn{background:#fff;border:1.5px solid var(--flag);color:#7a5600;border-radius:4px;padding:6px 12px;font-weight:600}
+.flagbtn.on{background:var(--flag);color:#fff}
+
+/* review + results */
+.rvlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:14px 0}
+.rvitem{border:1.5px solid #8ea4bc;border-radius:6px;padding:10px;background:#fff;text-align:left}
+.rvitem.done{background:#e4effb;border-color:var(--blue)}
+.rvitem.todo{background:#fff8e1;border-color:var(--flag)}
+.rvitem b{display:block;color:var(--navy)}
+.score{font-size:2.3rem;font-weight:700;color:var(--navy)}
+.scoregrid{display:grid;grid-template-columns:auto auto;gap:2px 18px;justify-content:start;margin:8px 0}
+.res{border:1.5px solid var(--line);border-left-width:8px;border-radius:5px;padding:12px 16px;margin:14px 0;background:#fff}
+.res.good{border-left-color:var(--ok)}
+.res.miss{border-left-color:var(--bad)}
+.res.self{border-left-color:var(--blue)}
+.res h4{margin:0 0 6px;color:var(--navy)}
+.tag{font-size:.8rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:8px}
+.tag.good{background:var(--okbg);color:var(--ok)}
+.tag.miss{background:var(--badbg);color:var(--bad)}
+.part{margin:6px 0;padding-left:24px;position:relative}
+.part::before{position:absolute;left:2px;top:0;font-weight:700}
+.part.ok::before{content:"\2713";color:var(--ok)}
+.part.no::before{content:"\2715";color:var(--bad)}
+.part .fix{color:var(--bad)}
+.model{background:var(--pale);border-radius:5px;padding:10px 14px;margin-top:8px;font-size:.95rem}
+.resp{white-space:pre-wrap;background:#fafafa;border:1px dashed #98a9bb;padding:6px 10px;border-radius:4px;margin:4px 0 8px;font-size:.95rem}
+.checks label{display:block;margin:4px 0}
+
+/* lock screen */
+.lock{position:fixed;inset:0;background:rgba(14,33,58,.97);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
+.lock[hidden]{display:none}
+.lockbox{background:#fff;border-radius:8px;padding:26px 30px;max-width:440px;width:100%}
+.lockbox h2{margin:0 0 8px;color:var(--bad)}
+.lockbox label{font-weight:600;color:var(--navy);font-size:.9rem}
+.lockbox input{font:inherit;padding:8px 10px;border:1.5px solid #8ea4bc;border-radius:4px;width:100%;margin:4px 0 12px}
+.lockbox .err{color:var(--bad);font-size:.9rem;margin-top:8px}
+
+@media (max-width:900px){
+ .app{grid-template-columns:1fr;grid-template-rows:48% 52%}
+ .stim{border-right:none;border-bottom:3px solid var(--navy)}
+ .screen{margin:10px;padding:20px}
+ .foot{flex-wrap:wrap;height:auto;padding:6px}
+}
+@media (max-width:600px){.bins{grid-template-columns:1fr}}
+@media print{
+ body{background:#fff}
+ .top,.foot,.noprint,.lock{display:none!important}
+ #root{height:auto}
+ .screen{border:none;margin:0;max-width:none;padding:0}
+}
+.bank{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:6px 0 2px}
+.bank-l{font-size:12px;font-weight:800;color:#586878;text-transform:uppercase;letter-spacing:.3px}.bank-l b{color:#1d6fd1}
+.wchip{font-size:12.5px;padding:3px 10px;border-radius:999px;border:1.5px dashed #9db2c9;color:#586878;transition:all .25s}
+.wchip.used{border-style:solid;border-color:#1b7f4b;color:#fff;background:#1b7f4b}
+.wchip.pop{animation:wpop .45s ease} @keyframes wpop{50%{transform:scale(1.18)}}
+.calc{position:fixed;right:14px;top:64px;z-index:120;width:290px;background:#fff;border:1.5px solid #8ea4bc;border-radius:10px;padding:10px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.calc[hidden]{display:none}
+.calc-top{display:flex;align-items:center;gap:8px;margin-bottom:6px}.calc-top b{flex:1;color:var(--navy)}
+.calc-x{background:none;border:0;font-size:20px;color:#33475b}
+.calc-d{width:100%;font:inherit;font-size:18px;padding:7px 9px;border:1.5px solid #8ea4bc;border-radius:6px}
+.calc-r{text-align:right;font-weight:700;font-size:19px;color:#1b7f4b;min-height:28px;padding:3px 2px}
+.calc-k{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.calc-k button{padding:9px 0;border-radius:6px;border:1px solid #9db2c9;background:#eef4fa;font-weight:700;font-size:14px;color:#17365d}
+.calc-k button.n{background:#fff}.calc-k button.eq{background:var(--blue);color:#fff}
+@media print{.calc{display:none!important}}
+.tp{margin:10px 0 14px}
+.tpopts{display:grid;gap:8px;margin-top:6px}
+.tpo{display:flex;align-items:center;gap:10px;text-align:left;background:#fff;border:1.5px solid #9db2c9;border-radius:8px;padding:9px 12px;font:inherit;color:var(--ink)}
+.tpo.on{border-color:var(--blue);background:#e8f0fb}
+.tpo .rb{flex:0 0 16px;height:16px;border-radius:50%;border:2px solid #586878}.tpo.on .rb{border:5px solid var(--blue)}
+.tpo .cbx{flex:0 0 16px;height:16px;border-radius:3px;border:2px solid #586878}.tpo.on .cbx{background:var(--blue);border-color:var(--blue)}
+.checks .ck{margin:4px 0}.checks .ck.ok{color:#1b7f4b}.checks .ck.no{color:#a33a2a}
+</style>
+</head>
+<body>
+
+<div class="top">
+ <h1>Ionic Bonding<small>CAST-style formative &bull; Electron transfer, formulas, properties &bull; 4 questions, about 10 minutes</small></h1>
+ <div class="tools noprint" aria-label="Text size">
+   <button onclick="fs(-1)" aria-label="Smaller text">A&minus;</button><button onclick="fs(1)" aria-label="Larger text">A+</button>
+ </div>
+</div>
+<div class="calc noprint" id="calc" hidden role="dialog" aria-label="Calculator (degrees)"><div class="calc-top"><b>Calculator</b><span style="font-size:13px;color:#586878">degrees</span><button class="calc-x" onclick="toggleCalc()" aria-label="Close calculator">&times;</button></div>
+<input class="calc-d" id="calcD" aria-label="Expression" autocomplete="off" onkeydown="if(event.key==='Enter')calcRun()"><div class="calc-r" id="calcR" aria-live="polite">&nbsp;</div><div class="calc-k" id="calcK"></div></div>
+<div id="root"></div>
+
+<div id="lock" class="lock" hidden role="dialog" aria-modal="true" aria-labelledby="lockh">
+ <div class="lockbox">
+  <h2 id="lockh">Formative locked</h2>
+  <p>You left the formative or exited full screen. Raise your hand so your teacher can unlock it. Your answers are saved.</p>
+  <label for="lockcode">Teacher code</label>
+  <input id="lockcode" type="password" autocomplete="off" onkeydown="if(event.key==='Enter')tryUnlock()">
+  <button class="btn" onclick="tryUnlock()">Unlock</button>
+  <div class="err" id="lockerr" hidden>That code isn't right. Ask your teacher to enter it.</div>
+ </div>
+</div>
+
+<script src="sheets-config.js"></script>
+<script>
+const ACTIVITY="Ionic Bonding Formative";
+const SHEETS_ACTIVITY_NAME=ACTIVITY;
+const UNLOCK_CODE="bonding"; /* lock-screen code = last word of the lesson title */
+const TEACHER_CODE="teacher007"; /* teacher tools code */
+const codeIs=v=>{v=String(v||"").trim().toLowerCase();return v===UNLOCK_CODE||v===TEACHER_CODE;};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+
+/* =========================================================
+  CONTENT
+  ========================================================= */
+/* question indexes */
+const QI_SORT=0,QI_TP=1,QI_SEL=2,QI_CER=3;
+const SENTS=[],PICKS=[];
+const blanksOf=s=>s.parts.filter(p=>typeof p==="object");
+const strip=t=>String(t).replace(/<sub>(.*?)<\/sub>/g,"$1");
+function sentText(){return "";}function sentKey(){return {};}
+/* light-theme drawings */
+const R={};
+function bohrL(cx,cy,sym,shells,o){o=o||{};const RR=[22,38,54],pos=[[0,-1],[1,0],[0,1],[-1,0]];
+ let s=shells.map((c,i)=>`<circle cx="${cx}" cy="${cy}" r="${RR[i]}" fill="none" stroke="#9db2c9" stroke-width="1.6"/>`).join("");
+ s+=`<circle cx="${cx}" cy="${cy}" r="13" fill="#d9563f"/><text x="${cx}" y="${cy+5}" font-size="13" font-weight="700" text-anchor="middle" fill="#fff">${sym}</text>`;
+ shells.forEach((c,i)=>{const r=RR[i];for(let k=0;k<c;k++){const side=k<4?k:k-4,paired=c>side+4,off=paired?(k<4?-4.5:4.5):0,[dx,dy]=pos[side];
+  const gained=o.gain&&i===shells.length-1&&k>=c-o.gain;s+=`<circle cx="${cx+dx*r+(dy?off:0)}" cy="${cy+dy*r+(dx?off:0)}" r="4.2" fill="${gained?"#c0267a":(o.glow&&i===shells.length-1?"#d4a017":"#1f6fb5")}"/>`;}});
+ if(o.q){const ro=RR[shells.length-1]+10;s+=`<path d="M${cx-ro+7} ${cy-ro} h-7 v${2*ro} h7 M${cx+ro-7} ${cy-ro} h7 v${2*ro} h-7" fill="none" stroke="#17365d" stroke-width="2"/><text x="${cx+ro+4}" y="${cy-ro+10}" font-size="15" font-weight="800" fill="#17365d">${o.q}</text>`;}
+ if(o.label)s+=`<text x="${cx}" y="${cy+RR[shells.length-1]+28}" font-size="14" font-weight="700" text-anchor="middle" fill="#17365d">${o.label}</text>`;
+ return s;}
+function dotsL(x,y,sym,n,pink){pink=pink||0;const P=[[0,-20],[20,0],[0,20],[-20,0]];let s=`<text x="${x}" y="${y+8}" font-size="24" font-weight="800" text-anchor="middle" fill="#17365d">${sym}</text>`;
+ for(let k=0;k<n;k++){const side=k<4?k:k-4,paired=n>side+4,off=paired?(k<4?-4.5:4.5):0,[dx,dy]=P[side];s+=`<circle cx="${x+dx+(dy?off:0)}" cy="${y+dy+(dx?off:0)}" r="3.6" fill="${k>=n-pink?"#c0267a":"#1f6fb5"}"/>`;}return s;}
+const ARR=`<defs><marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9z" fill="#b8860b"/></marker></defs>`;
+/* Q1: match pairs to formulas */
+const SLOTS=[["NaCl","NaCl"],["MgCl2","MgCl<sub>2</sub>"],["Na2O","Na<sub>2</sub>O"],["AlF3","AlF<sub>3</sub>"]];
+const SLOT_NAME=Object.fromEntries(SLOTS);
+const CARDS=[
+ {id:"mgcl",slot:"MgCl2",text:"<b>Magnesium + chlorine</b><br>Mg gives 2, Cl takes 1"},
+ {id:"alf",slot:"AlF3",text:"<b>Aluminum + fluorine</b><br>Al gives 3, F takes 1"},
+ {id:"nacl",slot:"NaCl",text:"<b>Sodium + chlorine</b><br>Na gives 1, Cl takes 1"},
+ {id:"nao",slot:"Na2O",text:"<b>Sodium + oxygen</b><br>Na gives 1, O takes 2"}
+];
+/* Q2: two-part */
+const TP={A:{q:"<b>Part A.</b> Use the <b>Diagram</b> tab. When magnesium and oxygen form MgO, what happens to the electrons?",opts:[["o2mg","Oxygen gives 2 electrons to magnesium"],["mg2o","Magnesium gives 2 electrons to oxygen"],["share","They share 2 electrons equally"],["mg6","Magnesium gives 6 electrons to oxygen"]],ans:"mg2o"},
+ B:{q:"<b>Part B.</b> Which statement best explains your answer to Part A?",opts:[["full","Magnesium has 2 valence electrons, and oxygen needs 2 more to fill its outer shell"],["prot","Oxygen has more protons, so it gives away electrons"],["metal","Magnesium is a metal, so it gains electrons"],["eight","Both atoms already have 8 valence electrons"]],ans:"full"}};
+/* Q3: select all */
+const SEL={q:"Use the <b>Data</b> tab. Select <b>all</b> the statements about magnesium oxide (MgO) that are supported.",opts:[["mp","It has a very high melting point",true],["solid","It conducts electricity as a solid",false],["melt","It conducts electricity when melted",true],["ions","It is made of Mg²⁺ and O²⁻ ions",true],["share","Its atoms share electrons",false]]};
+const CLIPS=[];
+const QS=[
+{t:"sort",tab:"passage",label:"Drag and drop",pts:4,
+ prompt:"Drag each pair of elements to the formula of the ionic compound it makes. Remember: electrons given = electrons taken.",
+ why:"Na gives 1 and Cl takes 1: NaCl. Mg gives 2, so it needs two Cl: MgCl\u2082. O takes 2, so it needs two Na: Na\u2082O. Al gives 3, so it needs three F: AlF\u2083."},
+{t:"twopart",tab:"diagram",label:"Two-part question",pts:2,
+ prompt:"Magnesium (2, 8, 2) reacts with oxygen (2, 6). Answer Part A, then Part B.",
+ why:"Magnesium, a metal, gives its 2 valence electrons to oxygen, which needs 2 more for a full outer shell. That makes Mg\u00b2\u207a and O\u00b2\u207b."},
+{t:"selall",tab:"data",label:"Select all that apply",pts:3,
+ prompt:"Use Table 1 on the <b>Data</b> tab.",
+ why:"MgO melts at 2852 \u00b0C, conducts only when melted (when the ions can move), and is made of Mg\u00b2\u207a and O\u00b2\u207b ions. Ionic compounds do not share electrons."},
+{t:"cer",tab:"diagram",label:"Constructed response (Claim, Evidence, Reasoning), about 4 minutes",pts:3,
+ prompt:"A classmate says the formula of magnesium oxide should be Mg<sub>2</sub>O \u201Cbecause magnesium gives away 2 electrons.\u201D Use the <b>Diagram</b> tab to write a claim, evidence, and reasoning response. Is your classmate correct?",
+ ph:{c:"My classmate is ... because the formula is ...",e:"The diagram shows ...",r:"Electrons given must equal ..."},
+ model:{
+  c:"My classmate is not correct. The formula is MgO, with one magnesium for every one oxygen.",
+  e:"The diagram shows one magnesium giving its 2 valence electrons to one oxygen, which needed 2 more to fill its outer shell. That makes Mg\u00b2\u207a and O\u00b2\u207b.",
+  r:"Electrons given must equal electrons taken. One Mg gives 2 and one O takes 2, so one of each is enough. The charges +2 and \u22122 cancel to zero, so the formula is MgO, not Mg\u2082O."},
+ checks:["Claim: says the classmate is not correct; the formula is MgO (one of each).",
+         "Evidence: uses the diagram: Mg gives 2 electrons, O takes 2, making Mg\u00b2\u207a and O\u00b2\u207b.",
+         "Reasoning: electrons given = electrons taken, so the +2 and \u22122 charges cancel with one of each."],
+ kw:{claim:[/not\s+(correct|right|true)|incorrect|disagree|wrong|isn'?t|is\s+not/i,/MgO|one\s+(of\s+each|magnesium)|1\s*:\s*1|1\s+to\s+1/i],
+     evidence:[/\b2\b|two/i,/gives?|lose|transfer|moves?/i,/takes?|gains?|needs?/i,/2\+|2-|2−|\+2|-2|charge/i,/diagram|outer\s+shell|valence/i],
+     reasoning:[/given|equal|same|match|balance/i,/cancel|zero|\b0\b|neutral|charge/i]},
+ bank:{c:[["not correct",/not\s+(correct|right|true)|incorrect|disagree|wrong|isn'?t|is\s+not/i],["MgO",/MgO/i],["one of each",/one\s+of\s+each|1\s*:\s*1/i]],
+       e:[["gives 2 electrons",/give|lose|transfer/i],["takes 2",/take|gain|need/i],["Mg²⁺",/mg\s*2\+|mg²⁺|\+2/i],["O²⁻",/o\s*2-|o²⁻|o2−|-2/i],["outer shell",/outer\s+shell|valence/i]],
+       r:[["electrons given = taken",/given|equal|same|match|balance/i],["charges cancel",/cancel/i],["total charge zero",/zero|\b0\b|neutral/i]]}}
+];
+const MAX_TOTAL=QS.reduce((s,q)=>s+q.pts,0);
+
+/* =========================================================
+  STATE
+  ========================================================= */
+let screen="intro",cur=0,tab="passage",ans={},flagged=new Set(),student={id:"",first:"",last:"",period:"",teacher:""},selfChecks=[false,false,false],fsize=17,cerRevised=false,selCard=null,dragId=null;
+
+/* =========================================================
+  LOCKDOWN (only when opened from a github.io site)
+  ========================================================= */
+const ETC={}; /* settings come from sheets-config.js only */
+const LOCKDOWN=/(^|\.)github\.io$/i.test(location.hostname)&&ETC.LOCKDOWN!==false;
+let lockActive=false,locked=false,lockCount=0;
+function enterFS(){const el=document.documentElement,f=el.requestFullscreen||el.webkitRequestFullscreen;if(!f)return;try{const r=f.call(el);if(r&&r.catch)r.catch(()=>{});}catch(e){}}
+function exitFS(){const f=document.exitFullscreen||document.webkitExitFullscreen;if(f&&(document.fullscreenElement||document.webkitFullscreenElement)){try{const r=f.call(document);if(r&&r.catch)r.catch(()=>{});}catch(e){}}}
+function lockdownOn(){if(!LOCKDOWN)return;lockActive=true;enterFS();}
+function lockdownOff(){lockActive=false;exitFS();}
+function lockNow(){
+ if(!lockActive||locked)return;
+ locked=true;lockCount++;saveState();
+ $("#lock").hidden=false;$("#lockcode").value="";$("#lockerr").hidden=true;
+ setTimeout(()=>{const i=$("#lockcode");if(i)i.focus();},60);
+}
+function tryUnlock(){
+ if(codeIs($("#lockcode").value)){locked=false;$("#lock").hidden=true;enterFS();}
+ else{$("#lockerr").hidden=false;$("#lockcode").value="";}
+}
+document.addEventListener("visibilitychange",()=>{if(document.hidden)lockNow();});
+window.addEventListener("blur",()=>lockNow());
+document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement)lockNow();});
+document.addEventListener("webkitfullscreenchange",()=>{if(!document.webkitFullscreenElement)lockNow();});
+
+/* =========================================================
+  STATIC DIAGRAMS
+  ========================================================= */
+/* light-theme graph of first ionization energy, elements 1-20 */
+const IEDATA=[["H",1312],["He",2372],["Li",520],["Be",900],["B",801],["C",1086],["N",1402],["O",1314],["F",1681],["Ne",2081],["Na",496],["Mg",738],["Al",578],["Si",787],["P",1012],["S",1000],["Cl",1251],["Ar",1521],["K",419],["Ca",590]];
+function ieGraph(){
+ const W=700,H=300,x0=64,x1=680,y0=250,y1=20,X=i=>x0+i*(x1-x0)/19,Y=v=>y0-v/2500*(y0-y1);
+ let g=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Line graph of first ionization energy for elements 1 to 20. Magnesium is 738 and sulfur is 1000 kilojoules per mole. Values rise across each period and drop at each new period."><rect width="${W}" height="${H}" fill="#fff" stroke="#9db2c9"/>`;
+ [0,500,1000,1500,2000,2500].forEach(v=>g+=`<line x1="${x0}" x2="${x1}" y1="${Y(v)}" y2="${Y(v)}" stroke="#e1e8f0"/><text x="${x0-8}" y="${Y(v)+4}" font-size="12" text-anchor="end" fill="#586878">${v}</text>`);
+ g+=`<polyline fill="none" stroke="#b5610e" stroke-width="3" points="${IEDATA.map((d,i)=>`${X(i)},${Y(d[1])}`).join(" ")}"/>`;
+ IEDATA.forEach((d,i)=>{const hl=d[0]==="Mg"||d[0]==="S";g+=`<circle cx="${X(i)}" cy="${Y(d[1])}" r="${hl?7:4.5}" fill="${hl?"#1d6fd1":"#b5610e"}"/><text x="${X(i)}" y="${y0+18}" font-size="12" text-anchor="middle" fill="${hl?"#1d6fd1":"#33475b"}" font-weight="${hl?800:500}">${d[0]}</text>`;
+  if(hl)g+=`<text x="${X(i)}" y="${Y(d[1])-12}" font-size="12" text-anchor="middle" font-weight="800" fill="#1d6fd1">${d[1]}</text>`;});
+ g+=`<text x="16" y="${(y0+y1)/2}" transform="rotate(-90 16 ${(y0+y1)/2})" font-size="12" text-anchor="middle" fill="#33475b">Ionization energy (kJ/mol)</text>`;
+ return g+`</svg>`;
+}
+/* atoms drawn to scale */
+function atomsScale(list,cap){
+ const W=700,H=250,k=0.36,gap=60,rs=list.map(x=>R[x]*k),tot=rs.reduce((a,r)=>a+2*r,0)+gap*(list.length-1);
+ let x=(W-tot)/2,cy=Math.max(...rs)+16;
+ let g=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="${list.map(s=>s+" atom, radius "+R[s]+" picometers").join(". ")}. Drawn to scale."><rect width="${W}" height="${H}" fill="#fff" stroke="#9db2c9"/>`;
+ list.forEach((sym,i)=>{const r=rs[i],cx=x+r;x+=2*r+gap;
+  g+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="#dcecfb" stroke="#2a6fb5" stroke-width="2" stroke-dasharray="5 4"/><circle cx="${cx}" cy="${cy}" r="5" fill="#d9563f"/><text x="${cx}" y="${cy+Math.max(...rs)+24}" font-size="15" font-weight="700" text-anchor="middle" fill="#17365d">${sym} · ${R[sym]} pm</text>`;});
+ return g+(cap?`<text x="${W/2}" y="${H-10}" font-size="12" text-anchor="middle" fill="#586878">${cap}</text>`:"")+`</svg>`;
+}
+/* =========================================================
+  MOVING IMAGES (canvas animations)
+  ========================================================= */
+const CW=360,CH=230,TOP=10,BOT=220,GY=115;
+const LEFT=[6,156],RIGHT=[204,354];
+const RAD={o2:7,water:3.8,glc:7,salt:5.5,ion:5.5};
+const REDUCED=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const CLIPCFG={
+ A:{kind:"glc",gate:"channel",from:"R",start:{L:2,R:15},moves:4},
+ B:{kind:"ion",gate:"pump",from:"L",start:{L:5,R:14},moves:4},
+ C:{kind:"water",gate:"bilayer",from:"L",start:{L:20,R:7},extra:{kind:"salt",L:2,R:9},moves:4},
+ D:{kind:"o2",gate:"bilayer",from:"R",start:{L:2,R:16},moves:5}
+};
+const CLIPST={};
+function newPart(kind,side,mover){
+ const b=side==="L"?LEFT:RIGHT,r=RAD[kind];
+ return {kind,side,mover,x:b[0]+r+Math.random()*(b[1]-b[0]-2*r),y:TOP+r+Math.random()*(BOT-TOP-2*r),vx:(Math.random()-.5)*40,vy:(Math.random()-.5)*40,state:"free",hl:0};
+}
+function resetClip(st){
+ const c=st.cfg;st.parts=[];
+ const add=(kind,side,n,m)=>{for(let i=0;i<n;i++)st.parts.push(newPart(kind,side,m));};
+ if(c.extra){add(c.extra.kind,"L",c.extra.L,false);add(c.extra.kind,"R",c.extra.R,false);}
+ add(c.kind,"L",c.start.L,true);add(c.kind,"R",c.start.R,true);
+ st.t=0;st.next=1.6;st.done=0;st.phase="fadein";st.fade=0;st.flash=0;
+}
+function clipState(id){if(!CLIPST[id]){CLIPST[id]={id,cfg:CLIPCFG[id],paused:REDUCED};resetClip(CLIPST[id]);}return CLIPST[id];}
+function toward(p,tx,ty,step){const dx=tx-p.x,dy=ty-p.y,d=Math.hypot(dx,dy);if(d<=step){p.x=tx;p.y=ty;return true;}p.x+=dx/d*step;p.y+=dy/d*step;return false;}
+function startCross(st){
+ const c=st.cfg,src=c.from;
+ const cands=st.parts.filter(p=>p.mover&&p.state==="free"&&p.side===src);
+ if(!cands.length)return;
+ cands.sort((a,b)=>src==="L"?b.x-a.x:a.x-b.x);
+ const p=cands[Math.floor(Math.random()*Math.min(3,cands.length))],r=RAD[p.kind];
+ p.gy=c.gate==="bilayer"?Math.max(TOP+18,Math.min(BOT-18,p.y)):GY;
+ p.tx=src==="L"?156-r:204+r;p.ty=p.gy;
+ p.exitX=src==="L"?204+r+2:156-r-2;
+ p.state="approach";p.hl=1;
+}
+function stepClip(st,dt){
+ st.t+=dt;
+ if(st.flash>0)st.flash=Math.max(0,st.flash-dt*1.1);
+ if(st.phase==="fadein"){st.fade=Math.min(1,st.fade+dt*2.5);if(st.fade>=1)st.phase="run";}
+ else if(st.phase==="hold"){if(st.t>=st.holdUntil)st.phase="fadeout";}
+ else if(st.phase==="fadeout"){st.fade-=dt*2.5;if(st.fade<=0){resetClip(st);return;}}
+ for(const p of st.parts)movePart(st,p,dt);
+ if(st.phase==="run"&&st.t>=st.next&&!st.parts.some(p=>p.state!=="free"))startCross(st);
+}
+function movePart(st,p,dt){
+ const r=RAD[p.kind];
+ if(p.state==="free"){
+  p.vx+=(Math.random()-.5)*170*dt;p.vy+=(Math.random()-.5)*170*dt;
+  const sp=Math.hypot(p.vx,p.vy),mx=p.kind==="water"?42:30;
+  if(sp>mx){p.vx*=mx/sp;p.vy*=mx/sp;}
+  p.x+=p.vx*dt;p.y+=p.vy*dt;
+  const b=p.side==="L"?LEFT:RIGHT;
+  if(p.x<b[0]+r){p.x=b[0]+r;p.vx=Math.abs(p.vx);}
+  if(p.x>b[1]-r){p.x=b[1]-r;p.vx=-Math.abs(p.vx);}
+  if(p.y<TOP+r){p.y=TOP+r;p.vy=Math.abs(p.vy);}
+  if(p.y>BOT-r){p.y=BOT-r;p.vy=-Math.abs(p.vy);}
+  if(p.hl>0)p.hl=Math.max(0,p.hl-dt*0.6);
+ } else if(p.state==="approach"){
+  if(toward(p,p.tx,p.ty,46*dt)){
+   if(st.cfg.gate==="pump"){p.state="topump";}
+   else{p.state="through";}
+  }
+ } else if(p.state==="topump"){
+  if(toward(p,180,GY,28*dt)){p.state="hold";p.wait=0.7;st.flash=1;}
+ } else if(p.state==="hold"){
+  p.wait-=dt;if(p.wait<=0)p.state="through";
+ } else if(p.state==="through"){
+  if(toward(p,p.exitX,p.gy,32*dt)){
+   p.side=p.side==="L"?"R":"L";p.state="free";p.hl=1;
+   p.vx=(p.side==="R"?1:-1)*24;p.vy=(Math.random()-.5)*20;
+   st.done++;st.next=st.t+1.2+Math.random()*0.7;
+   if(st.done>=st.cfg.moves){st.phase="hold";st.holdUntil=st.t+2.4;}
+  }
+ }
+}
+function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.quadraticCurveTo(x+w,y,x+w,y+r);c.lineTo(x+w,y+h-r);c.quadraticCurveTo(x+w,y+h,x+w-r,y+h);c.lineTo(x+r,y+h);c.quadraticCurveTo(x,y+h,x,y+h-r);c.lineTo(x,y+r);c.quadraticCurveTo(x,y,x+r,y);c.closePath();}
+function hexPath(c,x,y,r){c.beginPath();for(let i=0;i<6;i++){const a=Math.PI/6+i*Math.PI/3;const px=x+r*Math.cos(a),py=y+r*Math.sin(a);i?c.lineTo(px,py):c.moveTo(px,py);}c.closePath();}
+function starPath(c,x,y,ro,ri){c.beginPath();for(let i=0;i<16;i++){const a=-Math.PI/2+i*Math.PI/8,rad=i%2?ri:ro;const px=x+rad*Math.cos(a),py=y+rad*Math.sin(a);i?c.lineTo(px,py):c.moveTo(px,py);}c.closePath();}
+function drawMembrane(c,gate,flash){
+ const s0=gate==="bilayer"?-99:GY-40,s1=gate==="bilayer"?-99:GY+40;
+ c.fillStyle="#fbf3d6";c.fillRect(160,0,40,CH);
+ for(let y=4;y<CH;y+=12){
+  if(y>s0&&y<s1)continue;
+  c.strokeStyle="#a8850a";c.lineWidth=1.4;
+  c.beginPath();c.moveTo(168,y-1.8);c.lineTo(179,y-1.8);c.moveTo(168,y+1.8);c.lineTo(179,y+1.8);
+  c.moveTo(181,y-1.8);c.lineTo(192,y-1.8);c.moveTo(181,y+1.8);c.lineTo(192,y+1.8);c.stroke();
+  c.fillStyle="#f0c419";c.lineWidth=1.2;
+  c.beginPath();c.arc(164,y,4.6,0,Math.PI*2);c.fill();c.stroke();
+  c.beginPath();c.arc(196,y,4.6,0,Math.PI*2);c.fill();c.stroke();
+ }
+ if(gate==="channel"){
+  c.fillStyle="#bcd6f0";c.strokeStyle="#1f5fa8";c.lineWidth=2.5;
+  rr(c,156,GY-40,48,29,9);c.fill();c.stroke();
+  rr(c,156,GY+11,48,29,9);c.fill();c.stroke();
+ }
+ if(gate==="pump"){
+  c.fillStyle=flash>0?"#ffd9a8":"#f6cf9e";c.strokeStyle="#b5610e";c.lineWidth=flash>0?4:2.5;
+  rr(c,154,GY-40,52,80,14);c.fill();c.stroke();
+  c.fillStyle="#fff";c.lineWidth=2;c.beginPath();c.arc(180,GY,10,0,Math.PI*2);c.fill();c.stroke();
+ }
+}
+function drawPart(c,p){
+ const r=RAD[p.kind];
+ if(p.hl>0){c.save();c.globalAlpha*=Math.min(1,p.hl*1.4);c.strokeStyle="#ffb300";c.lineWidth=3;c.beginPath();c.arc(p.x,p.y,r+5,0,Math.PI*2);c.stroke();c.restore();}
+ c.lineWidth=1.5;
+ if(p.kind==="o2"){
+  c.fillStyle="#e0483e";c.strokeStyle="#8e1f18";
+  c.beginPath();c.arc(p.x-3,p.y,4.3,0,Math.PI*2);c.fill();c.stroke();
+  c.beginPath();c.arc(p.x+3,p.y,4.3,0,Math.PI*2);c.fill();c.stroke();
+ } else if(p.kind==="water"){
+  c.fillStyle="#2f8fe0";c.strokeStyle="#12528c";c.beginPath();c.arc(p.x,p.y,r,0,Math.PI*2);c.fill();c.stroke();
+ } else if(p.kind==="glc"){
+  c.fillStyle="#3a9a4a";c.strokeStyle="#1d5e27";hexPath(c,p.x,p.y,r);c.fill();c.stroke();
+ } else if(p.kind==="salt"){
+  c.fillStyle="#9b6cc6";c.strokeStyle="#5b3586";c.beginPath();c.rect(p.x-r,p.y-r,2*r,2*r);c.fill();c.stroke();
+ } else if(p.kind==="ion"){
+  c.fillStyle="#e8862a";c.strokeStyle="#8a4a0c";c.beginPath();c.arc(p.x,p.y,r,0,Math.PI*2);c.fill();c.stroke();
+  c.strokeStyle="#fff";c.lineWidth=1.6;c.beginPath();c.moveTo(p.x-2.6,p.y);c.lineTo(p.x+2.6,p.y);c.moveTo(p.x,p.y-2.6);c.lineTo(p.x,p.y+2.6);c.stroke();
+ }
+}
+function drawClip(st,cv){
+ const dpr=window.devicePixelRatio||1;
+ if(cv.width!==Math.round(CW*dpr)){cv.width=Math.round(CW*dpr);cv.height=Math.round(CH*dpr);}
+ const c=cv.getContext("2d");c.setTransform(dpr,0,0,dpr,0,0);
+ c.fillStyle="#f7fbff";c.fillRect(0,0,CW,CH);
+ drawMembrane(c,st.cfg.gate,st.flash);
+ c.globalAlpha=Math.max(0,st.fade);
+ st.parts.filter(p=>!p.mover).forEach(p=>drawPart(c,p));
+ st.parts.filter(p=>p.mover&&p.state==="free").forEach(p=>drawPart(c,p));
+ st.parts.filter(p=>p.state!=="free").forEach(p=>drawPart(c,p));
+ c.globalAlpha=1;
+ if(st.flash>0){
+  const s=1+(1-st.flash)*0.5;
+  c.save();c.globalAlpha=Math.min(1,st.flash*1.3);
+  c.fillStyle="#f2b705";c.strokeStyle="#8a6a00";c.lineWidth=1.5;
+  starPath(c,180,GY+58,17*s,9*s);c.fill();c.stroke();
+  c.fillStyle="#3d2a00";c.font="bold 10px Segoe UI, Helvetica, Arial, sans-serif";c.textAlign="center";c.fillText("ATP",180,GY+62);
+  c.restore();
+ }
+ if(st.paused){c.fillStyle="rgba(23,54,93,.78)";rr(c,CW/2-36,CH/2-14,72,28,6);c.fill();c.fillStyle="#fff";c.font="bold 13px Segoe UI, Helvetica, Arial, sans-serif";c.textAlign="center";c.fillText("Paused",CW/2,CH/2+5);}
+}
+function toggleClip(id){const st=clipState(id);st.paused=!st.paused;const b=document.getElementById("pb"+id);if(b)b.textContent=st.paused?"Play":"Pause";}
+function replayClip(id){const st=clipState(id);resetClip(st);st.paused=false;const b=document.getElementById("pb"+id);if(b)b.textContent="Pause";}
+let lastT=performance.now();
+function loop(now){
+ const dt=Math.min(0.05,(now-lastT)/1000);lastT=now;
+ CLIPS.forEach(cl=>{
+  const cv=document.getElementById("cv"+cl.id);
+  if(!cv)return;
+  const st=clipState(cl.id);
+  if(!st.paused&&!locked)stepClip(st,dt);
+  drawClip(st,cv);
+ });
+ requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+const KEYICON={
+ glc:`<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="8,1 14,4.5 14,11.5 8,15 2,11.5 2,4.5" fill="#3a9a4a" stroke="#1d5e27" stroke-width="1.3"/></svg>`,
+ ion:`<svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" fill="#e8862a" stroke="#8a4a0c" stroke-width="1.3"/><path d="M5 8h6M8 5v6" stroke="#fff" stroke-width="1.6"/></svg>`,
+ atp:`<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="8,0.5 9.8,5.5 15.5,5.8 11,9.3 12.6,15 8,11.8 3.4,15 5,9.3 0.5,5.8 6.2,5.5" fill="#f2b705" stroke="#8a6a00" stroke-width="1"/></svg>`,
+ water:`<svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="4.5" fill="#2f8fe0" stroke="#12528c" stroke-width="1.3"/></svg>`,
+ salt:`<svg width="16" height="16" viewBox="0 0 16 16"><rect x="2.5" y="2.5" width="11" height="11" fill="#9b6cc6" stroke="#5b3586" stroke-width="1.3"/></svg>`,
+ o2:`<svg width="18" height="16" viewBox="0 0 18 16"><circle cx="6" cy="8" r="4.6" fill="#e0483e" stroke="#8e1f18" stroke-width="1.2"/><circle cx="12" cy="8" r="4.6" fill="#e0483e" stroke="#8e1f18" stroke-width="1.2"/></svg>`
+};
+const CLIPKEY={
+ A:[["glc","glucose"]],
+ B:[["ion","sodium ion (Na\u207A)"],["atp","ATP (energy)"]],
+ C:[["water","water"],["salt","salt (can't cross the membrane)"]],
+ D:[["o2","oxygen (O\u2082)"]]
+};
+function clipsHTML(){
+ return `<div class="clips">${CLIPS.map(cl=>{const st=clipState(cl.id);return `<div class="clip"><div class="cliptop"><b>Clip ${cl.id}</b><span><button class="mini" id="pb${cl.id}" onclick="toggleClip('${cl.id}')">${st.paused?"Play":"Pause"}</button><button class="mini" onclick="replayClip('${cl.id}')">Replay</button></span></div>
+  <canvas id="cv${cl.id}" width="${CW}" height="${CH}" role="img" aria-label="${CLIP_ARIA[cl.id]}"></canvas>
+  <div class="key">${CLIPKEY[cl.id].map(k=>`<span>${KEYICON[k[0]]}${k[1]}</span>`).join("")}</div></div>`;}).join("")}</div>`;
+}
+
+/* =========================================================
+  STIMULUS
+  ========================================================= */
+function stimHTML(){
+ const tabs=[["passage","Passage"],["diagram","Diagram"],["data","Data"]];
+ let h=`<div class="tabs" role="tablist">`+tabs.map(t=>`<button class="tab" role="tab" aria-selected="${tab===t[0]}" onclick="setTab('${t[0]}')">${t[1]}</button>`).join("")+`</div><div class="tabbody">`;
+ if(tab==="passage")h+=`
+ <div class="phen"><b>Phenomenon:</b> Magnesium ribbon burns with a blinding white flame. When it is done, a crumbly white powder is left: magnesium oxide, MgO.</div>
+ <div class="passage"><h2>Giving and Taking Electrons</h2>
+ <p>In an <mark>ionic bond</mark>, a metal gives its valence electrons to a nonmetal. The metal becomes a positive ion and the nonmetal becomes a negative ion. The opposite charges attract.</p>
+ <p>The metal must give away exactly as many electrons as the nonmetal takes. If one atom can't take them all, more atoms are needed. Magnesium gives 2 electrons, so it needs two chlorine atoms (each takes 1): MgCl<sub>2</sub>.</p>
+ <p>The ions stack into a <mark>crystal lattice</mark> held together by strong attractions, which is why ionic compounds are hard to melt.</p></div><div class="cap">Passage written for classroom use.</div>`;
+ if(tab==="diagram")h+=`<figure><h2>Diagram 1: Magnesium and oxygen</h2><svg viewBox="0 0 700 220" width="100%" role="img" aria-label="Before: magnesium with electrons 2, 8, 2 and oxygen with electrons 2, 6. Arrows show magnesium's 2 outer electrons moving to oxygen. After: Mg 2 plus with 2, 8 and O 2 minus with 2, 8, where the 2 gained electrons are pink."><rect width="700" height="220" fill="#fff" stroke="#9db2c9"/>${ARR}
+  <text x="20" y="24" font-size="14" font-weight="700" fill="#586878">Before</text>${bohrL(90,105,"Mg",[2,8,2],{glow:1,label:"Mg (2, 8, 2)"})}${bohrL(240,105,"O",[2,6],{label:"O (2, 6)"})}
+  <path d="M135 70 Q170 25 205 60" fill="none" stroke="#b8860b" stroke-width="2.4" stroke-dasharray="5 4" marker-end="url(#ah)"/><path d="M140 140 Q175 185 210 150" fill="none" stroke="#b8860b" stroke-width="2.4" stroke-dasharray="5 4" marker-end="url(#ah)"/>
+  <line x1="335" y1="20" x2="335" y2="200" stroke="#cfd9e4" stroke-width="2"/><text x="350" y="24" font-size="14" font-weight="700" fill="#586878">After</text>
+  ${bohrL(450,105,"Mg",[2,8],{q:"2+",label:"Mg²⁺ (2, 8)"})}${bohrL(600,105,"O",[2,8],{q:"2−",gain:2,label:"O²⁻ (2, 8)"})}</svg>
+  <figcaption class="cap">Pink electrons were gained by oxygen.</figcaption></figure>`;
+ if(tab==="data")h+=`<h2>Table 1: Properties of four substances</h2>
+ <table class="data"><tr><th>Substance</th><th>Type</th><th>Melting point (&deg;C)</th><th>Conducts as a solid?</th><th>Conducts when melted or dissolved?</th></tr>
+ <tr><td>Magnesium oxide (MgO)</td><td>Ionic</td><td>2852</td><td>No</td><td>Yes</td></tr>
+ <tr><td>Sodium chloride (NaCl)</td><td>Ionic</td><td>801</td><td>No</td><td>Yes</td></tr>
+ <tr><td>Sugar</td><td>Not ionic</td><td>186</td><td>No</td><td>No</td></tr>
+ <tr><td>Candle wax</td><td>Not ionic</td><td>about 60</td><td>No</td><td>No</td></tr></table>
+ <p class="cap">MgO is made of Mg<sup>2+</sup> and O<sup>2&minus;</sup> ions held in a crystal lattice.</p>`;
+ return h+`</div>`;
+}
+
+/* =========================================================
+  QUESTION RENDERING
+  ========================================================= */
+function blank(sid,p){
+ const a=((ans[0]||{})[sid])||{};
+ return `<select class="blank ${a[p.k]?"filled":""}" aria-label="${p.k==="dir"?"direction":"reason"}" onchange="setBlank('${sid}','${p.k}',this.value,this)"><option value="">choose\u2026</option>${p.opts.map(o=>`<option value="${o[0]}" ${a[p.k]===o[0]?"selected":""}>${strip(o[1])}</option>`).join("")}</select>`;
+}
+function cardHTML(c){
+ return `<div class="card ${selCard===c.id?"sel":""}" draggable="true" tabindex="0" role="button" aria-pressed="${selCard===c.id}" ondragstart="dragCard(event,'${c.id}')" onclick="event.stopPropagation();tapCard('${c.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();tapCard('${c.id}')}">${c.text}</div>`;
+}
+function isAnswered(i){
+ const q=QS[i],a=ans[i];
+ if(!a)return false;
+ if(q.t==="twopart")return !!(a.A&&a.B);
+ if(q.t==="selall")return (a.sel||[]).length>0;
+ if(q.t==="sent")return SENTS.every(s=>a[s.id]&&blanksOf(s).every(p=>a[s.id][p.k]));
+ if(q.t==="picks")return PICKS.every(p=>a[p.id]);
+ if(q.t==="sort")return CARDS.every(c=>a[c.id]);
+ if(q.t==="cer")return !!(a.c||a.e||a.r);
+ return false;
+}
+function qHTML(i){
+ const q=QS[i],a=ans[i]||{};
+ let h=`<div class="qbody"><div><span class="qnum">${i+1}</span><b>Question ${i+1} of ${QS.length}</b></div><div class="qtype">${q.label}</div><div class="prompt">${q.prompt}</div>`;
+ if(q.t==="sent"){
+
+  h+=SENTS.map(s=>`<div class="sent"><span class="tn">${s.name}</span> ${s.parts.map(p=>typeof p==="string"?p:blank(s.id,p)).join("")}</div>`).join("");
+ }
+ if(q.t==="picks"){
+
+  h+=PICKS.map(p=>`<div class="cliprow"><h4>${p.label}</h4><div class="picks" role="group" aria-label="${p.label.replace(/<[^>]+>/g,"")}">${p.opts.map(o=>`<button class="pick ${a[p.id]===o?"on":""}" aria-pressed="${a[p.id]===o}" onclick="setPick('${p.id}','${o}')">${o}</button>`).join("")}</div></div>`).join("");
+ }
+ if(q.t==="twopart"){
+  h+=["A","B"].map(pt=>`<div class="tp"><div class="prompt">${TP[pt].q}</div><div class="tpopts" role="radiogroup">${TP[pt].opts.map(([v,l])=>`<button class="tpo ${a[pt]===v?"on":""}" role="radio" aria-checked="${a[pt]===v}" onclick="setTP('${pt}','${v}')"><span class="rb"></span>${l}</button>`).join("")}</div></div>`).join("");
+ }
+ if(q.t==="selall"){
+  const sel=a.sel||[];
+  h+=`<div class="prompt">${SEL.q}</div><div class="tpopts">${SEL.opts.map(([v,l])=>`<button class="tpo cb ${sel.includes(v)?"on":""}" role="checkbox" aria-checked="${sel.includes(v)}" onclick="toggleSel('${v}')"><span class="cbx"></span>${l}</button>`).join("")}</div>`;
+ }
+ if(q.t==="sort"){
+  const pool=CARDS.filter(c=>!a[c.id]);
+  h+=`<div class="hint">On a Chromebook or tablet, you can also <b>tap a card</b>, then <b>tap a box</b>. Tap a placed card to move it again.</div>
+  <div class="pool" ondragover="event.preventDefault()" ondrop="event.preventDefault();dropTo('')" onclick="tapBin('')"><div class="pooltitle">Pairs to place</div>${pool.map(cardHTML).join("")||`<div class="cap">All cards are placed. Tap a card to move it.</div>`}</div>
+  <div class="bins">${SLOTS.map(t=>`<div class="bin ${selCard?"ready":""}" tabindex="0" role="button" aria-label="Place the selected card in ${t[1]}" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="event.preventDefault();this.classList.remove('over');dropTo('${t[0]}')" onclick="tapBin('${t[0]}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();tapBin('${t[0]}')}"><div class="binhead">${t[1]}</div>${CARDS.filter(c=>a[c.id]===t[0]).map(cardHTML).join("")}</div>`).join("")}</div>`;
+ }
+ if(q.t==="cer"){
+  const v={c:a.c||"",e:a.e||"",r:a.r||""};
+  h+=`<div class="hint">Use the <b>Diagram</b> tab. Give yourself about 4 minutes and write in complete sentences.</div>
+  <div class="cerbox"><label for="cc">Claim</label><textarea id="cc" oninput="setCER('c',this.value)" onpaste="return false" placeholder="${esc(q.ph.c)}">${esc(v.c)}</textarea>${bankHTML("c",v.c)}</div>
+  <div class="cerbox"><label for="ce">Evidence</label><textarea id="ce" oninput="setCER('e',this.value)" onpaste="return false" placeholder="${esc(q.ph.e)}">${esc(v.e)}</textarea>${bankHTML("e",v.e)}</div>
+  <div class="cerbox"><label for="cr">Reasoning</label><textarea id="cr" oninput="setCER('r',this.value)" onpaste="return false" placeholder="${esc(q.ph.r)}">${esc(v.r)}</textarea>${bankHTML("r",v.r)}</div>`;
+ }
+ return h+`</div>`;
+}
+function rerenderQ(){const q=$("#qp");if(q){const y=q.scrollTop;q.innerHTML=qHTML(cur);q.scrollTop=y;}refreshChips();}
+function setBlank(sid,key,v,el){const a=ans[0]||{};a[sid]=a[sid]||{};a[sid][key]=v;ans[0]=a;if(el)el.classList.toggle("filled",!!v);refreshChips();}
+function setPick(id,v){const a=ans[1]||{};a[id]=v;ans[1]=a;rerenderQ();}
+function tapCard(id){selCard=selCard===id?null:id;rerenderQ();}
+function tapBin(b){if(!selCard)return;place(selCard,b);selCard=null;rerenderQ();}
+function dragCard(e,id){dragId=id;try{e.dataTransfer.setData("text/plain",id);e.dataTransfer.effectAllowed="move";}catch(x){}}
+function dropTo(b){const id=dragId;dragId=null;if(!id)return;place(id,b);selCard=null;rerenderQ();}
+function place(id,b){const a=ans[QI_SORT]||{};if(b)a[id]=b;else delete a[id];ans[QI_SORT]=a;}
+function setTP(pt,v){const a=ans[QI_TP]||{};a[pt]=v;ans[QI_TP]=a;rerenderQ();}
+function toggleSel(v){const a=ans[QI_SEL]||{sel:[]};a.sel=a.sel||[];const k=a.sel.indexOf(v);if(k<0)a.sel.push(v);else a.sel.splice(k,1);ans[QI_SEL]=a;rerenderQ();}
+
+/* ---------- calculator (degrees); stays inside the page so lockdown is not triggered ---------- */
+(function(){const keys=[["sin","sin("],["cos","cos("],["tan","tan("],["√","√("],["sin⁻¹","asin("],["cos⁻¹","acos("],["tan⁻¹","atan("],["x²","^2"],["7"],["8"],["9"],["÷","/"],["4"],["5"],["6"],["×","*"],["1"],["2"],["3"],["−","-"],["0"],["."],["("],[")"],["C","C"],["⌫","B"],["+"],["=","="]];
+ const k=document.getElementById("calcK");k.innerHTML=keys.map(([l,v])=>`<button type="button" class="${/^[0-9.]$/.test(l)?"n":l==="="?"eq":""}" data-v="${v||l}">${l}</button>`).join("");
+ k.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{const d=document.getElementById("calcD"),v=b.dataset.v;if(v==="C"){d.value="";document.getElementById("calcR").innerHTML="&nbsp;";}else if(v==="B")d.value=d.value.slice(0,-1);else if(v==="=")calcRun();else d.value+=v;d.focus();}));})();
+function toggleCalc(){const c=document.getElementById("calc");c.hidden=!c.hidden;if(!c.hidden)document.getElementById("calcD").focus();}
+function calcRun(){const d=document.getElementById("calcD"),o=document.getElementById("calcR"),R=Math.PI/180;
+ try{let t=d.value.replace(/×/g,"*").replace(/÷/g,"/").replace(/−/g,"-").replace(/√\(/g,"Math.sqrt(").replace(/\^2/g,"**2").replace(/asin\(/g,"ASIN(").replace(/acos\(/g,"ACOS(").replace(/atan\(/g,"ATAN(").replace(/sin\(/g,"SIN(").replace(/cos\(/g,"COS(").replace(/tan\(/g,"TAN(");
+  if(/[^0-9+\-*/().\s A-Za-z]/.test(t)||/[A-Za-z]/.test(t.replace(/Math\.sqrt|SIN|COS|TAN|ASIN|ACOS|ATAN/g,"")))throw 0;
+  const v=new Function("SIN","COS","TAN","ASIN","ACOS","ATAN",`return (${t||0});`)(x=>Math.sin(x*R),x=>Math.cos(x*R),x=>Math.tan(x*R),x=>Math.asin(x)/R,x=>Math.acos(x)/R,x=>Math.atan(x)/R);
+  o.textContent=isFinite(v)?"= "+(Math.round(v*10000)/10000):"Error";}catch(e){o.textContent="Check your expression";}}
+function setCER(k,v){const a=ans[3]||{c:"",e:"",r:""};a[k]=v;ans[3]=a;updBank(k,v);refreshChips();}
+function bankHTML(k,text){const L=QS[3].bank[k];if(!L)return"";const u=L.filter(([,re])=>re.test(text||"")).length;
+ return `<div class="bank" data-bank="${k}"><span class="bank-l">Word bank <b>${u}/${L.length}</b></span>${L.map(([w,re])=>`<span class="wchip ${re.test(text||"")?"used":""}">${w}</span>`).join("")}</div>`;}
+function updBank(k,text){const el=document.querySelector(`.bank[data-bank="${k}"]`),L=QS[3].bank[k];if(!el||!L)return;const ch=el.querySelectorAll(".wchip");let u=0;
+ L.forEach(([,re],i)=>{const on=re.test(text||"");if(on)u++;if(on&&!ch[i].classList.contains("used")){ch[i].classList.add("used","pop");setTimeout(()=>ch[i].classList.remove("pop"),500);}else if(!on)ch[i].classList.remove("used");});
+ el.querySelector(".bank-l b").textContent=`${u}/${L.length}`;}
+function refreshChips(){const c=$("#chips");if(c)c.innerHTML=chipsHTML();saveState();}
+
+/* =========================================================
+  NAVIGATION / SCREENS
+  ========================================================= */
+function setTab(t){tab=t;const s=$("#stim");if(s)s.innerHTML=stimHTML();}
+function go(i){cur=i;tab=QS[i].tab;selCard=null;screen="test";render();}
+function next(){if(cur<QS.length-1)go(cur+1);else openReview();}
+function prev(){if(cur>0)go(cur-1);}
+function toggleFlag(){flagged.has(cur)?flagged.delete(cur):flagged.add(cur);render(true);}
+function openReview(){screen="review";render();}
+function submitAll(){autoCheckCER();lockdownOff();screen="results";window.scrollTo(0,0);render();}
+function reviseCER(){if(cerRevised)return;cur=QS.findIndex(q=>q.t==="cer");tab=QS[cur].tab;screen="reviseCER";lockdownOn();render();window.scrollTo(0,0);}
+function saveRevision(){cerRevised=true;autoCheckCER();lockdownOff();screen="results";render();window.scrollTo(0,0);}
+function autoCheckCER(){
+ const ci=QS.findIndex(q=>q.t==="cer"),kw=QS[ci].kw,a=ans[ci]||{c:"",e:"",r:""};
+ const all=((a.c||"")+" "+(a.e||"")+" "+(a.r||"")),c=(a.c||"");
+ const claimOK=kw.claim[0].test(c)&&kw.claim[1].test(all);
+ const evidenceOK=kw.evidence.filter(p=>p.test(all)).length>=3;
+ const reasoningOK=kw.reasoning[0].test(all)&&kw.reasoning[1].test(all);
+ selfChecks=[claimOK,evidenceOK,reasoningOK];
+}
+function fs(d){fsize=Math.min(24,Math.max(13,fsize+d*2));document.documentElement.style.setProperty("--fs",fsize+"px");}
+function startTest(){
+ const v=id=>(($("#"+id)||{value:""}).value||"").trim();
+ const sid=v("sid"),f=v("fn"),l=v("ln"),p=v("pd"),t=v("tc");
+ if(!sid||!f||!l||!p||!t){const e=$("#nmerr");if(e)e.style.display="block";return;}
+ student={id:sid,first:f,last:l,period:p,teacher:t};
+ lockdownOn();
+ go(0);
+}
+function chipsHTML(){
+ return QS.map((q,i)=>`<button class="chip ${i===cur?"cur":""} ${isAnswered(i)?"done":""} ${flagged.has(i)?"flag":""}" onclick="go(${i})" aria-label="Question ${i+1}${isAnswered(i)?", answered":""}${flagged.has(i)?", flagged":""}">${i+1}</button>`).join("");
+}
+const BACKUP_URL="https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec",BACKUP_TEACHERS=["Austin","Mueller","McCue","Arce","Trimm","Garcia","Trimm/Callanan","Callanan"];
+function periodList(){try{if(typeof PERIODS!=="undefined"&&Array.isArray(PERIODS)&&PERIODS.length)return PERIODS.map(String);}catch(e){}return ["1","2","3","4","5","6","7","8"];}
+function teacherList(){try{if(typeof TEACHERS!=="undefined"&&Array.isArray(TEACHERS)&&TEACHERS.length)return TEACHERS.map(String).filter(Boolean);}catch(e){}return BACKUP_TEACHERS;}
+function sheetURL(){try{if(typeof SHEETS_WEBHOOK_URL!=="undefined"&&SHEETS_WEBHOOK_URL&&String(SHEETS_WEBHOOK_URL).indexOf("PASTE")<0)return String(SHEETS_WEBHOOK_URL);}catch(e){}return BACKUP_URL;}
+function introHTML(){
+ return `<div class="screen">
+ <h2>Ionic Bonding</h2>
+ <div class="phen"><b>Phenomenon:</b> Magnesium ribbon burns with a blinding white flame and leaves behind a white powder, magnesium oxide. That powder is so hard to melt that it is used to line furnaces.</div>
+ <p><b>About 10 minutes:</b> Questions 1 to 3 take about 6 minutes, and question 4 (Claim, Evidence, Reasoning) takes about 4 minutes. You will see your score and the answers after you turn it in.</p>
+ <div class="namebox"><b>Student information</b> (required, used to record your score)
+  <div class="row">
+   <div class="fld"><label for="sid">Student ID</label><input id="sid" autocomplete="off" inputmode="numeric" value="${esc(student.id)}"></div>
+   <div class="fld"><label for="fn">First name</label><input id="fn" autocomplete="off" value="${esc(student.first)}"></div>
+   <div class="fld"><label for="ln">Last name</label><input id="ln" autocomplete="off" value="${esc(student.last)}"></div>
+   <div class="fld pd"><label for="pd">Period</label><select id="pd"><option value="">\u2014</option>${periodList().map(p=>`<option ${String(student.period)===String(p)?"selected":""}>${esc(p)}</option>`).join("")}</select></div>
+   <div class="fld"><label for="tc">Teacher's name</label>${teacherList().length?`<select id="tc"><option value="">Choose\u2026</option>${teacherList().map(t=>`<option ${student.teacher===t?"selected":""}>${esc(t)}</option>`).join("")}</select>`:`<input id="tc" autocomplete="off" value="${esc(student.teacher)}">`}</div>
+  </div>
+  <div class="err" id="nmerr">Fill in all five boxes before starting.</div>
+ </div>
+ <button class="btn" onclick="startTest()">Begin formative</button>
+</div>`;
+}
+function testHTML(){
+ return `<div class="app">
+ <section class="stim" id="stim" aria-label="Stimulus">${stimHTML()}</section>
+ <section class="qp" id="qp" aria-label="Question">${qHTML(cur)}</section>
+</div>
+<div class="foot">
+ <div><button class="btn ghost" onclick="prev()" ${cur===0?"disabled":""}>Previous</button></div>
+ <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center">
+   <button class="flagbtn ${flagged.has(cur)?"on":""}" onclick="toggleFlag()">${flagged.has(cur)?"Flagged":"Flag for review"}</button>
+   <div class="chips" id="chips">${chipsHTML()}</div>
+ </div>
+ <div><button class="btn" onclick="next()">${cur===QS.length-1?"Review and submit":"Next"}</button></div>
+</div>`;
+}
+function reviseCERHTML(){
+ return `<div class="app">
+ <section class="stim" id="stim" aria-label="Stimulus">${stimHTML()}</section>
+ <section class="qp" id="qp" aria-label="Question">${qHTML(cur)}</section>
+</div>
+<div class="foot">
+ <div></div>
+ <div style="text-align:center"><p style="margin:0"><b>Revising your response.</b> This is your only chance to change it.</p></div>
+ <div><button class="btn" onclick="saveRevision()">Save revision and return to results</button></div>
+</div>`;
+}
+function reviewHTML(){
+ const un=QS.map((q,i)=>i).filter(i=>!isAnswered(i));
+ return `<div class="screen">
+ <h2>Review your answers</h2>
+ <p>${un.length?`You have <b>${un.length}</b> unfinished question${un.length>1?"s":""}: ${un.map(i=>i+1).join(", ")}.`:"Every question has an answer."} Select a question to go back to it.</p>
+ <div class="rvlist">${QS.map((q,i)=>`<button class="rvitem ${isAnswered(i)?"done":"todo"}" onclick="go(${i})"><b>Question ${i+1}${flagged.has(i)?" (flagged)":""}</b>${isAnswered(i)?"Answered":"Not finished"}</button>`).join("")}</div>
+ <button class="btn" onclick="submitAll()">Submit and see results</button>
+ <button class="btn ghost" onclick="go(QS.length-1)" style="margin-left:8px">Back to task</button>
+</div>`;
+}
+
+/* =========================================================
+  SCORING + RESULTS
+  ========================================================= */
+function score(i){
+ const q=QS[i],a=ans[i]||{};
+ if(q.t==="sent")return SENTS.filter(s=>{const v=a[s.id]||{};return blanksOf(s).every(p=>v[p.k]===p.ans);}).length;
+ if(q.t==="picks")return PICKS.filter(p=>a[p.id]===p.ans).length;
+ if(q.t==="sort")return CARDS.filter(c=>a[c.id]===c.slot).length;
+ if(q.t==="twopart")return (a.A===TP.A.ans?1:0)+(a.B===TP.B.ans?1:0);
+ if(q.t==="selall"){const sel=a.sel||[];const good=SEL.opts.filter(o=>o[2]&&sel.includes(o[0])).length,bad=SEL.opts.filter(o=>!o[2]&&sel.includes(o[0])).length;return Math.max(0,good-bad);}
+ if(q.t==="cer")return selfChecks.filter(Boolean).length;
+ return 0;
+}
+function total(){return QS.reduce((s,q,i)=>s+score(i),0);}
+function detailHTML(i){
+ const q=QS[i],a=ans[i]||{};
+ if(q.t==="sent")return SENTS.map(s=>{const v=a[s.id]||{},ok=blanksOf(s).every(p=>v[p.k]===p.ans);
+  return `<div class="part ${ok?"ok":"no"}"><b>Your sentence:</b> ${esc(sentText(s,v))}${ok?"":`<br><span class="fix"><b>Correct:</b></span> ${esc(sentText(s,sentKey(s)))}`}</div>`;}).join("");
+ if(q.t==="picks")return PICKS.map(p=>{const ok=a[p.id]===p.ans;
+  return `<div class="part ${ok?"ok":"no"}">${p.label}<br>You chose ${a[p.id]||"nothing"}.${ok?"":` <span class="fix"><b>Correct:</b></span> ${p.ans}.`}<br><span class="cap">${p.why}</span></div>`;}).join("");
+ if(q.t==="sort")return CARDS.map(c=>{const ok=a[c.id]===c.slot;
+  return `<div class="part ${ok?"ok":"no"}">${c.text.replace(/<[^>]+>/g,"")}: you put it in <b>${a[c.id]?SLOT_NAME[a[c.id]]:"(not placed)"}</b>.${ok?"":` <span class="fix"><b>Correct:</b></span> ${SLOT_NAME[c.slot]}.`}</div>`;}).join("");
+ if(q.t==="twopart")return ["A","B"].map(pt=>{const ok=a[pt]===TP[pt].ans,lab=v=>(TP[pt].opts.find(o=>o[0]===v)||[0,"nothing"])[1];
+  return `<div class="part ${ok?"ok":"no"}"><b>Part ${pt}:</b> you chose ${esc(lab(a[pt]))}.${ok?"":` <span class="fix"><b>Correct:</b></span> ${esc(lab(TP[pt].ans))}.`}</div>`;}).join("");
+ if(q.t==="selall"){const sel=a.sel||[];return SEL.opts.map(([v,l,t])=>{const picked=sel.includes(v),ok=picked===t;
+  return `<div class="part ${ok?"ok":"no"}">${picked?"☑":"☐"} ${l} <span class="cap">(${t?"true":"false"}${ok?"":picked?" — should not be selected":" — should be selected"})</span></div>`;}).join("");}
+ return "";
+}
+function toggleSelf(k){selfChecks[k]=!selfChecks[k];saveState();$("#cerscore").textContent=score(3);$("#totalscore").textContent=total();}
+function sheetsReady(){return !!sheetURL();}
+function sendToSheet(){
+ const st=$("#sheetStatus");
+ if(!sheetsReady()){if(st)st.textContent="This activity isn't connected to your teacher's gradebook sheet yet.";return;}
+ const body=new URLSearchParams({studentId:student.id,firstName:student.first,lastName:student.last,period:student.period,teacher:student.teacher,activity:SHEETS_ACTIVITY_NAME,score:String(total()),total:String(MAX_TOTAL),locks:String(lockCount),qlabels:QS.map((q,i)=>"Q"+(i+1)+(q.t==="cer"?" CER":"")).join("|"),qpoints:QS.map((q,i)=>score(i)).join("|"),qmax:QS.map(q=>q.pts).join("|"),when:new Date().toString()});
+ if(st)st.textContent="Sending...";
+ fetch(sheetURL(),{method:"POST",mode:"no-cors",body:body})
+  .then(()=>{if(st)st.textContent="Sent! Your teacher will see your score.";})
+  .catch(()=>{if(st)st.textContent="Couldn't send. Check your internet connection and try again.";});
+}
+function csvCell(v){v=String(v==null?"":v);return /[",\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
+function downloadCSV(){
+ const head=["Student ID","Last Name","First Name","Period","Teacher","Activity","Q1 Formulas (of 4)","Q2 Two-part (of 2)","Q3 Select all (of 3)","Q4 CER (of 3)","Score","Total","Times Locked","Date"];
+ const row=[student.id,student.last,student.first,student.period,student.teacher,ACTIVITY,score(0),score(1),score(2),score(3),total(),MAX_TOTAL,lockCount,new Date().toLocaleString()];
+ const csv=head.map(csvCell).join(",")+"\r\n"+row.map(csvCell).join(",")+"\r\n";
+ const clean=s=>String(s).replace(/[^A-Za-z0-9_-]+/g,"");
+ const blob=new Blob([csv],{type:"text/csv"}),a=document.createElement("a");
+ a.href=URL.createObjectURL(blob);a.download=`IonicBondingFormative_${clean(student.last)}_${clean(student.first)}.csv`;
+ document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},800);
+}
+function resultsHTML(){
+ const ci=QS.findIndex(q=>q.t==="cer"),cq=QS[ci],ca=ans[ci]||{c:"",e:"",r:""};
+ let h=`<div class="screen">
+ <h2>Results: ${esc(student.first)} ${esc(student.last)} \u2014 Period ${esc(student.period)} \u2014 ${esc(student.teacher)}</h2>
+ <div>Total: <span class="score"><span id="totalscore">${total()}</span> / ${MAX_TOTAL}</span></div>
+ <div class="scoregrid">${QS.map((q,i)=>`<span>Question ${i+1}${q.t==="cer"?" (CER, scored by key ideas)":""}</span><b>${q.t==="cer"?`<span id="cerscore">${score(i)}</span>`:score(i)} / ${q.pts}</b>`).join("")}</div>
+ <p class="noprint"><button class="btn" onclick="downloadCSV()">Download score (CSV)</button> <button class="btn ghost" onclick="window.print()">Print or save as PDF</button>${sheetsReady()?` <button class="btn ghost" onclick="sendToSheet()">Send my score to my teacher</button>`:""}</p>
+ <p class="sheetbox noprint" id="sheetStatus"></p>`;
+ QS.forEach((q,i)=>{
+  if(q.t==="cer")return;
+  const s=score(i),full=s===q.pts;
+  h+=`<div class="res ${full?"good":"miss"}"><h4>Question ${i+1}: ${q.label}<span class="tag ${full?"good":"miss"}">${s} / ${q.pts}</span></h4>${detailHTML(i)}<div class="model">${q.why}</div></div>`;
+ });
+ h+=`<div class="res self"><h4>Question ${QS.length}: Claim, Evidence, Reasoning</h4>
+  <div class="cap" style="margin:0 0 8px">${cq.prompt}</div>
+  <div><b>Your claim:</b></div><div class="resp">${esc(ca.c||"(blank)")}</div>
+  <div><b>Your evidence:</b></div><div class="resp">${esc(ca.e||"(blank)")}</div>
+  <div><b>Your reasoning:</b></div><div class="resp">${esc(ca.r||"(blank)")}</div>
+  <div class="model" oncopy="return false" style="user-select:none"><b>Model response</b><br><b>Claim:</b> ${cq.model.c}<br><b>Evidence:</b> ${cq.model.e}<br><b>Reasoning:</b> ${cq.model.r}</div>
+  <p><b>Scored by key ideas</b> (1 point each):</p>
+  <div class="checks">${cq.checks.map((c,k)=>`<div class="ck ${selfChecks[k]?"ok":"no"}">${selfChecks[k]?"✓":"✗"} ${c}</div>`).join("")}</div>
+ </div>`;
+ h+=`<p class="noprint" style="margin-top:22px"><button class="btn ghost" style="font-size:.85rem;padding:6px 14px" onclick="teacherReset()">Teacher: clear this device for a new attempt</button></p>`;
+ return h+`</div>`;
+}
+
+/* =========================================================
+  AUTO-SAVE (answers are kept on this device until the page is reset)
+  ========================================================= */
+const SAVE_KEY="fate_save_"+ACTIVITY.replace(/\W+/g,"_");
+const SAVE_HOURS=24;
+let resumeTo=null;
+function saveState(){
+ if(screen==="intro"||screen==="resume")return;
+ try{localStorage.setItem(SAVE_KEY,JSON.stringify({v:1,t:Date.now(),screen,cur,tab,ans,flagged:[...flagged],student,selfChecks,cerRevised,lockCount,fsize}));}catch(e){}
+}
+function loadState(){try{const s=localStorage.getItem(SAVE_KEY);return s?JSON.parse(s):null;}catch(e){return null;}}
+function clearState(){try{localStorage.removeItem(SAVE_KEY);}catch(e){}}
+function restoreSaved(){
+ const d=loadState();
+ if(!d||!d.v||Date.now()-d.t>SAVE_HOURS*3600*1000||!d.screen||d.screen==="intro"){if(d)clearState();return;}
+ cur=d.cur||0;tab=d.tab||QS[cur].tab;ans=d.ans||{};flagged=new Set(d.flagged||[]);student=d.student||student;
+ selfChecks=d.selfChecks||selfChecks;cerRevised=!!d.cerRevised;lockCount=d.lockCount||0;
+ if(d.fsize){fsize=d.fsize;document.documentElement.style.setProperty("--fs",fsize+"px");}
+ if(d.screen==="results"){screen="results";}
+ else{resumeTo=d.screen;screen="resume";}
+}
+function resumeHTML(){
+ const done=QS.filter((q,i)=>isAnswered(i)).length;
+ return `<div class="screen">
+ <h2>Welcome back, ${esc(student.first)}</h2>
+ <p>Your answers were saved. You have finished <b>${done} of ${QS.length}</b> questions.</p>
+ ${LOCKDOWN?`<p>Because you left the page, your teacher needs to enter the code to let you continue.</p>
+ <div class="namebox"><div class="fld"><label for="rescode">Teacher code</label><input id="rescode" type="password" autocomplete="off" onkeydown="if(event.key==='Enter')resumeTest()"></div>
+ <div class="err" id="reserr">That code isn't right. Ask your teacher to enter it.</div></div>`:""}
+ <button class="btn" onclick="resumeTest()">Continue where you left off</button>
+ <p class="cap" style="margin-top:16px">Not ${esc(student.first)} ${esc(student.last)}? <button class="btn ghost" style="font-size:.85rem;padding:4px 12px" onclick="startOver()">Start over</button></p>
+</div>`;
+}
+function codeOK(){
+ if(!LOCKDOWN)return true;
+ const i=$("#rescode"),ok=i&&codeIs(i.value);
+ if(!ok){const e=$("#reserr");if(e)e.style.display="block";if(i)i.value="";}
+ return ok;
+}
+function resumeTest(){
+ if(!codeOK())return;
+ if(LOCKDOWN)lockCount++;
+ const to=resumeTo||"test";resumeTo=null;
+ lockdownOn();
+ if(to==="review"){screen="review";render();}
+ else if(to==="reviseCER"){cur=QS.findIndex(q=>q.t==="cer");tab=QS[cur].tab;screen="reviseCER";render();}
+ else go(Math.min(cur,QS.length-1));
+}
+function startOver(){
+ if(!codeOK())return;
+ clearState();
+ screen="intro";cur=0;tab="passage";ans={};flagged=new Set();student={id:"",first:"",last:"",period:"",teacher:""};
+ selfChecks=[false,false,false];cerRevised=false;lockCount=0;resumeTo=null;render();
+}
+function teacherReset(){
+ const c=window.prompt("Teacher code:");
+ if(c===null)return;
+ if(c.trim().toLowerCase()!==TEACHER_CODE){alert("That code isn't right.");return;}
+ clearState();location.reload();
+}
+
+/* =========================================================
+  RENDER
+  ========================================================= */
+function render(keepScroll){
+ const root=$("#root");let sy=0,qy=0;
+ if(keepScroll){const s=$("#stim"),q=$("#qp");if(s)sy=s.scrollTop;if(q)qy=q.scrollTop;}
+ root.innerHTML=screen==="intro"?introHTML():screen==="resume"?resumeHTML():screen==="test"?testHTML():screen==="reviseCER"?reviseCERHTML():screen==="review"?reviewHTML():resultsHTML();
+ if(keepScroll){const s=$("#stim"),q=$("#qp");if(s)s.scrollTop=sy;if(q)q.scrollTop=qy;}
+ root.style.overflow=(screen==="test"||screen==="reviseCER")?"hidden":"auto";
+ saveState();
+}
+restoreSaved();
+render();
+</script>
+</body>
+</html>
