@@ -817,5 +817,88 @@ function render(keepScroll){
 restoreSaved();
 render();
 </script>
+<script>
+/* =========================================================
+   CLOUD BACKUP (Saved Student Work sheet)
+   Save code = student ID + last name. Work saves on this Chromebook AND in the cloud,
+   so a student can sign in on any Chromebook and pick up where they left off.
+   ========================================================= */
+(() => {
+  const KEY = 'fate_save_Ions_and_the_Octet_Rule_Exit_Ticket', LESSON = 'Ions and the Octet Rule Exit Ticket';
+  const BACKUP_SAVE_URL = 'https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';
+  const saveURL = () => { try { if (typeof SAVE_WEBHOOK_URL !== 'undefined' && SAVE_WEBHOOK_URL) return SAVE_WEBHOOK_URL; } catch (e) {} return BACKUP_SAVE_URL; };
+  if (!window.localStorage || !window.fetch) return;
+  const realSet = Storage.prototype.setItem;
+  const parse = s => { try { return JSON.parse(s); } catch (e) { return null; } };
+  const who = st => { const s = st && st.student; if (!s) return null; const sid = String(s.sid || s.id || '').trim(), last = String(s.last || '').trim(); return sid && last ? { sid, last, first: s.first || '', period: s.period || '', teacher: s.teacher || '' } : null; };
+  const codeOf = w => (w.sid + '-' + w.last).toLowerCase().replace(/\s+/g, '');
+  const cnt = o => o ? Object.values(o).filter(Boolean).length : 0;
+  /* a number that only grows as the student does more */
+  const prog = st => { if (!st) return 0; let p = 0;
+    p += 100 * cnt(st.secDone) + cnt(st.reqs);
+    if (st.final) p += 10000 * (st.final.passed ? 1 : 0) + 50 * ((st.final.attempts || []).length);
+    if (st.items) p += 10 * Object.values(st.items).filter(x => x && (x.done || x.checked)).length;
+    if (st.ans) p += 5 * Object.keys(st.ans).length;
+    if (st.submittedAt || st.completedAt || st.screen === 'results') p += 1000;
+    return p; };
+  const verKey = KEY + '__cloudver';
+  let pending = null, lastSent = '', restoring = false;
+  /* status chip */
+  const chip = document.createElement('div'); chip.className = 'cloudchip'; chip.setAttribute('aria-live', 'polite');
+  chip.style.cssText = 'position:fixed;left:10px;bottom:10px;z-index:9999;font:600 12px system-ui,sans-serif;padding:5px 10px;border-radius:999px;background:rgba(20,32,52,.85);color:#cfe3ff;pointer-events:none;opacity:0;transition:opacity .3s';
+  const showChip = (t, ms = 2500) => { chip.textContent = t; chip.style.opacity = '1'; clearTimeout(showChip.t); showChip.t = setTimeout(() => { chip.style.opacity = '0'; }, ms); };
+  document.addEventListener('DOMContentLoaded', () => document.body.appendChild(chip)); if (document.body) document.body.appendChild(chip);
+  const body = (raw, st, w) => { const ver = Date.now(); realSet.call(localStorage, verKey, String(ver));
+    return new URLSearchParams({ code: codeOf(w), lesson: LESSON, data: raw, prog: String(prog(st)), ver: String(ver), studentId: w.sid, lastName: w.last, firstName: w.first, period: w.period, teacher: w.teacher,
+      summary: `${prog(st)} progress points` }); };
+  function push(now) {
+    if (restoring) return;
+    const raw = localStorage.getItem(KEY), st = parse(raw), w = who(st);
+    if (!w || raw === lastSent) return;
+    const b = body(raw, st, w); lastSent = raw;
+    if (now && navigator.sendBeacon) { navigator.sendBeacon(saveURL(), b); return; }
+    fetch(saveURL(), { method: 'POST', mode: 'no-cors', body: b }).then(() => showChip('☁ Saved to the cloud')).catch(() => { lastSent = ''; showChip('Saved on this Chromebook (cloud not reached)'); });
+  }
+  function schedule() { clearTimeout(pending); pending = setTimeout(() => push(false), 4000); }
+  async function pull(w, localSt) {
+    try {
+      const r = await fetch(saveURL() + '?code=' + encodeURIComponent(codeOf(w)) + '&lesson=' + encodeURIComponent(LESSON), { cache: 'no-store' });
+      const j = await r.json(); if (!j || !j.found || !j.data) return false;
+      const cloudSt = parse(j.data); if (!cloudSt) return false;
+      if (prog(cloudSt) > prog(localSt)) {
+        restoring = true; clearTimeout(pending);
+        realSet.call(localStorage, KEY, j.data);
+        realSet.call(localStorage, verKey, String(j.ver || Date.now()));
+        sessionStorage.setItem('cloud-restored-' + KEY, '1');
+        showChip('☁ Found your saved work. Loading it…', 4000);
+        setTimeout(() => location.reload(), 700);
+        return true;
+      }
+    } catch (e) { /* offline or blocked: keep working on this Chromebook */ }
+    return false;
+  }
+  /* watch saves to this activity's key */
+  Storage.prototype.setItem = function (k, v) {
+    if (restoring && this === localStorage && k === KEY) return; /* loading cloud work: don't let the page overwrite it */
+    let before = null;
+    if (this === localStorage && k === KEY) before = who(parse(localStorage.getItem(KEY)));
+    realSet.call(this, k, v);
+    if (this !== localStorage || k !== KEY) return;
+    const st = parse(v), w = who(st);
+    if (!w) return;
+    if (!before || codeOf(before) !== codeOf(w)) pull(w, st).then(restored => { if (!restored) schedule(); });
+    else schedule();
+  };
+  window.addEventListener('pagehide', () => push(true));
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') push(true); });
+  /* on open: if the cloud has more progress for this student, load it */
+  const start = () => {
+    if (sessionStorage.getItem('cloud-restored-' + KEY)) { sessionStorage.removeItem('cloud-restored-' + KEY); showChip('☁ Your saved work is loaded'); return; }
+    const st = parse(localStorage.getItem(KEY)), w = who(st);
+    if (w) pull(w, st);
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
+</script>
 </body>
 </html>

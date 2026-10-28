@@ -559,6 +559,16 @@ textarea.wbox:focus{outline:none;border-color:var(--e)}
 #s8r .cmp{flex-direction:column;align-items:stretch}#s8r .choice{width:100%;justify-content:flex-start;text-align:left}
 .model{margin-top:10px;background:var(--panel2);border-left:4px solid var(--good);border-radius:10px;padding:10px 14px;font-size:15px}
 @media (max-width:720px){.ch-arr{transform:rotate(90deg);width:100%;text-align:center}}
+/* phenomenon card */
+.k-phen{border:2px solid #fb923c;background:linear-gradient(180deg,color-mix(in srgb,#fb923c 10%,var(--panel)),var(--panel))}
+.k-phen .tag{color:#2a1305;background:#fb923c}
+.phen-svg{width:100%;max-width:720px;display:block;margin:6px auto 10px}
+.phen-svg .ph-l{font:600 14px var(--font);fill:var(--muted);text-anchor:middle}.phen-svg .ph-op{font:800 40px var(--font);fill:var(--text)}
+.sorter .token.placed{cursor:pointer}.sorter .token.locked{cursor:default;opacity:.95}.sorter .tray.hover,.sorter .tray:focus-visible{outline:2px dashed var(--e)}.sort-row{margin-top:10px;align-items:center}
+.xp-hidden{display:grid;place-items:center;align-content:center;gap:6px;min-height:170px;border:2px dashed var(--line2);border-radius:50%;width:170px;height:170px;margin:0 auto}.xp-hidden span{font-size:44px;font-weight:800;color:var(--muted)}.xp-hidden small{color:var(--muted);text-align:center;max-width:120px;font-size:11px}
+.choice .pq-pos{display:block;font-size:12px;color:var(--muted);font-weight:500;margin-top:2px}.choice .mtile{margin:0 auto 6px}
+.pair-pics{display:flex;gap:18px;justify-content:center;margin-top:8px}.pair-pics figure{margin:0;text-align:center}.pair-pics svg{width:110px;height:110px}.pair-pics figcaption{font-size:12px;color:var(--muted)}
+.lockcode-box{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:2px 12px;background:color-mix(in srgb,var(--amber) 16%,var(--panel2));border:1.5px solid var(--amber);border-radius:12px;padding:10px 14px;margin:0 0 12px}.lockcode-box span{color:var(--muted);font-size:13px;font-weight:700}.lockcode-box b{font-size:24px;letter-spacing:1px;color:var(--amber)}.lockcode-box small{grid-column:1/-1;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -594,7 +604,7 @@ textarea.wbox:focus{outline:none;border-color:var(--e)}
       <div>
         <p class="unit">Chemistry, Unit 2: Ions, Periodic Trends and Bonding</p>
         <h1>Periodic Trends</h1>
-        <p class="lede">Predict atomic radius, ionization energy, and electronegativity, then learn the shortcut that ties all three together. Nine sections, about 65 minutes.</p>
+        <p class="lede">Predict atomic radius, ionization energy, and electronegativity, then learn the shortcut that ties all three together. Nine short sections, about 40 minutes. You'll get more practice on the worksheet.</p>
       </div>
       <div class="hero-fig hero-trend">
         <svg id="heroSvg" viewBox="0 0 640 300" aria-label="Atoms drawn to scale: across period 2 they get smaller, and down group 1 they get larger."></svg>
@@ -676,6 +686,7 @@ textarea.wbox:focus{outline:none;border-color:var(--e)}
       <div class="btn-row"><button class="btn primary" id="tGo" type="button">Open teacher view</button><button class="btn ghost" id="tCancel" type="button">Cancel</button></div>
     </div>
     <div id="tPanel" class="hidden">
+      <div class="lockcode-box"><span>Lock screen code</span><b>trends</b><small>Type this on a student's locked screen. teacher007 also works there.</small></div>
       <p class="small muted" id="tInfo"></p>
       <div class="teacher-tools">
         <button class="btn ghost" id="tUnlock" type="button">Unlock every section</button>
@@ -712,7 +723,8 @@ textarea.wbox:focus{outline:none;border-color:var(--e)}
    SETTINGS
    ========================================================= */
 const KEY = 'fate_chem_periodic_trends_v1';
-const TEACHER_CODE = 'trends'; /* unlock code = last word of the lesson title, any capitalization */
+const UNLOCK_CODE = 'trends'; /* lock-screen code = last word of the lesson title, any capitalization */
+const TEACHER_CODE = 'teacher007'; /* opens the Teacher button tools, any capitalization */
 const LESSON = 'Periodic Trends';
 /* Google Sheets + teacher list: same setup as the formative assessments.
    If sheets-config.js (next to this file on the site) defines TEACHERS or SHEETS_WEBHOOK_URL, those win. */
@@ -963,7 +975,7 @@ function toast(msg) {
 }
 function shake(el) { if (!el) return; el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); setTimeout(() => el.classList.remove('shake'), 500); }
 const card = (kind, title, body, extra = '') => {
-  const label = { read: 'Read', try: 'Try it', qc: 'Quick check', final: 'Final check' }[kind];
+  const label = { read: 'Read', try: 'Try it', qc: 'Quick check', final: 'Final check', phen: 'Phenomenon' }[kind];
   const cls = kind === 'final' ? 'qc' : kind;
   return `<section class="card k-${cls}" ${extra}><span class="tag">${label}</span>${title ? `<h3>${title}</h3>` : ''}${body}</section>`;
 };
@@ -997,48 +1009,52 @@ function makeQC(root, cfg) {
 
 /* Tap-or-drag sorter */
 function makeSorter(root, cfg) {
+  /* Students can place cards anywhere (and move them). Check only says whether everything is right. */
   const doneAlready = !!S.tasks[cfg.id];
-  root.innerHTML = `<div class="sorter ${cfg.layout || ''}"><div class="tray" aria-label="Items to sort"></div><div class="bins">${cfg.bins.map(b => `<div class="bin" data-bin="${b.id}" tabindex="0" role="button" aria-label="${esc(b.aria || b.label)}"><div class="bin-label">${b.label}</div><div class="bin-drop"></div></div>`).join('')}</div><p class="sort-msg" aria-live="polite"></p></div>`;
-  const tray = $('.tray', root), msg = $('.sort-msg', root);
+  root.innerHTML = `<div class="sorter ${cfg.layout || ''}"><div class="tray" tabindex="0" role="button" aria-label="Cards not placed yet"></div><div class="bins">${cfg.bins.map(b => `<div class="bin" data-bin="${b.id}" tabindex="0" role="button" aria-label="${esc(b.aria || b.label)}"><div class="bin-label">${b.label}</div><div class="bin-drop"></div></div>`).join('')}</div>
+    <div class="btn-row sort-row"><button type="button" class="btn primary sm sort-check" disabled>Check</button><span class="small muted sort-left"></span></div><p class="sort-msg" aria-live="polite"></p></div>`;
+  const tray = $('.tray', root), msg = $('.sort-msg', root), chk = $('.sort-check', root), left = $('.sort-left', root);
   const binOf = id => cfg.bins.find(b => b.accepts.includes(id));
+  const st = S.tasks[cfg.id + '_place'] || {};
   const toks = shuffle(cfg.tokens).map(t => {
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'token' + (t.cls ? ' ' + t.cls : ''); b.dataset.id = t.id; b.innerHTML = t.label;
     tray.appendChild(b); return b;
   });
-  let sel = null, dragged = false;
-  const place = (tok, binEl, silent) => {
-    $('.bin-drop', binEl).appendChild(tok);
-    tok.classList.remove('sel'); tok.classList.add('placed'); tok.setAttribute('aria-disabled', 'true');
-    if (!silent && !tray.children.length) {
-      msg.innerHTML = `<span style="color:var(--good)">${cfg.doneMsg || 'All sorted. Nice work.'}</span>`;
-      S.tasks[cfg.id] = true; save(); cfg.onDone && cfg.onDone();
-    }
+  let sel = null, dragged = false, finished = false;
+  const status = () => { const n = tray.children.length; chk.disabled = finished || n > 0; left.textContent = finished ? '' : n ? `${n} card${n > 1 ? 's' : ''} left to place` : 'All placed. Press Check.'; };
+  const remember = () => { const m = {}; toks.forEach(t => { const bn = t.closest('.bin'); if (bn) m[t.dataset.id] = bn.dataset.bin; }); S.tasks[cfg.id + '_place'] = m; save(); };
+  const move = (tok, target) => {
+    (target.classList.contains('tray') ? target : $('.bin-drop', target)).appendChild(tok);
+    tok.classList.remove('sel'); tok.classList.toggle('placed', !target.classList.contains('tray'));
+    sel = null; msg.textContent = ''; remember(); status();
   };
-  if (doneAlready) {
-    toks.forEach(t => place(t, $(`.bin[data-bin="${binOf(t.dataset.id).id}"]`, root), true));
-    msg.innerHTML = `<span style="color:var(--good)">${cfg.doneMsg || 'All sorted. Nice work.'}</span>`;
-    return;
-  }
-  const attempt = (tok, binEl) => {
-    if (!tok || tok.classList.contains('placed')) return;
-    const b = cfg.bins.find(x => x.id === binEl.dataset.bin);
-    if (b.accepts.includes(tok.dataset.id)) { place(tok, binEl); if (tray.children.length) msg.textContent = ''; }
-    else { shake(tok); shake(binEl); msg.innerHTML = `<span style="color:#ffc2cd">${(cfg.hint && cfg.hint(tok.dataset.id, b.id)) || 'Not there. Try a different spot.'}</span>`; tok.classList.remove('sel'); }
-    sel = null;
+  const finish = () => {
+    finished = true; toks.forEach(t => { t.classList.add('locked'); t.setAttribute('aria-disabled', 'true'); });
+    msg.innerHTML = `<span style="color:var(--good)">${cfg.doneMsg || 'All correct. Nice work.'}</span>`; status();
   };
+  if (doneAlready) { toks.forEach(t => move(t, $(`.bin[data-bin="${binOf(t.dataset.id).id}"]`, root))); finish(); return; }
+  toks.forEach(t => { const b = st[t.dataset.id]; const el = b && $(`.bin[data-bin="${b}"]`, root); if (el) move(t, el); });
+  status();
+  chk.addEventListener('click', () => {
+    if (finished || tray.children.length) return;
+    const allRight = toks.every(t => { const bn = t.closest('.bin'); return bn && binOf(t.dataset.id).id === bn.dataset.bin; });
+    if (allRight) { S.tasks[cfg.id] = true; save(); finish(); cfg.onDone && cfg.onDone(); }
+    else { shake($('.bins', root)); msg.innerHTML = '<span style="color:#ffc2cd">Something is in the wrong spot. Look over your sort, move any cards you want to change, and check again.</span>'; }
+  });
   toks.forEach(tok => {
-    tok.addEventListener('click', () => {
+    tok.addEventListener('click', e => {
+      e.stopPropagation();
+      if (finished) return;
       if (dragged) { dragged = false; return; }
-      if (tok.classList.contains('placed')) return;
-      if (sel === tok) { tok.classList.remove('sel'); sel = null; return; }
-      if (sel) sel.classList.remove('sel');
+      if (sel === tok) { tok.classList.remove('sel'); sel = null; msg.textContent = ''; return; }
+      if (sel) { const target = tok.closest('.bin') || tray; if (sel.closest('.bin') !== tok.closest('.bin') || target === tray) { move(sel, target); return; } sel.classList.remove('sel'); }
       sel = tok; tok.classList.add('sel');
-      msg.textContent = 'Now tap where it goes.';
+      msg.textContent = tok.closest('.bin') ? 'Tap another box to move it, or tap the card area to take it back.' : 'Now tap where it goes.';
     });
     let start = null, ghost = null, over = null;
     tok.addEventListener('pointerdown', e => {
-      if (tok.classList.contains('placed') || e.button > 0) return;
+      if (finished || e.button > 0) return;
       start = { x: e.clientX, y: e.clientY }; dragged = false;
       try { tok.setPointerCapture(e.pointerId); } catch (_) {}
     });
@@ -1051,28 +1067,28 @@ function makeSorter(root, cfg) {
       if (ghost) {
         ghost.style.left = e.clientX + 'px'; ghost.style.top = e.clientY + 'px';
         const t = document.elementFromPoint(e.clientX, e.clientY);
-        const bin = t && t.closest('.bin');
-        if (over && over !== bin) over.classList.remove('hover');
-        over = bin && root.contains(bin) ? bin : null;
+        const tgt = t && (t.closest('.bin') || t.closest('.tray'));
+        if (over && over !== tgt) over.classList.remove('hover');
+        over = tgt && root.contains(tgt) ? tgt : null;
         if (over) over.classList.add('hover');
       }
     });
-    const end = e => {
+    const end = () => {
       if (!start) return;
       start = null;
       if (ghost) {
         ghost.remove(); ghost = null; tok.style.opacity = '';
-        if (over) { over.classList.remove('hover'); attempt(tok, over); over = null; }
+        if (over) { over.classList.remove('hover'); move(tok, over); over = null; }
         setTimeout(() => { dragged = false; }, 50);
       }
     };
     tok.addEventListener('pointerup', end);
     tok.addEventListener('pointercancel', end);
   });
-  $$('.bin', root).forEach(binEl => {
-    const go = () => { if (sel) attempt(sel, binEl); };
-    binEl.addEventListener('click', e => { if (e.target.closest('.token:not(.placed)')) return; go(); });
-    binEl.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+  [...$$('.bin', root), tray].forEach(el => {
+    const go = () => { if (sel && !finished) move(sel, el); };
+    el.addEventListener('click', go);
+    el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
   });
 }
 
@@ -1147,8 +1163,14 @@ function makeExplorer(root, cfg) {
     <div class="hunt"><p class="place-prompt hunt-q" aria-live="polite"></p><div class="progress-pips">${cfg.missions.map(() => '<i></i>').join('')}</div><p class="fb-line hunt-fb" aria-live="polite"></p></div>`;
   const st = S.tasks[cfg.id] || (S.tasks[cfg.id] = { n: 0 });
   const viz = $('.xp-viz', root), info = $('.xp-info', root), q = $('.hunt-q', root), fb = $('.hunt-fb', root);
-  const show = s => {
+  const show = (s, reveal) => {
     const t = TD[s];
+    if (cfg.hide && st.n < cfg.missions.length && !reveal) {
+      viz.innerHTML = `<div class="xp-hidden"><span>?</span><small>Size shows after you find the answer</small></div>`;
+      info.innerHTML = `<div class="t-name" style="text-align:center">${t.name}</div><p class="small muted" style="text-align:center;margin:2px 0 0">Period ${t.p}, group ${t.g}</p>`;
+      $$('.tile', root).forEach(b => b.classList.toggle('picked', b.dataset.sym === s));
+      return;
+    }
     viz.innerHTML = atomViz(s);
     info.innerHTML = `<div class="t-name" style="text-align:center">${t.name}</div><p class="small muted" style="text-align:center;margin:2px 0 0">Period ${t.p}, group ${t.g}</p>${which.length ? barsHTML(s, which) : ''}`;
     $$('.tile', root).forEach(b => b.classList.toggle('picked', b.dataset.sym === s));
@@ -1160,15 +1182,15 @@ function makeExplorer(root, cfg) {
     q.innerHTML = `<b>Mission ${st.n + 1} of ${cfg.missions.length}.</b> ${cfg.missions[st.n].t}`;
   };
   $$('.tile', root).forEach(b => b.addEventListener('click', () => {
-    const s = b.dataset.sym; show(s);
-    if (st.n >= cfg.missions.length) return;
+    const s = b.dataset.sym;
+    if (st.n >= cfg.missions.length) { show(s); return; }
     const m = cfg.missions[st.n];
     if (s === m.ans) {
-      st.n++; save(); fb.className = 'fb-line good'; fb.innerHTML = m.why || `Yes: ${nm(s)}.`;
+      st.n++; save(); show(s, true); fb.className = 'fb-line good'; fb.innerHTML = m.why || `Yes: ${nm(s)}.`;
       b.classList.add('pop'); setTimeout(() => b.classList.remove('pop'), 600);
       if (st.n >= cfg.missions.length) cfg.onDone && cfg.onDone();
       ask();
-    } else { fb.className = 'fb-line bad'; fb.innerHTML = m.hint ? m.hint(s) : 'Not that one. Look again.'; shake(b); }
+    } else { show(s); fb.className = 'fb-line bad'; fb.innerHTML = m.hint ? m.hint(s) : 'Not that one. Look again.'; shake(b); }
   }));
   show(cfg.start || 'Na'); ask();
 }
@@ -1302,25 +1324,25 @@ function tugSVG(a, b) {
    SECTIONS
    ========================================================= */
 const SECS = [null,
-  { z: 1, title: 'What is a periodic trend?', min: 4 },
-  { z: 2, title: 'Atomic radius', min: 7 },
-  { z: 3, title: 'Why atomic radius changes', min: 7 },
-  { z: 4, title: 'Ionization energy', min: 7 },
-  { z: 5, title: 'Electronegativity', min: 7 },
-  { z: 6, title: 'Use atomic radius to explain the trends', min: 9 },
-  { z: 7, title: 'Ranking practice', min: 7 },
-  { z: 8, title: 'Spot the mistake: fix the claims', min: 6 },
-  { z: 9, title: 'Final check', min: 10 }
+  { z: 1, title: 'What is a periodic trend?', min: 3 },
+  { z: 2, title: 'Atomic radius', min: 4 },
+  { z: 3, title: 'Why atomic radius changes', min: 5 },
+  { z: 4, title: 'Ionization energy', min: 4 },
+  { z: 5, title: 'Electronegativity', min: 4 },
+  { z: 6, title: 'Use atomic radius to explain the trends', min: 6 },
+  { z: 7, title: 'Ranking practice', min: 3 },
+  { z: 8, title: 'Spot the mistake: fix the claims', min: 3 },
+  { z: 9, title: 'Final check', min: 8 }
 ];
 const REQS = {
-  1: [['hunt', 'Finish the 5 table missions'], ['qc1', 'Answer the quick check correctly']],
-  2: [['hunt', 'Finish the 5 atom size missions'], ['pairs', 'Pick the larger atom 5 times'], ['qc2', 'Answer the quick check correctly']],
-  3: [['sim', 'Explore both directions in the simulator'], ['sort', 'Sort what makes an atom bigger or smaller'], ['rank', 'Rank 5 sets by atomic radius'], ['qc3', 'Answer the quick check correctly']],
-  4: [['graph', 'Find 3 points on the graph'], ['pairs', 'Pick the higher ionization energy 5 times'], ['qc4', 'Answer the quick check correctly']],
-  5: [['tug', 'Win 5 electron tug-of-war rounds'], ['qc5', 'Answer the quick check correctly']],
-  6: [['predict', 'Predict and explain all three trends for 5 pairs'], ['explain', 'Write your own explanation using the word bank'], ['qc6', 'Answer the quick check correctly']],
-  7: [['rank', 'Finish 5 mixed ranking rounds'], ['qc7', 'Answer the quick check correctly']],
-  8: [['claims', 'Find and fix the mistake in 5 student claims'], ['qc8', 'Answer the quick check correctly']],
+  1: [['phen', 'Make a prediction about the phenomenon'], ['hunt', 'Finish the 3 table missions'], ['qc1', 'Answer the quick check correctly']],
+  2: [['hunt', 'Finish the 3 atom size missions'], ['pairs', 'Pick the larger atom 3 times'], ['qc2', 'Answer the quick check correctly']],
+  3: [['sim', 'Explore both directions in the simulator'], ['sort', 'Sort what makes an atom bigger or smaller'], ['rank', 'Rank 3 sets by atomic radius'], ['qc3', 'Answer the quick check correctly']],
+  4: [['graph', 'Find 2 points on the graph'], ['pairs', 'Pick the higher ionization energy 3 times'], ['qc4', 'Answer the quick check correctly']],
+  5: [['tug', 'Win 3 electron tug-of-war rounds'], ['qc5', 'Answer the quick check correctly']],
+  6: [['predict', 'Predict and explain all three trends for 3 pairs'], ['explain', 'Write your own explanation using the word bank'], ['qc6', 'Answer the quick check correctly']],
+  7: [['rank', 'Finish 3 mixed ranking rounds'], ['qc7', 'Answer the quick check correctly']],
+  8: [['claims', 'Find and fix the mistake in 3 student claims'], ['qc8', 'Answer the quick check correctly']],
   9: [['pass', `Score ${PASS_SCORE} or more out of ${FC_LEN} on the final check`]]
 };
 const GOALS = [
@@ -1344,13 +1366,36 @@ function frame(n, inner) {
 }
 const pairQ = (a, b, m, dirBig = true) => {
   const k = MET[m].key, win = (TD[a][k] > TD[b][k]) === dirBig ? 0 : 1;
-  return { a: win, opts: [a, b].map(s => `${atomViz(s, { label: false, cls: 'sm' })}<b>${nm(s)}</b>`), win: [a, b][win], lose: [a, b][1 - win] };
+  /* choices show only position on the table (no size drawing), so the picture never gives the answer away */
+  return { a: win, opts: [a, b].map(s => `${ttile(s)}<b>${nm(s)}</b><small class="pq-pos">Period ${TD[s].p}, group ${TD[s].g}</small>`), win: [a, b][win], lose: [a, b][1 - win],
+    pics: `<div class="pair-pics">${[a, b].map(s => `<figure>${atomViz(s, { label: false, cls: 'sm' })}<figcaption>${nm(s)} · ${TD[s].r} pm</figcaption></figure>`).join('')}</div>` };
 };
 const samePeriod = (a, b) => TD[a].p === TD[b].p, sameGroup = (a, b) => TD[a].g === TD[b].g;
 
 /* ---------------- Section 1 ---------------- */
+/* ---------------- Phenomenon ---------------- */
+const PH_OPTS = ['Potassium has more electrons to lose', 'Potassium\'s outer electron is farther from the nucleus, so it is easier to pull off', 'Potassium is heavier, so it hits the water harder', 'Lithium has no outer electron'];
+const PHEN_SVG = `<svg viewBox="0 0 720 250" class="phen-svg" role="img" aria-label="Two beakers of water. Lithium fizzes slowly in the left one. Potassium bursts into a purple flame in the right one.">
+  ${[[60, 'Li', false], [400, 'K', true]].map(([x, sym, hot]) => `<g transform="translate(${x} 20)">
+    <path d="M20 40 v130 a14 14 0 0 0 14 14 h192 a14 14 0 0 0 14 -14 v-130" fill="#7dd3fc" fill-opacity=".18" stroke="#e2e8f0" stroke-width="3"/>
+    <path d="M22 95 h216" stroke="#7dd3fc" stroke-width="2" opacity=".7"/>
+    <rect x="${hot ? 110 : 112}" y="${hot ? 80 : 84}" width="${hot ? 40 : 34}" height="16" rx="5" fill="#cbd5e1"/>
+    ${hot ? `<path d="M130 82 C100 50 112 20 128 0 C132 28 160 30 150 60 C158 50 166 62 160 80 Z" fill="#c084fc" opacity=".9"/><path d="M130 82 C116 62 124 44 132 32 C136 50 150 54 146 70 Z" fill="#f0abfc"/>${[[90, 70], [180, 60], [70, 40], [200, 30]].map(([a, b]) => `<circle cx="${a}" cy="${b}" r="4" fill="#fde047"/>`).join('')}` : [[118, 76], [140, 72], [128, 62], [150, 64]].map(([a, b]) => `<circle cx="${a}" cy="${b}" r="3.5" fill="none" stroke="#e2e8f0" stroke-width="1.5"/>`).join('')}
+  </g>
+  <text x="${x + 130}" y="232" class="ph-l">${hot ? 'Potassium: bursts into flame' : 'Lithium: fizzes slowly'}</text>`).join('')}</svg>`;
+function phenBackHTML() {
+  const pk = (S.tasks.phen || {}).pick;
+  return `${pk != null ? `<p class="small muted">You predicted: “${PH_OPTS[pk]}.” ${pk === 1 ? '<b>You were right.</b>' : 'Here\'s what really happens.'}</p>` : ''}
+    <p>Lithium and potassium both react by losing one outer electron. Potassium has <b>two more shells</b>, so its outer electron is much <b>farther from the nucleus</b> (radius ${TD.K.r} pm vs. ${TD.Li.r} pm).</p>
+    <p>A farther electron is held more weakly, so potassium's <b>ionization energy is lower</b> (${TD.K.ie} vs. ${TD.Li.ie} kJ/mol). It gives up its electron much more easily, so it reacts much more violently.</p>`;
+}
+
 function build1(el) {
   el.innerHTML = frame(1,
+    card('phen', 'Why is one metal so much more violent?', `${PHEN_SVG}
+      <p>Drop a piece of lithium into water and it fizzes slowly. Drop in potassium, from the same group, and it bursts into a purple flame. Both metals react by losing one outer electron. What do you think makes potassium so much more reactive?</p>
+      <div class="opts phen-opts">${PH_OPTS.map((t, k) => `<button type="button" class="opt" data-k="${k}"><span class="L">${'ABCD'[k]}</span><span class="ot">${t}</span></button>`).join('')}</div>
+      <p class="fb-line" id="phenMsg" aria-live="polite"></p>`) +
     card('read', 'Patterns that repeat', `<div class="read-text">
       <p>A ${c('periodic trend')} is a pattern in a property that changes in a predictable way as you move across the periodic table. The same pattern repeats in every row.</p>
       <p>A ${c('period')} is a row (left to right). A ${c('group')} is a column (top to bottom). Every trend in this lesson has two directions: <b>across a period</b> and <b>down a group</b>.</p>
@@ -1360,13 +1405,15 @@ function build1(el) {
     card('try', 'Table missions', '<p class="muted">Use periods (rows) and groups (columns) to find each element.</p><div id="s1x"></div>') +
     card('qc', '', '<div id="qc1"></div>'));
   $$('#s1demo .tile', el).forEach(b => { b.tabIndex = -1; });
+  { const st = S.tasks.phen || (S.tasks.phen = { pick: null });
+    const paint = () => { $$('.phen-opts .opt', el).forEach(b => b.classList.toggle('picked', +b.dataset.k === st.pick)); if (st.pick != null) { $('#phenMsg', el).className = 'fb-line good'; $('#phenMsg', el).innerHTML = 'Prediction saved. Keep it in mind: you\'ll find out in Section 4.'; } };
+    $$('.phen-opts .opt', el).forEach(b => b.addEventListener('click', () => { st.pick = +b.dataset.k; save(); paint(); done(1, 'phen'); const bk = $('#s4back'); if (bk) bk.innerHTML = phenBackHTML(); }));
+    paint(); }
   makeExplorer($('#s1x', el), {
     id: 's1x', which: [], start: 'Na',
     missions: [
       { t: 'Tap the element in <b>period 3, group 1</b>.', ans: 'Na', hint: s => `${nm(s)} is in period ${TD[s].p}, group ${TD[s].g}. Rows are periods, columns are groups.` },
       { t: 'Tap the element in <b>period 2, group 17</b>.', ans: 'F', hint: s => `${nm(s)} is in period ${TD[s].p}, group ${TD[s].g}.` },
-      { t: 'Tap the element in <b>period 4, group 2</b>.', ans: 'Ca', hint: s => `${nm(s)} is in period ${TD[s].p}, group ${TD[s].g}.` },
-      { t: 'Tap the element <b>at the top of group 16</b>.', ans: 'O', hint: () => 'Find the column labeled 16, then go to the top.' },
       { t: 'Tap the <b>last element in period 3</b>.', ans: 'Ar', hint: () => 'Find row 3, then go all the way to the right.' }
     ],
     onDone: () => done(1, 'hunt')
@@ -1388,25 +1435,23 @@ function build2(el) {
       <div class="two-col"><div>${trendArrows('r')}
       <div class="read-text"><p><b>Down a group</b>, atoms get <b>larger</b>. <br><b>Across a period</b>, atoms get <b>smaller</b>.</p><p>So the largest atoms are in the bottom left of the table, and the smallest are in the top right.</p></div></div>
       <div class="row-viz">${['Li', 'C', 'F'].map(s => `<figure>${atomViz(s, { cls: 'sm' })}</figure>`).join('')}<p class="small muted" style="grid-column:1/-1;text-align:center;margin:0">Across period 2, drawn to scale</p></div></div>`) +
-    card('try', 'Atom size missions', '<p class="muted">Each atom is drawn to scale. Use the trend to find each one.</p><div id="s2x"></div>') +
+    card('try', 'Atom size missions', '<p class="muted">Use the trend to find each atom. When you find the right one, you\'ll see it drawn to scale.</p><div id="s2x"></div>') +
     card('try', 'Which atom is larger?', '<div id="s2r"></div>') +
     card('qc', '', '<div id="qc2"></div>'));
   makeExplorer($('#s2x', el), {
-    id: 's2x', which: ['r'], start: 'Li',
+    id: 's2x', which: ['r'], start: 'Li', hide: true,
     missions: [
-      { t: 'Tap the <b>largest</b> atom in period 2.', ans: 'Li', hint: s => `${nm(s)} is ${TD[s].r} pm. Across a period atoms get smaller, so the largest is on the left.` },
-      { t: 'Tap the <b>smallest</b> atom in group 1.', ans: 'H', hint: s => `${nm(s)} is ${TD[s].r} pm. Atoms get larger going down a group, so the smallest is at the top.` },
-      { t: 'Tap the <b>largest</b> atom on this whole table.', ans: 'K', hint: () => 'Largest atoms are bottom left.' },
-      { t: 'Tap the <b>smallest</b> atom in period 3.', ans: 'Ar', hint: () => 'Across a period atoms get smaller, so look at the right end.' },
-      { t: 'Tap the <b>largest</b> atom in group 17.', ans: 'Br', hint: () => 'Going down a group adds shells, so go to the bottom.' }
+      { t: 'Tap the <b>largest</b> atom in period 2.', ans: 'Li', hint: () => 'Not that one. Across a period atoms get smaller, so the largest is on the left end of the row.' },
+      { t: 'Tap the <b>largest</b> atom on this whole table.', ans: 'K', hint: () => 'Not that one. The largest atoms are in the bottom left corner.' },
+      { t: 'Tap the <b>largest</b> atom in group 17.', ans: 'Br', hint: () => 'Not that one. Going down a group adds shells, so go to the bottom of the column.' }
     ],
     onDone: () => done(2, 'hunt')
   });
   makeRounds($('#s2r', el), {
-    id: 's2r', need: 5, req: '2.pairs',
+    id: 's2r', need: 3, req: '2.pairs',
     rounds: P2.map(([a, b]) => { const p = pairQ(a, b, 'r'); return { q: `Which atom is <b>larger</b>?`, opts: p.opts, a: p.a,
       hint: samePeriod(a, b) ? 'They are in the same period. Which is farther left?' : sameGroup(a, b) ? 'They are in the same group. Which is lower down?' : 'Bigger atoms are toward the bottom left.',
-      why: `${nm(p.win)} (${TD[p.win].r} pm) is larger than ${nm(p.lose)} (${TD[p.lose].r} pm).` }; }),
+      why: `${nm(p.win)} (${TD[p.win].r} pm) is larger than ${nm(p.lose)} (${TD[p.lose].r} pm).${p.pics}` }; }),
     onDone: () => done(2, 'pairs')
   });
   makeQC($('#qc2', el), {
@@ -1464,7 +1509,7 @@ function build3(el) {
     onDone: () => done(3, 'sort')
   });
   makeRank($('#s3rank', el), {
-    id: 's3rank', need: 5,
+    id: 's3rank', need: 3,
     rounds: [{ syms: ['Na', 'Cl', 'Si'], m: 'r', dir: 'asc', hint: 'All period 3. Farther right means smaller.' },
       { syms: ['K', 'H', 'Na'], m: 'r', dir: 'asc', hint: 'All group 1. Lower down means larger.' },
       { syms: ['O', 'Li', 'B'], m: 'r', dir: 'desc', hint: 'All period 2. Farther left means larger.' },
@@ -1484,7 +1529,7 @@ function build3(el) {
 /* ---------------- Section 4 ---------------- */
 function build4(el) {
   const P4 = [['Na', 'Cl'], ['Li', 'K'], ['F', 'C'], ['Mg', 'Ca'], ['Ne', 'Ar'], ['Si', 'Na'], ['He', 'H']];
-  const G = [{ t: 'Tap the element with the <b>highest</b> ionization energy on the graph.', ans: 'He' }, { t: 'Tap the <b>lowest</b> point in period 3.', ans: 'Na' }, { t: 'Tap the <b>highest</b> point in period 2.', ans: 'Ne' }];
+  const G = [{ t: 'Tap the element with the <b>highest</b> ionization energy on the graph.', ans: 'He' }, { t: 'Tap the <b>lowest</b> point in period 3.', ans: 'Na' }];
   el.innerHTML = frame(4,
     card('read', 'How hard is it to pull an electron off?', `<div class="read-text">
       <p>${c('ionization energy', 'Ionization energy')} is the energy needed to remove one outer electron from an atom. A high value means the atom holds its electrons tightly.</p></div>
@@ -1494,7 +1539,9 @@ function build4(el) {
     card('try', 'Read the graph', `<p class="muted">Tap points on the graph to read their values.</p><div class="graph-wrap">${ieGraphSVG()}</div>
       <p class="place-prompt" id="s4q" aria-live="polite"></p><p class="fb-line" id="s4fb" aria-live="polite"></p>`) +
     card('try', 'Which needs more energy?', '<div id="s4r"></div>') +
+    card('phen', 'Back to the phenomenon', '<div class="read-text" id="s4back"></div>') +
     card('qc', '', '<div id="qc4"></div>'));
+  $('#s4back', el).innerHTML = phenBackHTML();
   const st = S.tasks.s4g || (S.tasks.s4g = { n: 0 });
   const ask = () => { $('#s4q', el).innerHTML = st.n >= G.length ? '<b>Graph missions done.</b> Tap any point to read it.' : `<b>Mission ${st.n + 1} of ${G.length}.</b> ${G[st.n].t}`; };
   wireGraph(el, s => {
@@ -1506,10 +1553,10 @@ function build4(el) {
   });
   ask();
   makeRounds($('#s4r', el), {
-    id: 's4r', need: 5, req: '4.pairs',
+    id: 's4r', need: 3, req: '4.pairs',
     rounds: P4.map(([a, b]) => { const p = pairQ(a, b, 'ie'); return { q: 'Which atom has the <b>higher ionization energy</b>?', opts: p.opts, a: p.a,
       hint: 'Smaller atoms hold their electrons tighter. Which atom is smaller?',
-      why: `${nm(p.win)} (${TD[p.win].ie} kJ/mol) is smaller, so its outer electrons are held tighter than ${nm(p.lose)}'s (${TD[p.lose].ie} kJ/mol).` }; }),
+      why: `${nm(p.win)} (${TD[p.win].ie} kJ/mol) is smaller, so its outer electrons are held tighter than ${nm(p.lose)}'s (${TD[p.lose].ie} kJ/mol).${p.pics}` }; }),
     onDone: () => done(4, 'pairs')
   });
   makeQC($('#qc4', el), {
@@ -1533,7 +1580,7 @@ function build5(el) {
     card('try', 'Electron tug-of-war', '<p class="muted">Pick the atom that pulls the shared electrons harder.</p><div id="s5r"></div>') +
     card('qc', '', '<div id="qc5"></div>'));
   makeRounds($('#s5r', el), {
-    id: 's5r', need: 5, req: '5.tug',
+    id: 's5r', need: 3, req: '5.tug',
     rounds: T5.map(([a, b]) => { const w = TD[a].en > TD[b].en ? 0 : 1; const W = [a, b][w], L = [a, b][1 - w];
       return { q: `In a bond between <b>${nm(a)}</b> and <b>${nm(b)}</b>, which atom pulls the shared electrons harder?`, vis: tugSVG(a, b), opts: [a, b].map(s => `${ttile(s)} <b>${nm(s)}</b>`), a: w, ab: [a, b],
         hint: 'Higher electronegativity is toward the top right (not counting noble gases).',
@@ -1574,7 +1621,7 @@ function build6(el) {
     card('qc', '', '<div id="qc6"></div>'));
   $$('#s6map .tile', el).forEach(b => { b.tabIndex = -1; });
   const st = S.tasks.s6p || (S.tasks.s6p = { n: 0, i: 0 }), root = $('#s6p', el);
-  const need = 5;
+  const need = 3;
   root.innerHTML = `<p class="place-prompt" id="s6q" aria-live="polite"></p><div class="cmp" id="s6vis"></div>
     <div class="pred" id="s6grid"></div><div class="btn-row"><button type="button" class="btn primary sm" id="s6chk">Check</button><div class="progress-pips">${Array.from({ length: need }, () => '<i></i>').join('')}</div><button type="button" class="btn ghost sm hidden" id="s6nx">Next</button></div><p class="fb-line" id="s6fb" aria-live="polite"></p>`;
   let pick = {}, tries = 0;
@@ -1652,7 +1699,7 @@ function build7(el) {
     card('try', 'Mixed ranking', '<div id="s7rank"></div>') +
     card('qc', '', '<div id="qc7"></div>'));
   makeRank($('#s7rank', el), {
-    id: 's7rank', need: 5,
+    id: 's7rank', need: 3,
     rounds: [{ syms: ['Mg', 'S', 'Na'], m: 'ie', dir: 'asc', hint: 'All period 3. Smaller atoms (farther right) have higher ionization energy.' },
       { syms: ['F', 'Br', 'Cl'], m: 'en', dir: 'desc', hint: 'All group 17. Smaller atoms (higher up) pull harder.' },
       { syms: ['K', 'Na', 'Li'], m: 'ie', dir: 'desc', hint: 'All group 1. Higher up means smaller and harder to ionize.' },
@@ -1685,7 +1732,7 @@ function build8(el) {
     card('try', 'Spot the mistake', '<p class="muted">Read each student claim. If it is correct, say so. If not, choose the fix.</p><div id="s8r"></div>') +
     card('qc', '', '<div id="qc8"></div>'));
   makeRounds($('#s8r', el), {
-    id: 's8r2', need: 5, req: '8.claims',
+    id: 's8r2', need: 3, req: '8.claims',
     rounds: CL.map(x => ({ q: x.q, opts: x.o.map(o => `<span class="ctext">${o}</span>`), a: x.a, hint: 'Check the direction first, then the reason.', why: x.why })),
     onDone: () => done(8, 'claims')
   });
@@ -2001,7 +2048,8 @@ document.addEventListener('visibilitychange', () => { if (document.hidden) lockN
 window.addEventListener('blur', () => { setTimeout(() => { if (!document.hasFocus()) lockNow(); }, 150); });
 document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && !fsExiting) lockNow(); });
 function tryUnlock() {
-  if ($('#lockCode').value.trim().toLowerCase() === TEACHER_CODE) { S.locked = false; save(); $('#lockOv').hidden = true; reqFS(); toast('Unlocked'); }
+  const lc = $('#lockCode').value.trim().toLowerCase();
+  if (lc === UNLOCK_CODE || lc === TEACHER_CODE) { S.locked = false; save(); $('#lockOv').hidden = true; reqFS(); toast('Unlocked'); }
   else { $('#lockMsg').textContent = 'That code is not correct.'; shake($('#lockCode')); }
 }
 $('#lockGo').addEventListener('click', tryUnlock);
@@ -2116,6 +2164,89 @@ let startAt = 0;
 if (S.student) { startAt = S.final.current ? NSEC : (accessible(S.cur) ? S.cur : 0); }
 go(startAt);
 if (S.locked && S.lockActive) showLock();
+})();
+</script>
+<script>
+/* =========================================================
+   CLOUD BACKUP (Saved Student Work sheet)
+   Save code = student ID + last name. Work saves on this Chromebook AND in the cloud,
+   so a student can sign in on any Chromebook and pick up where they left off.
+   ========================================================= */
+(() => {
+  const KEY = 'fate_chem_periodic_trends_v1', LESSON = 'Periodic Trends';
+  const BACKUP_SAVE_URL = 'https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';
+  const saveURL = () => { try { if (typeof SAVE_WEBHOOK_URL !== 'undefined' && SAVE_WEBHOOK_URL) return SAVE_WEBHOOK_URL; } catch (e) {} return BACKUP_SAVE_URL; };
+  if (!window.localStorage || !window.fetch) return;
+  const realSet = Storage.prototype.setItem;
+  const parse = s => { try { return JSON.parse(s); } catch (e) { return null; } };
+  const who = st => { const s = st && st.student; if (!s) return null; const sid = String(s.sid || s.id || '').trim(), last = String(s.last || '').trim(); return sid && last ? { sid, last, first: s.first || '', period: s.period || '', teacher: s.teacher || '' } : null; };
+  const codeOf = w => (w.sid + '-' + w.last).toLowerCase().replace(/\s+/g, '');
+  const cnt = o => o ? Object.values(o).filter(Boolean).length : 0;
+  /* a number that only grows as the student does more */
+  const prog = st => { if (!st) return 0; let p = 0;
+    p += 100 * cnt(st.secDone) + cnt(st.reqs);
+    if (st.final) p += 10000 * (st.final.passed ? 1 : 0) + 50 * ((st.final.attempts || []).length);
+    if (st.items) p += 10 * Object.values(st.items).filter(x => x && (x.done || x.checked)).length;
+    if (st.ans) p += 5 * Object.keys(st.ans).length;
+    if (st.submittedAt || st.completedAt || st.screen === 'results') p += 1000;
+    return p; };
+  const verKey = KEY + '__cloudver';
+  let pending = null, lastSent = '', restoring = false;
+  /* status chip */
+  const chip = document.createElement('div'); chip.className = 'cloudchip'; chip.setAttribute('aria-live', 'polite');
+  chip.style.cssText = 'position:fixed;left:10px;bottom:10px;z-index:9999;font:600 12px system-ui,sans-serif;padding:5px 10px;border-radius:999px;background:rgba(20,32,52,.85);color:#cfe3ff;pointer-events:none;opacity:0;transition:opacity .3s';
+  const showChip = (t, ms = 2500) => { chip.textContent = t; chip.style.opacity = '1'; clearTimeout(showChip.t); showChip.t = setTimeout(() => { chip.style.opacity = '0'; }, ms); };
+  document.addEventListener('DOMContentLoaded', () => document.body.appendChild(chip)); if (document.body) document.body.appendChild(chip);
+  const body = (raw, st, w) => { const ver = Date.now(); realSet.call(localStorage, verKey, String(ver));
+    return new URLSearchParams({ code: codeOf(w), lesson: LESSON, data: raw, prog: String(prog(st)), ver: String(ver), studentId: w.sid, lastName: w.last, firstName: w.first, period: w.period, teacher: w.teacher,
+      summary: `${prog(st)} progress points` }); };
+  function push(now) {
+    if (restoring) return;
+    const raw = localStorage.getItem(KEY), st = parse(raw), w = who(st);
+    if (!w || raw === lastSent) return;
+    const b = body(raw, st, w); lastSent = raw;
+    if (now && navigator.sendBeacon) { navigator.sendBeacon(saveURL(), b); return; }
+    fetch(saveURL(), { method: 'POST', mode: 'no-cors', body: b }).then(() => showChip('☁ Saved to the cloud')).catch(() => { lastSent = ''; showChip('Saved on this Chromebook (cloud not reached)'); });
+  }
+  function schedule() { clearTimeout(pending); pending = setTimeout(() => push(false), 4000); }
+  async function pull(w, localSt) {
+    try {
+      const r = await fetch(saveURL() + '?code=' + encodeURIComponent(codeOf(w)) + '&lesson=' + encodeURIComponent(LESSON), { cache: 'no-store' });
+      const j = await r.json(); if (!j || !j.found || !j.data) return false;
+      const cloudSt = parse(j.data); if (!cloudSt) return false;
+      if (prog(cloudSt) > prog(localSt)) {
+        restoring = true; clearTimeout(pending);
+        realSet.call(localStorage, KEY, j.data);
+        realSet.call(localStorage, verKey, String(j.ver || Date.now()));
+        sessionStorage.setItem('cloud-restored-' + KEY, '1');
+        showChip('☁ Found your saved work. Loading it…', 4000);
+        setTimeout(() => location.reload(), 700);
+        return true;
+      }
+    } catch (e) { /* offline or blocked: keep working on this Chromebook */ }
+    return false;
+  }
+  /* watch saves to this activity's key */
+  Storage.prototype.setItem = function (k, v) {
+    if (restoring && this === localStorage && k === KEY) return; /* loading cloud work: don't let the page overwrite it */
+    let before = null;
+    if (this === localStorage && k === KEY) before = who(parse(localStorage.getItem(KEY)));
+    realSet.call(this, k, v);
+    if (this !== localStorage || k !== KEY) return;
+    const st = parse(v), w = who(st);
+    if (!w) return;
+    if (!before || codeOf(before) !== codeOf(w)) pull(w, st).then(restored => { if (!restored) schedule(); });
+    else schedule();
+  };
+  window.addEventListener('pagehide', () => push(true));
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') push(true); });
+  /* on open: if the cloud has more progress for this student, load it */
+  const start = () => {
+    if (sessionStorage.getItem('cloud-restored-' + KEY)) { sessionStorage.removeItem('cloud-restored-' + KEY); showChip('☁ Your saved work is loaded'); return; }
+    const st = parse(localStorage.getItem(KEY)), w = who(st);
+    if (w) pull(w, st);
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();
 </script>
 </body></html>

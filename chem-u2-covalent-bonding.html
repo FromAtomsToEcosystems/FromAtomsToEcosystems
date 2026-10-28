@@ -1,0 +1,2100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Covalent Bonding | Chemistry Unit 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c1424; --bg2:#101b30; --panel:#14203a; --panel2:#1b2a49; --panel3:#223358;
+  --line:#26375a; --line2:#35496f;
+  --text:#e8eef8; --muted:#a3b4d1; --dim:#7488ab;
+  --e:#5fe1ff; --e-glow:rgba(95,225,255,.55); --p:#ff7d66; --n:#aab6cc; --val:#ffd36b; --gain:#ff8fd0;
+  --amber:#f6b93b; --good:#4ade80; --bad:#fb7185;
+  --c-nonmetal:#45c08f; --c-noble:#a084ff; --c-alkali:#ff8f5e; --c-alkaline:#ffcb5c;
+  --c-metalloid:#46c7d8; --c-post:#8ea8cc; --c-halogen:#f477b8;
+  --r-lg:16px; --r-md:12px; --r-sm:8px;
+  --font:"Lexend","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 110px)}
+*,*::before,*::after{box-sizing:inherit}
+body{
+  margin:0; min-height:100vh; color:var(--text); font-family:var(--font);
+  font-size:17px; line-height:1.6; font-weight:300;
+  background:
+    radial-gradient(900px 520px at 85% -8%, #1a2d52 0%, transparent 62%),
+    radial-gradient(700px 420px at -10% 30%, #13233f 0%, transparent 60%),
+    var(--bg);
+  background-attachment:fixed;
+}
+b,strong{font-weight:600}
+h1,h2,h3{font-weight:600;line-height:1.2;margin:0}
+p{margin:.5em 0}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--e);outline-offset:2px;border-radius:6px}
+.small{font-size:14px}
+.muted{color:var(--muted)}
+.hidden{display:none!important}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:sticky; top:0; z-index:40;
+  padding-top:env(safe-area-inset-top,0px);
+  background:rgba(12,20,36,.9); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.topbar-in{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:14px;padding:10px 18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:16px;white-space:nowrap}
+.brand svg{width:30px;height:30px}
+.navtiles{display:flex;gap:6px;overflow-x:auto;padding:4px 2px;flex:1;scrollbar-width:thin}
+.top-actions{display:flex;gap:8px}
+.top-btn{background:var(--panel2);border:1px solid var(--line2);border-radius:999px;padding:6px 14px;font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap}
+.top-btn:hover{background:var(--panel3)}
+
+/* ---------- element tiles ---------- */
+.tile{
+  --c:var(--c-nonmetal);
+  position:relative; flex:0 0 auto; width:46px; height:52px; border-radius:8px;
+  background:var(--panel2);
+  background:color-mix(in srgb, var(--c) 20%, var(--panel));
+  border:1.5px solid var(--c);
+  border-color:color-mix(in srgb, var(--c) 75%, transparent);
+  display:grid; place-items:center; font-weight:700; font-size:19px; line-height:1;
+  color:var(--text); cursor:pointer; padding:0;
+  transition:transform .2s, box-shadow .2s, opacity .2s;
+}
+.tile .z{position:absolute;top:4px;left:5px;font-size:10px;font-weight:500;color:var(--muted)}
+.tile:hover:not(:disabled){transform:translateY(-2px)}
+.tile.current{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--c)}
+.tile:disabled{cursor:not-allowed;opacity:.32;filter:saturate(.3)}
+.tile .ck{position:absolute;right:-5px;bottom:-5px;width:17px;height:17px;border-radius:50%;background:var(--good);color:#06240f;font-size:11px;display:grid;place-items:center;font-weight:700;opacity:0;transform:scale(.4);transition:.25s}
+.tile.done .ck{opacity:1;transform:scale(1)}
+.tile.unlocking{animation:unlockPop .7s cubic-bezier(.2,1.6,.4,1)}
+@keyframes unlockPop{0%{transform:scale(.7)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
+.tile.big{width:74px;height:82px;font-size:32px;border-width:2px;cursor:default}
+.tile.big .z{font-size:13px;top:6px;left:8px}
+.cat-nonmetal{--c:var(--c-nonmetal)} .cat-noble{--c:var(--c-noble)} .cat-alkali{--c:var(--c-alkali)}
+.cat-alkaline{--c:var(--c-alkaline)} .cat-metalloid{--c:var(--c-metalloid)} .cat-post{--c:var(--c-post)} .cat-halogen{--c:var(--c-halogen)}
+
+/* ---------- layout ---------- */
+main{max-width:980px;margin:0 auto;padding:22px 18px 80px}
+.screen{display:none}
+.screen.on{display:block;animation:screenIn .35s ease-out}
+@keyframes screenIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sec-head{display:flex;align-items:center;gap:18px;margin:8px 0 10px}
+.sec-meta{color:var(--muted);font-size:15px;margin:0 0 4px}
+.sec-head h2{font-size:clamp(26px,4vw,36px);letter-spacing:-.01em}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px 24px;margin:18px 0}
+.card h3{font-size:21px;margin:2px 0 10px}
+.tag{display:inline-block;font-size:13px;font-weight:600;color:var(--muted);background:var(--panel2);border-radius:999px;padding:3px 12px;margin-bottom:8px}
+.k-read .tag{color:#c3cffc;background:#25305a}
+.k-try .tag{color:#0b2630;background:var(--e)}
+.k-qc{border:2px solid var(--amber)}
+.k-qc .tag{color:#241703;background:var(--amber)}
+.read-text{max-width:68ch}
+
+.btn{border:0;border-radius:10px;padding:11px 20px;font-weight:600;font-size:16px;cursor:pointer;transition:transform .15s, background .2s, opacity .2s}
+.btn:active:not(:disabled){transform:scale(.97)}
+.btn.primary{background:var(--e);color:#062430}
+.btn.primary:hover:not(:disabled){background:#8eebff}
+.btn.ghost{background:transparent;border:1.5px solid var(--line2);color:var(--text)}
+.btn.ghost:hover:not(:disabled){background:var(--panel2)}
+.btn.amber{background:var(--amber);color:#241703}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.sm{padding:7px 14px;font-size:14px;border-radius:8px}
+.btn-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}
+
+.sec-foot{display:flex;justify-content:space-between;gap:12px;margin-top:22px}
+
+/* word-help chips */
+.chip{display:inline;background:rgba(95,225,255,.1);border:0;border-bottom:1.5px dotted var(--e);color:#bff3ff;padding:0 4px;border-radius:4px;cursor:help;font-weight:400}
+.chip:hover{background:rgba(95,225,255,.2)}
+#pop{position:fixed;z-index:80;max-width:300px;background:var(--panel3);border:1px solid var(--line2);border-radius:12px;padding:12px 14px;box-shadow:0 14px 40px rgba(0,0,0,.45);font-size:15px}
+#pop b{display:block;color:var(--e);margin-bottom:2px;text-transform:capitalize}
+#pop p{margin:0}
+
+/* particle dots + small tables */
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px;vertical-align:-1px}
+.dot.p{background:var(--p)} .dot.n{background:var(--n)} .dot.e{background:var(--e);box-shadow:0 0 8px var(--e-glow)}
+.mini-table{border-collapse:collapse;margin:14px 0 4px;font-size:15px;min-width:300px}
+.mini-table th,.mini-table td{padding:7px 16px 7px 0;border-bottom:1px solid var(--line);text-align:left}
+.mini-table th{color:var(--muted);font-weight:500}
+.table-scroll{overflow-x:auto}
+.rules{display:grid;gap:8px;margin:12px 0}
+.rule{background:var(--panel2);border-radius:10px;padding:10px 14px}
+.rule small{color:var(--muted)}
+
+/* ---------- Bohr SVG ---------- */
+svg.bohr{width:100%;max-width:340px;height:auto;display:block;margin:0 auto;overflow:visible}
+.bohr .ring{fill:none;stroke:var(--line2);stroke-width:2}
+.bohr .ring.outer{stroke:rgba(255,211,107,.55);stroke-width:2.5}
+.bohr .ring-in{animation:ringIn .45s ease-out}
+@keyframes ringIn{from{opacity:0;stroke-width:8}to{opacity:1}}
+.bohr .nucleus{fill:url(#nucGrad);stroke:rgba(255,125,102,.6);stroke-width:1.5}
+.bohr .nt{fill:#fff;font-size:12.5px;font-weight:600;text-anchor:middle;font-family:var(--font)}
+.bohr .e{fill:var(--e);filter:drop-shadow(0 0 4px var(--e-glow));transform-box:view-box;transform-origin:0 0;
+  transition:transform .55s cubic-bezier(.2,.85,.25,1), opacity .35s, fill .3s}
+.bohr .e.val{fill:var(--val);filter:drop-shadow(0 0 5px rgba(255,211,107,.7))}
+.bohr .e.gain{fill:var(--gain);filter:drop-shadow(0 0 5px rgba(255,143,208,.75))}
+.bohr .ring-out{opacity:0;transition:opacity .45s}
+.bohr .bracket{fill:none;stroke:var(--text);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+.bohr .charge{fill:var(--text);font-size:28px;font-weight:700;font-family:var(--font)}
+.bohr .ion-in{animation:ionIn .6s ease-out}
+@keyframes ionIn{from{opacity:0;transform:scale(1.08)}to{opacity:1;transform:none}}
+.bohr .ionmark{transform-box:view-box;transform-origin:150px 150px}
+.ion{white-space:nowrap;font-weight:600}
+.ion sup{font-size:.62em;margin-left:1px}
+.dot.g{background:var(--gain);box-shadow:0 0 8px rgba(255,143,208,.7)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;color:var(--muted);margin:8px 0 0;justify-content:center}
+.token .tok-model{display:block;width:70px;margin:0 auto 2px}
+.token.model-token{display:inline-flex;flex-direction:column;align-items:center;padding:6px 10px;font-size:14px}
+.big-ion{font-size:clamp(48px,9vw,80px);font-weight:700;line-height:1;text-align:center;margin:8px 0}
+.big-ion sup{font-size:.45em;vertical-align:1.1em;margin-left:2px}
+.arrow-cap{text-align:center;color:var(--muted);font-size:14px}
+.atom-ion{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center}
+.atom-ion .arr{font-size:30px;color:var(--amber);font-weight:700}
+.atom-ion figure{margin:0;text-align:center}
+.atom-ion figcaption{font-size:14px;color:var(--muted);margin-top:4px}
+.atom-ion svg{max-width:220px}
+.meter{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.meter div{background:var(--panel2);border-radius:10px;padding:8px;text-align:center}
+.meter .k{font-size:13px;color:var(--muted)} .meter .v{font-size:24px;font-weight:600}
+.meter .v.pos{color:var(--p)} .meter .v.neg{color:var(--e)}
+.hero-ion svg{max-width:460px;width:100%;height:auto;display:block;margin:0 auto;overflow:visible}
+.hero-ion .travel{transition:transform 1.3s cubic-bezier(.45,0,.25,1)}
+.hero-fig.hero-ion svg{max-width:470px}
+.hero-ion .ionmark{animation:fadeIn .7s ease-out}
+@keyframes fadeIn{from{opacity:0}}
+.bohr.static .e{transition:none}
+.bohr .zone{fill:rgba(95,225,255,.06);stroke:var(--e);stroke-width:1.5;stroke-dasharray:4 3;cursor:pointer;opacity:.75;transition:fill .2s,opacity .2s}
+.bohr .zone:hover,.bohr .zone:focus{fill:rgba(95,225,255,.22);opacity:1;outline:none}
+.bohr .zone.bad{stroke:var(--bad);fill:rgba(251,113,133,.25)}
+.bohr.pulse .zone{animation:zonePulse 1.6s ease-in-out infinite}
+@keyframes zonePulse{50%{fill:rgba(95,225,255,.2)}}
+.bohr.mode-add .e{pointer-events:none}
+.bohr.mode-erase .zone{pointer-events:none;opacity:.25}
+.bohr.mode-erase .e{cursor:pointer}
+.bohr.mode-erase .e:hover{fill:var(--bad)}
+.bohr .sh{transform-box:view-box;transform-origin:150px 150px}
+.bohr.orbit .sh0{animation:spin 14s linear infinite}
+.bohr.orbit .sh1{animation:spin 24s linear infinite}
+.bohr.orbit .sh2{animation:spin 36s linear infinite}
+.bohr.orbit .sh3{animation:spin 50s linear infinite}
+.bohr.celebrate .sh{animation:spin 1.1s cubic-bezier(.3,0,.2,1) 1}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pin circle{fill:var(--panel3);stroke:var(--amber);stroke-width:2}
+.pin text{fill:var(--text);font-size:14px;font-weight:700;text-anchor:middle;font-family:var(--font)}
+.leader{stroke:var(--amber);stroke-width:1.5;stroke-dasharray:4 4;opacity:.8}
+
+/* ---------- start / hero ---------- */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center;margin:12px 0 6px}
+.hero h1{font-size:clamp(40px,7vw,72px);letter-spacing:-.025em;font-weight:700;line-height:1.02;margin:6px 0 14px}
+.hero .unit{color:var(--muted);margin:0;font-size:16px}
+.hero .lede{font-size:19px;max-width:44ch;color:#d3def0}
+.hero-fig{position:relative}
+.hero-fig svg{max-width:360px}
+.hero-cap{text-align:center;color:var(--muted);margin:4px 0 0;font-size:15px;min-height:1.6em}
+.hero-cap b{color:var(--text)}
+.start-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.start-grid .card{margin:0}
+.start-grid + .start-grid{margin-top:18px}
+.obj{border-left:4px solid var(--e)}
+.std{border-left:4px solid var(--c-noble)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;margin:8px 0 6px}
+.form-grid label{display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--muted);font-weight:500}
+input[type=text],input[type=number],input[type=password],select,.inp{
+  background:var(--bg2);border:1.5px solid var(--line2);border-radius:9px;padding:9px 11px;color:var(--text);font-size:16px;width:100%}
+input:focus,select:focus{border-color:var(--e);outline:none}
+.form-msg{color:var(--bad);min-height:1.4em;font-size:15px;margin:4px 0}
+.welcome{background:var(--panel2);border-radius:12px;padding:14px 16px}
+
+/* goals checklist */
+.goals{list-style:none;margin:6px 0;padding:0;display:grid;gap:8px}
+.goals li{display:flex;gap:10px;align-items:flex-start;font-size:15.5px}
+.box{flex:0 0 22px;width:22px;height:22px;border-radius:6px;border:2px solid var(--line2);display:grid;place-items:center;margin-top:1px;transition:.25s}
+.ok > .box,.mission.ok .mt > .box{background:var(--good);border-color:var(--good)}
+.ok > .box::after,.mission.ok .mt > .box::after{content:"";width:6px;height:11px;border:solid #06240f;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.ok{color:var(--text)}
+.goals li:not(.ok){color:var(--muted)}
+.just-ok > .box{animation:tickPop .6s cubic-bezier(.2,1.7,.4,1)}
+@keyframes tickPop{0%{transform:scale(.5)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
+
+/* unlock checklist */
+.unlock{background:var(--bg2);border-style:dashed}
+.unlock h3{font-size:17px;color:var(--muted);font-weight:500}
+.reqs{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.reqs li{display:flex;gap:10px;align-items:flex-start}
+.reqs li:not(.ok){color:var(--muted)}
+.unlock.all-done{border-color:var(--good);border-style:solid}
+
+/* ---------- quick checks ---------- */
+.qc-q{font-weight:500;font-size:18px;margin:4px 0 12px}
+.opts{display:grid;gap:9px}
+.opts.grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+.opt{display:flex;gap:12px;align-items:center;text-align:left;background:var(--panel2);border:1.5px solid var(--line2);border-radius:11px;padding:10px 14px;cursor:pointer;transition:border-color .2s, background .2s, transform .15s;width:100%}
+.opt:hover:not(:disabled){border-color:var(--e)}
+.opt .L{flex:0 0 30px;height:30px;border-radius:8px;background:var(--panel3);display:grid;place-items:center;font-weight:600}
+.opts.grid .opt{flex-direction:column;align-items:stretch;padding:10px}
+.opts.grid .opt .L{align-self:flex-start}
+.opts.grid .opt svg{max-width:170px;stroke-width:1}
+.opts.grid .ring{stroke-width:3}
+.opt.right{border-color:var(--good);background:rgba(74,222,128,.12)}
+.opt.right .L{background:var(--good);color:#06240f}
+.opt.wrong{border-color:var(--bad);background:rgba(251,113,133,.1);opacity:.75}
+.opt.wrong .L{background:var(--bad);color:#2a0710}
+.opt.picked{border-color:var(--e);background:rgba(95,225,255,.12)}
+.opt.picked .L{background:var(--e);color:#062430}
+.opt:disabled{cursor:default}
+body.show-key .opt[data-key]{box-shadow:0 0 0 2px var(--amber)}
+body.show-key .opt[data-key]::after{content:"key";margin-left:auto;font-size:12px;color:var(--amber);font-weight:600}
+.qc-fb{min-height:1.5em;margin:12px 0 0}
+.qc-fb.good{color:#b9f5cf} .qc-fb.bad{color:#ffc2cd}
+.qc-fig{margin:4px 0 10px}
+.qc-fig svg{max-width:280px;margin:0}
+.shake{animation:shake .45s}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+
+/* ---------- sorter (tap or drag) ---------- */
+.sorter .tray{display:flex;flex-wrap:wrap;gap:8px;min-height:50px;padding:10px;background:var(--bg2);border-radius:12px;border:1px dashed var(--line2)}
+.sorter .tray:empty::after{content:"All sorted";color:var(--good);font-size:14px;padding:6px}
+.token{background:var(--panel3);border:1.5px solid var(--line2);border-radius:9px;padding:8px 14px;font-weight:500;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;transition:transform .15s, border-color .15s, background .2s}
+.token.sel{border-color:var(--e);background:#20456a;transform:translateY(-2px)}
+.token.placed{cursor:default;border-color:var(--good);background:rgba(74,222,128,.14);animation:tickPop .45s}
+.token.el-token{display:inline-flex;gap:8px;align-items:center}
+.token.el-token .sym{font-weight:700;font-size:18px}
+.token.el-token .nm{font-size:13px;color:var(--muted)}
+.ghost-token{position:fixed;z-index:90;pointer-events:none;opacity:.92;transform:translate(-50%,-50%) rotate(-3deg);box-shadow:0 12px 28px rgba(0,0,0,.5)}
+.sorter .bins{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:12px}
+.bin{background:var(--panel2);border:1.5px solid var(--line2);border-radius:12px;padding:10px;min-height:96px;cursor:pointer;transition:border-color .2s, background .2s}
+.bin.hover,.bin:focus-visible{border-color:var(--e);background:#1f3a5e}
+.bin-label{font-size:14px;font-weight:600;color:var(--muted);margin-bottom:6px}
+.bin-drop{display:flex;flex-wrap:wrap;gap:6px}
+.sorter.rows .bins{grid-template-columns:1fr;gap:8px}
+.sorter.six .bins{grid-template-columns:repeat(3,1fr)}
+.sorter.rows .bin{display:flex;align-items:center;gap:12px;min-height:54px;padding:8px 10px}
+.sorter.rows .bin-label{margin:0;width:32px;height:32px;border-radius:50%;border:2px solid var(--amber);display:grid;place-items:center;color:var(--text);flex:0 0 32px}
+.sorter.rows .bin-drop:empty::before{content:"Drop a label here";color:var(--dim);font-size:14px}
+.sort-msg{min-height:1.4em;margin:8px 0 0;font-size:15px}
+.label-wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center}
+.label-fig svg{max-width:360px}
+
+/* ---------- element tile explorer ---------- */
+.tile-explore{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center}
+.big-tile{--c:var(--c-alkali);width:190px;height:220px;border-radius:16px;background:color-mix(in srgb,var(--c) 18%,var(--panel));border:2.5px solid var(--c);position:relative;display:grid;grid-template-rows:auto 1fr auto auto;padding:12px;gap:2px}
+.part{background:transparent;border:2px dashed transparent;border-radius:8px;cursor:pointer;padding:2px 6px;transition:border-color .2s, background .2s}
+.part:hover{border-color:rgba(255,255,255,.35)}
+.part.seen{border-color:var(--good)}
+.part.active{background:rgba(255,255,255,.1);border-color:var(--e)}
+.p-z{justify-self:start;font-size:24px;font-weight:600}
+.p-sym{font-size:64px;font-weight:700;line-height:1;justify-self:center;align-self:center}
+.p-name{font-size:18px;justify-self:center}
+.p-mass{font-size:18px;justify-self:center;color:#d5def0}
+.part-info{background:var(--panel2);border-radius:12px;padding:14px 16px;min-height:120px}
+.part-info h4{margin:0 0 4px;color:var(--e);font-size:17px;font-weight:600}
+
+/* notebook tables */
+.notebook{width:100%;border-collapse:collapse;font-size:15px;margin-top:8px}
+.notebook th{color:var(--muted);font-weight:500;text-align:left;padding:6px 8px;border-bottom:1px solid var(--line2)}
+.notebook td{padding:7px 8px;border-bottom:1px solid var(--line)}
+.notebook input{width:76px;text-align:center;padding:7px}
+.notebook input.good{border-color:var(--good);background:rgba(74,222,128,.1)}
+.notebook input.badv{border-color:var(--bad);background:rgba(251,113,133,.1)}
+.mtile{display:inline-grid;grid-template-columns:auto auto;gap:0 8px;align-items:center;background:color-mix(in srgb,var(--c) 18%,var(--panel));border:1.5px solid var(--c);border-radius:8px;padding:4px 9px;font-size:12px;color:var(--muted);line-height:1.25}
+.mtile .s{grid-row:span 2;font-size:20px;font-weight:700;color:var(--text)}
+.fb-line{min-height:1.4em;margin:10px 0 0}
+.fb-line.good{color:#b9f5cf} .fb-line.bad{color:#ffc2cd}
+
+/* ---------- simulators ---------- */
+.sim{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+.sim-el{display:flex;gap:14px;align-items:center;background:var(--panel2);border-radius:12px;padding:12px}
+.sim-el .nm{font-size:20px;font-weight:600}
+.sim-el .ar{color:var(--muted);font-size:15px}
+.sim-el .ar b{color:var(--e);font-size:18px}
+.missions{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:10px}
+.mission{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.mission.ok{border-color:var(--good)}
+.mission .mt{display:flex;gap:10px;align-items:flex-start}
+.mission .mfb{font-size:14px;margin:6px 0 0 32px;min-height:0}
+.mission .btn{margin:8px 0 0 32px}
+.mission.ok .lockin{display:none}
+.counter{font-size:14px;color:var(--muted)}
+
+/* flipchart */
+.flip{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center;background:var(--bg2);border-radius:14px;padding:16px;margin-top:12px}
+.flip-step{color:var(--amber);font-weight:600;font-size:14px;margin:0}
+.flip-text{font-size:18px;min-height:3.4em}
+.flip-left{background:var(--panel2);border-radius:10px;padding:8px 12px;display:inline-block}
+.flip-left b{color:var(--e);font-size:20px}
+.flip-dots{display:flex;gap:6px;margin-top:10px}
+.flip-dots i{width:9px;height:9px;border-radius:50%;background:var(--line2);transition:.3s}
+.flip-dots i.on{background:var(--amber);transform:scale(1.25)}
+
+/* steppers */
+.steppers{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+.stp{background:var(--panel2);border-radius:10px;padding:8px;text-align:center}
+.stp .lab{font-size:13px;color:var(--muted)}
+.stp .row{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:4px}
+.stp button{width:32px;height:32px;border-radius:8px;border:1px solid var(--line2);background:var(--panel3);cursor:pointer;font-size:18px;font-weight:600;line-height:1}
+.stp output{min-width:26px;font-size:20px;font-weight:600}
+.target{display:flex;gap:14px;align-items:center;margin:4px 0 6px}
+.target .t-name{font-size:20px;font-weight:600}
+.progress-pips{display:flex;gap:6px}
+.progress-pips i{width:26px;height:8px;border-radius:4px;background:var(--line2);transition:.3s}
+.progress-pips i.on{background:var(--good)}
+
+/* builder */
+.builder{display:grid;grid-template-columns:1.05fr .95fr;gap:22px;align-items:start}
+.b-fig{background:var(--bg2);border-radius:14px;padding:12px;position:sticky;top:96px}
+.b-fig svg{max-width:420px}
+.b-note{text-align:center;color:var(--muted);font-size:14px;margin:6px 0 0}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.tab{background:var(--panel2);border:1.5px solid var(--line2);border-radius:999px;padding:6px 14px;font-weight:500;cursor:pointer;font-size:15px}
+.tab[aria-selected=true]{border-color:var(--e);background:#1f3a5e}
+.tab.ok::after{content:" ✓";color:var(--good);font-weight:700}
+fieldset{border:1px solid var(--line);border-radius:12px;padding:10px 12px 12px;margin:0 0 10px}
+legend{padding:0 6px;color:var(--muted);font-size:14px;font-weight:500}
+.nuc-in{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.nuc-in label{font-size:14px;color:var(--muted);display:flex;flex-direction:column;gap:3px}
+.seg{display:inline-flex;background:var(--bg2);border-radius:10px;padding:3px;border:1px solid var(--line2)}
+.seg button{border:0;background:transparent;padding:7px 16px;border-radius:8px;cursor:pointer;font-weight:500}
+.seg button[aria-pressed=true]{background:var(--e);color:#062430}
+.inline-stepper{display:inline-flex;align-items:center;gap:8px}
+.inline-stepper button{width:34px;height:34px;border-radius:8px;border:1px solid var(--line2);background:var(--panel3);cursor:pointer;font-size:18px;font-weight:600}
+.inline-stepper output{font-size:20px;font-weight:600;min-width:24px;text-align:center}
+.report{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:7px}
+.report li{display:flex;gap:10px;align-items:flex-start;font-size:15px}
+.report .ic{flex:0 0 22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700}
+.report .y .ic{background:var(--good);color:#06240f}
+.report .x .ic{background:var(--bad);color:#2a0710}
+.report .w .ic{background:var(--line2);color:var(--muted)}
+
+/* placement game */
+.place-prompt{font-size:17px;background:var(--bg2);border-radius:10px;padding:10px 14px;margin:8px 0}
+.place-prompt b{color:var(--e)}
+.num-fig svg{max-width:280px}
+.demo-cap{text-align:center;font-size:16px;min-height:2.8em;margin:6px 0}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:center}
+
+/* periodic table */
+.pt{display:grid;grid-template-columns:repeat(8,minmax(38px,1fr));gap:5px;max-width:460px}
+.pt .gh{text-align:center;font-size:12px;color:var(--muted);font-weight:500}
+.pt .tile{width:auto;height:48px;font-size:17px}
+.pt .tile.same{box-shadow:0 0 0 2px var(--val)}
+.pt .tile.seen::before{content:"";position:absolute;right:4px;top:4px;width:6px;height:6px;border-radius:50%;background:var(--good)}
+.pt-wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:center}
+.pt-info{text-align:center;min-height:3em;margin:4px 0 0}
+.pt-info b.v{color:var(--val)}
+.ans-grid{display:grid;grid-template-columns:repeat(10,minmax(34px,1fr));gap:5px;margin-top:10px}
+.ans-grid .tile{width:auto;height:44px;font-size:16px}
+
+/* final check */
+.fc-dots{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 14px}
+.fc-dots button{width:32px;height:32px;border-radius:8px;border:1.5px solid var(--line2);background:var(--panel2);cursor:pointer;font-size:13px;font-weight:600}
+.fc-dots button.ans{background:#1f3a5e;border-color:var(--e)}
+.fc-dots button.cur{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--amber)}
+.score-big{font-size:64px;font-weight:700;line-height:1;margin:6px 0}
+.score-big.pass{color:var(--good)} .score-big.fail{color:var(--amber)}
+.review-item{border-top:1px solid var(--line);padding:12px 0}
+.review-item .yours{color:#ffc2cd} .review-item .right{color:#b9f5cf}
+.attempts{font-size:15px;color:var(--muted)}
+.lock-note{background:rgba(246,185,59,.1);border:1px solid rgba(246,185,59,.5);border-radius:10px;padding:10px 14px;font-size:15px}
+.review-box{background:var(--bg2);border-radius:12px;padding:12px 16px;margin:10px 0}
+.review-box li{margin:4px 0}
+
+/* results */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:12px 0}
+.stat{background:var(--panel2);border-radius:12px;padding:12px 14px}
+.stat .k{font-size:13px;color:var(--muted)}
+.stat .v{font-size:26px;font-weight:600}
+.who{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 16px;font-size:15px}
+.who span{color:var(--muted);display:block;font-size:13px}
+
+/* overlays */
+.overlay{position:fixed;inset:0;z-index:100;background:rgba(6,11,22,.86);backdrop-filter:blur(6px);display:grid;place-items:center;padding:20px}
+.overlay[hidden]{display:none}
+.modal{background:var(--panel);border:1px solid var(--line2);border-radius:18px;padding:24px;max-width:460px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.modal h3{font-size:22px;margin-bottom:6px}
+.lock-modal{border:2px solid var(--amber);text-align:center}
+.lock-icon{font-size:44px;line-height:1}
+.teacher-tools{display:grid;gap:8px;margin-top:12px}
+.drawer{position:fixed;right:16px;top:76px;z-index:60;width:min(360px,calc(100vw - 32px));background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.55)}
+.drawer[hidden]{display:none}
+.sheetbox{font-size:15px;color:var(--muted);margin:8px 0 0;min-height:1.4em}
+#toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);opacity:0;z-index:120;background:var(--panel3);border:1px solid var(--good);color:var(--text);border-radius:12px;padding:10px 18px;font-weight:500;transition:.35s;pointer-events:none;max-width:90vw;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:820px){
+  .hero,.start-grid,.sim,.builder,.flip,.two-col,.pt-wrap,.label-wrap,.tile-explore{grid-template-columns:1fr}
+  .b-fig{position:static}
+  .brand span{display:none}
+  .form-grid{grid-template-columns:1fr}
+  .big-tile{margin:0 auto}
+  .ans-grid{grid-template-columns:repeat(5,1fr)}
+  .steppers{grid-template-columns:repeat(2,1fr)}
+  .card{padding:18px 16px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .bohr.orbit .sh{animation:none!important}
+}
+@media print{
+  body{background:#fff;color:#000}
+  .topbar,.sec-foot,#toast,.drawer,.overlay,.no-print{display:none!important}
+  .screen{display:none!important}
+  #scr-10{display:block!important}
+  .card,.stat{background:#fff;border:1px solid #999;color:#000}
+  .stat .k,.who span,.muted{color:#333}
+  .goals li:not(.ok){color:#333}
+}
+
+/* ion-themed tiles */
+.tile.ion{font-size:15px;letter-spacing:-.3px}
+.tile.ion .lab{white-space:nowrap}.tile.ion sup{font-size:.62em;margin-left:1px;vertical-align:.55em;line-height:0}
+.tile.ion.pos{--c:#60a5fa}.tile.ion.neg{--c:#f472b6}.tile.ion.neu{--c:#f6b93b}
+.tile.ion.big{font-size:22px}
+.tile.ion.long{font-size:11.5px;letter-spacing:-.5px}.tile.ion.big.long{font-size:17px}
+/* section 9: balance the charges */
+.combo-ex{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;margin:12px 0;font-size:22px;font-weight:700}
+.cx-side,.cx-res{display:grid;justify-items:center;gap:2px;padding:8px 14px;border-radius:12px;background:color-mix(in srgb,#60a5fa 18%,var(--panel));border:1.5px solid #60a5fa}
+.cx-side.neg{background:color-mix(in srgb,#f472b6 18%,var(--panel));border-color:#f472b6}
+.cx-row{display:flex;gap:10px}
+.cx-res{background:color-mix(in srgb,#f6b93b 18%,var(--panel));border-color:#f6b93b}
+.combo-ex small{font-size:12px;font-weight:500;color:var(--muted)}
+.cx-op{color:var(--muted)}
+.bal-grid{display:grid;grid-template-columns:1fr 1.1fr 1fr;gap:12px;align-items:center;margin-top:8px}
+.bal-col{background:var(--panel2);border-radius:14px;padding:10px;display:grid;gap:8px;justify-items:center;border:1.5px solid #60a5fa;min-height:190px}
+.bal-col.neg{border-color:#f472b6}
+.bal-head{font-weight:700;text-align:center}
+.bal-ions{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-height:56px;align-content:center}
+.ichip{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:15px}
+.ichip.pos{background:color-mix(in srgb,#60a5fa 30%,var(--panel));border:2px solid #60a5fa}
+.ichip.neg{background:color-mix(in srgb,#f472b6 30%,var(--panel));border:2px solid #f472b6}
+.ichip.pop{animation:unlockPop .45s cubic-bezier(.2,1.6,.4,1)}
+.bal-btns{display:flex;align-items:center;gap:10px}.bal-btns b{font-size:22px;min-width:20px;text-align:center}
+.bal-tot{font-weight:700;color:var(--muted)}
+.bal-mid{text-align:center}.beam{width:100%;max-width:220px}
+.beam-g{transform-origin:100px 76px;transition:transform .6s cubic-bezier(.3,1.4,.5,1)}
+.beam-t{fill:var(--text);font:700 15px var(--font)}
+.bal-status{font-size:15px}.ok-t{color:var(--good)}
+.formula{font-size:1.15em;color:var(--amber)}
+@media (max-width:720px){.bal-grid{grid-template-columns:1fr}.bal-mid{order:-1}}
+.cmp{display:flex;gap:14px;justify-content:center;align-items:stretch;flex-wrap:wrap;margin:8px 0}
+.choice{background:var(--panel2);border:2px solid var(--line2);border-radius:16px;padding:10px 16px;color:var(--text);min-width:140px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:16px}
+.choice:hover{border-color:var(--e)}
+.choice.ok{border-color:var(--good);box-shadow:0 0 0 4px rgba(74,222,128,.22)}
+.choice.no{border-color:var(--bad);opacity:.7}
+.choice .mtile{margin:0}
+.choice .ctext{display:block;text-align:left;font-weight:500}
+/* ionic bonding */
+.tile.icon{padding:0;overflow:hidden}.tile.icon svg{width:62%;height:62%;margin-top:6px}
+.tile.icon.big svg{width:64%;height:64%;margin-top:8px}
+.warnbar{position:sticky;top:64px;z-index:15;max-width:1000px;margin:8px auto 0;background:color-mix(in srgb,var(--amber) 22%,var(--panel));border:1.5px solid var(--amber);border-radius:12px;padding:10px 14px;font-weight:600}
+.scene-wrap{background:var(--bg2);border-radius:14px;padding:6px;margin:10px 0;overflow-x:auto}
+svg.tscene{width:100%;min-width:560px;height:auto;display:block}
+.tscene .tat.tap{cursor:pointer}.tscene .hit{fill:transparent}
+.tscene .tat.sel .ring,.tscene .tat.sel .l-sym{stroke:var(--amber)}
+.tscene .tat.m.tap:hover .e.val,.tscene .e.val{filter:drop-shadow(0 0 6px #fde047)}
+.tscene .l-sym{font:800 46px var(--font);fill:var(--text);text-anchor:middle}
+.tscene .tat.sel .l-sym{fill:var(--amber)}
+.tscene .l-dot{fill:var(--e)}.tscene .l-dot.gain{fill:#f472b6}.tscene .l-dot.val{fill:#fde047;filter:drop-shadow(0 0 5px #fde047)}
+.tscene .l-br{fill:none;stroke:var(--text);stroke-width:3}.tscene .l-q{font:800 26px var(--font);fill:var(--text)}
+.tscene .t-lab{font:700 22px var(--font);fill:var(--muted);text-anchor:middle}
+.tscene .flyer{fill:#fde047;filter:drop-shadow(0 0 10px #fde047)}
+.tscene .trail{fill:none;stroke:#fde047;stroke-width:2.5;stroke-dasharray:6 6;opacity:.7}
+.tscene .attract{stroke:var(--good);stroke-width:3;stroke-dasharray:8 6;animation:pulseA 1.2s ease-in-out infinite}
+.tscene .attract-t{font:800 22px var(--font);fill:var(--good);text-anchor:middle}
+@keyframes pulseA{50%{opacity:.35}}
+.legend .dot.y{background:#fde047}
+.mini-flow,.mist{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;margin:10px 0}
+.pill{padding:6px 14px;border-radius:999px;background:var(--panel2);border:1.5px solid var(--line2);font-weight:700}
+.pill.pos{border-color:#60a5fa}.pill.neg{border-color:#f472b6}.arr{color:var(--amber);font-weight:700}
+.count-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:8px 0}
+.cnt{display:flex;align-items:center;gap:8px;background:var(--panel2);border-radius:12px;padding:6px 10px}
+.cnt button{width:32px;height:32px;border-radius:8px;border:1px solid var(--line2);background:var(--bg2);color:var(--text);font-weight:800}
+.cnt b{min-width:18px;text-align:center;font-size:18px}
+.fb-build{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;align-items:stretch;margin:8px 0}
+.ionbox{background:var(--panel2);border-radius:14px;padding:10px;display:grid;justify-items:center;gap:8px;border:1.5px solid #60a5fa}.ionbox.neg{border-color:#f472b6}
+.ionbox .ions{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;min-height:56px}
+.ionbox small{color:var(--muted)}
+.ichip{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:15px;animation:unlockPop .4s}
+.ichip.pos{background:color-mix(in srgb,#60a5fa 30%,var(--panel));border:2px solid #60a5fa}.ichip.neg{background:color-mix(in srgb,#f472b6 30%,var(--panel));border:2px solid #f472b6}
+.ftot{background:var(--panel2);border-radius:14px;padding:10px;display:grid;justify-items:center;align-content:center;gap:8px}
+.fout{font-size:30px;font-weight:800;color:var(--amber)}.ok-t{color:var(--good)}
+.ide{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.ide span{background:var(--panel2);border-radius:10px;padding:6px 12px}
+.lat-wrap{background:var(--bg2);border-radius:14px;padding:8px;margin:10px 0}
+svg.lattice{width:100%;max-width:620px;display:block;margin:0 auto}
+.lattice .lat-box{fill:none;stroke:var(--line2);stroke-width:2;stroke-dasharray:6 6}
+.lattice .ip{fill:color-mix(in srgb,#60a5fa 55%,#0b1220);stroke:#60a5fa;stroke-width:2}.lattice .in{fill:color-mix(in srgb,#f472b6 45%,#0b1220);stroke:#f472b6;stroke-width:2}
+.lattice .it{font:700 11px var(--font);fill:#fff;text-anchor:middle}
+.lattice .wire{fill:none;stroke:#94a3b8;stroke-width:3}.lattice .bulb{fill:#334155;stroke:#94a3b8;stroke-width:2;transition:fill .4s}.lattice .bulb.on{fill:#fde047;filter:drop-shadow(0 0 16px #fde047)}.lattice .bulb-base{fill:#94a3b8}
+.tp-h{margin:14px 0 4px}.sa-tag{display:inline-block;font-size:12px;font-weight:800;color:var(--amber);border:1px solid var(--amber);border-radius:999px;padding:1px 8px;margin-left:6px}
+.opt.sa .cbx{flex:0 0 18px;height:18px;border-radius:4px;border:2px solid var(--muted);margin-right:4px}.opt.sa.picked .cbx{background:var(--e);border-color:var(--e)}
+/* phenomenon card */
+.k-phen{border:2px solid #fb923c;background:linear-gradient(180deg,color-mix(in srgb,#fb923c 10%,var(--panel)),var(--panel))}
+.k-phen .tag{color:#2a1305;background:#fb923c}
+.phen-svg{width:100%;max-width:720px;display:block;margin:6px auto 10px}
+.phen-svg .ph-l{font:600 14px var(--font);fill:var(--muted);text-anchor:middle}.phen-svg .ph-op{font:800 40px var(--font);fill:var(--text)}
+body.preview .topbar{box-shadow:inset 0 -3px 0 var(--amber)}
+@media (max-width:720px){.fb-build{grid-template-columns:1fr}}
+.sorter .token.placed{cursor:pointer}.sorter .token.locked{cursor:default;opacity:.95}.sorter .tray.hover,.sorter .tray:focus-visible{outline:2px dashed var(--e)}.sort-row{margin-top:10px;align-items:center}
+.lockcode-box{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:2px 12px;background:color-mix(in srgb,var(--amber) 16%,var(--panel2));border:1.5px solid var(--amber);border-radius:12px;padding:10px 14px;margin:0 0 12px}.lockcode-box span{color:var(--muted);font-size:13px;font-weight:700}.lockcode-box b{font-size:24px;letter-spacing:1px;color:var(--amber)}.lockcode-box small{grid-column:1/-1;color:var(--muted)}
+
+/* covalent bonding scenes */
+svg.sscene{width:100%;min-width:480px;height:auto;display:block}
+.sscene .ssym{font:800 40px var(--font);fill:var(--text);text-anchor:middle}
+.sscene .ldot{fill:var(--e)}
+.sscene .udot{fill:#fde047;filter:drop-shadow(0 0 5px #fde047)}
+.sscene .sdot{fill:#fde047}
+.sscene .bline{stroke:var(--text);stroke-width:3.5;stroke-linecap:round}
+.sscene .oct{fill:none;stroke:var(--line2);stroke-width:2;stroke-dasharray:6 6}.sscene .oct.full{stroke:var(--good)}
+.sscene .octn{font:800 15px var(--font);fill:var(--good);text-anchor:middle}
+.sscene .slab{font:700 16px var(--font);fill:var(--muted);text-anchor:middle}.sscene .slab.sm{font-size:13px;font-weight:600}
+.sscene .sat.tap{cursor:pointer}.sscene .hit{fill:transparent}
+.legend .dot.g2{background:transparent;border:2px dashed var(--good)}
+.bond-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px}
+.bond-card{background:var(--panel2);border-radius:12px;padding:10px;text-align:center;display:grid;gap:2px}
+.bond-card b{font-size:28px}.bond-card span{color:var(--muted);font-size:13px}.bond-card em{font-style:normal;font-weight:800;color:var(--amber)}
+@media (max-width:640px){.bond-row{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <radialGradient id="nucGrad" cx="40%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#ff9b84"/>
+      <stop offset="55%" stop-color="#d9563f"/>
+      <stop offset="100%" stop-color="#7a2c22"/>
+    </radialGradient>
+  </defs>
+</svg>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="5" fill="#e0654f"/><circle cx="20" cy="20" r="11" fill="none" stroke="#35496f" stroke-width="2"/><circle cx="20" cy="20" r="17" fill="none" stroke="#35496f" stroke-width="2"/><circle cx="20" cy="9" r="2.6" fill="#5fe1ff"/><circle cx="37" cy="20" r="2.6" fill="#5fe1ff"/><circle cx="20" cy="37" r="2.6" fill="#5fe1ff"/></svg>
+      <span>Covalent Bonding</span>
+    </div>
+    <nav class="navtiles" id="navTiles" aria-label="Lesson sections"></nav>
+    <div class="top-actions">
+      <button class="top-btn" id="goalsBtn" type="button" aria-expanded="false" aria-controls="goalsDrawer">Goals 0/6</button>
+      <button class="top-btn" id="teacherBtn" type="button">Teacher</button>
+    </div>
+  </div>
+</header>
+
+<div class="warnbar hidden" id="warnBar" role="alert"></div>
+<main id="app">
+  <!-- START -->
+  <section class="screen" id="scr-0" aria-label="Start">
+    <div class="hero">
+      <div>
+        <p class="unit">Chemistry, Unit 2: Ions, Periodic Trends and Bonding</p>
+        <h1>Covalent Bonding</h1>
+        <p class="lede">Watch two nonmetal atoms share electrons, count bonds, draw Lewis structures with single, double, and triple bonds, then name covalent compounds. Nine short sections, about 40 minutes. You'll get more practice on the worksheet.</p>
+      </div>
+      <div class="hero-fig hero-ion">
+        <svg id="heroSvg" viewBox="0 0 600 260" aria-label="Two chlorine atoms share their unpaired electrons, forming a shared pair drawn as a line"></svg>
+        <p class="hero-cap" id="heroCap"></p>
+      </div>
+    </div>
+
+    <div class="start-grid">
+      <section class="card obj">
+        <span class="tag">Objective</span>
+        <p>I can explain why two nonmetals share electrons, draw Lewis structures with single, double, and triple bonds so every atom has a full outer shell, name covalent compounds with prefixes, and compare covalent and ionic properties.</p>
+      </section>
+      <section class="card std">
+        <span class="tag">Standard</span>
+        <p><b>NGSS HS-PS1-1 and HS-PS1-3.</b> Use the periodic table to predict how atoms bond from their outer electrons, and relate the structure of a substance (separate molecules vs. a lattice of ions) to its bulk properties.</p>
+      </section>
+    </div>
+
+    <div class="start-grid">
+      <section class="card" id="startCard">
+        <span class="tag">Before you start</span>
+        <div id="welcomeBack" class="welcome hidden"></div>
+        <div id="startForm">
+          <div class="form-grid">
+            <label>First name<input type="text" id="fFirst" autocomplete="given-name"></label>
+            <label>Last name<input type="text" id="fLast" autocomplete="family-name"></label>
+            <label>Period
+              <select id="fPeriod">
+                <option value="">Choose your period</option>
+                <option>1</option><option>2</option><option>3</option><option>4</option>
+                <option>5</option><option>6</option><option>7</option><option>8</option>
+              </select>
+            </label>
+            <label>Teacher's name<select id="fTeacher"></select></label>
+            <label>Student ID<input type="text" id="fSid" inputmode="numeric" autocomplete="off"></label>
+          </div>
+          <p class="form-msg" id="formMsg" aria-live="polite"></p>
+          <button class="btn primary" id="fStart" type="button">Start the lesson</button>
+        </div>
+      </section>
+      <section class="card">
+        <span class="tag">Your goals</span>
+        <ul class="goals" id="goalsStart"></ul>
+        <p class="small muted">These check themselves off as you finish sections. Your progress saves on this device.</p>
+      </section>
+    </div>
+  </section>
+
+  <section class="screen" id="scr-1"></section>
+  <section class="screen" id="scr-2"></section>
+  <section class="screen" id="scr-3"></section>
+  <section class="screen" id="scr-4"></section>
+  <section class="screen" id="scr-5"></section>
+  <section class="screen" id="scr-6"></section>
+  <section class="screen" id="scr-7"></section>
+  <section class="screen" id="scr-8"></section>
+  <section class="screen" id="scr-9"></section>
+  <section class="screen" id="scr-10"></section>
+</main>
+
+<!-- goals drawer -->
+<aside class="drawer" id="goalsDrawer" hidden aria-label="Your goals">
+  <h3 style="font-size:18px;margin-bottom:10px">Your goals</h3>
+  <ul class="goals" id="goalsDrawerList"></ul>
+  <div class="btn-row"><button class="btn ghost sm" id="goalsClose" type="button">Close</button></div>
+</aside>
+
+<!-- word help popover -->
+<div id="pop" role="dialog" aria-live="polite" hidden><b></b><p></p></div>
+
+<!-- teacher modal -->
+<div class="overlay" id="teacherOv" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="tTitle">
+    <h3 id="tTitle">Teacher view</h3>
+    <div id="tLogin">
+      <p class="muted small">Enter the teacher code.</p>
+      <input type="password" id="tCode" autocomplete="off" aria-label="Teacher code">
+      <p class="form-msg" id="tMsg"></p>
+      <div class="btn-row"><button class="btn primary" id="tGo" type="button">Open teacher view</button><button class="btn ghost" id="tCancel" type="button">Cancel</button></div>
+    </div>
+    <div id="tPanel" class="hidden">
+      <div class="lockcode-box"><span>Lock screen code</span><b>bonding</b><small>Type this on a student's locked screen. teacher007 also works there.</small></div>
+      <p class="small muted" id="tInfo"></p>
+      <div class="teacher-tools">
+        <button class="btn ghost" id="tUnlock" type="button">Unlock every section</button>
+        <button class="btn ghost" id="tKey" type="button">Show answer key</button>
+        <button class="btn ghost" id="tEndLock" type="button">End lockdown for this check</button>
+        <button class="btn ghost" id="tSend" type="button">Send this student's scores to the sheet</button>
+        <button class="btn ghost" id="tCsv" type="button">Download scores saved on this Chromebook</button>
+        <button class="btn ghost" id="tPreview" type="button">Preview mode (saves nothing)</button>
+        <button class="btn ghost" id="tReset" type="button">Reset this device (erase progress)</button>
+        <p class="sheetbox sheetStatus small" aria-live="polite"></p>
+      </div>
+      <div class="btn-row"><button class="btn primary" id="tClose" type="button">Close</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- lockdown -->
+<div class="overlay" id="lockOv" hidden>
+  <div class="modal lock-modal" role="alertdialog" aria-modal="true" aria-labelledby="lockTitle">
+    <div class="lock-icon" aria-hidden="true">🔒</div>
+    <h3 id="lockTitle">Your final check is locked</h3>
+    <p class="muted">You left the page or exited full screen. Ask your teacher to unlock it.</p>
+    <input type="password" id="lockCode" autocomplete="off" aria-label="Teacher unlock code" placeholder="Teacher code">
+    <p class="form-msg" id="lockMsg"></p>
+    <button class="btn amber" id="lockGo" type="button">Unlock</button>
+  </div>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="sheets-config.js"></script>
+<script>
+(() => {
+'use strict';
+
+/* =========================================================
+   SETTINGS
+   ========================================================= */
+const KEY = 'fate_chem_covalent_bonding_v1';
+const UNLOCK_CODE = 'bonding'; /* lock-screen code = last word of the lesson title, any capitalization */
+const TEACHER_CODE = 'teacher007'; /* opens the Teacher button tools, any capitalization */
+const LESSON = 'Covalent Bonding';
+/* Google Sheets + teacher list: same setup as the formative assessments.
+   If sheets-config.js (next to this file on the site) defines TEACHERS or SHEETS_WEBHOOK_URL, those win. */
+const BACKUP_URL = 'https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const BACKUP_TEACHERS = ['Austin', 'Mueller', 'McCue', 'Arce', 'Trimm', 'Garcia', 'Trimm/Callanan', 'Callanan'];
+function periodList() { try { if (typeof PERIODS !== 'undefined' && Array.isArray(PERIODS) && PERIODS.length) return PERIODS.map(String); } catch (e) {} return ['1', '2', '3', '4', '5', '6', '7', '8']; }
+function teacherList() { try { if (typeof TEACHERS !== 'undefined' && Array.isArray(TEACHERS) && TEACHERS.length) return TEACHERS.map(String).filter(Boolean); } catch (e) {} return BACKUP_TEACHERS; }
+function sheetURL() { try { if (typeof SHEETS_WEBHOOK_URL !== 'undefined' && SHEETS_WEBHOOK_URL && String(SHEETS_WEBHOOK_URL).indexOf('PASTE') < 0) return String(SHEETS_WEBHOOK_URL); } catch (e) {} return BACKUP_URL; }
+const PASS_SCORE = 8, FC_LEN = 10;
+const LOCK_ON = /github\.io$/i.test(location.hostname) || new URLSearchParams(location.search).has('lockdown');
+const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const sum = a => a.reduce((x, y) => x + y, 0);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+/* =========================================================
+   ELEMENT DATA (first 20)
+   ========================================================= */
+const EL = [
+  ['H', 'Hydrogen', '1.008', 1, 1, 'nonmetal'], ['He', 'Helium', '4.003', 18, 1, 'noble'],
+  ['Li', 'Lithium', '6.94', 1, 2, 'alkali'], ['Be', 'Beryllium', '9.012', 2, 2, 'alkaline'],
+  ['B', 'Boron', '10.81', 13, 2, 'metalloid'], ['C', 'Carbon', '12.011', 14, 2, 'nonmetal'],
+  ['N', 'Nitrogen', '14.007', 15, 2, 'nonmetal'], ['O', 'Oxygen', '15.999', 16, 2, 'nonmetal'],
+  ['F', 'Fluorine', '18.998', 17, 2, 'halogen'], ['Ne', 'Neon', '20.180', 18, 2, 'noble'],
+  ['Na', 'Sodium', '22.990', 1, 3, 'alkali'], ['Mg', 'Magnesium', '24.305', 2, 3, 'alkaline'],
+  ['Al', 'Aluminum', '26.982', 13, 3, 'post'], ['Si', 'Silicon', '28.086', 14, 3, 'metalloid'],
+  ['P', 'Phosphorus', '30.974', 15, 3, 'nonmetal'], ['S', 'Sulfur', '32.06', 16, 3, 'nonmetal'],
+  ['Cl', 'Chlorine', '35.45', 17, 3, 'halogen'], ['Ar', 'Argon', '39.948', 18, 3, 'noble'],
+  ['K', 'Potassium', '39.098', 1, 4, 'alkali'], ['Ca', 'Calcium', '40.078', 2, 4, 'alkaline']
+].map((a, i) => ({ z: i + 1, sym: a[0], name: a[1], massStr: a[2], mass: parseFloat(a[2]), group: a[3], period: a[4], cat: a[5] }));
+const E = z => EL[z - 1];
+/* usual ion charge for the first 20 (null = usually shares electrons instead) */
+const ION = { H: 1, He: 0, Li: 1, Be: 2, B: null, C: null, N: -3, O: -2, F: -1, Ne: 0, Na: 1, Mg: 2, Al: 3, Si: null, P: -3, S: -2, Cl: -1, Ar: 0, K: 1, Ca: 2 };
+const ionCharge = z => ION[E(z).sym];
+const chargeText = c => c > 0 ? (c > 1 ? c : '') + '+' : c < 0 ? (c < -1 ? -c : '') + '−' : '';
+const ionHTML = (sym, c) => `<span class="ion">${sym}${c ? `<sup>${chargeText(c)}</sup>` : ''}</span>`;
+const IDE = { F: 'fluoride', Cl: 'chloride', O: 'oxide', S: 'sulfide', N: 'nitride', P: 'phosphide' };
+const ionName = z => { const e = E(z), c = ionCharge(z); return c < 0 ? IDE[e.sym] : e.name.toLowerCase() + ' ion'; };
+const bySym = s => EL.find(e => e.sym === s);
+const massNum = z => Math.round(E(z).mass);
+const neutrons = z => massNum(z) - z;
+function arr(z) { const caps = [2, 8, 8, 8], out = []; let left = z; for (const c of caps) { if (left <= 0) break; const k = Math.min(c, left); out.push(k); left -= k; } return out; }
+const valence = z => arr(z)[arr(z).length - 1];
+/* Class rule: one at a time top, right, bottom, left; the 5th pairs with the 1st, and so on. */
+function conv(n) { n = Math.max(0, Math.min(8, n)); const b = Math.floor(n / 4), r = n % 4; return [0, 1, 2, 3].map(s => b + (s < r ? 1 : 0)); }
+const norm = s => Array.isArray(s) ? s : conv(s);
+const SIDE = ['top', 'right', 'bottom', 'left'];
+const CAP = [2, 8, 8, 8];
+
+/* =========================================================
+   GLOSSARY (word-help chips)
+   ========================================================= */
+const GLOSS = {
+  'metal': 'Metals are on the left side of the periodic table. They give electrons away to form positive ions.',
+  'covalent bond': 'A bond made when two atoms share a pair of electrons. It forms between two nonmetals.',
+  'molecule': 'A group of atoms held together by covalent bonds, like H₂O or CO₂.',
+  'lone pair': 'A pair of valence electrons that belongs to one atom and is not shared.',
+  'shared pair': 'Two electrons, one from each atom, held between two atoms. Drawn as a line.',
+  'Lewis structure': 'A drawing of a molecule where each line is a shared pair and each pair of dots is a lone pair.',
+  'double bond': 'Two shared pairs (4 electrons) between the same two atoms, drawn as =.',
+  'triple bond': 'Three shared pairs (6 electrons) between the same two atoms, drawn as ≡.',
+  'prefixes': 'Number words in covalent names: mono-, di-, tri-, tetra-, penta-, hexa-.'
+};
+const c = (term, label) => `<button type="button" class="chip" data-term="${term}">${label || term}</button>`;
+
+/* =========================================================
+   STATE (saved on this device)
+   ========================================================= */
+const DEF = () => ({
+  v: 3, student: null, cur: 0, reqs: {}, secDone: {}, qc: {}, tasks: {},
+  final: { attempts: [], passed: false, best: 0, current: null, reviewAt: 0 },
+  lockouts: 0, locked: false, lockActive: false, teacherUnlock: false, startedAt: null, completedAt: null
+});
+let S;
+try {
+  const raw = JSON.parse(localStorage.getItem(KEY) || 'null');
+  S = Object.assign(DEF(), raw || {});
+  S.final = Object.assign(DEF().final, S.final || {});
+  /* v1 had 9 sections (final check = 9, results = 10). v2 adds "Ions combine" as section 9. */
+  if ((S.v || 1) < 2) {
+    if (S.secDone[9]) { S.secDone[10] = true; delete S.secDone[9]; }
+    Object.keys(S.reqs).filter(k => k.startsWith('9.')).forEach(k => { S.reqs['10.' + k.slice(2)] = S.reqs[k]; delete S.reqs[k]; });
+    if (S.cur === 10) S.cur = 11; else if (S.cur === 9) S.cur = 10;
+    S.v = 2;
+  }
+  /* v2 had 10 sections. v3 merges old 3 (lose) and 4 (gain) into one section and shifts the rest down by one. */
+  if (S.v === 2) {
+    const sd = S.secDone, rq = S.reqs, nsd = {}, nrq = {};
+    const map = k => k <= 2 ? k : k <= 4 ? 3 : k - 1;
+    Object.keys(sd).forEach(k => { const n = +k; if (n !== 3 && n !== 4) nsd[map(n)] = sd[k]; });
+    if (sd[3] && sd[4]) nsd[3] = true;
+    Object.keys(rq).forEach(k => { const [n, id] = k.split('.'); const nn = +n;
+      if (nn === 3 || nn === 4) return;
+      if (nn === 2 && id === 'table') return;
+      nrq[map(nn) + '.' + id] = rq[k]; });
+    if (rq['3.lose'] && rq['4.gain']) nrq['3.ions'] = true;
+    if (rq['4.qc4']) nrq['3.qc3'] = true;
+    S.secDone = nsd; S.reqs = nrq;
+    if (S.cur >= 3) S.cur = map(S.cur);
+    S.v = 3;
+  }
+} catch (e) { S = DEF(); }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* storage blocked: keep going */ } }
+
+/* =========================================================
+   BOHR MODEL RENDERING
+   ========================================================= */
+const R = [48, 78, 106, 134], CX = 150, CY = 150, SIDE_ANG = [-90, 0, 90, 180];
+function ePos(r, side, k, count, gap = 8.8) {
+  let a = SIDE_ANG[side] * Math.PI / 180;
+  if (count === 2) { const off = gap / r; a += (k === 0 ? -off : off); }
+  return [CX + r * Math.cos(a), CY + r * Math.sin(a)];
+}
+const NS = 'http://www.w3.org/2000/svg';
+function svgEl(tag, attrs) { const el = document.createElementNS(NS, tag); for (const k in attrs) el.setAttribute(k, attrs[k]); return el; }
+
+/* Static Bohr model as an SVG string */
+function bohrInner(spec) {
+  const radii = spec.radii || R;
+  const shells = (spec.shells || []).map(norm);
+  const nr = spec.rings != null ? spec.rings : shells.length;
+  let s = '';
+  for (let i = 0; i < nr; i++) s += `<circle class="ring${spec.val && i === nr - 1 ? ' outer' : ''}" cx="150" cy="150" r="${radii[i]}"/>`;
+  if (!spec.noNucleus) {
+    const nrad = spec.nucR || 31;
+    s += `<circle class="nucleus" cx="150" cy="150" r="${nrad}"/>`;
+    const l1 = spec.l1 != null ? spec.l1 : (spec.p == null ? '?' : spec.p + ' p⁺');
+    const l2 = spec.l2 != null ? spec.l2 : (spec.n == null ? '' : spec.n + ' n⁰');
+    s += `<text class="nt" x="150" y="${l2 ? 146 : 154}">${l1}</text>`;
+    if (l2) s += `<text class="nt" x="150" y="163">${l2}</text>`;
+  }
+  shells.forEach((sides, i) => {
+    if (i >= nr) return;
+    const er = spec.er || 6.5;
+    sides.forEach((cnt, sd) => { for (let k = 0; k < cnt; k++) { const [x, y] = ePos(radii[i], sd, k, cnt, er + 2.6); const g = isGained(spec.orig, i, sd, k, cnt); s += `<circle class="e${g ? ' gain' : ''}${spec.val && i === nr - 1 ? ' val' : ''}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${er}"/>`; } });
+  });
+  if (spec.charge) s += ionMarks(nr, spec.charge, radii);
+  return s;
+}
+/* which electrons were gained (order index past the neutral atom's count in that shell) */
+function isGained(orig, i, sd, k, cnt) {
+  if (!orig) return false;
+  const j = cnt === 2 && k === 1 ? sd + 4 : sd;
+  return i >= orig.length ? true : j >= orig[i];
+}
+function ionMarks(nr, charge, radii = R) {
+  const ro = radii[Math.max(0, nr - 1)] + 16, L = 150 - ro, Rr = 150 + ro, T = 150 - ro, B = 150 + ro, t = 13;
+  return `<g class="ionmark"><path class="bracket" d="M${L + t} ${T} H${L} V${B} H${L + t}"/><path class="bracket" d="M${Rr - t} ${T} H${Rr} V${B} H${Rr - t}"/><text class="charge" x="${Rr + 5}" y="${T + 10}">${chargeText(charge)}</text></g>`;
+}
+function bohrSVG(spec, cls = '') {
+  return `<svg viewBox="0 0 300 300" class="bohr static ${cls}" role="img" aria-label="${esc(spec.aria || 'Bohr model')}">${bohrInner(spec)}</svg>`;
+}
+
+/* Live, animated Bohr model */
+class BohrView {
+  constructor(svg, o = {}) {
+    this.svg = svg; this.o = o;
+    svg.setAttribute('viewBox', '0 0 300 300');
+    svg.classList.add('bohr');
+    svg.innerHTML = '<g class="rings"></g><g class="zones"></g><g class="nuc"><circle class="nucleus" cx="150" cy="150" r="31"></circle><text class="nt" x="150" y="146"></text><text class="nt" x="150" y="163"></text></g><g class="els"><g class="sh sh0"></g><g class="sh sh1"></g><g class="sh sh2"></g><g class="sh sh3"></g></g><g class="ionwrap"></g>';
+    this.ionG = $('.ionwrap', svg); this.ringEls = []; this._ionKey = '';
+    this.ringsG = $('.rings', svg); this.zonesG = $('.zones', svg);
+    this.nt = $$('.nt', svg); this.shG = $$('.sh', svg);
+    this.map = new Map();
+    this.st = { p: null, n: null, shells: [], rings: null, val: false, zones: null };
+    const act = (e) => {
+      const z = e.target.closest && e.target.closest('.zone');
+      if (z && this.o.onZone) { this.o.onZone(+z.dataset.shell, +z.dataset.side, z); return true; }
+      const el = e.target.closest && e.target.closest('.e');
+      if (el && el.dataset.gone) return true;
+      if (el && this.o.onElectron) { this.o.onElectron(+el.dataset.shell, +el.dataset.side, el); return true; }
+      return false;
+    };
+    svg.addEventListener('click', act);
+    svg.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && act(e)) e.preventDefault(); });
+  }
+  set(p) { Object.assign(this.st, p); this.draw(); }
+  draw() {
+    const st = this.st, shells = (st.shells || []).map(norm);
+    const nr = st.rings != null ? st.rings : shells.length;
+    // rings
+    while (this.ringEls.length < nr) {
+      const i = this.ringEls.length, c = svgEl('circle', { cx: 150, cy: 150, r: R[i], class: 'ring ring-in' });
+      this.ringsG.appendChild(c); this.ringEls.push(c);
+    }
+    while (this.ringEls.length > nr) { const c = this.ringEls.pop(); c.classList.add('ring-out'); setTimeout(() => c.remove(), REDUCED ? 0 : 500); }
+    this.ringEls.forEach((ci, i) => ci.classList.toggle('outer', !!st.val && i === nr - 1));
+    // ion brackets + charge
+    const ik = st.charge ? `${nr}|${st.charge}` : '';
+    if (ik !== this._ionKey) {
+      this._ionKey = ik;
+      this.ionG.innerHTML = ik ? ionMarks(nr, st.charge) : '';
+      if (ik && !this.o.instant) { const g = this.ionG.firstChild; g.classList.add('ion-in'); }
+    }
+    // nucleus labels
+    const l1 = st.l1 != null ? st.l1 : (st.p == null ? '?' : st.p + ' p⁺');
+    const l2 = st.l2 != null ? st.l2 : (st.n == null ? '' : st.n + ' n⁰');
+    this.nt[0].textContent = l1; this.nt[1].textContent = l2;
+    this.nt[0].setAttribute('y', l2 ? 146 : 154);
+    // zones
+    this.zonesG.innerHTML = '';
+    if (st.zones) {
+      const list = st.zones === 'all' ? [...Array(nr).keys()] : st.zones;
+      for (const i of list) {
+        if (i >= nr) continue;
+        for (let s = 0; s < 4; s++) {
+          const [x, y] = ePos(R[i], s, 0, 1);
+          this.zonesG.appendChild(svgEl('circle', { cx: x, cy: y, r: 16, class: 'zone', 'data-shell': i, 'data-side': s, tabindex: 0, role: 'button', 'aria-label': `Shell ${i + 1}, ${SIDE[s]}` }));
+        }
+      }
+    }
+    // electrons (diffed so moves animate)
+    const want = new Map();
+    shells.forEach((sides, i) => { if (i >= nr) return; sides.forEach((cnt, sd) => { for (let k = 0; k < cnt; k++) want.set(`${i}-${sd}-${k}`, ePos(R[i], sd, k, cnt)); }); });
+    for (const [key, el] of this.map) {
+      if (!want.has(key)) {
+        this.map.delete(key);
+        const a = Math.atan2(el._y - 150, el._x - 150);
+        el.dataset.gone = '1';
+        el.style.opacity = '0';
+        el.style.transform = `translate(${el._x + 80 * Math.cos(a)}px,${el._y + 80 * Math.sin(a)}px) scale(.7)`;
+        setTimeout(() => el.remove(), 480);
+      }
+    }
+    const instant = REDUCED || this.o.instant;
+    for (const [key, [x, y]] of want) {
+      const [i, sd] = key.split('-').map(Number);
+      let el = this.map.get(key);
+      if (!el) {
+        el = svgEl('circle', { r: 6.5, cx: 0, cy: 0, class: 'e', 'data-shell': i, 'data-side': sd });
+        if (this.o.erasable) { el.setAttribute('tabindex', '0'); el.setAttribute('role', 'button'); el.setAttribute('aria-label', `Electron, shell ${i + 1}, ${SIDE[sd]}`); }
+        const a = SIDE_ANG[sd] * Math.PI / 180, rr = R[i] + 46;
+        if (!instant) {
+          el.style.transform = `translate(${CX + rr * Math.cos(a)}px,${CY + rr * Math.sin(a)}px) scale(.6)`;
+          el.style.opacity = '0';
+        }
+        this.shG[i].appendChild(el);
+        this.map.set(key, el);
+        if (!instant) el.getBoundingClientRect();
+      }
+      el._x = x; el._y = y;
+      el.style.transform = `translate(${x}px,${y}px)`;
+      el.style.opacity = '1';
+      el.classList.toggle('val', !!st.val && i === nr - 1);
+      const cnt = shells[i][sd], k = +key.split('-')[2];
+      el.classList.toggle('gain', isGained(st.orig, i, sd, k, cnt));
+    }
+  }
+  celebrate() {
+    if (REDUCED) return;
+    this.svg.classList.remove('celebrate'); void this.svg.getBoundingClientRect();
+    this.svg.classList.add('celebrate');
+    setTimeout(() => this.svg.classList.remove('celebrate'), 1200);
+  }
+}
+
+/* small element tile chip */
+const mtile = (z) => { const e = E(z); return `<span class="mtile cat-${e.cat}"><span class="s">${e.sym}</span><span>${e.z}</span><span>${e.massStr}</span></span>`; };
+
+/* =========================================================
+   UI HELPERS
+   ========================================================= */
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('on');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('on'), 2600);
+}
+function shake(el) { if (!el) return; el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); setTimeout(() => el.classList.remove('shake'), 500); }
+const card = (kind, title, body, extra = '') => {
+  const label = { read: 'Read', try: 'Try it', qc: 'Quick check', final: 'Final check', phen: 'Phenomenon' }[kind];
+  const cls = kind === 'final' ? 'qc' : kind;
+  return `<section class="card k-${cls}" ${extra}><span class="tag">${label}</span>${title ? `<h3>${title}</h3>` : ''}${body}</section>`;
+};
+
+/* Quick check (A–D) */
+function makeQC(root, cfg) {
+  const st = S.qc[cfg.id] || (S.qc[cfg.id] = { done: false, first: null, tries: 0 });
+  const opts = cfg.opts.map((o, i) => `<button type="button" class="opt" data-i="${i}" ${i === cfg.ans ? 'data-key="1"' : ''}><span class="L">${'ABCD'[i]}</span><span class="ot">${o}</span></button>`).join('');
+  root.innerHTML = `${cfg.fig ? `<div class="qc-fig">${cfg.fig}</div>` : ''}<p class="qc-q">${cfg.q}</p><div class="opts ${cfg.grid ? 'grid' : ''}">${opts}</div><p class="qc-fb" aria-live="polite"></p>`;
+  const fb = $('.qc-fb', root), btns = $$('.opt', root);
+  const finish = () => {
+    btns.forEach(b => { b.disabled = true; if (+b.dataset.i === cfg.ans) b.classList.add('right'); });
+    fb.className = 'qc-fb good'; fb.innerHTML = `<strong>Correct.</strong> ${cfg.explain}`;
+  };
+  if (st.done) finish();
+  btns.forEach(b => b.addEventListener('click', () => {
+    if (st.done) return;
+    const i = +b.dataset.i; st.tries++;
+    if (i === cfg.ans) {
+      if (st.first === null) st.first = true;
+      st.done = true; finish(); save();
+      cfg.onCorrect && cfg.onCorrect();
+    } else {
+      if (st.first === null) st.first = false;
+      b.classList.add('wrong'); b.disabled = true; shake(b);
+      fb.className = 'qc-fb bad'; fb.innerHTML = `<strong>Not quite.</strong> ${cfg.hint || 'Look back at the Read card and try again.'}`;
+      save();
+    }
+  }));
+}
+
+/* Tap-or-drag sorter */
+function makeSorter(root, cfg) {
+  /* Students can place cards anywhere (and move them). Check only says whether everything is right. */
+  const doneAlready = !!S.tasks[cfg.id];
+  root.innerHTML = `<div class="sorter ${cfg.layout || ''}"><div class="tray" tabindex="0" role="button" aria-label="Cards not placed yet"></div><div class="bins">${cfg.bins.map(b => `<div class="bin" data-bin="${b.id}" tabindex="0" role="button" aria-label="${esc(b.aria || b.label)}"><div class="bin-label">${b.label}</div><div class="bin-drop"></div></div>`).join('')}</div>
+    <div class="btn-row sort-row"><button type="button" class="btn primary sm sort-check" disabled>Check</button><span class="small muted sort-left"></span></div><p class="sort-msg" aria-live="polite"></p></div>`;
+  const tray = $('.tray', root), msg = $('.sort-msg', root), chk = $('.sort-check', root), left = $('.sort-left', root);
+  const binOf = id => cfg.bins.find(b => b.accepts.includes(id));
+  const st = S.tasks[cfg.id + '_place'] || {};
+  const toks = shuffle(cfg.tokens).map(t => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'token' + (t.cls ? ' ' + t.cls : ''); b.dataset.id = t.id; b.innerHTML = t.label;
+    tray.appendChild(b); return b;
+  });
+  let sel = null, dragged = false, finished = false;
+  const status = () => { const n = tray.children.length; chk.disabled = finished || n > 0; left.textContent = finished ? '' : n ? `${n} card${n > 1 ? 's' : ''} left to place` : 'All placed. Press Check.'; };
+  const remember = () => { const m = {}; toks.forEach(t => { const bn = t.closest('.bin'); if (bn) m[t.dataset.id] = bn.dataset.bin; }); S.tasks[cfg.id + '_place'] = m; save(); };
+  const move = (tok, target) => {
+    (target.classList.contains('tray') ? target : $('.bin-drop', target)).appendChild(tok);
+    tok.classList.remove('sel'); tok.classList.toggle('placed', !target.classList.contains('tray'));
+    sel = null; msg.textContent = ''; remember(); status();
+  };
+  const finish = () => {
+    finished = true; toks.forEach(t => { t.classList.add('locked'); t.setAttribute('aria-disabled', 'true'); });
+    msg.innerHTML = `<span style="color:var(--good)">${cfg.doneMsg || 'All correct. Nice work.'}</span>`; status();
+  };
+  if (doneAlready) { toks.forEach(t => move(t, $(`.bin[data-bin="${binOf(t.dataset.id).id}"]`, root))); finish(); return; }
+  toks.forEach(t => { const b = st[t.dataset.id]; const el = b && $(`.bin[data-bin="${b}"]`, root); if (el) move(t, el); });
+  status();
+  chk.addEventListener('click', () => {
+    if (finished || tray.children.length) return;
+    const allRight = toks.every(t => { const bn = t.closest('.bin'); return bn && binOf(t.dataset.id).id === bn.dataset.bin; });
+    if (allRight) { S.tasks[cfg.id] = true; save(); finish(); cfg.onDone && cfg.onDone(); }
+    else { shake($('.bins', root)); msg.innerHTML = '<span style="color:#ffc2cd">Something is in the wrong spot. Look over your sort, move any cards you want to change, and check again.</span>'; }
+  });
+  toks.forEach(tok => {
+    tok.addEventListener('click', e => {
+      e.stopPropagation();
+      if (finished) return;
+      if (dragged) { dragged = false; return; }
+      if (sel === tok) { tok.classList.remove('sel'); sel = null; msg.textContent = ''; return; }
+      if (sel) { const target = tok.closest('.bin') || tray; if (sel.closest('.bin') !== tok.closest('.bin') || target === tray) { move(sel, target); return; } sel.classList.remove('sel'); }
+      sel = tok; tok.classList.add('sel');
+      msg.textContent = tok.closest('.bin') ? 'Tap another box to move it, or tap the card area to take it back.' : 'Now tap where it goes.';
+    });
+    let start = null, ghost = null, over = null;
+    tok.addEventListener('pointerdown', e => {
+      if (finished || e.button > 0) return;
+      start = { x: e.clientX, y: e.clientY }; dragged = false;
+      try { tok.setPointerCapture(e.pointerId); } catch (_) {}
+    });
+    tok.addEventListener('pointermove', e => {
+      if (!start) return;
+      if (!ghost && Math.hypot(e.clientX - start.x, e.clientY - start.y) > 6) {
+        ghost = tok.cloneNode(true); ghost.classList.add('ghost-token'); document.body.appendChild(ghost);
+        tok.style.opacity = '.35'; dragged = true;
+      }
+      if (ghost) {
+        ghost.style.left = e.clientX + 'px'; ghost.style.top = e.clientY + 'px';
+        const t = document.elementFromPoint(e.clientX, e.clientY);
+        const tgt = t && (t.closest('.bin') || t.closest('.tray'));
+        if (over && over !== tgt) over.classList.remove('hover');
+        over = tgt && root.contains(tgt) ? tgt : null;
+        if (over) over.classList.add('hover');
+      }
+    });
+    const end = () => {
+      if (!start) return;
+      start = null;
+      if (ghost) {
+        ghost.remove(); ghost = null; tok.style.opacity = '';
+        if (over) { over.classList.remove('hover'); move(tok, over); over = null; }
+        setTimeout(() => { dragged = false; }, 50);
+      }
+    };
+    tok.addEventListener('pointerup', end);
+    tok.addEventListener('pointercancel', end);
+  });
+  [...$$('.bin', root), tray].forEach(el => {
+    const go = () => { if (sel && !finished) move(sel, el); };
+    el.addEventListener('click', go);
+    el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+  });
+}
+
+/* ion-themed tiles for sections (blue = positive ion, pink = negative ion, gold = full shell / neutral) */
+const ION_T = [null, ['Ne', '', 'neu'], ['Na<sup>+</sup>', '', 'pos'], ['Mg<sup>2+</sup>', '', 'pos'], ['Al<sup>3+</sup>', '', 'pos'], ['O<sup>2−</sup>', '', 'neg'],
+  ['S<sup>2−</sup>', '', 'neg'], ['K<sup>+</sup>', '', 'pos'], ['MgCl₂', '', 'neu'], ['N<sup>3−</sup>', '', 'neg'], ['NaCl', '', 'neu']];
+const ionTile = (n, big) => `<div class="tile ion ${ION_T[n][2]} ${big ? 'big' : ''} ${ION_T[n][0].replace(/<sup>.*?<\/sup>/g, '').length > 3 ? 'long' : ''}" aria-hidden="true"><span class="z">${n}</span><span class="lab">${ION_T[n][0]}</span></div>`;
+/* ---------- Rounds: pick the right choice, repeated practice ---------- */
+function makeRounds(root, cfg) {
+  const st = S.tasks[cfg.id] || (S.tasks[cfg.id] = { n: 0, i: 0 });
+  const R = cfg.rounds, need = cfg.need || R.length;
+  root.innerHTML = `<div class="rounds"><div class="rq" aria-live="polite"></div><div class="rvis"></div><div class="rch"></div><p class="fb-line rfb" aria-live="polite"></p>
+    <div class="btn-row"><div class="progress-pips">${Array.from({ length: need }, () => '<i></i>').join('')}</div><button type="button" class="btn ghost sm rnext hidden">Next</button></div></div>`;
+  const q = $('.rq', root), vis = $('.rvis', root), ch = $('.rch', root), fb = $('.rfb', root), nx = $('.rnext', root);
+  const pips = () => $$('.progress-pips i', root).forEach((p, i) => p.classList.toggle('on', i < st.n));
+  let tries = 0;
+  function show() {
+    const r = R[st.i % R.length]; tries = 0;
+    q.innerHTML = `<p class="place-prompt">${st.n >= need ? '<b>Done. Extra practice:</b> ' : `<b>Round ${st.n + 1} of ${need}.</b> `}${r.q}</p>`;
+    vis.innerHTML = r.vis || '';
+    ch.innerHTML = `<div class="cmp">${(cfg.keepOrder ? r.opts.map((o, k) => k) : shuffle(r.opts.map((o, k) => k))).map(k => `<button type="button" class="choice" data-k="${k}">${r.opts[k]}</button>`).join('')}</div>`;
+    fb.textContent = ''; fb.className = 'fb-line rfb'; nx.classList.add('hidden');
+    $$('.choice', ch).forEach(b => b.addEventListener('click', () => pick(+b.dataset.k, b)));
+    pips();
+  }
+  function pick(k, b) {
+    const r = R[st.i % R.length];
+    if (ch.dataset.locked) return;
+    if (k === r.a) {
+      ch.dataset.locked = '1'; b.classList.add('ok');
+      fb.className = 'fb-line good'; fb.innerHTML = `${tries ? 'Got it.' : 'Correct.'} ${r.why}`;
+      if (st.n < need) st.n++;
+      st.i++; save(); pips();
+      cfg.after && cfg.after(r, vis, k);
+      if (st.n >= need && !S.reqs[cfg.req]) cfg.onDone && cfg.onDone();
+      nx.classList.remove('hidden'); nx.textContent = st.n >= need ? 'More practice' : 'Next';
+    } else {
+      tries++; b.classList.add('no'); shake(b);
+      fb.className = 'fb-line bad'; fb.innerHTML = tries === 1 ? (r.hint || 'Not quite. Think about the trend.') : `${r.hint || ''} ${r.why}`;
+    }
+  }
+  nx.addEventListener('click', () => { delete ch.dataset.locked; show(); });
+  show();
+}
+
+
+/* =========================================================
+   COVALENT BONDING: electron-sharing scene (electron-dot style)
+   atoms: [{s, v, x, y}]  bonds: [{a, b, k, sa, sb}]  (sides: 0 top, 1 right, 2 bottom, 3 left)
+   ========================================================= */
+const VAL = { H: 1, C: 4, N: 5, O: 6, F: 7, Cl: 7, S: 6 };
+const FULL = s => s === 'H' ? 2 : 8;
+const OPP = [2, 3, 0, 1];
+class ShareScene {
+  constructor(svg, atoms, bonds, o = {}) {
+    this.svg = svg; this.atoms = atoms.map(a => ({ ...a, v: VAL[a.s] })); this.bonds = bonds.map(b => ({ ...b, done: false }));
+    this.o = o; this.busy = false; this.W = o.W || 600; this.H = o.H || 260;
+    svg.setAttribute('viewBox', `0 0 ${this.W} ${this.H}`); svg.classList.add('sscene');
+    this.render();
+  }
+  sidesOf(i) { const s = {}; this.bonds.forEach(b => { if (b.a === i) s[b.sa] = b; if (b.b === i) s[b.sb] = b; }); return s; }
+  lonePairs(i) { const a = this.atoms[i], used = this.bonds.filter(b => b.a === i || b.b === i).reduce((t, b) => t + b.k, 0); return Math.max(0, (a.v - used) / 2); }
+  around(i) { const a = this.atoms[i]; let n = this.lonePairs(i) * 2; this.bonds.forEach(b => { if (b.a === i || b.b === i) n += b.done ? 2 * b.k : b.k; }); return n; }
+  allDone() { return this.bonds.every(b => b.done); }
+  /* free sides for lone pairs: one pair goes on the outer side, more pairs fill top, bottom, then outer */
+  lpSides(i) {
+    const used = Object.keys(this.sidesOf(i)).map(Number), free = [0, 1, 2, 3].filter(s => !used.includes(s)), n = this.lonePairs(i);
+    const outer = used.length === 1 ? OPP[used[0]] : null;
+    let order = n === 1 && outer != null ? [outer, ...free.filter(s => s !== outer)] : [0, 2, outer, 1, 3].filter((s, k, arr) => s != null && free.includes(s) && arr.indexOf(s) === k);
+    free.forEach(s => { if (!order.includes(s)) order.push(s); });
+    return order.slice(0, n);
+  }
+  pt(i, side, j, cnt, d = 34) { const a = this.atoms[i], off = (j - (cnt - 1) / 2) * 11; return [[a.x + off, a.y - d], [a.x + d, a.y + off], [a.x + off, a.y + d], [a.x - d, a.y + off]][side]; }
+  bondMid(b, j) { const A = this.atoms[b.a], B = this.atoms[b.b], mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2, horiz = Math.abs(A.x - B.x) > Math.abs(A.y - B.y), off = (j - (b.k - 1) / 2) * 13;
+    return horiz ? [mx, my + off] : [mx + off, my]; }
+  render() {
+    let s = '';
+    this.bonds.forEach((b, bi) => { if (!b.done) return; const A = this.atoms[b.a], B = this.atoms[b.b], horiz = Math.abs(A.x - B.x) > Math.abs(A.y - B.y);
+      for (let j = 0; j < b.k; j++) { const off = (j - (b.k - 1) / 2) * 13, r = 26;
+        const [x1, y1, x2, y2] = horiz ? [Math.min(A.x, B.x) + r, A.y + off, Math.max(A.x, B.x) - r, B.y + off] : [A.x + off, Math.min(A.y, B.y) + r, B.x + off, Math.max(A.y, B.y) - r];
+        s += `<line class="bline" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
+        const [mx, my] = this.bondMid(b, j); s += `<circle class="sdot" cx="${horiz ? mx - 5 : mx}" cy="${horiz ? my : my - 5}" r="4.5"/><circle class="sdot" cx="${horiz ? mx + 5 : mx}" cy="${horiz ? my : my + 5}" r="4.5"/>`; } });
+    this.atoms.forEach((a, i) => {
+      const done = this.allDone(), n = this.around(i), full = n === FULL(a.s);
+      if (done) s += `<circle class="oct ${full ? 'full' : ''}" cx="${a.x}" cy="${a.y}" r="${a.s === 'H' ? 40 : 52}"/><text class="octn" x="${a.x + (a.s === 'H' ? 34 : 44)}" y="${a.y - (a.s === 'H' ? 30 : 38)}">${n}</text>`;
+      s += `<g class="sat ${this.o.interactive && !done ? 'tap' : ''}" data-i="${i}"><circle class="hit" cx="${a.x}" cy="${a.y}" r="44"/><text class="ssym" x="${a.x}" y="${a.y + 12}">${a.s}</text>`;
+      this.lpSides(i).forEach(sd => { for (let j = 0; j < 2; j++) { const [x, y] = this.pt(i, sd, j, 2); s += `<circle class="ldot" cx="${x}" cy="${y}" r="4.5"/>`; } });
+      Object.entries(this.sidesOf(i)).forEach(([sd, b]) => { if (b.done) return; for (let j = 0; j < b.k; j++) { const [x, y] = this.pt(i, +sd, j, b.k); s += `<circle class="udot" cx="${x}" cy="${y}" r="5"/>`; } });
+      s += `</g>`;
+      if (this.o.labels) s += `<text class="slab" x="${a.x}" y="${this.H - 10}">${bySym(a.s).name}</text>`;
+    });
+    s += '<g class="fly"></g>';
+    this.svg.innerHTML = s;
+    if (this.o.interactive) $$('.sat', this.svg).forEach(g => g.addEventListener('click', () => this.tap(+g.dataset.i)));
+  }
+  tap(i) { if (this.busy) return; const b = this.bonds.find(b => !b.done && (b.a === i || b.b === i)); if (!b) { this.o.onChange && this.o.onChange({ msg: 'This atom has no more unpaired electrons to share. Tap another atom.' }); return; } this.share(this.bonds.indexOf(b)); }
+  share(bi) {
+    return new Promise(res => {
+      const b = this.bonds[bi]; if (b.done) { res(); return; } this.busy = true;
+      const starts = []; for (let j = 0; j < b.k; j++) { starts.push(this.pt(b.a, b.sa, j, b.k)); starts.push(this.pt(b.b, b.sb, j, b.k)); }
+      const ends = []; for (let j = 0; j < b.k; j++) { const [mx, my] = this.bondMid(b, j), A = this.atoms[b.a], B = this.atoms[b.b], horiz = Math.abs(A.x - B.x) > Math.abs(A.y - B.y);
+        ends.push(horiz ? [mx - 5, my] : [mx, my - 5]); ends.push(horiz ? [mx + 5, my] : [mx, my + 5]); }
+      b.hide = true; const keep = b.done; b.done = false;
+      /* draw without this bond's unpaired dots, then fly them */
+      const sv = this.bonds.map(x => x.done); this.render();
+      $$('.udot', this.svg).forEach(d => d.remove());
+      this.bonds.forEach((x, k) => { if (k === bi || x.done) return; [x.a, x.b].forEach((ai, w) => { const sd = w ? x.sb : x.sa; for (let j = 0; j < x.k; j++) { const [px, py] = this.pt(ai, sd, j, x.k); const c = svgEl('circle', { cx: px, cy: py, r: 5, class: 'udot' }); this.svg.appendChild(c); } }); });
+      const fly = $('.fly', this.svg), dots = starts.map(([x, y]) => { const c = svgEl('circle', { cx: x, cy: y, r: 5, class: 'udot flying' }); fly.appendChild(c); return c; });
+      const dur = REDUCED ? 30 : 900, t0 = performance.now();
+      const step = now => { const t = Math.min(1, (now - t0) / dur), e = t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+        dots.forEach((d, k) => { const [x1, y1] = starts[k], [x2, y2] = ends[Math.min(k, ends.length - 1)]; d.setAttribute('cx', x1 + (x2 - x1) * e); d.setAttribute('cy', y1 + (y2 - y1) * e); });
+        if (t < 1) requestAnimationFrame(step); else { b.done = true; this.busy = false; this.render(); this.o.onChange && this.o.onChange({ shared: true, done: this.allDone() }); res(); } };
+      requestAnimationFrame(step);
+    });
+  }
+  async playAll() { for (let k = 0; k < this.bonds.length; k++) { if (!this.bonds[k].done) { await this.share(k); await new Promise(r => setTimeout(r, REDUCED ? 10 : 250)); } } }
+  reset() { this.bonds.forEach(b => { b.done = false; }); this.busy = false; this.render(); }
+}
+/* ready-made molecules (x, y laid out for a 600 x 260 scene) */
+const MOL = {
+  H2: () => [[{ s: 'H', x: 240, y: 130 }, { s: 'H', x: 360, y: 130 }], [{ a: 0, b: 1, k: 1, sa: 1, sb: 3 }]],
+  Cl2: () => [[{ s: 'Cl', x: 220, y: 130 }, { s: 'Cl', x: 380, y: 130 }], [{ a: 0, b: 1, k: 1, sa: 1, sb: 3 }]],
+  F2: () => [[{ s: 'F', x: 220, y: 130 }, { s: 'F', x: 380, y: 130 }], [{ a: 0, b: 1, k: 1, sa: 1, sb: 3 }]],
+  HCl: () => [[{ s: 'H', x: 230, y: 130 }, { s: 'Cl', x: 370, y: 130 }], [{ a: 0, b: 1, k: 1, sa: 1, sb: 3 }]],
+  H2O: () => [[{ s: 'H', x: 170, y: 130 }, { s: 'O', x: 300, y: 130 }, { s: 'H', x: 430, y: 130 }], [{ a: 0, b: 1, k: 1, sa: 1, sb: 3 }, { a: 1, b: 2, k: 1, sa: 1, sb: 3 }]],
+  NH3: () => [[{ s: 'H', x: 170, y: 110 }, { s: 'N', x: 300, y: 110 }, { s: 'H', x: 430, y: 110 }, { s: 'H', x: 300, y: 230 }], [{ a: 0, b: 1, k: 1, sa: 1, sb: 3 }, { a: 1, b: 2, k: 1, sa: 1, sb: 3 }, { a: 1, b: 3, k: 1, sa: 2, sb: 0 }], 300],
+  CH4: () => [[{ s: 'H', x: 300, y: 50 }, { s: 'H', x: 170, y: 165 }, { s: 'C', x: 300, y: 165 }, { s: 'H', x: 430, y: 165 }, { s: 'H', x: 300, y: 280 }], [{ a: 1, b: 2, k: 1, sa: 1, sb: 3 }, { a: 2, b: 3, k: 1, sa: 1, sb: 3 }, { a: 0, b: 2, k: 1, sa: 2, sb: 0 }, { a: 2, b: 4, k: 1, sa: 2, sb: 0 }], 335],
+  O2: () => [[{ s: 'O', x: 220, y: 130 }, { s: 'O', x: 380, y: 130 }], [{ a: 0, b: 1, k: 2, sa: 1, sb: 3 }]],
+  N2: () => [[{ s: 'N', x: 220, y: 130 }, { s: 'N', x: 380, y: 130 }], [{ a: 0, b: 1, k: 3, sa: 1, sb: 3 }]],
+  CO2: () => [[{ s: 'O', x: 150, y: 130 }, { s: 'C', x: 300, y: 130 }, { s: 'O', x: 450, y: 130 }], [{ a: 0, b: 1, k: 2, sa: 1, sb: 3 }, { a: 1, b: 2, k: 2, sa: 1, sb: 3 }]]
+};
+const mol = (svg, key, o = {}) => { const [a, b, H] = MOL[key](); return new ShareScene(svg, a, b, H ? { ...o, H } : o); };
+
+/* =========================================================
+   SECTION ICONS (SVG drawings)
+   ========================================================= */
+const ICON = {
+  1: `<svg viewBox="0 0 40 40"><circle cx="14" cy="20" r="9" fill="none" stroke="#5fe1ff" stroke-width="2.4"/><circle cx="26" cy="20" r="9" fill="none" stroke="#f472b6" stroke-width="2.4"/><circle cx="20" cy="16" r="2.6" fill="#fde047"/><circle cx="20" cy="24" r="2.6" fill="#fde047"/></svg>`,
+  2: `<svg viewBox="0 0 40 40"><circle cx="9" cy="20" r="5" fill="#5fe1ff"/><circle cx="31" cy="20" r="5" fill="#5fe1ff"/><path d="M14 20h12" stroke="#e2e8f0" stroke-width="3"/><circle cx="18" cy="13" r="2.2" fill="#fde047"/><circle cx="22" cy="13" r="2.2" fill="#fde047"/></svg>`,
+  3: `<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="6" fill="#e2e8f0"/><path d="M20 14V4M26 20h10M20 26v10M14 20H4" stroke="#5fe1ff" stroke-width="2.6"/><text x="33" y="9" font-size="9" font-weight="800" fill="#fde047">4</text></svg>`,
+  4: `<svg viewBox="0 0 40 40"><circle cx="20" cy="22" r="6" fill="#f87171"/><circle cx="7" cy="22" r="4" fill="#e2e8f0"/><circle cx="33" cy="22" r="4" fill="#e2e8f0"/><path d="M11 22h3M26 22h3" stroke="#e2e8f0" stroke-width="2.6"/><circle cx="17" cy="10" r="2" fill="#5fe1ff"/><circle cx="23" cy="10" r="2" fill="#5fe1ff"/></svg>`,
+  5: `<svg viewBox="0 0 40 40"><circle cx="8" cy="20" r="5" fill="#60a5fa"/><circle cx="32" cy="20" r="5" fill="#60a5fa"/><path d="M13 15h14M13 20h14M13 25h14" stroke="#e2e8f0" stroke-width="2.4"/></svg>`,
+  6: `<svg viewBox="0 0 40 40"><path d="M6 12h20l8 8-8 8H6z" fill="#f6b93b"/><text x="10" y="24" font-size="9" font-weight="800" fill="#241703">di-</text></svg>`,
+  7: `<svg viewBox="0 0 40 40"><path d="M14 6h12M17 6v10l-9 16a3 3 0 0 0 3 4h18a3 3 0 0 0 3-4l-9-16V6" fill="none" stroke="#e2e8f0" stroke-width="2.2"/><path d="M11 28h18l-2-4H13z" fill="#5fe1ff" opacity=".7"/><circle cx="18" cy="31" r="1.6" fill="#fff"/><circle cx="23" cy="30" r="1.2" fill="#fff"/></svg>`,
+  8: `<svg viewBox="0 0 40 40"><circle cx="17" cy="17" r="10" fill="none" stroke="#e2e8f0" stroke-width="3"/><path d="M25 25l9 9" stroke="#e2e8f0" stroke-width="4" stroke-linecap="round"/><path d="M13 13l8 8M21 13l-8 8" stroke="#f87171" stroke-width="2.6" stroke-linecap="round"/></svg>`,
+  9: `<svg viewBox="0 0 40 40"><rect x="9" y="6" width="22" height="29" rx="3" fill="none" stroke="#cbd5e1" stroke-width="2.4"/><rect x="15" y="3" width="10" height="6" rx="2" fill="#cbd5e1"/><path d="M14 17l3 3 6-6M14 27l3 3 6-6" fill="none" stroke="#4ade80" stroke-width="2.4" stroke-linecap="round"/></svg>`,
+  10: `<svg viewBox="0 0 40 40"><path d="M12 6h16v8a8 8 0 0 1-16 0z" fill="#f6b93b"/><path d="M12 9H6a6 6 0 0 0 6 7M28 9h6a6 6 0 0 1-6 7" fill="none" stroke="#f6b93b" stroke-width="2"/><rect x="17" y="21" width="6" height="7" fill="#f6b93b"/><rect x="12" y="28" width="16" height="5" rx="1.5" fill="#f6b93b"/></svg>`
+};
+const iconTile = (n, big) => `<div class="tile icon ${big ? 'big' : ''}" aria-hidden="true"><span class="z">${n}</span>${ICON[n]}</div>`;
+
+/* =========================================================
+   SECTIONS
+   ========================================================= */
+const NSEC = 9, RES = 10;
+const SECS = [null,
+  { title: 'Why do nonmetals share?', min: 4 },
+  { title: 'Sharing one pair', min: 5 },
+  { title: 'How many bonds?', min: 4 },
+  { title: 'Lewis structures', min: 5 },
+  { title: 'Double and triple bonds', min: 5 },
+  { title: 'Naming covalent compounds', min: 4 },
+  { title: 'Covalent vs. ionic properties', min: 3 },
+  { title: 'Spot the mistake', min: 3 },
+  { title: 'Final check', min: 7 }
+];
+const REQS = {
+  1: [['phen', 'Make a prediction about the phenomenon'], ['sort', 'Sort the pairs into ionic and covalent'], ['qc1', 'Answer the quick check correctly']],
+  2: [['watch', 'Watch two chlorine atoms share'], ['share', 'Make the bond for 3 molecules'], ['qc2', 'Answer the quick check correctly']],
+  3: [['bonds', 'Sort the elements by number of bonds'], ['qc3', 'Answer the quick check correctly']],
+  4: [['lewis', 'Build 3 Lewis structures'], ['qc4', 'Answer the quick check correctly']],
+  5: [['multi', 'Pick the right bond for 3 molecules'], ['qc5', 'Answer the quick check correctly']],
+  6: [['names', 'Answer 3 naming rounds'], ['qc6', 'Answer the quick check correctly']],
+  7: [['props', 'Sort the property cards'], ['qc7', 'Answer the quick check correctly']],
+  8: [['fix', 'Find the mistake in 3 student examples'], ['qc8', 'Answer the quick check correctly']],
+  9: [['pass', `Score ${PASS_SCORE} or more out of ${FC_LEN} on the final check`]]
+};
+const GOALS = [
+  { t: 'Explain why two nonmetals share electrons', sec: 1 },
+  { t: 'Show a shared pair as a covalent bond', sec: 2 },
+  { t: 'Draw Lewis structures with full outer shells', sec: 4 },
+  { t: 'Recognize double and triple bonds', sec: 5 },
+  { t: 'Name covalent compounds with prefixes', sec: 6 },
+  { t: `Pass the final check (${PASS_SCORE} out of ${FC_LEN})`, sec: 9 }
+];
+function frame(n, inner) {
+  const s = SECS[n];
+  return `<header class="sec-head">${iconTile(n, true)}<div><p class="sec-meta">Section ${n} of ${NSEC} · about ${s.min} min</p><h2>${s.title}</h2></div></header>
+  ${inner}
+  <section class="card unlock" id="unlock-${n}"><h3>To unlock the next section</h3><ul class="reqs"></ul></section>
+  <nav class="sec-foot"><button class="btn ghost" type="button" data-go="${n - 1}">Back</button><button class="btn primary" type="button" id="next-${n}" data-go="${n + 1}" disabled>${n < NSEC ? 'Next section' : 'See your results'}</button></nav>`;
+}
+const legendS = '<p class="legend"><span><span class="dot y"></span>unpaired electron (ready to share)</span><span><span class="dot e"></span>lone pair</span><span><span class="dot g2"></span>outer shell full</span></p>';
+const pips = (el, sel, st, n) => $$(sel + ' .progress-pips i', el).forEach((p, i) => p.classList.toggle('on', i < st.done.length));
+
+/* ---------------- Phenomenon ---------------- */
+const PH_OPTS = ['One chlorine atom gives an electron to the other', 'The two atoms share a pair of electrons, so both count 8', 'Chlorine atoms never stick together', 'They swap protons'];
+function phenBackHTML() {
+  const pk = (S.tasks.phen || {}).pick;
+  return `${pk != null ? `<p class="small muted">You predicted: “${PH_OPTS[pk]}.” ${pk === 1 ? '<b>You were right.</b>' : 'Here\'s what really happens.'}</p>` : ''}
+    <p>Each chlorine atom has 7 valence electrons and needs 1 more. Neither atom will give one away, because both want to gain. So they <b>share</b>: each puts 1 electron into the space between them.</p>
+    <p>That shared pair counts for <b>both</b> atoms. Each chlorine now has 6 of its own plus 2 shared = <b>8</b>. The shared pair holds the atoms together: a covalent bond, drawn as a line: Cl–Cl.</p>`;
+}
+
+/* ---------------- Section 1 ---------------- */
+function build1(el) {
+  el.innerHTML = frame(1,
+    card('phen', 'Two atoms that both want more', `<div class="scene-wrap"><svg id="s1ph" class="tsvg"></svg></div>
+      <p>Chlorine gas is made of Cl₂: two chlorine atoms stuck together. But in ionic bonding, one atom <b>gives</b> an electron and the other <b>takes</b> it. Both chlorine atoms need one more electron, and neither wants to give one up. So what holds them together?</p>
+      <div class="opts phen-opts">${PH_OPTS.map((t, k) => `<button type="button" class="opt" data-k="${k}"><span class="L">${'ABCD'[k]}</span><span class="ot">${t}</span></button>`).join('')}</div>
+      <p class="fb-line" id="phenMsg" aria-live="polite"></p>`) +
+    card('read', 'When both atoms want electrons', `<div class="read-text">
+      <p>An ionic bond needs a ${c('metal')} that gives electrons away. When <b>two nonmetals</b> meet, both atoms want to gain electrons, so neither gives one up.</p>
+      <p>Instead, they <b>share</b>. Each atom puts an electron into a pair between them. The shared pair counts toward <b>both</b> atoms' outer shells. This is a ${c('covalent bond')}, and a group of atoms joined this way is a ${c('molecule')}.</p></div>
+      <div class="mini-flow"><span class="pill neg">nonmetal</span><span class="arr">+</span><span class="pill neg">nonmetal</span><span class="arr">=</span><span class="pill">share electrons (covalent)</span></div>
+      <div class="mini-flow"><span class="pill pos">metal</span><span class="arr">+</span><span class="pill neg">nonmetal</span><span class="arr">=</span><span class="pill">transfer electrons (ionic)</span></div>`) +
+    card('try', 'Ionic or covalent?', '<p class="muted">Sort each pair. Place every card, then press Check.</p><div id="s1sort"></div>') +
+    card('qc', '', '<div id="qc1"></div>'));
+  new ShareScene($('#s1ph', el), ...MOL.Cl2(), { labels: true });
+  const st = S.tasks.phen || (S.tasks.phen = { pick: null });
+  const paint = () => { $$('.phen-opts .opt', el).forEach(b => b.classList.toggle('picked', +b.dataset.k === st.pick)); if (st.pick != null) { $('#phenMsg', el).className = 'fb-line good'; $('#phenMsg', el).innerHTML = 'Prediction saved. You\'ll find out in Section 2.'; } };
+  $$('.phen-opts .opt', el).forEach(b => b.addEventListener('click', () => { st.pick = +b.dataset.k; save(); paint(); done(1, 'phen'); const bk = $('#s2back'); if (bk) bk.innerHTML = phenBackHTML(); }));
+  paint();
+  makeSorter($('#s1sort', el), {
+    id: 's1sort',
+    tokens: [{ id: 'nacl', label: 'Na + Cl' }, { id: 'co', label: 'C + O' }, { id: 'ho', label: 'H + O' }, { id: 'mgo', label: 'Mg + O' }, { id: 'nh', label: 'N + H' }, { id: 'kf', label: 'K + F' }],
+    bins: [{ id: 'ion', label: 'Ionic (metal + nonmetal)', accepts: ['nacl', 'mgo', 'kf'] }, { id: 'cov', label: 'Covalent (two nonmetals)', accepts: ['co', 'ho', 'nh'] }],
+    onDone: () => done(1, 'sort')
+  });
+  makeQC($('#qc1', el), { id: 'qc1', q: 'Why do two nonmetal atoms share electrons instead of transferring them?', opts: ['They both have too many protons', 'Both want to gain electrons, so neither gives one away', 'Nonmetals have no valence electrons', 'Sharing only happens with metals'], ans: 1,
+    explain: 'Nonmetals are close to a full outer shell, so both want electrons. Sharing lets both count the shared pair.', hint: 'Do nonmetals usually gain or lose electrons?', onCorrect: () => done(1, 'qc1') });
+}
+
+/* ---------------- Section 2 ---------------- */
+function build2(el) {
+  const LIST = [['H2', 'H₂', 'Each hydrogen counts 2, which is full for hydrogen.'], ['F2', 'F₂', 'Each fluorine counts 6 + 2 = 8.'], ['HCl', 'HCl', 'Hydrogen counts 2 and chlorine counts 8.']];
+  el.innerHTML = frame(2,
+    card('read', 'Watch two chlorine atoms share', `<div class="read-text">
+      <p>Each chlorine has 7 valence electrons: 3 ${c('lone pair')}s and 1 <b>unpaired</b> electron (gold). The unpaired electrons from both atoms move into the space between them and become a ${c('shared pair')}.</p>
+      <p>A shared pair is drawn as a line: <b>Cl–Cl</b>. Count around each atom, including the shared pair: 6 + 2 = 8. Hydrogen is the exception: it is full with just <b>2</b>.</p></div>
+      <div class="scene-wrap"><svg id="s2demo" class="tsvg" role="img" aria-label="Animation: each chlorine atom's unpaired electron moves to the middle, forming a shared pair drawn as a line. Each atom then counts 8 electrons."></svg></div>${legendS}
+      <div class="btn-row"><button type="button" class="btn primary" id="s2play">▶ Play the sharing</button><button type="button" class="btn ghost" id="s2reset">Reset</button></div>`) +
+    card('try', 'Make the bond', `<p class="muted">Tap either atom to share their unpaired electrons. Then count the electrons around each atom.</p>
+      <div class="tabs" id="s2tabs"></div><div class="scene-wrap"><svg id="s2svg" class="tsvg"></svg></div>${legendS}
+      <p class="place-prompt" id="s2msg" aria-live="polite"></p><div class="progress-pips">${'<i></i>'.repeat(3)}</div>`) +
+    card('phen', 'Back to the phenomenon', '<div class="read-text" id="s2back"></div>') +
+    card('qc', '', '<div id="qc2"></div>'));
+  $('#s2back', el).innerHTML = phenBackHTML();
+  const demo = mol($('#s2demo', el), 'Cl2', { labels: true });
+  $('#s2play', el).addEventListener('click', async () => { demo.reset(); await new Promise(r => setTimeout(r, 300)); await demo.playAll(); done(2, 'watch'); });
+  $('#s2reset', el).addEventListener('click', () => demo.reset());
+  const st = S.tasks.s2 || (S.tasks.s2 = { done: [] });
+  let k = Math.max(0, LIST.findIndex((p, i) => !st.done.includes(i)));
+  function show() {
+    const [key, name, why] = LIST[k];
+    $('#s2tabs', el).innerHTML = LIST.map((p, i) => `<button type="button" class="tab ${st.done.includes(i) ? 'ok' : ''}" aria-selected="${i === k}" data-i="${i}">${p[1]}</button>`).join('');
+    $$('#s2tabs .tab', el).forEach(b => b.addEventListener('click', () => { k = +b.dataset.i; show(); }));
+    $('#s2msg', el).innerHTML = `Tap an atom to make the bond in <b>${name}</b>.`;
+    mol($('#s2svg', el), key, { labels: true, interactive: true, onChange: ev => {
+      if (ev.msg) { $('#s2msg', el).innerHTML = ev.msg; return; }
+      if (!ev.done) return;
+      $('#s2msg', el).innerHTML = `<b>Bonded.</b> ${why}`;
+      if (!st.done.includes(k)) { st.done.push(k); save(); } pips(el, '', st);
+      if (st.done.length >= LIST.length) done(2, 'share');
+      const nx = LIST.findIndex((p, i) => !st.done.includes(i));
+      if (nx >= 0) setTimeout(() => { if (LIST[k][0] === key) { k = nx; show(); } }, 2000);
+    } });
+    pips(el, '', st);
+  }
+  show();
+  makeQC($('#qc2', el), { id: 'qc2', q: 'In Cl–Cl, what does the line between the atoms stand for?', opts: ['One electron', 'A pair of shared electrons', 'A proton', 'An electron given away'], ans: 1,
+    explain: 'Each line in a Lewis structure is one shared pair: 2 electrons, one from each atom.', hint: 'How many electrons moved into the middle?', onCorrect: () => done(2, 'qc2') });
+}
+
+/* ---------------- Section 3 ---------------- */
+function build3(el) {
+  el.innerHTML = frame(3,
+    card('read', 'Count what each atom needs', `<div class="read-text">
+      <p>An atom makes one bond for every electron it still needs to reach a full outer shell:</p>
+      <ul><li><b>Hydrogen</b> (1 valence electron) needs 1 more → <b>1 bond</b></li><li><b>Oxygen</b> (6) needs 2 → <b>2 bonds</b></li><li><b>Nitrogen</b> (5) needs 3 → <b>3 bonds</b></li><li><b>Carbon</b> (4) needs 4 → <b>4 bonds</b></li></ul>
+      <p>The halogens (F, Cl) have 7, so they make <b>1 bond</b>, just like hydrogen.</p></div>
+      <div class="bond-row">${[['H', 1], ['O', 2], ['N', 3], ['C', 4]].map(([s, n]) => `<div class="bond-card"><b>${s}</b><span>${VAL[s]} valence</span><em>${n} bond${n > 1 ? 's' : ''}</em></div>`).join('')}</div>`) +
+    card('try', 'How many bonds?', '<p class="muted">Sort each element by how many bonds it makes. Place every card, then press Check.</p><div id="s3sort"></div>') +
+    card('qc', '', '<div id="qc3"></div>'));
+  makeSorter($('#s3sort', el), {
+    id: 's3sort',
+    tokens: [{ id: 'f', label: 'Fluorine (7 valence)' }, { id: 's', label: 'Sulfur (6 valence)' }, { id: 'c', label: 'Carbon (4 valence)' }, { id: 'cl', label: 'Chlorine (7 valence)' }, { id: 'n', label: 'Nitrogen (5 valence)' }, { id: 'o', label: 'Oxygen (6 valence)' }],
+    bins: [{ id: 'b1', label: '1 bond', accepts: ['f', 'cl'] }, { id: 'b2', label: '2 bonds', accepts: ['s', 'o'] }, { id: 'b3', label: '3 bonds', accepts: ['n'] }, { id: 'b4', label: '4 bonds', accepts: ['c'] }],
+    onDone: () => done(3, 'bonds')
+  });
+  makeQC($('#qc3', el), { id: 'qc3', q: 'Nitrogen has 5 valence electrons. How many covalent bonds does it usually make?', opts: ['5', '1', '8', '3'], ans: 3,
+    explain: 'Nitrogen needs 3 more electrons to reach 8, so it makes 3 bonds (like in NH₃).', hint: 'How many more does it need to reach 8?', onCorrect: () => done(3, 'qc3') });
+}
+
+/* ---------------- Section 4 ---------------- */
+function build4(el) {
+  const LIST = [['H2O', 'H₂O', 'O', 2], ['NH3', 'NH₃', 'N', 1], ['CH4', 'CH₄', 'C', 0]];
+  el.innerHTML = frame(4,
+    card('read', 'Drawing a Lewis structure', `<div class="read-text">
+      <p>A ${c('Lewis structure')} shows every bond as a line and every unshared pair of electrons as two dots.</p>
+      <ol><li>Put the atom that makes the <b>most bonds</b> in the center (never hydrogen).</li><li>Share one pair between the center and each outer atom.</li><li>Check: every atom has <b>8</b> (hydrogen has <b>2</b>). Leftover pairs stay as lone pairs.</li></ol></div>
+      <div class="scene-wrap"><svg id="s4demo" class="tsvg"></svg></div>${legendS}
+      <div class="btn-row"><button type="button" class="btn primary" id="s4play">▶ Play H₂O</button><button type="button" class="btn ghost" id="s4reset">Reset</button></div>`) +
+    card('try', 'Build it, then count', `<p class="muted">Tap the center atom to share with each outer atom. Then answer: how many lone pairs are on the center atom?</p>
+      <div class="tabs" id="s4tabs"></div><div class="scene-wrap"><svg id="s4svg" class="tsvg"></svg></div>${legendS}
+      <div class="btn-row hidden" id="s4lp"><span class="small">Lone pairs on the center atom:</span>${[0, 1, 2, 3].map(n => `<button type="button" class="btn ghost sm" data-n="${n}">${n}</button>`).join('')}</div>
+      <p class="place-prompt" id="s4msg" aria-live="polite"></p><div class="progress-pips">${'<i></i>'.repeat(3)}</div>`) +
+    card('qc', '', '<div id="qc4"></div>'));
+  const demo = mol($('#s4demo', el), 'H2O', { labels: false });
+  $('#s4play', el).addEventListener('click', async () => { demo.reset(); await new Promise(r => setTimeout(r, 300)); await demo.playAll(); });
+  $('#s4reset', el).addEventListener('click', () => demo.reset());
+  const st = S.tasks.s4 || (S.tasks.s4 = { done: [] });
+  let k = Math.max(0, LIST.findIndex((p, i) => !st.done.includes(i)));
+  function show() {
+    const [key, name, center, lp] = LIST[k];
+    $('#s4tabs', el).innerHTML = LIST.map((p, i) => `<button type="button" class="tab ${st.done.includes(i) ? 'ok' : ''}" aria-selected="${i === k}" data-i="${i}">${p[1]}</button>`).join('');
+    $$('#s4tabs .tab', el).forEach(b => b.addEventListener('click', () => { k = +b.dataset.i; show(); }));
+    $('#s4lp', el).classList.add('hidden');
+    $('#s4msg', el).innerHTML = `Build <b>${name}</b>: tap the ${bySym(center).name.toLowerCase()} atom (or any atom) to share one pair at a time.`;
+    mol($('#s4svg', el), key, { interactive: true, onChange: ev => {
+      if (ev.msg) { $('#s4msg', el).innerHTML = ev.msg; return; }
+      if (!ev.done) { $('#s4msg', el).innerHTML = 'Good. Keep sharing until every hydrogen is bonded.'; return; }
+      $('#s4msg', el).innerHTML = `All bonds made. Every atom is full. Now: how many lone pairs are left on ${bySym(center).name.toLowerCase()}?`;
+      $('#s4lp', el).classList.remove('hidden');
+    } });
+    $$('#s4lp [data-n]', el).forEach(b => { b.onclick = () => {
+      if (+b.dataset.n !== lp) { shake(b); $('#s4msg', el).innerHTML = `Count the pairs of dots on ${center} that are <b>not</b> on a line.`; return; }
+      $('#s4msg', el).innerHTML = `<b>Correct.</b> ${name} has ${lp} lone pair${lp === 1 ? '' : 's'} on ${center}.`;
+      if (!st.done.includes(k)) { st.done.push(k); save(); } pips(el, '', st);
+      if (st.done.length >= LIST.length) done(4, 'lewis');
+      const nx = LIST.findIndex((p, i) => !st.done.includes(i));
+      if (nx >= 0) setTimeout(() => { if (LIST[k][0] === key) { k = nx; show(); } }, 1800);
+    }; });
+    pips(el, '', st);
+  }
+  show();
+  makeQC($('#qc4', el), { id: 'qc4', q: 'In a Lewis structure of water (H₂O), which atom goes in the center?', opts: ['Hydrogen', 'Oxygen', 'Either one', 'Neither: they go in a line H–H–O'], ans: 1,
+    explain: 'Oxygen makes 2 bonds and hydrogen only 1, so oxygen is in the center: H–O–H.', hint: 'Which atom makes more bonds?', onCorrect: () => done(4, 'qc4') });
+}
+
+/* ---------------- Section 5 ---------------- */
+function build5(el) {
+  const LIST = [['O2', 'O₂', 'O', 2], ['N2', 'N₂', 'N', 3], ['CO2', 'CO₂', 'C', 2]];
+  el.innerHTML = frame(5,
+    card('read', 'Sharing more than one pair', `<div class="read-text">
+      <p>Sometimes one shared pair isn't enough. Two oxygen atoms each need <b>2</b> more electrons, so they share <b>two pairs</b>: a ${c('double bond')}, O=O.</p>
+      <p>Nitrogen needs 3, so two nitrogen atoms share <b>three pairs</b>: a ${c('triple bond')}, N≡N. Count the electrons: each N has 2 (lone pair) + 6 (three shared pairs) = 8.</p></div>
+      <div class="scene-wrap"><svg id="s5demo" class="tsvg"></svg></div>${legendS}
+      <div class="btn-row"><button type="button" class="btn primary" id="s5play">▶ Play O₂</button><button type="button" class="btn ghost" id="s5n2">▶ Play N₂</button></div>`) +
+    card('try', 'Single, double, or triple?', `<p class="muted">Pick the bond that gives every atom a full outer shell. Then watch the electrons share.</p>
+      <div class="tabs" id="s5tabs"></div>
+      <div class="btn-row" id="s5pick">${[['1', 'Single'], ['2', 'Double'], ['3', 'Triple']].map(([n, l]) => `<button type="button" class="btn ghost" data-k="${n}">${l}</button>`).join('')}</div>
+      <div class="scene-wrap"><svg id="s5svg" class="tsvg"></svg></div>
+      <p class="place-prompt" id="s5msg" aria-live="polite"></p><div class="progress-pips">${'<i></i>'.repeat(3)}</div>`) +
+    card('qc', '', '<div id="qc5"></div>'));
+  let demo = mol($('#s5demo', el), 'O2', { labels: true });
+  $('#s5play', el).addEventListener('click', async () => { demo = mol($('#s5demo', el), 'O2', { labels: true }); await new Promise(r => setTimeout(r, 300)); await demo.playAll(); });
+  $('#s5n2', el).addEventListener('click', async () => { demo = mol($('#s5demo', el), 'N2', { labels: true }); await new Promise(r => setTimeout(r, 300)); await demo.playAll(); });
+  const st = S.tasks.s5 || (S.tasks.s5 = { done: [] });
+  let k = Math.max(0, LIST.findIndex((p, i) => !st.done.includes(i)));
+  function show() {
+    const [key, name, el0, need] = LIST[k];
+    $('#s5tabs', el).innerHTML = LIST.map((p, i) => `<button type="button" class="tab ${st.done.includes(i) ? 'ok' : ''}" aria-selected="${i === k}" data-i="${i}">${p[1]}</button>`).join('');
+    $$('#s5tabs .tab', el).forEach(b => b.addEventListener('click', () => { k = +b.dataset.i; show(); }));
+    const [atoms] = MOL[key](), svg5 = $('#s5svg', el); svg5.setAttribute('viewBox', '0 0 600 260'); svg5.classList.add('sscene');
+    svg5.innerHTML = atoms.map(a => { const v = VAL[a.s], P = [[0, -34], [34, 0], [0, 34], [-34, 0]]; let d = `<text class="ssym" x="${a.x}" y="${a.y + 12}">${a.s}</text>`;
+      for (let q = 0; q < v; q++) { const sd = q < 4 ? q : q - 4, paired = v > sd + 4, off = paired ? (q < 4 ? -5.5 : 5.5) : 0, [dx, dy] = P[sd]; d += `<circle class="ldot" cx="${a.x + dx + (dy ? off : 0)}" cy="${a.y + dy + (dx ? off : 0)}" r="4.5"/>`; }
+      return d + `<text class="slab" x="${a.x}" y="228">${bySym(a.s).name}</text><text class="slab sm" x="${a.x}" y="250">${v} valence</text>`; }).join('');
+    $('#s5msg', el).innerHTML = key === 'CO2' ? `<b>CO₂</b> (O–C–O): what bond goes between C and each O?` : `<b>${name}</b>: what bond holds the two atoms together?`;
+    $$('#s5pick .btn', el).forEach(b => { b.disabled = false; b.onclick = async () => {
+      const pick = +b.dataset.k, outerVal = VAL[key === 'CO2' ? 'O' : el0];
+      if (pick !== need) { shake(b); $('#s5msg', el).innerHTML = `With a ${['', 'single', 'double', 'triple'][pick]} bond, each ${key === 'CO2' ? 'oxygen' : bySym(el0).name.toLowerCase()} would count ${outerVal + pick}, not 8. Try again.`; return; }
+      $$('#s5pick .btn', el).forEach(x => { x.disabled = true; });
+      const sc = mol($('#s5svg', el), key, { labels: true }); await new Promise(r => setTimeout(r, 200)); await sc.playAll();
+      $('#s5msg', el).innerHTML = `<b>Correct: ${['', 'single', 'double', 'triple'][need]} bond${key === 'CO2' ? 's (O=C=O)' : ''}.</b> Every atom now counts 8.`;
+      if (!st.done.includes(k)) { st.done.push(k); save(); } pips(el, '', st);
+      if (st.done.length >= LIST.length) done(5, 'multi');
+      const nx = LIST.findIndex((p, i) => !st.done.includes(i));
+      if (nx >= 0) setTimeout(() => { if (LIST[k][0] === key) { k = nx; show(); } }, 2200);
+    }; });
+    pips(el, '', st);
+  }
+  show();
+  makeQC($('#qc5', el), { id: 'qc5', q: 'How many electrons are shared in a double bond?', opts: ['2', '4', '6', '8'], ans: 1,
+    explain: 'A double bond is two shared pairs: 2 × 2 = 4 electrons.', hint: 'Each line is one pair.', onCorrect: () => done(5, 'qc5') });
+}
+
+/* ---------------- Section 6 ---------------- */
+function build6(el) {
+  const R6 = [
+    { q: 'Name <b>CO₂</b>.', o: ['carbon oxide', 'carbon dioxide', 'monocarbon dioxide'], a: 1, why: 'One carbon (no "mono" on the first element) and two oxygens: carbon dioxide.' },
+    { q: 'Name <b>N₂O₄</b>.', o: ['dinitrogen tetroxide', 'nitrogen oxide', 'dinitrogen oxide'], a: 0, why: 'Two nitrogens (di-) and four oxygens (tetra- → tetroxide).' },
+    { q: 'Name <b>CCl₄</b>.', o: ['carbon chloride', 'tetracarbon chloride', 'carbon tetrachloride'], a: 2, why: 'One carbon, four chlorines: carbon tetrachloride.' },
+    { q: 'What is the formula of <b>sulfur hexafluoride</b>?', o: ['SF₆', 'S₆F', 'SF'], a: 0, why: 'Hexa- means 6 fluorines: SF₆.' }
+  ];
+  el.innerHTML = frame(6,
+    card('read', 'Prefixes tell you how many', `<div class="read-text">
+      <p>Covalent compounds can combine in different ratios (CO and CO₂), so their names use ${c('prefixes')} to say how many of each atom:</p>
+      <div class="ide">${[['1', 'mono-'], ['2', 'di-'], ['3', 'tri-'], ['4', 'tetra-'], ['5', 'penta-'], ['6', 'hexa-']].map(([n, p]) => `<span><b>${n}</b> = ${p}</span>`).join('')}</div>
+      <ol><li>Name the first element with a prefix, but <b>skip mono-</b> for the first one.</li><li>Name the second element with a prefix and the <b>-ide</b> ending.</li></ol>
+      <p><b>Examples:</b> CO = carbon <b>mon</b>oxide · CO₂ = carbon <b>di</b>oxide · N₂O = <b>di</b>nitrogen <b>mon</b>oxide.</p>
+      <p class="small muted">Ionic compounds (a metal + a nonmetal) never use prefixes. Prefixes are only for two nonmetals.</p></div>`) +
+    card('try', 'Name it', '<div id="s6r"></div>') +
+    card('qc', '', '<div id="qc6"></div>'));
+  makeRounds($('#s6r', el), { id: 's6r', need: 3, req: '6.names', rounds: R6.map(r => ({ q: r.q, opts: r.o, a: r.a, hint: 'Count the atoms of each element and use the prefixes.', why: r.why })), onDone: () => done(6, 'names') });
+  makeQC($('#qc6', el), { id: 'qc6', q: 'What is the name of PCl₃?', opts: ['phosphorus chloride', 'monophosphorus trichloride', 'phosphorus trichloride', 'triphosphorus chloride'], ans: 2,
+    explain: 'One phosphorus (no mono- on the first element) and three chlorines: phosphorus trichloride.', hint: 'Skip mono- on the first element.', onCorrect: () => done(6, 'qc6') });
+}
+
+/* ---------------- Section 7 ---------------- */
+function build7(el) {
+  el.innerHTML = frame(7,
+    card('read', 'Molecules vs. crystals', `<div class="read-text">
+      <p>An ionic compound is a giant crystal held together by strong attractions between ions. A covalent compound is made of separate <b>molecules</b>. The bonds <i>inside</i> a molecule are strong, but the molecules barely hold on to each other.</p>
+      <ul><li><b>Low melting and boiling points:</b> many are liquids or gases at room temperature (water, CO₂, O₂).</li><li><b>Don't conduct electricity</b>, even when dissolved: there are no ions to carry charge (sugar water doesn't light a bulb).</li><li>Often soft, or have a smell (molecules escape easily).</li></ul></div>`) +
+    card('try', 'Ionic or covalent?', '<p class="muted">Sort each property. Place every card, then press Check.</p><div id="s7sort"></div>') +
+    card('qc', '', '<div id="qc7"></div>'));
+  makeSorter($('#s7sort', el), {
+    id: 's7sort',
+    tokens: [{ id: 'hm', label: 'Melts at 801 °C' }, { id: 'lm', label: 'Melts at 0 °C' }, { id: 'cd', label: 'Conducts when dissolved' }, { id: 'nc', label: 'Does not conduct when dissolved' }],
+    bins: [{ id: 'ion', label: 'Ionic (like salt)', accepts: ['hm', 'cd'] }, { id: 'cov', label: 'Covalent (like water or sugar)', accepts: ['lm', 'nc'] }],
+    onDone: () => done(7, 'props')
+  });
+  makeQC($('#qc7', el), { id: 'qc7', q: 'Sugar dissolves in water, but the solution does not light a bulb. Why?', opts: ['Sugar is made of molecules, not ions, so nothing carries a charge', 'Sugar has metal atoms', 'The water is too cold', 'Sugar forms a crystal lattice of ions'], ans: 0,
+    explain: 'Sugar is covalent. It dissolves into molecules, not ions, so there are no moving charges.', hint: 'What has to move for electricity to flow?', onCorrect: () => done(7, 'qc7') });
+}
+
+/* ---------------- Section 8 ---------------- */
+function build8(el) {
+  const M = [
+    { q: 'A student says the bond in Cl₂ is ionic because one chlorine gives an electron to the other. What is wrong?', o: ['Nothing is wrong', 'Two identical nonmetals share a pair; the bond is covalent', 'It should be a triple bond', 'Chlorine has no valence electrons'], a: 1, why: 'Both chlorines want an electron, so they share. Two nonmetals form a covalent bond.' },
+    { q: 'A student drew O–O with one bond for O₂. What is wrong?', o: ['Each O would only count 7; O₂ needs a double bond', 'It should be ionic', 'Oxygen needs 4 bonds', 'Nothing is wrong'], a: 0, why: 'With one bond each oxygen has 6 + 1 = 7. Sharing two pairs (O=O) gives each 8.' },
+    { q: 'A student named CO₂ "monocarbon dioxide." What is wrong?', o: ['Use no prefixes at all', 'It should be carbon oxide', 'Skip mono- on the first element: carbon dioxide', 'Nothing is wrong'], a: 2, why: 'Never use mono- on the first element.' },
+    { q: 'A student put hydrogen in the center of H₂O: H–H–O. What is wrong?', o: ['Hydrogen makes only 1 bond, so it can\'t be in the center: H–O–H', 'Oxygen should be on the end', 'It needs a double bond', 'Nothing is wrong'], a: 0, why: 'The center atom makes the most bonds. Oxygen (2 bonds) goes in the middle.' }
+  ];
+  el.innerHTML = frame(8,
+    card('read', 'Check the work', `<div class="read-text"><p>When you check a covalent bonding problem, ask: Are both atoms <b>nonmetals</b>? Does every atom have <b>8</b> (hydrogen <b>2</b>)? Is the atom with the most bonds in the <b>center</b>? Does the name use the right <b>prefixes</b>, with no mono- on the first element?</p></div>`) +
+    card('try', 'Spot the mistake', '<p class="muted">Each student example has one mistake. Find it.</p><div id="s8r"></div>') +
+    card('qc', '', '<div id="qc8"></div>'));
+  makeRounds($('#s8r', el), { id: 's8r', need: 3, req: '8.fix', rounds: M.map(r => ({ q: r.q, opts: r.o, a: r.a, hint: 'Check the bond type, the electron count, the center atom, and the name.', why: r.why })), onDone: () => done(8, 'fix') });
+  makeQC($('#qc8', el), { id: 'qc8', q: 'Which name is written correctly?', opts: ['monocarbon monoxide', 'nitrogen trihydride for NH₃', 'dinitrogen pentoxide for N₂O₅', 'sodium dichloride for NaCl'], ans: 2,
+    explain: 'N₂O₅: di- for 2 nitrogens, pent(a)- for 5 oxygens. NaCl is ionic and never uses prefixes.', hint: 'Skip mono- on the first element, and remember ionic compounds use no prefixes.', onCorrect: () => done(8, 'qc8') });
+}
+
+/* =========================================================
+   SECTION 9: FINAL CHECK
+   ========================================================= */
+const BANK = [
+  { id: 'b1', q: 'A covalent bond forms between…', o: ['two nonmetals', 'a metal and a nonmetal', 'two metals', 'two noble gases'], a: 0, x: 'Two nonmetals both want electrons, so they share.' },
+  { id: 'b2', q: 'In a covalent bond, electrons are…', o: ['transferred from one atom to the other', 'shared between the atoms', 'destroyed', 'moved into the nucleus'], a: 1, x: 'A covalent bond is a shared pair of electrons.' },
+  { id: 'b3', q: 'How many electrons are in one shared pair (one line in a Lewis structure)?', o: ['1', '2', '4', '8'], a: 1, x: 'Each line is a pair: one electron from each atom.' },
+  { id: 'b4', q: 'How many covalent bonds does oxygen usually make?', o: ['1', '2', '3', '4'], a: 1, x: 'Oxygen has 6 valence electrons and needs 2 more.' },
+  { id: 'b5', q: 'How many covalent bonds does carbon usually make?', o: ['2', '3', '4', '6'], a: 2, x: 'Carbon has 4 valence electrons and needs 4 more.' },
+  { id: 'b6', q: 'Hydrogen has a full outer shell with how many electrons?', o: ['8', '1', '2', '4'], a: 2, x: 'Hydrogen only has one shell, which holds 2.' },
+  { id: 'b7', q: 'Which molecule has a triple bond?', o: ['H₂', 'O₂', 'N₂', 'Cl₂'], a: 2, x: 'Each nitrogen needs 3 more electrons, so they share three pairs.' },
+  { id: 'b8', q: 'Which molecule has a double bond?', o: ['O₂', 'F₂', 'HCl', 'H₂O'], a: 0, x: 'Each oxygen needs 2 more electrons, so they share two pairs: O=O.' },
+  { id: 'b9', q: 'How many lone pairs are on the oxygen in H₂O?', o: ['0', '1', '2', '3'], a: 2, x: 'Oxygen has 6 valence electrons: 2 are used in bonds, leaving 2 lone pairs.' },
+  { id: 'b10', q: 'How many lone pairs are on the nitrogen in NH₃?', o: ['0', '1', '2', '3'], a: 1, x: 'Nitrogen has 5: 3 go into bonds, leaving 1 lone pair.' },
+  { id: 'b11', q: 'Which atom goes in the center of the Lewis structure of NH₃?', o: ['N', 'H', 'Either', 'None'], a: 0, x: 'Nitrogen makes 3 bonds; hydrogen makes only 1.' },
+  { id: 'b12', q: 'What is the name of CO?', o: ['carbon oxide', 'carbon monoxide', 'monocarbon monoxide', 'carbon dioxide'], a: 1, x: 'One oxygen: monoxide. Skip mono- on the first element.' },
+  { id: 'b13', q: 'What is the name of N₂O₃?', o: ['dinitrogen trioxide', 'nitrogen oxide', 'trinitrogen dioxide', 'dinitrogen oxide'], a: 0, x: 'di- for 2 nitrogens, tri- for 3 oxygens.' },
+  { id: 'b14', q: 'What is the formula of carbon tetrachloride?', o: ['C₄Cl', 'CCl₄', 'CCl', 'C₄Cl₄'], a: 1, x: 'tetra- = 4 chlorines.' },
+  { id: 'b15', q: 'Which prefix means 6?', o: ['penta-', 'tetra-', 'hexa-', 'tri-'], a: 2, x: 'hexa- = 6, as in sulfur hexafluoride (SF₆).' },
+  { id: 'b16', q: 'Why does sugar water NOT conduct electricity?', o: ['Sugar is made of molecules, not ions', 'Sugar has too many electrons', 'Water blocks electricity', 'Sugar is a metal'], a: 0, x: 'Covalent compounds dissolve into molecules, not ions, so no charges move.' },
+  { id: 'b17', q: 'Compared to ionic compounds, covalent compounds usually have…', o: ['higher melting points', 'lower melting points', 'the same melting points', 'no melting points'], a: 1, x: 'Molecules hold on to each other weakly, so they melt and boil at lower temperatures.' },
+  { id: 'b18', q: 'Which pair forms a covalent bond?', o: ['Na and Cl', 'K and O', 'C and H', 'Mg and F'], a: 2, x: 'Carbon and hydrogen are both nonmetals.' },
+  { id: 'b19', type: 'tp', q: 'Two fluorine atoms (7 valence electrons each) form F₂.', A: { q: 'What kind of bond forms?', o: ['A single covalent bond', 'A double covalent bond', 'An ionic bond', 'No bond'], a: 0 }, B: { q: 'Why?', o: ['Each F needs 1 more electron, so they share one pair', 'One F gives an electron to the other', 'Each F needs 2 more electrons', 'Fluorine is a metal'], a: 0 }, x: 'Each fluorine needs one more electron, so one shared pair gives both 8.' },
+  { id: 'b20', type: 'tp', q: 'Two oxygen atoms form O₂.', A: { q: 'How many pairs do they share?', o: ['1', '2', '3', '4'], a: 1 }, B: { q: 'How many electrons does each O count after bonding?', o: ['6', '7', '8', '10'], a: 2 }, x: 'Two shared pairs (a double bond) give each oxygen 4 + 4 = 8.' },
+  { id: 'b21', type: 'tp', q: 'Look at the molecule CO₂ (O–C–O).', A: { q: 'What bonds connect C to each O?', o: ['Single bonds', 'Double bonds', 'Triple bonds', 'Ionic bonds'], a: 1 }, B: { q: 'What is its name?', o: ['carbon oxide', 'monocarbon dioxide', 'carbon dioxide', 'carbon dioxygen'], a: 2 }, x: 'O=C=O: carbon makes 4 bonds (2 + 2) and each O makes 2. Name: carbon dioxide.' },
+  { id: 'b22', type: 'tp', q: 'Methane is CH₄.', A: { q: 'Which atom is in the center?', o: ['C', 'H', 'Any H', 'None'], a: 0 }, B: { q: 'How many lone pairs does carbon have?', o: ['0', '1', '2', '4'], a: 0 }, x: 'Carbon uses all 4 valence electrons in 4 single bonds, so it has no lone pairs.' },
+  { id: 'b23', type: 'sa', q: 'Which pairs of elements form covalent bonds?', o: ['N and H', 'Na and Cl', 'C and O', 'Ca and F', 'S and O'], a: [0, 2, 4], x: 'Each covalent pair has two nonmetals.' },
+  { id: 'b24', type: 'sa', q: 'Which statements about covalent compounds are true?', o: ['They are made of molecules', 'They usually have low melting points', 'They conduct electricity when dissolved', 'Their atoms share electrons', 'They always contain a metal'], a: [0, 1, 3], x: 'Covalent compounds are molecules of nonmetals sharing electrons; they don\'t form ions, so they don\'t conduct.' },
+  { id: 'b25', type: 'sa', q: 'Which names are written correctly?', o: ['carbon dioxide (CO₂)', 'monocarbon monoxide (CO)', 'dinitrogen tetroxide (N₂O₄)', 'sodium dichloride (NaCl)', 'sulfur hexafluoride (SF₆)'], a: [0, 2, 4], x: 'Skip mono- on the first element, and ionic compounds like NaCl never use prefixes.' },
+  { id: 'b26', type: 'sa', q: 'In a correct Lewis structure of H₂O, which are true?', o: ['O is in the center', 'Each H has 2 electrons', 'O has 8 electrons around it', 'There is a double bond', 'O has 2 lone pairs'], a: [0, 1, 2, 4], x: 'H–O–H with two single bonds and two lone pairs on oxygen.' },
+  { id: 'b27', q: 'A student drew a single bond in N₂. What is wrong?', o: ['Nothing', 'Each N would count only 6; N₂ needs a triple bond', 'It should be ionic', 'Nitrogen makes 4 bonds'], a: 1, x: 'With one bond each N has 5 + 1 = 6. Three shared pairs give 8.' },
+  { id: 'b28', q: 'A student named NaCl "sodium monochloride." What is wrong?', o: ['NaCl is ionic, so no prefixes: sodium chloride', 'It should be monosodium chloride', 'It should be sodium chlorine', 'Nothing'], a: 0, x: 'Prefixes are only for covalent compounds (two nonmetals).' },
+  { id: 'b29', q: 'A student said H₂ has a double bond. What is wrong?', o: ['Nothing', 'Each H needs just 1 more electron, so one shared pair is enough', 'H₂ is ionic', 'H₂ needs a triple bond'], a: 1, x: 'Hydrogen is full with 2. One shared pair gives each H 2.' },
+  { id: 'b30', q: 'Which drawing correctly shows water?', o: ['H–H–O', 'H–O–H', 'H=O=H', 'O–H–H'], a: 1, x: 'Oxygen (2 bonds) goes in the middle with single bonds to each hydrogen.' }
+];
+const QB = Object.fromEntries(BANK.map(q => [q.id, q]));
+const optHTML = (o, small) => Array.isArray(o) ? ionHTML(o[0], o[1]) : typeof o === 'object' ? (small ? `<span style="display:inline-block;width:84px;vertical-align:middle">${bohrSVG(o)}</span>` : bohrSVG(o)) : o;
+
+const REVIEW_HTML = `<div class="two-col"><div class="review-box"><ul>
+  <li><b>Covalent bond:</b> two nonmetals <b>share</b> a pair of electrons (a line in a Lewis structure).</li>
+  <li><b>Bonds needed</b> = electrons needed to reach 8: H 1, O 2, N 3, C 4 (halogens 1).</li>
+  <li><b>Lewis structures:</b> most-bonding atom in the center; every atom has 8 (hydrogen 2).</li>
+  <li><b>Double</b> = 2 shared pairs (O=O); <b>triple</b> = 3 shared pairs (N≡N).</li>
+  <li><b>Names:</b> prefixes mono-, di-, tri-, tetra-, penta-, hexa-; skip mono- on the first element; second element ends in -ide.</li>
+  <li><b>Properties:</b> molecules, low melting points, don't conduct when dissolved.</li></ul></div>
+  <div><svg viewBox="0 0 600 260" class="sscene" id="revSvg" role="img" aria-label="Lewis structure of water, H–O–H, with two lone pairs on oxygen"></svg></div></div>`;
+
+function buildFinal(el) { el.innerHTML = frame(9, '<div id="fc"></div>'); }
+
+function renderFinal() {
+  const box = $('#fc'), F = S.final;
+  if (F.current) return renderFCQ();
+  const fails = F.attempts.filter(a => !a.pass).length;
+  const hist = F.attempts.length ? `<p class="attempts">Attempts so far: ${F.attempts.map((a, i) => `#${i + 1}: ${a.score}/${FC_LEN}`).join(', ')}</p>` : '';
+  const lockNote = LOCK_ON ? '<p class="lock-note">This check opens in full screen. If you leave the page or exit full screen, it locks, and your teacher will need to unlock it.</p>' : '';
+  if (F.passed) {
+    box.innerHTML = card('final', 'You passed the final check', `<div class="score-big pass">${F.best}/${FC_LEN}</div><p>That's your best score. Your results page is unlocked.</p>${hist}
+      <div class="btn-row"><button type="button" class="btn primary" data-go="10">See your results</button><button type="button" class="btn ghost" id="fcStart">Practice with new questions</button></div>`);
+    $('#fcStart').addEventListener('click', startAttempt);
+    return;
+  }
+  if (fails >= 3 && fails % 3 === 0 && F.reviewAt < fails) {
+    box.innerHTML = card('read', 'Quick review before your next try', `<p class="muted">You've tried ${fails} times. Read these key ideas, then start a new check.</p>${REVIEW_HTML}
+      <div class="btn-row"><button type="button" class="btn primary" id="fcReviewed">I reviewed this. Start a new check</button></div>`);
+    { const rv = $('#revSvg'); if (rv) { const sc = mol(rv, 'H2O', {}); sc.bonds.forEach(b => { b.done = true; }); sc.render(); } }
+    $('#fcReviewed').addEventListener('click', () => { F.reviewAt = fails; save(); startAttempt(); });
+    return;
+  }
+  box.innerHTML = card('final', fails ? 'Try again with new questions' : 'Ready for the final check?', `<p>${FC_LEN} questions picked at random from a bigger bank. Score ${PASS_SCORE} or more to pass. Each retake gives you different questions.</p>${lockNote}${hist}
+    <div class="btn-row"><button type="button" class="btn amber" id="fcStart">Start the final check</button></div>`);
+  $('#fcStart').addEventListener('click', startAttempt);
+}
+function startAttempt() {
+  const F = S.final;
+  const last = F.attempts.length ? F.attempts[F.attempts.length - 1].ids : [];
+  let ids = shuffle(BANK.map(q => q.id).filter(id => !last.includes(id)));
+  if (ids.length < FC_LEN) ids = ids.concat(shuffle(last));
+  ids = ids.slice(0, FC_LEN);
+  F.current = { qs: ids.map(id => { const q = QB[id]; return { id, order: q.type === 'tp' ? { A: shuffle([0, 1, 2, 3]), B: shuffle([0, 1, 2, 3]) } : q.type === 'sa' ? shuffle(q.o.map((o, k) => k)) : (q.fixed ? [0, 1, 2, 3] : shuffle([0, 1, 2, 3])) }; }), ans: {}, idx: 0, startedAt: Date.now() };
+  save(); startLockdown(); renderFinal();
+  $('#scr-9').scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });
+}
+/* answered / right for multiple choice, two-part (tp), and select-all (sa) */
+function fcAnswered(x, ans) { const q = QB[x.id], a = ans[x.id]; if (q.type === 'tp') return !!a && a.A != null && a.B != null; if (q.type === 'sa') return Array.isArray(a) && a.length > 0; return a != null; }
+function fcRight(q, a) { if (q.type === 'tp') return !!a && a.A === q.A.a && a.B === q.B.a; if (q.type === 'sa') return Array.isArray(a) && a.slice().sort().join() === q.a.slice().sort().join(); return a === q.a; }
+function fcAnsText(q, a) {
+  if (q.type === 'tp') return `Part A: ${a && a.A != null ? optHTML(q.A.o[a.A], true) : '—'}; Part B: ${a && a.B != null ? optHTML(q.B.o[a.B], true) : '—'}`;
+  if (q.type === 'sa') return (a || []).length ? a.map(k => optHTML(q.o[k], true)).join('; ') : '—';
+  return a != null ? optHTML(q.o[a], true) : '—';
+}
+function fcKeyText(q) { if (q.type === 'tp') return `Part A: ${optHTML(q.A.o[q.A.a], true)}; Part B: ${optHTML(q.B.o[q.B.a], true)}`; if (q.type === 'sa') return q.a.map(k => optHTML(q.o[k], true)).join('; '); return optHTML(q.o[q.a], true); }
+function renderFCQ() {
+  const cur = S.final.current, qd = cur.qs[cur.idx], q = QB[qd.id], box = $('#fc');
+  const allAns = cur.qs.every(x => fcAnswered(x, cur.ans));
+  const unanswered = cur.qs.map((x, i) => fcAnswered(x, cur.ans) ? null : i + 1).filter(Boolean);
+  const mc = (order, opts, pick, keyIdx, part) => `<div class="opts">${order.map((oi, pos) => `<button type="button" class="opt ${pick === oi ? 'picked' : ''}" data-oi="${oi}" ${part ? `data-part="${part}"` : ''} ${oi === keyIdx ? 'data-key="1"' : ''}><span class="L">${'ABCD'[pos]}</span><span class="ot">${optHTML(opts[oi])}</span></button>`).join('')}</div>`;
+  let body = '';
+  if (q.type === 'tp') { const a = cur.ans[qd.id] || {}; body = `<p class="qc-q">${q.q}</p><p class="tp-h"><b>Part A.</b> ${q.A.q}</p>${mc(qd.order.A, q.A.o, a.A, q.A.a, 'A')}<p class="tp-h"><b>Part B.</b> ${q.B.q}</p>${mc(qd.order.B, q.B.o, a.B, q.B.a, 'B')}`; }
+  else if (q.type === 'sa') { const a = cur.ans[qd.id] || []; body = `<p class="qc-q">${q.q} <span class="sa-tag">Select all that apply</span></p><div class="opts">${qd.order.map(oi => `<button type="button" class="opt sa ${a.includes(oi) ? 'picked' : ''}" data-oi="${oi}" ${q.a.includes(oi) ? 'data-key="1"' : ''}><span class="cbx"></span><span class="ot">${optHTML(q.o[oi])}</span></button>`).join('')}</div>`; }
+  else body = `<p class="qc-q">${q.q}</p>${mc(qd.order, q.o, cur.ans[qd.id], q.a)}`;
+  box.innerHTML = `<section class="card k-qc"><span class="tag">Final check</span>
+    <div class="fc-dots">${cur.qs.map((x, i) => `<button type="button" class="${fcAnswered(x, cur.ans) ? 'ans' : ''} ${i === cur.idx ? 'cur' : ''}" data-j="${i}" aria-label="Question ${i + 1}${fcAnswered(x, cur.ans) ? ', answered' : ''}">${i + 1}</button>`).join('')}</div>
+    <p class="sec-meta">Question ${cur.idx + 1} of ${FC_LEN}${q.type === 'tp' ? ' · two-part' : ''}</p>
+    ${q.fig ? `<div class="qc-fig">${typeof q.fig === 'string' ? q.fig : bohrSVG(q.fig)}</div>` : ''}
+    ${body}
+    <div class="btn-row" style="justify-content:space-between;margin-top:18px"><button type="button" class="btn ghost" id="fcPrev" ${cur.idx === 0 ? 'disabled' : ''}>Back</button>
+    ${cur.idx < FC_LEN - 1 ? '<button type="button" class="btn primary" id="fcNext">Next</button>' : `<button type="button" class="btn amber" id="fcSubmit" ${allAns ? '' : 'disabled'}>Submit check</button>`}</div>
+    ${cur.idx === FC_LEN - 1 && !allAns ? `<p class="small muted">Answer every question to submit. Still open: ${unanswered.join(', ')}.</p>` : ''}
+  </section>`;
+  $$('.opt', box).forEach(b => b.addEventListener('click', () => {
+    const oi = +b.dataset.oi;
+    if (q.type === 'tp') { const a = cur.ans[qd.id] || {}; a[b.dataset.part] = oi; cur.ans[qd.id] = a; }
+    else if (q.type === 'sa') { const a = (cur.ans[qd.id] || []).slice(), k = a.indexOf(oi); if (k < 0) a.push(oi); else a.splice(k, 1); cur.ans[qd.id] = a; }
+    else cur.ans[qd.id] = oi;
+    save(); renderFCQ();
+  }));
+  $$('.fc-dots button', box).forEach(b => b.addEventListener('click', () => { cur.idx = +b.dataset.j; save(); renderFCQ(); }));
+  const prev = $('#fcPrev', box), next = $('#fcNext', box), sub = $('#fcSubmit', box);
+  prev && prev.addEventListener('click', () => { cur.idx--; save(); renderFCQ(); });
+  next && next.addEventListener('click', () => { cur.idx++; save(); renderFCQ(); });
+  sub && sub.addEventListener('click', gradeAttempt);
+}
+function gradeAttempt() {
+  const F = S.final, cur = F.current;
+  let score = 0; const missed = [];
+  cur.qs.forEach(x => { const q = QB[x.id]; if (fcRight(q, cur.ans[x.id])) score++; else missed.push(x); });
+  const pass = score >= PASS_SCORE, prevBest = F.best, wasPassed = F.passed;
+  F.attempts.push({ score, pass, at: new Date().toISOString(), ids: cur.qs.map(x => x.id), pts: cur.qs.map(x => fcRight(QB[x.id], cur.ans[x.id]) ? 1 : 0) });
+  F.best = Math.max(F.best, score);
+  const autoSend = pass && (!wasPassed || score > prevBest);
+  if (pass) F.passed = true;
+  F.current = null; save(); endLockdown();
+  if (pass) done(NSEC, 'pass');
+  const box = $('#fc');
+  const review = missed.map(x => { const q = QB[x.id]; return `<div class="review-item"><p style="margin:0 0 4px"><b>${q.q}</b></p><p class="yours" style="margin:0">Your answer: ${fcAnsText(q, cur.ans[x.id])}</p><p class="right" style="margin:0">Correct answer: ${fcKeyText(q)}</p><p class="small muted" style="margin:4px 0 0">${q.x}</p></div>`; }).join('');
+  const failsNow = F.attempts.filter(a => !a.pass).length;
+  box.innerHTML = card('final', pass ? 'You passed' : 'Not yet', `<div class="score-big ${pass ? 'pass' : 'fail'}">${score}/${FC_LEN}</div>
+    <p>${pass ? (missed.length ? 'Nice work. Look over what you missed below.' : 'Perfect score.') : `You need ${PASS_SCORE} to pass. Look over what you missed, then try again with new questions.${failsNow % 3 === 0 ? ' You\'ll see a quick review first.' : ''}`}</p>
+    ${missed.length ? `<h4 style="margin:14px 0 0;font-weight:500;color:var(--muted)">What you missed</h4>${review}` : ''}
+    <div class="btn-row">${pass ? `<button type="button" class="btn primary" data-go="${RES}">See your results</button>` : '<button type="button" class="btn amber" id="fcAgain">Try again</button>'}</div>
+    ${pass ? '<p class="sheetbox sheetStatus" aria-live="polite"></p>' : ''}`);
+  const again = $('#fcAgain'); again && again.addEventListener('click', renderFinal);
+  if (autoSend) sendScores();
+  $('#scr-' + NSEC).scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });
+}
+
+/* =========================================================
+   RESULTS
+   ========================================================= */
+const QC_IDS = ['qc1', 'qc2', 'qc3', 'qc4', 'qc5', 'qc6', 'qc7', 'qc8'];
+function stats() {
+  const F = S.final;
+  return {
+    firstTry: QC_IDS.filter(id => S.qc[id] && S.qc[id].first === true).length,
+    secs: [1, 2, 3, 4, 5, 6, 7, 8, 9].filter(n => S.secDone[n]).length,
+    best: F.best, attempts: F.attempts.length, passed: F.passed
+  };
+}
+function renderResults() {
+  const el = $('#scr-10'), st = S.student || {}, k = stats();
+  el.innerHTML = `<header class="sec-head">${iconTile(10, true)}<div><p class="sec-meta">Results</p><h2>${k.passed ? 'Lesson complete' : 'Your results so far'}</h2></div></header>
+  <section class="card"><span class="tag">Student</span>
+    <div class="who"><div><span>Name</span>${esc((st.first || '') + ' ' + (st.last || ''))}</div><div><span>Period</span>${esc(st.period || '')}</div><div><span>Teacher</span>${esc(st.teacher || '')}</div><div><span>Student ID</span>${esc(st.sid || '')}</div></div>
+    <div class="stats">
+      <div class="stat"><div class="k">Final check (best)</div><div class="v">${k.best}/${FC_LEN}</div></div>
+      <div class="stat"><div class="k">Status</div><div class="v" style="color:${k.passed ? 'var(--good)' : 'var(--amber)'}">${k.passed ? 'Passed' : 'Not yet'}</div></div>
+      <div class="stat"><div class="k">Final check attempts</div><div class="v">${k.attempts}</div></div>
+      <div class="stat"><div class="k">Quick checks right on first try</div><div class="v">${k.firstTry}/8</div></div>
+      <div class="stat"><div class="k">Sections finished</div><div class="v">${k.secs}/9</div></div>
+      <div class="stat"><div class="k">Times locked</div><div class="v">${S.lockouts}</div></div>
+    </div>
+    <p class="small muted">${S.completedAt ? 'Completed ' + new Date(S.completedAt).toLocaleString() : ''}</p>
+  </section>
+  <section class="card"><span class="tag">Your goals</span><ul class="goals" id="goalsResults"></ul></section>
+  <div class="btn-row no-print"><button type="button" class="btn primary" id="sendBtn">Send my scores to my teacher</button><button type="button" class="btn ghost" id="csvBtn">Download CSV</button><button type="button" class="btn ghost" id="printBtn">Print results</button><button type="button" class="btn ghost" data-go="9">Back to the final check</button></div>
+  <p class="sheetbox sheetStatus no-print" aria-live="polite">${S.sentAt ? `Sent to your teacher ${new Date(S.sentAt).toLocaleString()}.` : ''}</p>`;
+  renderGoalsInto($('#goalsResults'));
+  $('#csvBtn').addEventListener('click', downloadCSV);
+  $('#sendBtn').addEventListener('click', sendScores);
+  $('#printBtn').addEventListener('click', () => window.print());
+}
+function downloadCSV() {
+  const st = S.student || {}, k = stats();
+  const H = ['Student ID', 'Last Name', 'First Name', 'Period', 'Teacher', 'Activity', 'Lesson Score (quick checks right on first try)', 'Lesson Total', 'Final Check Score (best)', 'Final Check Total', 'Final Check Passed', 'Final Check Attempts', 'Sections Completed (of 9)', 'Times Locked', 'Date'];
+  const row = [st.sid, st.last, st.first, st.period, st.teacher, LESSON, k.firstTry, 8, k.best, FC_LEN, k.passed ? 'Yes' : 'No', k.attempts, k.secs, S.lockouts, new Date().toLocaleString()];
+  const q = v => { const s = String(v == null ? '' : v); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+  const csv = H.map(q).join(',') + '\r\n' + row.map(q).join(',') + '\r\n';
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `CovalentBonding_${(st.last || 'student').replace(/\W+/g, '')}_${(st.first || '').replace(/\W+/g, '')}.csv`;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+
+/* =========================================================
+   GOOGLE SHEETS (two rows: the lesson and the final check)
+   ========================================================= */
+function sheetBodies() {
+  const st = S.student || {}, F = S.final;
+  const base = { studentId: st.sid || '', firstName: st.first || '', lastName: st.last || '', period: st.period || '', teacher: st.teacher || '', locks: String(S.lockouts), when: new Date().toString() };
+  const qcPts = QC_IDS.map(id => S.qc[id] && S.qc[id].first === true ? 1 : 0);
+  const lesson = Object.assign({}, base, {
+    activity: `${LESSON}: Lesson`, score: String(sum(qcPts)), total: String(QC_IDS.length),
+    qlabels: QC_IDS.map((_, i) => 'QC' + (i + 1)).join('|'), qpoints: qcPts.join('|'), qmax: QC_IDS.map(() => 1).join('|')
+  });
+  let best = null; F.attempts.forEach(a => { if (!best || a.score >= best.score) best = a; });
+  const fin = Object.assign({}, base, { activity: `${LESSON}: Final Check`, score: String(F.best), total: String(FC_LEN) },
+    best && best.pts ? { qlabels: best.pts.map((_, i) => 'Q' + (i + 1)).join('|'), qpoints: best.pts.join('|'), qmax: best.pts.map(() => 1).join('|') }
+                     : { qlabels: 'Final Check', qpoints: String(F.best), qmax: String(FC_LEN) });
+  return [lesson, fin];
+}
+function sendScores() {
+  const msg = t => $$('.sheetStatus').forEach(e => { e.textContent = t; });
+  if (!S.student) { msg('Sign in on the start page first.'); return; }
+  const url = sheetURL();
+  if (!url) { msg("This lesson isn't connected to your teacher's gradebook sheet yet."); return; }
+  msg('Sending...');
+  Promise.all(sheetBodies().map(b => fetch(url, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(b) })))
+    .then(() => { S.sentAt = new Date().toISOString(); save(); msg('Sent! Your teacher will see your scores.'); })
+    .catch(() => msg("Couldn't send. Check your internet connection and try again."));
+}
+
+/* =========================================================
+   PROGRESS: requirements, sections, goals, nav
+   ========================================================= */
+function renderReqs(n, justId) {
+  const box = $('#unlock-' + n); if (!box) return;
+  $('.reqs', box).innerHTML = REQS[n].map(([id, t]) => `<li class="${S.reqs[n + '.' + id] ? 'ok' : ''} ${id === justId ? 'just-ok' : ''}"><span class="box"></span><span>${t}</span></li>`).join('');
+  box.classList.toggle('all-done', !!S.secDone[n]);
+}
+function updateNext(n) { const b = $('#next-' + n); if (b) b.disabled = !(S.secDone[n] || S.teacherUnlock); }
+function done(n, id) {
+  const k = n + '.' + id;
+  if (S.reqs[k]) return;
+  S.reqs[k] = true; save();
+  renderReqs(n, id);
+  if (REQS[n].every(([r]) => S.reqs[n + '.' + r])) completeSection(n);
+}
+function completeSection(n) {
+  if (S.secDone[n]) return;
+  S.secDone[n] = true;
+  if (n === 9 && !S.completedAt) S.completedAt = new Date().toISOString();
+  save(); renderReqs(n); updateNext(n);
+  renderNav(n + 1);
+  const gi = GOALS.findIndex(g => g.sec === n);
+  renderGoals(gi);
+  setTimeout(() => toast(gi >= 0 ? `Goal reached: ${GOALS[gi].t}` : (n < 9 ? `Section ${n + 1} unlocked` : 'Results unlocked')), 250);
+}
+function accessible(n) {
+  if (n === 0) return true;
+  if (!S.student) return false;
+  if (S.teacherUnlock) return true;
+  if (n === 1) return true;
+  if (n <= 9) return !!S.secDone[n - 1];
+  if (n === 10) return !!S.secDone[9];
+  return false;
+}
+function renderNav(popN) {
+  const nav = $('#navTiles');
+  nav.innerHTML = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => {
+    const title = n <= 9 ? `Section ${n}: ${SECS[n].title}` : 'Results';
+    return `<button type="button" class="tile icon ${S.cur === n ? 'current' : ''} ${(n <= 9 && S.secDone[n]) ? 'done' : ''} ${n === popN && !REDUCED ? 'unlocking' : ''}" data-go="${n}" ${accessible(n) ? '' : 'disabled'} title="${esc(title)}" aria-label="${esc(title)}${accessible(n) ? '' : ' (locked)'}"><span class="z">${n}</span>${ICON[n]}<span class="ck" aria-hidden="true">✓</span></button>`;
+  }).join('');
+}
+function renderGoalsInto(ul, justIdx) {
+  if (!ul) return;
+  ul.innerHTML = GOALS.map((g, i) => `<li class="${S.secDone[g.sec] ? 'ok' : ''} ${i === justIdx ? 'just-ok' : ''}"><span class="box"></span><span>${g.t}</span></li>`).join('');
+}
+function renderGoals(justIdx) {
+  renderGoalsInto($('#goalsStart'), justIdx);
+  renderGoalsInto($('#goalsDrawerList'), justIdx);
+  renderGoalsInto($('#goalsResults'), justIdx);
+  const n = GOALS.filter(g => S.secDone[g.sec]).length;
+  $('#goalsBtn').textContent = `Goals ${n}/${GOALS.length}`;
+}
+
+function go(n) {
+  if (n < 0 || n > 10) return;
+  if (S.final.current && n !== 9) { toast('Submit your final check first.'); return; }
+  if (!accessible(n)) { toast(S.student ? 'Finish the section before this one to unlock it.' : 'Fill in your name and info to start.'); return; }
+  S.cur = n; save();
+  $$('.screen').forEach(s => s.classList.toggle('on', s.id === 'scr-' + n));
+  if (n === 9) renderFinal();
+  if (n === 10) renderResults();
+  if (n === 0) startHero(); else heroRun++;
+  renderNav();
+  window.scrollTo({ top: 0, behavior: 'auto' });
+}
+
+/* =========================================================
+   HERO (start screen)
+   ========================================================= */
+let heroRun = 0;
+function startHero() {
+  const svg = $('#heroSvg'), cap = $('#heroCap'), id = ++heroRun;
+  const run = async () => { if (id !== heroRun) return; const sc = mol(svg, 'Cl2', {}); cap.textContent = 'Two chlorine atoms, each one electron short…';
+    await new Promise(r => setTimeout(r, 1300)); if (id !== heroRun) return; await sc.playAll(); cap.textContent = '…share a pair. Both count 8: Cl–Cl.';
+    setTimeout(run, 3200); };
+  run();
+}
+
+/* =========================================================
+   LOCKDOWN (final check only, when opened from GitHub Pages)
+   ========================================================= */
+let fsExiting = false;
+function reqFS() {
+  const d = document.documentElement, f = d.requestFullscreen || d.webkitRequestFullscreen;
+  if (f && !document.fullscreenElement) { try { const p = f.call(d); if (p && p.catch) p.catch(() => {}); } catch (e) {} }
+}
+function exitFS() {
+  if (!document.fullscreenElement) return;
+  const f = document.exitFullscreen || document.webkitExitFullscreen;
+  fsExiting = true;
+  try { const p = f.call(document); if (p && p.then) p.then(() => { fsExiting = false; }, () => { fsExiting = false; }); else fsExiting = false; } catch (e) { fsExiting = false; }
+}
+function startLockdown() { if (!LOCK_ON) return; S.lockActive = true; S.locked = false; save(); reqFS(); }
+function endLockdown() { S.lockActive = false; S.locked = false; save(); $('#lockOv').hidden = true; exitFS(); }
+function lockNow() { if (!S.lockActive || S.locked) return; S.locked = true; S.lockouts++; save(); showLock(); }
+function showLock() { $('#lockOv').hidden = false; $('#lockCode').value = ''; $('#lockMsg').textContent = ''; setTimeout(() => $('#lockCode').focus(), 60); }
+document.addEventListener('visibilitychange', () => { if (document.hidden) lockNow(); });
+window.addEventListener('blur', () => { setTimeout(() => { if (!document.hasFocus()) lockNow(); }, 150); });
+document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && !fsExiting) lockNow(); });
+function tryUnlock() {
+  const lc = $('#lockCode').value.trim().toLowerCase();
+  if (lc === UNLOCK_CODE || lc === TEACHER_CODE) { S.locked = false; save(); $('#lockOv').hidden = true; reqFS(); toast('Unlocked'); }
+  else { $('#lockMsg').textContent = 'That code is not correct.'; shake($('#lockCode')); }
+}
+$('#lockGo').addEventListener('click', tryUnlock);
+$('#lockCode').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+
+/* =========================================================
+   TEACHER VIEW
+   ========================================================= */
+const tOv = $('#teacherOv');
+function teacherInfo() {
+  const st = S.student;
+  $('#tInfo').textContent = `${st ? `Student: ${st.first} ${st.last}, period ${st.period}. ` : 'No student signed in. '}Final check attempts: ${S.final.attempts.length}. Best: ${S.final.best}/${FC_LEN}. Times locked: ${S.lockouts}.`;
+  $('#tKey').textContent = document.body.classList.contains('show-key') ? 'Hide answer key' : 'Show answer key';
+  $('#tUnlock').textContent = S.teacherUnlock ? 'Every section is unlocked' : 'Unlock every section';
+  $('#tUnlock').disabled = !!S.teacherUnlock;
+  $('#tEndLock').disabled = !S.lockActive;
+}
+$('#teacherBtn').addEventListener('click', () => {
+  tOv.hidden = false; $('#tLogin').classList.remove('hidden'); $('#tPanel').classList.add('hidden');
+  $('#tCode').value = ''; $('#tMsg').textContent = ''; setTimeout(() => $('#tCode').focus(), 50);
+});
+const tLogin = () => {
+  if ($('#tCode').value.trim().toLowerCase() === TEACHER_CODE) { $('#tLogin').classList.add('hidden'); $('#tPanel').classList.remove('hidden'); teacherInfo(); }
+  else { $('#tMsg').textContent = 'That code is not correct.'; shake($('#tCode')); }
+};
+$('#tGo').addEventListener('click', tLogin);
+$('#tCode').addEventListener('keydown', e => { if (e.key === 'Enter') tLogin(); });
+$('#tCancel').addEventListener('click', () => { tOv.hidden = true; });
+$('#tClose').addEventListener('click', () => { tOv.hidden = true; });
+$('#tUnlock').addEventListener('click', () => {
+  if (!S.student) { toast('Have the student sign in first.'); return; }
+  S.teacherUnlock = true; save(); renderNav(); for (let n = 1; n <= 9; n++) updateNext(n); teacherInfo(); toast('Every section is unlocked');
+});
+$('#tKey').addEventListener('click', () => { document.body.classList.toggle('show-key'); teacherInfo(); });
+$('#tSend').addEventListener('click', sendScores);
+$('#tEndLock').addEventListener('click', () => { endLockdown(); teacherInfo(); toast('Lockdown ended for this check'); });
+$('#tReset').addEventListener('click', () => {
+  if (!confirm('Erase all progress for this lesson on this device?')) return;
+  try { localStorage.removeItem(KEY); } catch (e) {}
+  S = DEF(); location.reload();
+});
+
+/* =========================================================
+   GLOBAL EVENTS
+   ========================================================= */
+const pop = $('#pop');
+document.addEventListener('click', e => {
+  const g = e.target.closest('[data-go]');
+  if (g && !g.disabled) { go(+g.dataset.go); return; }
+  const ch = e.target.closest('.chip');
+  if (ch) {
+    const t = ch.dataset.term;
+    $('b', pop).textContent = t; $('p', pop).textContent = GLOSS[t] || '';
+    pop.hidden = false;
+    const r = ch.getBoundingClientRect(), w = Math.min(300, window.innerWidth - 24);
+    pop.style.left = Math.max(12, Math.min(r.left, window.innerWidth - w - 12)) + 'px';
+    const below = r.bottom + 8, ph = pop.offsetHeight;
+    pop.style.top = (below + ph > window.innerHeight - 10 ? Math.max(10, r.top - ph - 8) : below) + 'px';
+    return;
+  }
+  if (!e.target.closest('#pop')) pop.hidden = true;
+  const dr = $('#goalsDrawer');
+  if (!dr.hidden && !e.target.closest('#goalsDrawer') && !e.target.closest('#goalsBtn')) { dr.hidden = true; $('#goalsBtn').setAttribute('aria-expanded', 'false'); }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { pop.hidden = true; $('#goalsDrawer').hidden = true; if (!tOv.hidden) tOv.hidden = true; } });
+window.addEventListener('scroll', () => { pop.hidden = true; }, { passive: true });
+$('#goalsBtn').addEventListener('click', () => { const d = $('#goalsDrawer'); d.hidden = !d.hidden; $('#goalsBtn').setAttribute('aria-expanded', String(!d.hidden)); });
+$('#goalsClose').addEventListener('click', () => { $('#goalsDrawer').hidden = true; $('#goalsBtn').setAttribute('aria-expanded', 'false'); });
+$('.brand').style.cursor = 'pointer';
+$('.brand').addEventListener('click', () => go(0));
+
+/* start form */
+function renderStart() {
+  const wb = $('#welcomeBack'), form = $('#startForm');
+  if (S.student) {
+    wb.classList.remove('hidden'); form.classList.add('hidden');
+    wb.innerHTML = `<p style="margin-top:0">Welcome back, <b>${esc(S.student.first)}</b> (period ${esc(S.student.period)}, ${esc(S.student.teacher)}). Your progress is saved on this device.</p><div class="btn-row"><button type="button" class="btn primary" id="wbGo">Continue</button><button type="button" class="btn ghost" id="wbNew">Not you? Start fresh</button></div>`;
+    $('#wbGo').addEventListener('click', () => {
+      let n = S.cur > 0 && accessible(S.cur) ? S.cur : 1;
+      if (S.cur === 0) { for (let k = 1; k <= 9; k++) if (accessible(k)) n = k; }
+      go(n);
+    });
+    $('#wbNew').addEventListener('click', () => {
+      if (!confirm('Start fresh? This erases the saved progress on this device.')) return;
+      try { localStorage.removeItem(KEY); } catch (e) {}
+      location.reload();
+    });
+  } else { wb.classList.add('hidden'); form.classList.remove('hidden'); }
+}
+$('#fStart').addEventListener('click', () => {
+  const v = id => $(id).value.trim();
+  const st = { first: v('#fFirst'), last: v('#fLast'), period: v('#fPeriod'), teacher: v('#fTeacher'), sid: v('#fSid') };
+  const missing = [['first', 'first name'], ['last', 'last name'], ['period', 'period'], ['teacher', 'teacher'], ['sid', 'student ID']].filter(([k]) => !st[k]).map(([, l]) => l);
+  if (missing.length) { $('#formMsg').textContent = `Add your ${missing.join(', ')}.`; return; }
+  S.student = st; S.startedAt = new Date().toISOString(); save();
+  renderStart(); go(1);
+});
+
+/* =========================================================
+   INIT
+   ========================================================= */
+$('#fTeacher').innerHTML = '<option value="">Choose your teacher</option>' + teacherList().map(t => `<option>${esc(t)}</option>`).join('');
+$('#fPeriod').innerHTML = '<option value="">Choose your period</option>' + periodList().map(p => `<option>${esc(p)}</option>`).join('');
+const BUILD = [null, build1, build2, build3, build4, build5, build6, build7, build8, buildFinal];
+for (let n = 1; n <= 9; n++) {
+  try { BUILD[n]($('#scr-' + n)); } catch (err) { console.error('Section ' + n, err); }
+  renderReqs(n); updateNext(n);
+}
+renderGoals(); renderStart();
+if (S.lockActive && S.final.current) { if (!S.locked) { S.locked = true; S.lockouts++; save(); } }
+let startAt = 0;
+if (S.student) { startAt = S.final.current ? 9 : (accessible(S.cur) ? S.cur : 0); }
+go(startAt);
+if (S.locked && S.lockActive) showLock();
+/* =========================================================
+   SAFEGUARDS: copy/paste and right-click blocked, two-tab check,
+   guest/incognito warning, and teacher preview mode
+   ========================================================= */
+['copy', 'cut', 'paste', 'contextmenu'].forEach(ev => document.addEventListener(ev, e => { if (e.target && e.target.id === 'tCode') return; e.preventDefault(); }));
+let SAVE_OFF = false;
+const realSave = save;
+save = function () { if (!SAVE_OFF) realSave(); };
+function warn(t) { const w = $('#warnBar'); w.innerHTML = t; w.classList.remove('hidden'); }
+try {
+  const bc = new BroadcastChannel('fate-tab-' + KEY), me = Math.random().toString(36).slice(2);
+  bc.onmessage = e => { if (!e.data) return; if (e.data.t === 'hello' && e.data.id !== me) bc.postMessage({ t: 'here', id: me }); if (e.data.t === 'here' && e.data.id !== me && !SAVE_OFF) { SAVE_OFF = true; warn('⚠ This lesson is already open in another tab. Saving is turned off here. Close this tab and keep working in the other one.'); } };
+  bc.postMessage({ t: 'hello', id: me });
+} catch (e) {}
+try { if (navigator.storage && navigator.storage.estimate) navigator.storage.estimate().then(est => { if (est && est.quota && est.quota < 200 * 1024 * 1024) warn('⚠ You seem to be in a guest or incognito window. Your work will be erased when you close it. Sign in to your Chromebook and open the lesson in a normal window.'); }); } catch (e) {}
+$('#tCsv').addEventListener('click', () => downloadCSV());
+$('#tPreview').addEventListener('click', () => {
+  if (!confirm('Preview mode unlocks every section and saves nothing on this device. Use it to look through the lesson. Continue?')) return;
+  SAVE_OFF = true; S.teacherUnlock = true; document.body.classList.add('preview');
+  if (typeof sendScores === 'function') sendScores = function () { toast('Preview mode: nothing is sent.'); };
+  if (!S.student) S.student = { first: 'Preview', last: 'Teacher', period: '-', teacher: 'Preview', sid: '0' };
+  warn('Preview mode: every section is unlocked and nothing is saved or sent. Reload the page to leave preview mode.');
+  renderNav(); for (let n = 1; n <= NSEC; n++) updateNext(n); tOv.hidden = true; go(1);
+});
+})();
+</script>
+<script>
+/* =========================================================
+   CLOUD BACKUP (Saved Student Work sheet)
+   Save code = student ID + last name. Work saves on this Chromebook AND in the cloud,
+   so a student can sign in on any Chromebook and pick up where they left off.
+   ========================================================= */
+(() => {
+  const KEY = 'fate_chem_covalent_bonding_v1', LESSON = 'Covalent Bonding';
+  const BACKUP_SAVE_URL = 'https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';
+  const saveURL = () => { try { if (typeof SAVE_WEBHOOK_URL !== 'undefined' && SAVE_WEBHOOK_URL) return SAVE_WEBHOOK_URL; } catch (e) {} return BACKUP_SAVE_URL; };
+  if (!window.localStorage || !window.fetch) return;
+  const realSet = Storage.prototype.setItem;
+  const parse = s => { try { return JSON.parse(s); } catch (e) { return null; } };
+  const who = st => { const s = st && st.student; if (!s) return null; const sid = String(s.sid || s.id || '').trim(), last = String(s.last || '').trim(); return sid && last ? { sid, last, first: s.first || '', period: s.period || '', teacher: s.teacher || '' } : null; };
+  const codeOf = w => (w.sid + '-' + w.last).toLowerCase().replace(/\s+/g, '');
+  const cnt = o => o ? Object.values(o).filter(Boolean).length : 0;
+  /* a number that only grows as the student does more */
+  const prog = st => { if (!st) return 0; let p = 0;
+    p += 100 * cnt(st.secDone) + cnt(st.reqs);
+    if (st.final) p += 10000 * (st.final.passed ? 1 : 0) + 50 * ((st.final.attempts || []).length);
+    if (st.items) p += 10 * Object.values(st.items).filter(x => x && (x.done || x.checked)).length;
+    if (st.ans) p += 5 * Object.keys(st.ans).length;
+    if (st.submittedAt || st.completedAt || st.screen === 'results') p += 1000;
+    return p; };
+  const verKey = KEY + '__cloudver';
+  let pending = null, lastSent = '', restoring = false;
+  /* status chip */
+  const chip = document.createElement('div'); chip.className = 'cloudchip'; chip.setAttribute('aria-live', 'polite');
+  chip.style.cssText = 'position:fixed;left:10px;bottom:10px;z-index:9999;font:600 12px system-ui,sans-serif;padding:5px 10px;border-radius:999px;background:rgba(20,32,52,.85);color:#cfe3ff;pointer-events:none;opacity:0;transition:opacity .3s';
+  const showChip = (t, ms = 2500) => { chip.textContent = t; chip.style.opacity = '1'; clearTimeout(showChip.t); showChip.t = setTimeout(() => { chip.style.opacity = '0'; }, ms); };
+  document.addEventListener('DOMContentLoaded', () => document.body.appendChild(chip)); if (document.body) document.body.appendChild(chip);
+  const body = (raw, st, w) => { const ver = Date.now(); realSet.call(localStorage, verKey, String(ver));
+    return new URLSearchParams({ code: codeOf(w), lesson: LESSON, data: raw, prog: String(prog(st)), ver: String(ver), studentId: w.sid, lastName: w.last, firstName: w.first, period: w.period, teacher: w.teacher,
+      summary: `${prog(st)} progress points` }); };
+  function push(now) {
+    if (restoring) return;
+    const raw = localStorage.getItem(KEY), st = parse(raw), w = who(st);
+    if (!w || raw === lastSent) return;
+    const b = body(raw, st, w); lastSent = raw;
+    if (now && navigator.sendBeacon) { navigator.sendBeacon(saveURL(), b); return; }
+    fetch(saveURL(), { method: 'POST', mode: 'no-cors', body: b }).then(() => showChip('☁ Saved to the cloud')).catch(() => { lastSent = ''; showChip('Saved on this Chromebook (cloud not reached)'); });
+  }
+  function schedule() { clearTimeout(pending); pending = setTimeout(() => push(false), 4000); }
+  async function pull(w, localSt) {
+    try {
+      const r = await fetch(saveURL() + '?code=' + encodeURIComponent(codeOf(w)) + '&lesson=' + encodeURIComponent(LESSON), { cache: 'no-store' });
+      const j = await r.json(); if (!j || !j.found || !j.data) return false;
+      const cloudSt = parse(j.data); if (!cloudSt) return false;
+      if (prog(cloudSt) > prog(localSt)) {
+        restoring = true; clearTimeout(pending);
+        realSet.call(localStorage, KEY, j.data);
+        realSet.call(localStorage, verKey, String(j.ver || Date.now()));
+        sessionStorage.setItem('cloud-restored-' + KEY, '1');
+        showChip('☁ Found your saved work. Loading it…', 4000);
+        setTimeout(() => location.reload(), 700);
+        return true;
+      }
+    } catch (e) { /* offline or blocked: keep working on this Chromebook */ }
+    return false;
+  }
+  /* watch saves to this activity's key */
+  Storage.prototype.setItem = function (k, v) {
+    if (restoring && this === localStorage && k === KEY) return; /* loading cloud work: don't let the page overwrite it */
+    let before = null;
+    if (this === localStorage && k === KEY) before = who(parse(localStorage.getItem(KEY)));
+    realSet.call(this, k, v);
+    if (this !== localStorage || k !== KEY) return;
+    const st = parse(v), w = who(st);
+    if (!w) return;
+    if (!before || codeOf(before) !== codeOf(w)) pull(w, st).then(restored => { if (!restored) schedule(); });
+    else schedule();
+  };
+  window.addEventListener('pagehide', () => push(true));
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') push(true); });
+  /* on open: if the cloud has more progress for this student, load it */
+  const start = () => {
+    if (sessionStorage.getItem('cloud-restored-' + KEY)) { sessionStorage.removeItem('cloud-restored-' + KEY); showChip('☁ Your saved work is loaded'); return; }
+    const st = parse(localStorage.getItem(KEY)), w = who(st);
+    if (w) pull(w, st);
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
+</script>
+</body></html>

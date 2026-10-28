@@ -456,7 +456,7 @@ legend{padding:0 6px;color:var(--muted);font-size:14px;font-weight:500}
       <div>
         <p class="unit">Chemistry, Unit 2: Ions, Periodic Trends and Bonding</p>
         <h1>Drawing Bohr Models</h1>
-        <p class="lede">Count an atom's particles, fill its shells, and draw it the class way. Nine short sections, at your own pace.</p>
+        <p class="lede">Count an atom's particles, fill its shells, and draw it the class way. Nine sections, about 75 minutes.</p>
       </div>
       <div class="hero-fig">
         <svg id="heroSvg" aria-label="A sodium atom building itself electron by electron"></svg>
@@ -709,6 +709,7 @@ class BohrView {
       const z = e.target.closest && e.target.closest('.zone');
       if (z && this.o.onZone) { this.o.onZone(+z.dataset.shell, +z.dataset.side, z); return true; }
       const el = e.target.closest && e.target.closest('.e');
+      if (el && el.dataset.gone) return true;
       if (el && this.o.onElectron) { this.o.onElectron(+el.dataset.shell, +el.dataset.side, el); return true; }
       return false;
     };
@@ -749,6 +750,7 @@ class BohrView {
     for (const [key, el] of this.map) {
       if (!want.has(key)) {
         this.map.delete(key);
+        el.dataset.gone = '1';
         el.style.opacity = '0';
         el.style.transform = `translate(${el._x}px,${el._y}px) scale(0)`;
         setTimeout(() => el.remove(), 380);
@@ -913,25 +915,25 @@ function makeSorter(root, cfg) {
    SECTIONS
    ========================================================= */
 const SECS = [null,
-  { z: 1, title: "What's inside an atom", min: 6 },
+  { z: 1, title: "What's inside an atom", min: 5 },
   { z: 2, title: 'Count the particles', min: 8 },
-  { z: 3, title: 'Shells fill from the inside out', min: 8 },
+  { z: 3, title: 'Shells fill from the inside out', min: 7 },
   { z: 4, title: 'Write the electron arrangement', min: 7 },
-  { z: 5, title: 'Place electrons the class way', min: 6 },
-  { z: 6, title: 'Build a complete Bohr model', min: 10 },
-  { z: 7, title: 'Valence electrons and the periodic table', min: 8 },
-  { z: 8, title: 'Practice: read and fix Bohr models', min: 8 },
+  { z: 5, title: 'Place electrons the class way', min: 7 },
+  { z: 6, title: 'Build a complete Bohr model', min: 13 },
+  { z: 7, title: 'Valence electrons and the periodic table', min: 7 },
+  { z: 8, title: 'Practice: read and fix Bohr models', min: 9 },
   { z: 9, title: 'Final check', min: 12 }
 ];
 const REQS = {
   1: [['label', 'Label all four parts of the lithium model'], ['qc1', 'Answer the quick check correctly']],
   2: [['tile', 'Explore all four parts of the element tile'], ['table', 'Fill in the particle table correctly'], ['qc2', 'Answer the quick check correctly']],
-  3: [['m1', 'Mission 1: fill shell 1'], ['m2', 'Mission 2: start shell 3'], ['m3', 'Mission 3: fill shell 3'], ['qc3', 'Answer the quick check correctly']],
-  4: [['steps', 'Step through the phosphorus example'], ['build', 'Build 3 electron arrangements correctly'], ['qc4', 'Answer the quick check correctly']],
-  5: [['watch', 'Watch the placement demo'], ['place1', 'Place all of oxygen\'s electrons'], ['place2', 'Place phosphorus\'s outer shell'], ['qc5', 'Answer the quick check correctly']],
-  6: [['b6', 'Build carbon'], ['b11', 'Build sodium'], ['b17', 'Build chlorine'], ['qc6', 'Answer the quick check correctly']],
+  3: [['m1', 'Mission 1: fill shell 1'], ['m4', 'Mission 2: start shell 2'], ['m5', 'Mission 3: fill shell 2'], ['m2', 'Mission 4: start shell 3'], ['m3', 'Mission 5: fill shell 3'], ['qc3', 'Answer the quick check correctly']],
+  4: [['steps', 'Step through the phosphorus example'], ['build', 'Build 5 electron arrangements correctly'], ['qc4', 'Answer the quick check correctly']],
+  5: [['watch', 'Watch the placement demo'], ['place', 'Finish all 5 placement rounds'], ['qc5', 'Answer the quick check correctly']],
+  6: [['b6', 'Build carbon'], ['b11', 'Build sodium'], ['b17', 'Build chlorine'], ['b12', 'Build magnesium'], ['b9', 'Build fluorine'], ['qc6', 'Answer the quick check correctly']],
   7: [['explore', 'Tap at least 6 elements on the table'], ['sort', 'Sort the elements by valence electrons'], ['qc7', 'Answer the quick check correctly']],
-  8: [['name', 'Name 4 atoms from their models'], ['fix', 'Find the mistake in all 4 models'], ['qc8', 'Answer the quick check correctly']],
+  8: [['name', 'Name 5 atoms from their models'], ['fix', 'Find the mistake in all 4 models'], ['qc8', 'Answer the quick check correctly']],
   9: [['pass', `Score ${PASS_SCORE} or more out of ${FC_LEN} on the final check`]]
 };
 const GOALS = [
@@ -1038,7 +1040,7 @@ function build2(el) {
   }));
   upd();
 
-  const ZS = [8, 12, 13, 17];
+  const ZS = [8, 12, 13, 17, 19];
   const tb = $('#ptable tbody', el);
   tb.innerHTML = ZS.map(z => `<tr data-z="${z}"><td>${mtile(z)} <span class="small muted">${E(z).name}</span></td>
     ${['p', 'n', 'e'].map(k => `<td><input type="number" inputmode="numeric" min="0" data-k="${k}" aria-label="${E(z).name} ${{ p: 'protons', n: 'neutrons', e: 'electrons' }[k]}"></td>`).join('')}</tr>`).join('');
@@ -1103,6 +1105,8 @@ function build3(el) {
   const view = new BohrView($('#s3svg', el));
   const M = [
     { id: 'm1', t: 'Fill shell 1 completely. Which element is that?', z: 2, hint: zz => zz < 2 ? 'Shell 1 still has room.' : 'Too far. That element already started shell 2.' },
+    { id: 'm4', t: 'Find the first element that has an electron in shell 2.', z: 3, hint: zz => zz < 3 ? 'Shell 2 is still empty.' : 'Go back. Find the very first one to use shell 2.' },
+    { id: 'm5', t: 'Fill shell 2 completely. Which element is that?', z: 10, hint: zz => zz < 10 ? 'Shell 2 still has room.' : 'Too far. That element already started shell 3.' },
     { id: 'm2', t: 'Find the first element that has an electron in shell 3.', z: 11, hint: zz => zz < 11 ? 'There is no electron in shell 3 yet.' : 'Go back. Find the very first one to use shell 3.' },
     { id: 'm3', t: 'Find the element that fills shell 3 with 8 electrons. It is the last one before shell 4 starts.', z: 18, hint: zz => zz < 18 ? 'Shell 3 is not full yet.' : 'Too far. Shell 4 has already started.' }
   ];
@@ -1151,13 +1155,13 @@ function build4(el) {
           <div class="btn-row"><button type="button" class="btn ghost sm" id="s4back">Back</button><button type="button" class="btn primary sm" id="s4next">Next step</button></div>
         </div>
       </div>`) +
-    card('try', 'Arrangement builder', `<p class="muted">Set the number of electrons in each shell for the element shown, then check. Get 3 right to finish.</p>
+    card('try', 'Arrangement builder', `<p class="muted">Set the number of electrons in each shell for the element shown, then check. Get 5 right to finish.</p>
       <div class="sim">
         <div><svg id="s4svg"></svg></div>
         <div>
           <div class="target" id="s4target"></div>
           <div class="steppers" id="s4stp"></div>
-          <div class="btn-row"><button type="button" class="btn primary" id="s4check">Check</button><div class="progress-pips" id="s4pips" aria-label="Correct so far"><i></i><i></i><i></i></div></div>
+          <div class="btn-row"><button type="button" class="btn primary" id="s4check">Check</button><div class="progress-pips" id="s4pips" aria-label="Correct so far"><i></i><i></i><i></i><i></i><i></i></div></div>
           <p class="fb-line" id="s4fb" aria-live="polite"></p>
         </div>
       </div>`) +
@@ -1220,7 +1224,7 @@ function build4(el) {
     if (msg) { fb.className = 'fb-line bad'; fb.textContent = msg; shake($('#s4stp', el)); return; }
     right++; S.tasks.s4right = right; save(); pips(); view.celebrate();
     fb.className = 'fb-line good'; fb.textContent = `Correct: ${e.name} is ${want.join(', ')}.`;
-    if (right >= 3) done(4, 'build');
+    if (right >= 5) done(4, 'build');
     setTimeout(() => { ti++; newTarget(); }, 1300);
   });
   pips(); newTarget();
@@ -1283,11 +1287,12 @@ function build5(el) {
   });
 
   // placement game
-  const ROUNDS = [{ z: 8, targets: [2, 6], pre: 0, req: 'place1' }, { z: 15, targets: [2, 8, 5], pre: 2, req: 'place2' }];
+  const ROUNDS = [{ z: 8, targets: [2, 6], pre: 0 }, { z: 15, targets: [2, 8, 5], pre: 2 }, { z: 7, targets: [2, 5], pre: 1 }, { z: 17, targets: [2, 8, 7], pre: 2 }, { z: 13, targets: [2, 8, 3], pre: 2 }];
+  const rdone = S.tasks.s5r || (S.tasks.s5r = {});
   const view = new BohrView($('#s5svg', el), { onZone: onZone });
   view.svg.classList.add('pulse');
   let r = 0, counts = [], active = 0, finished = false;
-  $('#s5tabs', el).innerHTML = ROUNDS.map((R0, i) => `<button type="button" class="tab ${S.reqs['5.' + R0.req] ? 'ok' : ''}" role="tab" data-r="${i}">Round ${i + 1}: ${E(R0.z).name}</button>`).join('');
+  $('#s5tabs', el).innerHTML = ROUNDS.map((R0, i) => `<button type="button" class="tab ${rdone[i] ? 'ok' : ''}" role="tab" data-r="${i}">Round ${i + 1}: ${E(R0.z).name}</button>`).join('');
   $$('#s5tabs .tab', el).forEach(b => b.addEventListener('click', () => startRound(+b.dataset.r)));
   function startRound(k) {
     r = k; const R0 = ROUNDS[k]; finished = false;
@@ -1302,7 +1307,7 @@ function build5(el) {
     const placed = sum(counts) - (R0.pre ? sum(R0.targets.slice(0, R0.pre)) : 0);
     const toPlace = sum(R0.targets) - (R0.pre ? sum(R0.targets.slice(0, R0.pre)) : 0);
     $('#s5prompt', el).innerHTML = finished
-      ? `<b>${E(R0.z).name} done.</b> ${R0.pre ? 'Shell 3 has a pair on top and single electrons on the other three sides.' : 'Shell 2 has pairs on the top and right, and single electrons on the bottom and left.'}`
+      ? `<b>${E(R0.z).name} done.</b> Shell ${R0.targets.length} has ${R0.targets[R0.targets.length - 1]} electrons, placed ${(() => { const n = R0.targets[R0.targets.length - 1]; return n > 4 ? 'top, right, bottom, left, then paired in the same order' : ['top', 'right', 'bottom', 'left'].slice(0, n).join(', '); })()}.`
       : `${E(R0.z).name}: electron <b>${placed + 1}</b> of ${toPlace}. It goes in <b>shell ${active + 1}</b>.`;
   }
   function onZone(i, s, zEl) {
@@ -1319,12 +1324,17 @@ function build5(el) {
     const R0 = ROUNDS[r];
     if (counts[i] >= R0.targets[i]) {
       if (i + 1 < R0.targets.length) active++;
-      else { finished = true; done(5, R0.req); $$('#s5tabs .tab', el)[r].classList.add('ok'); view.celebrate(); $('#s5fb', el).className = 'fb-line good'; $('#s5fb', el).textContent = r === 0 ? 'Round 1 complete. Try round 2.' : 'Both rounds complete.'; if (r === 0) setTimeout(() => { if (r === 0) startRound(1); }, 1800); }
+      else {
+        finished = true; rdone[r] = true; save(); $$('#s5tabs .tab', el)[r].classList.add('ok'); view.celebrate();
+        const nx = ROUNDS.findIndex((x, k) => !rdone[k]);
+        $('#s5fb', el).className = 'fb-line good'; $('#s5fb', el).textContent = nx < 0 ? 'All 5 rounds complete.' : `Round ${r + 1} complete. Next: round ${nx + 1}.`;
+        if (nx < 0) done(5, 'place'); else { const rr = r; setTimeout(() => { if (r === rr) startRound(nx); }, 1800); }
+      }
     }
     render();
   }
   $('#s5again', el).addEventListener('click', () => startRound(r));
-  startRound(S.reqs['5.place1'] && !S.reqs['5.place2'] ? 1 : 0);
+  startRound(Math.max(0, ROUNDS.findIndex((x, k) => !rdone[k])));
 
   const one = (sides) => bohrSVG({ radii: [104], shells: [sides], l1: '', l2: '', nucR: 34, er: 13, aria: 'One shell with six electrons' });
   makeQC($('#qc5', el), {
@@ -1338,7 +1348,7 @@ function build5(el) {
 
 /* ---------------- Section 6 ---------------- */
 function build6(el) {
-  const MIS = [6, 11, 17];
+  const MIS = [6, 11, 17, 12, 9];
   el.innerHTML = frame(6,
     card('read', 'What a complete model needs', `<div class="read-text">
       <p>A complete Bohr model has four things. The builder checks each one.</p>
@@ -1510,7 +1520,7 @@ function build8(el) {
       <ul><li>More than 2 electrons in shell 1</li><li>Starting a new shell before the one inside it is full</li><li>A different number of electrons than protons</li><li>Neutrons found without rounding the atomic mass first</li><li>Pairing up before every side has one electron</li></ul></div>`) +
     card('try', 'Name that atom', `<p class="muted">The nucleus is hidden. Count the electrons, then tap the matching element below.</p>
       <div class="sim"><div><svg id="s8svg"></svg></div>
-      <div><p class="place-prompt" id="s8prompt">Which element is this?</p><div class="progress-pips" id="s8pips" aria-label="Correct so far"><i></i><i></i><i></i><i></i></div><p class="fb-line" id="s8fb" aria-live="polite"></p></div></div>
+      <div><p class="place-prompt" id="s8prompt">Which element is this?</p><div class="progress-pips" id="s8pips" aria-label="Correct so far"><i></i><i></i><i></i><i></i><i></i></div><p class="fb-line" id="s8fb" aria-live="polite"></p></div></div>
       <div class="ans-grid" id="s8grid"></div>`) +
     card('try', 'Spot the mistake', `<p class="muted">Each model has one mistake. Pick what's wrong.</p><div class="tabs" id="s8tabs" role="tablist"></div><div id="s8det"></div>`) +
     card('qc', '', '<div id="qc8"></div>'));
@@ -1527,7 +1537,7 @@ function build8(el) {
     if (+t.dataset.z === z) {
       right++; S.tasks.s8right = right; save(); pips(); view.celebrate();
       fb.className = 'fb-line good'; fb.textContent = `Yes: ${E(z).name}. ${arr(z).join(' + ')} = ${z} electrons.`;
-      if (right >= 4) done(8, 'name');
+      if (right >= 5) done(8, 'name');
       setTimeout(() => { pi++; show(); }, 1500);
     } else {
       misses++; shake(t);
@@ -2001,6 +2011,89 @@ let startAt = 0;
 if (S.student) { startAt = S.final.current ? 9 : (accessible(S.cur) ? S.cur : 0); }
 go(startAt);
 if (S.locked && S.lockActive) showLock();
+})();
+</script>
+<script>
+/* =========================================================
+   CLOUD BACKUP (Saved Student Work sheet)
+   Save code = student ID + last name. Work saves on this Chromebook AND in the cloud,
+   so a student can sign in on any Chromebook and pick up where they left off.
+   ========================================================= */
+(() => {
+  const KEY = 'fate_chem_bohr_models_v1', LESSON = 'Drawing Bohr Models';
+  const BACKUP_SAVE_URL = 'https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';
+  const saveURL = () => { try { if (typeof SAVE_WEBHOOK_URL !== 'undefined' && SAVE_WEBHOOK_URL) return SAVE_WEBHOOK_URL; } catch (e) {} return BACKUP_SAVE_URL; };
+  if (!window.localStorage || !window.fetch) return;
+  const realSet = Storage.prototype.setItem;
+  const parse = s => { try { return JSON.parse(s); } catch (e) { return null; } };
+  const who = st => { const s = st && st.student; if (!s) return null; const sid = String(s.sid || s.id || '').trim(), last = String(s.last || '').trim(); return sid && last ? { sid, last, first: s.first || '', period: s.period || '', teacher: s.teacher || '' } : null; };
+  const codeOf = w => (w.sid + '-' + w.last).toLowerCase().replace(/\s+/g, '');
+  const cnt = o => o ? Object.values(o).filter(Boolean).length : 0;
+  /* a number that only grows as the student does more */
+  const prog = st => { if (!st) return 0; let p = 0;
+    p += 100 * cnt(st.secDone) + cnt(st.reqs);
+    if (st.final) p += 10000 * (st.final.passed ? 1 : 0) + 50 * ((st.final.attempts || []).length);
+    if (st.items) p += 10 * Object.values(st.items).filter(x => x && (x.done || x.checked)).length;
+    if (st.ans) p += 5 * Object.keys(st.ans).length;
+    if (st.submittedAt || st.completedAt || st.screen === 'results') p += 1000;
+    return p; };
+  const verKey = KEY + '__cloudver';
+  let pending = null, lastSent = '', restoring = false;
+  /* status chip */
+  const chip = document.createElement('div'); chip.className = 'cloudchip'; chip.setAttribute('aria-live', 'polite');
+  chip.style.cssText = 'position:fixed;left:10px;bottom:10px;z-index:9999;font:600 12px system-ui,sans-serif;padding:5px 10px;border-radius:999px;background:rgba(20,32,52,.85);color:#cfe3ff;pointer-events:none;opacity:0;transition:opacity .3s';
+  const showChip = (t, ms = 2500) => { chip.textContent = t; chip.style.opacity = '1'; clearTimeout(showChip.t); showChip.t = setTimeout(() => { chip.style.opacity = '0'; }, ms); };
+  document.addEventListener('DOMContentLoaded', () => document.body.appendChild(chip)); if (document.body) document.body.appendChild(chip);
+  const body = (raw, st, w) => { const ver = Date.now(); realSet.call(localStorage, verKey, String(ver));
+    return new URLSearchParams({ code: codeOf(w), lesson: LESSON, data: raw, prog: String(prog(st)), ver: String(ver), studentId: w.sid, lastName: w.last, firstName: w.first, period: w.period, teacher: w.teacher,
+      summary: `${prog(st)} progress points` }); };
+  function push(now) {
+    if (restoring) return;
+    const raw = localStorage.getItem(KEY), st = parse(raw), w = who(st);
+    if (!w || raw === lastSent) return;
+    const b = body(raw, st, w); lastSent = raw;
+    if (now && navigator.sendBeacon) { navigator.sendBeacon(saveURL(), b); return; }
+    fetch(saveURL(), { method: 'POST', mode: 'no-cors', body: b }).then(() => showChip('☁ Saved to the cloud')).catch(() => { lastSent = ''; showChip('Saved on this Chromebook (cloud not reached)'); });
+  }
+  function schedule() { clearTimeout(pending); pending = setTimeout(() => push(false), 4000); }
+  async function pull(w, localSt) {
+    try {
+      const r = await fetch(saveURL() + '?code=' + encodeURIComponent(codeOf(w)) + '&lesson=' + encodeURIComponent(LESSON), { cache: 'no-store' });
+      const j = await r.json(); if (!j || !j.found || !j.data) return false;
+      const cloudSt = parse(j.data); if (!cloudSt) return false;
+      if (prog(cloudSt) > prog(localSt)) {
+        restoring = true; clearTimeout(pending);
+        realSet.call(localStorage, KEY, j.data);
+        realSet.call(localStorage, verKey, String(j.ver || Date.now()));
+        sessionStorage.setItem('cloud-restored-' + KEY, '1');
+        showChip('☁ Found your saved work. Loading it…', 4000);
+        setTimeout(() => location.reload(), 700);
+        return true;
+      }
+    } catch (e) { /* offline or blocked: keep working on this Chromebook */ }
+    return false;
+  }
+  /* watch saves to this activity's key */
+  Storage.prototype.setItem = function (k, v) {
+    if (restoring && this === localStorage && k === KEY) return; /* loading cloud work: don't let the page overwrite it */
+    let before = null;
+    if (this === localStorage && k === KEY) before = who(parse(localStorage.getItem(KEY)));
+    realSet.call(this, k, v);
+    if (this !== localStorage || k !== KEY) return;
+    const st = parse(v), w = who(st);
+    if (!w) return;
+    if (!before || codeOf(before) !== codeOf(w)) pull(w, st).then(restored => { if (!restored) schedule(); });
+    else schedule();
+  };
+  window.addEventListener('pagehide', () => push(true));
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') push(true); });
+  /* on open: if the cloud has more progress for this student, load it */
+  const start = () => {
+    if (sessionStorage.getItem('cloud-restored-' + KEY)) { sessionStorage.removeItem('cloud-restored-' + KEY); showChip('☁ Your saved work is loaded'); return; }
+    const st = parse(localStorage.getItem(KEY)), w = who(st);
+    if (w) pull(w, st);
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();
 </script>
 </body></html>
