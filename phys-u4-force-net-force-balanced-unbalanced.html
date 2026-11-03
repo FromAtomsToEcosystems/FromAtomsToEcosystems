@@ -36,7 +36,7 @@ sub{font-size:.7em}
 .top-tools{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .savenote{font-size:.78rem;color:var(--muted);min-width:90px;text-align:right}
 .savenote.err{color:var(--orange)}
-.nav{max-width:1180px;margin:0 auto;padding:0 16px 10px;display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:8px}
+.nav{max-width:1180px;margin:0 auto;padding:0 16px 10px;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
 .tile{position:relative;height:62px;border-radius:10px;border:2px solid var(--line2);background:var(--panel);color:var(--muted);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px;transition:border-color .15s,transform .15s}
 .tile .n{position:absolute;top:3px;left:6px;font-size:.68rem;color:var(--dim)}
 .tile svg{width:26px;height:26px}
@@ -241,15 +241,14 @@ body.key .keyonly{display:block!important}
 #calc .chead{display:flex;justify-content:space-between;align-items:center;font-size:.85rem;color:var(--muted)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media print{.top,#calc{display:none}}
-.numrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin:6px 0;background:var(--bg2)}
-.numrow .in{display:flex;gap:6px;align-items:center}
+.phbox{width:100%;min-height:60px;border:1px solid var(--line2);border-radius:8px;padding:8px;background:var(--bg2);color:var(--ink);font-family:inherit;font-size:.92rem;resize:vertical;margin-top:3px}
 </style>
 </head>
 <body>
 <div class="preview-bar" id="previewBar" hidden>Preview mode: nothing is saved or sent. Reload the page to leave preview mode.</div>
 <header class="top">
   <div class="top-in">
-    <div class="brand"><b>Force, Net Force, and Balanced vs. Unbalanced Forces</b><span>Physics · Unit 4: Forces and Newton’s Laws</span></div>
+    <div class="brand"><b>Force, Net Force, and Balanced vs. Unbalanced Forces</b><span>Physics · Unit 4: Forces &amp; Newton’s Laws</span></div>
     <div class="top-tools">
       <span class="savenote" id="saveNote" aria-live="polite"></span>
       <button class="btn small" id="calcBtn" type="button">Calculator</button>
@@ -268,7 +267,7 @@ body.key .keyonly{display:block!important}
     <div class="hero">
       <div>
         <h1>Force, Net Force, and Balanced vs. Unbalanced Forces</h1>
-        <p class="sub">So far you described motion: how fast, how far, how long. Now the big question is <b>why</b> things move the way they do. Why does a soccer ball speed up when kicked, slow down on grass, or sit perfectly still? The answer is forces.</p>
+        <p class="sub">Two teams strain on a rope and nothing moves. One more person grabs on and everything changes. Today you’ll find out why, by adding up forces.</p>
       </div>
       <div class="fig" id="heroFig"></div>
     </div>
@@ -276,8 +275,8 @@ body.key .keyonly{display:block!important}
       <div>
         <div class="card">
           <h3>What we are learning</h3>
-          <p><b>Objective:</b> I can identify the forces acting on an object, draw a free-body diagram, calculate the net force, and use it to tell whether the forces are balanced or unbalanced and how the motion will change.</p>
-          <p class="muted" style="font-size:.88rem"><b>Standards:</b> NGSS HS-PS2-1: analyze data to support the claim that the net force on an object changes its motion. NGSS SEP 2 and 5: developing models (free-body diagrams), using mathematics. CCC: cause and effect.</p>
+          <p><b>Objective:</b> I can identify the forces acting on an object, add them to find the net force, and use the net force to decide whether the forces are balanced and whether the motion will change.</p>
+          <p class="muted" style="font-size:.88rem"><b>Standards:</b> NGSS HS-PS2-1: analyze data to support that a net force changes an object’s motion. NGSS SEP 2: developing and using models. CCC: cause and effect.</p>
           <h3 style="margin-top:14px">Goals</h3>
           <ul class="goals" id="goals"></ul>
         </div>
@@ -285,10 +284,10 @@ body.key .keyonly{display:block!important}
           <h3>How the lesson works</h3>
           <div class="howgrid">
             <div class="how"><b>Read</b>Short readings with diagrams. The equations live here.</div>
-            <div class="how"><b>Try it</b>Sorting, a free-body diagram builder, a tug-of-war, a cart lab, and practice.</div>
+            <div class="how"><b>Try it</b>A force sort, a matching game, a tug-of-war, and a cart lab.</div>
             <div class="how qc"><b>Quick check</b>Multiple choice. Answer correctly to unlock the next section.</div>
           </div>
-          <p class="muted" style="font-size:.88rem;margin-top:10px">Sections 1 to 8 teach and practice. Section 9 is the final check: 10 random questions, 8 out of 10 to pass. Use right and up as positive. Forces are in newtons (N). About 60 minutes.</p>
+          <p class="muted" style="font-size:.88rem;margin-top:10px">Sections 1 to 5 teach the ideas with a simulator in each. Section 6 is a short exit check: 5 questions, 4 out of 5 to pass. About 30 minutes. Then do the <b>practice</b> to build your skills.</p>
         </div>
       </div>
       <div>
@@ -322,9 +321,7 @@ body.key .keyonly{display:block!important}
   <section class="page" id="page5"></section>
   <section class="page" id="page6"></section>
   <section class="page" id="page7"></section>
-  <section class="page" id="page8"></section>
-  <section class="page" id="page9"></section>
-  <section class="page" id="page10"></section>
+
 </main>
 
 <!-- full screen gate -->
@@ -393,14 +390,15 @@ body.key .keyonly{display:block!important}
    SETTINGS
    ========================================================= */
 const LESSON = 'Force, Net Force, and Balanced vs. Unbalanced Forces';
-const LESSON_ID = 'phys-u4-force-net-force-balanced-unbalanced';
-const KEY = 'fate_phys_u4_forces_net_v1';
+const LESSON_ID = 'phys-u4-force-net-force-balanced-unbalanced-lesson30';
+const KEY = 'fate_phys_u4_forces_net_lesson30_v1';
 const RECS = KEY + '_records';
 const UNLOCK_CODE = 'forces';           // last word of the lesson title: unlocks the lockdown screen only
 const TEACHER_CODE = 'teacher007';        // opens the teacher tools only
 const isTeacherCode = v => String(v || '').trim().toLowerCase() === TEACHER_CODE.toLowerCase();
 const G = 9.8;                            // a_y = -9.8 m/s^2 (up is positive)
-const PASS_SCORE = 8, FC_LEN = 10;
+const PASS_SCORE = 4, FC_LEN = 5;
+const NSEC = 5, FIN = 6, RES = 7, ALLN = [1, 2, 3, 4, 5, 6, 7];
 /* Google Sheets + teacher list: if sheets-config.js (next to this file on the site) defines these, they win. */
 const BACKUP_URL = 'https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
 const SAVE_URL_BUILTIN = 'https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';
@@ -433,15 +431,15 @@ const LET = 'ABCDEFGH';
 /* notation */
 const V = (b, s) => `<span class="v">${b}<sub>${s}</sub></span>`;
 const vix = V('v', 'ix'), viy = V('v', 'iy'), vfy = V('v', 'fy'), vx = V('v', 'x'), vy = V('v', 'y'), Dx = V('ΔD', 'x'), Dy = V('ΔD', 'y'), ay = V('a', 'y'), ax = V('a', 'x');
-const t_ = '<span class="v">Δt</span>';
 const F = s => V('F', s), Fnet = V('F', 'net'), SFx = '<span class="v">ΣF<sub>x</sub></span>', SFy = '<span class="v">ΣF<sub>y</sub></span>';
+const t_ = '<span class="v">Δt</span>';
 /* worked examples: the equation, then the same equation with numbers plugged in.
    Each known quantity and the number that replaces it share a color. */
 const KC = { vi: 'c-vi', vf: 'c-vf', a: 'c-a', t: 'c-t', D: 'c-D', vx: 'c-vx' };
 const k = (c, h) => `<span class="${KC[c]}">${h}</span>`;
 const work = (title, rows) => `<div class="work">${title ? `<div class="wt">${title}</div>` : ''}${rows.map(([l, h]) => `<div class="wl">${l}</div><div class="wr">${h}</div>`).join('')}</div>`;
 const COLORNOTE = '<p class="muted" style="font-size:.8rem;margin:2px 0 0">Same color = the number that replaces that letter. Letters in white are what we are solving for.</p>';
-const subs = s => String(s).replace(/ΣF_(x|y)/g, (m, s2) => `<span class="v">ΣF<sub>${s2}</sub></span>`).replace(/\bF_(net|g|N|f|a|T|air|x|y|1|2|3)\b/g, (m, s2) => V('F', s2)).replace(/\b([vDa])_(ix|iy|fy|fx|x|y)\b/g, (m, b, s2) => V(b === 'D' ? 'ΔD' : b, s2));
+const subs = s => String(s).replace(/\b([vDa])_(ix|iy|fy|fx|x|y)\b/g, (m, b, s2) => V(b === 'D' ? 'ΔD' : b, s2));
 function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toast.T); toast.T = setTimeout(() => el.classList.remove('show'), 2600); }
 function parseNum(s) {
   s = String(s || '').trim().replace(/[−–—]/g, '-').replace(/,/g, '');
@@ -466,15 +464,12 @@ const IC = {
 };
 const icon = (k, col = 'var(--amber)') => `<svg viewBox="0 0 24 24" fill="none" stroke="${col}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[k]}</svg>`;
 const TILES = [null,
-  { ic: 'force', name: 'Force', title: 'What is a force?', min: 5 },
-  { ic: 'types', name: 'Types', title: 'Common types of forces', min: 6 },
-  { ic: 'fbd', name: 'FBD', title: 'Free-body diagrams', min: 8 },
-  { ic: 'net1', name: 'Net force', title: 'Net force in one direction', min: 7 },
-  { ic: 'net2', name: 'x and y', title: 'Net force in two directions', min: 7 },
-  { ic: 'balanced', name: 'Balanced', title: 'Balanced forces', min: 6 },
-  { ic: 'unbalanced', name: 'Unbalanced', title: 'Unbalanced forces', min: 7 },
-  { ic: 'mistake', name: 'Mistakes', title: 'What is wrong with this?', min: 5 },
-  { ic: 'final', name: 'Final', title: 'Final check', min: 8 },
+  { ic: 'force', name: 'Force', title: 'What is a force?', min: 7 },
+  { ic: 'types', name: 'Types', title: 'Types of forces', min: 6 },
+  { ic: 'net1', name: 'Net force', title: 'Net force in one direction', min: 6 },
+  { ic: 'net2', name: 'x and y', title: 'Net force in x and y', min: 5 },
+  { ic: 'balanced', name: 'Balanced?', title: 'Balanced vs. unbalanced forces', min: 7 },
+  { ic: 'final', name: 'Exit check', title: 'Exit check', min: 4 },
   { ic: 'results', name: 'Results', title: 'Your results', min: 0 }
 ];
 
@@ -535,7 +530,7 @@ window.addEventListener('storage', e => { if (e.key !== KEY || !e.newValue) retu
 /* ---------- cloud backup (save code = student ID + last name) ---------- */
 function saveKey(st) { return (String(st.id || '').replace(/\s+/g, '') + '-' + String(st.last || '').toLowerCase().replace(/[^a-z]/g, '')).toLowerCase(); }
 function progressOf(st) { return Object.keys(st.reqs || {}).length * 1000 + Object.keys(st.qc || {}).length * 10 + ((st.final && st.final.attempts && st.final.attempts.length) || 0); }
-function progressSummary() { const n = [1, 2, 3, 4, 5, 6, 7, 8].filter(k => S.secDone[k]).length; return `${n} of 8 sections done` + (S.final.attempts.length ? `, final check best ${S.final.best}/${S.final.bestMax}` + (S.final.passed ? ' (passed)' : '') : ''); }
+function progressSummary() { const n = [1, 2, 3, 4, 5].filter(k => S.secDone[k]).length; return `${n} of 5 sections done` + (S.final.attempts.length ? `, final check best ${S.final.best}/${S.final.bestMax}` + (S.final.passed ? ' (passed)' : '') : ''); }
 let cloudTimer = null, cloudDirty = false, cloudBusy = false, cloudAt = null, cloudErr = false;
 function cloudOK() { return CLOUD() && S.student && !S.preview && !saveBlocked; }
 function cloudBody() { const st = S.student || {}; return new URLSearchParams({ code: saveKey(st), lesson: LESSON_ID, ver: String(S.updatedAt || Date.now()), prog: String(progressOf(S)),
@@ -633,39 +628,36 @@ function run(key, dur, frame, done, speed = 1) {
    SECTION REQUIREMENTS + PROGRESS
    ========================================================= */
 const REQS = {
-  1: [['sim', 'Sort all 8 forces correctly'], ['q1', 'Answer quick check 1'], ['q2', 'Answer quick check 2']],
-  2: [['sim', 'Match all 6 situations to their force'], ['q1', 'Answer quick check 1'], ['q2', 'Answer quick check 2']],
-  3: [['sim', 'Build 3 correct free-body diagrams'], ['q1', 'Answer quick check 1'], ['q2', 'Answer quick check 2']],
-  4: [['sim', 'Complete both tug-of-war missions'], ['prac', 'Finish the 3 practice problems'], ['q1', 'Answer quick check 1'], ['q2', 'Answer quick check 2']],
-  5: [['prac', 'Finish the 3 practice problems'], ['q1', 'Answer quick check 1'], ['q2', 'Answer quick check 2']],
-  6: [['sim', 'Complete both balanced-force missions'], ['q1', 'Answer quick check 1'], ['q2', 'Answer quick check 2']],
-  7: [['sim', 'Complete all 3 unbalanced-force missions'], ['q1', 'Answer quick check 1'], ['q2', 'Answer quick check 2']],
-  8: [['mis', 'Find and explain all 5 mistakes']],
-  9: [['pass', 'Score 8 out of 10 on the final check']]
+  1: [['phen', 'Write your first explanation of the phenomenon'], ['sim', 'Sort all 8 forces correctly'], ['q1', 'Solve the practice problem'], ['q2', 'Answer the quick check']],
+  2: [['sim', 'Name all 6 forces correctly'], ['q1', 'Solve the practice problem'], ['q2', 'Answer the quick check']],
+  3: [['sim', 'Complete both tug-of-war missions'], ['prac', 'Solve the practice problem'], ['q1', 'Answer the quick check']],
+  4: [['prac', 'Solve the practice problem'], ['q1', 'Answer the quick check']],
+  5: [['sim', 'Complete the 3 cart lab missions'], ['q1', 'Solve the practice problem'], ['q2', 'Answer the quick check'], ['q3', 'Spot the mistake'], ['phen2', 'Revise your explanation of the phenomenon']],
+  6: [['pass', 'Score 4 out of 5 on the exit check']]
 };
 const GOALS = [
-  { t: 'I can explain what a force is and name common forces.', sec: [1, 2] },
-  { t: 'I can draw a free-body diagram for an object.', sec: [3] },
-  { t: 'I can calculate the net force on an object in one and two directions.', sec: [4, 5] },
-  { t: 'I can use the net force to tell if forces are balanced or unbalanced and predict how the motion will change.', sec: [6, 7] }
+  { t: 'I can describe a force and tell contact from non-contact forces.', sec: [1] },
+  { t: 'I can name the common forces and the direction each one points.', sec: [2] },
+  { t: 'I can find the net force, in one direction and in x and y.', sec: [3, 4] },
+  { t: 'I can use the net force to tell balanced from unbalanced and predict the motion.', sec: [5] }
 ];
-function secDone(n) { if (n === 9) return !!S.final.passed; return (REQS[n] || []).every(([id]) => S.reqs[n + '.' + id]); }
+function secDone(n) { if (n === FIN) return !!S.final.passed; return (REQS[n] || []).every(([id]) => S.reqs[n + '.' + id]); }
 function accessible(n) {
   if (n === 0) return true;
   if (!S.student && !S.preview) return false;
   if (S.teacherUnlock || S.preview) return true;
   if (n === 1) return true;
-  if (n <= 9) return secDone(n - 1);
-  if (n === 10) return S.final.attempts.length > 0;
+  if (n <= FIN) return secDone(n - 1);
+  if (n === RES) return S.final.attempts.length > 0;
   return false;
 }
 function req(n, id) {
   const k = n + '.' + id; if (S.reqs[k]) return;
-  const before = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(accessible);
+  const before = ALLN.map(accessible);
   S.reqs[k] = true;
-  if (secDone(n) && !S.secDone[n]) { S.secDone[n] = true; toast(n < 8 ? `Section ${n} done. Section ${n + 1} is unlocked.` : n === 8 ? 'Section 8 done. The final check is unlocked.' : 'Done!'); }
+  if (secDone(n) && !S.secDone[n]) { S.secDone[n] = true; toast(n < NSEC ? `Section ${n} done. Section ${n + 1} is unlocked.` : n === NSEC ? 'Section 8 done. The final check is unlocked.' : 'Done!'); }
   renderReqs(n, id); renderGoals();
-  const after = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(accessible); const pop = after.findIndex((a, i) => a && !before[i]);
+  const after = ALLN.map(accessible); const pop = after.findIndex((a, i) => a && !before[i]);
   renderNav(pop >= 0 ? pop + 1 : null); save(true);
 }
 function renderReqs(n, justId) {
@@ -674,24 +666,24 @@ function renderReqs(n, justId) {
   const nb = $('.nextbtn', box); if (nb) nb.disabled = !accessible(n + 1);
 }
 function unlockBox(n) {
-  return `<div class="unlock" id="unlock-${n}"><h4>To unlock ${n < 8 ? 'section ' + (n + 1) : 'the final check'}</h4><ul class="reqs"></ul>
-    <button class="btn primary nextbtn" type="button" data-go="${n + 1}" disabled>${n < 8 ? 'Next: ' + TILES[n + 1].title : 'Go to the final check'}</button></div>`;
+  return `<div class="unlock" id="unlock-${n}"><h4>To unlock ${n < NSEC ? 'section ' + (n + 1) : 'the exit check'}</h4><ul class="reqs"></ul>
+    <button class="btn primary nextbtn" type="button" data-go="${n + 1}" disabled>${n < NSEC ? 'Next: ' + TILES[n + 1].title : 'Go to the exit check'}</button></div>`;
 }
 function renderGoals() {
   $('#goals').innerHTML = GOALS.map(g => `<li class="${g.sec.every(n => S.secDone[n]) ? 'ok' : ''}">${g.t}</li>`).join('');
 }
 function renderNav(popN) {
   $('#nav').innerHTML = TILES.slice(1).map((t, i) => {
-    const n = i + 1, dn = n <= 9 ? secDone(n) && (n < 9 || S.final.passed) : false, ok = accessible(n);
-    return `<button type="button" class="tile ${S.cur === n ? 'current' : ''} ${dn ? 'done' : ''} ${n === popN && !REDUCED ? 'unlocking' : ''}" data-go="${n}" ${ok ? '' : 'disabled'} title="${esc(t.title)}" aria-label="Section ${n}: ${esc(t.title)}${ok ? '' : ' (locked)'}"><span class="n">${n === 10 ? '' : n}</span>${icon(t.ic)}<span class="lb">${t.name}</span><span class="ck" aria-hidden="true">✓</span></button>`;
+    const n = i + 1, dn = n <= FIN ? secDone(n) && (n < FIN || S.final.passed) : false, ok = accessible(n);
+    return `<button type="button" class="tile ${S.cur === n ? 'current' : ''} ${dn ? 'done' : ''} ${n === popN && !REDUCED ? 'unlocking' : ''}" data-go="${n}" ${ok ? '' : 'disabled'} title="${esc(t.title)}" aria-label="Section ${n}: ${esc(t.title)}${ok ? '' : ' (locked)'}"><span class="n">${n === RES ? '' : n}</span>${icon(t.ic)}<span class="lb">${t.name}</span><span class="ck" aria-hidden="true">✓</span></button>`;
   }).join('');
 }
 function go(n) {
-  if (n < 0 || n > 10) return;
+  if (n < 0 || n > RES) return;
   if (!accessible(n)) { toast(S.student ? 'Finish the section before this one to unlock it.' : 'Sign in to start.'); return; }
   S.cur = n;
   $$('.page').forEach(p => p.classList.remove('show')); $('#page' + n).classList.add('show');
-  renderNav(); if (n === 9) renderFinal(); if (n === 10) renderResults(); if (n === 0) renderStart();
+  renderNav(); if (n === FIN) renderFinal(); if (n === RES) renderResults(); if (n === 0) renderStart();
   window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
   if (S.student) save();
 }
@@ -699,7 +691,7 @@ document.addEventListener('click', e => { const b = e.target.closest('[data-go]'
 function secHead(n) {
   const t = TILES[n];
   return `<div class="sechead"><div class="bigtile"><span class="n">${n}</span>${icon(t.ic)}<span>${t.name}</span></div>
-    <div><div class="meta">Section ${n} of 9 · about ${t.min} min</div><h2>${t.title}</h2></div></div>`;
+    <div><div class="meta">Section ${n} of ${FIN} · about ${t.min} min</div><h2>${t.title}</h2></div></div>`;
 }
 
 /* =========================================================
@@ -708,7 +700,7 @@ function secHead(n) {
 const QC = {};
 function qcHTML(n, k, q) {
   const id = `s${n}${k}`; QC[id] = Object.assign({ n, k }, q);
-  return `<div class="qcwrap" id="qc-${id}"><p><b>Quick check ${k === 'q1' ? 1 : 2}.</b> ${q.q}</p>${q.fig || ''}
+  return `<div class="qcwrap" id="qc-${id}"><p><b>${q.label || 'Quick check ' + (k === 'q1' ? 1 : 2)}.</b> ${q.q}</p>${q.fig || ''}
     <div class="opts">${q.opts.map((o, i) => `<button type="button" class="opt" data-qc="${id}" data-i="${i}"><span class="L">${LET[i]}</span><span>${o}</span></button>`).join('')}</div>
     <p class="fb" data-fb></p><div class="keyonly keytag">Answer: ${LET[q.a]}</div></div>`;
 }
@@ -804,195 +796,6 @@ function fbdSVG(arrows, o = {}) {
 }
 
 /* =========================================================
-   SECTION 1: WHAT IS A FORCE?
-   ========================================================= */
-const SORT1 = [['A hand pushing a door open', 'c'], ['Earth pulling a falling apple down', 'n'], ['A magnet pulling a paperclip from 2 cm away', 'n'], ['Friction on a box sliding across the floor', 'c'],
-  ['A rope pulling a sled', 'c'], ['A charged balloon lifting your hair from a few cm away', 'n'], ['A table holding up a book', 'c'], ['The Sun pulling on Earth', 'n']];
-function build1() {
-  $('#page1').innerHTML = secHead(1) + `
-  <div class="card"><span class="chip read">Read</span><h3>Pushes and pulls</h3>
-    <div class="cols"><div>
-      <p>A ${wh('force')} is a push or a pull. Every force comes from an <b>interaction</b> between two objects: your foot and a ball, Earth and an apple, a rope and a sled.</p>
-      <p>A force has a <b>size</b> and a <b>direction</b>, so it is a ${wh('vector')}. We draw forces as arrows: the arrow points the way the force pushes or pulls, and a longer arrow means a bigger force. Force is measured in ${wh('newton', 'newtons')} (N).</p>
-      <ul><li><b>${wh('contact force', 'Contact forces')}</b> only act when objects touch: pushes, friction, a surface holding something up, a rope pulling.</li>
-        <li><b>${wh('non-contact force', 'Non-contact forces')}</b> act across a distance: gravity, magnetic forces, and electric (static) forces.</li></ul>
-      <div class="callout">One newton is about the weight of a small apple. A typical high school student weighs around 600 to 700 N.</div>
-    </div><div class="fig">${fbdSVG([{ dir: 'right', f: 'F_a', len: 80, label: '20 N push' }, { dir: 'left', f: 'F_f', len: 40, label: '10 N friction' }], { box: 1, id: 'h1', label: 'A box with a 20 N push right and a 10 N friction force left' })}<div class="figcap">Arrows show direction; length shows size. The 20 N arrow is twice as long as the 10 N arrow.</div></div></div></div>
-  <div class="card"><span class="chip try">Try it</span><h3>Contact or non-contact?</h3><p>Sort each force, then press <b>Check</b>.</p>
-    <div id="sort1">${SORT1.map(([t], i) => `<div class="numrow" style="grid-template-columns:minmax(0,1fr) auto"><div>${t}</div><div class="row"><button type="button" class="btn small" data-s1="${i}" data-v="c">Contact</button><button type="button" class="btn small" data-s1="${i}" data-v="n">Non-contact</button></div></div>`).join('')}</div>
-    <div class="row" style="margin-top:8px"><button class="btn" type="button" id="s1chk">Check</button><span class="fb" id="s1fb" style="margin:0"></span></div>
-    <div class="keyonly keytag">Answer: ${SORT1.map(([t, v]) => v === 'c' ? 'C' : 'N').join(', ')}</div></div>
-  ${qcCard(1,
-    { q: 'Which of these is a non-contact force?', opts: ['Friction', 'The push of your hand', 'Gravity', 'Tension in a rope'], a: 2, why: 'Gravity pulls across a distance; the others need touching.', hint: 'Which one works even when the objects aren\u2019t touching?' },
-    { q: 'What unit is force measured in?', opts: ['Kilograms (kg)', 'Newtons (N)', 'Meters per second (m/s)', 'Meters (m)'], a: 1, why: 'Force is measured in newtons. Kilograms measure mass.', hint: 'It\u2019s named after the scientist who wrote the laws of motion.' })}
-  ${unlockBox(1)}`;
-  const st = simGet(1, 'ans', {});
-  const paint = () => $$('[data-s1]').forEach(b => b.classList.toggle('on', st[b.dataset.s1] === b.dataset.v));
-  $$('[data-s1]').forEach(b => b.addEventListener('click', () => { st[b.dataset.s1] = b.dataset.v; simSet(1, 'ans', st); paint(); save(); }));
-  paint();
-  $('#s1chk').addEventListener('click', () => {
-    const right = SORT1.filter(([, v], i) => st[i] === v).length, fb = $('#s1fb');
-    $$('#sort1 .numrow').forEach((r, i) => { r.style.borderColor = st[i] == null ? '' : st[i] === SORT1[i][1] ? 'var(--teal)' : 'var(--red)'; });
-    if (right === SORT1.length) { fb.className = 'fb ok'; fb.textContent = 'All 8 correct.'; req(1, 'sim'); }
-    else { fb.className = 'fb no'; fb.textContent = `${right} of 8 correct. Red rows need another look: do the objects have to touch?`; }
-  });
-}
-
-/* =========================================================
-   SECTION 2: COMMON TYPES OF FORCES
-   ========================================================= */
-const MATCH2 = [['A lamp hangs from the ceiling. The cord pulls up on it.', 'F_T'], ['A book rests on a table. The table pushes up on it.', 'F_N'], ['A hockey puck slides on rough ice and slows down.', 'F_f'],
-  ['A skydiver falls. What pulls the skydiver down?', 'F_g'], ['You push a shopping cart across the store.', 'F_a'], ['A skydiver opens a parachute. The air pushes up on it.', 'F_air']];
-function build2() {
-  $('#page2').innerHTML = secHead(2) + `
-  <div class="card"><span class="chip read">Read</span><h3>The forces you'll see all unit</h3>
-    <div class="tablewrap"><table class="dt" style="width:100%"><tr><th>Force</th><th>Symbol</th><th>Direction</th><th>Example</th></tr>
-      <tr><td>${wh('weight', 'Weight')} (gravity)</td><td>${F('g')}</td><td>Always straight down</td><td>Earth pulling on you</td></tr>
-      <tr><td>${wh('normal force', 'Normal force')}</td><td>${F('N')}</td><td>Straight out of the surface (up from a floor)</td><td>A floor holding you up</td></tr>
-      <tr><td>${wh('friction', 'Friction')}</td><td>${F('f')}</td><td>Opposite the sliding (or attempted sliding)</td><td>Brakes, a box dragged across carpet</td></tr>
-      <tr><td>Applied force</td><td>${F('a')}</td><td>Whatever way the push or pull goes</td><td>Pushing a cart</td></tr>
-      <tr><td>${wh('tension', 'Tension')}</td><td>${F('T')}</td><td>Along the rope, away from the object</td><td>A rope pulling a sled</td></tr>
-      <tr><td>Air resistance</td><td>${F('air')}</td><td>Opposite the motion through the air</td><td>A parachute</td></tr></table></div>
-    <div class="callout teal" style="margin-top:10px">The normal force is <b>not</b> always equal to the weight, and it\u2019s not a "reaction" to weight. It is whatever push the surface needs to give. On a flat floor with nothing else pushing up or down, it happens to match the weight.</div></div>
-  <div class="card"><span class="chip try">Try it</span><h3>Name that force</h3><p>Pick the force each sentence describes, then press <b>Check</b>.</p>
-    <div id="match2">${MATCH2.map(([t], i) => `<div class="numrow"><div>${t}</div><div class="in"><select data-m2="${i}" style="padding:7px;border-radius:8px;border:1px solid var(--line2);background:var(--panel);color:var(--ink);font-family:inherit"><option value="">Choose</option>${Object.keys(FNAME).map(k2 => `<option value="${k2}">${FNAME[k2]}</option>`).join('')}</select></div></div>`).join('')}</div>
-    <div class="row" style="margin-top:8px"><button class="btn" type="button" id="m2chk">Check</button><span class="fb" id="m2fb" style="margin:0"></span></div>
-    <div class="keyonly keytag">Answer: ${MATCH2.map(([, v]) => FNAME[v]).join(', ')}</div></div>
-  ${qcCard(2,
-    { q: 'A book rests on a table. Which force does the table exert on the book?', opts: ['Weight', 'Friction', 'Normal force', 'Tension'], a: 2, why: 'A surface pushes out of itself on whatever rests on it: the normal force.', hint: 'Which force is a surface pushing outward?' },
-    { q: 'A box slides to the right across a rough floor. Which way does friction on the box point?', opts: ['Right', 'Left', 'Up', 'Down'], a: 1, why: 'Friction opposes the sliding, so it points left.', hint: 'Friction works against the sliding.' })}
-  ${unlockBox(2)}`;
-  const st = simGet(2, 'ans', {});
-  $$('[data-m2]').forEach(s => { if (st[s.dataset.m2]) s.value = st[s.dataset.m2]; s.addEventListener('change', () => { st[s.dataset.m2] = s.value; simSet(2, 'ans', st); s.style.borderColor = ''; save(); }); });
-  $('#m2chk').addEventListener('click', () => {
-    let right = 0; $$('[data-m2]').forEach(s => { const ok2 = s.value === MATCH2[+s.dataset.m2][1]; if (ok2) right++; s.style.borderColor = s.value ? (ok2 ? 'var(--teal)' : 'var(--red)') : ''; });
-    const fb = $('#m2fb'); if (right === MATCH2.length) { fb.className = 'fb ok'; fb.textContent = 'All 6 correct.'; req(2, 'sim'); } else { fb.className = 'fb no'; fb.textContent = `${right} of 6 correct. Use the table above.`; }
-  });
-}
-
-/* =========================================================
-   SECTION 3: FREE-BODY DIAGRAMS
-   ========================================================= */
-const FBD3 = [
-  { t: 'A book resting on a table', a: { up: 'F_N', down: 'F_g', left: '', right: '' } },
-  { t: 'A lamp hanging at rest from a cord', a: { up: 'F_T', down: 'F_g', left: '', right: '' } },
-  { t: 'A box pushed to the right across a rough floor', a: { up: 'F_N', down: 'F_g', left: 'F_f', right: 'F_a' } },
-  { t: 'A skydiver falling with an open parachute', a: { up: 'F_air', down: 'F_g', left: '', right: '' } },
-  { t: 'A sled pulled to the left by a rope across rough snow', a: { up: 'F_N', down: 'F_g', left: 'F_T', right: 'F_f' } }];
-function build3() {
-  $('#page3').innerHTML = secHead(3) + `
-  <div class="card"><span class="chip read">Read</span><h3>One object, every force</h3>
-    <div class="cols"><div>
-      <p>A ${wh('free-body diagram')} (FBD) shows <b>one object</b> and <b>every force acting on it</b>. To draw one:</p>
-      <ol><li>Draw the object as a dot (or a small box).</li>
-        <li>Draw an arrow for each force, starting at the dot and pointing <b>away</b> from it in the force's direction.</li>
-        <li>Make bigger forces longer arrows.</li>
-        <li>Label every arrow (${F('g')}, ${F('N')}, ${F('f')}, ${F('a')}, ${F('T')}, ${F('air')}).</li></ol>
-      <p>Only include forces acting <b>on</b> the object, not forces the object puts on other things. Every object near Earth has ${F('g')}.</p>
-    </div><div class="fig">${fbdSVG([{ dir: 'up', f: 'F_N', len: 70 }, { dir: 'down', f: 'F_g', len: 70 }, { dir: 'right', f: 'F_a', len: 80 }, { dir: 'left', f: 'F_f', len: 45 }], { id: 'r3', W: 300, label: 'FBD of a box pushed right across a rough floor' })}<div class="figcap">A box pushed to the right across a rough floor.</div></div></div></div>
-  <div class="card"><span class="chip try">Try it</span><h3>Free-body diagram builder</h3>
-    <p>For each situation, choose the force (or none) in each direction. Press <b>Check</b>. Build at least 3 correct diagrams.</p>
-    <div class="row" id="fbdPick">${FBD3.map((s, i) => `<button type="button" class="btn small" data-fbd="${i}">${i + 1}</button>`).join('')}</div>
-    <p id="fbdT" style="font-weight:600;margin:10px 0 4px"></p>
-    <div class="cols"><div>${['up', 'down', 'left', 'right'].map(d => `<div class="numrow"><div>Arrow pointing <b>${d}</b></div><div class="in"><select data-dir="${d}" style="padding:7px;border-radius:8px;border:1px solid var(--line2);background:var(--panel);color:var(--ink);font-family:inherit"><option value="">none</option>${Object.keys(FNAME).map(k2 => `<option value="${k2}">${k2.replace('_', ' ')} (${FNAME[k2]})</option>`).join('')}</select></div></div>`).join('')}
-      <div class="row" style="margin-top:8px"><button class="btn" type="button" id="fbdChk">Check</button><span class="fb" id="fbdFb" style="margin:0"></span></div><p class="muted" id="fbdN" style="font-size:.85rem"></p></div>
-      <div class="fig" id="fbdFig"></div></div>
-    <div class="keyonly keytag" id="fbdKey"></div></div>
-  ${qcCard(3,
-    { q: 'In a free-body diagram, how is the object drawn?', opts: ['As a detailed sketch', 'As a graph of its motion', 'With arrows pointing toward it', 'As a dot, with an arrow for each force pointing away from it'], a: 3, why: 'An FBD shrinks the object to a dot so only the forces show.', hint: 'Which choice keeps only the forces?' },
-    { q: 'A lamp hangs at rest from a cord. Which forces belong on its free-body diagram?', opts: ['Only weight', 'Weight and tension', 'Weight, tension, and normal force', 'Tension and friction'], a: 1, why: 'Gravity pulls it down; the cord pulls it up. Nothing touches it from below, so there is no normal force.', hint: 'What is touching the lamp?' })}
-  ${unlockBox(3)}`;
-  let cur = 0; const done = new Set(simGet(3, 'done', []));
-  const draw = () => {
-    const arrows = $$('[data-dir]').filter(s => s.value).map(s => ({ dir: s.dataset.dir, f: s.value, len: 70 }));
-    $('#fbdFig').innerHTML = fbdSVG(arrows, { id: 'b3', W: 300, label: 'Your free-body diagram' }) + '<div class="figcap">Your diagram</div>';
-  };
-  const show = i => { cur = i; $$('[data-fbd]').forEach(b => b.classList.toggle('on', +b.dataset.fbd === i || done.has(+b.dataset.fbd))); $('#fbdT').textContent = `${i + 1}. ${FBD3[i].t}`;
-    $$('[data-dir]').forEach(s => { s.value = ''; s.style.borderColor = ''; }); $('#fbdFb').textContent = ''; draw();
-    $('#fbdKey').textContent = 'Answer: ' + ['up', 'down', 'left', 'right'].map(d => `${d}: ${FBD3[i].a[d] || 'none'}`).join(', '); $('#fbdN').textContent = `${done.size} of 3 diagrams built correctly.`; };
-  $$('[data-fbd]').forEach(b => b.addEventListener('click', () => show(+b.dataset.fbd)));
-  $$('[data-dir]').forEach(s => s.addEventListener('change', () => { s.style.borderColor = ''; draw(); }));
-  $('#fbdChk').addEventListener('click', () => {
-    const ans = FBD3[cur].a; let right = 0; $$('[data-dir]').forEach(s => { const r = s.value === ans[s.dataset.dir]; if (r) right++; s.style.borderColor = r ? 'var(--teal)' : 'var(--red)'; });
-    const fb = $('#fbdFb');
-    if (right === 4) { fb.className = 'fb ok'; fb.textContent = 'Correct diagram!'; done.add(cur); simSet(3, 'done', [...done]); $('#fbdN').textContent = `${done.size} of 3 diagrams built correctly.`; if (done.size >= 3) req(3, 'sim'); else save(); }
-    else { fb.className = 'fb no'; fb.textContent = 'Not yet. Red boxes need another look. What is touching the object? Which way does friction oppose?'; }
-  });
-  show(0);
-}
-
-/* =========================================================
-   SECTION 4: NET FORCE IN ONE DIRECTION
-   ========================================================= */
-function build4() {
-  $('#page4').innerHTML = secHead(4) + `
-  <div class="card"><span class="chip read">Read</span><h3>Add them up, with signs</h3>
-    <div class="cols"><div>
-      <p>The ${wh('net force')} is the total of all the forces on an object, counting directions. Pick right as positive. Then forces to the left are negative, and you just add.</p>
-      <ul><li>Same direction: the forces add up.</li><li>Opposite directions: they partly cancel.</li><li>A positive answer means the net force points right; negative means left; zero means they cancel.</li></ul>
-      <div class="callout"><b>Example.</b> You push a box with 40 N to the right. Friction pushes back with 15 N to the left. Find the net force.
-        <p class="known">Known: ${k('vx', F('1x'))} = ${k('vx', '+40 N')} (right), ${k('a', F('2x'))} = ${k('a', '−15 N')} (left)</p>
-        ${work('', [['Equation', `${SFx} = ${k('vx', F('1x'))} + ${k('a', F('2x'))}`], ['Plug in', `${SFx} = ${k('vx', '40')} + ${k('a', '(−15)')}`], ['Solve', `${SFx} = <b>+25 N</b>, so the net force is <b>25 N to the right</b>`]])}${COLORNOTE}</div>
-    </div><div>${EQ_NET}<div class="fig">${fbdSVG([{ dir: 'right', f: 'F_a', len: 90, label: '40 N' }, { dir: 'left', f: 'F_f', len: 34, label: '15 N' }], { box: 1, id: 'r4', W: 300, H: 170, label: 'Box with 40 N right and 15 N left' })}</div></div></div></div>
-  <div class="card"><span class="chip try">Try it</span><h3>Tug-of-war</h3>
-    <p>Set how hard each team pulls. Watch the net force on the rope. Complete both missions.</p>
-    <div class="fig" id="tugFig"></div>
-    <div class="ctrls"><div class="ctrl"><label for="tugL"><span>Left team pulls</span> <b id="tugLv"></b></label><input type="range" id="tugL" min="0" max="600" step="25" value="300"></div>
-      <div class="ctrl"><label for="tugR"><span>Right team pulls</span> <b id="tugRv"></b></label><input type="range" id="tugR" min="0" max="600" step="25" value="200"></div></div>
-    <div class="readouts" id="tugRo"></div>
-    ${missionsHTML(4, ['Make the net force exactly 150 N to the left.', 'Make the forces balanced with each team pulling at least 400 N.'])}</div>
-  ${pracCard(4, 'Practice: net force in one direction', 'Right is positive. Type a negative number for a net force to the left.', [
-    { id: 'p4a', q: 'A wagon is pulled 12 N to the right while friction pulls 5 N to the left. What is the net force?', ans: 7, show: '+7', unit: 'N', tol: 0.05, hint: 'Friction is to the left, so give it a minus sign before adding.', sol: 'ΣF_x = 12 + (−5) = +7 N, so 7 N to the right' },
-    { id: 'p4b', q: 'A box has three horizontal forces: 30 N to the left, 18 N to the right, and 4 N to the right. What is the net force?', ans: -8, show: '−8', unit: 'N', tol: 0.05, hint: 'Add all three with signs. Which side wins?', sol: 'ΣF_x = (−30) + 18 + 4 = −8 N, so 8 N to the left' },
-    { id: 'p4c', q: 'In a tug-of-war, the left team pulls with 250 N and the right team pulls with 250 N. What is the net force on the rope?', ans: 0, show: '0', unit: 'N', tol: 0.05, hint: 'Equal forces in opposite directions.', sol: 'ΣF_x = 250 + (−250) = 0 N' }
-  ])}
-  ${qcCard(4,
-    { q: 'A box has 30 N pushing right and 30 N pushing left. What is the net force?', opts: ['60 N right', '30 N right', '0 N', '60 N left'], a: 2, why: '30 + (−30) = 0. The forces cancel.', hint: 'Give the left force a minus sign.' },
-    { q: 'A 15 N push to the right and 20 N of friction to the left act on a box. What is the net force?', opts: ['35 N right', '5 N left', '5 N right', '35 N left'], a: 1, why: '15 + (−20) = −5 N, which means 5 N to the left.', hint: 'Which force is bigger, and which way does it point?' })}
-  ${unlockBox(4)}`;
-  const sl = $('#tugL'), sr = $('#tugR'), done = simGet(4, 'done', [false, false]);
-  const draw = () => {
-    const L = +sl.value, R = +sr.value, net = R - L; $('#tugLv').textContent = L + ' N'; $('#tugRv').textContent = R + ' N';
-    const W = 560, H = 150, cx = W / 2, cy = 70, s = 0.32;
-    let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Tug-of-war"><line x1="40" y1="${cy}" x2="${W - 40}" y2="${cy}" stroke="#a3b2d2" stroke-width="4"/><rect x="${cx - 5}" y="${cy - 16}" width="10" height="32" fill="#ffcf5a"/>`;
-    svg += `<line x1="${cx}" y1="${cy - 30}" x2="${cx - L * s}" y2="${cy - 30}" stroke="#6cb8ff" stroke-width="4"/><path d="M${cx - L * s} ${cy - 30} l10 -6 v12z" fill="#6cb8ff"/><text x="${cx - L * s / 2}" y="${cy - 40}" fill="#6cb8ff" font-size="12" text-anchor="middle">${L} N</text>`;
-    svg += `<line x1="${cx}" y1="${cy + 30}" x2="${cx + R * s}" y2="${cy + 30}" stroke="#ff7f86" stroke-width="4"/><path d="M${cx + R * s} ${cy + 30} l-10 -6 v12z" fill="#ff7f86"/><text x="${cx + R * s / 2}" y="${cy + 50}" fill="#ff7f86" font-size="12" text-anchor="middle">${R} N</text>`;
-    svg += `<text x="40" y="${H - 6}" fill="#6cb8ff" font-size="12">Left team</text><text x="${W - 40}" y="${H - 6}" fill="#ff7f86" font-size="12" text-anchor="end">Right team</text></svg>`;
-    $('#tugFig').innerHTML = svg;
-    $('#tugRo').innerHTML = ro('Net force =', net === 0 ? '0 N (balanced)' : `${Math.abs(net)} N ${net > 0 ? 'right' : 'left'}`) + ro('The rope\u2019s motion:', net === 0 ? 'does not change' : `changes toward the ${net > 0 ? 'right' : 'left'}`);
-    let ch = false; if (!done[0] && net === -150) { done[0] = true; ch = true; } if (!done[1] && net === 0 && L >= 400) { done[1] = true; ch = true; }
-    paintMissions(4, done); if (ch) { simSet(4, 'done', done); toast('Mission complete!'); if (done.every(Boolean)) req(4, 'sim'); else save(); }
-  };
-  sl.addEventListener('input', draw); sr.addEventListener('input', draw); draw();
-}
-
-/* =========================================================
-   SECTION 5: NET FORCE IN TWO DIRECTIONS
-   ========================================================= */
-function build5() {
-  $('#page5').innerHTML = secHead(5) + `
-  <div class="card"><span class="chip read">Read</span><h3>Sideways and up-down are separate</h3>
-    <div class="cols"><div>
-      <p>Just like velocity in projectile motion, forces in the x direction (sideways) and the y direction (up and down) are added <b>separately</b>. A sideways push can't cancel an upward force.</p>
-      <p>Find ${SFx} from the horizontal forces and ${SFy} from the vertical forces. Right and up are positive.</p>
-      <div class="callout"><b>Example.</b> You push a 200 N box across the floor with 50 N to the right. Friction is 10 N to the left. The floor pushes up with 200 N. Find ${SFx} and ${SFy}.
-        <p class="known">Known: ${k('vx', F('a'))} = ${k('vx', '+50 N')}, ${k('a', F('f'))} = ${k('a', '−10 N')}, ${k('vf', F('N'))} = ${k('vf', '+200 N')}, ${k('vi', F('g'))} = ${k('vi', '−200 N')}</p>
-        ${work('x direction', [['Equation', `${SFx} = ${k('vx', F('a'))} + ${k('a', F('f'))}`], ['Plug in', `${SFx} = ${k('vx', '50')} + ${k('a', '(−10)')}`], ['Solve', `${SFx} = <b>+40 N</b> (40 N to the right)`]])}
-        ${work('y direction', [['Equation', `${SFy} = ${k('vf', F('N'))} + ${k('vi', F('g'))}`], ['Plug in', `${SFy} = ${k('vf', '200')} + ${k('vi', '(−200)')}`], ['Solve', `${SFy} = <b>0 N</b>`]])}${COLORNOTE}
-        <p style="margin:6px 0 0">So the net force is <b>40 N to the right</b>. The box speeds up sideways, but it doesn't rise or sink into the floor.</p></div>
-    </div><div>${EQ_NET}<div class="fig">${fbdSVG([{ dir: 'right', f: 'F_a', len: 75, label: '50 N' }, { dir: 'left', f: 'F_f', len: 30, label: '10 N' }, { dir: 'up', f: 'F_N', len: 80, label: '200 N' }, { dir: 'down', f: 'F_g', len: 80, label: '200 N' }], { box: 1, id: 'r5', W: 300, H: 260, label: 'FBD of a pushed box' })}</div></div></div></div>
-  ${pracCard(5, 'Practice: net force in two directions', 'Right and up are positive. Type a negative number for left or down.', [
-    { id: 'p5a', q: 'A sled is pulled 60 N to the right across snow. Friction is 20 N to the left. The sled weighs 150 N and the snow pushes up with 150 N. What is the horizontal net force ΣF<sub>x</sub>?', ans: 40, show: '+40', unit: 'N', tol: 0.05, hint: 'Only the sideways forces go into ΣF_x.', sol: 'ΣF_x = 60 + (−20) = +40 N' },
-    { id: 'p5b', q: 'Same sled. What is the vertical net force ΣF<sub>y</sub>?', ans: 0, show: '0', unit: 'N', tol: 0.05, hint: 'Only the up and down forces go into ΣF_y.', sol: 'ΣF_y = 150 + (−150) = 0 N' },
-    { id: 'p5c', q: 'An elevator cable pulls up on the elevator with 9,000 N. The elevator weighs 8,000 N. What is the vertical net force?', ans: 1000, show: '+1000', unit: 'N', tol: 1, hint: 'Tension up is positive; weight down is negative.', sol: 'ΣF_y = 9000 + (−8000) = +1000 N, so 1000 N up' }
-  ])}
-  ${qcCard(5,
-    { q: 'You push a heavy box sideways across the floor. Why don\u2019t you include its weight when finding ΣF<sub>x</sub>?', opts: ['The weight is too small to matter', 'Forces in the x and y directions are added separately', 'Weight only acts on moving objects', 'Weight and the push always cancel'], a: 1, why: 'Weight points down, so it only goes into ΣF_y.', hint: 'Which direction does weight point?' },
-    { q: 'An elevator cable pulls up with 900 N, and the elevator\u2019s weight is 800 N. What is ΣF<sub>y</sub>?', opts: ['1700 N up', '100 N down', '100 N up', '0 N'], a: 2, why: '900 + (−800) = +100 N, so 100 N up.', hint: 'Up is positive, down is negative.' })}
-  ${unlockBox(5)}`;
-}
-
-/* =========================================================
    CART LAB (sections 6 and 7)
    Mass 2 kg, runs 3 s. Students only see forces and motion.
    ========================================================= */
@@ -1035,105 +838,215 @@ function cartLab(n, missions, check) {
   } };
 }
 
+
 /* =========================================================
-   SECTION 6: BALANCED FORCES
+   ANCHORING PHENOMENON: the tug-of-war that won't move
    ========================================================= */
-function build6() {
-  const lab = cartLab(6, ['Keep the cart at rest while at least 4 N pushes on each side.', 'Keep the cart moving at a steady speed while at least 4 N pushes on each side.'],
-    r => [r.v0 === 0 && r.net === 0 && r.R >= 4, r.v0 > 0 && r.net === 0 && r.R >= 4]);
-  $('#page6').innerHTML = secHead(6) + `
-  <div class="card"><span class="chip read">Read</span><h3>Net force zero: no change in motion</h3>
+function tugScene(shift, helper, label) {
+  const W = 600, H = 200, cy = 120, cx = 300 + shift;
+  const person = (x, col) => `<circle cx="${x}" cy="${cy - 46}" r="9" fill="${col}"/><path d="M${x} ${cy - 37} v26 M${x} ${cy - 11} l-10 26 M${x} ${cy - 11} l10 26 M${x} ${cy - 30} l${x < cx ? 18 : -18} 14" stroke="${col}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${label || 'Tug-of-war'}"><rect width="${W}" height="${H}" fill="#101a30"/><line x1="0" y1="${cy + 16}" x2="${W}" y2="${cy + 16}" stroke="#2f7a4f" stroke-width="6"/>`;
+  s += `<line x1="300" y1="${cy + 10}" x2="300" y2="${cy + 22}" stroke="#ffcf5a" stroke-width="3"/><text x="300" y="${cy + 40}" font-size="11" fill="#ffcf5a" text-anchor="middle">center line</text>`;
+  s += `<line x1="${cx - 230}" y1="${cy - 16}" x2="${cx + 230}" y2="${cy - 16}" stroke="#d8b878" stroke-width="5"/><rect x="${cx - 5}" y="${cy - 26}" width="10" height="20" fill="#ff7f86"/>`;
+  [-210, -170, -130].forEach(o => s += person(cx + o, '#6cb8ff'));
+  [130, 170, 210].forEach(o => s += person(cx + o, '#ffcf5a'));
+  if (helper) s += person(cx + 250, '#3fd6a0') + `<text x="${cx + 250}" y="${cy - 64}" font-size="11" fill="#3fd6a0" text-anchor="middle">helper</text>`;
+  return s + `</svg>`;
+}
+function phenomenonCard() {
+  const st = S.sim[1] || {};
+  return `<div class="card" style="border-color:var(--amber)"><span class="chip qc">Phenomenon</span><h3>The tug-of-war that won\u2019t move</h3>
+    <p>Two teams of three pull on a rope as hard as they can. Everyone is straining, but the red flag in the middle doesn\u2019t budge. Then one more person grabs the right side.</p>
+    <div class="fig" id="phFig"></div>
+    <div class="row" style="margin-top:8px"><button class="btn primary" type="button" data-ph="even">Play: even teams</button><button class="btn" type="button" data-ph="helper">Play: a helper joins</button></div>
+    <div class="cols" style="margin-top:12px"><div><label class="muted" for="phN" style="font-size:.86rem">What do you <b>notice</b>?</label><textarea id="phN" data-ph-t="notice" class="phbox">${esc(st.notice || '')}</textarea></div>
+      <div><label class="muted" for="phW" style="font-size:.86rem">What do you <b>wonder</b>?</label><textarea id="phW" data-ph-t="wonder" class="phbox">${esc(st.wonder || '')}</textarea></div></div>
+    <label class="muted" for="phE" style="font-size:.86rem;display:block;margin-top:8px"><b>Your first explanation:</b> Everyone is pulling hard, so why doesn\u2019t the rope move at first? And why does one extra person change everything? (A guess is fine. You\u2019ll come back to this.)</label>
+    <textarea id="phE" data-ph-t="init" class="phbox" style="min-height:80px">${esc(st.init || '')}</textarea>
+    <div class="row" style="margin-top:6px"><button class="btn" type="button" id="phSave">Save my first explanation</button><span class="fb" id="phMsg" style="margin:0"></span></div></div>`;
+}
+function initPhenomenon() {
+  const fig = $('#phFig'); fig.innerHTML = tugScene(0, false);
+  $$('[data-ph]').forEach(b => b.addEventListener('click', () => {
+    const helper = b.dataset.ph === 'helper'; $$('[data-ph]').forEach(x => x.disabled = true);
+    run('ph', 3, t => { const shift = helper ? Math.min(150, 40 * t * t) : Math.sin(t * 9) * 3; fig.innerHTML = tugScene(shift, helper && t > 0.15); },
+      () => { $$('[data-ph]').forEach(x => x.disabled = false); });
+  }));
+  $$('[data-ph-t]').forEach(t => t.addEventListener('input', () => { simSet(1, t.dataset.phT, t.value); const pi = document.getElementById('phInit'); if (pi && t.dataset.phT === 'init') pi.textContent = t.value; clearTimeout(initPhenomenon.T); initPhenomenon.T = setTimeout(save, 600); }));
+  $('#phSave').addEventListener('click', () => {
+    const w = String(simGet(1, 'init', '')).trim().split(/\s+/).filter(Boolean).length, m = $('#phMsg');
+    if (w < 8) { m.className = 'fb no'; m.textContent = 'Write at least a sentence or two (8+ words) with your best idea.'; return; }
+    m.className = 'fb ok'; m.textContent = 'Saved. You\u2019ll revisit this at the end of the lesson.'; req(1, 'phen');
+  });
+  if (S.reqs['1.phen']) { $('#phMsg').className = 'fb ok'; $('#phMsg').textContent = 'Saved. You\u2019ll revisit this at the end of the lesson.'; }
+}
+function phenRevisit() {
+  const init = simGet(1, 'init', ''), fin = simGet(5, 'final', '');
+  return `<div class="card" style="border-color:var(--amber)"><span class="chip qc">Revisit the phenomenon</span><h3>The tug-of-war, again</h3>
+    <div class="fig" style="max-width:460px">${tugScene(0, false, 'Even teams')}</div>
+    <p class="muted" style="font-size:.86rem">Your first explanation:</p><div class="callout" id="phInit" style="white-space:pre-wrap">${init ? esc(init) : '(You haven\u2019t written one yet. Go back to section 1.)'}</div>
+    <p>Suppose each team pulls with 600 N, and the helper adds 150 N to the right side.</p>
+    <label class="muted" for="phF" style="font-size:.86rem;display:block">Explain both parts again using <b>net force</b>, <b>balanced</b>, and <b>unbalanced</b>. Include the net force in each case.</label>
+    <textarea id="phF" class="phbox" style="min-height:100px">${esc(fin)}</textarea>
+    <div class="row" style="margin-top:6px"><button class="btn" type="button" id="phSave2">Save my revised explanation</button><span class="fb" id="phMsg2" style="margin:0"></span></div></div>`;
+}
+function initRevisit() {
+  $('#phF').addEventListener('input', e => { simSet(5, 'final', e.target.value); clearTimeout(initRevisit.T); initRevisit.T = setTimeout(save, 600); });
+  $('#phSave2').addEventListener('click', () => {
+    const t = String(simGet(5, 'final', '')).toLowerCase(), w = t.trim().split(/\s+/).filter(Boolean).length, m = $('#phMsg2');
+    const used = [/net force/, /\bbalanced/, /unbalanced/, /\b0\b|zero|150/].filter(r => r.test(t)).length;
+    if (w < 15) { m.className = 'fb no'; m.textContent = 'Write a few sentences (15+ words).'; return; }
+    if (used < 3) { m.className = 'fb no'; m.textContent = 'Use net force, balanced, and unbalanced, and give the net force in each case.'; return; }
+    m.className = 'fb ok'; m.textContent = 'Saved. Compare it to your first explanation: what changed?'; req(5, 'phen2');
+  });
+  if (S.reqs['5.phen2']) { $('#phMsg2').className = 'fb ok'; $('#phMsg2').textContent = 'Saved.'; }
+}
+const SORT1 = [['A hand pushing a door open', 'c'], ['Earth pulling a falling apple down', 'n'], ['A magnet pulling a paperclip from 2 cm away', 'n'], ['Friction on a box sliding across the floor', 'c'],
+  ['A rope pulling a sled', 'c'], ['A charged balloon lifting your hair from a few cm away', 'n'], ['A table holding up a book', 'c'], ['The Sun pulling on Earth', 'n']];
+const MATCH2 = [['A lamp hangs from the ceiling. The cord pulls up on it.', 'F_T'], ['A book rests on a table. The table pushes up on it.', 'F_N'], ['A hockey puck slides on rough ice and slows down.', 'F_f'],
+  ['A skydiver falls. What pulls the skydiver down?', 'F_g'], ['You push a shopping cart across the store.', 'F_a'], ['A skydiver opens a parachute. The air pushes up on it.', 'F_air']];
+
+function build1() {
+  $('#page1').innerHTML = secHead(1) + phenomenonCard() + `
+  <div class="card"><span class="chip read">Read</span><h3>Pushes and pulls</h3>
     <div class="cols"><div>
-      <p>When the net force is zero, the forces are ${wh('balanced forces', 'balanced')}. Balanced forces do <b>not</b> change an object's motion:</p>
-      <ul><li>An object at rest stays at rest.</li><li>An object already moving <b>keeps moving</b> at the same speed in the same direction.</li></ul>
-      <div class="callout teal"><b>Big misconception:</b> "If it\u2019s moving, there must be a net force pushing it." No! A car cruising at a steady 25 m/s on a straight road has balanced forces: the engine\u2019s push forward equals friction and air resistance backward. You need a net force to <b>change</b> motion, not to keep it going.</div>
-    </div><div>${EQ_BAL}<div class="fig">${fbdSVG([{ dir: 'right', f: 'F_a', len: 60, label: 'engine' }, { dir: 'left', f: 'F_air', len: 60, label: 'air + friction' }, { dir: 'up', f: 'F_N', len: 60 }, { dir: 'down', f: 'F_g', len: 60 }], { box: 1, id: 'r6', W: 300, H: 220, label: 'Car at constant velocity: balanced forces' })}<div class="figcap">A car at a steady speed: every arrow is matched.</div></div></div></div>
-  <div class="card"><span class="chip try">Try it</span><h3>Cart lab: balanced</h3><p>Set the cart's starting velocity and the forces, then run it. Complete both missions.</p>${lab.html}</div>
-  ${qcCard(6,
-    { q: 'A hockey puck slides across frictionless ice at 5 m/s with no net force on it. What happens?', opts: ['It slows down and stops', 'It keeps moving at 5 m/s in a straight line', 'It speeds up', 'It curves to the side'], a: 1, why: 'No net force means no change in motion: same speed, same direction.', hint: 'What does a net force of zero do to motion?' },
-    { q: 'The forces on an object are balanced. What could the object be doing?', opts: ['Speeding up', 'Slowing down', 'Moving at a constant velocity', 'Turning a corner'], a: 2, why: 'Balanced forces mean the velocity stays the same: at rest, or constant speed in a straight line.', hint: 'The other three are all changes in motion.' })}
-  ${unlockBox(6)}`;
-  lab.init();
+      <p>A ${wh('force')} is a push or a pull. Every force comes from an <b>interaction</b> between two objects: your foot and a ball, Earth and an apple, a rope and a sled.</p>
+      <p>A force has a <b>size</b> and a <b>direction</b>, so it is a ${wh('vector')}. We draw forces as arrows: the arrow points the way the force pushes or pulls, and a longer arrow means a bigger force. Force is measured in ${wh('newton', 'newtons')} (N).</p>
+      <ul><li><b>${wh('contact force', 'Contact forces')}</b> only act when objects touch: pushes, friction, a surface holding something up, a rope pulling.</li>
+        <li><b>${wh('non-contact force', 'Non-contact forces')}</b> act across a distance: gravity, magnetic forces, and electric (static) forces.</li></ul>
+      <div class="callout"><b>Example.</b> A magnet pulls a paperclip from 2 cm away. Contact or non-contact? Ask: <i>are the two objects touching?</i> No, so it is a <b>non-contact</b> force.</div>
+      <div class="callout">One newton is about the weight of a small apple. A typical high school student weighs around 600 to 700 N.</div>
+    </div><div class="fig">${fbdSVG([{ dir: 'right', f: 'F_a', len: 80, label: '20 N push' }, { dir: 'left', f: 'F_f', len: 40, label: '10 N friction' }], { box: 1, id: 'h1', label: 'A box with a 20 N push right and a 10 N friction force left' })}<div class="figcap">Arrows show direction; length shows size. The 20 N arrow is twice as long as the 10 N arrow.</div></div></div></div>
+  <div class="card"><span class="chip try">Try it</span><h3>Contact or non-contact?</h3><p>Sort each force, then press <b>Check</b>.</p>
+    <div id="sort1">${SORT1.map(([t], i) => `<div class="numrow" style="grid-template-columns:minmax(0,1fr) auto"><div>${t}</div><div class="row"><button type="button" class="btn small" data-s1="${i}" data-v="c">Contact</button><button type="button" class="btn small" data-s1="${i}" data-v="n">Non-contact</button></div></div>`).join('')}</div>
+    <div class="row" style="margin-top:8px"><button class="btn" type="button" id="s1chk">Check</button><span class="fb" id="s1fb" style="margin:0"></span></div>
+    <div class="keyonly keytag">Answer: ${SORT1.map(([t, v]) => v === 'c' ? 'C' : 'N').join(', ')}</div></div>
+  <div class="card"><span class="chip try">Practice</span>${qcHTML(1, 'q1', Object.assign({ q: 'Which of these forces only acts when the two objects are touching?', opts: ['Gravity on a falling apple', 'A magnet pulling a nail from a distance', 'Friction on a sliding box', 'A charged balloon pulling hair'], a: 2, why: 'Friction needs the surfaces to touch; the others act across a distance.', hint: 'Ask: do the objects have to touch?' }, { label: 'Practice (you solve it)' }))}</div>
+  <div class="card"><span class="chip qc">Quick check</span>${qcHTML(1, 'q2', Object.assign({ q: 'What unit is force measured in?', opts: ['Kilograms (kg)', 'Newtons (N)', 'Meters per second (m/s)', 'Meters (m)'], a: 1, why: 'Force is measured in newtons. Kilograms measure mass.', hint: 'It\u2019s named after the scientist who wrote the laws of motion.' }, { label: 'Quick check' }))}</div>
+  ${unlockBox(1)}`;
+  initPhenomenon();
+  const st = simGet(1, 'ans', {});
+  const paint = () => $$('[data-s1]').forEach(b => b.classList.toggle('on', st[b.dataset.s1] === b.dataset.v));
+  $$('[data-s1]').forEach(b => b.addEventListener('click', () => { st[b.dataset.s1] = b.dataset.v; simSet(1, 'ans', st); paint(); save(); }));
+  paint();
+  $('#s1chk').addEventListener('click', () => {
+    const right = SORT1.filter(([, v], i) => st[i] === v).length, fb = $('#s1fb');
+    $$('#sort1 .numrow').forEach((r, i) => { r.style.borderColor = st[i] == null ? '' : st[i] === SORT1[i][1] ? 'var(--teal)' : 'var(--red)'; });
+    if (right === SORT1.length) { fb.className = 'fb ok'; fb.textContent = 'All 8 correct.'; req(1, 'sim'); }
+    else { fb.className = 'fb no'; fb.textContent = `${right} of 8 correct. Red rows need another look: do the objects have to touch?`; }
+  });
+}
+
+function build2() {
+  $('#page2').innerHTML = secHead(2) + `
+  <div class="card"><span class="chip read">Read</span><h3>The forces you'll see all unit</h3>
+    <div class="tablewrap"><table class="dt" style="width:100%"><tr><th>Force</th><th>Symbol</th><th>Direction</th><th>Example</th></tr>
+      <tr><td>${wh('weight', 'Weight')} (gravity)</td><td>${F('g')}</td><td>Always straight down</td><td>Earth pulling on you</td></tr>
+      <tr><td>${wh('normal force', 'Normal force')}</td><td>${F('N')}</td><td>Straight out of the surface (up from a floor)</td><td>A floor holding you up</td></tr>
+      <tr><td>${wh('friction', 'Friction')}</td><td>${F('f')}</td><td>Opposite the sliding (or attempted sliding)</td><td>Brakes, a box dragged across carpet</td></tr>
+      <tr><td>Applied force</td><td>${F('a')}</td><td>Whatever way the push or pull goes</td><td>Pushing a cart</td></tr>
+      <tr><td>${wh('tension', 'Tension')}</td><td>${F('T')}</td><td>Along the rope, away from the object</td><td>A rope pulling a sled</td></tr>
+      <tr><td>Air resistance</td><td>${F('air')}</td><td>Opposite the motion through the air</td><td>A parachute</td></tr></table></div>
+    <div class="callout" style="margin-top:10px"><b>Example.</b> A book rests on a table. Which forces act on it? Earth pulls it <b>down</b> (weight, ${F('g')}), and the table pushes it <b>up</b> (normal force, ${F('N')}).</div>
+    <div class="callout teal" style="margin-top:10px">The normal force is <b>not</b> always equal to the weight, and it\u2019s not a "reaction" to weight. It is whatever push the surface needs to give. On a flat floor with nothing else pushing up or down, it happens to match the weight.</div></div>
+  <div class="card"><span class="chip try">Try it</span><h3>Name that force</h3><p>Pick the force each sentence describes, then press <b>Check</b>.</p>
+    <div id="match2">${MATCH2.map(([t], i) => `<div class="numrow"><div>${t}</div><div class="in"><select data-m2="${i}" style="padding:7px;border-radius:8px;border:1px solid var(--line2);background:var(--panel);color:var(--ink);font-family:inherit"><option value="">Choose</option>${Object.keys(FNAME).map(k2 => `<option value="${k2}">${FNAME[k2]}</option>`).join('')}</select></div></div>`).join('')}</div>
+    <div class="row" style="margin-top:8px"><button class="btn" type="button" id="m2chk">Check</button><span class="fb" id="m2fb" style="margin:0"></span></div>
+    <div class="keyonly keytag">Answer: ${MATCH2.map(([, v]) => FNAME[v]).join(', ')}</div></div>
+  <div class="card"><span class="chip try">Practice</span>${qcHTML(2, 'q1', Object.assign({ q: 'A hockey puck slides to the right across rough ice and slows down. Which force slows it, and which way does it point?', opts: ['Friction, to the left', 'Friction, to the right', 'Normal force, up', 'Applied force, to the right'], a: 0, why: 'Friction from the ice opposes the sliding, so it points left.', hint: 'Which force works against sliding?' }, { label: 'Practice (you solve it)' }))}</div>
+  <div class="card"><span class="chip qc">Quick check</span>${qcHTML(2, 'q2', Object.assign({ q: 'A rope pulls a sled. Which force does the rope exert on the sled?', opts: ['Weight', 'Normal force', 'Tension', 'Air resistance'], a: 2, why: 'Ropes and strings pull with tension, along the rope.', hint: 'Which force belongs to ropes?' }, { label: 'Quick check' }))}</div>
+  ${unlockBox(2)}`;
+  const st = simGet(2, 'ans', {});
+  $$('[data-m2]').forEach(s => { if (st[s.dataset.m2]) s.value = st[s.dataset.m2]; s.addEventListener('change', () => { st[s.dataset.m2] = s.value; simSet(2, 'ans', st); s.style.borderColor = ''; save(); }); });
+  $('#m2chk').addEventListener('click', () => {
+    let right = 0; $$('[data-m2]').forEach(s => { const ok2 = s.value === MATCH2[+s.dataset.m2][1]; if (ok2) right++; s.style.borderColor = s.value ? (ok2 ? 'var(--teal)' : 'var(--red)') : ''; });
+    const fb = $('#m2fb'); if (right === MATCH2.length) { fb.className = 'fb ok'; fb.textContent = 'All 6 correct.'; req(2, 'sim'); } else { fb.className = 'fb no'; fb.textContent = `${right} of 6 correct. Use the table above.`; }
+  });
+}
+
+function build3() {
+  $('#page3').innerHTML = secHead(3) + `
+  <div class="card"><span class="chip read">Read</span><h3>Add them up, with signs</h3>
+    <div class="cols"><div>
+      <p>The ${wh('net force')} is the total of all the forces on an object, counting directions. Pick right as positive. Then forces to the left are negative, and you just add.</p>
+      <ul><li>Same direction: the forces add up.</li><li>Opposite directions: they partly cancel.</li><li>A positive answer means the net force points right; negative means left; zero means they cancel.</li></ul>
+      <div class="callout"><b>Example.</b> You push a box with 40 N to the right. Friction pushes back with 15 N to the left. Find the net force.
+        <p class="known">Known: ${k('vx', F('1x'))} = ${k('vx', '+40 N')} (right), ${k('a', F('2x'))} = ${k('a', '−15 N')} (left)</p>
+        ${work('', [['Equation', `${SFx} = ${k('vx', F('1x'))} + ${k('a', F('2x'))}`], ['Plug in', `${SFx} = ${k('vx', '40')} + ${k('a', '(−15)')}`], ['Solve', `${SFx} = <b>+25 N</b>, so the net force is <b>25 N to the right</b>`]])}${COLORNOTE}</div>
+    </div><div>${EQ_NET}<div class="fig">${fbdSVG([{ dir: 'right', f: 'F_a', len: 90, label: '40 N' }, { dir: 'left', f: 'F_f', len: 34, label: '15 N' }], { box: 1, id: 'r4', W: 300, H: 170, label: 'Box with 40 N right and 15 N left' })}</div></div></div></div>
+  <div class="card"><span class="chip try">Try it</span><h3>Tug-of-war</h3>
+    <p>Set how hard each team pulls. Watch the net force on the rope. Complete both missions.</p>
+    <div class="fig" id="tugFig"></div>
+    <div class="ctrls"><div class="ctrl"><label for="tugL"><span>Left team pulls</span> <b id="tugLv"></b></label><input type="range" id="tugL" min="0" max="600" step="25" value="300"></div>
+      <div class="ctrl"><label for="tugR"><span>Right team pulls</span> <b id="tugRv"></b></label><input type="range" id="tugR" min="0" max="600" step="25" value="200"></div></div>
+    <div class="readouts" id="tugRo"></div>
+    ${missionsHTML(3, ['Make the net force exactly 150 N to the left.', 'Make the forces balanced with each team pulling at least 400 N.'])}</div>
+  ${pracCard(3, 'Practice (you solve it)', 'A little different from the example: this time you know the net force.', [
+    { id: 'p3x', q: 'A sled is pulled 25 N to the right. The net force on it is 10 N to the right. How big is the friction force pulling left?', ans: 15, show: '15', unit: 'N', tol: 0.05, hint: 'Net force = pull + (−friction). What friction leaves 10 N?', sol: '10 = 25 + (−F<sub>f</sub>), so F<sub>f</sub> = 15 N (to the left)' }])}
+  <div class="card"><span class="chip qc">Quick check</span>${qcHTML(3, 'q1', { label: 'Quick check', q: 'A 15 N push to the right and 20 N of friction to the left act on a box. What is the net force?', opts: ['35 N right', '5 N left', '5 N right', '35 N left'], a: 1, why: '15 + (−20) = −5 N, which means 5 N to the left.', hint: 'Which force is bigger?' })}</div>
+  ${unlockBox(3)}`;
+  const sl = $('#tugL'), sr = $('#tugR'), done = simGet(3, 'done', [false, false]);
+  const draw = () => {
+    const L = +sl.value, R = +sr.value, net = R - L; $('#tugLv').textContent = L + ' N'; $('#tugRv').textContent = R + ' N';
+    const W = 560, H = 150, cx = W / 2, cy = 70, s = 0.32;
+    let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Tug-of-war"><line x1="40" y1="${cy}" x2="${W - 40}" y2="${cy}" stroke="#a3b2d2" stroke-width="4"/><rect x="${cx - 5}" y="${cy - 16}" width="10" height="32" fill="#ffcf5a"/>`;
+    svg += `<line x1="${cx}" y1="${cy - 30}" x2="${cx - L * s}" y2="${cy - 30}" stroke="#6cb8ff" stroke-width="4"/><path d="M${cx - L * s} ${cy - 30} l10 -6 v12z" fill="#6cb8ff"/><text x="${cx - L * s / 2}" y="${cy - 40}" fill="#6cb8ff" font-size="12" text-anchor="middle">${L} N</text>`;
+    svg += `<line x1="${cx}" y1="${cy + 30}" x2="${cx + R * s}" y2="${cy + 30}" stroke="#ff7f86" stroke-width="4"/><path d="M${cx + R * s} ${cy + 30} l-10 -6 v12z" fill="#ff7f86"/><text x="${cx + R * s / 2}" y="${cy + 50}" fill="#ff7f86" font-size="12" text-anchor="middle">${R} N</text>`;
+    svg += `<text x="40" y="${H - 6}" fill="#6cb8ff" font-size="12">Left team</text><text x="${W - 40}" y="${H - 6}" fill="#ff7f86" font-size="12" text-anchor="end">Right team</text></svg>`;
+    $('#tugFig').innerHTML = svg;
+    $('#tugRo').innerHTML = ro('Net force =', net === 0 ? '0 N (balanced)' : `${Math.abs(net)} N ${net > 0 ? 'right' : 'left'}`) + ro('The rope\u2019s motion:', net === 0 ? 'does not change' : `changes toward the ${net > 0 ? 'right' : 'left'}`);
+    let ch = false; if (!done[0] && net === -150) { done[0] = true; ch = true; } if (!done[1] && net === 0 && L >= 400) { done[1] = true; ch = true; }
+    paintMissions(3, done); if (ch) { simSet(3, 'done', done); toast('Mission complete!'); if (done.every(Boolean)) req(3, 'sim'); else save(); }
+  };
+  sl.addEventListener('input', draw); sr.addEventListener('input', draw); draw();
+}
+
+function build4() {
+  $('#page4').innerHTML = secHead(4) + `
+  <div class="card"><span class="chip read">Read</span><h3>Sideways and up-down are separate</h3>
+    <div class="cols"><div>
+      <p>Just like velocity in projectile motion, forces in the x direction (sideways) and the y direction (up and down) are added <b>separately</b>. A sideways push can't cancel an upward force.</p>
+      <p>Find ${SFx} from the horizontal forces and ${SFy} from the vertical forces. Right and up are positive.</p>
+      <div class="callout"><b>Example.</b> You push a 200 N box across the floor with 50 N to the right. Friction is 10 N to the left. The floor pushes up with 200 N. Find ${SFx} and ${SFy}.
+        <p class="known">Known: ${k('vx', F('a'))} = ${k('vx', '+50 N')}, ${k('a', F('f'))} = ${k('a', '−10 N')}, ${k('vf', F('N'))} = ${k('vf', '+200 N')}, ${k('vi', F('g'))} = ${k('vi', '−200 N')}</p>
+        ${work('x direction', [['Equation', `${SFx} = ${k('vx', F('a'))} + ${k('a', F('f'))}`], ['Plug in', `${SFx} = ${k('vx', '50')} + ${k('a', '(−10)')}`], ['Solve', `${SFx} = <b>+40 N</b> (40 N to the right)`]])}
+        ${work('y direction', [['Equation', `${SFy} = ${k('vf', F('N'))} + ${k('vi', F('g'))}`], ['Plug in', `${SFy} = ${k('vf', '200')} + ${k('vi', '(−200)')}`], ['Solve', `${SFy} = <b>0 N</b>`]])}${COLORNOTE}
+        <p style="margin:6px 0 0">So the net force is <b>40 N to the right</b>. The box speeds up sideways, but it doesn't rise or sink into the floor.</p></div>
+    </div><div>${EQ_NET}<div class="fig">${fbdSVG([{ dir: 'right', f: 'F_a', len: 75, label: '50 N' }, { dir: 'left', f: 'F_f', len: 30, label: '10 N' }, { dir: 'up', f: 'F_N', len: 80, label: '200 N' }, { dir: 'down', f: 'F_g', len: 80, label: '200 N' }], { box: 1, id: 'r5', W: 300, H: 260, label: 'FBD of a pushed box' })}</div></div></div></div>
+  ${pracCard(4, 'Practice (you solve it)', 'A little different from the example: the up-and-down forces don\u2019t cancel.', [
+    { id: 'p4x', q: 'A hot-air balloon has 5,200 N of lift pushing up and weighs 5,000 N. The wind pushes it 300 N to the right. What is ΣF<sub>y</sub>? (Up is positive.)', ans: 200, show: '200', unit: 'N', tol: 0.5, hint: 'Only the up and down forces go into ΣF<sub>y</sub>. Leave the wind out.', sol: 'ΣF<sub>y</sub> = 5200 + (−5000) = +200 N, so 200 N up' }])}
+  <div class="card"><span class="chip qc">Quick check</span>${qcHTML(4, 'q1', { label: 'Quick check', q: 'You push a heavy box sideways across the floor. Why don\u2019t you include its weight when finding ΣF<sub>x</sub>?', opts: ['The weight is too small to matter', 'Forces in the x and y directions are added separately', 'Weight only acts on moving objects', 'The normal force cancels the push'], a: 1, why: 'Weight points down, so it belongs in ΣF<sub>y</sub>, not ΣF<sub>x</sub>.', hint: 'Which direction does weight point?' })}</div>
+  ${unlockBox(4)}`;
 }
 
 /* =========================================================
-   SECTION 7: UNBALANCED FORCES
+   SECTION 5: BALANCED VS. UNBALANCED (cart lab)
    ========================================================= */
-function build7() {
-  const lab = cartLab(7, ['Make the cart speed up to the right.', 'Start the cart moving right, then make it slow down without turning around.', 'Start the cart moving right, then make it turn around.'],
-    r => [r.net > 0 && r.vEnd > r.v0, r.v0 > 0 && r.net < 0 && r.vEnd >= 0 && r.vEnd < r.v0, r.v0 > 0 && r.vEnd < 0]);
-  $('#page7').innerHTML = secHead(7) + `
-  <div class="card"><span class="chip read">Read</span><h3>Net force not zero: the motion changes</h3>
+function build5() {
+  const lab = cartLab(5, ['Keep the cart moving at a steady speed while at least 4 N pushes on each side.', 'Make the cart speed up to the right.', 'Start the cart moving right, then make it slow down without turning around.'],
+    r => [r.v0 > 0 && r.net === 0 && r.R >= 4, r.net > 0 && r.vEnd > r.v0, r.v0 > 0 && r.net < 0 && r.vEnd >= 0 && r.vEnd < r.v0]);
+  $('#page5').innerHTML = secHead(5) + `
+  <div class="card"><span class="chip read">Read</span><h3>Does the motion change?</h3>
     <div class="cols"><div>
-      <p>When the net force is not zero, the forces are ${wh('unbalanced forces', 'unbalanced')}. Unbalanced forces always <b>change</b> the motion, in the direction of the net force:</p>
-      <ul><li>Net force in the <b>same</b> direction as the motion: the object <b>speeds up</b>.</li>
-        <li>Net force <b>opposite</b> the motion: the object <b>slows down</b> (and can stop and turn around).</li>
-        <li>Net force <b>sideways</b> to the motion: the object <b>changes direction</b>.</li></ul>
-      <p>The bigger the net force, the faster the motion changes. Next lesson, Newton\u2019s laws make this exact.</p>
-    </div><div>${EQ_BAL}<div class="fig">${fbdSVG([{ dir: 'right', f: 'F_a', len: 95, label: '30 N' }, { dir: 'left', f: 'F_f', len: 40, label: '10 N' }], { box: 1, id: 'r7', W: 300, H: 160, label: 'Unbalanced: 30 N right, 10 N left' })}<div class="figcap">Net force 20 N to the right: the box\u2019s motion changes toward the right.</div></div></div></div>
-  <div class="card"><span class="chip try">Try it</span><h3>Cart lab: unbalanced</h3><p>Complete all three missions.</p>${lab.html}</div>
-  ${qcCard(7,
-    { q: 'A cart is rolling to the right. The net force on it points to the left. What happens?', opts: ['It speeds up to the right', 'It keeps the same speed', 'It slows down', 'It stops instantly'], a: 2, why: 'A net force opposite the motion slows the cart; if it lasts long enough, the cart turns around.', hint: 'Is the net force with the motion or against it?' },
-    { q: 'Which statement about unbalanced forces is always true?', opts: ['The object must already be moving', 'The object\u2019s motion changes', 'The object moves in the direction of the biggest single force at a steady speed', 'The object stays at rest'], a: 1, why: 'Unbalanced means a nonzero net force, and a net force always changes motion.', hint: 'What does a nonzero net force do?' })}
-  ${unlockBox(7)}`;
+      <p>When the net force is <b>zero</b>, the forces are ${wh('balanced forces', 'balanced')}. The motion does <b>not</b> change: an object at rest stays at rest, and a moving object keeps the same speed and direction.</p>
+      <p>When the net force is <b>not zero</b>, the forces are ${wh('unbalanced forces', 'unbalanced')}, and the motion <b>changes</b> in the direction of the net force:</p>
+      <ul><li>Net force <b>with</b> the motion: it speeds up.</li><li>Net force <b>against</b> the motion: it slows down (and can turn around).</li><li>Net force <b>sideways</b>: it changes direction.</li></ul>
+      <div class="callout"><b>Example.</b> A car cruises at a steady 25 m/s. The engine pushes it forward with 3,000 N, and friction and air push back with 3,000 N.
+        ${work('', [['Equation', `${SFx} = ${F('a')} + ${F('air')}`], ['Plug in', `${SFx} = 3000 + (−3000)`], ['Solve', `${SFx} = <b>0 N</b>: balanced, so the car <b>keeps going 25 m/s</b>`]])}</div>
+      <div class="callout teal"><b>Big misconception:</b> \u201cIf it\u2019s moving, there must be a net force pushing it.\u201d No. Moving at a steady speed means balanced forces.</div>
+    </div><div>${EQ_BAL}<div class="fig">${fbdSVG([{ dir: 'right', f: 'F_a', len: 60, label: '3000 N' }, { dir: 'left', f: 'F_air', len: 60, label: '3000 N' }], { box: 1, id: 'r5', W: 300, H: 150, label: 'Car at a steady speed: balanced forces' })}<div class="figcap">A car at a steady speed: balanced</div></div></div></div></div>
+  <div class="card"><span class="chip try">Try it</span><h3>Cart lab</h3><p>Set the cart\u2019s starting velocity and the forces, then run it. Complete all three missions.</p>${lab.html}</div>
+  <div class="card"><span class="chip try">Practice</span>${qcHTML(5, 'q1', { label: 'Practice (you solve it)', q: 'A cart rolls to the right. A 20 N push acts to the right and 35 N of friction acts to the left. What happens to the cart?', opts: ['It speeds up', 'It keeps the same speed', 'It slows down', 'It stops instantly'], a: 2, why: '20 + (−35) = −15 N: unbalanced, pointing against the motion, so it slows down.', hint: 'Find the net force first. Does it point with or against the motion?' })}</div>
+  <div class="card"><span class="chip qc">Quick check</span>${qcHTML(5, 'q2', { label: 'Quick check', q: 'The forces on an object are balanced. What could the object be doing?', opts: ['Speeding up', 'Slowing down', 'Moving at a constant velocity', 'Turning a corner'], a: 2, why: 'Balanced forces mean the velocity stays the same: at rest or a constant velocity.', hint: 'Balanced means no change in motion.' })}</div>
+  <div class="card"><span class="chip qc">What is wrong with this?</span>
+    <p>A crate slides to the right at a <b>steady</b> 3 m/s. A student explains:</p>
+    <ol style="margin:4px 0 8px"><li>The crate is moving to the right.</li><li>So the net force on it must point to the right.</li><li>So the push must be bigger than friction.</li></ol>
+    ${qcHTML(5, 'q3', { label: 'Spot the mistake', q: 'Which step is wrong, and why?', opts: ['Step 1: the crate isn\u2019t really moving', 'Step 2: a steady speed means the forces are balanced, so the net force is zero', 'Step 3: friction is always bigger than the push', 'Nothing is wrong'], a: 1, why: 'Moving at a steady speed means no change in motion, so the net force is zero. The push equals friction.', hint: 'Is the crate\u2019s speed changing?' })}</div>
+  ${phenRevisit()}
+  ${unlockBox(5)}`;
   lab.init();
+  initRevisit();
 }
-
-/* =========================================================
-   SECTION 8: WHAT IS WRONG WITH THIS? (spot the mistake)
-   ========================================================= */
-const MIS8 = [
-  { id: 'm1', q: 'A box has a 20 N push to the right and 12 N of friction to the left. Find the net force.',
-    steps: ['Right is positive and left is negative.', 'ΣF<sub>x</sub> = 20 + 12', 'ΣF<sub>x</sub> = 32 N to the right'], bad: 1,
-    why: ['Friction points left, so it is −12 N: ΣF<sub>x</sub> = 20 + (−12) = 8 N to the right.', 'Right should have been negative.', 'Friction never counts in the net force.'], wa: 0 },
-  { id: 'm2', q: 'A book sits still on a desk. A student explains the forces.',
-    steps: ['The book is not moving.', 'So there are no forces acting on it.', 'So its free-body diagram is just a dot.'], bad: 1,
-    why: ['Only gravity acts on it.', 'Gravity pulls it down and the desk pushes it up. The forces are balanced, not missing.', 'The desk pulls the book down.'], wa: 1 },
-  { id: 'm3', q: 'A car drives at a constant 25 m/s on a straight highway. A student explains the forces.',
-    steps: ['The car is moving forward.', 'So the forward force must be bigger than the backward forces.', 'So the net force points forward.'], bad: 1,
-    why: ['The car has no forces on it at all.', 'The backward forces must be bigger.', 'Constant velocity means the forces are balanced, so the net force is 0.'], wa: 2 },
-  { id: 'm4', q: 'A student draws the free-body diagram for a box pushed to the right across a rough floor.',
-    steps: ['Draw F<sub>g</sub> down and F<sub>N</sub> up.', 'Draw F<sub>a</sub> to the right.', 'Draw friction F<sub>f</sub> to the right, the way the box moves.'], bad: 2,
-    why: ['Friction opposes the sliding, so F<sub>f</sub> points left.', 'Friction points up.', 'A moving box has no normal force.'], wa: 0 },
-  { id: 'm5', q: 'A sled has a 50 N pull to the right, 10 N friction to the left, a 300 N weight, and a 300 N normal force. Find the net force.',
-    steps: ['ΣF<sub>x</sub> = 50 + (−10) = 40 N', 'ΣF<sub>y</sub> = 300 + (−300) = 0 N', 'Net force = 40 + 0 + 300 = 340 N'], bad: 2,
-    why: ['ΣF<sub>y</sub> should be 600 N.', 'The x and y directions stay separate. The net force is 40 N to the right; the weight was already used in ΣF<sub>y</sub>.', 'Friction should be +10 N.'], wa: 1 }
-];
-function build8() {
-  $('#page8').innerHTML = secHead(8) + `
-  <div class="card"><span class="chip mis">Spot the mistake</span><h3>What is wrong with this?</h3>
-    <p>Each student made one mistake. Click the step that is wrong, pick why it is wrong, then press <b>Check</b>. You get points for each part you get right on the first try.</p>
-    ${MIS8.map((m, i) => `<div class="mis" id="mis8-${m.id}"><p><b>${i + 1}.</b> ${m.q}</p>
-      <div class="steps">${m.steps.map((s, j) => `<button type="button" class="stepbtn" data-ms="${m.id}" data-j="${j}"><span class="sn">Step ${j + 1}</span><span>${s}</span></button>`).join('')}</div>
-      <p class="muted" style="margin:8px 0 4px;font-size:.9rem">Why is that step wrong?</p>
-      <div class="opts">${m.why.map((w, j) => `<button type="button" class="opt" data-mw="${m.id}" data-j="${j}"><span class="L">${LET[j]}</span><span>${w}</span></button>`).join('')}</div>
-      <div class="row"><button class="btn small" type="button" data-mchk="${m.id}">Check</button><span class="fb" data-fb style="margin:0"></span></div>
-      <div class="keyonly keytag">Answer: step ${m.bad + 1}, ${LET[m.wa]}</div></div>`).join('')}
-  </div>
-  ${unlockBox(8)}`;
-  MIS8.forEach(m => paintMis(m.id));
-}
-const MISPICK = {};
-function paintMis(id) {
-  const m = MIS8.find(x => x.id === id), st = S.mis[id], box = $('#mis8-' + id), pk = MISPICK[id] || {};
-  $$('[data-ms]', box).forEach((b, j) => { b.classList.toggle('picked', pk.s === j); b.classList.toggle('right', !!(st && st.done && j === m.bad)); b.disabled = !!(st && st.done); });
-  $$('[data-mw]', box).forEach((b, j) => { b.classList.toggle('picked', pk.w === j); b.classList.toggle('right', !!(st && st.done && j === m.wa)); b.disabled = !!(st && st.done); });
-  if (st && st.done) { const fb = $('[data-fb]', box); fb.className = 'fb ok'; fb.textContent = `Found it. First-try points: ${st.pts} of 1.`; $('[data-mchk]', box).disabled = true; }
-}
-document.addEventListener('click', e => {
-  const s = e.target.closest('[data-ms]'), w = e.target.closest('[data-mw]'), c = e.target.closest('[data-mchk]');
-  if (s) { const id = s.dataset.ms; (MISPICK[id] = MISPICK[id] || {}).s = +s.dataset.j; paintMis(id); }
-  if (w) { const id = w.dataset.mw; (MISPICK[id] = MISPICK[id] || {}).w = +w.dataset.j; paintMis(id); }
-  if (c) {
-    const id = c.dataset.mchk, m = MIS8.find(x => x.id === id), pk = MISPICK[id] || {}, box = $('#mis8-' + id), fb = $('[data-fb]', box);
-    if (pk.s == null || pk.w == null) { fb.className = 'fb no'; fb.textContent = 'Pick a step and a reason first.'; return; }
-    const st = S.mis[id] || (S.mis[id] = { done: false, pts: null, tries: 0 }); st.tries++;
-    const okS = pk.s === m.bad, okW = pk.w === m.wa;
-    if (st.pts === null) st.pts = (okS ? 0.5 : 0) + (okW ? 0.5 : 0);
-    if (okS && okW) { st.done = true; paintMis(id); if (MIS8.every(x => S.mis[x.id] && S.mis[x.id].done)) req(8, 'mis'); else save(); }
-    else { fb.className = 'fb no'; fb.textContent = !okS ? 'That step is actually fine. Check each step again.' : 'Right step. Now look again at why it is wrong.'; save(); }
-  }
-});
 
 /* =========================================================
    FINAL CHECK (10 random questions, 8/10 to pass)
@@ -1143,28 +1056,26 @@ const BANK = [
   { id: 'f2', type: 'mc', q: 'A force is a vector. That means it has…', opts: ['only a size', 'only a direction', 'a size and a direction', 'a mass and a speed'], a: 2, why: 'Vectors have both size (magnitude) and direction.', sec: 1 },
   { id: 'f3', type: 'mc', q: 'Which way does the normal force from a flat floor point on a box resting on it?', opts: ['Down', 'Up', 'Left', 'Opposite the motion'], a: 1, why: 'A surface pushes straight out of itself: up from a floor.', sec: 2 },
   { id: 'f4', type: 'mc', q: 'A crate slides to the left across a rough floor. Which way does friction on the crate point?', opts: ['Left', 'Right', 'Up', 'Down'], a: 1, why: 'Friction opposes the sliding, so it points right.', sec: 2 },
-  { id: 'f5', type: 'multi', q: 'A lamp hangs at rest from a cord. Which forces belong on its free-body diagram? Select all that apply.', opts: ['Weight (F_g)', 'Tension (F_T)', 'Normal force (F_N)', 'Friction (F_f)'], a: [0, 1], why: 'Gravity pulls down and the cord pulls up. Nothing pushes from a surface or rubs on it.', sec: 3 },
-  { id: 'f6', type: 'multi', q: 'A box is pushed to the right across a rough floor. Which arrows belong on its free-body diagram? Select all that apply.', opts: ['F_g pointing down', 'F_N pointing up', 'F_f pointing right', 'F_a pointing right'], a: [0, 1, 3], why: 'Friction opposes the motion, so it points left, not right.', sec: 3 },
-  { id: 'f7', type: 'mc', q: 'A wagon is pulled 25 N to the right while friction pulls 9 N to the left. What is the net force?', opts: ['34 N right', '16 N right', '16 N left', '9 N left'], a: 1, why: '25 + (−9) = +16 N, so 16 N to the right.', sec: 4 },
-  { id: 'f8', type: 'mc', q: 'Three forces act on a cart: 40 N left, 15 N right, and 10 N right. What is the net force?', opts: ['65 N left', '15 N left', '15 N right', '0 N'], a: 1, why: '(−40) + 15 + 10 = −15 N, so 15 N to the left.', sec: 4 },
+  { id: 'f7', type: 'mc', q: 'A wagon is pulled 25 N to the right while friction pulls 9 N to the left. What is the net force?', opts: ['34 N right', '16 N right', '16 N left', '9 N left'], a: 1, why: '25 + (−9) = +16 N, so 16 N to the right.', sec: 3 },
+  { id: 'f8', type: 'mc', q: 'Three forces act on a cart: 40 N left, 15 N right, and 10 N right. What is the net force?', opts: ['65 N left', '15 N left', '15 N right', '0 N'], a: 1, why: '(−40) + 15 + 10 = −15 N, so 15 N to the left.', sec: 3 },
   { id: 'f9', type: 'two', q: 'In a tug-of-war, the left team pulls with 420 N and the right team with 380 N.',
     A: { q: 'What is the net force on the rope?', opts: ['800 N left', '40 N left', '40 N right', '0 N'], a: 1 },
-    B: { q: 'How does the rope\u2019s motion change?', opts: ['It doesn\u2019t change', 'It changes toward the left', 'It changes toward the right'], a: 1 }, why: '380 + (−420) = −40 N. The net force points left, so the motion changes toward the left.', sec: 4 },
+    B: { q: 'How does the rope\u2019s motion change?', opts: ['It doesn\u2019t change', 'It changes toward the left', 'It changes toward the right'], a: 1 }, why: '380 + (−420) = −40 N. The net force points left, so the motion changes toward the left.', sec: 3 },
   { id: 'f10', type: 'two', q: 'A box has a 70 N push right, 20 N friction left, a 250 N weight, and a 250 N normal force.',
-    A: { q: 'What is ΣF_x?', opts: ['90 N right', '50 N right', '50 N left', '0 N'], a: 1 },
-    B: { q: 'What is ΣF_y?', opts: ['500 N up', '250 N down', '0 N'], a: 2 }, why: 'ΣF_x = 70 + (−20) = 50 N right. ΣF_y = 250 + (−250) = 0.', sec: 5 },
-  { id: 'f11', type: 'mc', q: 'A helicopter\u2019s rotor lifts with 12,000 N. The helicopter weighs 11,000 N. What is the vertical net force?', opts: ['23,000 N up', '1,000 N up', '1,000 N down', '0 N'], a: 1, why: '12,000 + (−11,000) = +1,000 N, so 1,000 N up.', sec: 5 },
-  { id: 'f12', type: 'mc', q: 'An object\u2019s net force is zero. Which describes its motion?', opts: ['It must be at rest', 'It must be slowing down', 'It is at rest or moving at a constant velocity', 'It must be speeding up'], a: 2, why: 'Balanced forces mean no change in motion: either at rest or constant velocity.', sec: 6 },
-  { id: 'f13', type: 'mc', q: 'A car moves at a steady 20 m/s in a straight line. How do the forward and backward forces compare?', opts: ['Forward is bigger', 'Backward is bigger', 'They are equal', 'There are no forces'], a: 2, why: 'Constant velocity means balanced forces.', sec: 6 },
-  { id: 'f14', type: 'mc', q: 'A skydiver falls at a constant speed. What is the net force on the skydiver?', opts: ['Down, equal to the weight', 'Up', 'Zero', 'Down, but smaller than the weight'], a: 2, why: 'Constant speed in a straight line means balanced forces: air resistance equals weight.', sec: 6 },
-  { id: 'f15', type: 'mc', q: 'A ball rolls to the right. The net force on it points to the right. What happens?', opts: ['It slows down', 'It speeds up', 'It keeps a constant speed', 'It turns around'], a: 1, why: 'A net force in the direction of motion speeds the object up.', sec: 7 },
-  { id: 'f16', type: 'mc', q: 'A bike moves forward. The net force on it points backward. What happens?', opts: ['It speeds up', 'It keeps a constant speed', 'It slows down', 'It moves sideways'], a: 2, why: 'A net force opposite the motion slows it down.', sec: 7 },
-  { id: 'f17', type: 'multi', q: 'Which of these mean the forces on an object are unbalanced? Select all that apply.', opts: ['It speeds up', 'It turns a corner at a steady speed', 'It sits still on a table', 'It slows down'], a: [0, 1, 3], why: 'Any change in speed or direction needs a net force. Sitting still means balanced.', sec: 7 },
-  { id: 'f18', type: 'mc', q: 'What is wrong with this? "The box has 30 N right and 10 N left, so ΣF = 30 + 10 = 40 N."', opts: ['Nothing is wrong', 'The 10 N force is to the left, so it should be −10 N: ΣF = 20 N right', 'The answer should be 300 N', 'Forces can\u2019t be added'], a: 1, why: 'Opposite directions get opposite signs.', sec: 8 },
-  { id: 'f19', type: 'mc', q: 'What is wrong with this? "The car is moving forward at a steady speed, so the net force must point forward."', opts: ['Nothing is wrong', 'The net force must point backward', 'Steady speed in a straight line means the net force is zero', 'Moving objects have no forces'], a: 2, why: 'You need a net force to change motion, not to keep it.', sec: 8 },
+    A: { q: 'What is ΣF<sub>x</sub>?', opts: ['90 N right', '50 N right', '50 N left', '0 N'], a: 1 },
+    B: { q: 'What is ΣF<sub>y</sub>?', opts: ['500 N up', '250 N down', '0 N'], a: 2 }, why: 'ΣF<sub>x</sub> = 70 + (−20) = 50 N right. ΣF<sub>y</sub> = 250 + (−250) = 0.', sec: 4 },
+  { id: 'f11', type: 'mc', q: 'A helicopter\u2019s rotor lifts with 12,000 N. The helicopter weighs 11,000 N. What is the vertical net force?', opts: ['23,000 N up', '1,000 N up', '1,000 N down', '0 N'], a: 1, why: '12,000 + (−11,000) = +1,000 N, so 1,000 N up.', sec: 4 },
+  { id: 'f12', type: 'mc', q: 'An object\u2019s net force is zero. Which describes its motion?', opts: ['It must be at rest', 'It must be slowing down', 'It is at rest or moving at a constant velocity', 'It must be speeding up'], a: 2, why: 'Balanced forces mean no change in motion: either at rest or constant velocity.', sec: 5 },
+  { id: 'f13', type: 'mc', q: 'A car moves at a steady 20 m/s in a straight line. How do the forward and backward forces compare?', opts: ['Forward is bigger', 'Backward is bigger', 'They are equal', 'There are no forces'], a: 2, why: 'Constant velocity means balanced forces.', sec: 5 },
+  { id: 'f14', type: 'mc', q: 'A skydiver falls at a constant speed. What is the net force on the skydiver?', opts: ['Down, equal to the weight', 'Up', 'Zero', 'Down, but smaller than the weight'], a: 2, why: 'Constant speed in a straight line means balanced forces: air resistance equals weight.', sec: 5 },
+  { id: 'f15', type: 'mc', q: 'A ball rolls to the right. The net force on it points to the right. What happens?', opts: ['It slows down', 'It speeds up', 'It keeps a constant speed', 'It turns around'], a: 1, why: 'A net force in the direction of motion speeds the object up.', sec: 5 },
+  { id: 'f16', type: 'mc', q: 'A bike moves forward. The net force on it points backward. What happens?', opts: ['It speeds up', 'It keeps a constant speed', 'It slows down', 'It moves sideways'], a: 2, why: 'A net force opposite the motion slows it down.', sec: 5 },
+  { id: 'f17', type: 'multi', q: 'Which of these mean the forces on an object are unbalanced? Select all that apply.', opts: ['It speeds up', 'It turns a corner at a steady speed', 'It sits still on a table', 'It slows down'], a: [0, 1, 3], why: 'Any change in speed or direction needs a net force. Sitting still means balanced.', sec: 5 },
+  { id: 'f18', type: 'mc', q: 'What is wrong with this? "The box has 30 N right and 10 N left, so ΣF = 30 + 10 = 40 N."', opts: ['Nothing is wrong', 'The 10 N force is to the left, so it should be −10 N: ΣF = 20 N right', 'The answer should be 300 N', 'Forces can\u2019t be added'], a: 1, why: 'Opposite directions get opposite signs.', sec: 5 },
+  { id: 'f19', type: 'mc', q: 'What is wrong with this? "The car is moving forward at a steady speed, so the net force must point forward."', opts: ['Nothing is wrong', 'The net force must point backward', 'Steady speed in a straight line means the net force is zero', 'Moving objects have no forces'], a: 2, why: 'You need a net force to change motion, not to keep it.', sec: 5 },
   { id: 'f20', type: 'two', q: 'A 600 N student stands still in an elevator that isn\u2019t moving.',
     A: { q: 'How big is the normal force from the floor?', opts: ['0 N', '600 N', '1200 N'], a: 1 },
-    B: { q: 'Are the forces on the student balanced?', opts: ['Yes', 'No'], a: 0 }, why: 'At rest means balanced: the floor pushes up with 600 N to match the 600 N weight.', sec: 6 }
+    B: { q: 'Are the forces on the student balanced?', opts: ['Yes', 'No'], a: 0 }, why: 'At rest means balanced: the floor pushes up with 600 N to match the 600 N weight.', sec: 5 }
 ];
 const BQ = id => BANK.find(b => b.id === id);
 function scoreQ(q, ans) {
@@ -1185,37 +1096,37 @@ function newAttempt() {
 function optList(id, part, opts, ord, isMulti, cur, correct) {
   const key = document.body.classList.contains('key');
   return `<div class="opts">${ord.map((oi, k) => { const sel = isMulti ? (cur || []).includes(oi) : cur === oi; const ok = key && (isMulti ? correct.includes(oi) : correct === oi);
-    return `<button type="button" class="opt ${sel ? 'picked' : ''} ${ok ? 'right' : ''}" data-fc="${id}" data-part="${part}" data-oi="${oi}" aria-pressed="${sel}"><span class="L">${isMulti ? (sel ? '✓' : '') : LET[k]}</span><span>${subs(opts[oi])}</span></button>`; }).join('')}</div>`;
+    return `<button type="button" class="opt ${sel ? 'picked' : ''} ${ok ? 'right' : ''}" data-fc="${id}" data-part="${part}" data-oi="${oi}" aria-pressed="${sel}"><span class="L">${isMulti ? (sel ? '✓' : '') : LET[k]}</span><span>${opts[oi]}</span></button>`; }).join('')}</div>`;
 }
 function renderFinal() {
-  const pg = $('#page9'), F = S.final;
-  let body = secHead(9);
+  const pg = $('#page' + FIN), F = S.final;
+  let body = secHead(FIN);
   if (F.cur) {
     const c = F.cur, id = c.qs[c.i], q = BQ(id), a = c.ans[id];
-    body += `<div class="card"><span class="chip qc">Final check</span>
+    body += `<div class="card"><span class="chip qc">Exit check</span>
       <div class="fcnav">${c.qs.map((qid, k) => `<button type="button" class="dot ${answered(BQ(qid), c.ans[qid]) ? 'ans' : ''} ${k === c.i ? 'cur' : ''}" data-fcgo="${k}" aria-label="Question ${k + 1}">${k + 1}</button>`).join('')}</div>
-      <div class="fcq"><p><b>Question ${c.i + 1} of ${FC_LEN}.</b> ${subs(q.q)}</p>`;
-    if (q.type === 'two') body += ['A', 'B'].map(P => `<div class="part"><h5>Part ${P}</h5><p style="margin:0 0 4px">${subs(q[P].q)}</p>${optList(id, P, q[P].opts, c.order[id][P], false, a && a[P], q[P].a)}</div>`).join('');
+      <div class="fcq"><p><b>Question ${c.i + 1} of ${FC_LEN}.</b> ${q.q}</p>`;
+    if (q.type === 'two') body += ['A', 'B'].map(P => `<div class="part"><h5>Part ${P}</h5><p style="margin:0 0 4px">${q[P].q}</p>${optList(id, P, q[P].opts, c.order[id][P], false, a && a[P], q[P].a)}</div>`).join('');
     else body += `${q.type === 'multi' ? '<p class="muted" style="font-size:.86rem">Select all that apply. Wrong picks take away points.</p>' : ''}${optList(id, 'm', q.opts, c.order[id], q.type === 'multi', a, q.a)}`;
     const all = c.qs.every(qid => answered(BQ(qid), c.ans[qid]));
     body += `</div><div class="row"><button class="btn" type="button" data-fcgo="${c.i - 1}" ${c.i === 0 ? 'disabled' : ''}>Back</button>
       ${c.i < FC_LEN - 1 ? `<button class="btn primary" type="button" data-fcgo="${c.i + 1}">Next</button>` : ''}
-      <button class="btn ${all ? 'teal' : ''}" type="button" id="fcSubmit" ${all ? '' : 'disabled'}>Submit final check</button>
+      <button class="btn ${all ? 'teal' : ''}" type="button" id="fcSubmit" ${all ? '' : 'disabled'}>Submit exit check</button>
       <span class="muted" style="font-size:.85rem">${all ? 'All answered.' : `${c.qs.filter(qid => answered(BQ(qid), c.ans[qid])).length} of ${FC_LEN} answered`}</span></div>
       <p class="muted" style="font-size:.85rem;margin-top:10px">You won't see right or wrong until you submit. Use ${ay} = −9.8 m/s² and the calculator. Round to one decimal place (two for times).</p></div>`;
   } else {
     const last = F.attempts[F.attempts.length - 1];
-    body += `<div class="card"><h3>${F.attempts.length ? (F.passed ? 'You passed the final check' : 'Final check results') : 'Ready for the final check?'}</h3>`;
+    body += `<div class="card"><h3>${F.attempts.length ? (F.passed ? 'You passed the exit check' : 'Exit check results') : 'Ready for the exit check?'}</h3>`;
     if (!F.attempts.length) body += `<p>10 random questions about everything in this lesson. You need 8 out of 10 to pass. Some questions have two parts or ask you to select all that apply; those give partial credit. If you don't pass, you can retake it with new questions.</p>`;
     if (last) {
       body += `<div class="row" style="gap:24px;margin:8px 0 12px"><div><div class="scorebig">${last.score}<span class="muted" style="font-size:1.2rem"> / ${FC_LEN}</span></div><div class="muted">this attempt</div></div><div><div class="scorebig" style="font-size:1.6rem">${F.best}</div><div class="muted">best of ${F.attempts.length} attempt${F.attempts.length > 1 ? 's' : ''}</div></div></div>`;
       body += `<p>${last.pts.map((p, k) => `<span class="ro" style="display:inline-block;margin:2px">Q${k + 1}: ${p === 1 ? '✓' : p > 0 ? p : '✗'}</span>`).join('')}</p>`;
       if (F.passed || F.failCount >= 3) {
         const missed = last.qs.map((qid, k) => ({ q: BQ(qid), p: last.pts[k], k })).filter(x => x.p < 1);
-        if (missed.length) body += `<h3 style="margin-top:14px">${F.passed ? 'Look back at what you missed' : 'Review before you try again'}</h3><ul class="review">${missed.map(x => `<li><b>Q${x.k + 1}.</b> ${subs(x.q.q)}<br><span class="muted">${subs(x.q.why)}</span> <button class="btn small ghost" type="button" data-go="${x.q.sec}">Review section ${x.q.sec}</button></li>`).join('')}</ul>`;
+        if (missed.length) body += `<h3 style="margin-top:14px">${F.passed ? 'Look back at what you missed' : 'Review before you try again'}</h3><ul class="review">${missed.map(x => `<li><b>Q${x.k + 1}.</b> ${x.q.q}<br><span class="muted">${subs(x.q.why)}</span> <button class="btn small ghost" type="button" data-go="${x.q.sec}">Review section ${x.q.sec}</button></li>`).join('')}</ul>`;
       } else body += `<p class="muted">Not quite 8 yet. Look back at the sections you were unsure about, then try again. You will get new questions.</p>`;
     }
-    body += `<div class="row">${!F.passed ? `<button class="btn primary" type="button" id="fcStart">${F.attempts.length ? 'Try again with new questions' : 'Start the final check'}</button>` : ''}${F.attempts.length ? '<button class="btn teal" type="button" data-go="10">See my results</button>' : ''}</div></div>`;
+    body += `<div class="row">${!F.passed ? `<button class="btn primary" type="button" id="fcStart">${F.attempts.length ? 'Try again with new questions' : 'Start the exit check'}</button>` : ''}${F.attempts.length ? `<button class="btn teal" type="button" data-go="${RES}">See my results</button>` : ''}</div></div>`;
   }
   pg.innerHTML = body;
 }
@@ -1230,14 +1141,14 @@ document.addEventListener('click', e => {
   }
   const g = e.target.closest('[data-fcgo]'); if (g && S.final.cur && !g.disabled) { S.final.cur.i = clamp(+g.dataset.fcgo, 0, FC_LEN - 1); renderFinal(); return; }
   if (e.target.closest('#fcStart')) { newAttempt(); return; }
-  if (e.target.closest('#fcSubmit')) { confirmBox('Submit your final check?', 'You can\u2019t change your answers after you submit.', submitFinal); }
+  if (e.target.closest('#fcSubmit')) { confirmBox('Submit your exit check?', 'You can\u2019t change your answers after you submit.', submitFinal); }
 });
 function submitFinal() {
   const F = S.final, c = F.cur; if (!c) return;
   const pts = c.qs.map(id => scoreQ(BQ(id), c.ans[id])), score = Math.round(sum(pts) * 100) / 100;
   F.attempts.push({ qs: c.qs, ans: c.ans, pts, score, at: new Date().toISOString() });
   F.best = Math.max(F.best, score); F.cur = null;
-  if (score >= PASS_SCORE) { if (!F.passed) { F.passed = true; S.secDone[9] = true; S.reqs['9.pass'] = true; S.completedAt = Date.now(); S.lockActive = false; endFullscreen(); } toast('You passed!'); }
+  if (score >= PASS_SCORE) { if (!F.passed) { F.passed = true; S.secDone[FIN] = true; S.reqs[FIN + '.pass'] = true; S.completedAt = Date.now(); S.lockActive = false; endFullscreen(); } toast('You passed!'); }
   else F.failCount = (F.failCount || 0) + 1;
   storeRecord(); save(true); renderNav(); renderGoals(); renderFinal();
 }
@@ -1248,17 +1159,17 @@ function submitFinal() {
 const QC_IDS = () => Object.keys(QC);
 function lessonParts() {
   const qc = QC_IDS().map(id => ({ l: 'QC' + id.replace('s', '').replace('q', '-'), p: S.qc[id] && S.qc[id].first === true ? 1 : 0, m: 1 }));
-  const mi = MIS8.map((m, i) => ({ l: 'Mistake' + (i + 1), p: S.mis[m.id] && S.mis[m.id].pts != null ? S.mis[m.id].pts : 0, m: 1 }));
+  const mi = Object.keys(PR).map(id => ({ l: 'Practice' + PR[id].n, p: S.prac[id] && S.prac[id].first === true ? 1 : 0, m: 1 }));
   return qc.concat(mi);
 }
 function sheetBodies() {
   const st = S.student || {}, F = S.final;
   const base = { studentId: st.id || '', firstName: st.first || '', lastName: st.last || '', period: st.period || '', teacher: st.teacher || '', locks: String(S.lockouts), when: new Date().toString() };
   const lp = lessonParts();
-  const lesson = Object.assign({}, base, { activity: `${LESSON}: Lesson`, score: String(Math.round(sum(lp.map(x => x.p)) * 100) / 100), total: String(sum(lp.map(x => x.m))),
+  const lesson = Object.assign({}, base, { activity: 'Force, Net Force, and Balanced vs. Unbalanced Forces: Lesson', score: String(Math.round(sum(lp.map(x => x.p)) * 100) / 100), total: String(sum(lp.map(x => x.m))),
     qlabels: lp.map(x => x.l).join('|'), qpoints: lp.map(x => x.p).join('|'), qmax: lp.map(x => x.m).join('|') });
   let best = null; F.attempts.forEach(a => { if (!best || a.score >= best.score) best = a; });
-  const fin = Object.assign({}, base, { activity: `${LESSON}: Final Check`, score: String(F.best), total: String(FC_LEN) },
+  const fin = Object.assign({}, base, { activity: 'Force, Net Force, and Balanced vs. Unbalanced Forces: Exit Check', score: String(F.best), total: String(FC_LEN) },
     best ? { qlabels: best.pts.map((_, i) => 'Q' + (i + 1)).join('|'), qpoints: best.pts.join('|'), qmax: best.pts.map(() => 1).join('|') } : { qlabels: 'Final Check', qpoints: '0', qmax: String(FC_LEN) });
   return [lesson, fin];
 }
@@ -1287,15 +1198,15 @@ function sendScores() {
 }
 function renderResults() {
   const [L, Fb] = sheetBodies(), F = S.final;
-  $('#page10').innerHTML = `<div class="sechead"><div class="bigtile"><span class="n"></span>${icon('results')}<span>Results</span></div><div><div class="meta">${esc(S.student ? S.student.first + ' ' + S.student.last + ', period ' + S.student.period : '')}</div><h2>Your results</h2></div></div>
+  $('#page' + RES).innerHTML = `<div class="sechead"><div class="bigtile"><span class="n"></span>${icon('results')}<span>Results</span></div><div><div class="meta">${esc(S.student ? S.student.first + ' ' + S.student.last + ', period ' + S.student.period : '')}</div><h2>Your results</h2></div></div>
   <div class="cols"><div class="card"><h3>Scores</h3>
-    <div class="row" style="gap:28px"><div><div class="scorebig">${Fb.score}<span class="muted" style="font-size:1.1rem"> / ${FC_LEN}</span></div><div class="muted">Final check (best)${F.passed ? ' · passed' : ''}</div></div>
-    <div><div class="scorebig" style="font-size:1.8rem">${L.score}<span class="muted" style="font-size:1rem"> / ${L.total}</span></div><div class="muted">Lesson: quick checks and mistakes, first try</div></div></div>
-    <p class="muted" style="font-size:.86rem;margin-top:10px">Final check attempts: ${F.attempts.length}. Times the lesson locked: ${S.lockouts}.</p>
+    <div class="row" style="gap:28px"><div><div class="scorebig">${Fb.score}<span class="muted" style="font-size:1.1rem"> / ${FC_LEN}</span></div><div class="muted">Exit check (best)${F.passed ? ' · passed' : ''}</div></div>
+    <div><div class="scorebig" style="font-size:1.8rem">${L.score}<span class="muted" style="font-size:1rem"> / ${L.total}</span></div><div class="muted">Lesson: quick checks and practice, first try</div></div></div>
+    <p class="muted" style="font-size:.86rem;margin-top:10px">Exit check attempts: ${F.attempts.length}. Times the lesson locked: ${S.lockouts}.</p>
     <div class="row"><button class="btn primary" type="button" id="sendBtn">Send my scores to my teacher</button><button class="btn" type="button" id="csvBtn">Download my scores (CSV)</button></div>
     <p class="sheetStatus muted" style="margin-top:8px">${S.sentAt ? 'Sent ' + new Date(S.sentAt).toLocaleString() + '. You can send again to update.' : ''}</p></div>
   <div class="card"><h3>Goals</h3><ul class="goals">${GOALS.map(g => `<li class="${g.sec.every(n => S.secDone[n]) ? 'ok' : ''}">${g.t}</li>`).join('')}</ul>
-    ${F.passed ? '' : '<p class="muted">Pass the final check to finish the lesson.</p><button class="btn" type="button" data-go="9">Back to the final check</button>'}</div></div>`;
+    ${F.passed ? '' : '<p class="muted">Pass the exit check to finish the lesson.</p><button class="btn" type="button" data-go="' + FIN + '">Back to the exit check</button>'}</div></div>`;
   $('#sendBtn').addEventListener('click', sendScores);
   $('#csvBtn').addEventListener('click', () => downloadCSV(csvRows(sheetBodies()), `ForcesLesson_${(S.student && S.student.last || 'student').replace(/\W+/g, '')}_${(S.student && S.student.first || '').replace(/\W+/g, '')}.csv`));
 }
@@ -1327,8 +1238,9 @@ $('#lockGo').addEventListener('click', () => {
 $('#lockCode').addEventListener('keydown', e => { if (e.key === 'Enter') $('#lockGo').click(); });
 document.addEventListener('fullscreenchange', () => { if (!isFull() && !unlocking) lockNow(); });
 document.addEventListener('webkitfullscreenchange', () => { if (!isFull() && !unlocking) lockNow(); });
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') lockNow(); });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') lockNow(); }); window.addEventListener('blur', () => setTimeout(() => { if (!document.hasFocus()) lockNow(); }, 250));
 
+function showUnlockCode(box) { const old = document.getElementById('unlockInfo'); if (old) old.remove(); box.insertAdjacentHTML('afterbegin', `<div id="unlockInfo" style="border:2px solid #ffcf5a;background:rgba(255,207,90,.12);border-radius:10px;padding:10px 12px;margin:0 0 10px;font-size:.95rem">🔑 Code to end lockdown on this activity: <b style="font-size:1.15rem;letter-spacing:.03em">${UNLOCK_CODE}</b><div style="font-size:.8rem;opacity:.8;margin-top:2px">Give this to absent students. It ends lockdown only; it does not open the teacher view.</div></div>`); }
 /* =========================================================
    TEACHER TOOLS (code = last word of the lesson title)
    ========================================================= */
@@ -1336,10 +1248,10 @@ let keyOn = false;
 $('#teachBtn').addEventListener('click', () => { $('#teachOv').hidden = false; $('#teachLogin').hidden = false; $('#teachTools').hidden = true; $('#teachCode').value = ''; $('#teachMsg').textContent = ''; setTimeout(() => $('#teachCode').focus(), 50); });
 $('#teachGo').addEventListener('click', () => {
   if (!isTeacherCode($('#teachCode').value)) { $('#teachMsg').textContent = 'That code isn\u2019t right.'; return; }
-  $('#teachLogin').hidden = true; $('#teachTools').hidden = false; $('#teachNote').textContent = S.student ? `Signed in: ${S.student.first} ${S.student.last} (ID ${S.student.id}). Save code: ${saveKey(S.student)}` : 'No student is signed in on this Chromebook.';
+  $('#teachLogin').hidden = true; $('#teachTools').hidden = false; showUnlockCode($('#teachTools')); $('#teachNote').textContent = S.student ? `Signed in: ${S.student.first} ${S.student.last} (ID ${S.student.id}). Save code: ${saveKey(S.student)}` : 'No student is signed in on this Chromebook.';
 });
 $('#teachCode').addEventListener('keydown', e => { if (e.key === 'Enter') $('#teachGo').click(); });
-$('#tKey').addEventListener('click', () => { keyOn = !keyOn; document.body.classList.toggle('key', keyOn); $('#tKey').textContent = keyOn ? 'Hide answer key' : 'Show answer key'; $('#tKey').classList.toggle('on', keyOn); if (S.cur === 9) renderFinal(); });
+$('#tKey').addEventListener('click', () => { keyOn = !keyOn; document.body.classList.toggle('key', keyOn); $('#tKey').textContent = keyOn ? 'Hide answer key' : 'Show answer key'; $('#tKey').classList.toggle('on', keyOn); if (S.cur === FIN) renderFinal(); });
 $('#tUnlock').addEventListener('click', () => { if (!S.student) { toast('Sign a student in first, or use preview mode.'); return; } S.teacherUnlock = true; save(true); renderNav(); $$('.nextbtn').forEach(b => { b.disabled = false; }); toast('All sections are unlocked for this student.'); $('#teachOv').hidden = true; });
 $('#tPreview').addEventListener('click', () => {
   S = freshState(); S.preview = true; S.student = { first: 'Teacher', last: 'Preview', id: '0', period: '0', teacher: 'Preview' };
@@ -1396,8 +1308,8 @@ document.addEventListener('keydown', e => {
    ========================================================= */
 $('#fTeacher').innerHTML = '<option value="">Choose</option>' + teacherList().map(t => `<option>${esc(t)}</option>`).join('');
 $('#fPeriod').innerHTML = '<option value="">Choose</option>' + periodList().map(x => `<option>${esc(x)}</option>`).join('');
-const TITLE_OF = n => n === 10 ? 'Results' : n === 9 ? 'Final check' : `Section ${n}: ${TILES[n].title}`;
-const resumeTarget = () => { if (S.cur >= 1 && S.cur <= 10 && accessible(S.cur)) return S.cur; let n = 1; for (let k = 1; k <= 9; k++) if (accessible(k)) n = k; return n; };
+const TITLE_OF = n => n === RES ? 'Results' : n === FIN ? 'Exit check' : `Section ${n}: ${TILES[n].title}`;
+const resumeTarget = () => { if (S.cur >= 1 && S.cur <= RES && accessible(S.cur)) return S.cur; let n = 1; for (let k = 1; k <= FIN; k++) if (accessible(k)) n = k; return n; };
 function renderStart() {
   const has = !!(S.student && !S.preview);
   $('#signCard').hidden = has; $('#resumeCard').hidden = !has; renderGoals();
@@ -1412,7 +1324,7 @@ $('#startForm').addEventListener('submit', async e => {
   if (!v.first || !v.last || !v.id || !v.period || !v.teacher) { err.textContent = 'Fill in every box.'; err.hidden = false; return; }
   if (!/^\d{3,12}$/.test(v.id)) { err.textContent = 'Your student ID should be numbers only.'; err.hidden = false; return; }
   err.hidden = true;
-  if (!skipCloud && CLOUD()) {
+  if (!skipCloud && CLOUD() && !/claude/i.test(location.hostname)) {
     const btn = $('#startBtn'); btn.disabled = true; btn.textContent = 'Checking for your saved work...';
     const r = await cloudLoad(v); btn.disabled = false; btn.textContent = 'Start the lesson';
     if (r.status === 'found') { const d = r.data; d.student = Object.assign({}, d.student || {}, { first: v.first, last: v.last, id: v.id, period: v.period, teacher: v.teacher }); adoptState(d); toast('Your saved work was loaded.'); go(resumeTarget()); startLock(); return; }
@@ -1440,14 +1352,14 @@ $('#notMeBtn').addEventListener('click', async () => {
    BUILD + INIT
    ========================================================= */
 function heroFig() {
-  $('#heroFig').innerHTML = fbdSVG([{ dir: 'right', f: 'F_a', len: 95, label: 'push' }, { dir: 'left', f: 'F_f', len: 45, label: 'friction' }, { dir: 'up', f: 'F_N', len: 70 }, { dir: 'down', f: 'F_g', len: 70 }], { box: 1, id: 'hero', W: 420, H: 230, label: 'A box being pushed: four forces' }) + '<div class="figcap" style="margin-bottom:6px">Four forces on a pushed box. Are they balanced?</div>';
+  $('#heroFig').innerHTML = tugScene(0, false, 'Two teams in a tug-of-war') + '<div class="figcap" style="margin-bottom:6px">Everyone is pulling hard. Why isn\u2019t the rope moving?</div>';
 }
 function buildAll() {
   Object.keys(QC).forEach(k => delete QC[k]); Object.keys(PR).forEach(k => delete PR[k]);
-  [build1, build2, build3, build4, build5, build6, build7, build8].forEach(f => f());
+  [build1, build2, build3, build4, build5].forEach(f => f());
   Object.keys(QC).forEach(paintQC); Object.keys(PR).forEach(paintPR);
-  for (let n = 1; n <= 8; n++) renderReqs(n);
-  renderNav(); renderGoals(); if (S.cur === 9) renderFinal(); if (S.cur === 10) renderResults();
+  for (let n = 1; n <= NSEC; n++) renderReqs(n);
+  renderNav(); renderGoals(); if (S.cur === FIN) renderFinal(); if (S.cur === RES) renderResults();
 }
 if (!STORAGE_OK) $('#noStore').classList.add('show');
 if (S.preview) S = freshState();

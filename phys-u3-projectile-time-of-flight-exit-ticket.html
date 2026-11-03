@@ -434,7 +434,7 @@ $('#signForm').addEventListener('submit', async e => {
   if (!v.first || !v.last || !v.id || !v.period || !v.teacher) { err.textContent = 'Fill in every box.'; err.hidden = false; return; }
   if (!/^\d{3,12}$/.test(v.id)) { err.textContent = 'Your student ID should be numbers only.'; err.hidden = false; return; }
   err.hidden = true;
-  if (!skipCloud && CLOUD()) {
+  if (!skipCloud && CLOUD() && !/claude/i.test(location.hostname)) {
     const btn = $('#startBtn'); btn.disabled = true; btn.textContent = 'Checking for your saved work...'; const r = await cloudFetch(v); btn.disabled = false; btn.textContent = 'Start';
     if (r.status === 'found') { S = Object.assign(fresh(), r.data, { student: v }); save(true); toast('Your saved work was loaded.'); showTask(); return; }
     if (r.status === 'error') { err.innerHTML = 'Can\u2019t reach your saved work. Check the Wi-Fi and try again. <button class="btn small" type="button" id="anyway">Start without saved work</button>'; err.hidden = false; $('#anyway').addEventListener('click', () => { skipCloud = true; $('#signForm').requestSubmit(); }); return; }
@@ -456,7 +456,7 @@ $('#gateGo').addEventListener('click', async () => { try { const el = document.d
 $('#lockGo').addEventListener('click', () => { if ($('#lockCode').value.trim().toLowerCase() !== UNLOCK_CODE) { $('#lockMsg').textContent = 'That code isn\u2019t right.'; return; } S.locked = false; S.lockActive = false; save(true); $('#lockOv').hidden = true; $('#gateOv').hidden = true; endFull(); toast('Lockdown ended for this student on this Chromebook.'); });
 $('#lockCode').addEventListener('keydown', e => { if (e.key === 'Enter') $('#lockGo').click(); });
 document.addEventListener('fullscreenchange', () => { if (!isFull()) lockNow(); });
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') lockNow(); });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') lockNow(); }); window.addEventListener('blur', () => setTimeout(() => { if (!document.hasFocus()) lockNow(); }, 250));
 
 /* ---------- teacher tools ---------- */
 let confFn = null;

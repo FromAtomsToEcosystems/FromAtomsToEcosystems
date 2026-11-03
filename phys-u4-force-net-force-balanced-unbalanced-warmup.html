@@ -431,7 +431,7 @@ $('#signForm').addEventListener('submit', async e => {
   if (!v.first || !v.last || !v.id || !v.period || !v.teacher) { err.textContent = 'Fill in every box.'; err.hidden = false; return; }
   if (!/^\d{3,12}$/.test(v.id)) { err.textContent = 'Your student ID should be numbers only.'; err.hidden = false; return; }
   err.hidden = true;
-  if (!skipCloud && CLOUD()) {
+  if (!skipCloud && CLOUD() && !/claude/i.test(location.hostname)) {
     const btn = $('#startBtn'); btn.disabled = true; btn.textContent = 'Checking for your saved work...'; const r = await cloudFetch(v); btn.disabled = false; btn.textContent = 'Start';
     if (r.status === 'found') { S = Object.assign(fresh(), r.data, { student: v }); save(true); toast('Your saved work was loaded.'); showTask(); return; }
     if (r.status === 'error') { err.innerHTML = 'Can\u2019t reach your saved work. Check the Wi-Fi and try again. <button class="btn small" type="button" id="anyway">Start without saved work</button>'; err.hidden = false; $('#anyway').addEventListener('click', () => { skipCloud = true; $('#signForm').requestSubmit(); }); return; }
@@ -453,7 +453,7 @@ $('#gateGo').addEventListener('click', async () => { try { const el = document.d
 $('#lockGo').addEventListener('click', () => { if ($('#lockCode').value.trim().toLowerCase() !== UNLOCK_CODE) { $('#lockMsg').textContent = 'That code isn\u2019t right.'; return; } S.locked = false; S.lockActive = false; save(true); $('#lockOv').hidden = true; $('#gateOv').hidden = true; endFull(); toast('Lockdown ended for this student on this Chromebook.'); });
 $('#lockCode').addEventListener('keydown', e => { if (e.key === 'Enter') $('#lockGo').click(); });
 document.addEventListener('fullscreenchange', () => { if (!isFull()) lockNow(); });
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') lockNow(); });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') lockNow(); }); window.addEventListener('blur', () => setTimeout(() => { if (!document.hasFocus()) lockNow(); }, 250));
 
 /* ---------- teacher tools ---------- */
 let confFn = null;
@@ -462,7 +462,8 @@ $('#confYes').addEventListener('click', () => { $('#confOv').hidden = true; cons
 $('#confNo').addEventListener('click', () => { $('#confOv').hidden = true; confFn = null; });
 document.addEventListener('click', e => { if (e.target.closest('[data-close]')) $('#teachOv').hidden = true; });
 $('#teachBtn').addEventListener('click', () => { $('#teachOv').hidden = false; $('#tLogin').hidden = false; $('#tTools').hidden = true; $('#tCode').value = ''; $('#tMsg').textContent = ''; });
-$('#tGo').addEventListener('click', () => { if (!isTeacherCode($('#tCode').value)) { $('#tMsg').textContent = 'That code isn\u2019t right.'; return; } $('#tLogin').hidden = true; $('#tTools').hidden = false; $('#tNote').textContent = S.student ? `Signed in: ${S.student.first} ${S.student.last}. Save code: ${saveKey(S.student)}` : 'No student is signed in.'; });
+function showUnlockCode(box) { const old = document.getElementById('unlockInfo'); if (old) old.remove(); box.insertAdjacentHTML('afterbegin', `<div id="unlockInfo" style="border:2px solid #ffcf5a;background:rgba(255,207,90,.12);border-radius:10px;padding:10px 12px;margin:0 0 10px;font-size:.95rem">🔑 Code to end lockdown on this activity: <b style="font-size:1.15rem;letter-spacing:.03em">${UNLOCK_CODE}</b><div style="font-size:.8rem;opacity:.8;margin-top:2px">Give this to absent students. It ends lockdown only; it does not open the teacher view.</div></div>`); }
+$('#tGo').addEventListener('click', () => { if (!isTeacherCode($('#tCode').value)) { $('#tMsg').textContent = 'That code isn\u2019t right.'; return; } $('#tLogin').hidden = true; $('#tTools').hidden = false; showUnlockCode($('#tTools')); $('#tNote').textContent = S.student ? `Signed in: ${S.student.first} ${S.student.last}. Save code: ${saveKey(S.student)}` : 'No student is signed in.'; });
 $('#tCode').addEventListener('keydown', e => { if (e.key === 'Enter') $('#tGo').click(); });
 $('#tKey').addEventListener('click', () => { document.body.classList.toggle('key'); $('#tKey').textContent = document.body.classList.contains('key') ? 'Hide answer key' : 'Show answer key'; if (!$('#taskPage').hidden && !S.done) renderQ(); });
 $('#tPreview').addEventListener('click', () => { S = fresh(); S.preview = true; S.student = { first: 'Teacher', last: 'Preview', id: '0', period: '0', teacher: 'Preview' }; $('#previewBar').hidden = false; $('#teachOv').hidden = true; $('#gateOv').hidden = true; $('#lockOv').hidden = true; showTask(); });

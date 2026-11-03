@@ -1316,7 +1316,7 @@ $('#lockGo').addEventListener('click', () => {
 $('#lockCode').addEventListener('keydown', e => { if (e.key === 'Enter') $('#lockGo').click(); });
 document.addEventListener('fullscreenchange', () => { if (!isFull() && !unlocking) lockNow(); });
 document.addEventListener('webkitfullscreenchange', () => { if (!isFull() && !unlocking) lockNow(); });
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') lockNow(); });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') lockNow(); }); window.addEventListener('blur', () => setTimeout(() => { if (!document.hasFocus()) lockNow(); }, 250));
 
 function showUnlockCode(box) { const old = document.getElementById('unlockInfo'); if (old) old.remove(); box.insertAdjacentHTML('afterbegin', `<div id="unlockInfo" style="border:2px solid #ffcf5a;background:rgba(255,207,90,.12);border-radius:10px;padding:10px 12px;margin:0 0 10px;font-size:.95rem">🔑 Code to end lockdown on this activity: <b style="font-size:1.15rem;letter-spacing:.03em">${UNLOCK_CODE}</b><div style="font-size:.8rem;opacity:.8;margin-top:2px">Give this to absent students. It ends lockdown only; it does not open the teacher view.</div></div>`); }
 /* =========================================================
@@ -1402,7 +1402,7 @@ $('#startForm').addEventListener('submit', async e => {
   if (!v.first || !v.last || !v.id || !v.period || !v.teacher) { err.textContent = 'Fill in every box.'; err.hidden = false; return; }
   if (!/^\d{3,12}$/.test(v.id)) { err.textContent = 'Your student ID should be numbers only.'; err.hidden = false; return; }
   err.hidden = true;
-  if (!skipCloud && CLOUD()) {
+  if (!skipCloud && CLOUD() && !/claude/i.test(location.hostname)) {
     const btn = $('#startBtn'); btn.disabled = true; btn.textContent = 'Checking for your saved work...';
     const r = await cloudLoad(v); btn.disabled = false; btn.textContent = 'Start the lesson';
     if (r.status === 'found') { const d = r.data; d.student = Object.assign({}, d.student || {}, { first: v.first, last: v.last, id: v.id, period: v.period, teacher: v.teacher }); adoptState(d); toast('Your saved work was loaded.'); go(resumeTarget()); startLock(); return; }

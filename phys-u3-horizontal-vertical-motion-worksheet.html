@@ -445,7 +445,8 @@ $('turnBtn').addEventListener('click', () => {
 /* ---------- teacher tools (code: flight) ---------- */
 let codeFn = null;
 function askCode(fn) { codeFn = fn; $('codeIn').value = ''; $('codeMsg').textContent = ''; $('codeOv').hidden = false; setTimeout(() => $('codeIn').focus(), 30); }
-$('codeGo').addEventListener('click', () => { if (!isTeacherCode($('codeIn').value)) { $('codeMsg').textContent = 'That code isn\u2019t right.'; return; } $('codeOv').hidden = true; const f = codeFn; codeFn = null; if (f) f(); });
+function showUnlockCode() { const old = document.getElementById('unlockInfo'); if (old) old.remove(); document.querySelector('.bar').insertAdjacentHTML('afterend', `<div id="unlockInfo" class="noprint" style="max-width:900px;margin:0 auto 10px;border:2px solid #e9b53a;background:#fff6dc;border-radius:10px;padding:8px 12px;font-size:.92rem;color:#16213a">🔑 Code to end lockdown on this activity: <b style="font-size:1.1rem">${UNLOCK_CODE}</b> <span style="font-size:.8rem;color:#55627f">Give this to absent students. It ends lockdown only.</span></div>`); }
+$('codeGo').addEventListener('click', () => { if (!isTeacherCode($('codeIn').value)) { $('codeMsg').textContent = 'That code isn\u2019t right.'; return; } $('codeOv').hidden = true; showUnlockCode(); const f = codeFn; codeFn = null; if (f) f(); });
 $('codeIn').addEventListener('keydown', e => { if (e.key === 'Enter') $('codeGo').click(); });
 $('codeNo').addEventListener('click', () => { $('codeOv').hidden = true; codeFn = null; });
 function toggleKey() {
@@ -473,7 +474,7 @@ $('lockGo').addEventListener('click', () => { if ($('lockCode').value.trim().toL
 $('lockCode').addEventListener('keydown', e => { if (e.key === 'Enter') $('lockGo').click(); });
 document.addEventListener('fullscreenchange', () => { if (!isFull()) lockNow(); });
 document.addEventListener('webkitfullscreenchange', () => { if (!isFull()) lockNow(); });
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') lockNow(); });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') lockNow(); }); window.addEventListener('blur', () => setTimeout(() => { if (!document.hasFocus()) lockNow(); }, 250));
 $('endLockBtn').addEventListener('click', () => askCode(() => { S.lockActive = false; S.locked = false; save(); $('lockOv').hidden = true; $('gateOv').hidden = true; endFull(); $('saved').textContent = 'Lockdown is off for this student on this Chromebook.'; }));
 
 buildNotes(); setupSign();
