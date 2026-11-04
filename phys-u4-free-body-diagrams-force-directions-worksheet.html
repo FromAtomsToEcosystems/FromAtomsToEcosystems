@@ -1231,24 +1231,42 @@ $('#tReset').addEventListener('click', () => {
 /* =========================================================
    CALCULATOR (degrees)
    ========================================================= */
-const CK = [['C', 'clr'], ['⌫', 'bs'], ['(', '('], [')', ')'], ['tan⁻¹', 'tan⁻¹('], ['√', '√('], ['x²', '²'], ['÷', '÷'], ['7', '7'], ['8', '8'], ['9', '9'], ['×', '×'], ['4', '4'], ['5', '5'], ['6', '6'], ['−', '−'], ['1', '1'], ['2', '2'], ['3', '3'], ['+', '+'], ['0', '0'], ['.', '.'], ['ans', 'ans'], ['=', 'eq']];
+const CK = [['C', 'clr'], ['⌫', 'bs'], ['(', '('], [')', ')'],
+  ['sin', 'sin('], ['cos', 'cos('], ['tan', 'tan('], ['π', 'π'],
+  ['sin⁻¹', 'sin⁻¹('], ['cos⁻¹', 'cos⁻¹('], ['tan⁻¹', 'tan⁻¹('], ['√', '√('],
+  ['x²', '²'], ['xʸ', '^'], ['ans', 'ans'], ['÷', '÷'],
+  ['7', '7'], ['8', '8'], ['9', '9'], ['×', '×'],
+  ['4', '4'], ['5', '5'], ['6', '6'], ['−', '−'],
+  ['1', '1'], ['2', '2'], ['3', '3'], ['+', '+'],
+  ['0', '0'], ['.', '.'], ['(−)', '−'], ['=', 'eq']];
 let cExpr = '', cAns = 0, cJust = false;
-$('#cKeys').innerHTML = CK.map(([l, v]) => `<button type="button" data-ck="${esc(v)}" class="${'÷×−+²'.includes(v) || v.endsWith('(') && v.length > 1 ? 'op' : ''} ${v === 'eq' ? 'eq' : ''}">${l}</button>`).join('');
+$('#cKeys').innerHTML = CK.map(([l, v]) => `<button type="button" data-ck="${esc(v)}" class="${/^[÷×−+²^]$/.test(v) || (v.endsWith('(') && v.length > 1) || v === 'π' || v === 'ans' ? 'op' : ''} ${v === 'eq' ? 'eq' : ''}" ${l.length > 3 ? 'style="font-size:.82rem"' : ''}>${l}</button>`).join('');
+(() => { const h = document.querySelector('#calc .chead'); if (h && !h.querySelector('.degtag')) { const s = document.createElement('span'); s.className = 'degtag'; s.textContent = 'DEG'; s.style.cssText = 'font-size:.72rem;border:1px solid var(--line2);border-radius:6px;padding:1px 6px;margin-left:8px;color:var(--amber)'; h.firstElementChild ? h.firstElementChild.appendChild(s) : h.prepend(s); } })();
 function cEval(s) {
-  let js = s.replace(/ans/g, '(' + cAns + ')').replace(/tan⁻¹\(/g, 'A(').replace(/√\(/g, 'Q(').replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-').replace(/²/g, '**2');
-  if (!/^[0-9.+\-*/()AQ\s]*$/.test(js.replace(/\*\*/g, '*'))) throw new Error('bad');
-  const opens = (js.match(/\(/g) || []).length - (js.match(/\)/g) || []).length; js += ')'.repeat(Math.max(0, opens));
-  const r = Function('A', 'Q', '"use strict";return (' + js + ')')(x => Math.atan(x) * 180 / Math.PI, Math.sqrt);
-  if (!isFinite(r)) throw new Error('bad'); return r;
+  const D = Math.PI / 180;
+  let js = s.replace(/ans/g, '(' + cAns + ')')
+    .replace(/sin⁻¹\(/g, 'Z(').replace(/cos⁻¹\(/g, 'Y(').replace(/tan⁻¹\(/g, 'X(')
+    .replace(/sin\(/g, 'S(').replace(/cos\(/g, 'C(').replace(/tan\(/g, 'T(').replace(/√\(/g, 'Q(')
+    .replace(/π/g, '(' + Math.PI + ')').replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-').replace(/²/g, '**2').replace(/\^/g, '**');
+  js = js.replace(/([0-9.)])\s*(?=[(SCTZYXQ])/g, '$1*');
+  if (!/^[0-9.+\-*/()SCTZYXQ\se]*$/.test(js)) throw new Error('bad');
+  const opens = (js.match(/\(/g) || []).length - (js.match(/\)/g) || []).length; if (opens < 0) throw new Error('bad'); js += ')'.repeat(opens);
+  const r = Function('S', 'C', 'T', 'Z', 'Y', 'X', 'Q', '"use strict";return (' + js + ')')(
+    x => Math.sin(x * D), x => Math.cos(x * D), x => Math.tan(x * D),
+    x => Math.asin(x) / D, x => Math.acos(x) / D, x => Math.atan(x) / D, Math.sqrt);
+  if (!isFinite(r)) throw new Error('bad'); return Math.abs(r) < 1e-12 ? 0 : r;
 }
 function cPress(v) {
   if (v === 'clr') { cExpr = ''; $('#cRes').textContent = '0'; }
-  else if (v === 'bs') { cExpr = cExpr.replace(/(tan⁻¹\(|√\(|ans|.)$/, ''); }
+  else if (v === 'bs') { cExpr = cExpr.replace(/(sin⁻¹\(|cos⁻¹\(|tan⁻¹\(|sin\(|cos\(|tan\(|√\(|ans|.)$/, ''); }
   else if (v === 'eq') { try { const r = cEval(cExpr); cAns = Math.round(r * 1e8) / 1e8; $('#cRes').textContent = String(cAns); cJust = true; } catch (e) { $('#cRes').textContent = 'Check your entry'; } $('#cExpr').textContent = cExpr; return; }
-  else { if (cJust && /^[0-9.]|^tan|^√/.test(v)) cExpr = ''; if (cJust && /^[÷×−+²]/.test(v)) cExpr = 'ans'; cExpr += v; }
+  else { if (cJust && /^[0-9.]|^sin|^cos|^tan|^√|^π|^\($/.test(v)) cExpr = ''; if (cJust && /^[÷×+²^]$/.test(v)) cExpr = 'ans'; cExpr += v; }
   cJust = false; $('#cExpr').textContent = cExpr;
 }
 $('#cKeys').addEventListener('click', e => { const b = e.target.closest('[data-ck]'); if (b) cPress(b.dataset.ck); });
+document.addEventListener('keydown', e => { if ($('#calc').hidden || /INPUT|TEXTAREA|SELECT/.test((document.activeElement || {}).tagName || '')) return;
+  const map = { '*': '×', '/': '÷', '-': '−', '+': '+', '(': '(', ')': ')', '.': '.', '^': '^', 'Enter': 'eq', '=': 'eq', 'Backspace': 'bs', 'Escape': 'clr' };
+  const v = /^[0-9]$/.test(e.key) ? e.key : map[e.key]; if (v) { e.preventDefault(); cPress(v); } });
 $('#calcBtn').addEventListener('click', () => { $('#calc').hidden = !$('#calc').hidden; });
 $('#calcClose').addEventListener('click', () => { $('#calc').hidden = true; });
 document.addEventListener('keydown', e => {
