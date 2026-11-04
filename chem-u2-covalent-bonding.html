@@ -562,6 +562,17 @@ svg.sscene{width:100%;min-width:480px;height:auto;display:block}
 .bond-card{background:var(--panel2);border-radius:12px;padding:10px;text-align:center;display:grid;gap:2px}
 .bond-card b{font-size:28px}.bond-card span{color:var(--muted);font-size:13px}.bond-card em{font-style:normal;font-weight:800;color:var(--amber)}
 @media (max-width:640px){.bond-row{grid-template-columns:1fr 1fr}}
+
+/* build-it-yourself */
+.bld-steps{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.bstep{padding:4px 12px;border-radius:999px;background:var(--panel2);color:var(--muted);font-weight:700;font-size:13px}.bstep.on{background:var(--e);color:#0b2630}
+.bld-msg.bad{color:#ffc2cd}
+.bld-tray{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0;min-height:20px}
+.dcard{display:grid;justify-items:center;gap:2px;background:var(--panel2);border:1.5px solid var(--line2);border-radius:12px;padding:6px 10px;color:var(--text);cursor:grab}
+.dcard span{font-size:12px;color:var(--muted)}.dcard.sel{border-color:var(--amber);box-shadow:0 0 0 2px rgba(246,185,59,.35)}.dcard.used{opacity:.3}
+.sscene .slot rect{fill:rgba(95,225,255,.04);stroke:var(--line2);stroke-width:2;stroke-dasharray:6 6}.sscene .slot{cursor:pointer}.sscene .slot.filled rect{stroke:var(--e)}
+.sscene .slot-l{font:600 12px var(--font);fill:var(--muted);text-anchor:middle}.sscene .placed{color:var(--text)}
+.sscene .tapdot{cursor:pointer}.sscene .tapdot.sel{stroke:#fff;stroke-width:3}
+.sscene .bdot{fill:var(--e)}.sscene .bhit{fill:transparent;cursor:pointer}.sscene .tapdot.sel{fill:#fff;stroke:var(--e);stroke-width:3}
 </style>
 </head>
 <body>
@@ -597,7 +608,7 @@ svg.sscene{width:100%;min-width:480px;height:auto;display:block}
       <div>
         <p class="unit">Chemistry, Unit 2: Ions, Periodic Trends and Bonding</p>
         <h1>Covalent Bonding</h1>
-        <p class="lede">Watch two nonmetal atoms share electrons, count bonds, draw Lewis structures with single, double, and triple bonds, then name covalent compounds. Nine short sections, about 40 minutes. You'll get more practice on the worksheet.</p>
+        <p class="lede">Watch two nonmetal atoms share electrons, count bonds, then build Lewis structures yourself, with single, double, and triple bonds. Nine short sections, about 40 minutes. You'll get more practice on the worksheet.</p>
       </div>
       <div class="hero-fig hero-ion">
         <svg id="heroSvg" viewBox="0 0 600 260" aria-label="Two chlorine atoms share their unpaired electrons, forming a shared pair drawn as a line"></svg>
@@ -608,7 +619,7 @@ svg.sscene{width:100%;min-width:480px;height:auto;display:block}
     <div class="start-grid">
       <section class="card obj">
         <span class="tag">Objective</span>
-        <p>I can explain why two nonmetals share electrons, draw Lewis structures with single, double, and triple bonds so every atom has a full outer shell, name covalent compounds with prefixes, and compare covalent and ionic properties.</p>
+        <p>I can explain why two nonmetals share electrons, draw Lewis structures with single, double, and triple bonds so every atom has a full outer shell, and compare covalent and ionic properties.</p>
       </section>
       <section class="card std">
         <span class="tag">Standard</span>
@@ -783,8 +794,7 @@ const GLOSS = {
   'shared pair': 'Two electrons, one from each atom, held between two atoms. Drawn as a line.',
   'Lewis structure': 'A drawing of a molecule where each line is a shared pair and each pair of dots is a lone pair.',
   'double bond': 'Two shared pairs (4 electrons) between the same two atoms, drawn as =.',
-  'triple bond': 'Three shared pairs (6 electrons) between the same two atoms, drawn as ≡.',
-  'prefixes': 'Number words in covalent names: mono-, di-, tri-, tetra-, penta-, hexa-.'
+  'triple bond': 'Three shared pairs (6 electrons) between the same two atoms, drawn as ≡.'
 };
 const c = (term, label) => `<button type="button" class="chip" data-term="${term}">${label || term}</button>`;
 
@@ -1263,9 +1273,9 @@ const SECS = [null,
   { title: 'Why do nonmetals share?', min: 4 },
   { title: 'Sharing one pair', min: 5 },
   { title: 'How many bonds?', min: 4 },
-  { title: 'Lewis structures', min: 5 },
-  { title: 'Double and triple bonds', min: 5 },
-  { title: 'Naming covalent compounds', min: 4 },
+  { title: 'Lewis structures', min: 4 },
+  { title: 'Double and triple bonds', min: 4 },
+  { title: 'Build it yourself', min: 7 },
   { title: 'Covalent vs. ionic properties', min: 3 },
   { title: 'Spot the mistake', min: 3 },
   { title: 'Final check', min: 7 }
@@ -1276,7 +1286,7 @@ const REQS = {
   3: [['bonds', 'Sort the elements by number of bonds'], ['qc3', 'Answer the quick check correctly']],
   4: [['lewis', 'Build 3 Lewis structures'], ['qc4', 'Answer the quick check correctly']],
   5: [['multi', 'Pick the right bond for 3 molecules'], ['qc5', 'Answer the quick check correctly']],
-  6: [['names', 'Answer 3 naming rounds'], ['qc6', 'Answer the quick check correctly']],
+  6: [['build', 'Build 3 Lewis structures yourself'], ['qc6', 'Answer the quick check correctly']],
   7: [['props', 'Sort the property cards'], ['qc7', 'Answer the quick check correctly']],
   8: [['fix', 'Find the mistake in 3 student examples'], ['qc8', 'Answer the quick check correctly']],
   9: [['pass', `Score ${PASS_SCORE} or more out of ${FC_LEN} on the final check`]]
@@ -1286,7 +1296,7 @@ const GOALS = [
   { t: 'Show a shared pair as a covalent bond', sec: 2 },
   { t: 'Draw Lewis structures with full outer shells', sec: 4 },
   { t: 'Recognize double and triple bonds', sec: 5 },
-  { t: 'Name covalent compounds with prefixes', sec: 6 },
+  { t: 'Build Lewis structures on your own', sec: 6 },
   { t: `Pass the final check (${PASS_SCORE} out of ${FC_LEN})`, sec: 9 }
 ];
 function frame(n, inner) {
@@ -1491,26 +1501,173 @@ function build5(el) {
     explain: 'A double bond is two shared pairs: 2 × 2 = 4 electrons.', hint: 'Each line is one pair.', onCorrect: () => done(5, 'qc5') });
 }
 
-/* ---------------- Section 6 ---------------- */
+/* ---------------- Section 6: build it yourself ---------------- */
+/* dot card for the tray: symbol + valence dots in the class order */
+function dotCard(sym, size = 64) {
+  const v = VAL[sym], P = [[0, -20], [20, 0], [0, 20], [-20, 0]], c = size / 2;
+  let s = `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" aria-hidden="true"><text x="${c}" y="${c + 8}" font-size="22" font-weight="800" text-anchor="middle" fill="currentColor">${sym}</text>`;
+  for (let k = 0; k < v; k++) { const sd = k < 4 ? k : k - 4, paired = v > sd + 4, off = paired ? (k < 4 ? -4 : 4) : 0, [dx, dy] = P[sd];
+    s += `<circle cx="${c + dx + (dy ? off : 0)}" cy="${c + dy + (dx ? off : 0)}" r="3.4" fill="#5fe1ff"/>`; }
+  return s + '</svg>';
+}
+const BUILDS = [
+  { key: 'H2O', name: 'H₂O (water)', center: 'O', outer: ['H', 'H'] },
+  { key: 'NH3', name: 'NH₃ (ammonia)', center: 'N', outer: ['H', 'H', 'H'] },
+  { key: 'CO2', name: 'CO₂ (carbon dioxide)', center: 'C', outer: ['O', 'O'] },
+  { key: 'CH4', name: 'CH₄ (methane)', center: 'C', outer: ['H', 'H', 'H', 'H'] },
+  { key: 'N2', name: 'N₂ (nitrogen gas)', center: 'N', outer: ['N'] }
+];
+/* slots in a plus shape: 0 center, 1 top, 2 right, 3 bottom, 4 left */
+const SLOT_XY = [[300, 165], [300, 50], [450, 165], [300, 280], [150, 165]];
+const SLOT_SIDE = [null, 0, 1, 2, 3];   /* side of the center atom that faces each outer slot */
+function makeBuilder(root, cfg) {
+  const st = S.tasks[cfg.id] || (S.tasks[cfg.id] = { done: [], i: 0 });
+  root.innerHTML = `<div class="tabs" role="tablist"></div>
+    <div class="bld-steps"><span class="bstep" data-s="1">1 · Place the atoms</span><span class="bstep" data-s="2">2 · Move electrons to make bonds</span></div>
+    <p class="place-prompt bld-msg" aria-live="polite"></p>
+    <div class="bld-tray" aria-label="Atoms to place"></div>
+    <div class="scene-wrap"><svg class="sscene bld-svg" viewBox="0 0 600 330" role="img" aria-label="Workspace for building the Lewis structure"></svg></div>
+    <p class="legend"><span><span class="dot e"></span>valence electron</span><span><span class="dot g2"></span>outer shell full</span></p>
+    <div class="btn-row"><button type="button" class="btn primary sm bld-go">Done placing</button><button type="button" class="btn ghost sm bld-reset">Start this one over</button></div>
+    <div class="progress-pips">${'<i></i>'.repeat(cfg.need)}</div>`;
+  const tabsEl = $('.tabs', root), tray = $('.bld-tray', root), svg = $('.bld-svg', root), msg = $('.bld-msg', root), go = $('.bld-go', root);
+  let B, slots, phase, atoms, bonds, selDot, selCard, busy;
+  const say = (t, bad) => { msg.innerHTML = t; msg.classList.toggle('bad', !!bad); };
+  const pip = () => $$('.progress-pips i', root).forEach((p, i) => p.classList.toggle('on', i < st.done.length));
+  function tabs() {
+    tabsEl.innerHTML = BUILDS.map((b, i) => `<button type="button" class="tab ${st.done.includes(i) ? 'ok' : ''}" aria-selected="${i === st.i}" data-i="${i}">${b.name.split(' ')[0]}</button>`).join('');
+    $$('.tab', tabsEl).forEach(t => t.addEventListener('click', () => { st.i = +t.dataset.i; save(); start(); }));
+  }
+  function start() {
+    B = BUILDS[st.i]; slots = [null, null, null, null, null]; phase = 1; atoms = []; bonds = {}; selDot = null; selCard = null; busy = false;
+    tabs(); pip();
+    $$('.bstep', root).forEach(s => s.classList.toggle('on', s.dataset.s === '1'));
+    go.classList.remove('hidden'); go.disabled = true;
+    const cards = shuffle([B.center, ...B.outer].map((s, k) => ({ s, k })));
+    tray.innerHTML = cards.map(c => `<button type="button" class="dcard" data-k="${c.k}" data-s="${c.s}" aria-label="${bySym(c.s).name}, ${VAL[c.s]} valence electrons">${dotCard(c.s)}<span>${bySym(c.s).name}</span></button>`).join('');
+    say(`Build <b>${B.name}</b>. Drag each atom into a spot (or tap an atom, then tap a spot). The atom that makes the most bonds goes in the <b>center</b>.`);
+    $$('.dcard', tray).forEach(card => {
+      card.addEventListener('click', () => { if (phase !== 1) return; selCard = selCard === card ? null : card; $$('.dcard', tray).forEach(c => c.classList.toggle('sel', c === selCard)); });
+      card.draggable = true;
+      card.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', card.dataset.k); selCard = card; });
+    });
+    drawPlace();
+  }
+  function drawPlace() {
+    let s = SLOT_XY.map(([x, y], i) => `<g class="slot ${slots[i] ? 'filled' : ''}" data-i="${i}"><rect x="${x - 42}" y="${y - 42}" width="84" height="84" rx="14"/>${slots[i] ? `<g transform="translate(${x - 32} ${y - 32})" class="placed">${dotCard(slots[i].s)}</g>` : `<text x="${x}" y="${y + 5}" class="slot-l">${i === 0 ? 'center' : ''}</text>`}</g>`).join('');
+    svg.innerHTML = s;
+    $$('.slot', svg).forEach(g => {
+      const i = +g.dataset.i;
+      g.addEventListener('click', () => { if (phase !== 1) return; if (slots[i] && !selCard) { const k = slots[i].k; slots[i] = null; $(`.dcard[data-k="${k}"]`, tray).classList.remove('used'); drawPlace(); return; } if (selCard) place(selCard, i); });
+      g.addEventListener('dragover', e => e.preventDefault());
+      g.addEventListener('drop', e => { e.preventDefault(); const card = $(`.dcard[data-k="${e.dataTransfer.getData('text/plain')}"]`, tray); if (card) place(card, i); });
+    });
+    go.disabled = slots.filter(Boolean).length !== 1 + B.outer.length;
+  }
+  function place(card, i) {
+    const k = +card.dataset.k;
+    slots.forEach((x, j) => { if (x && x.k === k) slots[j] = null; });
+    if (slots[i]) $(`.dcard[data-k="${slots[i].k}"]`, tray).classList.remove('used');
+    slots[i] = { s: card.dataset.s, k }; card.classList.add('used'); card.classList.remove('sel'); selCard = null;
+    drawPlace();
+  }
+  go.addEventListener('click', () => {
+    if (phase !== 1) return;
+    if (!slots[0]) { say('Put an atom in the center spot.', true); return; }
+    if (slots[0].s !== B.center) { shake(svg); say(`${bySym(slots[0].s).name} makes ${({ H: 1, O: 2, N: 3, C: 4 })[slots[0].s] || 1} bond${slots[0].s === 'H' ? '' : 's'}. The atom that makes the <b>most</b> bonds goes in the center. Tap it to move it.`, true); return; }
+    phase = 2; go.classList.add('hidden');
+    $$('.bstep', root).forEach(s => s.classList.toggle('on', s.dataset.s === '2'));
+    atoms = slots.map((x, i) => x ? { s: x.s, slot: i, x: SLOT_XY[i][0], y: SLOT_XY[i][1], v: VAL[x.s] } : null);
+    atoms.forEach(a => { if (!a) return; a.pairs = Math.max(0, a.v - 4); a.u = a.v - 2 * a.pairs; });
+    say('Now make the bonds. Find an <b>unpaired</b> electron (one that is by itself) on one atom and tap it, then tap an unpaired electron on a neighboring atom. They move into the middle and become a shared pair.');
+    drawBuild();
+  });
+  const sideToward = (a, b) => { if (a.slot === 0) return SLOT_SIDE[b.slot]; return OPP[SLOT_SIDE[a.slot]]; };
+  const bondKey = (i, j) => i < j ? `${i}-${j}` : `${j}-${i}`;
+  const bondCount = i => Object.entries(bonds).reduce((t, [k, n]) => t + (k.split('-').map(Number).includes(i) ? n : 0), 0);
+  function dotsFor(i) {
+    /* standard dot rules on the open sides: one per side first, then pair up. Every electron looks the same. */
+    const a = atoms[i], used = Object.keys(bonds).filter(k => bonds[k] > 0 && k.split('-').map(Number).includes(i)).map(k => { const j = k.split('-').map(Number).find(x => x !== i); return sideToward(a, atoms[j]); });
+    const free = [0, 1, 2, 3].filter(s => !used.includes(s)), res = [];
+    /* pairs take the first open sides, single electrons the next ones (same order every time, so the layout gives no hints) */
+    const put = (sd, n, kind) => { for (let m = 0; m < n; m++) { const off = n === 2 ? (m ? 5 : -5) : 0, D = 36, [dx, dy] = [[0, -1], [1, 0], [0, 1], [-1, 0]][sd];
+      res.push({ kind, x: a.x + dx * D + (dy ? off : 0), y: a.y + dy * D + (dx ? off : 0) }); } };
+    let f = 0;
+    for (let k = 0; k < a.pairs; k++) put(free[f++ % free.length], 2, 'p');
+    for (let k = 0; k < a.u; k++) put(free[f++ % free.length], 1, 'u');
+    return res;
+  }
+  function around(i) { const a = atoms[i]; return 2 * a.pairs + a.u + 2 * bondCount(i); }
+  function drawBuild() {
+    let s = '';
+    Object.entries(bonds).forEach(([k, n]) => { const [i, j] = k.split('-').map(Number), A = atoms[i], C = atoms[j], horiz = A.y === C.y;
+      for (let m = 0; m < n; m++) { const off = (m - (n - 1) / 2) * 13, r = 26;
+        const [x1, y1, x2, y2] = horiz ? [Math.min(A.x, C.x) + r, A.y + off, Math.max(A.x, C.x) - r, A.y + off] : [A.x + off, Math.min(A.y, C.y) + r, A.x + off, Math.max(A.y, C.y) - r];
+        const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+        s += `<line class="bline" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/><circle class="bdot" cx="${horiz ? mx - 5 : mx}" cy="${horiz ? my : my - 5}" r="4.5"/><circle class="bdot" cx="${horiz ? mx + 5 : mx}" cy="${horiz ? my : my + 5}" r="4.5"/>`; } });
+    const allDone = atoms.every(a => !a || a.u === 0);
+    atoms.forEach((a, i) => { if (!a) return; const n = around(i), full = n === FULL(a.s);
+      if (allDone || full) s += `<circle class="oct ${full ? 'full' : ''}" cx="${a.x}" cy="${a.y}" r="${a.s === 'H' ? 40 : 52}"/><text class="octn" x="${a.x + (a.s === 'H' ? 34 : 44)}" y="${a.y - (a.s === 'H' ? 30 : 38)}">${n}</text>`;
+      s += `<text class="ssym" x="${a.x}" y="${a.y + 12}">${a.s}</text>`;
+      dotsFor(i).forEach(d => { const sel = selDot && selDot.i === i && Math.abs(selDot.x - d.x) < 1 && Math.abs(selDot.y - d.y) < 1; s += `<circle class="bdot tapdot ${sel ? 'sel' : ''}" data-i="${i}" data-k="${d.kind}" cx="${d.x}" cy="${d.y}" r="5.5"/><circle class="bhit" data-i="${i}" data-k="${d.kind}" cx="${d.x}" cy="${d.y}" r="11"/>`; }); });
+    s += '<g class="fly"></g>';
+    svg.innerHTML = s;
+    $$('.bhit', svg).forEach(d => d.addEventListener('click', () => { if (d.dataset.k === 'p') { say('That electron is already part of a lone pair. Pick an electron that is by itself.', true); shake(svg); return; } tapDot(+d.dataset.i, +d.getAttribute('cx'), +d.getAttribute('cy')); }));
+  }
+  function tapDot(i, x, y) {
+    if (busy || !atoms[i] || atoms[i].u <= 0) return;
+    if (!selDot) { selDot = { i, x, y }; drawBuild(); say(`Now tap an unpaired electron on an atom next to ${bySym(atoms[i].s).name.toLowerCase()}.`); return; }
+    if (selDot.i === i) { selDot = null; drawBuild(); say('Pick an unpaired electron on one atom, then one on a neighboring atom.'); return; }
+    const a = selDot.i, b = i;
+    if (a !== 0 && b !== 0) { say('Those atoms aren\'t next to each other. Bonds go between the center atom and an outer atom.', true); selDot = null; drawBuild(); return; }
+    const A = atoms[a], C = atoms[b], k = bondKey(a, b), n = (bonds[k] || 0) + 1, horiz = A.y === C.y, mx = (A.x + C.x) / 2, my = (A.y + C.y) / 2;
+    const off = ((n - 1) - (n - 1) / 2) * 13;
+    const ends = horiz ? [[mx - 5, my + off], [mx + 5, my + off]] : [[mx + off, my - 5], [mx + off, my + 5]];
+    const starts = [[selDot.x, selDot.y], [x, y]]; selDot = null; busy = true;
+    drawBuild(); $$('.tapdot, .bhit', svg).forEach(d => d.remove());
+    const fly = $('.fly', svg), dots = starts.map(([sx, sy]) => { const c = svgEl('circle', { cx: sx, cy: sy, r: 5.5, class: 'bdot' }); fly.appendChild(c); return c; });
+    const t0 = performance.now(), dur = REDUCED ? 30 : 650;
+    const step = now => { const t = Math.min(1, (now - t0) / dur), e = t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+      dots.forEach((d, m) => { d.setAttribute('cx', starts[m][0] + (ends[m][0] - starts[m][0]) * e); d.setAttribute('cy', starts[m][1] + (ends[m][1] - starts[m][1]) * e); });
+      if (t < 1) { requestAnimationFrame(step); return; }
+      bonds[k] = n; A.u--; C.u--; busy = false; drawBuild(); afterBond(); };
+    requestAnimationFrame(step);
+  }
+  function afterBond() {
+    const left = atoms.filter(a => a && a.u > 0);
+    if (left.length === 0) {
+      const bad = atoms.map((a, i) => a && around(i) !== FULL(a.s) ? a : null).filter(Boolean);
+      if (bad.length) { say(`Not quite: ${bad.map(a => bySym(a.s).name).join(', ')} doesn't have a full shell. Start this one over and try again.`, true); return; }
+      const multi = Object.values(bonds).some(n => n > 1);
+      say(`<b>Built it!</b> Every atom is full (8, or 2 for hydrogen).${multi ? ' This one needed a ' + (Object.values(bonds).some(n => n === 3) ? 'triple' : 'double') + ' bond.' : ''}`);
+      if (!st.done.includes(st.i)) { st.done.push(st.i); save(); } pip(); tabs();
+      if (st.done.length >= cfg.need && !S.reqs[cfg.req]) cfg.onDone && cfg.onDone();
+      const nx = BUILDS.findIndex((b, j) => !st.done.includes(j));
+      phase = 3; const doneB = B;
+      if (nx >= 0) setTimeout(() => { if (B === doneB && phase === 3) { st.i = nx; save(); start(); } }, 2200);
+      return;
+    }
+    const lonely = left.filter((a, _, arr) => { const i = atoms.indexOf(a); return !atoms.some((b, j) => b && b.u > 0 && j !== i && (i === 0 || j === 0)); });
+    if (lonely.length === left.length) { say(`${left.map(a => bySym(a.s).name).join(' and ')} still ${left.length > 1 ? 'have' : 'has'} unpaired electrons, but no neighbor has one to pair with. Start this one over and try a different set of bonds.`, true); return; }
+    say('Good. Keep pairing unpaired electrons until every atom is full.');
+  }
+  $('.bld-reset', root).addEventListener('click', () => start());
+  start();
+}
+
 function build6(el) {
-  const R6 = [
-    { q: 'Name <b>CO₂</b>.', o: ['carbon oxide', 'carbon dioxide', 'monocarbon dioxide'], a: 1, why: 'One carbon (no "mono" on the first element) and two oxygens: carbon dioxide.' },
-    { q: 'Name <b>N₂O₄</b>.', o: ['dinitrogen tetroxide', 'nitrogen oxide', 'dinitrogen oxide'], a: 0, why: 'Two nitrogens (di-) and four oxygens (tetra- → tetroxide).' },
-    { q: 'Name <b>CCl₄</b>.', o: ['carbon chloride', 'tetracarbon chloride', 'carbon tetrachloride'], a: 2, why: 'One carbon, four chlorines: carbon tetrachloride.' },
-    { q: 'What is the formula of <b>sulfur hexafluoride</b>?', o: ['SF₆', 'S₆F', 'SF'], a: 0, why: 'Hexa- means 6 fluorines: SF₆.' }
-  ];
   el.innerHTML = frame(6,
-    card('read', 'Prefixes tell you how many', `<div class="read-text">
-      <p>Covalent compounds can combine in different ratios (CO and CO₂), so their names use ${c('prefixes')} to say how many of each atom:</p>
-      <div class="ide">${[['1', 'mono-'], ['2', 'di-'], ['3', 'tri-'], ['4', 'tetra-'], ['5', 'penta-'], ['6', 'hexa-']].map(([n, p]) => `<span><b>${n}</b> = ${p}</span>`).join('')}</div>
-      <ol><li>Name the first element with a prefix, but <b>skip mono-</b> for the first one.</li><li>Name the second element with a prefix and the <b>-ide</b> ending.</li></ol>
-      <p><b>Examples:</b> CO = carbon <b>mon</b>oxide · CO₂ = carbon <b>di</b>oxide · N₂O = <b>di</b>nitrogen <b>mon</b>oxide.</p>
-      <p class="small muted">Ionic compounds (a metal + a nonmetal) never use prefixes. Prefixes are only for two nonmetals.</p></div>`) +
-    card('try', 'Name it', '<div id="s6r"></div>') +
+    card('read', 'Your turn to draw', `<div class="read-text">
+      <p>Now you'll build Lewis structures yourself, from start to finish:</p>
+      <ol><li><b>Place the atoms.</b> The atom that makes the most bonds goes in the center. Hydrogen is never in the center.</li>
+      <li><b>Pair the electrons.</b> Find an unpaired electron (one sitting by itself, not in a pair) on an atom and one on its neighbor. Together they become a shared pair: one bond.</li>
+      <li><b>Keep going</b> until no unpaired electrons are left. If two atoms still need more, they can share a second or third pair.</li>
+      <li><b>Check:</b> every atom should have 8 around it (hydrogen 2).</li></ol></div>`) +
+    card('try', 'Build it yourself', '<div id="s6b"></div>') +
     card('qc', '', '<div id="qc6"></div>'));
-  makeRounds($('#s6r', el), { id: 's6r', need: 3, req: '6.names', rounds: R6.map(r => ({ q: r.q, opts: r.o, a: r.a, hint: 'Count the atoms of each element and use the prefixes.', why: r.why })), onDone: () => done(6, 'names') });
-  makeQC($('#qc6', el), { id: 'qc6', q: 'What is the name of PCl₃?', opts: ['phosphorus chloride', 'monophosphorus trichloride', 'phosphorus trichloride', 'triphosphorus chloride'], ans: 2,
-    explain: 'One phosphorus (no mono- on the first element) and three chlorines: phosphorus trichloride.', hint: 'Skip mono- on the first element.', onCorrect: () => done(6, 'qc6') });
+  makeBuilder($('#s6b', el), { id: 's6b', need: 3, req: '6.build', onDone: () => done(6, 'build') });
+  makeQC($('#qc6', el), { id: 'qc6', q: 'While building CO₂, a student made single bonds from C to each O. Carbon still has 2 unpaired electrons and each oxygen has 1. What should they do?', opts: ['Stop: the structure is done', 'Pair each oxygen\'s last electron with one of carbon\'s, making two double bonds', 'Move carbon\'s electrons onto one oxygen as a lone pair', 'Add another hydrogen'], ans: 1,
+    explain: 'Each C–O pair shares one more pair, giving O=C=O. Now carbon has 8 and each oxygen has 8.', hint: 'Atoms that still have unpaired electrons can share another pair.', onCorrect: () => done(6, 'qc6') });
 }
 
 /* ---------------- Section 7 ---------------- */
@@ -1536,16 +1693,16 @@ function build8(el) {
   const M = [
     { q: 'A student says the bond in Cl₂ is ionic because one chlorine gives an electron to the other. What is wrong?', o: ['Nothing is wrong', 'Two identical nonmetals share a pair; the bond is covalent', 'It should be a triple bond', 'Chlorine has no valence electrons'], a: 1, why: 'Both chlorines want an electron, so they share. Two nonmetals form a covalent bond.' },
     { q: 'A student drew O–O with one bond for O₂. What is wrong?', o: ['Each O would only count 7; O₂ needs a double bond', 'It should be ionic', 'Oxygen needs 4 bonds', 'Nothing is wrong'], a: 0, why: 'With one bond each oxygen has 6 + 1 = 7. Sharing two pairs (O=O) gives each 8.' },
-    { q: 'A student named CO₂ "monocarbon dioxide." What is wrong?', o: ['Use no prefixes at all', 'It should be carbon oxide', 'Skip mono- on the first element: carbon dioxide', 'Nothing is wrong'], a: 2, why: 'Never use mono- on the first element.' },
+    { q: 'A student drew NH₃ with three N–H bonds and no lone pair on nitrogen. What is wrong?', o: ['Nitrogen needs a double bond', 'Nitrogen only counts 6; it still has a lone pair, giving 8', 'Hydrogen should have a lone pair', 'Nothing is wrong'], a: 1, why: 'Nitrogen has 5 valence electrons: 3 go into bonds and 2 stay as a lone pair. 6 + 2 = 8.' },
     { q: 'A student put hydrogen in the center of H₂O: H–H–O. What is wrong?', o: ['Hydrogen makes only 1 bond, so it can\'t be in the center: H–O–H', 'Oxygen should be on the end', 'It needs a double bond', 'Nothing is wrong'], a: 0, why: 'The center atom makes the most bonds. Oxygen (2 bonds) goes in the middle.' }
   ];
   el.innerHTML = frame(8,
-    card('read', 'Check the work', `<div class="read-text"><p>When you check a covalent bonding problem, ask: Are both atoms <b>nonmetals</b>? Does every atom have <b>8</b> (hydrogen <b>2</b>)? Is the atom with the most bonds in the <b>center</b>? Does the name use the right <b>prefixes</b>, with no mono- on the first element?</p></div>`) +
+    card('read', 'Check the work', `<div class="read-text"><p>When you check a covalent bonding problem, ask: Are both atoms <b>nonmetals</b>? Does every atom have <b>8</b> (hydrogen <b>2</b>)? Is the atom with the most bonds in the <b>center</b>? Are any electrons left unpaired or missing?</p></div>`) +
     card('try', 'Spot the mistake', '<p class="muted">Each student example has one mistake. Find it.</p><div id="s8r"></div>') +
     card('qc', '', '<div id="qc8"></div>'));
   makeRounds($('#s8r', el), { id: 's8r', need: 3, req: '8.fix', rounds: M.map(r => ({ q: r.q, opts: r.o, a: r.a, hint: 'Check the bond type, the electron count, the center atom, and the name.', why: r.why })), onDone: () => done(8, 'fix') });
-  makeQC($('#qc8', el), { id: 'qc8', q: 'Which name is written correctly?', opts: ['monocarbon monoxide', 'nitrogen trihydride for NH₃', 'dinitrogen pentoxide for N₂O₅', 'sodium dichloride for NaCl'], ans: 2,
-    explain: 'N₂O₅: di- for 2 nitrogens, pent(a)- for 5 oxygens. NaCl is ionic and never uses prefixes.', hint: 'Skip mono- on the first element, and remember ionic compounds use no prefixes.', onCorrect: () => done(8, 'qc8') });
+  makeQC($('#qc8', el), { id: 'qc8', q: 'Which Lewis structure of water is correct?', opts: ['H–H–O with no lone pairs', 'H=O=H with no lone pairs', 'H–O–H with two lone pairs on O', 'H–O–H with one lone pair on O'], ans: 2,
+    explain: 'Oxygen goes in the center with two single bonds and two lone pairs: 4 + 4 = 8. Each H has 2.', hint: 'Count to 8 around oxygen.', onCorrect: () => done(8, 'qc8') });
 }
 
 /* =========================================================
@@ -1563,23 +1720,23 @@ const BANK = [
   { id: 'b9', q: 'How many lone pairs are on the oxygen in H₂O?', o: ['0', '1', '2', '3'], a: 2, x: 'Oxygen has 6 valence electrons: 2 are used in bonds, leaving 2 lone pairs.' },
   { id: 'b10', q: 'How many lone pairs are on the nitrogen in NH₃?', o: ['0', '1', '2', '3'], a: 1, x: 'Nitrogen has 5: 3 go into bonds, leaving 1 lone pair.' },
   { id: 'b11', q: 'Which atom goes in the center of the Lewis structure of NH₃?', o: ['N', 'H', 'Either', 'None'], a: 0, x: 'Nitrogen makes 3 bonds; hydrogen makes only 1.' },
-  { id: 'b12', q: 'What is the name of CO?', o: ['carbon oxide', 'carbon monoxide', 'monocarbon monoxide', 'carbon dioxide'], a: 1, x: 'One oxygen: monoxide. Skip mono- on the first element.' },
-  { id: 'b13', q: 'What is the name of N₂O₃?', o: ['dinitrogen trioxide', 'nitrogen oxide', 'trinitrogen dioxide', 'dinitrogen oxide'], a: 0, x: 'di- for 2 nitrogens, tri- for 3 oxygens.' },
-  { id: 'b14', q: 'What is the formula of carbon tetrachloride?', o: ['C₄Cl', 'CCl₄', 'CCl', 'C₄Cl₄'], a: 1, x: 'tetra- = 4 chlorines.' },
-  { id: 'b15', q: 'Which prefix means 6?', o: ['penta-', 'tetra-', 'hexa-', 'tri-'], a: 2, x: 'hexa- = 6, as in sulfur hexafluoride (SF₆).' },
+  { id: 'b12', q: 'When you build a Lewis structure, which atom goes in the center?', o: ['The atom that makes the most bonds', 'Always hydrogen', 'The smallest atom', 'The atom listed last'], a: 0, x: 'The atom that makes the most bonds goes in the center; hydrogen never does.' },
+  { id: 'b13', q: 'How many lone pairs are on each chlorine in Cl₂?', o: ['0', '1', '2', '3'], a: 3, x: 'Each Cl has 7: 1 goes into the bond, leaving 6 as 3 lone pairs.' },
+  { id: 'b14', q: 'In CO₂, how many electrons does carbon share in total?', o: ['2', '4', '6', '8'], a: 3, x: 'Two double bonds = four shared pairs = 8 electrons around carbon.' },
+  { id: 'b15', q: 'An unpaired electron on an atom (one not in a pair) means…', o: ['the atom can still form a bond with it', 'the atom is full', 'it is a lone pair', 'it belongs to the nucleus'], a: 0, x: 'Unpaired electrons are the ones that pair up with a neighbor\'s to form bonds.' },
   { id: 'b16', q: 'Why does sugar water NOT conduct electricity?', o: ['Sugar is made of molecules, not ions', 'Sugar has too many electrons', 'Water blocks electricity', 'Sugar is a metal'], a: 0, x: 'Covalent compounds dissolve into molecules, not ions, so no charges move.' },
   { id: 'b17', q: 'Compared to ionic compounds, covalent compounds usually have…', o: ['higher melting points', 'lower melting points', 'the same melting points', 'no melting points'], a: 1, x: 'Molecules hold on to each other weakly, so they melt and boil at lower temperatures.' },
   { id: 'b18', q: 'Which pair forms a covalent bond?', o: ['Na and Cl', 'K and O', 'C and H', 'Mg and F'], a: 2, x: 'Carbon and hydrogen are both nonmetals.' },
   { id: 'b19', type: 'tp', q: 'Two fluorine atoms (7 valence electrons each) form F₂.', A: { q: 'What kind of bond forms?', o: ['A single covalent bond', 'A double covalent bond', 'An ionic bond', 'No bond'], a: 0 }, B: { q: 'Why?', o: ['Each F needs 1 more electron, so they share one pair', 'One F gives an electron to the other', 'Each F needs 2 more electrons', 'Fluorine is a metal'], a: 0 }, x: 'Each fluorine needs one more electron, so one shared pair gives both 8.' },
   { id: 'b20', type: 'tp', q: 'Two oxygen atoms form O₂.', A: { q: 'How many pairs do they share?', o: ['1', '2', '3', '4'], a: 1 }, B: { q: 'How many electrons does each O count after bonding?', o: ['6', '7', '8', '10'], a: 2 }, x: 'Two shared pairs (a double bond) give each oxygen 4 + 4 = 8.' },
-  { id: 'b21', type: 'tp', q: 'Look at the molecule CO₂ (O–C–O).', A: { q: 'What bonds connect C to each O?', o: ['Single bonds', 'Double bonds', 'Triple bonds', 'Ionic bonds'], a: 1 }, B: { q: 'What is its name?', o: ['carbon oxide', 'monocarbon dioxide', 'carbon dioxide', 'carbon dioxygen'], a: 2 }, x: 'O=C=O: carbon makes 4 bonds (2 + 2) and each O makes 2. Name: carbon dioxide.' },
+  { id: 'b21', type: 'tp', q: 'Look at the molecule CO₂ (O–C–O).', A: { q: 'What bonds connect C to each O?', o: ['Single bonds', 'Double bonds', 'Triple bonds', 'Ionic bonds'], a: 1 }, B: { q: 'How many lone pairs are on carbon?', o: ['0', '1', '2', '4'], a: 0 }, x: 'O=C=O: carbon uses all 4 electrons in two double bonds, so it has no lone pairs.' },
   { id: 'b22', type: 'tp', q: 'Methane is CH₄.', A: { q: 'Which atom is in the center?', o: ['C', 'H', 'Any H', 'None'], a: 0 }, B: { q: 'How many lone pairs does carbon have?', o: ['0', '1', '2', '4'], a: 0 }, x: 'Carbon uses all 4 valence electrons in 4 single bonds, so it has no lone pairs.' },
   { id: 'b23', type: 'sa', q: 'Which pairs of elements form covalent bonds?', o: ['N and H', 'Na and Cl', 'C and O', 'Ca and F', 'S and O'], a: [0, 2, 4], x: 'Each covalent pair has two nonmetals.' },
   { id: 'b24', type: 'sa', q: 'Which statements about covalent compounds are true?', o: ['They are made of molecules', 'They usually have low melting points', 'They conduct electricity when dissolved', 'Their atoms share electrons', 'They always contain a metal'], a: [0, 1, 3], x: 'Covalent compounds are molecules of nonmetals sharing electrons; they don\'t form ions, so they don\'t conduct.' },
-  { id: 'b25', type: 'sa', q: 'Which names are written correctly?', o: ['carbon dioxide (CO₂)', 'monocarbon monoxide (CO)', 'dinitrogen tetroxide (N₂O₄)', 'sodium dichloride (NaCl)', 'sulfur hexafluoride (SF₆)'], a: [0, 2, 4], x: 'Skip mono- on the first element, and ionic compounds like NaCl never use prefixes.' },
+  { id: 'b25', q: 'Which Lewis structures give every atom a full outer shell?', o: ['H–Cl with 3 lone pairs on Cl', 'O–O with 3 lone pairs on each O', 'N≡N with 1 lone pair on each N', 'H–O–H with no lone pairs', 'H–H'], a: [0, 2, 4], x: 'O₂ needs a double bond and water needs 2 lone pairs on O.' },
   { id: 'b26', type: 'sa', q: 'In a correct Lewis structure of H₂O, which are true?', o: ['O is in the center', 'Each H has 2 electrons', 'O has 8 electrons around it', 'There is a double bond', 'O has 2 lone pairs'], a: [0, 1, 2, 4], x: 'H–O–H with two single bonds and two lone pairs on oxygen.' },
   { id: 'b27', q: 'A student drew a single bond in N₂. What is wrong?', o: ['Nothing', 'Each N would count only 6; N₂ needs a triple bond', 'It should be ionic', 'Nitrogen makes 4 bonds'], a: 1, x: 'With one bond each N has 5 + 1 = 6. Three shared pairs give 8.' },
-  { id: 'b28', q: 'A student named NaCl "sodium monochloride." What is wrong?', o: ['NaCl is ionic, so no prefixes: sodium chloride', 'It should be monosodium chloride', 'It should be sodium chlorine', 'Nothing'], a: 0, x: 'Prefixes are only for covalent compounds (two nonmetals).' },
+  { id: 'b28', q: 'A student finished building CH₄ but carbon still had one unpaired electron. What happened?', o: ['They forgot one C–H bond', 'Carbon needs a lone pair', 'It should be a double bond', 'Nothing is wrong'], a: 0, x: 'Carbon makes 4 bonds; a leftover unpaired electron means one H was not bonded.' },
   { id: 'b29', q: 'A student said H₂ has a double bond. What is wrong?', o: ['Nothing', 'Each H needs just 1 more electron, so one shared pair is enough', 'H₂ is ionic', 'H₂ needs a triple bond'], a: 1, x: 'Hydrogen is full with 2. One shared pair gives each H 2.' },
   { id: 'b30', q: 'Which drawing correctly shows water?', o: ['H–H–O', 'H–O–H', 'H=O=H', 'O–H–H'], a: 1, x: 'Oxygen (2 bonds) goes in the middle with single bonds to each hydrogen.' }
 ];
@@ -1591,7 +1748,6 @@ const REVIEW_HTML = `<div class="two-col"><div class="review-box"><ul>
   <li><b>Bonds needed</b> = electrons needed to reach 8: H 1, O 2, N 3, C 4 (halogens 1).</li>
   <li><b>Lewis structures:</b> most-bonding atom in the center; every atom has 8 (hydrogen 2).</li>
   <li><b>Double</b> = 2 shared pairs (O=O); <b>triple</b> = 3 shared pairs (N≡N).</li>
-  <li><b>Names:</b> prefixes mono-, di-, tri-, tetra-, penta-, hexa-; skip mono- on the first element; second element ends in -ide.</li>
   <li><b>Properties:</b> molecules, low melting points, don't conduct when dissolved.</li></ul></div>
   <div><svg viewBox="0 0 600 260" class="sscene" id="revSvg" role="img" aria-label="Lewis structure of water, H–O–H, with two lone pairs on oxygen"></svg></div></div>`;
 
@@ -2096,5 +2252,149 @@ $('#tPreview').addEventListener('click', () => {
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();
+</script>
+<script>
+/* ===== Scientific calculator (floating, with history) ===== */
+(function () {
+  if (window.__sciCalc) return; window.__sciCalc = true;
+  const HKEY = 'sci_calc_history_v1', MKEY = 'sci_calc_mode_v1';
+  const css = `
+  .scalc-btn{display:inline-flex;align-items:center;gap:6px}
+  .scalc{position:fixed;z-index:99990;right:18px;top:70px;width:330px;max-width:calc(100vw - 20px);background:#0f1a2e;color:#e8eef8;border:1.5px solid #35496f;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.45);font:14px/1.3 system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;user-select:none}
+  .scalc[hidden]{display:none}
+  .scalc-head{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;cursor:move;border-bottom:1px solid #26385a;font-weight:700}
+  .scalc-head button{background:none;border:0;color:#a3b4d1;font:700 18px system-ui;cursor:pointer;padding:0 4px}
+  .scalc-hist{max-height:92px;overflow-y:auto;padding:6px 10px 2px;font-size:13px}
+  .scalc-hist .h{display:flex;justify-content:space-between;gap:8px;padding:2px 0;border-bottom:1px dashed #22324f;cursor:pointer}
+  .scalc-hist .h span:first-child{color:#a3b4d1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .scalc-hist .h span:last-child{color:#5fe1ff;font-weight:700;white-space:nowrap}
+  .scalc-hist .empty{color:#6b7c99;font-style:italic;padding:4px 0}
+  .scalc-in{display:flex;flex-direction:column;gap:2px;margin:6px 10px;background:#0b1322;border:1.5px solid #35496f;border-radius:10px;padding:6px 8px}
+  .scalc-in input{flex:1;min-width:0;background:none;border:0;color:#fff;font:600 20px system-ui;outline:none;user-select:text}
+  .scalc-prev{color:#4ade80;font-weight:700;font-size:15px;white-space:nowrap;align-self:flex-end;min-height:19px}
+  .scalc-keys{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;padding:4px 10px 10px}
+  .scalc-keys button{height:36px;border-radius:8px;border:1px solid #2a3d61;background:#17253f;color:#e8eef8;font:600 15px system-ui;cursor:pointer}
+  .scalc-keys button:hover{background:#1e3152}
+  .scalc-keys button.n{background:#22355a}.scalc-keys button.op{color:#f6b93b}.scalc-keys button.eq{background:#f6b93b;color:#241703;grid-column:span 2}
+  .scalc-keys button.fn{font-size:13px;color:#5fe1ff}.scalc-keys button.ac{color:#fca5a5}
+  @media print{.scalc,.scalc-btn{display:none!important}}`;
+  const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
+
+  let hist = []; try { hist = JSON.parse(localStorage.getItem(HKEY) || '[]'); } catch (e) {}
+  let deg = true; try { deg = localStorage.getItem(MKEY) !== 'rad'; } catch (e) {}
+  const saveH = () => { try { localStorage.setItem(HKEY, JSON.stringify(hist.slice(-40))); } catch (e) {} };
+
+  /* ---- safe parser (no eval) ---- */
+  function evaluate(src, ans) {
+    let s = String(src).replace(/\s+/g, '').replace(/([0-9.])[×*]10\^\(?([-−]?[0-9]+)\)?/g, (m, d, e) => d + 'E' + e.replace('−', '-')).replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-').replace(/π/g, 'pi').replace(/√/g, 'sqrt').replace(/²/g, '^2').replace(/³/g, '^3').replace(/\s+/g, '');
+    const toks = []; let i = 0;
+    while (i < s.length) {
+      const c = s[i];
+      if (/[0-9.]/.test(c)) { let j = i; while (j < s.length && /[0-9.]/.test(s[j])) j++; if (s[j] === 'E' && /[-+0-9]/.test(s[j + 1] || '')) { j++; if (/[-+]/.test(s[j])) j++; while (j < s.length && /[0-9]/.test(s[j])) j++; } const t = s.slice(i, j); if ((t.match(/\./g) || []).length > 1) throw 'Too many decimal points'; toks.push({ t: 'n', v: parseFloat(t) }); i = j; continue; }
+      if (/[a-z]/i.test(c)) { let j = i; while (j < s.length && /[a-z]/i.test(s[j])) j++; const w = s.slice(i, j).toLowerCase(); i = j;
+        const known = ['sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'ln', 'log', 'sqrt', 'pi', 'e', 'ans'];
+        if (!known.includes(w)) throw 'Unknown: ' + w; toks.push({ t: ['pi', 'e', 'ans'].includes(w) ? 'c' : 'f', v: w }); continue; }
+      if ('+-*/^()!%'.includes(c)) { toks.push({ t: 'o', v: c }); i++; continue; }
+      throw 'Unexpected "' + c + '"';
+    }
+    let p = 0;
+    const peek = () => toks[p], take = () => toks[p++];
+    const startsValue = t => t && (t.t === 'n' || t.t === 'c' || t.t === 'f' || (t.t === 'o' && t.v === '('));
+    const trig = (f, x) => { const k = deg ? Math.PI / 180 : 1;
+      if (f === 'sin') return Math.sin(x * k); if (f === 'cos') return Math.cos(x * k); if (f === 'tan') return Math.tan(x * k);
+      if (f === 'asin') return Math.asin(x) / k; if (f === 'acos') return Math.acos(x) / k; if (f === 'atan') return Math.atan(x) / k; };
+    function expr() { let v = term(); while (peek() && peek().t === 'o' && '+-'.includes(peek().v)) { const o = take().v, r = term(); v = o === '+' ? v + r : v - r; } return v; }
+    function term() { let v = unary();
+      while (true) { const t = peek(); if (!t) break;
+        if (t.t === 'o' && '*/'.includes(t.v)) { take(); const r = unary(); v = t.v === '*' ? v * r : v / r; }
+        else if (startsValue(t)) { v = v * unary(); }  /* implied multiplication: 2pi, 3(4) */
+        else break; }
+      return v; }
+    function unary() { const t = peek(); if (t && t.t === 'o' && (t.v === '-' || t.v === '+')) { take(); const v = unary(); return t.v === '-' ? -v : v; } return power(); }
+    function power() { let b = post(); const t = peek(); if (t && t.t === 'o' && t.v === '^') { take(); const e = unary(); return Math.pow(b, e); } return b; }
+    function post() { let v = atom(); while (peek() && peek().t === 'o' && (peek().v === '!' || peek().v === '%')) { const o = take().v; if (o === '%') v = v / 100; else { if (v < 0 || v % 1 || v > 170) throw 'Factorial needs a whole number'; let f = 1; for (let k = 2; k <= v; k++) f *= k; v = f; } } return v; }
+    function atom() { const t = take(); if (!t) throw 'Incomplete';
+      if (t.t === 'n') return t.v;
+      if (t.t === 'c') { if (t.v === 'pi') return Math.PI; if (t.v === 'e') return Math.E; if (ans == null) throw 'No answer yet'; return ans; }
+      if (t.t === 'f') { let x; if (peek() && peek().v === '(') { take(); x = expr(); if (!peek() || peek().v !== ')') throw 'Missing )'; take(); } else x = power();
+        if (['sin', 'cos', 'tan', 'asin', 'acos', 'atan'].includes(t.v)) return trig(t.v, x);
+        if (t.v === 'ln') return Math.log(x); if (t.v === 'log') return Math.log10(x); if (t.v === 'sqrt') return Math.sqrt(x); }
+      if (t.t === 'o' && t.v === '(') { const v = expr(); if (peek() && peek().v === ')') take(); return v; }  /* allow missing final ) */
+      throw 'Check your expression'; }
+    if (!toks.length) throw 'Type something first';
+    const v = expr(); if (p < toks.length) throw 'Check your expression';
+    if (!isFinite(v) || isNaN(v)) throw (isNaN(v) ? 'Not a real number' : 'Too big / divide by 0');
+    return v;
+  }
+  const SUP = { '-': '⁻', 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴', 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹' };
+  function fmt(v) {
+    if (v === 0) return '0';
+    const a = Math.abs(v);
+    if (a >= 1e10 || a < 1e-6) { const [m, e] = v.toExponential(6).split('e'); return `${parseFloat(m)} × 10${String(+e).split('').map(c => SUP[c]).join('')}`; }
+    return String(parseFloat(v.toPrecision(10)));
+  }
+
+  /* ---- panel ---- */
+  const box = document.createElement('div'); box.className = 'scalc'; box.hidden = true; box.setAttribute('role', 'dialog'); box.setAttribute('aria-label', 'Scientific calculator');
+  const K = [['sin', 'sin(', 'fn'], ['cos', 'cos(', 'fn'], ['tan', 'tan(', 'fn'], ['DEG', 'mode', 'fn'], ['AC', 'ac', 'ac'],
+    ['ln', 'ln(', 'fn'], ['log', 'log(', 'fn'], ['√', '√(', 'fn'], ['x²', '^2', 'fn'], ['⌫', 'back', 'ac'],
+    ['(', '(', 'op'], [')', ')', 'op'], ['xʸ', '^', 'op'], ['×10ⁿ', '×10^', 'fn'], ['÷', '÷', 'op'],
+    ['7', '7', 'n'], ['8', '8', 'n'], ['9', '9', 'n'], ['π', 'π', 'fn'], ['×', '×', 'op'],
+    ['4', '4', 'n'], ['5', '5', 'n'], ['6', '6', 'n'], ['e', 'e', 'fn'], ['−', '−', 'op'],
+    ['1', '1', 'n'], ['2', '2', 'n'], ['3', '3', 'n'], ['ans', 'ans', 'fn'], ['+', '+', 'op'],
+    ['0', '0', 'n'], ['.', '.', 'n'], ['(−)', '-', 'op'], ['=', 'eq', 'eq']];
+  box.innerHTML = `<div class="scalc-head"><span>🧮 Calculator</span><span><button type="button" class="scalc-clr" aria-label="Clear history" style="font-size:12px">Clear</button><button type="button" class="scalc-x" aria-label="Close calculator">×</button></span></div>
+    <div class="scalc-hist" aria-live="polite"></div>
+    <div class="scalc-in"><input type="text" inputmode="none" autocomplete="off" spellcheck="false" aria-label="Calculator input"><span class="scalc-prev"></span></div>
+    <div class="scalc-keys">${K.map(([l, v, c]) => `<button type="button" class="${c}" data-v="${v}">${l}</button>`).join('')}</div>`;
+  const inp = box.querySelector('input'), histEl = box.querySelector('.scalc-hist'), prev = box.querySelector('.scalc-prev'), modeBtn = box.querySelector('[data-v="mode"]');
+  const lastAns = () => hist.length ? hist[hist.length - 1].v : null;
+  function drawHist() {
+    histEl.innerHTML = hist.length ? hist.slice(-40).map(h => `<div class="h" title="Tap to reuse"><span>${h.e.replace(/</g, '&lt;')}</span><span>= ${h.r}</span></div>`).join('') : '<div class="empty">Your last answers will show here.</div>';
+    histEl.scrollTop = histEl.scrollHeight;
+    histEl.querySelectorAll('.h').forEach((d, k) => d.addEventListener('click', () => { const h = hist.slice(-40)[k]; insert(h.r.includes('×') ? String(h.v) : h.r); }));
+  }
+  function livePreview() { try { const v = evaluate(inp.value, lastAns()); prev.textContent = inp.value.trim() && /[^0-9.]/.test(inp.value) ? '= ' + fmt(v) : ''; } catch (e) { prev.textContent = ''; } }
+  function insert(t) { const a = inp.selectionStart ?? inp.value.length, b = inp.selectionEnd ?? a; inp.value = inp.value.slice(0, a) + t + inp.value.slice(b); const c = a + t.length; inp.setSelectionRange(c, c); livePreview(); }
+  function doEq() {
+    const src = inp.value.trim(); if (!src) return;
+    try { const v = evaluate(src, lastAns()); hist.push({ e: src, r: fmt(v), v }); saveH(); drawHist(); inp.value = ''; prev.textContent = ''; }
+    catch (e) { prev.textContent = typeof e === 'string' ? e : 'Error'; prev.style.color = '#fca5a5'; setTimeout(() => { prev.style.color = ''; livePreview(); }, 1600); }
+  }
+  function setMode() { modeBtn.textContent = deg ? 'DEG' : 'RAD'; try { localStorage.setItem(MKEY, deg ? 'deg' : 'rad'); } catch (e) {} livePreview(); }
+  box.querySelectorAll('.scalc-keys button').forEach(b => b.addEventListener('click', () => {
+    const v = b.dataset.v;
+    if (v === 'eq') doEq(); else if (v === 'ac') { inp.value = ''; prev.textContent = ''; }
+    else if (v === 'back') { const a = inp.selectionStart, e2 = inp.selectionEnd; if (a !== e2) insert(''); else if (a > 0) { inp.value = inp.value.slice(0, a - 1) + inp.value.slice(a); inp.setSelectionRange(a - 1, a - 1); livePreview(); } }
+    else if (v === 'mode') { deg = !deg; setMode(); }
+    else { if (!inp.value && /^[+×÷^]/.test(v) && hist.length) insert('ans'); insert(v); }
+    inp.focus({ preventScroll: true });
+  }));
+  inp.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') { e.preventDefault(); doEq(); } else if (e.key === 'Escape') box.hidden = true;
+    else if (e.key.length === 1 && /[+*/^]/.test(e.key) && !inp.value && hist.length) { e.preventDefault(); insert('ans' + (e.key === '*' ? '×' : e.key === '/' ? '÷' : e.key)); } });
+  inp.addEventListener('input', livePreview);
+  inp.addEventListener('keyup', e => e.stopPropagation()); inp.addEventListener('keypress', e => e.stopPropagation());
+  box.querySelector('.scalc-x').addEventListener('click', () => { box.hidden = true; });
+  box.querySelector('.scalc-clr').addEventListener('click', () => { hist = []; saveH(); drawHist(); inp.focus({ preventScroll: true }); });
+  /* drag */
+  const head = box.querySelector('.scalc-head'); let drag = null;
+  head.addEventListener('pointerdown', e => { if (e.target.closest('button')) return; const r = box.getBoundingClientRect(); drag = { dx: e.clientX - r.left, dy: e.clientY - r.top }; head.setPointerCapture(e.pointerId); });
+  head.addEventListener('pointermove', e => { if (!drag) return; box.style.left = Math.max(0, Math.min(innerWidth - 60, e.clientX - drag.dx)) + 'px'; box.style.top = Math.max(0, Math.min(innerHeight - 40, e.clientY - drag.dy)) + 'px'; box.style.right = 'auto'; });
+  head.addEventListener('pointerup', () => { drag = null; });
+  function toggle() { box.hidden = !box.hidden; if (!box.hidden) { drawHist(); setMode(); inp.focus({ preventScroll: true }); } }
+  function mount() {
+    document.body.appendChild(box);
+    const tb = [...document.querySelectorAll('button, a')].find(b => /^\s*teacher\b/i.test(b.textContent || '') && b.offsetParent !== null) || [...document.querySelectorAll('button, a')].find(b => /^\s*teacher\b/i.test(b.textContent || ''));
+    const btn = document.createElement('button'); btn.type = 'button'; btn.className = ((tb && tb.className) || '') + ' scalc-btn'; btn.innerHTML = '🧮 Calculator'; btn.setAttribute('aria-label', 'Open the scientific calculator');
+    btn.addEventListener('click', e => { e.preventDefault(); toggle(); });
+    const aplus = !tb && [...document.querySelectorAll('button')].find(b => (b.textContent || '').trim() === 'A+');
+    if (tb && tb.parentNode) tb.parentNode.insertBefore(btn, tb);
+    else if (aplus && aplus.parentNode) { btn.className = (aplus.className || '') + ' scalc-btn'; btn.style.width = 'auto'; btn.style.padding = '0 10px'; aplus.parentNode.insertBefore(btn, aplus.nextSibling); }
+    else { btn.style.cssText = 'position:fixed;right:14px;bottom:14px;z-index:99989;padding:8px 14px;border-radius:999px;border:1.5px solid #35496f;background:#0f1a2e;color:#e8eef8;font:600 14px system-ui;cursor:pointer'; document.body.appendChild(btn); }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount); else mount();
+  window.__sciCalcEval = (s, a) => fmt(evaluate(s, a));
+})();
+
 </script>
 </body></html>

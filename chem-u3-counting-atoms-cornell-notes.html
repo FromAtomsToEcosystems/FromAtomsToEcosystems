@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counting Atoms: Cornell Notes</title>
+<style>
+:root{--ink:#1d2b36;--muted:#5a6a75;--line:#9fb0bd;--soft:#eef3f8;--accent:#2f5d9b;--key:#c0392b;--cue:#f6f8fb}
+*{box-sizing:border-box}
+body{margin:0;background:#e7ecf1;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:15px;line-height:1.55}
+button{font:inherit;cursor:pointer}
+.bar{position:sticky;top:0;z-index:5;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;padding:10px;background:var(--accent);color:#fff}
+.bar button{background:#fff;color:var(--accent);border:0;border-radius:6px;padding:7px 14px;font-weight:700}
+.bar button.on{background:var(--key);color:#fff}
+.bar span{font-size:13px;opacity:.9}
+.bar .saved{font-weight:700;opacity:1;min-width:110px;text-align:left}
+.page{width:8.5in;max-width:100%;min-height:11in;margin:18px auto;background:#fff;padding:.5in .55in;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+.head{display:grid;grid-template-columns:1fr auto;gap:6px 18px;border-bottom:3px solid var(--accent);padding-bottom:8px;margin-bottom:10px}
+.head h1{margin:0;font-size:22px;color:var(--accent)}
+.head .sub{font-size:13px;color:var(--muted)}
+.who{display:grid;grid-template-columns:auto 1fr;gap:4px 8px;font-size:13px;align-items:end;min-width:250px}
+.who input{border:0;border-bottom:1px solid var(--ink);font:inherit;padding:1px 4px;width:100%}
+.eq{background:var(--soft);border-left:5px solid var(--accent);padding:6px 12px;margin:0 0 10px;font-size:14px}
+.cornell{display:grid;grid-template-columns:24% 76%;border:2px solid var(--ink)}
+.cue,.notes{padding:9px 12px;border-top:1px solid var(--line)}
+.cornell > :nth-child(1),.cornell > :nth-child(2){border-top:0}
+.cue{background:var(--cue);border-right:2px solid var(--ink);font-weight:700;font-size:14px;color:var(--accent)}
+.cue small{display:block;font-weight:400;color:var(--muted);font-size:12px;margin-top:4px}
+.where{display:flex;align-items:center;gap:6px;margin-bottom:5px;font-size:11.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.3px}
+.tile{text-transform:none;display:inline-grid;place-items:center;width:30px;height:32px;border-radius:5px;border:1.5px solid var(--accent);background:#fff;color:var(--accent);font-size:14px;font-weight:800;line-height:1;position:relative;padding-top:6px}
+.tile i{position:absolute;top:2px;left:4px;font-size:8px;font-style:normal;font-weight:600}
+.colhead{background:var(--accent)!important;color:#fff!important;font-weight:700;font-size:13px;letter-spacing:.4px;text-transform:uppercase;padding:5px 12px}
+.notes p{margin:0 0 6px}
+.notes ul,.notes ol{margin:2px 0 6px;padding-left:20px}
+.notes li{margin:2px 0}
+.ex{border-top:1px dashed var(--line);margin-top:6px;padding-top:5px}
+.ex b:first-child{color:var(--accent)}
+input.b{font:inherit;border:0;border-bottom:1.5px solid var(--ink);background:transparent;padding:0 3px;text-align:center;color:var(--ink);min-width:3ch}
+input.b:focus{outline:2px solid #f2b705;outline-offset:1px}
+body.key input.b{color:var(--key);font-weight:700}
+table.t{border-collapse:collapse;width:100%;font-size:13.5px;margin:4px 0}
+table.t th,table.t td{border:1px solid var(--line);padding:3px 6px;text-align:center}
+table.t th{background:var(--soft)}
+.models{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:6px}
+.model{border:1px solid var(--line);border-radius:6px;padding:4px;text-align:center}
+.model b{font-size:13px}
+.model svg{width:100%;max-width:230px;height:auto;display:block;margin:0 auto}
+.slot{cursor:pointer}
+.mini{font-size:11px;padding:2px 8px;border:1px solid var(--line);background:#fff;border-radius:10px;color:var(--muted)}
+.rule{display:flex;gap:12px;align-items:center}
+.rule svg{flex:0 0 112px}
+.checks{list-style:none;padding-left:0!important}
+.checks li::before{content:"☐ ";color:var(--accent)}
+.summary{border:2px solid var(--ink);border-top:0;padding:8px 12px}
+.summary h3{margin:0 0 4px;font-size:14px;color:var(--accent);text-transform:uppercase;letter-spacing:.4px}
+.summary textarea{width:100%;min-height:96px;border:0;resize:vertical;font:inherit;line-height:24px;padding:0 2px;
+ background:repeating-linear-gradient(transparent 0 23px,#9fb0bd 23px 24px)}
+.foot{font-size:11px;color:var(--muted);text-align:right;margin-top:6px}
+@media screen and (max-width:760px){.cornell{grid-template-columns:1fr}.cue{border-right:0}.models{grid-template-columns:1fr}.page{padding:16px}.rule{flex-direction:column;align-items:flex-start}}
+@media print{
+ @page{size:letter;margin:.4in}
+ body{background:#fff;font-size:12.5px;line-height:1.45}
+ .cue,.notes{padding:6px 10px}
+ .notes p{margin:0 0 4px}
+ .head{padding-bottom:5px;margin-bottom:7px}
+ .models{grid-template-columns:repeat(2,210px);justify-content:center;margin-top:3px}
+ .model{padding:2px}
+ .model svg{max-width:122px}
+ .summary textarea{min-height:150px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .bar,.noprint{display:none!important}
+ .page{box-shadow:none;margin:0;padding:0;width:auto;min-height:0}
+ .page + .page{break-before:page}
+ .cue,.colhead,table.t th,.eq{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+.tmap{display:grid;grid-template-columns:repeat(8,24px);gap:3px;flex:0 0 auto;margin:4px 0}
+.tmap span{height:20px;border:1px solid var(--line);border-radius:2px;background:#fff}
+.tmap span.x{visibility:hidden}
+.mapwrap{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.trow{display:grid;grid-template-columns:auto 1fr 1fr;gap:0}
+@media print{.summary textarea{min-height:76px!important;height:76px}}
+.tile.atom{position:relative;overflow:hidden;width:34px;height:34px}
+.tile.atom .ab{position:absolute;left:50%;top:58%;width:calc(6px + var(--f) * 22px);height:calc(6px + var(--f) * 22px);transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 40% 35%,#cfe3fb,#9cc0ea);border:1px dashed #2f5d9b}
+.tile.atom .as{position:relative;z-index:1;font-size:12px;margin-top:4px}
+.yti b{color:#b5610e}
+.ex.yt{border-top:0;margin-top:0;padding-top:2px}.ex.yt b:first-child{color:#b5610e}
+
+/* ionic bonding notes additions */
+.tile.icon{display:inline-grid;place-items:center;position:relative;width:34px;height:34px;padding:0}
+.tile.icon svg{width:24px;height:24px;margin-top:3px}
+.tile.icon i{position:absolute;left:2px;top:0;font-size:8px;font-style:normal;color:var(--muted)}
+.side{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+.dg{display:block;width:100%;max-width:330px;height:auto;margin:4px auto}
+.side .dg{width:230px}.dg.sm{width:120px!important}
+.yti b{color:#b5610e}
+.ex.yt{border-top:0;margin-top:0;padding-top:2px}.ex.yt b:first-child{color:#b5610e}
+.who .fill{display:inline-block;min-width:150px;border-bottom:1px solid var(--line);font-weight:600;padding:0 4px;min-height:1.4em}
+.b.right{background:#e3f6e9;border-bottom-color:#1b7f4b}.b.wrong{background:#fde7e7;border-bottom-color:#c0392b}.b.empty{background:#eef1f4}
+.scorebar{position:sticky;top:46px;z-index:4;max-width:8.5in;margin:8px auto 0;background:#fff8e1;border:1px solid #e0a526;border-radius:8px;padding:8px 12px;font-size:14px}
+.scorebar .small{display:block;color:var(--muted);font-size:12px}
+.sum-pts{font-weight:600;color:var(--muted);font-size:13px}
+.ov{position:fixed;inset:0;background:rgba(15,25,40,.55);display:grid;place-items:center;z-index:20;padding:16px}.ov[hidden]{display:none}
+.modal{background:#fff;border-radius:12px;padding:20px 22px;max-width:640px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.modal h2{margin:0 0 10px;color:var(--accent)}
+.si-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.si-grid label{display:grid;gap:3px;font-size:13px;color:var(--muted)}
+.si-grid input,.si-grid select{font:inherit;padding:7px 9px;border:1px solid var(--line);border-radius:6px}
+.modal .go{margin-top:12px;background:var(--accent);color:#fff;border:0;border-radius:6px;padding:9px 16px;font-weight:700}
+.modal .err{color:#c0392b;min-height:1.2em;margin:6px 0 0}.modal .small{color:var(--muted);font-size:12px}
+.hidden{display:none!important}
+.foot{text-align:right;color:var(--muted);font-size:11px;margin-top:6px}
+@media print{.b.right,.b.wrong,.b.empty{background:none}.scorebar,.ov{display:none!important}.summary textarea{min-height:64px!important;height:64px}}
+
+.drawbox{width:200px;height:90px;border:1.5px dashed #9fb0bd;border-radius:8px;display:flex;align-items:flex-start;justify-content:flex-start;padding:4px 8px;font-size:11px;color:#5b6b7a}
+.dg.lw{display:inline-block;max-width:none;margin:4px 0}
+table.t.mini{width:auto;font-size:12.5px;margin:2px 0}table.t.mini th,table.t.mini td{padding:2px 10px;text-align:center}
+
+.ba{display:inline-flex;align-items:center;gap:6px;margin:2px 0}.ba small{display:block;font-size:9px;color:#5b6b7a;text-transform:uppercase;letter-spacing:.04em}
+.ba-ar{font-size:18px;color:#b8860b;font-weight:700}.ba-l{font-weight:800;font-size:12px;margin-right:2px}
+.ba-row{display:flex;flex-direction:column;gap:0}.ba-row .dg.lw{width:auto!important;height:52px}.ba-row .ba{gap:6px}.ba-row .ba small{display:inline;margin-right:4px}
+.wb{margin-top:3px;font-size:10.5px;color:#41536a;display:flex;flex-wrap:wrap;gap:3px 5px;align-items:center}.wb b{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:#5b6b7a}.wb span{border:1px solid #c9d4df;border-radius:999px;padding:0 6px;background:#f7fafc}
+
+.pp{display:inline-block;vertical-align:middle;background:#fff;border:1px solid #c9d4df;border-radius:6px;margin:2px}.pp svg{display:block;height:auto}
+.eqrow{display:flex;align-items:center;gap:4px;flex-wrap:wrap;font-weight:700;font-size:16px;margin:2px 0}
+</style>
+</head>
+<body>
+<div class="bar noprint">
+ <button onclick="window.print()">Print</button>
+ <button onclick="checkNotes()">Check my notes</button>
+ <button id="keybtn" onclick="toggleKey()">Teacher: answer key</button>
+ <span class="saved" id="saved" aria-live="polite"></span>
+</div>
+<div class="scorebar noprint hidden" id="scorebar" aria-live="polite"></div>
+
+
+
+<div class="page">
+ <div class="head">
+  <div><h1>Counting Atoms</h1><div class="sub">Chemistry · Unit 3: Chemical Reactions · Cornell Notes</div></div>
+  <div class="who"><label for="nm">Name</label><input id="nm" data-save="name"><label for="pd">Period</label><input id="pd" data-save="period"><label for="dt">Date</label><input id="dt" data-save="date"></div>
+ </div>
+ <div class="eq"><b>Phenomenon:</b> When hydrogen burns, 2H₂ + O₂ → 2H₂O. Do atoms appear, disappear, or rearrange? <b>Essential question:</b> How do you count the atoms in a formula, and why do both sides of a reaction match?</div>
+ <div class="cornell" id="p1"></div>
+</div>
+
+<div class="page p2">
+ <div class="head small-head"><div><h1>Counting Atoms (continued)</h1><div class="sub">Putting it together, particle diagrams, and equations</div></div></div>
+ <div class="cornell" id="p2"></div>
+ <div class="summary"><h3>Summary <span class="sum-pts" id="sumPts"></span></h3>
+  <p class="small">In 2–3 sentences: Explain how to count the atoms in 2Ca(OH)₂. Use the words <b>coefficient</b>, <b>subscript</b>, <b>parentheses</b>, and <b>multiply</b>.</p>
+  <textarea id="summary" data-save="summary" aria-label="Summary"></textarea>
+ </div>
+ <div class="foot">From Atoms To Ecosystems</div>
+</div>
+
+<script>
+
+const KEY = 'fate_chem_counting_atoms_notes_v1';
+const TEACHER_CODE = 'teacher007';
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+
+/* ---------- section icons (same drawings as the lesson, print colors) ---------- */
+const ICON = {
+  1: `<svg viewBox="0 0 40 40"><text x="20" y="27" font-size="17" font-weight="800" text-anchor="middle" fill="#334155">H<tspan font-size="10" dy="4">2</tspan><tspan dy="-4">O</tspan></text></svg>`,
+  2: `<svg viewBox="0 0 40 40"><text x="12" y="25" font-size="18" font-weight="800" fill="#334155">C</text><text x="24" y="31" font-size="12" font-weight="800" fill="#c48a10">6</text></svg>`,
+  3: `<svg viewBox="0 0 40 40"><text x="7" y="28" font-size="20" font-weight="800" fill="#c48a10">3</text><circle cx="25" cy="18" r="5" fill="#ef4444"/><circle cx="20" cy="25" r="3.5" fill="#cbd5e1"/><circle cx="31" cy="25" r="3.5" fill="#cbd5e1"/></svg>`,
+  4: `<svg viewBox="0 0 40 40"><text x="20" y="27" font-size="16" font-weight="800" text-anchor="middle" fill="#334155">(OH)<tspan font-size="10" dy="4" fill="#c48a10">2</tspan></text></svg>`,
+  5: `<svg viewBox="0 0 40 40"><path d="M10 14h20M10 20h20M10 26h12" stroke="#1f7aa8" stroke-width="2.6"/><text x="30" y="32" font-size="11" font-weight="800" fill="#c48a10">×</text></svg>`,
+  6: `<svg viewBox="0 0 40 40"><circle cx="14" cy="16" r="6" fill="#ef4444"/><circle cx="9" cy="24" r="4" fill="#cbd5e1"/><circle cx="20" cy="24" r="4" fill="#cbd5e1"/><circle cx="29" cy="20" r="6" fill="#475569"/><circle cx="29" cy="30" r="4" fill="#ef4444"/></svg>`,
+  7: `<svg viewBox="0 0 40 40"><path d="M6 20h22" stroke="#334155" stroke-width="2.6"/><path d="M24 14l8 6-8 6" fill="none" stroke="#334155" stroke-width="2.6"/><path d="M5 32h12M23 32h12" stroke="#1b7f4b" stroke-width="3"/><text x="20" y="11" font-size="9" font-weight="800" text-anchor="middle" fill="#1b7f4b">=</text></svg>`,
+  8: `<svg viewBox="0 0 40 40"><circle cx="17" cy="17" r="10" fill="none" stroke="#334155" stroke-width="3"/><path d="M25 25l9 9" stroke="#334155" stroke-width="4" stroke-linecap="round"/><path d="M13 13l8 8M21 13l-8 8" stroke="#e05252" stroke-width="2.6" stroke-linecap="round"/></svg>`,
+  9: `<svg viewBox="0 0 40 40"><rect x="9" y="6" width="22" height="29" rx="3" fill="none" stroke="#475569" stroke-width="2.4"/><rect x="15" y="3" width="10" height="6" rx="2" fill="#475569"/><path d="M14 17l3 3 6-6M14 27l3 3 6-6" fill="none" stroke="#1b7f4b" stroke-width="2.4" stroke-linecap="round"/></svg>`,
+  10: `<svg viewBox="0 0 40 40"><path d="M12 6h16v8a8 8 0 0 1-16 0z" fill="#c48a10"/><path d="M12 9H6a6 6 0 0 0 6 7M28 9h6a6 6 0 0 1-6 7" fill="none" stroke="#c48a10" stroke-width="2"/><rect x="17" y="21" width="6" height="7" fill="#c48a10"/><rect x="12" y="28" width="16" height="5" rx="1.5" fill="#c48a10"/></svg>`
+};
+const T = n => `<div class="where"><span class="tile icon"><i>${n}</i>${ICON[n]}</span>Section ${n}</div>`;
+/* ---------- molecule drawings (same as the lesson) ---------- */
+function parseF(f) {
+  let m = f.match(/^(\d*)(.*)$/), coef = m[1] ? +m[1] : 1, s = m[2], i = 0, order = [];
+  function group() { const out = {};
+    while (i < s.length && s[i] !== ')') {
+      if (s[i] === '(') { i++; const g = group(); i++; let n = ''; while (/\d/.test(s[i] || '')) n += s[i++]; const k = n ? +n : 1; Object.entries(g).forEach(([e, c]) => { out[e] = (out[e] || 0) + c * k; }); }
+      else { let e = s[i++]; while (/[a-z]/.test(s[i] || '')) e += s[i++]; let n = ''; while (/\d/.test(s[i] || '')) n += s[i++]; if (!order.includes(e)) order.push(e); out[e] = (out[e] || 0) + (n ? +n : 1); }
+    } return out; }
+  const per = group(), total = {}; Object.entries(per).forEach(([e, c]) => { total[e] = c * coef; });
+  return { coef, per, total, order };
+}
+/* pretty formula: digits after a letter or ")" become subscripts; a leading number stays big */
+const fmt = f => { const m = f.match(/^(\d*)(.*)$/); return (m[1] ? `<span class="coef">${m[1]}</span>` : '') + m[2].replace(/([A-Za-z)])(\d+)/g, '$1<sub>$2</sub>'); };
+const ACOL = { H: '#f1f5f9', O: '#ef4444', C: '#475569', N: '#3b82f6', Ca: '#22c55e', Mg: '#a3e635', Cl: '#34d399', S: '#facc15', Na: '#a78bfa', Al: '#cbd5e1', Fe: '#f97316', K: '#c084fc', P: '#fb923c' };
+const AR = e => e === 'H' ? 9 : 13;
+/* ---------- molecules drawn in their real shapes (ball and stick) ---------- */
+const METALS = ['Na', 'K', 'Li', 'Ca', 'Mg', 'Ba', 'Al', 'Fe', 'Cu', 'Zn', 'Ag', 'Pb', 'Sr'];
+/* structured parse of one formula unit: [{el, n} | {group:[...], n}] */
+function parseParts(s) {
+  let i = 0;
+  function list() { const out = [];
+    while (i < s.length && s[i] !== ')') {
+      if (s[i] === '(') { i++; const g = list(); i++; let n = ''; while (/\d/.test(s[i] || '')) n += s[i++]; out.push({ group: g, n: n ? +n : 1 }); }
+      else { let e = s[i++]; while (/[a-z]/.test(s[i] || '')) e += s[i++]; let n = ''; while (/\d/.test(s[i] || '')) n += s[i++]; out.push({ el: e, n: n ? +n : 1 }); }
+    } return out; }
+  return list();
+}
+const flat = parts => { const a = []; parts.forEach(p => { if (p.el) for (let k = 0; k < p.n; k++) a.push(p.el); else for (let k = 0; k < p.n; k++) a.push(...flat(p.group)); }); return a; };
+/* center + ligands in the right geometry; returns {atoms:[{e,x,y}], bonds:[[i,j]]} */
+function star(center, ligs, L) {
+  const atoms = [{ e: center, x: 0, y: 0 }], bonds = [], n = ligs.length, lone = ligs.every(e => e === 'H') ? ({ O: 2, S: 2, N: 1, P: 1 }[center] || 0) : 0;
+  let angs;
+  if (n === 1) angs = [0];
+  else if (n === 2) angs = lone ? [-52, 52].map(a => a + 90) : [180, 0];                 /* bent (water) or straight (CO2) */
+  else if (n === 3) angs = lone ? [150, 90, 30] : [270, 30, 150];                         /* pyramid seen from the side (NH3) or flat triangle (NO3) */
+  else angs = [270, 0, 90, 180];                                                          /* tetrahedral, drawn as a cross */
+  ligs.forEach((e, k) => { const a = (angs[k] ?? (k * 360 / n)) * Math.PI / 180, l = L * (e === 'H' ? (lone && n === 3 ? 1.05 : .85) : 1); atoms.push({ e, x: l * Math.cos(a), y: l * Math.sin(a) }); bonds.push([0, k + 1]); });
+  return { atoms, bonds };
+}
+function chainCH(nC) {          /* C3H8-style chain: zigzag carbons, hydrogens on the outside */
+  const atoms = [], bonds = [], dx = 34;
+  for (let k = 0; k < nC; k++) { atoms.push({ e: 'C', x: (k - (nC - 1) / 2) * dx, y: k % 2 ? 10 : -10 }); if (k) bonds.push([k - 1, k]); }
+  for (let k = 0; k < nC; k++) { const c = atoms[k], up = k % 2 ? 1 : -1, hs = (k === 0 || k === nC - 1) ? 3 : 2, list = [];
+    if (hs === 3) list.push(k === 0 ? [-26, 0] : [26, 0]); list.push([-12, up * 26], [12, up * 26]);
+    list.slice(0, hs).forEach(([ox, oy]) => { atoms.push({ e: 'H', x: c.x + ox, y: c.y + oy }); bonds.push([k, atoms.length - 1]); }); }
+  return { atoms, bonds };
+}
+function glucose() {             /* ring of 5 C + 1 O, with OH, H, and CH2OH groups pointing outward */
+  const atoms = [], bonds = [], R = 30, ring = ['O', 'C', 'C', 'C', 'C', 'C'];
+  ring.forEach((e, k) => { const a = (-90 + k * 60) * Math.PI / 180; atoms.push({ e, x: R * Math.cos(a), y: R * Math.sin(a) }); bonds.push([k, (k + 1) % 6]); });
+  const add = (from, e, dx, dy) => { const f = atoms[from]; atoms.push({ e, x: f.x + dx, y: f.y + dy }); bonds.push([from, atoms.length - 1]); return atoms.length - 1; };
+  [1, 2, 3, 4].forEach(k => { const a = (-90 + k * 60) * Math.PI / 180, ux = Math.cos(a), uy = Math.sin(a);
+    const o = add(k, 'O', ux * 26 + uy * 9, uy * 26 - ux * 9); add(o, 'H', ux * 16, uy * 16); add(k, 'H', ux * 18 - uy * 13, uy * 18 + ux * 13); });
+  const a5 = (-90 + 300) * Math.PI / 180, ux = Math.cos(a5), uy = Math.sin(a5);
+  add(5, 'H', ux * 16 + uy * 12, uy * 16 - ux * 12);
+  const c6 = add(5, 'C', ux * 28 - uy * 8, uy * 28 + ux * 8); add(c6, 'H', -12, -18); add(c6, 'H', -20, 10); const o6 = add(c6, 'O', 10, -24); add(o6, 'H', 14, -10);
+  return { atoms, bonds };
+}
+function groupShape(parts) {     /* a group like NO3, SO4, OH, NH4, PO4 */
+  const els = flat(parts), ctr = parts.find(p => p.el && p.n === 1 && p.el !== 'H' && els.length > 1) || parts[0];
+  const ligs = els.slice(); ligs.splice(ligs.indexOf(ctr.el), 1);
+  if (ligs.length === 1) return { atoms: [{ e: ctr.el, x: -11, y: 0 }, { e: ligs[0], x: 13, y: 0 }], bonds: [[0, 1]] };
+  return star(ctr.el, ligs, 25);
+}
+function molShape(f) {
+  const parts = parseParts(f), els = flat(parts), uniq = [...new Set(els)];
+  if (f === 'C6H12O6') return glucose();
+  if (uniq.length === 2 && uniq.includes('C') && uniq.includes('H') && els.filter(e => e === 'C').length > 1) return chainCH(els.filter(e => e === 'C').length);
+  if (f === 'H2O2') return { atoms: [{ e: 'O', x: -13, y: 0 }, { e: 'O', x: 13, y: 0 }, { e: 'H', x: -26, y: -16 }, { e: 'H', x: 26, y: 16 }], bonds: [[0, 1], [0, 2], [1, 3]] };
+  const metals = parts.filter(p => p.el && METALS.includes(p.el)), groups = parts.filter(p => p.group);
+  if (metals.length || groups.length) {           /* ionic: metal ions surrounded by groups / anions */
+    const atoms = [], bonds = [], units = [];
+    metals.forEach(m => { for (let k = 0; k < m.n; k++) units.push({ atoms: [{ e: m.el, x: 0, y: 0 }], bonds: [], metal: true }); });
+    groups.forEach(g => { for (let k = 0; k < g.n; k++) units.push(groupShape(g.group)); });
+    const rest = parts.filter(p => p.el && !METALS.includes(p.el));
+    if (rest.length) { if (groups.length || rest.length > 1 || rest.some(p => p.n > 1 && rest.length > 1)) { if (rest.length > 1) units.push(groupShape(rest)); else for (let k = 0; k < rest[0].n; k++) units.push({ atoms: [{ e: rest[0].el, x: 0, y: 0 }], bonds: [] }); }
+      else for (let k = 0; k < rest[0].n; k++) units.push({ atoms: [{ e: rest[0].el, x: 0, y: 0 }], bonds: [] }); }
+    const ms = units.filter(u => u.metal), others = units.filter(u => !u.metal);
+    const place = (u, ox, oy) => { const b0 = atoms.length; u.atoms.forEach(a => atoms.push({ e: a.e, x: a.x + ox, y: a.y + oy })); u.bonds.forEach(([i, j]) => bonds.push([b0 + i, b0 + j])); };
+    if (!groups.length && others.length + ms.length <= 6) {   /* simple ionic like NaCl, Fe2O3: alternate in a row */
+      const seq = []; let a = ms.slice(), b = others.slice(); while (a.length || b.length) { if (a.length) seq.push(a.shift()); if (b.length) seq.push(b.shift()); }
+      seq.forEach((u, k) => place(u, (k - (seq.length - 1) / 2) * 30, 0)); return { atoms, bonds, ionic: true };
+    }
+    ms.forEach((u, k) => place(u, (k - (ms.length - 1) / 2) * 34, 0));
+    const uR = u => Math.max(...u.atoms.map(a => Math.hypot(a.x, a.y) + AR(a.e))), R = Math.max(46, Math.max(...others.map(uR)) + 22) + Math.max(0, others.length - 2) * 6;
+    others.forEach((u, k) => { const a = (-90 + k * 360 / others.length) * Math.PI / 180; place(u, R * Math.cos(a) * (ms.length > 1 ? 1.25 : 1), R * Math.sin(a)); });
+    return { atoms, bonds, ionic: true };
+  }
+  if (uniq.length === 1) { const n = els.length, atoms = els.map((e, k) => ({ e, x: (k - (n - 1) / 2) * 24, y: 0 })), bonds = atoms.slice(1).map((a, k) => [k, k + 1]); return { atoms, bonds }; }
+  const ctrP = parts.find(p => p.el && p.n === 1 && p.el !== 'H') || parts.find(p => p.el !== 'H');
+  const ligs = els.slice(); ligs.splice(ligs.indexOf(ctrP.el), 1);
+  return star(ctrP.el, ligs, 28);
+}
+function molSVG(f, cx, cy) {
+  const m = molShape(f.replace(/^\d+/, '')); let s = '', r = 0;
+  m.atoms.forEach(a => { r = Math.max(r, Math.hypot(a.x, a.y) + AR(a.e)); });
+  m.bonds.forEach(([i, j]) => { const a = m.atoms[i], b = m.atoms[j]; s += `<line x1="${(cx + a.x).toFixed(1)}" y1="${(cy + a.y).toFixed(1)}" x2="${(cx + b.x).toFixed(1)}" y2="${(cy + b.y).toFixed(1)}" stroke="#94a3b8" stroke-width="3.5"/>`; });
+  m.atoms.slice().sort((a, b) => AR(a.e) - AR(b.e)).reverse().forEach(a => { const x = cx + a.x, y = cy + a.y;
+    s += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${AR(a.e)}" fill="${ACOL[a.e] || '#94a3b8'}" stroke="#0c1424" stroke-width="1.5"/><text x="${x.toFixed(1)}" y="${(y + 4).toFixed(1)}" font-size="${a.e.length > 1 ? 8 : 10}" font-weight="700" text-anchor="middle" fill="${['H', 'Al', 'Mg', 'S', 'Ca'].includes(a.e) ? '#0c1424' : '#fff'}">${a.e}</text>`; });
+  if (m.ionic) s = `<circle cx="${cx}" cy="${cy}" r="${(r + 6).toFixed(1)}" fill="rgba(148,163,184,.06)" stroke="#35496f" stroke-dasharray="4 4"/>` + s;
+  return { s, r: r + 8 };
+}
+
+function particles(f, W = 560, H = 170) {
+  const p = parseF(f), n = p.coef, m = molSVG(f, 0, 0); W = Math.max(W, n * (2 * m.r + 14) + 20); H = Math.max(H, 2 * m.r + 20); const gap = Math.max(2 * m.r + 14, Math.min(150, (W - 40) / n)), x0 = W / 2 - gap * (n - 1) / 2;
+  let s = ''; for (let k = 0; k < n; k++) s += `<g transform="translate(${(x0 + k * gap).toFixed(1)} ${H / 2})">${m.s}</g>`;
+  return `<svg viewBox="0 0 ${W} ${H}" class="psvg" role="img" aria-label="${n} molecule${n > 1 ? 's' : ''} of ${f.replace(/^\d+/, '')}">${s}</svg>`;
+}
+
+const PIC = (f, w, h, cls) => `<span class="pp ${cls || ''}">${particles(f, w, h).replace('class="psvg"', `class="psvg" style="height:${h}px;width:auto"`)}</span>`;
+const P1 = [{ head: true },
+ { where: T(1), cue: 'What does a formula tell you?', notes: `
+  <p>Each capital letter starts a new {{element}} symbol. A small number after a symbol is a {{subscript}}: it counts the atoms of the element right before it. No subscript means {{1|one}} atom.</p>
+  <p class="ex"><b>Example:</b> H₂O has 2 H and 1 O. <span class="yti"><b>Your turn:</b></span> NaCl has {{2|two}} different elements.</p>` },
+ { where: T(2), cue: 'How do I read subscripts?', notes: `
+  <div class="side"><div><p>CO₂ has {{1|one}} carbon and {{2|two}} oxygen atoms. Add them for the total: {{3|three}} atoms.</p>
+  <p class="ex yt"><b>Your turn:</b> CH₄ has {{5|five}} atoms in total.</p></div>${PIC('CO2', 170, 60)}</div>` },
+ { where: T(3), cue: 'What does a coefficient do?', notes: `
+  <div class="side"><div><p>A big number in front is a {{coefficient}}. It counts {{molecules}}, so multiply it by every subscript. 3H₂O has H = {{6|six}} and O = {{3|three}}.</p>
+  <p class="ex yt"><b>Your turn:</b> 2CO₂ has {{4|four}} oxygen atoms.</p></div>${PIC('3H2O', 230, 60)}</div>` },
+ { where: T(4), cue: 'What about parentheses?', notes: `
+  <div class="side"><div><p>A subscript outside parentheses multiplies everything {{inside}}. Ca(OH)₂ has O = {{2|two}} and H = {{2|two}}.</p>
+  <p class="ex yt"><b>Your turn:</b> Mg(NO₃)₂ has {{6|six}} oxygen atoms.</p></div>${PIC('Ca(OH)2', 130, 90)}</div>` }
+];
+const P2 = [{ head: true },
+ { where: T(5), cue: 'How do I put it all together?', cueSmall: 'subscript × parentheses × coefficient', notes: `
+  <p>Count one unit first, then multiply by the coefficient. 2Ca(OH)₂: Ca = {{2|two}}, O = {{4|four}}, H = {{4|four}}.</p>
+  <p class="ex yt"><b>Your turn:</b> 3Mg(NO₃)₂ has {{6|six}} nitrogen atoms.</p>` },
+ { where: T(6), cue: 'How do I read a particle diagram?', notes: `
+  <div class="side"><div><p>Separate clusters show the {{coefficient}}. The atoms inside one cluster show the {{subscripts|subscript}}. 2H₂O is two clusters; H₂O₂ is one.</p>
+  <p class="ex yt"><b>Your turn:</b> 3 clusters of 2 oxygen atoms is {{3O₂|3O2}}.</p></div><div>${PIC('2H2O', 170, 60)} ${PIC('H2O2', 90, 60)}</div></div>` },
+ { where: T(7), cue: 'Why do both sides match?', notes: `
+  <p>Reactants are on the {{left}} of the arrow; products are on the {{right}}. A balanced equation has the same number of each {{atom|atoms}} on both sides, because atoms are not created or destroyed: conservation of {{mass}}.</p>
+  <div class="eqrow">${PIC('2H2', 120, 54)} + ${PIC('O2', 70, 54)} → ${PIC('2H2O', 150, 54)}</div>
+  <p class="ex yt"><b>Your turn:</b> 2H₂ + O₂ → 2H₂O has {{4|four}} H on each side.</p>` },
+ { where: T(8), cue: 'How do I spot the mistake?', cueSmall: 'Spot the mistake', notes: `
+  <p class="ex"><b>Example:</b> "CO₂ has 2 carbon atoms." Fix: the 2 belongs to {{oxygen|O}}. <span class="yti"><b>Your turn:</b></span> "3H₂O has 2 H." Fix: it has {{6|six}} H.</p>` }
+];
+
+let blankId = 0; const BLANKS = [];
+function blanksIn(html, sec) {
+  return html.replace(/\{\{([^}]+)\}\}/g, (m, a) => {
+    const alts = a.split('|'), id = 'b' + (blankId++); BLANKS.push({ id, ans: alts[0], alts, sec });
+    const w = Math.max(4, alts[0].length + 2);
+    return `<input class="b" id="${id}" style="width:${w}ch" aria-label="Blank" autocomplete="off">`;
+  });
+}
+let secN = 0;
+/* word bank: this section's answers, each once, in a mixed-up order */
+function wordBank(n) {
+  const seen = new Set(), words = [];
+  BLANKS.filter(b => b.sec === n).forEach(b => { const k = b.ans.toLowerCase(); if (!seen.has(k)) { seen.add(k); words.push(b.ans); } });
+  const h = w => [...w].reduce((t, c) => (t * 31 + c.charCodeAt(0)) % 9973, 7);
+  words.sort((x, y) => h(x) - h(y));
+  const rep = BLANKS.filter(b => b.sec === n).length > words.length;
+  return words.length ? `<div class="wb"><b>Word bank:</b> ${words.map(w => `<span>${w}</span>`).join('')}${rep ? '<i>(some words are used more than once)</i>' : ''}</div>` : '';
+}
+function build(el, rows) {
+  $('#' + el).innerHTML = rows.map(r => r.head ? `<div class="cue colhead">Questions / Cues</div><div class="notes colhead">Notes</div>`
+    : (secN++, `<div class="cue">${r.where}${r.cue}${r.cueSmall ? `<small>${r.cueSmall}</small>` : ''}</div><div class="notes" data-sec="${secN}">${blanksIn(r.notes, secN)}${wordBank(secN)}</div>`)).join('');
+}
+build('p1', P1); build('p2', P2);
+const NSEC = secN;
+
+/* ---------- checking ---------- */
+const SUBS = '₀₁₂₃₄₅₆₇₈₉';
+const norm = s => String(s || '').toLowerCase().replace(/[₀-₉]/g, d => String(SUBS.indexOf(d))).replace(/⁺/g, '+').replace(/[⁻−–]/g, '-').replace(/²/g, '2').replace(/³/g, '3').replace(/\s+/g, '');
+const ok = b => b.alts.some(x => norm(x) === norm($('#' + b.id).value));
+const SUM_KW = [/coefficient/i, /subscript/i, /parenthes/i, /multipl|times/i, /\b4\b|four|\b2\b|two/i];
+function summaryPts() { const t = ($('#summary').value || '').trim(); if (t.length < 30) return 0; const k = SUM_KW.filter(re => re.test(t)).length; return k >= 5 ? 3 : k >= 3 ? 2 : k >= 1 ? 1 : 0; }
+function scores() {
+  const sec = []; for (let n = 1; n <= NSEC; n++) { const bs = BLANKS.filter(b => b.sec === n); sec.push({ n, pts: bs.filter(b => $('#' + b.id).value.trim() && ok(b)).length, max: bs.length }); }
+  const sum = summaryPts();
+  return { sec, sum, total: sec.reduce((a, s) => a + s.pts, 0) + sum, max: BLANKS.length + 3 };
+}
+function checkNotes() {
+  if (keyOn) return;
+  BLANKS.forEach(b => { const el = $('#' + b.id), v = el.value.trim(); el.classList.toggle('right', !!v && ok(b)); el.classList.toggle('wrong', !!v && !ok(b)); el.classList.toggle('empty', !v); });
+  const s = scores(); D.checked = true; save();
+  $('#scorebar').classList.remove('hidden');
+  $('#scorebar').innerHTML = `<b>${s.total} / ${s.max} points</b> · ` + s.sec.map(x => `S${x.n}: ${x.pts}/${x.max}`).join(' · ') + ` · Summary: ${s.sum}/3 <span class="small">Green = right, red = fix it, gray = still blank. Fix and check again anytime.</span>`;
+  $('#sumPts').textContent = `(${s.sum}/3)`;
+}
+/* ---------- saving on this device ---------- */
+let D = { blanks: {}, fields: {}, checked: false };
+let saveTimer, SAVE_OFF = false;
+function save() {
+  if (keyOn || SAVE_OFF) return;
+  BLANKS.forEach(b => { D.blanks[b.id] = $('#' + b.id).value; });
+  $$('[data-save]').forEach(el => { D.fields[el.dataset.save] = el.value; });
+  try { localStorage.setItem(KEY, JSON.stringify(D)); const s = $('#saved'); s.textContent = 'Saved ✓'; clearTimeout(saveTimer); saveTimer = setTimeout(() => { s.textContent = ''; }, 1800); } catch (e) {}
+}
+function load() {
+  try { const d = JSON.parse(localStorage.getItem(KEY) || 'null'); if (d) D = Object.assign(D, d); } catch (e) {}
+  BLANKS.forEach(b => { if (D.blanks[b.id] != null) $('#' + b.id).value = D.blanks[b.id]; });
+  $$('[data-save]').forEach(el => { if (D.fields[el.dataset.save] != null) el.value = D.fields[el.dataset.save]; });
+}
+document.addEventListener('input', e => { if (e.target.matches('input.b,[data-save]')) { e.target.classList.remove('right', 'wrong', 'empty'); save(); } });
+
+/* ---------- teacher answer key ---------- */
+let keyOn = false; const savedVals = {};
+function toggleKey() {
+  if (!keyOn) { const c = window.prompt('Teacher code:'); if (c === null) return; if (c.trim().toLowerCase() !== TEACHER_CODE) { alert("That code isn't right."); return; } }
+  keyOn = !keyOn; document.body.classList.toggle('key', keyOn);
+  const btn = $('#keybtn'); btn.textContent = keyOn ? 'Hide answer key' : 'Teacher: answer key'; btn.classList.toggle('on', keyOn);
+  BLANKS.forEach(b => { const el = $('#' + b.id); if (keyOn) { savedVals[b.id] = el.value; el.value = b.ans; el.readOnly = true; } else { el.value = savedVals[b.id] || ''; el.readOnly = false; } });
+}
+
+/* ---------- safeguards: right-click and copy/paste blocked, two tabs, guest window ---------- */
+['copy', 'cut', 'paste', 'contextmenu'].forEach(ev => document.addEventListener(ev, e => e.preventDefault()));
+function warn(t) { const w = $('#scorebar'); w.classList.remove('hidden'); w.innerHTML = t; }
+try { const bc = new BroadcastChannel('fate-tab-' + KEY), me = Math.random().toString(36).slice(2);
+  bc.onmessage = e => { if (!e.data) return; if (e.data.t === 'hello' && e.data.id !== me) bc.postMessage({ t: 'here', id: me }); if (e.data.t === 'here' && e.data.id !== me && !SAVE_OFF) { SAVE_OFF = true; warn('⚠ These notes are already open in another tab. Saving is off here. Close this tab.'); } };
+  bc.postMessage({ t: 'hello', id: me }); } catch (e) {}
+try { if (navigator.storage && navigator.storage.estimate) navigator.storage.estimate().then(est => { if (est && est.quota && est.quota < 200 * 1024 * 1024) warn('⚠ You seem to be in a guest or incognito window. Your notes will be erased when you close it.'); }); } catch (e) {}
+
+load();
+
+</script>
+<script>
+/* ===== Scientific calculator (floating, with history) ===== */
+(function () {
+  if (window.__sciCalc) return; window.__sciCalc = true;
+  const HKEY = 'sci_calc_history_v1', MKEY = 'sci_calc_mode_v1';
+  const css = `
+  .scalc-btn{display:inline-flex;align-items:center;gap:6px}
+  .scalc{position:fixed;z-index:99990;right:18px;top:70px;width:330px;max-width:calc(100vw - 20px);background:#0f1a2e;color:#e8eef8;border:1.5px solid #35496f;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.45);font:14px/1.3 system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;user-select:none}
+  .scalc[hidden]{display:none}
+  .scalc-head{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;cursor:move;border-bottom:1px solid #26385a;font-weight:700}
+  .scalc-head button{background:none;border:0;color:#a3b4d1;font:700 18px system-ui;cursor:pointer;padding:0 4px}
+  .scalc-hist{max-height:92px;overflow-y:auto;padding:6px 10px 2px;font-size:13px}
+  .scalc-hist .h{display:flex;justify-content:space-between;gap:8px;padding:2px 0;border-bottom:1px dashed #22324f;cursor:pointer}
+  .scalc-hist .h span:first-child{color:#a3b4d1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .scalc-hist .h span:last-child{color:#5fe1ff;font-weight:700;white-space:nowrap}
+  .scalc-hist .empty{color:#6b7c99;font-style:italic;padding:4px 0}
+  .scalc-in{display:flex;flex-direction:column;gap:2px;margin:6px 10px;background:#0b1322;border:1.5px solid #35496f;border-radius:10px;padding:6px 8px}
+  .scalc-in input{flex:1;min-width:0;background:none;border:0;color:#fff;font:600 20px system-ui;outline:none;user-select:text}
+  .scalc-prev{color:#4ade80;font-weight:700;font-size:15px;white-space:nowrap;align-self:flex-end;min-height:19px}
+  .scalc-keys{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;padding:4px 10px 10px}
+  .scalc-keys button{height:36px;border-radius:8px;border:1px solid #2a3d61;background:#17253f;color:#e8eef8;font:600 15px system-ui;cursor:pointer}
+  .scalc-keys button:hover{background:#1e3152}
+  .scalc-keys button.n{background:#22355a}.scalc-keys button.op{color:#f6b93b}.scalc-keys button.eq{background:#f6b93b;color:#241703;grid-column:span 2}
+  .scalc-keys button.fn{font-size:13px;color:#5fe1ff}.scalc-keys button.ac{color:#fca5a5}
+  @media print{.scalc,.scalc-btn{display:none!important}}`;
+  const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
+
+  let hist = []; try { hist = JSON.parse(localStorage.getItem(HKEY) || '[]'); } catch (e) {}
+  let deg = true; try { deg = localStorage.getItem(MKEY) !== 'rad'; } catch (e) {}
+  const saveH = () => { try { localStorage.setItem(HKEY, JSON.stringify(hist.slice(-40))); } catch (e) {} };
+
+  /* ---- safe parser (no eval) ---- */
+  function evaluate(src, ans) {
+    let s = String(src).replace(/\s+/g, '').replace(/([0-9.])[×*]10\^\(?([-−]?[0-9]+)\)?/g, (m, d, e) => d + 'E' + e.replace('−', '-')).replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-').replace(/π/g, 'pi').replace(/√/g, 'sqrt').replace(/²/g, '^2').replace(/³/g, '^3').replace(/\s+/g, '');
+    const toks = []; let i = 0;
+    while (i < s.length) {
+      const c = s[i];
+      if (/[0-9.]/.test(c)) { let j = i; while (j < s.length && /[0-9.]/.test(s[j])) j++; if (s[j] === 'E' && /[-+0-9]/.test(s[j + 1] || '')) { j++; if (/[-+]/.test(s[j])) j++; while (j < s.length && /[0-9]/.test(s[j])) j++; } const t = s.slice(i, j); if ((t.match(/\./g) || []).length > 1) throw 'Too many decimal points'; toks.push({ t: 'n', v: parseFloat(t) }); i = j; continue; }
+      if (/[a-z]/i.test(c)) { let j = i; while (j < s.length && /[a-z]/i.test(s[j])) j++; const w = s.slice(i, j).toLowerCase(); i = j;
+        const known = ['sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'ln', 'log', 'sqrt', 'pi', 'e', 'ans'];
+        if (!known.includes(w)) throw 'Unknown: ' + w; toks.push({ t: ['pi', 'e', 'ans'].includes(w) ? 'c' : 'f', v: w }); continue; }
+      if ('+-*/^()!%'.includes(c)) { toks.push({ t: 'o', v: c }); i++; continue; }
+      throw 'Unexpected "' + c + '"';
+    }
+    let p = 0;
+    const peek = () => toks[p], take = () => toks[p++];
+    const startsValue = t => t && (t.t === 'n' || t.t === 'c' || t.t === 'f' || (t.t === 'o' && t.v === '('));
+    const trig = (f, x) => { const k = deg ? Math.PI / 180 : 1;
+      if (f === 'sin') return Math.sin(x * k); if (f === 'cos') return Math.cos(x * k); if (f === 'tan') return Math.tan(x * k);
+      if (f === 'asin') return Math.asin(x) / k; if (f === 'acos') return Math.acos(x) / k; if (f === 'atan') return Math.atan(x) / k; };
+    function expr() { let v = term(); while (peek() && peek().t === 'o' && '+-'.includes(peek().v)) { const o = take().v, r = term(); v = o === '+' ? v + r : v - r; } return v; }
+    function term() { let v = unary();
+      while (true) { const t = peek(); if (!t) break;
+        if (t.t === 'o' && '*/'.includes(t.v)) { take(); const r = unary(); v = t.v === '*' ? v * r : v / r; }
+        else if (startsValue(t)) { v = v * unary(); }  /* implied multiplication: 2pi, 3(4) */
+        else break; }
+      return v; }
+    function unary() { const t = peek(); if (t && t.t === 'o' && (t.v === '-' || t.v === '+')) { take(); const v = unary(); return t.v === '-' ? -v : v; } return power(); }
+    function power() { let b = post(); const t = peek(); if (t && t.t === 'o' && t.v === '^') { take(); const e = unary(); return Math.pow(b, e); } return b; }
+    function post() { let v = atom(); while (peek() && peek().t === 'o' && (peek().v === '!' || peek().v === '%')) { const o = take().v; if (o === '%') v = v / 100; else { if (v < 0 || v % 1 || v > 170) throw 'Factorial needs a whole number'; let f = 1; for (let k = 2; k <= v; k++) f *= k; v = f; } } return v; }
+    function atom() { const t = take(); if (!t) throw 'Incomplete';
+      if (t.t === 'n') return t.v;
+      if (t.t === 'c') { if (t.v === 'pi') return Math.PI; if (t.v === 'e') return Math.E; if (ans == null) throw 'No answer yet'; return ans; }
+      if (t.t === 'f') { let x; if (peek() && peek().v === '(') { take(); x = expr(); if (!peek() || peek().v !== ')') throw 'Missing )'; take(); } else x = power();
+        if (['sin', 'cos', 'tan', 'asin', 'acos', 'atan'].includes(t.v)) return trig(t.v, x);
+        if (t.v === 'ln') return Math.log(x); if (t.v === 'log') return Math.log10(x); if (t.v === 'sqrt') return Math.sqrt(x); }
+      if (t.t === 'o' && t.v === '(') { const v = expr(); if (peek() && peek().v === ')') take(); return v; }  /* allow missing final ) */
+      throw 'Check your expression'; }
+    if (!toks.length) throw 'Type something first';
+    const v = expr(); if (p < toks.length) throw 'Check your expression';
+    if (!isFinite(v) || isNaN(v)) throw (isNaN(v) ? 'Not a real number' : 'Too big / divide by 0');
+    return v;
+  }
+  const SUP = { '-': '⁻', 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴', 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹' };
+  function fmt(v) {
+    if (v === 0) return '0';
+    const a = Math.abs(v);
+    if (a >= 1e10 || a < 1e-6) { const [m, e] = v.toExponential(6).split('e'); return `${parseFloat(m)} × 10${String(+e).split('').map(c => SUP[c]).join('')}`; }
+    return String(parseFloat(v.toPrecision(10)));
+  }
+
+  /* ---- panel ---- */
+  const box = document.createElement('div'); box.className = 'scalc'; box.hidden = true; box.setAttribute('role', 'dialog'); box.setAttribute('aria-label', 'Scientific calculator');
+  const K = [['sin', 'sin(', 'fn'], ['cos', 'cos(', 'fn'], ['tan', 'tan(', 'fn'], ['DEG', 'mode', 'fn'], ['AC', 'ac', 'ac'],
+    ['ln', 'ln(', 'fn'], ['log', 'log(', 'fn'], ['√', '√(', 'fn'], ['x²', '^2', 'fn'], ['⌫', 'back', 'ac'],
+    ['(', '(', 'op'], [')', ')', 'op'], ['xʸ', '^', 'op'], ['×10ⁿ', '×10^', 'fn'], ['÷', '÷', 'op'],
+    ['7', '7', 'n'], ['8', '8', 'n'], ['9', '9', 'n'], ['π', 'π', 'fn'], ['×', '×', 'op'],
+    ['4', '4', 'n'], ['5', '5', 'n'], ['6', '6', 'n'], ['e', 'e', 'fn'], ['−', '−', 'op'],
+    ['1', '1', 'n'], ['2', '2', 'n'], ['3', '3', 'n'], ['ans', 'ans', 'fn'], ['+', '+', 'op'],
+    ['0', '0', 'n'], ['.', '.', 'n'], ['(−)', '-', 'op'], ['=', 'eq', 'eq']];
+  box.innerHTML = `<div class="scalc-head"><span>🧮 Calculator</span><span><button type="button" class="scalc-clr" aria-label="Clear history" style="font-size:12px">Clear</button><button type="button" class="scalc-x" aria-label="Close calculator">×</button></span></div>
+    <div class="scalc-hist" aria-live="polite"></div>
+    <div class="scalc-in"><input type="text" inputmode="none" autocomplete="off" spellcheck="false" aria-label="Calculator input"><span class="scalc-prev"></span></div>
+    <div class="scalc-keys">${K.map(([l, v, c]) => `<button type="button" class="${c}" data-v="${v}">${l}</button>`).join('')}</div>`;
+  const inp = box.querySelector('input'), histEl = box.querySelector('.scalc-hist'), prev = box.querySelector('.scalc-prev'), modeBtn = box.querySelector('[data-v="mode"]');
+  const lastAns = () => hist.length ? hist[hist.length - 1].v : null;
+  function drawHist() {
+    histEl.innerHTML = hist.length ? hist.slice(-40).map(h => `<div class="h" title="Tap to reuse"><span>${h.e.replace(/</g, '&lt;')}</span><span>= ${h.r}</span></div>`).join('') : '<div class="empty">Your last answers will show here.</div>';
+    histEl.scrollTop = histEl.scrollHeight;
+    histEl.querySelectorAll('.h').forEach((d, k) => d.addEventListener('click', () => { const h = hist.slice(-40)[k]; insert(h.r.includes('×') ? String(h.v) : h.r); }));
+  }
+  function livePreview() { try { const v = evaluate(inp.value, lastAns()); prev.textContent = inp.value.trim() && /[^0-9.]/.test(inp.value) ? '= ' + fmt(v) : ''; } catch (e) { prev.textContent = ''; } }
+  function insert(t) { const a = inp.selectionStart ?? inp.value.length, b = inp.selectionEnd ?? a; inp.value = inp.value.slice(0, a) + t + inp.value.slice(b); const c = a + t.length; inp.setSelectionRange(c, c); livePreview(); }
+  function doEq() {
+    const src = inp.value.trim(); if (!src) return;
+    try { const v = evaluate(src, lastAns()); hist.push({ e: src, r: fmt(v), v }); saveH(); drawHist(); inp.value = ''; prev.textContent = ''; }
+    catch (e) { prev.textContent = typeof e === 'string' ? e : 'Error'; prev.style.color = '#fca5a5'; setTimeout(() => { prev.style.color = ''; livePreview(); }, 1600); }
+  }
+  function setMode() { modeBtn.textContent = deg ? 'DEG' : 'RAD'; try { localStorage.setItem(MKEY, deg ? 'deg' : 'rad'); } catch (e) {} livePreview(); }
+  box.querySelectorAll('.scalc-keys button').forEach(b => b.addEventListener('click', () => {
+    const v = b.dataset.v;
+    if (v === 'eq') doEq(); else if (v === 'ac') { inp.value = ''; prev.textContent = ''; }
+    else if (v === 'back') { const a = inp.selectionStart, e2 = inp.selectionEnd; if (a !== e2) insert(''); else if (a > 0) { inp.value = inp.value.slice(0, a - 1) + inp.value.slice(a); inp.setSelectionRange(a - 1, a - 1); livePreview(); } }
+    else if (v === 'mode') { deg = !deg; setMode(); }
+    else { if (!inp.value && /^[+×÷^]/.test(v) && hist.length) insert('ans'); insert(v); }
+    inp.focus({ preventScroll: true });
+  }));
+  inp.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') { e.preventDefault(); doEq(); } else if (e.key === 'Escape') box.hidden = true;
+    else if (e.key.length === 1 && /[+*/^]/.test(e.key) && !inp.value && hist.length) { e.preventDefault(); insert('ans' + (e.key === '*' ? '×' : e.key === '/' ? '÷' : e.key)); } });
+  inp.addEventListener('input', livePreview);
+  inp.addEventListener('keyup', e => e.stopPropagation()); inp.addEventListener('keypress', e => e.stopPropagation());
+  box.querySelector('.scalc-x').addEventListener('click', () => { box.hidden = true; });
+  box.querySelector('.scalc-clr').addEventListener('click', () => { hist = []; saveH(); drawHist(); inp.focus({ preventScroll: true }); });
+  /* drag */
+  const head = box.querySelector('.scalc-head'); let drag = null;
+  head.addEventListener('pointerdown', e => { if (e.target.closest('button')) return; const r = box.getBoundingClientRect(); drag = { dx: e.clientX - r.left, dy: e.clientY - r.top }; head.setPointerCapture(e.pointerId); });
+  head.addEventListener('pointermove', e => { if (!drag) return; box.style.left = Math.max(0, Math.min(innerWidth - 60, e.clientX - drag.dx)) + 'px'; box.style.top = Math.max(0, Math.min(innerHeight - 40, e.clientY - drag.dy)) + 'px'; box.style.right = 'auto'; });
+  head.addEventListener('pointerup', () => { drag = null; });
+  function toggle() { box.hidden = !box.hidden; if (!box.hidden) { drawHist(); setMode(); inp.focus({ preventScroll: true }); } }
+  function mount() {
+    document.body.appendChild(box);
+    const tb = [...document.querySelectorAll('button, a')].find(b => /^\s*teacher\b/i.test(b.textContent || '') && b.offsetParent !== null) || [...document.querySelectorAll('button, a')].find(b => /^\s*teacher\b/i.test(b.textContent || ''));
+    const btn = document.createElement('button'); btn.type = 'button'; btn.className = ((tb && tb.className) || '') + ' scalc-btn'; btn.innerHTML = '🧮 Calculator'; btn.setAttribute('aria-label', 'Open the scientific calculator');
+    btn.addEventListener('click', e => { e.preventDefault(); toggle(); });
+    const aplus = !tb && [...document.querySelectorAll('button')].find(b => (b.textContent || '').trim() === 'A+');
+    if (tb && tb.parentNode) tb.parentNode.insertBefore(btn, tb);
+    else if (aplus && aplus.parentNode) { btn.className = (aplus.className || '') + ' scalc-btn'; btn.style.width = 'auto'; btn.style.padding = '0 10px'; aplus.parentNode.insertBefore(btn, aplus.nextSibling); }
+    else { btn.style.cssText = 'position:fixed;right:14px;bottom:14px;z-index:99989;padding:8px 14px;border-radius:999px;border:1.5px solid #35496f;background:#0f1a2e;color:#e8eef8;font:600 14px system-ui;cursor:pointer'; document.body.appendChild(btn); }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount); else mount();
+  window.__sciCalcEval = (s, a) => fmt(evaluate(s, a));
+})();
+
+</script>
+</body>
+</html>

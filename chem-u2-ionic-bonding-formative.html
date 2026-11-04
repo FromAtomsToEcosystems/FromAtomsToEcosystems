@@ -958,5 +958,149 @@ render();
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();
 </script>
+<script>
+/* ===== Scientific calculator (floating, with history) ===== */
+(function () {
+  if (window.__sciCalc) return; window.__sciCalc = true;
+  const HKEY = 'sci_calc_history_v1', MKEY = 'sci_calc_mode_v1';
+  const css = `
+  .scalc-btn{display:inline-flex;align-items:center;gap:6px}
+  .scalc{position:fixed;z-index:99990;right:18px;top:70px;width:330px;max-width:calc(100vw - 20px);background:#0f1a2e;color:#e8eef8;border:1.5px solid #35496f;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.45);font:14px/1.3 system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;user-select:none}
+  .scalc[hidden]{display:none}
+  .scalc-head{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;cursor:move;border-bottom:1px solid #26385a;font-weight:700}
+  .scalc-head button{background:none;border:0;color:#a3b4d1;font:700 18px system-ui;cursor:pointer;padding:0 4px}
+  .scalc-hist{max-height:92px;overflow-y:auto;padding:6px 10px 2px;font-size:13px}
+  .scalc-hist .h{display:flex;justify-content:space-between;gap:8px;padding:2px 0;border-bottom:1px dashed #22324f;cursor:pointer}
+  .scalc-hist .h span:first-child{color:#a3b4d1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .scalc-hist .h span:last-child{color:#5fe1ff;font-weight:700;white-space:nowrap}
+  .scalc-hist .empty{color:#6b7c99;font-style:italic;padding:4px 0}
+  .scalc-in{display:flex;flex-direction:column;gap:2px;margin:6px 10px;background:#0b1322;border:1.5px solid #35496f;border-radius:10px;padding:6px 8px}
+  .scalc-in input{flex:1;min-width:0;background:none;border:0;color:#fff;font:600 20px system-ui;outline:none;user-select:text}
+  .scalc-prev{color:#4ade80;font-weight:700;font-size:15px;white-space:nowrap;align-self:flex-end;min-height:19px}
+  .scalc-keys{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;padding:4px 10px 10px}
+  .scalc-keys button{height:36px;border-radius:8px;border:1px solid #2a3d61;background:#17253f;color:#e8eef8;font:600 15px system-ui;cursor:pointer}
+  .scalc-keys button:hover{background:#1e3152}
+  .scalc-keys button.n{background:#22355a}.scalc-keys button.op{color:#f6b93b}.scalc-keys button.eq{background:#f6b93b;color:#241703;grid-column:span 2}
+  .scalc-keys button.fn{font-size:13px;color:#5fe1ff}.scalc-keys button.ac{color:#fca5a5}
+  @media print{.scalc,.scalc-btn{display:none!important}}`;
+  const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
+
+  let hist = []; try { hist = JSON.parse(localStorage.getItem(HKEY) || '[]'); } catch (e) {}
+  let deg = true; try { deg = localStorage.getItem(MKEY) !== 'rad'; } catch (e) {}
+  const saveH = () => { try { localStorage.setItem(HKEY, JSON.stringify(hist.slice(-40))); } catch (e) {} };
+
+  /* ---- safe parser (no eval) ---- */
+  function evaluate(src, ans) {
+    let s = String(src).replace(/\s+/g, '').replace(/([0-9.])[×*]10\^\(?([-−]?[0-9]+)\)?/g, (m, d, e) => d + 'E' + e.replace('−', '-')).replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-').replace(/π/g, 'pi').replace(/√/g, 'sqrt').replace(/²/g, '^2').replace(/³/g, '^3').replace(/\s+/g, '');
+    const toks = []; let i = 0;
+    while (i < s.length) {
+      const c = s[i];
+      if (/[0-9.]/.test(c)) { let j = i; while (j < s.length && /[0-9.]/.test(s[j])) j++; if (s[j] === 'E' && /[-+0-9]/.test(s[j + 1] || '')) { j++; if (/[-+]/.test(s[j])) j++; while (j < s.length && /[0-9]/.test(s[j])) j++; } const t = s.slice(i, j); if ((t.match(/\./g) || []).length > 1) throw 'Too many decimal points'; toks.push({ t: 'n', v: parseFloat(t) }); i = j; continue; }
+      if (/[a-z]/i.test(c)) { let j = i; while (j < s.length && /[a-z]/i.test(s[j])) j++; const w = s.slice(i, j).toLowerCase(); i = j;
+        const known = ['sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'ln', 'log', 'sqrt', 'pi', 'e', 'ans'];
+        if (!known.includes(w)) throw 'Unknown: ' + w; toks.push({ t: ['pi', 'e', 'ans'].includes(w) ? 'c' : 'f', v: w }); continue; }
+      if ('+-*/^()!%'.includes(c)) { toks.push({ t: 'o', v: c }); i++; continue; }
+      throw 'Unexpected "' + c + '"';
+    }
+    let p = 0;
+    const peek = () => toks[p], take = () => toks[p++];
+    const startsValue = t => t && (t.t === 'n' || t.t === 'c' || t.t === 'f' || (t.t === 'o' && t.v === '('));
+    const trig = (f, x) => { const k = deg ? Math.PI / 180 : 1;
+      if (f === 'sin') return Math.sin(x * k); if (f === 'cos') return Math.cos(x * k); if (f === 'tan') return Math.tan(x * k);
+      if (f === 'asin') return Math.asin(x) / k; if (f === 'acos') return Math.acos(x) / k; if (f === 'atan') return Math.atan(x) / k; };
+    function expr() { let v = term(); while (peek() && peek().t === 'o' && '+-'.includes(peek().v)) { const o = take().v, r = term(); v = o === '+' ? v + r : v - r; } return v; }
+    function term() { let v = unary();
+      while (true) { const t = peek(); if (!t) break;
+        if (t.t === 'o' && '*/'.includes(t.v)) { take(); const r = unary(); v = t.v === '*' ? v * r : v / r; }
+        else if (startsValue(t)) { v = v * unary(); }  /* implied multiplication: 2pi, 3(4) */
+        else break; }
+      return v; }
+    function unary() { const t = peek(); if (t && t.t === 'o' && (t.v === '-' || t.v === '+')) { take(); const v = unary(); return t.v === '-' ? -v : v; } return power(); }
+    function power() { let b = post(); const t = peek(); if (t && t.t === 'o' && t.v === '^') { take(); const e = unary(); return Math.pow(b, e); } return b; }
+    function post() { let v = atom(); while (peek() && peek().t === 'o' && (peek().v === '!' || peek().v === '%')) { const o = take().v; if (o === '%') v = v / 100; else { if (v < 0 || v % 1 || v > 170) throw 'Factorial needs a whole number'; let f = 1; for (let k = 2; k <= v; k++) f *= k; v = f; } } return v; }
+    function atom() { const t = take(); if (!t) throw 'Incomplete';
+      if (t.t === 'n') return t.v;
+      if (t.t === 'c') { if (t.v === 'pi') return Math.PI; if (t.v === 'e') return Math.E; if (ans == null) throw 'No answer yet'; return ans; }
+      if (t.t === 'f') { let x; if (peek() && peek().v === '(') { take(); x = expr(); if (!peek() || peek().v !== ')') throw 'Missing )'; take(); } else x = power();
+        if (['sin', 'cos', 'tan', 'asin', 'acos', 'atan'].includes(t.v)) return trig(t.v, x);
+        if (t.v === 'ln') return Math.log(x); if (t.v === 'log') return Math.log10(x); if (t.v === 'sqrt') return Math.sqrt(x); }
+      if (t.t === 'o' && t.v === '(') { const v = expr(); if (peek() && peek().v === ')') take(); return v; }  /* allow missing final ) */
+      throw 'Check your expression'; }
+    if (!toks.length) throw 'Type something first';
+    const v = expr(); if (p < toks.length) throw 'Check your expression';
+    if (!isFinite(v) || isNaN(v)) throw (isNaN(v) ? 'Not a real number' : 'Too big / divide by 0');
+    return v;
+  }
+  const SUP = { '-': '⁻', 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴', 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹' };
+  function fmt(v) {
+    if (v === 0) return '0';
+    const a = Math.abs(v);
+    if (a >= 1e10 || a < 1e-6) { const [m, e] = v.toExponential(6).split('e'); return `${parseFloat(m)} × 10${String(+e).split('').map(c => SUP[c]).join('')}`; }
+    return String(parseFloat(v.toPrecision(10)));
+  }
+
+  /* ---- panel ---- */
+  const box = document.createElement('div'); box.className = 'scalc'; box.hidden = true; box.setAttribute('role', 'dialog'); box.setAttribute('aria-label', 'Scientific calculator');
+  const K = [['sin', 'sin(', 'fn'], ['cos', 'cos(', 'fn'], ['tan', 'tan(', 'fn'], ['DEG', 'mode', 'fn'], ['AC', 'ac', 'ac'],
+    ['ln', 'ln(', 'fn'], ['log', 'log(', 'fn'], ['√', '√(', 'fn'], ['x²', '^2', 'fn'], ['⌫', 'back', 'ac'],
+    ['(', '(', 'op'], [')', ')', 'op'], ['xʸ', '^', 'op'], ['×10ⁿ', '×10^', 'fn'], ['÷', '÷', 'op'],
+    ['7', '7', 'n'], ['8', '8', 'n'], ['9', '9', 'n'], ['π', 'π', 'fn'], ['×', '×', 'op'],
+    ['4', '4', 'n'], ['5', '5', 'n'], ['6', '6', 'n'], ['e', 'e', 'fn'], ['−', '−', 'op'],
+    ['1', '1', 'n'], ['2', '2', 'n'], ['3', '3', 'n'], ['ans', 'ans', 'fn'], ['+', '+', 'op'],
+    ['0', '0', 'n'], ['.', '.', 'n'], ['(−)', '-', 'op'], ['=', 'eq', 'eq']];
+  box.innerHTML = `<div class="scalc-head"><span>🧮 Calculator</span><span><button type="button" class="scalc-clr" aria-label="Clear history" style="font-size:12px">Clear</button><button type="button" class="scalc-x" aria-label="Close calculator">×</button></span></div>
+    <div class="scalc-hist" aria-live="polite"></div>
+    <div class="scalc-in"><input type="text" inputmode="none" autocomplete="off" spellcheck="false" aria-label="Calculator input"><span class="scalc-prev"></span></div>
+    <div class="scalc-keys">${K.map(([l, v, c]) => `<button type="button" class="${c}" data-v="${v}">${l}</button>`).join('')}</div>`;
+  const inp = box.querySelector('input'), histEl = box.querySelector('.scalc-hist'), prev = box.querySelector('.scalc-prev'), modeBtn = box.querySelector('[data-v="mode"]');
+  const lastAns = () => hist.length ? hist[hist.length - 1].v : null;
+  function drawHist() {
+    histEl.innerHTML = hist.length ? hist.slice(-40).map(h => `<div class="h" title="Tap to reuse"><span>${h.e.replace(/</g, '&lt;')}</span><span>= ${h.r}</span></div>`).join('') : '<div class="empty">Your last answers will show here.</div>';
+    histEl.scrollTop = histEl.scrollHeight;
+    histEl.querySelectorAll('.h').forEach((d, k) => d.addEventListener('click', () => { const h = hist.slice(-40)[k]; insert(h.r.includes('×') ? String(h.v) : h.r); }));
+  }
+  function livePreview() { try { const v = evaluate(inp.value, lastAns()); prev.textContent = inp.value.trim() && /[^0-9.]/.test(inp.value) ? '= ' + fmt(v) : ''; } catch (e) { prev.textContent = ''; } }
+  function insert(t) { const a = inp.selectionStart ?? inp.value.length, b = inp.selectionEnd ?? a; inp.value = inp.value.slice(0, a) + t + inp.value.slice(b); const c = a + t.length; inp.setSelectionRange(c, c); livePreview(); }
+  function doEq() {
+    const src = inp.value.trim(); if (!src) return;
+    try { const v = evaluate(src, lastAns()); hist.push({ e: src, r: fmt(v), v }); saveH(); drawHist(); inp.value = ''; prev.textContent = ''; }
+    catch (e) { prev.textContent = typeof e === 'string' ? e : 'Error'; prev.style.color = '#fca5a5'; setTimeout(() => { prev.style.color = ''; livePreview(); }, 1600); }
+  }
+  function setMode() { modeBtn.textContent = deg ? 'DEG' : 'RAD'; try { localStorage.setItem(MKEY, deg ? 'deg' : 'rad'); } catch (e) {} livePreview(); }
+  box.querySelectorAll('.scalc-keys button').forEach(b => b.addEventListener('click', () => {
+    const v = b.dataset.v;
+    if (v === 'eq') doEq(); else if (v === 'ac') { inp.value = ''; prev.textContent = ''; }
+    else if (v === 'back') { const a = inp.selectionStart, e2 = inp.selectionEnd; if (a !== e2) insert(''); else if (a > 0) { inp.value = inp.value.slice(0, a - 1) + inp.value.slice(a); inp.setSelectionRange(a - 1, a - 1); livePreview(); } }
+    else if (v === 'mode') { deg = !deg; setMode(); }
+    else { if (!inp.value && /^[+×÷^]/.test(v) && hist.length) insert('ans'); insert(v); }
+    inp.focus({ preventScroll: true });
+  }));
+  inp.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') { e.preventDefault(); doEq(); } else if (e.key === 'Escape') box.hidden = true;
+    else if (e.key.length === 1 && /[+*/^]/.test(e.key) && !inp.value && hist.length) { e.preventDefault(); insert('ans' + (e.key === '*' ? '×' : e.key === '/' ? '÷' : e.key)); } });
+  inp.addEventListener('input', livePreview);
+  inp.addEventListener('keyup', e => e.stopPropagation()); inp.addEventListener('keypress', e => e.stopPropagation());
+  box.querySelector('.scalc-x').addEventListener('click', () => { box.hidden = true; });
+  box.querySelector('.scalc-clr').addEventListener('click', () => { hist = []; saveH(); drawHist(); inp.focus({ preventScroll: true }); });
+  /* drag */
+  const head = box.querySelector('.scalc-head'); let drag = null;
+  head.addEventListener('pointerdown', e => { if (e.target.closest('button')) return; const r = box.getBoundingClientRect(); drag = { dx: e.clientX - r.left, dy: e.clientY - r.top }; head.setPointerCapture(e.pointerId); });
+  head.addEventListener('pointermove', e => { if (!drag) return; box.style.left = Math.max(0, Math.min(innerWidth - 60, e.clientX - drag.dx)) + 'px'; box.style.top = Math.max(0, Math.min(innerHeight - 40, e.clientY - drag.dy)) + 'px'; box.style.right = 'auto'; });
+  head.addEventListener('pointerup', () => { drag = null; });
+  function toggle() { box.hidden = !box.hidden; if (!box.hidden) { drawHist(); setMode(); inp.focus({ preventScroll: true }); } }
+  function mount() {
+    document.body.appendChild(box);
+    const tb = [...document.querySelectorAll('button, a')].find(b => /^\s*teacher\b/i.test(b.textContent || '') && b.offsetParent !== null) || [...document.querySelectorAll('button, a')].find(b => /^\s*teacher\b/i.test(b.textContent || ''));
+    const btn = document.createElement('button'); btn.type = 'button'; btn.className = ((tb && tb.className) || '') + ' scalc-btn'; btn.innerHTML = '🧮 Calculator'; btn.setAttribute('aria-label', 'Open the scientific calculator');
+    btn.addEventListener('click', e => { e.preventDefault(); toggle(); });
+    const aplus = !tb && [...document.querySelectorAll('button')].find(b => (b.textContent || '').trim() === 'A+');
+    if (tb && tb.parentNode) tb.parentNode.insertBefore(btn, tb);
+    else if (aplus && aplus.parentNode) { btn.className = (aplus.className || '') + ' scalc-btn'; btn.style.width = 'auto'; btn.style.padding = '0 10px'; aplus.parentNode.insertBefore(btn, aplus.nextSibling); }
+    else { btn.style.cssText = 'position:fixed;right:14px;bottom:14px;z-index:99989;padding:8px 14px;border-radius:999px;border:1.5px solid #35496f;background:#0f1a2e;color:#e8eef8;font:600 14px system-ui;cursor:pointer'; document.body.appendChild(btn); }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount); else mount();
+  window.__sciCalcEval = (s, a) => fmt(evaluate(s, a));
+})();
+
+</script>
 </body>
 </html>
