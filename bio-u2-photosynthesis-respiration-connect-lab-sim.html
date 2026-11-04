@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Elodea and Snail Photosynthesis and Respiration Connect Lab (simulation) | Biology Unit 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1626; --panel:#142136; --panel2:#1a2a44; --line:#2a3d5f; --line2:#3a5580;
+  --text:#e8eef8; --muted:#a3b4cf; --dim:#7488a9;
+  --leaf:#5fe3a9; --sun:#ffd35c; --r:#ffd35c; --sky:#45c8f0; --ok:#4ade80; --bad:#fb7185; --pink:#f472b6;
+  --font:'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+*{box-sizing:border-box} [hidden]{display:none !important}
+html,body{margin:0}
+body{background-color:var(--bg); background-image:linear-gradient(rgba(110,150,210,.065) 1px,transparent 1px),linear-gradient(90deg,rgba(110,150,210,.065) 1px,transparent 1px); background-size:32px 32px;
+  color:var(--text); font-family:var(--font); font-size:17px; line-height:1.55; -webkit-user-select:none; user-select:none}
+input,textarea{-webkit-user-select:text; user-select:text}
+h1,h2,h3,h4{margin:0 0 .45em; line-height:1.2; font-weight:600}
+h1{font-size:clamp(28px,4.4vw,40px); font-weight:700} h2{font-size:24px} h3{font-size:19px}
+p{margin:0 0 .75em} .muted{color:var(--muted)} .small{font-size:14px}
+sub,sup{font-size:.72em}
+:focus-visible{outline:3px solid var(--r); outline-offset:2px}
+.top{position:sticky; top:0; z-index:20; background:rgba(13,22,38,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+.top-in{max-width:1100px; margin:0 auto; padding:8px 16px; display:flex; gap:12px; align-items:center}
+.brand{font-weight:600; font-size:15px; white-space:nowrap} .brand span{display:block; font-weight:400; font-size:12px; color:var(--muted)}
+.nav{display:flex; gap:6px; flex:1; overflow-x:auto; padding:3px 2px}
+.ntile{flex:0 0 auto; width:54px; height:54px; border-radius:7px; border:1.5px solid var(--line2); background:var(--panel); color:var(--text); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer; position:relative; font:inherit; padding:0}
+.ntile .ic{color:var(--leaf); line-height:0} .ntile .nm{font-size:8.5px; color:var(--muted)}
+.ntile.cur{border-color:var(--r); background:rgba(255,211,92,.14)}
+.ntile.cur .nm{color:var(--r)}
+.secnav{display:flex; justify-content:space-between; gap:10px; margin-top:4px}
+.ntile.done::after{content:'✓'; position:absolute; top:1px; right:4px; font-size:10px; font-weight:700; color:var(--ok)}
+.scorepill{font-size:13px; padding:4px 10px; border-radius:999px; background:var(--panel2); white-space:nowrap}
+.savenote{font-size:12.5px; color:var(--ok); white-space:nowrap} @media (max-width:1300px){ .savenote{display:none} } @media (max-width:900px){ .scorepill{display:none} }
+main{max-width:1000px; margin:0 auto; padding:20px 16px 80px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin:0 0 18px}
+.sec{scroll-margin-top:80px}
+.sechead{display:flex; gap:14px; align-items:center; margin:28px 0 10px}
+.badge{width:66px; height:66px; border-radius:10px; border:2px solid var(--leaf); background:var(--panel); display:flex; align-items:center; justify-content:center; position:relative; flex:0 0 auto; color:var(--leaf)}
+.badge .z{position:absolute; top:3px; left:6px; font-size:11px; color:var(--muted)}
+.meta{color:var(--muted); font-size:14px}
+.btn{font:inherit; font-weight:600; font-size:15px; border-radius:10px; padding:10px 18px; cursor:pointer; border:1.5px solid transparent}
+.btn.primary{background:var(--r); color:#231a00} .btn.ghost{background:transparent; border-color:var(--line2); color:var(--text)}
+.btn.small{padding:6px 12px; font-size:14px} .btn:disabled{opacity:.45; cursor:not-allowed}
+.btnrow{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:12px}
+.field{display:flex; flex-direction:column; gap:4px; font-size:14px; color:var(--muted)}
+.field input,.field select{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px}
+.formgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin:10px 0}
+.fb{margin-top:10px; padding:10px 14px; border-radius:10px; font-size:15px}
+.fb.ok{background:rgba(74,222,128,.12); color:#c9f7d8} .fb.no{background:rgba(251,113,133,.12); color:#ffd3db} .fb.info{background:var(--panel2)}
+.prob{border-top:1px solid var(--line); padding-top:16px; margin-top:16px}
+.prob:first-of-type{border-top:none; padding-top:0; margin-top:0}
+.pq{font-weight:500; margin-bottom:8px}
+.pnum{display:inline-block; min-width:30px; font-weight:700; color:var(--leaf)}
+.pts{font-size:13px; color:var(--muted); font-weight:400}
+.hintbox{background:rgba(255,211,92,.08); border-left:3px solid var(--r); border-radius:8px; padding:8px 12px; margin-top:8px; font-size:15px}
+/* drag and drop */
+.figwrap{position:relative; width:100%}
+.figwrap svg{width:100%; height:auto; display:block; background:#0a1322; border:1px solid var(--line); border-radius:12px}
+.figwrap svg text{font-family:var(--font)}
+.zone{position:absolute; transform:translate(-50%,-50%); min-height:32px; border:2px dashed #8fb3e6; border-radius:9px; background:rgba(13,22,38,.92); color:var(--text); font:inherit; font-size:14px; font-weight:600; display:flex; align-items:center; justify-content:center; padding:2px 6px; cursor:pointer; text-align:center; line-height:1.15}
+.zone.empty{color:var(--dim); font-weight:400; font-size:12.5px}
+.zone.filled{border-style:solid; border-color:var(--r); background:#2b2410}
+.zone.hot{box-shadow:0 0 0 3px rgba(255,211,92,.5)}
+.zone.locked{opacity:.9}
+.zone.ok{border-color:var(--ok); background:#0f2e1d} .zone.no{border-color:var(--bad); background:#3a0f1a}
+.pool{display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 4px; padding:10px; border:1px dashed var(--line2); border-radius:10px; min-height:52px}
+.pool .lbl{width:100%; font-size:12.5px; color:var(--muted)}
+.chip{font:inherit; font-size:15px; font-weight:600; padding:6px 14px; border-radius:999px; border:1.5px solid var(--line2); background:var(--panel2); color:var(--text); cursor:grab; touch-action:none}
+.chip.sel{border-color:var(--r); background:rgba(255,211,92,.16); box-shadow:0 0 0 3px rgba(255,211,92,.35)}
+.bins{display:grid; gap:10px; margin-top:6px}
+.bin{border:2px dashed var(--line2); border-radius:12px; padding:10px; min-height:96px; cursor:pointer; background:rgba(13,22,38,.5)}
+.bin h4{margin:0 0 8px; font-size:15px; color:var(--leaf)} .bin.hot{border-color:var(--r)}
+.bin .chip{cursor:pointer; margin:3px} .bin .chip.ok{border-color:var(--ok); background:#0f2e1d} .bin .chip.no{border-color:var(--bad); background:#3a0f1a}
+.phenbox{background:rgba(244,114,182,.1); border-left:4px solid #f472b6; border-radius:8px; padding:10px 14px; margin-bottom:14px}
+.fixnote{font-size:12px; color:#ffd3db; font-weight:400}
+/* equation */
+.eq{display:flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:20px; font-weight:600; margin:10px 0}
+.eq .zone{position:static; transform:none; min-width:120px; min-height:40px}
+/* choices */
+.opts{display:grid; gap:8px; margin:6px 0}
+.opt{display:flex; gap:12px; align-items:center; text-align:left; background:var(--panel2); border:1.5px solid var(--line); color:var(--text); border-radius:10px; padding:9px 14px; font:inherit; font-size:16px; cursor:pointer}
+.opt .L{flex:0 0 26px; height:26px; border-radius:50%; display:grid; place-items:center; background:var(--bg); font-weight:600; font-size:13px}
+.opt.multi .L{border-radius:6px}
+.opt.sel{border-color:var(--r); background:rgba(255,211,92,.08)} .opt.sel .L{background:var(--r); color:#231a00}
+.opt.ok{border-color:var(--ok); background:rgba(74,222,128,.1)} .opt.no{border-color:var(--bad); background:rgba(251,113,133,.1)}
+.opt:disabled{cursor:default}
+input.blank{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:7px 10px; font:inherit; font-size:16px; width:170px}
+input.blank.ok{border-color:var(--ok)} input.blank.no{border-color:var(--bad)}
+.brow{margin:8px 0}
+/* answer key (teacher) */
+body.keyon .zone[data-key]::after{content:'key: ' attr(data-key); position:absolute; top:100%; left:50%; transform:translateX(-50%); font-size:11px; color:var(--r); white-space:nowrap; margin-top:2px}
+body.keyon .chip[data-key]::after{content:' → ' attr(data-key); font-size:11px; color:var(--r)}
+body.keyon .opt[data-key]{outline:2px dashed var(--r); outline-offset:2px}
+body.keyon input.blank[data-key]+.keytxt{display:inline}
+.btbkey{display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; margin:6px 0 10px}.btbkey span{display:inline-block; width:16px; height:16px; border-radius:50%; vertical-align:middle; border:1px solid rgba(255,255,255,.4)}
+.simwrap{display:grid; grid-template-columns:minmax(150px,220px) 1fr; gap:18px; align-items:start; background:rgba(255,255,255,.04); border:1px solid var(--line,#2a3d5f); border-radius:14px; padding:14px}
+.simwrap.off{opacity:.35; pointer-events:none}
+.bigtube svg{width:100%; height:auto; display:block}.clock{text-align:center; font-weight:700; font-size:20px; margin-top:6px}
+.tg{display:block; margin:4px 0; font-size:17px}.tg input{transform:scale(1.3); margin-right:8px}
+.sensor{margin:10px 0; font-size:18px}.sensor b{font-size:24px; color:#ffd35c}
+.btn.on{outline:2px solid #ffd35c}
+.dot{display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:6px; vertical-align:middle}
+.predtab select{font:inherit; padding:4px 6px; border-radius:8px}
+#sChart svg{width:100%; height:auto; display:block}
+@media (max-width:700px){ .simwrap{grid-template-columns:1fr} .bigtube{max-width:180px; margin:0 auto} }
+.wbank2{margin-top:8px; padding:8px 10px; border:1px dashed rgba(163,180,207,.5); border-radius:10px; font-size:14px; line-height:2}
+.wchip{font:inherit; font-size:14px; margin:2px 4px 2px 0; padding:2px 10px; border-radius:999px; border:1px solid rgba(163,180,207,.6); background:rgba(255,255,255,.06); color:inherit; cursor:pointer}
+.wchip:hover{border-color:#ffd35c}
+.wtext{width:100%; min-height:110px; font:inherit; padding:10px; border-radius:10px; border:1.5px solid var(--line,#2a3d5f); background:rgba(255,255,255,.04); color:inherit; resize:vertical}
+.wkey{display:none; margin-top:6px; font-size:14px; color:var(--r,#ffd35c)}
+body.keyon .wkey{display:block}
+.keytxt{display:none; font-size:12px; color:var(--r); margin-left:6px}
+.big{font-size:52px; font-weight:700; color:var(--r); line-height:1}
+table.res{border-collapse:collapse; width:100%} table.res th,table.res td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line)} table.res th{color:var(--muted); font-weight:400}
+.card.nostore{border:2px solid var(--bad); background:rgba(251,113,133,.08)}
+.overlay{position:fixed; inset:0; background:rgba(4,9,18,.94); z-index:100; display:none; align-items:center; justify-content:center; padding:20px}
+.overlay.show{display:flex}
+.modal{background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:24px; max-width:900px; width:100%; max-height:92vh; overflow:auto}
+input.code{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px; width:200px}
+table.nb{border-collapse:collapse; width:100%; font-size:14px} table.nb th,table.nb td{border:1px solid var(--line2); padding:6px 8px} table.nb th{background:var(--panel2)}
+.wide{overflow-x:auto}
+@media (max-width:700px){ .zone{font-size:11px; min-height:26px} .chip{font-size:13px; padding:5px 10px} }
+@media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important} }
+</style>
+</head>
+<body>
+<header class="top" id="top" hidden>
+  <div class="top-in">
+    <div class="brand">Elodea and snail lab (simulation)<span id="whoami"></span></div>
+    <nav class="nav" id="nav" aria-label="Worksheet parts"></nav>
+    <span class="scorepill" id="scorePill"></span>
+    <span class="savenote" id="saveNote" aria-live="polite"></span>
+    <button class="btn ghost small" id="teachBtn" type="button">Teacher</button>
+  </div>
+</header>
+
+<main>
+  <section id="start">
+    <div class="muted" style="margin-top:8px">Biology · Unit 2: Energy Flow · Lab simulation · about 40 minutes</div>
+    <h1>Elodea and Snail Photosynthesis and Respiration Connect Lab (simulation)</h1>
+    <p class="muted" style="font-size:18px;max-width:42em">Predict, then test how a water snail and an Elodea plant change the CO₂ in sealed tubes of bromothymol blue, in the light and in the dark.</p>
+    <div class="card"><h3>How it works</h3>
+      <p style="margin:0">Each problem gets <b>two tries</b>. Right on either try earns full credit. If your first try is wrong, you'll be told it isn't right yet (but not the answer), so look again and try once more. Wrong twice and the problem is marked wrong and locks. Stuck? Tap <b>Hint</b> before you check.</p></div>
+    <div class="card nostore" id="noStore" hidden><h3>This browser can't save your work</h3><p style="margin:0">You may be in guest or incognito mode. Sign in to your school account and open the worksheet again.</p></div>
+    <div class="card">
+      <h3 id="signinTitle">Sign in to start</h3>
+      <div id="resumeBox" hidden><p id="resumeText"></p>
+        <div class="btnrow"><button class="btn primary" id="resumeBtn" type="button">Continue my lab</button><button class="btn ghost small" id="notMeBtn" type="button">Not you? Sign in as a different student</button></div>
+        <div class="fb no" id="resumeErr" hidden></div></div>
+      <div id="startForm">
+        <div class="formgrid">
+          <label class="field">First name<input id="fFirst" autocomplete="off"></label><label class="field">Last name<input id="fLast" autocomplete="off"></label>
+          <label class="field">Student ID<input id="fId" inputmode="numeric" autocomplete="off"></label>
+          <label class="field">Period<select id="fPeriod"></select></label><label class="field">Teacher<select id="fTeacher"></select></label>
+        </div>
+        <p class="small muted">Your work saves as you go. On any Chromebook, sign in with the same student ID and last name to pick up where you left off.</p>
+        <div class="fb no" id="formErr" hidden></div>
+        <div class="btnrow"><button class="btn primary" type="button" id="startBtn">Start the lab</button></div>
+      </div>
+    </div>
+    <p style="text-align:center"><button class="btn ghost" id="teacherLink" type="button">Teacher: enter unlock code</button></p>
+  </section>
+  <div id="ws" hidden></div>
+</main>
+
+<div class="overlay" id="teachOv" role="dialog" aria-modal="true" aria-labelledby="tTitle">
+  <div class="modal"><div id="teachLogin"><h2 id="tTitle">Teacher</h2>
+    <div class="btnrow"><input class="code" id="teachCode" type="password" placeholder="Teacher code" autocomplete="off"><button class="btn primary" id="teachGo" type="button">Open</button><button class="btn ghost" id="teachCancel" type="button">Close</button></div>
+    <div class="fb no" id="teachErr" hidden>That code didn't work.</div></div><div id="teachPanel" hidden></div></div>
+</div>
+<div class="overlay" id="tabOv" role="dialog" aria-modal="true"><div class="modal" style="max-width:520px"><h2>This lab is open in another tab</h2><p>To keep your newest work safe, this copy stopped saving. Close the extra tab, then reload this one.</p><div class="btnrow"><button class="btn primary" type="button" onclick="location.reload()">Reload with my newest work</button></div></div></div>
+
+<script src="sheets-config.js"></script>
+<script>
+(function(){
+'use strict';
+/* ============================== SETTINGS ============================== */
+const LESSON_TITLE='How Photosynthesis and Respiration Connect';           // unlock code = last word of this title
+const UNLOCK_CODE=LESSON_TITLE.trim().split(/\s+/).pop();
+const TEACHER_CODE='Teacher007';   // universal teacher-tools code
+const codeIs=(v,c)=>String(v||'').trim().toLowerCase()===String(c).toLowerCase();
+const WS_ID='bio-u2-photosynthesis-respiration-connect-lab-sim', ACTIVITY='Elodea and Snail Photosynthesis and Respiration Connect Lab (simulation)';
+const BACKUP_URL='https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const SAVE_URL_BUILTIN='https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';
+const BACKUP_TEACHERS=['Austin','Mueller','McCue','Arce','Trimm','Garcia','Trimm/Callanan','Callanan'], BACKUP_PERIODS=['1','2','3','4','5','6','7','8'];
+const STORE='btbVirtualLab_v1', RECS='btbVirtualLab_records_v1';
+/* ===================================================================== */
+const teacherList=()=>{ try{ if(typeof TEACHERS!=='undefined'&&Array.isArray(TEACHERS)&&TEACHERS.length) return TEACHERS.map(String); }catch(e){} return BACKUP_TEACHERS; };
+const periodList=()=>{ try{ if(typeof PERIODS!=='undefined'&&Array.isArray(PERIODS)&&PERIODS.length) return PERIODS.map(String); }catch(e){} return BACKUP_PERIODS; };
+const sheetURL=()=>{ try{ if(typeof SHEETS_WEBHOOK_URL!=='undefined'&&SHEETS_WEBHOOK_URL&&String(SHEETS_WEBHOOK_URL).indexOf('PASTE')<0) return String(SHEETS_WEBHOOK_URL); }catch(e){} return BACKUP_URL; };
+const saveURL=()=>{ try{ if(typeof SAVE_WEBHOOK_URL!=='undefined'&&SAVE_WEBHOOK_URL&&String(SAVE_WEBHOOK_URL).indexOf('PASTE')<0) return String(SAVE_WEBHOOK_URL); }catch(e){} return SAVE_URL_BUILTIN; };
+const LOCKDOWN=false;   // worksheets never lock down
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const strip=s=>String(s).replace(/<[^>]+>/g,'');
+function h(tag,attrs,html){ const e=document.createElement(tag); if(attrs) for(const k in attrs){ if(attrs[k]===false||attrs[k]==null) continue; if(k==='class') e.className=attrs[k]; else if(k==='hidden') e.hidden=!!attrs[k]; else e.setAttribute(k,attrs[k]); } if(html!=null) e.innerHTML=html; return e; }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* ---------- state + saving ---------- */
+function fresh(){ return {ws:WS_ID, student:null, p:{}, ord:{}, locks:0, locked:false, lockOff:false, submittedAt:null, sentAt:null}; }
+let S; try{ S=JSON.parse(localStorage.getItem(STORE)); }catch(e){} if(!S||S.ws!==WS_ID) S=fresh();
+let STORAGE_OK=true, saveBlocked=false;
+try{ localStorage.setItem('__ps_t','1'); STORAGE_OK=localStorage.getItem('__ps_t')==='1'; localStorage.removeItem('__ps_t'); }catch(e){ STORAGE_OK=false; }
+function save(){
+  if(saveBlocked) return;
+  if(S.preview){ note('Preview: nothing is saved'); return; }
+  try{ const raw=localStorage.getItem(STORE); if(raw){ const st=JSON.parse(raw); if(st&&st.ws===WS_ID&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); return; } }
+    S.rev=(S.rev||0)+1; S.updatedAt=Date.now(); localStorage.setItem(STORE,JSON.stringify(S)); note(); cloudSave(false); }catch(e){}
+}
+window.addEventListener('storage',e=>{ if(e.key!==STORE||!e.newValue) return; try{ const st=JSON.parse(e.newValue); if(st&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); } }catch(_){} });
+const saveKey=st=>(String(st.id||'').replace(/\s+/g,'')+'-'+String(st.last||'').toLowerCase().replace(/[^a-z]/g,'')).toLowerCase();
+const checkedCount=st=>Object.values((st||S).p).filter(x=>x&&x.checked).length;
+let cloudTimer=null, cloudDirty=false, cloudBusy=false, cloudAt=null, cloudErr=false;
+const cloudOK=()=>!!saveURL()&&S.student&&!saveBlocked&&!S.preview;
+function cloudBody(){ const st=S.student||{}, sc=scoreAll();
+  return new URLSearchParams({code:saveKey(st), lesson:WS_ID, ver:String(S.updatedAt||Date.now()), prog:String((S.submittedAt?100000:0)+checkedCount(S)), studentId:st.id||'', lastName:st.last||'', firstName:st.first||'', period:st.period||'', teacher:st.teacher||'',
+    summary:S.submittedAt?`Turned in · ${sc.total}/${sc.max}`:`${checkedCount(S)} of ${PROBS.length} problems checked`, data:JSON.stringify(S)}); }
+function cloudSave(soon){ if(!cloudOK()) return; cloudDirty=true; if(soon){ clearTimeout(cloudTimer); cloudTimer=setTimeout(cloudFlush,1200); } else if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); }
+async function cloudFlush(){ cloudTimer=null; if(!cloudOK()||!cloudDirty) return; if(cloudBusy){ cloudTimer=setTimeout(cloudFlush,4000); return; } cloudBusy=true; cloudDirty=false;
+  try{ await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); cloudAt=new Date(); cloudErr=false; }catch(e){ cloudDirty=true; cloudErr=true; if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); } finally{ cloudBusy=false; note(); } }
+function cloudBeacon(){ if(!cloudOK()||!cloudDirty) return; try{ if(navigator.sendBeacon&&navigator.sendBeacon(saveURL(),cloudBody())) cloudDirty=false; }catch(e){} }
+async function cloudLoad(st){ const ctrl=new AbortController(), t=setTimeout(()=>ctrl.abort(),5000);
+  try{ const r=await fetch(saveURL()+'?'+new URLSearchParams({code:saveKey(st),lesson:WS_ID}),{signal:ctrl.signal}); const j=await r.json(); if(j&&j.found&&j.data){ const d=JSON.parse(j.data); if(d&&d.ws===WS_ID) return {status:'found',data:d}; } return {status:'none'}; }
+  catch(e){ return {status:'error'}; } finally{ clearTimeout(t); } }
+function adopt(ns){ let sr=0; try{ const raw=localStorage.getItem(STORE); if(raw) sr=JSON.parse(raw).rev||0; }catch(e){} ns.rev=Math.max(ns.rev||0,sr); S=ns; saveBlocked=false; save(); }
+function note(msg){ const n=$('#saveNote'); if(!n) return; const tm=d=>d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}); n.textContent=msg||(cloudErr?'✓ Saved on this Chromebook':'✓ Saved '+tm(new Date())+(cloudAt?' · backed up '+tm(cloudAt):'')); }
+document.addEventListener('visibilitychange',()=>{ if(document.hidden){ save(); cloudBeacon(); } });
+window.addEventListener('pagehide',()=>{ save(); cloudBeacon(); });
+
+/* ============================== DIAGRAMS ============================== */
+const TUBES={"000": "<rect x=\"0.0\" y=\"2\" width=\"40\" height=\"100\" rx=\"6\" fill=\"#1e2a4a\" stroke=\"#0f172a\"/><path d=\"M19 9 a5 5 0 1 0 4.5 7.8 a4.0 4.0 0 0 1 -4.5 -7.8z\" fill=\"#f1f5f9\"/><path d=\"M31 7.4399999999999995 L31.72 9.28 L33.56 10 L31.72 10.72 L31 12.56 L30.28 10.72 L28.439999999999998 10 L30.28 9.28Z\" fill=\"#e2e8f0\"/><path d=\"M8 18.08 L8.54 19.46 L9.92 20 L8.54 20.54 L8 21.92 L7.46 20.54 L6.08 20 L7.46 19.46Z\" fill=\"#e2e8f0\"/><clipPath id=\"tc000__ID__\"><path d=\"M8 30v42a12 12 0 0 0 24 0V30Z\"/></clipPath><rect x=\"6.5\" y=\"26\" width=\"27\" height=\"4\" rx=\"1.5\" fill=\"#94a3b8\"/><path d=\"M8 30v42a12 12 0 0 0 24 0V30Z\" fill=\"#ffffff\"/><rect x=\"8\" y=\"36\" width=\"24\" height=\"60\" fill=\"__FILL__\" clip-path=\"url(#tc000__ID__)\" class=\"liquid\"/><g clip-path=\"url(#tc000__ID__)\"></g><path d=\"M8 30v42a12 12 0 0 0 24 0V30\" fill=\"none\" stroke=\"#16213a\" stroke-width=\"1.3\"/>", "001": "<rect x=\"0.0\" y=\"2\" width=\"40\" height=\"100\" rx=\"6\" fill=\"#fff4c7\" stroke=\"#f0d77a\"/><line x1=\"27.0\" y1=\"14.0\" x2=\"30.0\" y2=\"14.0\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><line x1=\"24.9\" y1=\"18.9\" x2=\"27.1\" y2=\"21.1\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><line x1=\"20.0\" y1=\"21.0\" x2=\"20.0\" y2=\"24.0\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><line x1=\"15.1\" y1=\"18.9\" x2=\"12.9\" y2=\"21.1\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><line x1=\"13.0\" y1=\"14.0\" x2=\"10.0\" y2=\"14.0\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><line x1=\"15.1\" y1=\"9.1\" x2=\"12.9\" y2=\"6.9\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><line x1=\"20.0\" y1=\"7.0\" x2=\"20.0\" y2=\"4.0\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><line x1=\"24.9\" y1=\"9.1\" x2=\"27.1\" y2=\"6.9\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><circle cx=\"20\" cy=\"14\" r=\"5\" fill=\"#ffd35c\" stroke=\"#f59e0b\" stroke-width=\"1\"/><clipPath id=\"tc001__ID__\"><path d=\"M8 30v42a12 12 0 0 0 24 0V30Z\"/></clipPath><rect x=\"6.5\" y=\"26\" width=\"27\" height=\"4\" rx=\"1.5\" fill=\"#94a3b8\"/><path d=\"M8 30v42a12 12 0 0 0 24 0V30Z\" fill=\"#ffffff\"/><rect x=\"8\" y=\"36\" width=\"24\" height=\"60\" fill=\"__FILL__\" clip-path=\"url(#tc001__ID__)\" class=\"liquid\"/><g clip-path=\"url(#tc001__ID__)\"></g><path d=\"M8 30v42a12 12 0 0 0 24 0V30\" fill=\"none\" stroke=\"#16213a\" stroke-width=\"1.3\"/>", "010": "<rect x=\"0.0\" y=\"2\" width=\"40\" height=\"100\" rx=\"6\" fill=\"#1e2a4a\" stroke=\"#0f172a\"/><path d=\"M19 9 a5 5 0 1 0 4.5 7.8 a4.0 4.0 0 0 1 -4.5 -7.8z\" fill=\"#f1f5f9\"/><path d=\"M31 7.4399999999999995 L31.72 9.28 L33.56 10 L31.72 10.72 L31 12.56 L30.28 10.72 L28.439999999999998 10 L30.28 9.28Z\" fill=\"#e2e8f0\"/><path d=\"M8 18.08 L8.54 19.46 L9.92 20 L8.54 20.54 L8 21.92 L7.46 20.54 L6.08 20 L7.46 19.46Z\" fill=\"#e2e8f0\"/><clipPath id=\"tc010__ID__\"><path d=\"M8 30v42a12 12 0 0 0 24 0V30Z\"/></clipPath><rect x=\"6.5\" y=\"26\" width=\"27\" height=\"4\" rx=\"1.5\" fill=\"#94a3b8\"/><path d=\"M8 30v42a12 12 0 0 0 24 0V30Z\" fill=\"#ffffff\"/><rect x=\"8\" y=\"36\" width=\"24\" height=\"60\" fill=\"__FILL__\" clip-path=\"url(#tc010__ID__)\" class=\"liquid\"/><g clip-path=\"url(#tc010__ID__)\"><path d=\"M20 84 V38\" stroke=\"#1d7a52\" stroke-width=\"1.6\"/><ellipse cx=\"16\" cy=\"80\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(-25 16 80)\"/><ellipse cx=\"24\" cy=\"78\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(25 24 78)\"/><ellipse cx=\"16\" cy=\"75\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(-25 16 75)\"/><ellipse cx=\"24\" cy=\"73\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(25 24 73)\"/><ellipse cx=\"16\" cy=\"70\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(-25 16 70)\"/><ellipse cx=\"24\" cy=\"68\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(25 24 68)\"/><ellipse cx=\"16\" cy=\"65\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(-25 16 65)\"/><ellipse cx=\"24\" cy=\"63\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(25 24 63)\"/><ellipse cx=\"16\" cy=\"60\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(-25 16 60)\"/><ellipse cx=\"24\" cy=\"58\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(25 24 58)\"/></g><path d=\"M8 30v42a12 12 0 0 0 24 0V30\" fill=\"none\" stroke=\"#16213a\" stroke-width=\"1.3\"/>", "011": "<rect x=\"0.0\" y=\"2\" width=\"40\" height=\"100\" rx=\"6\" fill=\"#fff4c7\" stroke=\"#f0d77a\"/><line x1=\"27.0\" y1=\"14.0\" x2=\"30.0\" y2=\"14.0\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><line x1=\"24.9\" y1=\"18.9\" x2=\"27.1\" y2=\"21.1\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><line x1=\"20.0\" y1=\"21.0\" x2=\"20.0\" y2=\"24.0\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><line x1=\"15.1\" y1=\"18.9\" x2=\"12.9\" y2=\"21.1\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><line x1=\"13.0\" y1=\"14.0\" x2=\"10.0\" y2=\"14.0\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><line x1=\"15.1\" y1=\"9.1\" x2=\"12.9\" y2=\"6.9\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><line x1=\"20.0\" y1=\"7.0\" x2=\"20.0\" y2=\"4.0\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><line x1=\"24.9\" y1=\"9.1\" x2=\"27.1\" y2=\"6.9\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><circle cx=\"20\" cy=\"14\" r=\"5\" fill=\"#ffd35c\" stroke=\"#f59e0b\" stroke-width=\"1\"/><clipPath id=\"tc011__ID__\"><path d=\"M8 30v42a12 12 0 0 0 24 0V30Z\"/></clipPath><rect x=\"6.5\" y=\"26\" width=\"27\" height=\"4\" rx=\"1.5\" fill=\"#94a3b8\"/><path d=\"M8 30v42a12 12 0 0 0 24 0V30Z\" fill=\"#ffffff\"/><rect x=\"8\" y=\"36\" width=\"24\" height=\"60\" fill=\"__FILL__\" clip-path=\"url(#tc011__ID__)\" class=\"liquid\"/><g clip-path=\"url(#tc011__ID__)\"><path d=\"M20 84 V38\" stroke=\"#1d7a52\" stroke-width=\"1.6\"/><ellipse cx=\"16\" cy=\"80\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(-25 16 80)\"/><ellipse cx=\"24\" cy=\"78\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(25 24 78)\"/><ellipse cx=\"16\" cy=\"75\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(-25 16 75)\"/><ellipse cx=\"24\" cy=\"73\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(25 24 73)\"/><ellipse cx=\"16\" cy=\"70\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(-25 16 70)\"/><ellipse cx=\"24\" cy=\"68\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(25 24 68)\"/><ellipse cx=\"16\" cy=\"65\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(-25 16 65)\"/><ellipse cx=\"24\" cy=\"63\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(25 24 63)\"/><ellipse cx=\"16\" cy=\"60\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(-25 16 60)\"/><ellipse cx=\"24\" cy=\"58\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(25 24 58)\"/></g><path d=\"M8 30v42a12 12 0 0 0 24 0V30\" fill=\"none\" stroke=\"#16213a\" stroke-width=\"1.3\"/>", "100": "<rect x=\"0.0\" y=\"2\" width=\"40\" height=\"100\" rx=\"6\" fill=\"#1e2a4a\" stroke=\"#0f172a\"/><path d=\"M19 9 a5 5 0 1 0 4.5 7.8 a4.0 4.0 0 0 1 -4.5 -7.8z\" fill=\"#f1f5f9\"/><path d=\"M31 7.4399999999999995 L31.72 9.28 L33.56 10 L31.72 10.72 L31 12.56 L30.28 10.72 L28.439999999999998 10 L30.28 9.28Z\" fill=\"#e2e8f0\"/><path d=\"M8 18.08 L8.54 19.46 L9.92 20 L8.54 20.54 L8 21.92 L7.46 20.54 L6.08 20 L7.46 19.46Z\" fill=\"#e2e8f0\"/><clipPath id=\"tc100__ID__\"><path d=\"M8 30v42a12 12 0 0 0 24 0V30Z\"/></clipPath><rect x=\"6.5\" y=\"26\" width=\"27\" height=\"4\" rx=\"1.5\" fill=\"#94a3b8\"/><path d=\"M8 30v42a12 12 0 0 0 24 0V30Z\" fill=\"#ffffff\"/><rect x=\"8\" y=\"36\" width=\"24\" height=\"60\" fill=\"__FILL__\" clip-path=\"url(#tc100__ID__)\" class=\"liquid\"/><g clip-path=\"url(#tc100__ID__)\"><path d=\"M9.26 79.36 Q8.42 76 13.46 76.42 L23.54 76.42 Q27.740000000000002 75.16 28.58 78.94 Q22.7 80.62 9.26 79.36Z\" fill=\"#f3d9a4\" stroke=\"#7c4a12\" stroke-width=\"0.756\"/><path d=\"M26.06 76 L27.740000000000002 70.12 M27.740000000000002 76.42 L31.1 71.38\" stroke=\"#7c4a12\" stroke-width=\"0.84\" stroke-linecap=\"round\"/><circle cx=\"27.740000000000002\" cy=\"69.7\" r=\"1.092\" fill=\"#3b2208\"/><circle cx=\"31.268\" cy=\"70.96\" r=\"1.092\" fill=\"#3b2208\"/><circle cx=\"16.82\" cy=\"71.8\" r=\"6.3\" fill=\"#c98a3c\" stroke=\"#7c4a12\" stroke-width=\"0.84\"/><path d=\"M16.82 71.8 m-3.78 0 a3.78 3.78 0 1 1 3.78 3.78 a2.52 2.52 0 1 1 -2.52 -2.52 a1.26 1.26 0 1 1 1.26 1.26\" fill=\"none\" stroke=\"#7c4a12\" stroke-width=\"0.924\"/></g><path d=\"M8 30v42a12 12 0 0 0 24 0V30\" fill=\"none\" stroke=\"#16213a\" stroke-width=\"1.3\"/>", "101": "<rect x=\"0.0\" y=\"2\" width=\"40\" height=\"100\" rx=\"6\" fill=\"#fff4c7\" stroke=\"#f0d77a\"/><line x1=\"27.0\" y1=\"14.0\" x2=\"30.0\" y2=\"14.0\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><line x1=\"24.9\" y1=\"18.9\" x2=\"27.1\" y2=\"21.1\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><line x1=\"20.0\" y1=\"21.0\" x2=\"20.0\" y2=\"24.0\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><line x1=\"15.1\" y1=\"18.9\" x2=\"12.9\" y2=\"21.1\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><line x1=\"13.0\" y1=\"14.0\" x2=\"10.0\" y2=\"14.0\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><line x1=\"15.1\" y1=\"9.1\" x2=\"12.9\" y2=\"6.9\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><line x1=\"20.0\" y1=\"7.0\" x2=\"20.0\" y2=\"4.0\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><line x1=\"24.9\" y1=\"9.1\" x2=\"27.1\" y2=\"6.9\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><circle cx=\"20\" cy=\"14\" r=\"5\" fill=\"#ffd35c\" stroke=\"#f59e0b\" stroke-width=\"1\"/><clipPath id=\"tc101__ID__\"><path d=\"M8 30v42a12 12 0 0 0 24 0V30Z\"/></clipPath><rect x=\"6.5\" y=\"26\" width=\"27\" height=\"4\" rx=\"1.5\" fill=\"#94a3b8\"/><path d=\"M8 30v42a12 12 0 0 0 24 0V30Z\" fill=\"#ffffff\"/><rect x=\"8\" y=\"36\" width=\"24\" height=\"60\" fill=\"__FILL__\" clip-path=\"url(#tc101__ID__)\" class=\"liquid\"/><g clip-path=\"url(#tc101__ID__)\"><path d=\"M9.26 79.36 Q8.42 76 13.46 76.42 L23.54 76.42 Q27.740000000000002 75.16 28.58 78.94 Q22.7 80.62 9.26 79.36Z\" fill=\"#f3d9a4\" stroke=\"#7c4a12\" stroke-width=\"0.756\"/><path d=\"M26.06 76 L27.740000000000002 70.12 M27.740000000000002 76.42 L31.1 71.38\" stroke=\"#7c4a12\" stroke-width=\"0.84\" stroke-linecap=\"round\"/><circle cx=\"27.740000000000002\" cy=\"69.7\" r=\"1.092\" fill=\"#3b2208\"/><circle cx=\"31.268\" cy=\"70.96\" r=\"1.092\" fill=\"#3b2208\"/><circle cx=\"16.82\" cy=\"71.8\" r=\"6.3\" fill=\"#c98a3c\" stroke=\"#7c4a12\" stroke-width=\"0.84\"/><path d=\"M16.82 71.8 m-3.78 0 a3.78 3.78 0 1 1 3.78 3.78 a2.52 2.52 0 1 1 -2.52 -2.52 a1.26 1.26 0 1 1 1.26 1.26\" fill=\"none\" stroke=\"#7c4a12\" stroke-width=\"0.924\"/></g><path d=\"M8 30v42a12 12 0 0 0 24 0V30\" fill=\"none\" stroke=\"#16213a\" stroke-width=\"1.3\"/>", "110": "<rect x=\"0.0\" y=\"2\" width=\"40\" height=\"100\" rx=\"6\" fill=\"#1e2a4a\" stroke=\"#0f172a\"/><path d=\"M19 9 a5 5 0 1 0 4.5 7.8 a4.0 4.0 0 0 1 -4.5 -7.8z\" fill=\"#f1f5f9\"/><path d=\"M31 7.4399999999999995 L31.72 9.28 L33.56 10 L31.72 10.72 L31 12.56 L30.28 10.72 L28.439999999999998 10 L30.28 9.28Z\" fill=\"#e2e8f0\"/><path d=\"M8 18.08 L8.54 19.46 L9.92 20 L8.54 20.54 L8 21.92 L7.46 20.54 L6.08 20 L7.46 19.46Z\" fill=\"#e2e8f0\"/><clipPath id=\"tc110__ID__\"><path d=\"M8 30v42a12 12 0 0 0 24 0V30Z\"/></clipPath><rect x=\"6.5\" y=\"26\" width=\"27\" height=\"4\" rx=\"1.5\" fill=\"#94a3b8\"/><path d=\"M8 30v42a12 12 0 0 0 24 0V30Z\" fill=\"#ffffff\"/><rect x=\"8\" y=\"36\" width=\"24\" height=\"60\" fill=\"__FILL__\" clip-path=\"url(#tc110__ID__)\" class=\"liquid\"/><g clip-path=\"url(#tc110__ID__)\"><path d=\"M20 64 V34\" stroke=\"#1d7a52\" stroke-width=\"1.6\"/><ellipse cx=\"16\" cy=\"60\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(-25 16 60)\"/><ellipse cx=\"24\" cy=\"58\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(25 24 58)\"/><ellipse cx=\"16\" cy=\"55\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(-25 16 55)\"/><ellipse cx=\"24\" cy=\"53\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(25 24 53)\"/><ellipse cx=\"16\" cy=\"50\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(-25 16 50)\"/><ellipse cx=\"24\" cy=\"48\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(25 24 48)\"/><ellipse cx=\"16\" cy=\"45\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(-25 16 45)\"/><ellipse cx=\"24\" cy=\"43\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(25 24 43)\"/><ellipse cx=\"16\" cy=\"40\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(-25 16 40)\"/><ellipse cx=\"24\" cy=\"38\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(25 24 38)\"/><path d=\"M9.26 79.36 Q8.42 76 13.46 76.42 L23.54 76.42 Q27.740000000000002 75.16 28.58 78.94 Q22.7 80.62 9.26 79.36Z\" fill=\"#f3d9a4\" stroke=\"#7c4a12\" stroke-width=\"0.756\"/><path d=\"M26.06 76 L27.740000000000002 70.12 M27.740000000000002 76.42 L31.1 71.38\" stroke=\"#7c4a12\" stroke-width=\"0.84\" stroke-linecap=\"round\"/><circle cx=\"27.740000000000002\" cy=\"69.7\" r=\"1.092\" fill=\"#3b2208\"/><circle cx=\"31.268\" cy=\"70.96\" r=\"1.092\" fill=\"#3b2208\"/><circle cx=\"16.82\" cy=\"71.8\" r=\"6.3\" fill=\"#c98a3c\" stroke=\"#7c4a12\" stroke-width=\"0.84\"/><path d=\"M16.82 71.8 m-3.78 0 a3.78 3.78 0 1 1 3.78 3.78 a2.52 2.52 0 1 1 -2.52 -2.52 a1.26 1.26 0 1 1 1.26 1.26\" fill=\"none\" stroke=\"#7c4a12\" stroke-width=\"0.924\"/></g><path d=\"M8 30v42a12 12 0 0 0 24 0V30\" fill=\"none\" stroke=\"#16213a\" stroke-width=\"1.3\"/>", "111": "<rect x=\"0.0\" y=\"2\" width=\"40\" height=\"100\" rx=\"6\" fill=\"#fff4c7\" stroke=\"#f0d77a\"/><line x1=\"27.0\" y1=\"14.0\" x2=\"30.0\" y2=\"14.0\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><line x1=\"24.9\" y1=\"18.9\" x2=\"27.1\" y2=\"21.1\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><line x1=\"20.0\" y1=\"21.0\" x2=\"20.0\" y2=\"24.0\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><line x1=\"15.1\" y1=\"18.9\" x2=\"12.9\" y2=\"21.1\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><line x1=\"13.0\" y1=\"14.0\" x2=\"10.0\" y2=\"14.0\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><line x1=\"15.1\" y1=\"9.1\" x2=\"12.9\" y2=\"6.9\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><line x1=\"20.0\" y1=\"7.0\" x2=\"20.0\" y2=\"4.0\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><line x1=\"24.9\" y1=\"9.1\" x2=\"27.1\" y2=\"6.9\" stroke=\"#f59e0b\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><circle cx=\"20\" cy=\"14\" r=\"5\" fill=\"#ffd35c\" stroke=\"#f59e0b\" stroke-width=\"1\"/><clipPath id=\"tc111__ID__\"><path d=\"M8 30v42a12 12 0 0 0 24 0V30Z\"/></clipPath><rect x=\"6.5\" y=\"26\" width=\"27\" height=\"4\" rx=\"1.5\" fill=\"#94a3b8\"/><path d=\"M8 30v42a12 12 0 0 0 24 0V30Z\" fill=\"#ffffff\"/><rect x=\"8\" y=\"36\" width=\"24\" height=\"60\" fill=\"__FILL__\" clip-path=\"url(#tc111__ID__)\" class=\"liquid\"/><g clip-path=\"url(#tc111__ID__)\"><path d=\"M20 64 V34\" stroke=\"#1d7a52\" stroke-width=\"1.6\"/><ellipse cx=\"16\" cy=\"60\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(-25 16 60)\"/><ellipse cx=\"24\" cy=\"58\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(25 24 58)\"/><ellipse cx=\"16\" cy=\"55\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(-25 16 55)\"/><ellipse cx=\"24\" cy=\"53\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(25 24 53)\"/><ellipse cx=\"16\" cy=\"50\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(-25 16 50)\"/><ellipse cx=\"24\" cy=\"48\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(25 24 48)\"/><ellipse cx=\"16\" cy=\"45\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(-25 16 45)\"/><ellipse cx=\"24\" cy=\"43\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(25 24 43)\"/><ellipse cx=\"16\" cy=\"40\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(-25 16 40)\"/><ellipse cx=\"24\" cy=\"38\" rx=\"4\" ry=\"1.6\" fill=\"#4ade80\" stroke=\"#1d7a52\" stroke-width=\".6\" transform=\"rotate(25 24 38)\"/><path d=\"M9.26 79.36 Q8.42 76 13.46 76.42 L23.54 76.42 Q27.740000000000002 75.16 28.58 78.94 Q22.7 80.62 9.26 79.36Z\" fill=\"#f3d9a4\" stroke=\"#7c4a12\" stroke-width=\"0.756\"/><path d=\"M26.06 76 L27.740000000000002 70.12 M27.740000000000002 76.42 L31.1 71.38\" stroke=\"#7c4a12\" stroke-width=\"0.84\" stroke-linecap=\"round\"/><circle cx=\"27.740000000000002\" cy=\"69.7\" r=\"1.092\" fill=\"#3b2208\"/><circle cx=\"31.268\" cy=\"70.96\" r=\"1.092\" fill=\"#3b2208\"/><circle cx=\"16.82\" cy=\"71.8\" r=\"6.3\" fill=\"#c98a3c\" stroke=\"#7c4a12\" stroke-width=\"0.84\"/><path d=\"M16.82 71.8 m-3.78 0 a3.78 3.78 0 1 1 3.78 3.78 a2.52 2.52 0 1 1 -2.52 -2.52 a1.26 1.26 0 1 1 1.26 1.26\" fill=\"none\" stroke=\"#7c4a12\" stroke-width=\"0.924\"/></g><path d=\"M8 30v42a12 12 0 0 0 24 0V30\" fill=\"none\" stroke=\"#16213a\" stroke-width=\"1.3\"/>"};
+
+/* ============================== PROBLEMS ============================== */
+const PARTS=[
+ {k:'P1', label:'Purpose', title:'Purpose and background', min:5, icon:'<path d="M9 2.5h6M10 2.5v6L4.5 19a2 2 0 0 0 1.8 2.8h11.4A2 2 0 0 0 19.5 19L14 8.5v-6"/><path d="M7 15h10"/>'},
+ {k:'P2', label:'Hypothesis', title:'Hypothesis', min:5, icon:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z"/>'},
+ {k:'P3', label:'Experiment', title:'Run the experiment', min:12, icon:'<path d="M7 2.5h4M8 2.5v15a2 2 0 0 0 4 0v-15"/><path d="M13 2.5h4M14 2.5v15a2 2 0 0 0 4 0v-15"/><path d="M8 11h4M14 13h4"/>'},
+ {k:'P4', label:'Analysis', title:'Analysis', min:10, icon:'<path d="M3 21h18"/><rect x="5" y="13" width="3" height="8"/><rect x="10.5" y="7" width="3" height="14"/><rect x="16" y="10" width="3" height="11"/>'},
+ {k:'P5', label:'Conclusion', title:'Conclusion (CER)', min:8, icon:'<path d="M4 4h12l4 4v12H4z"/><path d="M8 11h8M8 15h6"/>'},
+ {k:'P6', label:'Grade', title:'Your grade', min:1, icon:'<rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4V2.5h6V4"/><path d="M8.5 13l2.5 2.5 4.5-5"/>'}
+];
+const ico=(i,s)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PARTS[i].icon}</svg>`;
+const PROBS=[];   // every problem: {id, part, max, score(), key()}
+
+function probShell(parent, part, num, q, pts){
+  const box=h('div',{class:'prob'}); parent.appendChild(box);
+  box.innerHTML=`<div class="pq"><span class="pnum">${num}.</span> ${q} <span class="pts">(${pts} pt${pts>1?'s':''})</span></div>`;
+  return box;
+}
+function actions(box, o){ // Hint + Check buttons + feedback
+  const row=h('div',{class:'btnrow'}); const hb=h('button',{class:'btn ghost small',type:'button'},'Hint'); const cb=h('button',{class:'btn primary small',type:'button'},'Check');
+  row.append(hb,cb); box.appendChild(row);
+  const hint=h('div',{class:'hintbox',hidden:true},'💡 '+o.hint); box.appendChild(hint);
+  const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'}); box.appendChild(fb);
+  hb.addEventListener('click',()=>{ hint.hidden=!hint.hidden; });
+  return {row,hb,cb,hint,fb};
+}
+const st=id=>S.p[id]||(S.p[id]={});
+/* Two tries per problem. Right on try 1 or 2 = full credit. Wrong twice = marked wrong (credit for parts right on try 2).
+   The correct answer is never shown. */
+function gradeTry(P,res,max){ const n=res.filter(Boolean).length; P.tries=(P.tries||0)+1;
+  if(n===max){ P.first=max; P.checked=true; P.right=true; }
+  else if(P.tries>=2){ P.first=n; P.checked=true; P.right=false; }
+  return n===max; }
+function showTry(ui,P,max,doneText){
+  if(P.checked&&P.right){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML=`<b>Correct!</b> ${doneText||''}`; }
+  else if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`<b>Marked wrong.</b> You earned ${P.first} of ${max} point${max>1?'s':''}. Ask your teacher if you'd like to try it again.`; }
+  else if(P.tries===1){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=max>1?'<b>Not quite.</b> Something isn\'t right yet. You have <b>one more try</b>.':'<b>Not quite.</b> You have <b>one more try</b>.'; }
+  else ui.fb.hidden=true;
+  if(ui.cb) ui.cb.textContent=P.checked?'Checked':(P.tries===1?'Check (last try)':'Check'); }
+
+/* ---------- drag onto a diagram (or into equation slots) ---------- */
+function dragProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.zones.length);
+  let fig;
+  if(o.equation){ fig=h('div',{class:'eq'}); box.appendChild(fig); }
+  else { fig=h('div',{class:'figwrap'}); fig.innerHTML=o.svg; box.appendChild(fig); }
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.chips.map((_,i)=>i)));
+  const zoneEls={};
+  const groupAns=g=>o.zones.filter(z=>z.group===g).map(z=>z.ans);
+  if(o.equation){ o.layout.forEach(item=>{ if(typeof item==='string'){ fig.appendChild(h('span',null,item)); } else { const z=o.zones[item]; const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans}); fig.appendChild(b); zoneEls[z.id]=b; } }); }
+  else o.zones.forEach(z=>{ const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans});
+    b.style.left=(z.x/o.vb[0]*100)+'%'; b.style.top=(z.y/o.vb[1]*100)+'%'; b.style.width=((z.w||130)/o.vb[0]*100)+'%'; fig.appendChild(b); zoneEls[z.id]=b; });
+  function placedChips(){ return new Set(Object.values(P.place)); }
+  function render(){
+    const used=placedChips();
+    pool.innerHTML='<div class="lbl">Tap a label, then tap a box (or drag it). Tap a filled box to take its label back.</div>';
+    order.forEach(ci=>{ if(used.has(ci)) return; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true'},o.chips[ci]); c.disabled=!!P.checked;
+      c.addEventListener('click',()=>{ sel=sel===ci?null:ci; render(); });
+      c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+      pool.appendChild(c); });
+    if(P.checked&&!pool.querySelector('.chip')) pool.hidden=true;
+    o.zones.forEach(z=>{ const b=zoneEls[z.id]; const ci=P.place[z.id];
+      b.className='zone'+(ci==null?' empty':' filled')+(P.checked?' locked':'');
+      if(ci==null) b.innerHTML=z.ph||'drop here';
+      else b.innerHTML=o.chips[ci];
+      b.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; ui.hb.disabled=!!P.checked&&false;
+    showTry(ui,P,o.zones.length,o.done);
+  }
+  o.zones.forEach(z=>{ const b=zoneEls[z.id];
+    const drop=ci=>{ if(P.checked) return; if(ci==null){ if(P.place[z.id]!=null){ delete P.place[z.id]; save(); render(); } return; }
+      for(const k in P.place) if(P.place[k]===ci) delete P.place[k];
+      P.place[z.id]=ci; sel=null; save(); render(); };
+    b.addEventListener('click',()=>drop(sel));
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  ui.cb.addEventListener('click',()=>{
+    if(P.checked) return;
+    const empty=o.zones.filter(z=>P.place[z.id]==null).length;
+    if(empty){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill every box before you check. ${empty} still empty.`; return; }
+    const res={}; const usedInGroup={};
+    o.zones.forEach(z=>{ const t=o.chips[P.place[z.id]];
+      if(z.group){ const ans=groupAns(z.group); usedInGroup[z.group]=usedInGroup[z.group]||[]; const ok=ans.includes(t)&&!usedInGroup[z.group].includes(t); if(ok) usedInGroup[z.group].push(t); res[z.id]=ok; }
+      else res[z.id]=t===z.ans; });
+    gradeTry(P,Object.values(res),o.zones.length); save(); cloudSave(true); render(); refresh();
+  });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.zones.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- sort into bins ---------- */
+function binProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.items.length);
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const bins=h('div',{class:'bins',style:`grid-template-columns:repeat(${o.bins.length},minmax(0,1fr))`}); box.appendChild(bins);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.items.map((_,i)=>i)));
+  const binEls={};
+  o.bins.forEach(bn=>{ const b=h('div',{class:'bin',role:'button',tabindex:'0'},`<h4>${bn.label}</h4><div class="bchips"></div>`); bins.appendChild(b); binEls[bn.k]=b;
+    const drop=ci=>{ if(P.checked||ci==null) return; P.place[ci]=bn.k; sel=null; save(); render(); };
+    b.addEventListener('click',e=>{ if(e.target.closest('.chip')) return; drop(sel); });
+    b.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); drop(sel); } });
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  const binLabel=k=>(o.bins.find(b=>b.k===k)||{}).label;
+  function chipEl(ci,inBin){ const it=o.items[ci]; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true','data-key':binLabel(it.k)},it.t);
+    
+    c.disabled=!!P.checked;
+    c.addEventListener('click',e=>{ if(P.checked) return; if(inBin){ e.stopPropagation(); if(sel!=null&&sel!==ci){ P.place[sel]=P.place[ci]; sel=null; save(); render(); return; } delete P.place[ci]; save(); render(); return; } sel=sel===ci?null:ci; render(); });
+    c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+    return c; }
+  function render(){
+    pool.innerHTML='<div class="lbl">Tap an item, then tap the box it belongs in (or drag it). Tap a sorted item to take it back.</div>';
+    order.forEach(ci=>{ if(P.place[ci]==null) pool.appendChild(chipEl(ci,false)); });
+    pool.hidden=!!P.checked;
+    o.bins.forEach(bn=>{ const holder=$('.bchips',binEls[bn.k]); holder.innerHTML=''; order.forEach(ci=>{ if(P.place[ci]===bn.k) holder.appendChild(chipEl(ci,true)); }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,o.items.length,o.done);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const left=o.items.filter((_,i)=>P.place[i]==null).length;
+    if(left){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Sort every item before you check. ${left} still left.`; return; }
+    const res=o.items.map((it,i)=>P.place[i]===it.k); gradeTry(P,res,o.items.length); save(); cloudSave(true); render(); refresh(); });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.items.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- choice problems: one, two-part, or select-all ---------- */
+function choiceProblem(parent, o){   // o.parts: [{q, opts, ans (index or array for select-all)}]
+  const P=st(o.id); P.pick=P.pick||{};
+  const max=o.parts.length;
+  const box=probShell(parent,o.part,o.num,o.q,max);
+  const groups=[];
+  o.parts.forEach((pt,pi)=>{
+    const multi=Array.isArray(pt.ans);
+    if(pt.q) box.insertAdjacentHTML('beforeend',`<div style="margin:10px 0 4px">${pt.q}${multi?' <span class="small muted">(Select all that apply.)</span>':''}</div>`);
+    const ordKey=o.id+'_'+pi; const order=S.ord[ordKey]||(S.ord[ordKey]=shuffle(pt.opts.map((_,i)=>i)));
+    const wrap=h('div',{class:'opts'}); box.appendChild(wrap);
+    const btns={};
+    order.forEach((oi,pos)=>{ const correct=multi?pt.ans.includes(oi):oi===pt.ans;
+      const b=h('button',{class:'opt'+(multi?' multi':''),type:'button'},`<span class="L">${'ABCDEF'[pos]}</span><span>${pt.opts[oi]}</span>`); if(correct) b.dataset.key='1';
+      b.addEventListener('click',()=>{ if(P.checked) return; if(multi){ const s=new Set(P.pick[pi]||[]); s.has(oi)?s.delete(oi):s.add(oi); P.pick[pi]=[...s]; } else P.pick[pi]=oi; save(); paint(); });
+      wrap.appendChild(b); btns[oi]=b; });
+    groups.push({pt,multi,btns});
+  });
+  const ui=actions(box,o);
+  function gradePart(g,pi){ const pk=P.pick[pi]; if(g.multi){ const s=new Set(pk||[]); return g.pt.ans.length===s.size&&g.pt.ans.every(a=>s.has(a)); } return pk===g.pt.ans; }
+  function paint(){
+    groups.forEach((g,pi)=>{ const pk=P.pick[pi];
+      Object.entries(g.btns).forEach(([oi,b])=>{ oi=+oi; const picked=g.multi?(pk||[]).includes(oi):pk===oi; const correct=g.multi?g.pt.ans.includes(oi):oi===g.pt.ans;
+        b.className='opt'+(g.multi?' multi':'')+(picked?' sel':'')+(P.checked&&P.right&&picked?' ok':''); b.disabled=!!P.checked; }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,max,o.why);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const blank=groups.some((g,pi)=>g.multi?!(P.pick[pi]||[]).length:P.pick[pi]==null);
+    if(blank){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Answer every part before you check.'; return; }
+    gradeTry(P,groups.map((g,pi)=>gradePart(g,pi)),max); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- typed blanks (two tries, like every problem) ---------- */
+function typedProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.blanks.length);
+  const inputs=o.blanks.map((bl,i)=>{ const row=h('div',{class:'brow'}); row.innerHTML=`${bl.before} <input class="blank" type="text" aria-label="${esc(strip(bl.before))}" data-key="${esc(bl.show)}"><span class="keytxt">${bl.show}</span> ${bl.after||''}`; box.appendChild(row);
+    const inp=$('input',row); inp.value=P.val[i]||''; inp.addEventListener('input',()=>{ P.val[i]=inp.value; save(); }); return inp; });
+  const ui=actions(box,o);
+  const ok=(bl,v)=>{ v=String(v||'').trim().toLowerCase(); if(bl.num){ const n=parseFloat(v.replace(/[\u2212\u2013\u2014]/g,'-').replace(/[^0-9.\-]/g,'')); return !isNaN(n)&&n>=bl.num[0]&&n<=bl.num[1]; } return bl.accept.some(a=>v.replace(/\s+/g,' ')===a); };
+  function paint(){ inputs.forEach(inp=>{ inp.classList.remove('ok','no'); if(P.checked&&P.right) inp.classList.add('ok'); inp.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; showTry(ui,P,o.blanks.length,''); }
+  ui.cb.addEventListener('click',()=>{
+    if(inputs.some(inp=>!inp.value.trim())){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Fill in every blank before you check.'; return; }
+    if(P.checked) return;
+    const res=o.blanks.map((bl,i)=>ok(bl,inputs[i].value));
+    gradeTry(P,res,o.blanks.length); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.blanks.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- written answer, scored by key ideas (two tries, like every problem) ---------- */
+function writtenProblem(parent, o){
+  const P=st(o.id); if(P.val==null) P.val='';
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const ta=h('textarea',{class:'wtext',rows:'5','aria-label':'Your answer','data-key':o.model}); ta.value=P.val; box.appendChild(ta);
+  box.appendChild(h('div',{class:'wkey'},'<b>Key:</b> '+o.model));
+  if(o.bank){ const wb=h('div',{class:'wbank2'}); wb.innerHTML='<b>Word bank</b> <span class="small muted">(tap a word to add it)</span><br>'+o.bank.map(w=>`<button type="button" class="wchip">${w}</button>`).join('');
+    box.appendChild(wb);
+    wb.querySelectorAll('.wchip').forEach(c=>c.addEventListener('click',()=>{ if(ta.disabled) return; const w=c.textContent; const a=ta.selectionStart??ta.value.length, b=ta.selectionEnd??ta.value.length;
+      const before=ta.value.slice(0,a), after=ta.value.slice(b); const pre=(before&&!/\s$/.test(before))?' ':''; const ins=pre+w+' ';
+      ta.value=before+ins+after; ta.focus(); const p=a+ins.length; ta.setSelectionRange(p,p); ta.dispatchEvent(new Event('input',{bubbles:true})); })); }
+  ta.addEventListener('input',()=>{ P.val=ta.value; save(); });
+  const ui=actions(box,o);
+  const grade=()=>{ const t=ta.value.toLowerCase(); const hits=o.groups.filter(g=>g[1].test(t)).length; const n=Math.min(o.pts,hits); return Array.from({length:o.pts},(_,i)=>i<n); };
+  function paint(){ ta.disabled=!!P.checked; ui.cb.disabled=!!P.checked; showTry(ui,P,o.pts,o.why); }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(ta.value.trim().split(/\s+/).length<5){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Write a full answer (at least one complete sentence) before you check.'; return; }
+    gradeTry(P,grade(),o.pts); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- predictions: saved once, completion credit, never marked wrong ---------- */
+function predictProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.rows.length);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb predtab"><tr><th>Tube</th><th>Snail?</th><th>Elodea?</th><th>Light or dark</th><th>My prediction</th></tr>${o.rows.map((r,i)=>`<tr><td><b>${r.id}</b></td><td>${r.sn?'yes':'no'}</td><td>${r.pl?'yes':'no'}</td><td>${r.li?'☀ light':'☾ dark'}</td><td><select data-i="${i}" aria-label="Prediction for tube ${r.id}"><option value="">choose…</option>${o.choices.map(c=>`<option>${c}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select')];
+  sels.forEach((sl,i)=>{ sl.value=P.val[i]||''; sl.addEventListener('change',()=>{ P.val[i]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Lock in my predictions';
+  function paint(){ sels.forEach(sl=>sl.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Predictions saved.</b> You\'ll compare them with your results later. The simulator on page 3 is now unlocked.'; ui.cb.textContent='Predictions locked'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(sels.some(sl=>!sl.value)){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Choose a prediction for every tube first.'; return; }
+    if(!confirm('Lock in your predictions? You can\'t change them after this.')) return;
+    P.first=o.rows.length; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.labRefresh) labRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.rows.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ============================== WORKSHEET CONTENT ============================== */
+/* ===== lab data (simulated) ===== */
+const BTB={blue:'#2f6fdc', start:'#27a3a0', green:'#6cbf3a', yellow:'#e3c628'};
+const SETUPS=[
+  {id:'1',sn:0,pl:0,li:1},{id:'2',sn:0,pl:0,li:0},{id:'3',sn:1,pl:0,li:1},{id:'4',sn:1,pl:0,li:0},
+  {id:'5',sn:0,pl:1,li:1},{id:'6',sn:0,pl:1,li:0},{id:'7',sn:1,pl:1,li:1},{id:'8',sn:1,pl:1,li:0}];
+const CO2END={'000':100,'001':100,'100':160,'101':160,'010':125,'011':55,'110':185,'111':98};  // key: snail, plant, light
+const setupKey=s=>`${s.sn}${s.pl}${s.li}`;
+function colorFor(v){ return v<75?['Blue',BTB.blue]:v<=115?['Blue-green (no change)',BTB.start]:v<=140?['Green',BTB.green]:['Yellow',BTB.yellow]; }
+function mix(a,b,t){ const pa=[1,3,5].map(i=>parseInt(a.slice(i,i+2),16)), pb=[1,3,5].map(i=>parseInt(b.slice(i,i+2),16)); return '#'+pa.map((x,i)=>Math.round(x+(pb[i]-x)*t).toString(16).padStart(2,'0')).join(''); }
+const tubeSVG=(s,fill,uid)=>`<svg viewBox="0 0 40 104" role="img" aria-label="Tube ${s.id}: ${s.sn?'snail':''}${s.sn&&s.pl?' and ':''}${s.pl?'Elodea':''}${!s.sn&&!s.pl?'BTB only':''}, ${s.li?'light':'dark'}">${TUBES[setupKey(s)].replace(/__FILL__/g,fill).replace(/__ID__/g,uid)}</svg>`;
+function setupName(s){ return (s.sn&&s.pl?'Snail + Elodea':s.sn?'Snail only':s.pl?'Elodea only':'BTB only')+(s.li?', light':', dark'); }
+
+function buildContent(sec){
+  let n=0; const num=()=>++n;
+  const say=(s,html)=>s.insertAdjacentHTML('beforeend',html);
+  /* ---------- 1. Purpose and background ---------- */
+  say(sec[0],`<div class="phenbox"><b>Why a virtual lab?</b> Elodea is a water plant scientists use for this experiment, but California restricts it because it can take over lakes and rivers. So today you'll run the experiment in a simulator that works the same way the real lab does.</div>
+    <p><b>Question:</b> How do a water plant (Elodea) and a water snail change the amount of carbon dioxide (CO₂) in the water, in the light and in the dark?</p>
+    <p><b>How we measure CO₂.</b> Each tube holds water with a few drops of <b>bromothymol blue (BTB)</b>, a color indicator. Every tube starts <b>blue-green</b>. BTB changes color when the amount of CO₂ in the water changes:</p>
+    <div class="btbkey"><span style="background:${BTB.blue}"></span> <b>blue</b> = less CO₂ than at the start &nbsp; <span style="background:${BTB.start}"></span> <b>blue-green</b> = no change &nbsp; <span style="background:${BTB.green}"></span> <b>green</b> = a bit more CO₂ &nbsp; <span style="background:${BTB.yellow}"></span> <b>yellow</b> = a lot more CO₂</div>
+    <p>Each tube also has a <b>CO₂ sensor</b>. It reads <b>100</b> at the start. Higher numbers mean more CO₂; lower numbers mean less. Each tube is <b>sealed</b>, so no gas gets in or out.</p>`);
+  choiceProblem(sec[0],{id:'l1', part:'P1', num:num(), q:'Check your understanding of BTB.',
+    parts:[{q:'<b>Part A:</b> A tube turns <b>yellow</b>. What happened to the CO₂?',opts:['It went up','It went down','It stayed the same','BTB doesn\'t show CO₂'],ans:0},
+           {q:'<b>Part B:</b> A tube turns <b>blue</b>. What happened to the CO₂?',opts:['It went down','It went up','It stayed the same','The tube got colder'],ans:0}],
+    hint:'Re-read the color key above.', why:'Yellow = more CO₂; blue = less CO₂.'});
+  choiceProblem(sec[0],{id:'l2', part:'P1', num:num(), q:'Why are the tubes sealed?',
+    parts:[{opts:['So the only CO₂ changes come from what is inside the tube','So the snail can\'t escape','So the light can\'t get in','So the BTB doesn\'t evaporate'],ans:0}], hint:'What would happen if air could get in?', why:'Sealing keeps outside air out, so any CO₂ change comes from the living things inside.'});
+  /* ---------- 2. Hypothesis ---------- */
+  say(sec[1],`<p>Before you run anything, predict what each tube's BTB will look like after <b>24 hours</b>. Use what you know about photosynthesis and cellular respiration. There are no wrong predictions: you get full credit for making them, but you <b>can't change them</b> after you lock them in.</p>`);
+  predictProblem(sec[1],{id:'pred', part:'P2', num:num(), q:'Predict each tube\'s color after 24 hours.', rows:SETUPS, choices:['Blue','Blue-green (no change)','Green','Yellow'], hint:''});
+  writtenProblem(sec[1],{id:'hyp', part:'P2', num:num(), q:'Write a hypothesis for the Elodea tubes in the form <b>"If… then… because…"</b>.', pts:3, bank:['If', 'then', 'because', 'Elodea', 'light', 'dark', 'photosynthesis', 'cellular respiration', 'carbon dioxide', 'BTB', 'blue', 'yellow'],
+    groups:[['If… then… form',/\bif\b[\s\S]*\bthen\b/],['light vs. dark',/light|dark|sun|lamp/],['a reason using photosynthesis or respiration',/photosynth|respir/],['what happens to CO₂ or the BTB color',/co2|co₂|carbon dioxide|blue|yellow|green|color/]],
+    model:'If Elodea is kept in the light, then the BTB will turn blue because photosynthesis uses up CO₂; if it is kept in the dark, the BTB will turn green or yellow because only respiration happens, which adds CO₂.',
+    hint:'Say what you will change (light or dark), what you think will happen to the BTB, and why, using photosynthesis or respiration.', why:'A testable hypothesis names the change, the predicted result, and the reason.'});
+  /* ---------- 3. Experiment (simulator) ---------- */
+  const lab=h('div',{class:'labsim'}); sec[2].appendChild(lab);
+  const data=h('div',{class:'labdata'}); sec[2].appendChild(data);
+  const SIM=st('sim'); SIM.runs=SIM.runs||{};
+  lab.innerHTML=`<div class="locknote fb info" id="simLock"><b>Locked.</b> Lock in your predictions on page 2 first.</div>
+    <div class="simwrap" id="simWrap">
+      <div class="simleft"><div id="simTube" class="bigtube"></div><div class="clock" id="simClock">0 h</div></div>
+      <div class="simright">
+        <h4 style="margin:0 0 6px">Build a tube</h4>
+        <label class="tg"><input type="checkbox" id="sSnail"> Add a snail</label>
+        <label class="tg"><input type="checkbox" id="sPlant"> Add an Elodea sprig</label>
+        <div class="btnrow" style="margin:8px 0"><button class="btn ghost small" id="sLight" type="button">☀ Light</button><button class="btn ghost small" id="sDark" type="button">☾ Dark</button></div>
+        <div class="btnrow"><button class="btn primary" id="sRun" type="button">Run 24 hours</button></div>
+        <div class="sensor">CO₂ sensor: <b id="sCO2">100</b></div>
+        <div class="fb info" id="sOut" style="min-height:2.4em">Choose a setup, then run it.</div>
+        <p class="small muted" id="sCount"></p>
+      </div>
+    </div>
+    <h4 style="margin:14px 0 6px">My data table</h4>
+    <div class="wide"><table class="nb" id="sTable"><thead><tr><th>Tube</th><th>Setup</th><th>BTB color after 24 h</th><th>CO₂ start</th><th>CO₂ after 24 h</th></tr></thead><tbody></tbody></table></div>
+    <div id="sChart" style="margin-top:12px"></div>`;
+  const cur={sn:0,pl:0,li:1}; let running=false;
+  const $l=q=>lab.querySelector(q);
+  const curSetup=()=>SETUPS.find(s=>s.sn===cur.sn&&s.pl===cur.pl&&s.li===cur.li);
+  function drawTube(fill){ $l('#simTube').innerHTML=tubeSVG(curSetup(),fill,'big'); }
+  function table(){
+    const done=SETUPS.filter(s=>SIM.runs[s.id]!=null);
+    $l('#sTable tbody').innerHTML=done.map(s=>{ const v=SIM.runs[s.id]; const [nm,c]=colorFor(v); return `<tr><td><b>${s.id}</b></td><td>${setupName(s)}</td><td><span class="dot" style="background:${c}"></span>${nm}</td><td>100</td><td>${v}</td></tr>`; }).join('')||'<tr><td colspan="5" class="muted">No runs yet.</td></tr>';
+    $l('#sCount').textContent=`${done.length} of 8 setups run.`+(done.length<8?' Run all 8 to unlock the data questions below.':' All 8 done!');
+    // bar graph of CO2 after 24 h
+    if(done.length){ const W=760,H=270,L=60,B=220,T=34,bw=60,gap=(W-L-20-8*bw)/8, Y=v=>B-v/200*(B-T);
+      let g=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Bar graph of CO2 sensor readings after 24 hours for each tube run"><rect width="${W}" height="${H}" rx="14" fill="#f8fafc"/>`;
+      for(let v=0;v<=200;v+=50) g+=`<line x1="${L}" x2="${W-15}" y1="${Y(v)}" y2="${Y(v)}" stroke="#dde3ee"/><text x="${L-8}" y="${Y(v)+4}" text-anchor="end" font-size="12" fill="#5b6b86">${v}</text>`;
+      g+=`<line x1="${L}" x2="${W-15}" y1="${Y(100)}" y2="${Y(100)}" stroke="#16213a" stroke-dasharray="6 4"/><line x1="${L+6}" x2="${L+36}" y1="12" y2="12" stroke="#16213a" stroke-dasharray="6 4"/><text x="${L+42}" y="16" font-size="12" fill="#16213a">dashed line = starting CO₂ (100)</text>`;
+      SETUPS.forEach((s,i)=>{ const x=L+gap/2+i*(bw+gap); const v=SIM.runs[s.id]; g+=`<text x="${x+bw/2}" y="${B+18}" text-anchor="middle" font-size="13" font-weight="700" fill="#16213a">Tube ${s.id}</text>`;
+        if(v!=null){ const c=colorFor(v)[1]; g+=`<rect x="${x}" y="${Y(v)}" width="${bw}" height="${B-Y(v)}" rx="4" fill="${c}"/><text x="${x+bw/2}" y="${Y(v)-6}" text-anchor="middle" font-size="12" fill="#16213a">${v}</text>`; } });
+      g+=`<line x1="${L}" x2="${W-15}" y1="${B}" y2="${B}" stroke="#16213a"/><text x="18" y="${(T+B)/2}" text-anchor="middle" font-size="12" fill="#16213a" transform="rotate(-90 18 ${(T+B)/2})">CO₂ after 24 h</text></svg>`;
+      $l('#sChart').innerHTML=g; } else $l('#sChart').innerHTML='';
+    data.hidden=done.length<8;
+  }
+  function sync(){ $l('#sSnail').checked=!!cur.sn; $l('#sPlant').checked=!!cur.pl; $l('#sLight').classList.toggle('on',!!cur.li); $l('#sDark').classList.toggle('on',!cur.li);
+    if(!running){ const s=curSetup(); const v=SIM.runs[s.id]; drawTube(v!=null?colorFor(v)[1]:BTB.start); $l('#sCO2').textContent=v!=null?v:100; $l('#simClock').textContent=v!=null?'24 h':'0 h';
+      $l('#sOut').innerHTML=v!=null?`<b>Tube ${s.id}</b> (${setupName(s)}) was already run. Its result is in your data table.`:`This is <b>Tube ${s.id}</b>: ${setupName(s)}. Press <b>Run 24 hours</b>.`; } }
+  const lockCtl=on=>['#sSnail','#sPlant','#sLight','#sDark','#sRun'].forEach(q=>$l(q).disabled=on);
+  $l('#sSnail').addEventListener('change',e=>{ cur.sn=e.target.checked?1:0; sync(); });
+  $l('#sPlant').addEventListener('change',e=>{ cur.pl=e.target.checked?1:0; sync(); });
+  $l('#sLight').addEventListener('click',()=>{ cur.li=1; sync(); });
+  $l('#sDark').addEventListener('click',()=>{ cur.li=0; sync(); });
+  $l('#sRun').addEventListener('click',()=>{ if(running) return; const s=curSetup(); const end=CO2END[setupKey(s)]; running=true; lockCtl(true);
+    const t0=performance.now(), D=window.matchMedia('(prefers-reduced-motion: reduce)').matches?200:3600;
+    const endC=colorFor(end)[1];
+    (function step(now){ const f=Math.min(1,(now-t0)/D); const v=Math.round(100+(end-100)*f);
+      drawTube(mix(BTB.start,endC,f)); $l('#sCO2').textContent=v; $l('#simClock').textContent=Math.round(24*f)+' h';
+      if(f<1) requestAnimationFrame(step);
+      else{ SIM.runs[s.id]=end; save(); cloudSave(true); running=false; lockCtl(false);
+        $l('#sOut').innerHTML=`<b>Tube ${s.id} after 24 hours:</b> the BTB is <b>${colorFor(end)[0].toLowerCase()}</b> and the CO₂ sensor reads <b>${end}</b>.`; table(); refresh(); } })(t0);
+  });
+  window.labRefresh=()=>{ const ok=!!(st('pred').checked); $l('#simLock').hidden=ok; $l('#simWrap').classList.toggle('off',!ok); lockCtl(!ok); if(ok) sync(); };
+  labRefresh(); table(); sync(); labRefresh();
+  say(data,`<h3 style="margin:18px 0 6px">Record your data</h3><p class="small muted">Use your data table and graph.</p>`);
+  binProblem(data,{id:'d1', part:'P3', num:num(), q:'Sort each tube by the color its BTB turned after 24 hours.',
+    bins:[{k:'b',label:'Blue'},{k:'n',label:'Blue-green (no change)'},{k:'g',label:'Green'},{k:'y',label:'Yellow'}],
+    items:SETUPS.map(s=>({t:'Tube '+s.id+': '+setupName(s), k:{'Blue':'b','Blue-green (no change)':'n','Green':'g','Yellow':'y'}[colorFor(CO2END[setupKey(s)])[0]]})),
+    hint:'Copy each tube\'s color from your data table.', done:'Your color data is recorded.'});
+  typedProblem(data,{id:'d2', part:'P3', num:num(), q:'Record the CO₂ sensor readings after 24 hours.',
+    blanks:[{before:'Tube 3 (snail only, light):',after:'',num:[160,160],show:'160'},{before:'Tube 5 (Elodea only, light):',after:'',num:[55,55],show:'55'},{before:'Tube 6 (Elodea only, dark):',after:'',num:[125,125],show:'125'},{before:'Tube 8 (snail + Elodea, dark):',after:'',num:[185,185],show:'185'}],
+    hint:'Read the "CO₂ after 24 h" column of your data table.'});
+  typedProblem(data,{id:'d3', part:'P3', num:num(), q:'Calculate the <b>change</b> in CO₂ (after − start). Use a minus sign if it went down.',
+    blanks:[{before:'Tube 3 (snail, light): change =',after:'',num:[60,60],show:'60'},{before:'Tube 5 (Elodea, light): change =',after:'',num:[-45,-45],show:'-45'},{before:'Tube 6 (Elodea, dark): change =',after:'',num:[25,25],show:'25'}],
+    hint:'Every tube started at 100. Subtract 100 from the reading after 24 hours.'});
+  /* ---------- 4. Analysis ---------- */
+  choiceProblem(sec[3],{id:'a1', part:'P4', num:num(), q:'Variables and controls.',
+    parts:[{q:'<b>Part A:</b> Which tubes are the <b>controls</b>?',opts:['Tubes 1 and 2 (BTB only)','Tubes 3 and 4 (snail only)','Tubes 7 and 8 (snail + Elodea)','There are no controls'],ans:0},
+           {q:'<b>Part B:</b> Why do we need them?',opts:['To show the BTB doesn\'t change by itself in light or dark','To give the snails more room','To make the Elodea grow faster','To add extra CO₂'],ans:0},
+           {q:'<b>Part C:</b> Which are the <b>independent</b> variables (what we changed)?',opts:['Light vs. dark, and which organisms are in the tube','The BTB color','The CO₂ reading','The size of the tube'],ans:0},
+           {q:'<b>Part D:</b> What is the <b>dependent</b> variable (what we measured)?',opts:['The amount of CO₂ (BTB color and sensor reading)','Light vs. dark','The number of snails','How long we waited'],ans:0}],
+    hint:'Controls have nothing living in them. Independent = what you change. Dependent = what you measure.', why:'Tubes 1–2 are controls; light and organisms are independent variables; CO₂ (color and sensor) is dependent.'});
+  choiceProblem(sec[3],{id:'a2', part:'P4', num:num(), q:'Explain the Elodea tubes.',
+    parts:[{q:'<b>Part A:</b> Why did tube 5 (Elodea, light) turn blue?',opts:['Photosynthesis used up CO₂ faster than respiration made it','The Elodea did only respiration','Light turns BTB blue by itself','The Elodea made extra CO₂'],ans:0},
+           {q:'<b>Part B:</b> Why did tube 6 (Elodea, dark) turn green?',opts:['In the dark, the Elodea did only cellular respiration, which added CO₂','The Elodea did extra photosynthesis in the dark','The dark made the water warmer','The BTB broke'],ans:0}],
+    hint:'Which process needs light? Which one never stops?', why:'Light: photosynthesis outpaces respiration (CO₂ down). Dark: only respiration (CO₂ up).'});
+  choiceProblem(sec[3],{id:'a3', part:'P4', num:num(), q:'Explain the snail tubes.',
+    parts:[{q:'<b>Part A:</b> Why did tubes 3 and 4 (snail only) both turn yellow?',opts:['Snails do only cellular respiration, in light and dark, so they always add CO₂','Snails do photosynthesis in the light','Light makes snails give off oxygen','Snails don\'t affect CO₂'],ans:0},
+           {q:'<b>Part B:</b> Why did light vs. dark make <b>no difference</b> for the snail?',opts:['Snails have no chloroplasts, so they can\'t do photosynthesis','Snails sleep in the dark','The snail tubes weren\'t sealed','Snails make glucose from light'],ans:0}],
+    hint:'Does a snail have chloroplasts?', why:'Animals only respire, so light doesn\'t change what a snail does to CO₂.'});
+  choiceProblem(sec[3],{id:'a4', part:'P4', num:num(), q:'Explain the tubes with both a snail and Elodea.',
+    parts:[{q:'<b>Part A:</b> Why did tube 7 (snail + Elodea, light) barely change?',opts:['The Elodea\'s photosynthesis used up about as much CO₂ as the snail and plant made by respiration','Neither organism did anything','The light blocked respiration','The BTB stopped working'],ans:0},
+           {q:'<b>Part B:</b> Why did tube 8 (snail + Elodea, dark) have the most CO₂ of all?',opts:['Both organisms did respiration and nothing did photosynthesis to use the CO₂','The snail did photosynthesis in the dark','The Elodea made oxygen in the dark','Dark water holds more CO₂'],ans:0}],
+    hint:'Add up who is making CO₂ and who (if anyone) is using it.', why:'In light the two processes balance out; in the dark, two organisms respire and nothing removes CO₂.'});
+  choiceProblem(sec[3],{id:'a5', part:'P4', num:num(), q:'Which statements does your data support?',
+    parts:[{q:'Select all that apply.',opts:['Plants do photosynthesis only in the light','Plants do cellular respiration in both light and dark','Animals do photosynthesis in the light','Photosynthesis and cellular respiration can balance each other out'],ans:[0,1,3]}],
+    hint:'Compare Elodea in light vs. dark, and the snail + Elodea tube in the light.', why:'Elodea used CO₂ only in light but added it in the dark; with a snail in the light, the two processes balanced.'});
+  writtenProblem(sec[3],{id:'a6', part:'P4', num:num(), q:'Compare your <b>predictions</b> (page 2) with your <b>results</b>. Which tube surprised you the most, and why do you think it turned out that way?', pts:2, bank:['I predicted', 'tube', 'but', 'it turned', 'because', 'photosynthesis', 'cellular respiration', 'carbon dioxide', 'balanced'],
+    groups:[['names a tube or setup',/tube\s*\d|snail|elodea|plant|light|dark/],['explains with photosynthesis, respiration, or CO₂',/photosynth|respir|co2|co₂|carbon dioxide|oxygen/]],
+    model:'I predicted tube 7 (snail + Elodea in the light) would turn yellow, but it stayed blue-green because the Elodea\'s photosynthesis used up about as much CO₂ as the snail and plant made by respiration.',
+    hint:'Name the tube, say what you predicted and what happened, and explain it using photosynthesis, respiration, or CO₂.', why:'Comparing predictions to data is how scientists revise their thinking.'});
+  /* ---------- 5. Conclusion ---------- */
+  say(sec[4],`<p>Write a <b>claim–evidence–reasoning</b> conclusion that answers the lab question: <i>How do a water plant and a water snail change the CO₂ in the water, in the light and in the dark?</i></p>`);
+  writtenProblem(sec[4],{id:'c1', part:'P5', num:num(), q:'<b>Claim:</b> answer the lab question in one sentence.', pts:2, bank:['In the light', 'In the dark', 'Elodea', 'snail', 'lowers', 'adds', 'carbon dioxide', 'CO₂'],
+    groups:[['the plant removes CO₂ in the light',/(elodea|plant)[\s\S]{0,80}(light|sun)[\s\S]{0,80}(less|lower|decreas|remov|use|blue|down)|(light|sun)[\s\S]{0,80}(elodea|plant)[\s\S]{0,80}(less|lower|decreas|remov|use|blue|down)/],
+            ['respiration adds CO₂ (snail always, plant in the dark)',/(snail|dark|night)[\s\S]{0,80}(more|increas|add|higher|yellow|green|up)/]],
+    model:'In the light, Elodea lowers the CO₂ in the water, but in the dark the Elodea and the snail both add CO₂.',
+    hint:'Say what the plant does in the light, and what the snail (and the plant in the dark) do.', why:'Plants remove CO₂ only in light; respiration by snails (always) and plants (in the dark) adds CO₂.'});
+  writtenProblem(sec[4],{id:'c2', part:'P5', num:num(), q:'<b>Evidence:</b> give at least two pieces of data (colors or CO₂ numbers) that support your claim.', pts:2, bank:['Tube', 'turned', 'blue', 'green', 'yellow', 'CO₂', 'dropped', 'rose', 'from', 'to'],
+    groups:[['uses a color',/blue|yellow|green/],['uses a CO₂ number',/\b(55|60|98|100|125|160|185|-?45|25)\b/]],
+    model:'Tube 5 (Elodea, light) turned blue and its CO₂ dropped from 100 to 55. Tube 3 (snail) turned yellow with CO₂ rising to 160, and tube 6 (Elodea, dark) turned green at 125.',
+    hint:'Quote specific tubes with their BTB color and CO₂ reading.', why:'Good evidence uses specific numbers and observations from the data.'});
+  writtenProblem(sec[4],{id:'c3', part:'P5', num:num(), q:'<b>Reasoning:</b> explain <i>why</i> your evidence supports your claim, using photosynthesis and cellular respiration.', pts:3, bank:['photosynthesis', 'cellular respiration', 'uses', 'releases', 'carbon dioxide', 'needs light', 'all the time', 'so'],
+    groups:[['photosynthesis uses CO₂',/photosynth[\s\S]{0,80}(co2|co₂|carbon dioxide)|(co2|co₂|carbon dioxide)[\s\S]{0,80}photosynth/],['respiration releases CO₂',/respir[\s\S]{0,80}(co2|co₂|carbon dioxide|release|give|add|make)|(co2|co₂|carbon dioxide)[\s\S]{0,80}respir/],['photosynthesis needs light',/light|sun|dark/]],
+    model:'Photosynthesis uses CO₂ but needs light, so in the light the Elodea removed CO₂ and the BTB turned blue. Cellular respiration releases CO₂ and happens all the time, so the snail (and the Elodea in the dark) added CO₂ and the BTB turned green or yellow.',
+    hint:'Cover three ideas: photosynthesis uses CO₂, respiration releases CO₂, and photosynthesis only happens in light.', why:'Photosynthesis (light only) removes CO₂; respiration (always) adds it.'});
+}
+
+/* ============================== BUILD / SCORE ============================== */
+function scoreAll(){ const parts=PARTS.slice(0,-1).map(p=>({k:p.k,label:p.label,got:0,max:0})); PROBS.forEach(pr=>{ const pt=parts.find(x=>x.k===pr.part); pt.got+=pr.score(); pt.max+=pr.max; });
+  return {parts, total:parts.reduce((a,b)=>a+b.got,0), max:parts.reduce((a,b)=>a+b.max,0)}; }
+function build(){
+  PROBS.length=0; const ws=$('#ws'); ws.innerHTML='';
+  $('#nav').innerHTML=PARTS.map((pt,i)=>`<button class="ntile" type="button" data-i="${i}" aria-label="${pt.title}"><span class="ic">${ico(i,22)}</span><span class="nm">${pt.label}</span></button>`).join('');
+  $$('#nav .ntile').forEach(b=>b.addEventListener('click',()=>showPart(+b.dataset.i)));
+  const secs=PARTS.map((pt,i)=>{ const el=h('section',{class:'sec',id:'part'+i}); const last=i===PARTS.length-1;
+    el.innerHTML=`<div class="sechead"><div class="badge"><span class="z">${i+1}</span>${ico(i,34)}</div><div><div class="meta">${last?'Grade':`Section ${i+1} of 6 · about ${pt.min} min`}</div><h2>${pt.title}</h2></div></div>`;
+    const c=h('div',{class:'card'}); el.appendChild(c);
+    const nav=h('div',{class:'secnav'});
+    const back=h('button',{class:'btn ghost',type:'button'},i===0?'':'← Back'); if(i===0) back.style.visibility='hidden'; back.addEventListener('click',()=>showPart(i-1));
+    nav.appendChild(back);
+    if(!last){ const nx=h('button',{class:'btn primary',type:'button'},i===PARTS.length-2?'See my grade →':`Next: ${PARTS[i+1].title} →`); nx.addEventListener('click',()=>showPart(i+1)); nav.appendChild(nx); }
+    el.appendChild(nav); ws.appendChild(el); return c; });
+  buildContent(secs);
+  secs[PARTS.length-1].id='turnin';
+  showPart(Math.min(S.cur||0,PARTS.length-1),true);
+  $('#whoami').textContent=S.student?`${S.student.first} ${S.student.last}`:''; refresh();
+}
+function showPart(i,noScroll){
+  S.cur=i; $$('#ws .sec').forEach((el,j)=>el.hidden=j!==i);
+  $$('#nav .ntile').forEach((t,j)=>t.classList.toggle('cur',j===i));
+  if(!noScroll){ save(); window.scrollTo(0,0); }
+}
+function refresh(){
+  const sc=scoreAll(), done=PROBS.filter(p=>p.checked()).length;
+  $('#scorePill').textContent=`${done}/${PROBS.length} checked · ${sc.total}/${sc.max} pts`;
+  PARTS.slice(0,-1).forEach((pt,i)=>{ const t=$(`#nav .ntile[data-i="${i}"]`); if(t) t.classList.toggle('done',PROBS.filter(p=>p.part===pt.k).every(p=>p.checked())); });
+  const t7=$(`#nav .ntile[data-i="6"]`); if(t7) t7.classList.toggle('done',!!S.submittedAt);
+  const c=$('#turnin'); if(!c) return;
+  const rows=sc.parts.map(p=>`<tr><th>${p.label}</th><td>${p.got} / ${p.max}</td></tr>`).join('');
+  c.innerHTML=`<div style="display:flex;gap:22px;align-items:center;flex-wrap:wrap"><div class="big">${sc.total}/${sc.max}</div><div><h3 style="margin:0">${esc(S.student?S.student.first+' '+S.student.last:'')}</h3><p class="muted" style="margin:0">${done} of ${PROBS.length} problems checked</p></div></div>
+    <table class="res" style="margin-top:12px">${rows}</table>
+    <p class="small muted" style="margin-top:10px">Problems you haven't checked count as 0. You can turn in again later; your teacher sees the newest one.</p>
+    <div class="btnrow"><button class="btn primary" id="subBtn" type="button">${S.submittedAt?'Turn in again':'Turn in my lab'}</button><button class="btn ghost" id="csvBtn" type="button">Download CSV</button></div>
+    <p class="fb info sheetStatus" aria-live="polite">${S.sentAt?`Sent to your teacher ${new Date(S.sentAt).toLocaleString()}.`:'Not turned in yet.'}</p>`;
+  $('#subBtn').addEventListener('click',turnIn);
+  $('#csvBtn').addEventListener('click',()=>downloadCSV([recordRow()],`BTBVirtualLab_${(S.student&&S.student.last||'student').replace(/\W+/g,'')}.csv`));
+}
+const CSV_HEAD=['Student ID','Last Name','First Name','Period','Teacher','Activity','Score','Total','Percent',...PARTS.slice(0,-1).map(p=>p.label),'Date'];
+function recordRow(){ const st=S.student||{}, sc=scoreAll(); return [st.id||'',st.last||'',st.first||'',st.period||'',st.teacher||'',ACTIVITY,sc.total,sc.max,Math.round(100*sc.total/sc.max)+'%',...sc.parts.map(p=>p.got),new Date(S.submittedAt||Date.now()).toLocaleString()]; }
+function csvText(rows){ const q=v=>{ v=String(v==null?'':v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }; return [CSV_HEAD,...rows].map(r=>r.map(q).join(',')).join('\r\n')+'\r\n'; }
+function downloadCSV(rows,name){ const b=new Blob([csvText(rows)],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500); }
+const loadRecs=()=>{ try{ return (JSON.parse(localStorage.getItem(RECS))||[]).filter(r=>r.length===CSV_HEAD.length); }catch(e){ return []; } };
+function saveRecord(){ if(S.preview) return; const recs=loadRecs(), row=recordRow(); const i=recs.findIndex(r=>r[0]===row[0]&&r[1]===row[1]); if(i>=0) recs[i]=row; else recs.push(row); try{ localStorage.setItem(RECS,JSON.stringify(recs)); }catch(e){} }
+function turnIn(){
+  const left=PROBS.filter(p=>!p.checked()).length;
+  if(left&&!confirm(`${left} problem${left>1?'s':''} not checked yet (they count as 0). Turn in anyway?`)) return;
+  S.submittedAt=Date.now(); save(); saveRecord(); cloudSave(true); disarm(); refresh();
+  const msg=t=>$$('.sheetStatus').forEach(e=>e.textContent=t);
+  if(S.preview){ msg('Preview mode: nothing is sent.'); return; }
+  const st=S.student, sc=scoreAll();
+  const body={studentId:st.id||'',firstName:st.first||'',lastName:st.last||'',period:st.period||'',teacher:st.teacher||'',locks:'0',when:new Date().toString(),activity:ACTIVITY,score:String(sc.total),total:String(sc.max),
+    qlabels:sc.parts.map((p,i)=>'P'+(i+1)+' '+PARTS[i].label).join('|'),qpoints:sc.parts.map(p=>p.got).join('|'),qmax:sc.parts.map(p=>p.max).join('|')};
+  msg('Sending...');
+  fetch(sheetURL(),{method:'POST',mode:'no-cors',body:new URLSearchParams(body)}).then(()=>{ S.sentAt=new Date().toISOString(); save(); msg('Sent! Your teacher will see your score.'); }).catch(()=>msg("Couldn't send. Check the Wi-Fi and try again, or download the CSV."));
+}
+
+/* ============================== NO LOCKDOWN ON WORKSHEETS ============================== */
+let teacherOpen=false;
+function arm(){} function disarm(){} function showLock(){} function enterFS(){}
+['copy','cut','paste','contextmenu'].forEach(ev=>document.addEventListener(ev,e=>{ if(teacherOpen||S.preview) return; e.preventDefault(); }));
+
+/* ============================== SIGN IN ============================== */
+function showWS(){ $('#start').hidden=true; $('#top').hidden=false; $('#ws').hidden=false; build(); window.scrollTo(0,0); if(S.locked&&LOCKDOWN&&!S.lockOff) showLock(); else arm(); }
+function renderStart(){ const has=!!S.student; $('#resumeBox').hidden=!has; $('#startForm').hidden=has; $('#signinTitle').textContent=has?'Welcome back':'Sign in to start';
+  if(has) $('#resumeText').innerHTML=`Signed in as <b>${esc(S.student.first)} ${esc(S.student.last)}</b>, period ${esc(S.student.period)}.`; }
+$('#fPeriod').innerHTML='<option value="">Choose your period</option>'+periodList().map(p=>`<option>${esc(p)}</option>`).join('');
+$('#fTeacher').innerHTML='<option value="">Choose your teacher</option>'+teacherList().map(t=>`<option>${esc(t)}</option>`).join('');
+let starting=false;
+async function start(){
+  if(starting) return; starting=true;
+  try{
+    const v={first:$('#fFirst').value.trim(),last:$('#fLast').value.trim(),id:$('#fId').value.trim(),period:$('#fPeriod').value,teacher:$('#fTeacher').value};
+    const miss=[]; if(!v.first) miss.push('first name'); if(!v.last) miss.push('last name'); if(!v.id) miss.push('student ID'); if(!v.period) miss.push('period'); if(!v.teacher) miss.push('teacher');
+    const err=$('#formErr'); if(miss.length){ err.className='fb no'; err.textContent='Fill in your '+miss.join(', ')+'.'; err.hidden=false; return; }
+    if(LOCKDOWN) enterFS();
+    err.className='fb info'; err.textContent='Checking for your saved work...'; err.hidden=false;
+    const res=await cloudLoad(v); err.hidden=true;
+    if(res.status==='found'){ const d=res.data; d.student=Object.assign({},d.student||{},{first:v.first,period:v.period,teacher:v.teacher}); adopt(d); showWS(); note('✓ Your saved work was loaded'); return; }
+    const ns=fresh(); ns.student=v; adopt(ns); showWS(); cloudSave(true);
+  } catch(ex){ const er=$('#formErr'); er.className='fb no'; er.textContent='Something went wrong starting ('+(ex&&ex.message||ex)+'). Reload and try again.'; er.hidden=false; }
+  finally{ starting=false; }
+}
+$('#startBtn').addEventListener('click',start);
+$('#startForm').addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.tagName==='INPUT'){ e.preventDefault(); start(); } });
+$('#resumeBtn').addEventListener('click',async()=>{ const b=$('#resumeBtn'); b.disabled=true; b.textContent='Loading your work...'; if(LOCKDOWN&&!S.locked) enterFS();
+  const res=await cloudLoad(S.student); b.disabled=false; b.textContent='Continue my lab';
+  if(res.status==='found'&&(res.data.updatedAt||0)>(S.updatedAt||0)&&checkedCount(res.data)>=checkedCount(S)){ const d=res.data; d.student=S.student; adopt(d); note('✓ Your newest saved work was loaded'); } showWS(); });
+$('#notMeBtn').addEventListener('click',async()=>{ const b=$('#notMeBtn'); b.disabled=true;
+  try{ if(cloudOK()) await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); }catch(e){ b.disabled=false; $('#resumeErr').textContent="Can't back up the last student's work right now. Check the Wi-Fi, or ask your teacher."; $('#resumeErr').hidden=false; return; }
+  b.disabled=false; adopt(fresh()); ['#fFirst','#fLast','#fId','#fPeriod','#fTeacher'].forEach(s=>$(s).value=''); renderStart(); });
+
+/* ============================== TEACHER ============================== */
+function openTeacher(){ teacherOpen=true; $('#teachLogin').hidden=false; $('#teachPanel').hidden=true; $('#teachErr').hidden=true; $('#teachCode').value=''; $('#teachOv').classList.add('show'); setTimeout(()=>$('#teachCode').focus(),50); }
+function closeTeacher(){ $('#teachOv').classList.remove('show'); teacherOpen=false; }
+$('#teacherLink').addEventListener('click',openTeacher); $('#teachBtn').addEventListener('click',openTeacher);
+$('#teachCancel').addEventListener('click',closeTeacher);
+$('#teachCode').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#teachGo').click(); });
+$('#teachGo').addEventListener('click',()=>{ if(!codeIs($('#teachCode').value,TEACHER_CODE)){ $('#teachErr').hidden=false; return; } $('#teachLogin').hidden=true; $('#teachPanel').hidden=false; renderTeacher(); });
+function renderTeacher(){
+  const recs=loadRecs(), p=$('#teachPanel'), keyOn=document.body.classList.contains('keyon');
+  p.innerHTML=`<h2>Teacher tools</h2>
+    <div class="btnrow"><button class="btn ghost" id="tKey" type="button">${keyOn?'Hide answer key':'Answer key'}</button>
+      <button class="btn ghost" id="tPrev" type="button">${S.preview?'End preview':'Preview (saves nothing)'}</button>
+      <button class="btn ghost" id="tResetWrong" type="button">Reset all wrong answers</button>
+      <button class="btn ghost" id="tReset" type="button">Reset this Chromebook</button><button class="btn ghost" id="tClose" type="button">Close</button></div>
+    <h3 style="margin-top:16px">Scores saved on this Chromebook (${recs.length})</h3>
+    <div class="wide">${recs.length?`<table class="nb"><tr><th>Student</th><th>ID</th><th>Period</th><th>Score</th><th>Date</th></tr>${recs.map(r=>`<tr><td>${esc(r[1])}, ${esc(r[2])}</td><td>${esc(r[0])}</td><td>${esc(r[3])}</td><td>${r[6]}/${r[7]}</td><td>${esc(r[r.length-1])}</td></tr>`).join('')}</table>`:'<p class="muted">None yet.</p>'}</div>
+    <div class="btnrow"><button class="btn primary" id="tCsv" type="button" ${recs.length?'':'disabled'}>Download scores (CSV)</button></div>
+    <h3 style="margin-top:16px">Load a student's saved work</h3>
+    <div class="btnrow"><input class="code" id="tId" placeholder="Student ID" style="width:150px"><input class="code" id="tLast" placeholder="Last name" style="width:170px"><button class="btn ghost" id="tLoad" type="button">Load work</button></div>
+    <p class="fb info" id="tMsg" style="min-height:1em"></p>`;
+  const msg=t=>$('#tMsg').textContent=t;
+  $('#tKey').addEventListener('click',()=>{ document.body.classList.toggle('keyon'); renderTeacher(); msg(document.body.classList.contains('keyon')?'Answer key on: each box shows its answer, sort chips show their box, and correct choices have a dashed gold outline.':'Answer key off.'); });
+  $('#tPrev').addEventListener('click',()=>{ if(S.preview){ location.reload(); return; } const ns=fresh(); ns.preview=true; ns.student={first:'Teacher',last:'Preview',id:'0',period:'-',teacher:teacherList()[0]}; S=ns; closeTeacher(); showWS(); note('Preview: nothing is saved'); });
+  $('#tReset').addEventListener('click',()=>{ if(confirm('Erase this lab on this Chromebook? Work backed up to the Saved Student Work sheet is not deleted.')){ try{ localStorage.removeItem(STORE); }catch(e){} location.reload(); } });
+  $('#tResetWrong').addEventListener('click',()=>{
+    const wrong=PROBS.filter(pr=>{ const P=S.p[pr.id]||{}; return (P.tries||0)>0 && !P.right; });
+    if(!wrong.length){ msg('Nothing to reset: this student has no wrong answers.'); return; }
+    if(!confirm(`Reset ${wrong.length} problem${wrong.length>1?'s':''} that ${wrong.length>1?'are':'is'} wrong or on a second try for ${(S.student&&S.student.first)||'this student'}? Correct answers stay.`)) return;
+    wrong.forEach(pr=>{ delete S.p[pr.id]; });
+    save(); cloudSave(true); msg(`Reset ${wrong.length} problem${wrong.length>1?'s':''}. Reloading…`); setTimeout(()=>location.reload(),700); });
+  $('#tClose').addEventListener('click',closeTeacher);
+  $('#tCsv').addEventListener('click',()=>downloadCSV(recs,`BTBVirtualLab_scores_${new Date().toISOString().slice(0,10)}.csv`));
+  $('#tLoad').addEventListener('click',async()=>{ const s={id:$('#tId').value.trim(),last:$('#tLast').value.trim()}; if(!s.id||!s.last){ msg('Type the student ID and last name.'); return; } msg('Looking up saved work...');
+    const r=await cloudLoad(s); if(r.status==='found'){ adopt(r.data); closeTeacher(); renderStart(); $('#start').hidden=false; $('#ws').hidden=true; $('#top').hidden=true; } else msg(r.status==='none'?'No saved work found for that student.':"Couldn't reach the saved-work sheet."); });
+}
+
+if(!STORAGE_OK) $('#noStore').hidden=false;
+renderStart();
+})();
+</script>
+</body>
+</html>
