@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Carbon Atom Journey Game | Biology Unit 6</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1626; --panel:#142136; --panel2:#1a2a44; --line:#2a3d5f; --line2:#3a5580;
+  --text:#e8eef8; --muted:#a3b4cf; --dim:#7488a9;
+  --leaf:#5fe3a9; --sun:#ffd35c; --r:#ffd35c; --sky:#45c8f0; --ok:#4ade80; --bad:#fb7185; --pink:#f472b6;
+  --font:'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+*{box-sizing:border-box} [hidden]{display:none !important}
+html,body{margin:0}
+body{background-color:var(--bg); background-image:linear-gradient(rgba(110,150,210,.065) 1px,transparent 1px),linear-gradient(90deg,rgba(110,150,210,.065) 1px,transparent 1px); background-size:32px 32px;
+  color:var(--text); font-family:var(--font); font-size:17px; line-height:1.55; -webkit-user-select:none; user-select:none}
+input,textarea{-webkit-user-select:text; user-select:text}
+h1,h2,h3,h4{margin:0 0 .45em; line-height:1.2; font-weight:600}
+h1{font-size:clamp(28px,4.4vw,40px); font-weight:700} h2{font-size:24px} h3{font-size:19px}
+p{margin:0 0 .75em} .muted{color:var(--muted)} .small{font-size:14px}
+sub,sup{font-size:.72em}
+:focus-visible{outline:3px solid var(--r); outline-offset:2px}
+.top{position:sticky; top:0; z-index:20; background:rgba(13,22,38,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+.top-in{max-width:1100px; margin:0 auto; padding:8px 16px; display:flex; gap:12px; align-items:center}
+.brand{font-weight:600; font-size:15px; white-space:nowrap} .brand span{display:block; font-weight:400; font-size:12px; color:var(--muted)}
+.nav{display:flex; gap:6px; flex:1; overflow-x:auto; padding:3px 2px}
+.ntile{flex:0 0 auto; width:54px; height:54px; border-radius:7px; border:1.5px solid var(--line2); background:var(--panel); color:var(--text); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer; position:relative; font:inherit; padding:0}
+.ntile .ic{color:var(--leaf); line-height:0} .ntile .nm{font-size:8.5px; color:var(--muted)}
+.ntile.cur{border-color:var(--r); background:rgba(255,211,92,.14)}
+.ntile.cur .nm{color:var(--r)}
+.secnav{display:flex; justify-content:space-between; gap:10px; margin-top:4px}
+.ntile.done::after{content:'✓'; position:absolute; top:1px; right:4px; font-size:10px; font-weight:700; color:var(--ok)}
+.scorepill{font-size:13px; padding:4px 10px; border-radius:999px; background:var(--panel2); white-space:nowrap}
+.savenote{font-size:12.5px; color:var(--ok); white-space:nowrap} @media (max-width:1300px){ .savenote{display:none} } @media (max-width:900px){ .scorepill{display:none} }
+main{max-width:1000px; margin:0 auto; padding:20px 16px 80px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin:0 0 18px}
+.sec{scroll-margin-top:80px}
+.sechead{display:flex; gap:14px; align-items:center; margin:28px 0 10px}
+.badge{width:66px; height:66px; border-radius:10px; border:2px solid var(--leaf); background:var(--panel); display:flex; align-items:center; justify-content:center; position:relative; flex:0 0 auto; color:var(--leaf)}
+.badge .z{position:absolute; top:3px; left:6px; font-size:11px; color:var(--muted)}
+.meta{color:var(--muted); font-size:14px}
+.btn{font:inherit; font-weight:600; font-size:15px; border-radius:10px; padding:10px 18px; cursor:pointer; border:1.5px solid transparent}
+.btn.primary{background:var(--r); color:#231a00} .btn.ghost{background:transparent; border-color:var(--line2); color:var(--text)}
+.btn.small{padding:6px 12px; font-size:14px} .btn:disabled{opacity:.45; cursor:not-allowed}
+.btnrow{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:12px}
+.field{display:flex; flex-direction:column; gap:4px; font-size:14px; color:var(--muted)}
+.field input,.field select{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px}
+.formgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin:10px 0}
+.fb{margin-top:10px; padding:10px 14px; border-radius:10px; font-size:15px}
+.fb.ok{background:rgba(74,222,128,.12); color:#c9f7d8} .fb.no{background:rgba(251,113,133,.12); color:#ffd3db} .fb.info{background:var(--panel2)}
+.prob{border-top:1px solid var(--line); padding-top:16px; margin-top:16px}
+.prob:first-of-type{border-top:none; padding-top:0; margin-top:0}
+.pq{font-weight:500; margin-bottom:8px}
+.pnum{display:inline-block; min-width:30px; font-weight:700; color:var(--leaf)}
+.pts{font-size:13px; color:var(--muted); font-weight:400}
+.hintbox{background:rgba(255,211,92,.08); border-left:3px solid var(--r); border-radius:8px; padding:8px 12px; margin-top:8px; font-size:15px}
+/* drag and drop */
+.figwrap{position:relative; width:100%}
+.figwrap svg{width:100%; height:auto; display:block; background:#0a1322; border:1px solid var(--line); border-radius:12px}
+.figwrap svg text{font-family:var(--font)}
+.zone{position:absolute; transform:translate(-50%,-50%); min-height:32px; border:2px dashed #8fb3e6; border-radius:9px; background:rgba(13,22,38,.92); color:var(--text); font:inherit; font-size:14px; font-weight:600; display:flex; align-items:center; justify-content:center; padding:2px 6px; cursor:pointer; text-align:center; line-height:1.15}
+.zone.empty{color:var(--dim); font-weight:400; font-size:12.5px}
+.zone.filled{border-style:solid; border-color:var(--r); background:#2b2410}
+.zone.hot{box-shadow:0 0 0 3px rgba(255,211,92,.5)}
+.zone.locked{opacity:.9}
+.zone.ok{border-color:var(--ok); background:#0f2e1d} .zone.no{border-color:var(--bad); background:#3a0f1a}
+.pool{display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 4px; padding:10px; border:1px dashed var(--line2); border-radius:10px; min-height:52px}
+.pool .lbl{width:100%; font-size:12.5px; color:var(--muted)}
+.chip{font:inherit; font-size:15px; font-weight:600; padding:6px 14px; border-radius:999px; border:1.5px solid var(--line2); background:var(--panel2); color:var(--text); cursor:grab; touch-action:none}
+.chip.sel{border-color:var(--r); background:rgba(255,211,92,.16); box-shadow:0 0 0 3px rgba(255,211,92,.35)}
+.bins{display:grid; gap:10px; margin-top:6px}
+.bin{border:2px dashed var(--line2); border-radius:12px; padding:10px; min-height:96px; cursor:pointer; background:rgba(13,22,38,.5)}
+.bin h4{margin:0 0 8px; font-size:15px; color:var(--leaf)} .bin.hot{border-color:var(--r)}
+.bin .chip{cursor:pointer; margin:3px} .bin .chip.ok{border-color:var(--ok); background:#0f2e1d} .bin .chip.no{border-color:var(--bad); background:#3a0f1a}
+.phenbox{background:rgba(244,114,182,.1); border-left:4px solid #f472b6; border-radius:8px; padding:10px 14px; margin-bottom:14px}
+.fixnote{font-size:12px; color:#ffd3db; font-weight:400}
+/* equation */
+.eq{display:flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:20px; font-weight:600; margin:10px 0}
+.eq .zone{position:static; transform:none; min-width:120px; min-height:40px}
+/* choices */
+.opts{display:grid; gap:8px; margin:6px 0}
+.opt{display:flex; gap:12px; align-items:center; text-align:left; background:var(--panel2); border:1.5px solid var(--line); color:var(--text); border-radius:10px; padding:9px 14px; font:inherit; font-size:16px; cursor:pointer}
+.opt .L{flex:0 0 26px; height:26px; border-radius:50%; display:grid; place-items:center; background:var(--bg); font-weight:600; font-size:13px}
+.opt.multi .L{border-radius:6px}
+.opt.sel{border-color:var(--r); background:rgba(255,211,92,.08)} .opt.sel .L{background:var(--r); color:#231a00}
+.opt.ok{border-color:var(--ok); background:rgba(74,222,128,.1)} .opt.no{border-color:var(--bad); background:rgba(251,113,133,.1)}
+.opt:disabled{cursor:default}
+input.blank{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:7px 10px; font:inherit; font-size:16px; width:170px}
+input.blank.ok{border-color:var(--ok)} input.blank.no{border-color:var(--bad)}
+.brow{margin:8px 0}
+/* answer key (teacher) */
+body.keyon .zone[data-key]::after{content:'key: ' attr(data-key); position:absolute; top:100%; left:50%; transform:translateX(-50%); font-size:11px; color:var(--r); white-space:nowrap; margin-top:2px}
+body.keyon .chip[data-key]::after{content:' → ' attr(data-key); font-size:11px; color:var(--r)}
+body.keyon .opt[data-key]{outline:2px dashed var(--r); outline-offset:2px}
+body.keyon input.blank[data-key]+.keytxt{display:inline}
+.datatab select.ocell{font:inherit; padding:4px 6px; border-radius:8px; max-width:100%}
+.datatab input.dcell{width:72px; font:inherit; padding:4px 6px; border-radius:8px; text-align:center}
+.datachart svg{width:100%; height:auto; display:block; margin-top:10px}
+ol.proc li{margin:4px 0}
+.off{opacity:.35; pointer-events:none}
+.btbkey{display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; margin:6px 0 10px}.btbkey span{display:inline-block; width:16px; height:16px; border-radius:50%; vertical-align:middle; border:1px solid rgba(255,255,255,.4)}
+.simwrap{display:grid; grid-template-columns:minmax(150px,220px) 1fr; gap:18px; align-items:start; background:rgba(255,255,255,.04); border:1px solid var(--line,#2a3d5f); border-radius:14px; padding:14px}
+.simwrap.off{opacity:.35; pointer-events:none}
+.bigtube svg{width:100%; height:auto; display:block}.clock{text-align:center; font-weight:700; font-size:20px; margin-top:6px}
+.tg{display:block; margin:4px 0; font-size:17px}.tg input{transform:scale(1.3); margin-right:8px}
+.sensor{margin:10px 0; font-size:18px}.sensor b{font-size:24px; color:#ffd35c}
+.btn.on{outline:2px solid #ffd35c}
+.dot{display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:6px; vertical-align:middle}
+.predtab select{font:inherit; padding:4px 6px; border-radius:8px}
+#sChart svg{width:100%; height:auto; display:block}
+@media (max-width:700px){ .simwrap{grid-template-columns:1fr} .bigtube{max-width:180px; margin:0 auto} }
+.wbank2{margin-top:8px; padding:8px 10px; border:1px dashed rgba(163,180,207,.5); border-radius:10px; font-size:14px; line-height:2}
+.wchip{font:inherit; font-size:14px; margin:2px 4px 2px 0; padding:2px 10px; border-radius:999px; border:1px solid rgba(163,180,207,.6); background:rgba(255,255,255,.06); color:inherit; cursor:pointer}
+.wchip:hover{border-color:#ffd35c}
+.wtext{width:100%; min-height:110px; font:inherit; padding:10px; border-radius:10px; border:1.5px solid var(--line,#2a3d5f); background:rgba(255,255,255,.04); color:inherit; resize:vertical}
+.wkey{display:none; margin-top:6px; font-size:14px; color:var(--r,#ffd35c)}
+body.keyon .wkey{display:block}
+.keytxt{display:none; font-size:12px; color:var(--r); margin-left:6px}
+.big{font-size:52px; font-weight:700; color:var(--r); line-height:1}
+table.res{border-collapse:collapse; width:100%} table.res th,table.res td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line)} table.res th{color:var(--muted); font-weight:400}
+.card.nostore{border:2px solid var(--bad); background:rgba(251,113,133,.08)}
+.overlay{position:fixed; inset:0; background:rgba(4,9,18,.94); z-index:100; display:none; align-items:center; justify-content:center; padding:20px}
+.overlay.show{display:flex}
+.modal{background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:24px; max-width:900px; width:100%; max-height:92vh; overflow:auto}
+input.code{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px; width:200px}
+table.nb{border-collapse:collapse; width:100%; font-size:14px} table.nb th,table.nb td{border:1px solid var(--line2); padding:6px 8px} table.nb th{background:var(--panel2)}
+.wide{overflow-x:auto}
+@media (max-width:700px){ .zone{font-size:11px; min-height:26px} .chip{font-size:13px; padding:5px 10px} }
+@media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important} }
+.prob + p,.prob + .phenbox,.prob + .figwrap{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+
+.cjkey td{vertical-align:top} .cjkey td:first-child{width:40%}
+.cjchart svg{width:100%; height:auto; display:block; margin-top:10px}
+.cjdet{margin-top:12px; border:1px solid var(--line2); border-radius:12px; padding:8px 12px; background:rgba(255,255,255,.03)}
+.cjdet summary{cursor:pointer; padding:4px 0}
+.cjcards{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr)); gap:12px}
+.cjcbox{border:1.5px solid var(--line2); border-radius:12px; padding:8px 10px; background:var(--panel2)}
+.cjchead{display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap; margin-bottom:6px} .cjchead span{color:var(--r); font-size:14px}
+table.cjcard td,table.cjcard th{font-size:13.5px; vertical-align:middle} table.cjcard td:first-child{width:40px; text-align:center; padding:3px} table.cjcard svg{display:block; margin:0 auto} table.cjcard .rn{font-size:12px; font-weight:700; color:var(--muted); line-height:1.1}
+table.cjcard tr.hi td{background:rgba(255,211,92,.22)}
+.jtab td{padding:4px 6px} .jtab td.tn{text-align:center; font-weight:700; color:var(--muted); width:46px} .jtab select.ocell{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); max-width:210px}
+.jtab select.ocell:disabled{opacity:1; color:var(--text); background:var(--panel2); border-color:var(--line)} .jtab .jat{font-weight:600; color:var(--sky)}
+.datatab input.dcell{background:var(--bg); color:var(--text); border:1.5px solid var(--line2)}
+.datatab input.dcell:disabled{opacity:1; color:var(--text); border-color:var(--line); background:var(--panel2)}
+.ordwrap .eq{flex-direction:column; align-items:stretch; font-size:16px; gap:4px}
+.ordwrap .eq .zone{width:100%; min-height:42px; font-size:15px} .ordwrap .eq > span{text-align:center; color:var(--muted); line-height:1}
+.isstat{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; font-weight:600; margin-bottom:6px}
+.cjgrid{display:grid; grid-template-columns:minmax(0,1fr) 230px; gap:14px; align-items:start}
+.cjpic svg{width:100%; height:auto; display:block; border-radius:12px}
+.cjside{display:flex; flex-direction:column; gap:8px; align-items:stretch} .cjdie{display:flex; justify-content:center} .cjtxt{margin:4px 0 0; font-size:15px; line-height:1.45} .cjch{font-size:14px; margin:4px 0}
+.logr{margin-top:10px} .logtab td{font-size:14px; padding:4px 7px}
+@media (max-width:820px){ .cjgrid{grid-template-columns:1fr} .cjside{max-width:520px} }
+@media (max-width:520px){ .predtab td,.predtab th{padding:5px} .predtab select{max-width:150px} .jtab select.ocell{max-width:130px; font-size:13px} table.cjcard{min-width:440px} table.cjcard td,table.cjcard th{font-size:12.5px; padding:4px} }
+
+</style>
+</head>
+<body>
+<header class="top" id="top" hidden>
+  <div class="top-in">
+    <div class="brand">Carbon journey game<span id="whoami"></span></div>
+    <nav class="nav" id="nav" aria-label="Worksheet parts"></nav>
+    <span class="scorepill" id="scorePill"></span>
+    <span class="savenote" id="saveNote" aria-live="polite"></span>
+    <button class="btn ghost small" id="teachBtn" type="button">Teacher</button>
+  </div>
+</header>
+
+<main>
+  <section id="start">
+    <div class="muted" style="margin-top:8px">Biology · Unit 6: Ecology · Activity · about 50 minutes</div>
+    <h1>The Carbon Atom Journey Game</h1>
+    <p class="muted" style="font-size:18px;max-width:42em">Be one carbon atom. Roll a die at each station to travel through the carbon cycle, then play again with human impact and compare.</p>
+    <div class="card"><h3>How it works</h3>
+      <p style="margin:0">Each problem gets <b>two tries</b>. Right on either try earns full credit. If your first try is wrong, you'll be told it isn't right yet (but not the answer), so look again and try once more. Wrong twice and the problem is marked wrong and locks. Stuck? Tap <b>Hint</b> before you check.</p></div>
+    <div class="card nostore" id="noStore" hidden><h3>This browser can't save your work</h3><p style="margin:0">You may be in guest or incognito mode. Sign in to your school account and open the worksheet again.</p></div>
+    <div class="card">
+      <h3 id="signinTitle">Sign in to start</h3>
+      <div id="resumeBox" hidden><p id="resumeText"></p>
+        <div class="btnrow"><button class="btn primary" id="resumeBtn" type="button">Continue my lab</button><button class="btn ghost small" id="notMeBtn" type="button">Not you? Sign in as a different student</button></div>
+        <div class="fb no" id="resumeErr" hidden></div></div>
+      <div id="startForm">
+        <div class="formgrid">
+          <label class="field">First name<input id="fFirst" autocomplete="off"></label><label class="field">Last name<input id="fLast" autocomplete="off"></label>
+          <label class="field">Student ID<input id="fId" inputmode="numeric" autocomplete="off"></label>
+          <label class="field">Period<select id="fPeriod"></select></label><label class="field">Teacher<select id="fTeacher"></select></label>
+        </div>
+        <p class="small muted">Your work saves as you go. On any Chromebook, sign in with the same student ID and last name to pick up where you left off.</p>
+        <div class="fb no" id="formErr" hidden></div>
+        <div class="btnrow"><button class="btn primary" type="button" id="startBtn">Start the lab</button></div>
+      </div>
+    </div>
+    <p style="text-align:center"><button class="btn ghost" id="teacherLink" type="button">Teacher: enter unlock code</button></p>
+  </section>
+  <div id="ws" hidden></div>
+</main>
+
+<div class="overlay" id="teachOv" role="dialog" aria-modal="true" aria-labelledby="tTitle">
+  <div class="modal"><div id="teachLogin"><h2 id="tTitle">Teacher</h2>
+    <div class="btnrow"><input class="code" id="teachCode" type="password" placeholder="Teacher code" autocomplete="off"><button class="btn primary" id="teachGo" type="button">Open</button><button class="btn ghost" id="teachCancel" type="button">Close</button></div>
+    <div class="fb no" id="teachErr" hidden>That code didn't work.</div></div><div id="teachPanel" hidden></div></div>
+</div>
+<div class="overlay" id="tabOv" role="dialog" aria-modal="true"><div class="modal" style="max-width:520px"><h2>This lab is open in another tab</h2><p>To keep your newest work safe, this copy stopped saving. Close the extra tab, then reload this one.</p><div class="btnrow"><button class="btn primary" type="button" onclick="location.reload()">Reload with my newest work</button></div></div></div>
+
+<script src="sheets-config.js"></script>
+<script>
+(function(){
+'use strict';
+/* ============================== SETTINGS ============================== */
+const LESSON_TITLE='The Carbon Cycle';           // unlock code = last word of this title
+const UNLOCK_CODE=LESSON_TITLE.trim().split(/\s+/).pop();
+const TEACHER_CODE='Teacher007';   // universal teacher-tools code
+const codeIs=(v,c)=>String(v||'').trim().toLowerCase()===String(c).toLowerCase();
+const WS_ID='bio-u6-carbon-journey-activity', ACTIVITY='Carbon Journey Activity';
+const BACKUP_URL='https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const SAVE_URL_BUILTIN='https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';
+const BACKUP_TEACHERS=['Austin','Mueller','McCue','Arce','Trimm','Garcia','Trimm/Callanan','Callanan'], BACKUP_PERIODS=['1','2','3','4','5','6','7','8'];
+const STORE='carbonJourney_v1', RECS='carbonJourney_records_v1';
+/* ===================================================================== */
+const teacherList=()=>{ try{ if(typeof TEACHERS!=='undefined'&&Array.isArray(TEACHERS)&&TEACHERS.length) return TEACHERS.map(String); }catch(e){} return BACKUP_TEACHERS; };
+const periodList=()=>{ try{ if(typeof PERIODS!=='undefined'&&Array.isArray(PERIODS)&&PERIODS.length) return PERIODS.map(String); }catch(e){} return BACKUP_PERIODS; };
+const sheetURL=()=>{ try{ if(typeof SHEETS_WEBHOOK_URL!=='undefined'&&SHEETS_WEBHOOK_URL&&String(SHEETS_WEBHOOK_URL).indexOf('PASTE')<0) return String(SHEETS_WEBHOOK_URL); }catch(e){} return BACKUP_URL; };
+const saveURL=()=>{ try{ if(typeof SAVE_WEBHOOK_URL!=='undefined'&&SAVE_WEBHOOK_URL&&String(SAVE_WEBHOOK_URL).indexOf('PASTE')<0) return String(SAVE_WEBHOOK_URL); }catch(e){} return SAVE_URL_BUILTIN; };
+const LOCKDOWN=false;   // worksheets never lock down
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const strip=s=>String(s).replace(/<[^>]+>/g,'');
+function h(tag,attrs,html){ const e=document.createElement(tag); if(attrs) for(const k in attrs){ if(attrs[k]===false||attrs[k]==null) continue; if(k==='class') e.className=attrs[k]; else if(k==='hidden') e.hidden=!!attrs[k]; else e.setAttribute(k,attrs[k]); } if(html!=null) e.innerHTML=html; return e; }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* ---------- state + saving ---------- */
+function fresh(){ return {ws:WS_ID, student:null, p:{}, ord:{}, locks:0, locked:false, lockOff:false, submittedAt:null, sentAt:null}; }
+let S; try{ S=JSON.parse(localStorage.getItem(STORE)); }catch(e){} if(!S||S.ws!==WS_ID) S=fresh();
+let STORAGE_OK=true, saveBlocked=false;
+try{ localStorage.setItem('__ps_t','1'); STORAGE_OK=localStorage.getItem('__ps_t')==='1'; localStorage.removeItem('__ps_t'); }catch(e){ STORAGE_OK=false; }
+function save(){
+  if(saveBlocked) return;
+  if(S.preview){ note('Preview: nothing is saved'); return; }
+  try{ const raw=localStorage.getItem(STORE); if(raw){ const st=JSON.parse(raw); if(st&&st.ws===WS_ID&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); return; } }
+    S.rev=(S.rev||0)+1; S.updatedAt=Date.now(); localStorage.setItem(STORE,JSON.stringify(S)); note(); cloudSave(false); }catch(e){}
+}
+window.addEventListener('storage',e=>{ if(e.key!==STORE||!e.newValue) return; try{ const st=JSON.parse(e.newValue); if(st&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); } }catch(_){} });
+const saveKey=st=>(String(st.id||'').replace(/\s+/g,'')+'-'+String(st.last||'').toLowerCase().replace(/[^a-z]/g,'')).toLowerCase();
+const checkedCount=st=>Object.values((st||S).p).filter(x=>x&&x.checked).length;
+let cloudTimer=null, cloudDirty=false, cloudBusy=false, cloudAt=null, cloudErr=false;
+const cloudOK=()=>!!saveURL()&&S.student&&!saveBlocked&&!S.preview;
+function cloudBody(){ const st=S.student||{}, sc=scoreAll();
+  return new URLSearchParams({code:saveKey(st), lesson:WS_ID, ver:String(S.updatedAt||Date.now()), prog:String((S.submittedAt?100000:0)+checkedCount(S)), studentId:st.id||'', lastName:st.last||'', firstName:st.first||'', period:st.period||'', teacher:st.teacher||'',
+    summary:S.submittedAt?`Turned in · ${sc.total}/${sc.max}`:`${checkedCount(S)} of ${PROBS.length} problems checked`, data:JSON.stringify(S)}); }
+function cloudSave(soon){ if(!cloudOK()) return; cloudDirty=true; if(soon){ clearTimeout(cloudTimer); cloudTimer=setTimeout(cloudFlush,1200); } else if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); }
+async function cloudFlush(){ cloudTimer=null; if(!cloudOK()||!cloudDirty) return; if(cloudBusy){ cloudTimer=setTimeout(cloudFlush,4000); return; } cloudBusy=true; cloudDirty=false;
+  try{ await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); cloudAt=new Date(); cloudErr=false; }catch(e){ cloudDirty=true; cloudErr=true; if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); } finally{ cloudBusy=false; note(); } }
+function cloudBeacon(){ if(!cloudOK()||!cloudDirty) return; try{ if(navigator.sendBeacon&&navigator.sendBeacon(saveURL(),cloudBody())) cloudDirty=false; }catch(e){} }
+async function cloudLoad(st){ const ctrl=new AbortController(), t=setTimeout(()=>ctrl.abort(),5000);
+  try{ const r=await fetch(saveURL()+'?'+new URLSearchParams({code:saveKey(st),lesson:WS_ID}),{signal:ctrl.signal}); const j=await r.json(); if(j&&j.found&&j.data){ const d=JSON.parse(j.data); if(d&&d.ws===WS_ID) return {status:'found',data:d}; } return {status:'none'}; }
+  catch(e){ return {status:'error'}; } finally{ clearTimeout(t); } }
+function adopt(ns){ let sr=0; try{ const raw=localStorage.getItem(STORE); if(raw) sr=JSON.parse(raw).rev||0; }catch(e){} ns.rev=Math.max(ns.rev||0,sr); S=ns; saveBlocked=false; save(); }
+function note(msg){ const n=$('#saveNote'); if(!n) return; const tm=d=>d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}); n.textContent=msg||(cloudErr?'✓ Saved on this Chromebook':'✓ Saved '+tm(new Date())+(cloudAt?' · backed up '+tm(cloudAt):'')); }
+document.addEventListener('visibilitychange',()=>{ if(document.hidden){ save(); cloudBeacon(); } });
+window.addEventListener('pagehide',()=>{ save(); cloudBeacon(); });
+
+/* ============================== DIAGRAMS ============================== */
+/* ============================== PROBLEMS ============================== */
+const PARTS=[
+ {k:'P1', label:'Setup', title:'Purpose and setup', min:10, icon:'<circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8.5" stroke-dasharray="3 2.4"/><path d="M12 3.5V1.5M20.5 12h2"/>'},
+ {k:'P2', label:'Predict', title:'Predict', min:5, icon:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z"/>'},
+ {k:'P3', label:'Play', title:'Play and record', min:25, icon:'<rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="8.5" cy="8.5" r="1.2"/><circle cx="15.5" cy="15.5" r="1.2"/><circle cx="12" cy="12" r="1.2"/>'},
+ {k:'P4', label:'Analysis', title:'Analysis', min:15, icon:'<path d="M3 21h18"/><path d="M5 17l5-5 4 3 6-7"/>'},
+ {k:'P5', label:'Conclusion', title:'Conclusion (CER)', min:8, icon:'<path d="M4 4h12l4 4v12H4z"/><path d="M8 11h8M8 15h6"/>'},
+ {k:'P6', label:'Grade', title:'Your grade', min:1, icon:'<rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4V2.5h6V4"/><path d="M8.5 13l2.5 2.5 4.5-5"/>'}
+];
+const ico=(i,s)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PARTS[i].icon}</svg>`;
+const PROBS=[];   // every problem: {id, part, max, score(), key()}
+
+function probShell(parent, part, num, q, pts){
+  const box=h('div',{class:'prob'}); parent.appendChild(box);
+  box.innerHTML=`<div class="pq"><span class="pnum">${num}.</span> ${q} <span class="pts">(${pts} pt${pts>1?'s':''})</span></div>`;
+  return box;
+}
+function actions(box, o){ // Hint + Check buttons + feedback
+  const row=h('div',{class:'btnrow'}); const hb=h('button',{class:'btn ghost small',type:'button'},'Hint'); const cb=h('button',{class:'btn primary small',type:'button'},'Check');
+  row.append(hb,cb); box.appendChild(row);
+  const hint=h('div',{class:'hintbox',hidden:true},'💡 '+o.hint); box.appendChild(hint);
+  const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'}); box.appendChild(fb);
+  hb.addEventListener('click',()=>{ hint.hidden=!hint.hidden; });
+  return {row,hb,cb,hint,fb};
+}
+const st=id=>S.p[id]||(S.p[id]={});
+/* Two tries per problem. Right on try 1 or 2 = full credit. Wrong twice = marked wrong (credit for parts right on try 2).
+   The correct answer is never shown. */
+function gradeTry(P,res,max){ const n=res.filter(Boolean).length; P.tries=(P.tries||0)+1;
+  if(n===max){ P.first=max; P.checked=true; P.right=true; }
+  else if(P.tries>=2){ P.first=n; P.checked=true; P.right=false; }
+  return n===max; }
+function showTry(ui,P,max,doneText){
+  if(P.checked&&P.right){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML=`<b>Correct!</b> ${doneText||''}`; }
+  else if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`<b>Marked wrong.</b> You earned ${P.first} of ${max} point${max>1?'s':''}. Ask your teacher if you'd like to try it again.`; }
+  else if(P.tries===1){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=max>1?'<b>Not quite.</b> Something isn\'t right yet. You have <b>one more try</b>.':'<b>Not quite.</b> You have <b>one more try</b>.'; }
+  else ui.fb.hidden=true;
+  if(ui.cb) ui.cb.textContent=P.checked?'Checked':(P.tries===1?'Check (last try)':'Check'); }
+
+/* ---------- drag onto a diagram (or into equation slots) ---------- */
+function dragProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.zones.length);
+  let fig;
+  if(o.equation){ fig=h('div',{class:'eq'}); box.appendChild(fig); }
+  else { fig=h('div',{class:'figwrap'}); fig.innerHTML=o.svg; box.appendChild(fig); }
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.chips.map((_,i)=>i)));
+  const zoneEls={};
+  const groupAns=g=>o.zones.filter(z=>z.group===g).map(z=>z.ans);
+  if(o.equation){ o.layout.forEach(item=>{ if(typeof item==='string'){ fig.appendChild(h('span',null,item)); } else { const z=o.zones[item]; const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans}); fig.appendChild(b); zoneEls[z.id]=b; } }); }
+  else o.zones.forEach(z=>{ const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans});
+    b.style.left=(z.x/o.vb[0]*100)+'%'; b.style.top=(z.y/o.vb[1]*100)+'%'; b.style.width=((z.w||130)/o.vb[0]*100)+'%'; fig.appendChild(b); zoneEls[z.id]=b; });
+  function placedChips(){ return new Set(Object.values(P.place)); }
+  function render(){
+    const used=placedChips();
+    pool.innerHTML='<div class="lbl">Tap a label, then tap a box (or drag it). Tap a filled box to take its label back.</div>';
+    order.forEach(ci=>{ if(used.has(ci)) return; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true'},o.chips[ci]); c.disabled=!!P.checked;
+      c.addEventListener('click',()=>{ sel=sel===ci?null:ci; render(); });
+      c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+      pool.appendChild(c); });
+    if(P.checked&&!pool.querySelector('.chip')) pool.hidden=true;
+    o.zones.forEach(z=>{ const b=zoneEls[z.id]; const ci=P.place[z.id];
+      b.className='zone'+(ci==null?' empty':' filled')+(P.checked?' locked':'');
+      if(ci==null) b.innerHTML=z.ph||'drop here';
+      else b.innerHTML=o.chips[ci];
+      b.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; ui.hb.disabled=!!P.checked&&false;
+    showTry(ui,P,o.zones.length,o.done);
+  }
+  o.zones.forEach(z=>{ const b=zoneEls[z.id];
+    const drop=ci=>{ if(P.checked) return; if(ci==null){ if(P.place[z.id]!=null){ delete P.place[z.id]; save(); render(); } return; }
+      for(const k in P.place) if(P.place[k]===ci) delete P.place[k];
+      P.place[z.id]=ci; sel=null; save(); render(); };
+    b.addEventListener('click',()=>drop(sel));
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  ui.cb.addEventListener('click',()=>{
+    if(P.checked) return;
+    const empty=o.zones.filter(z=>P.place[z.id]==null).length;
+    if(empty){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill every box before you check. ${empty} still empty.`; return; }
+    const res={}; const usedInGroup={};
+    o.zones.forEach(z=>{ const t=o.chips[P.place[z.id]];
+      if(z.group){ const ans=groupAns(z.group); usedInGroup[z.group]=usedInGroup[z.group]||[]; const ok=ans.includes(t)&&!usedInGroup[z.group].includes(t); if(ok) usedInGroup[z.group].push(t); res[z.id]=ok; }
+      else res[z.id]=t===z.ans; });
+    gradeTry(P,Object.values(res),o.zones.length); save(); cloudSave(true); render(); refresh();
+  });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.zones.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- sort into bins ---------- */
+function binProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.items.length);
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const bins=h('div',{class:'bins',style:`grid-template-columns:repeat(${o.bins.length},minmax(0,1fr))`}); box.appendChild(bins);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.items.map((_,i)=>i)));
+  const binEls={};
+  o.bins.forEach(bn=>{ const b=h('div',{class:'bin',role:'button',tabindex:'0'},`<h4>${bn.label}</h4><div class="bchips"></div>`); bins.appendChild(b); binEls[bn.k]=b;
+    const drop=ci=>{ if(P.checked||ci==null) return; P.place[ci]=bn.k; sel=null; save(); render(); };
+    b.addEventListener('click',e=>{ if(e.target.closest('.chip')) return; drop(sel); });
+    b.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); drop(sel); } });
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  const binLabel=k=>(o.bins.find(b=>b.k===k)||{}).label;
+  function chipEl(ci,inBin){ const it=o.items[ci]; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true','data-key':binLabel(it.k)},it.t);
+    
+    c.disabled=!!P.checked;
+    c.addEventListener('click',e=>{ if(P.checked) return; if(inBin){ e.stopPropagation(); if(sel!=null&&sel!==ci){ P.place[sel]=P.place[ci]; sel=null; save(); render(); return; } delete P.place[ci]; save(); render(); return; } sel=sel===ci?null:ci; render(); });
+    c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+    return c; }
+  function render(){
+    pool.innerHTML='<div class="lbl">Tap an item, then tap the box it belongs in (or drag it). Tap a sorted item to take it back.</div>';
+    order.forEach(ci=>{ if(P.place[ci]==null) pool.appendChild(chipEl(ci,false)); });
+    pool.hidden=!!P.checked;
+    o.bins.forEach(bn=>{ const holder=$('.bchips',binEls[bn.k]); holder.innerHTML=''; order.forEach(ci=>{ if(P.place[ci]===bn.k) holder.appendChild(chipEl(ci,true)); }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,o.items.length,o.done);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const left=o.items.filter((_,i)=>P.place[i]==null).length;
+    if(left){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Sort every item before you check. ${left} still left.`; return; }
+    const res=o.items.map((it,i)=>P.place[i]===it.k); gradeTry(P,res,o.items.length); save(); cloudSave(true); render(); refresh(); });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.items.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- choice problems: one, two-part, or select-all ---------- */
+function choiceProblem(parent, o){   // o.parts: [{q, opts, ans (index or array for select-all)}]
+  const P=st(o.id); P.pick=P.pick||{};
+  const max=o.parts.length;
+  const box=probShell(parent,o.part,o.num,o.q,max);
+  const groups=[];
+  o.parts.forEach((pt,pi)=>{
+    const multi=Array.isArray(pt.ans);
+    if(pt.q) box.insertAdjacentHTML('beforeend',`<div style="margin:10px 0 4px">${pt.q}${multi?' <span class="small muted">(Select all that apply.)</span>':''}</div>`);
+    const ordKey=o.id+'_'+pi; const order=S.ord[ordKey]||(S.ord[ordKey]=shuffle(pt.opts.map((_,i)=>i)));
+    const wrap=h('div',{class:'opts'}); box.appendChild(wrap);
+    const btns={};
+    order.forEach((oi,pos)=>{ const correct=multi?pt.ans.includes(oi):oi===pt.ans;
+      const b=h('button',{class:'opt'+(multi?' multi':''),type:'button'},`<span class="L">${'ABCDEF'[pos]}</span><span>${pt.opts[oi]}</span>`); if(correct) b.dataset.key='1';
+      b.addEventListener('click',()=>{ if(P.checked) return; if(multi){ const s=new Set(P.pick[pi]||[]); s.has(oi)?s.delete(oi):s.add(oi); P.pick[pi]=[...s]; } else P.pick[pi]=oi; save(); paint(); });
+      wrap.appendChild(b); btns[oi]=b; });
+    groups.push({pt,multi,btns});
+  });
+  const ui=actions(box,o);
+  function gradePart(g,pi){ const pk=P.pick[pi]; if(g.multi){ const s=new Set(pk||[]); return g.pt.ans.length===s.size&&g.pt.ans.every(a=>s.has(a)); } const ans=g.pt.ansFn?g.pt.ansFn():g.pt.ans; return pk===ans; }
+  function paint(){
+    groups.forEach((g,pi)=>{ const pk=P.pick[pi];
+      Object.entries(g.btns).forEach(([oi,b])=>{ oi=+oi; const picked=g.multi?(pk||[]).includes(oi):pk===oi; const correct=g.multi?g.pt.ans.includes(oi):oi===g.pt.ans;
+        b.className='opt'+(g.multi?' multi':'')+(picked?' sel':'')+(P.checked&&P.right&&picked?' ok':''); b.disabled=!!P.checked; }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,max,o.why);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const blank=groups.some((g,pi)=>g.multi?!(P.pick[pi]||[]).length:P.pick[pi]==null);
+    if(blank){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Answer every part before you check.'; return; }
+    gradeTry(P,groups.map((g,pi)=>gradePart(g,pi)),max); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- typed blanks (two tries, like every problem) ---------- */
+function typedProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.blanks.length);
+  const inputs=o.blanks.map((bl,i)=>{ const row=h('div',{class:'brow'}); row.innerHTML=`${bl.before} <input class="blank" type="text" aria-label="${esc(strip(bl.before))}" data-key="${esc(bl.show)}"><span class="keytxt">${bl.show}</span> ${bl.after||''}`; box.appendChild(row);
+    const inp=$('input',row); inp.value=P.val[i]||''; inp.addEventListener('input',()=>{ P.val[i]=inp.value; save(); }); return inp; });
+  const ui=actions(box,o);
+  const ok=(bl,v)=>{ v=String(v||'').trim().toLowerCase(); if(bl.calc){ const n=parseFloat(v.replace(/[\u2212\u2013\u2014]/g,'-').replace(/[^0-9.\-]/g,'')); const t=bl.calc(); return !isNaN(n)&&t!=null&&!isNaN(t)&&Math.abs(n-t)<=(bl.tol==null?0.15:bl.tol); } if(bl.num){ const n=parseFloat(v.replace(/[\u2212\u2013\u2014]/g,'-').replace(/[^0-9.\-]/g,'')); return !isNaN(n)&&n>=bl.num[0]&&n<=bl.num[1]; } return bl.accept.some(a=>v.replace(/\s+/g,' ')===a); };
+  function paint(){ inputs.forEach(inp=>{ inp.classList.remove('ok','no'); if(P.checked&&P.right) inp.classList.add('ok'); inp.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; showTry(ui,P,o.blanks.length,''); }
+  ui.cb.addEventListener('click',()=>{
+    if(inputs.some(inp=>!inp.value.trim())){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Fill in every blank before you check.'; return; }
+    if(P.checked) return;
+    const res=o.blanks.map((bl,i)=>ok(bl,inputs[i].value));
+    gradeTry(P,res,o.blanks.length); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.blanks.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- written answer, scored by key ideas (two tries, like every problem) ---------- */
+function writtenProblem(parent, o){
+  const P=st(o.id); if(P.val==null) P.val='';
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const ta=h('textarea',{class:'wtext',rows:'5','aria-label':'Your answer','data-key':o.model}); ta.value=P.val; box.appendChild(ta);
+  box.appendChild(h('div',{class:'wkey'},'<b>Key:</b> '+o.model));
+  if(o.bank){ const wb=h('div',{class:'wbank2'}); wb.innerHTML='<b>Word bank</b> <span class="small muted">(tap a word to add it)</span><br>'+o.bank.map(w=>`<button type="button" class="wchip">${w}</button>`).join('');
+    box.appendChild(wb);
+    wb.querySelectorAll('.wchip').forEach(c=>c.addEventListener('click',()=>{ if(ta.disabled) return; const w=c.textContent; const a=ta.selectionStart??ta.value.length, b=ta.selectionEnd??ta.value.length;
+      const before=ta.value.slice(0,a), after=ta.value.slice(b); const pre=(before&&!/\s$/.test(before))?' ':''; const ins=pre+w+' ';
+      ta.value=before+ins+after; ta.focus(); const p=a+ins.length; ta.setSelectionRange(p,p); ta.dispatchEvent(new Event('input',{bubbles:true})); })); }
+  ta.addEventListener('input',()=>{ P.val=ta.value; save(); });
+  const ui=actions(box,o);
+  const grade=()=>{ const t=ta.value.toLowerCase(); const hits=o.groups.filter(g=>g[1].test(t)).length; const n=Math.min(o.pts,hits); return Array.from({length:o.pts},(_,i)=>i<n); };
+  function paint(){ ta.disabled=!!P.checked; ui.cb.disabled=!!P.checked; showTry(ui,P,o.pts,o.why); }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(ta.value.trim().split(/\s+/).length<5){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Write a full answer (at least one complete sentence) before you check.'; return; }
+    gradeTry(P,grade(),o.pts); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- predictions: saved once, completion credit, never marked wrong ---------- */
+function predictProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.rows.length);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb predtab"><tr><th>${o.rowsLabel||'Tube'}</th><th>Setup</th><th>My prediction</th></tr>${o.rows.map((r,i)=>`<tr><td><b>${r.id}</b></td><td>${r.desc}</td><td><select data-i="${i}" aria-label="Prediction for ${r.id}"><option value="">choose…</option>${o.choices.map(c=>`<option>${c}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select')];
+  sels.forEach((sl,i)=>{ sl.value=P.val[i]||''; sl.addEventListener('change',()=>{ P.val[i]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Lock in my predictions';
+  function paint(){ sels.forEach(sl=>sl.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Predictions saved.</b> You\'ll compare them with your results later. Your observation table on page 3 is now unlocked.'; ui.cb.textContent='Predictions locked'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(sels.some(sl=>!sl.value)){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Choose a prediction for every tube first.'; return; }
+    if(!confirm('Lock in your predictions? You can\'t change them after this.')) return;
+    P.first=o.rows.length; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.rows.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- lab data table: groups type their own measurements; graph builds from them ---------- */
+function dataTableProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const cells=o.rows.length*o.cols.length;
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb datatab"><tr><th>${o.corner}</th>${o.cols.map(c=>`<th>${c}</th>`).join('')}</tr>${o.rows.map((r,i)=>`<tr><td><b>${r}</b></td>${o.cols.map((c,j)=>`<td><input class="dcell" inputmode="decimal" data-r="${i}" data-c="${j}" aria-label="${r}, ${c}"></td>`).join('')}</tr>`).join('')}</table>`;
+  const ins=[...wrap.querySelectorAll('input.dcell')];
+  const chart=h('div',{class:'datachart'}); box.appendChild(chart);
+  ins.forEach(inp=>{ const k=inp.dataset.r+'_'+inp.dataset.c; inp.value=P.val[k]??''; inp.addEventListener('input',()=>{ P.val[k]=inp.value; save(); draw(); }); });
+  function draw(){ chart.innerHTML=o.chart(P.val); }
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Save my data';
+  function paint(){ ins.forEach(i=>i.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Data saved.</b> Your analysis questions use these numbers.'; ui.cb.textContent='Data saved'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const bad=ins.filter(i=>i.value.trim()===''||isNaN(parseFloat(i.value)));
+    if(bad.length){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill in every box with a number first (${bad.length} still empty).`; bad[0].focus(); return; }
+    if(!confirm('Save your data? You can\'t change it after this, and your analysis will use these numbers.')) return;
+    P.first=o.pts; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  draw(); paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- observation table: each row has its own menu; completion credit when saved ---------- */
+function obsTableProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb datatab"><tr><th>Observation</th><th>What you saw</th></tr>${o.rows.map((r,i)=>`<tr><td>${r.q}</td><td><select class="ocell" data-r="${i}" aria-label="${r.q.replace(/<[^>]+>/g,'')}"><option value="">choose…</option>${r.opts.map(x=>`<option>${x}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select.ocell')];
+  sels.forEach(sl=>{ const k=sl.dataset.r; sl.value=P.val[k]||''; sl.addEventListener('change',()=>{ P.val[k]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Save my observations';
+  function paint(){ sels.forEach(s=>s.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Observations saved.</b> Your analysis questions use them.'; ui.cb.textContent='Observations saved'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const bad=sels.filter(s=>!s.value); if(bad.length){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Choose an answer in every row first (${bad.length} still empty).`; return; }
+    if(!confirm('Save your observations? You can\'t change them after this, and your analysis will use them.')) return;
+    P.first=o.pts; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ============================== WORKSHEET CONTENT ============================== */
+/* ===== drawing helpers copied from the Carbon Cycle lesson (figs_core.js) ===== */
+const tx=(x,y,t,fs,col,anchor,bold)=>`<text x="${x}" y="${y}" text-anchor="${anchor||'middle'}" font-size="${fs||14}" fill="${col||'#e8eef8'}"${bold?' font-weight="700"':''}>${t}</text>`;
+const clamp01=v=>Math.max(0,Math.min(1,v));
+const easeIO=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+const lrp=(a,b,t)=>a+(b-a)*t;
+function mixHex(a,b,t){ const p=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)); const A=p(a),B=p(b); return '#'+A.map((v,i)=>Math.round(lrp(v,B[i],clamp01(t))).toString(16).padStart(2,'0')).join(''); }
+function rng(seed){ let s=seed; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
+const mkr=(x,y,n,r)=>{ r=r||15; return `<circle cx="${x}" cy="${y}" r="${r}" fill="#ffd35c" stroke="#16213a" stroke-width="2"/><text x="${x}" y="${y+r*0.4}" text-anchor="middle" font-size="${r*1.13}" font-weight="700" fill="#16213a">${n}</text>`; };
+function arw(x1,y1,x2,y2,col,w,dash){ const a=Math.atan2(y2-y1,x2-x1), L=w*3.6+6, bx=x2-Math.cos(a)*L, by=y2-Math.sin(a)*L, hw=w*2.2+3;
+  return `<path d="M${x1},${y1} L${bx},${by}" stroke="${col}" stroke-width="${w}" fill="none"${dash?` stroke-dasharray="${dash}"`:''} stroke-linecap="round"/><path d="M${x2},${y2} L${bx-Math.sin(a)*hw},${by+Math.cos(a)*hw} L${bx+Math.sin(a)*hw},${by-Math.cos(a)*hw} Z" fill="${col}"/>`; }
+/* curved arrow: quadratic through control point */
+function carw(x1,y1,cx,cy,x2,y2,col,w,dash){ const a=Math.atan2(y2-cy,x2-cx), L=w*3.6+6, bx=x2-Math.cos(a)*L, by=y2-Math.sin(a)*L, hw=w*2.2+3;
+  return `<path d="M${x1},${y1} Q${cx},${cy} ${bx},${by}" stroke="${col}" stroke-width="${w}" fill="none"${dash?` stroke-dasharray="${dash}"`:''} stroke-linecap="round"/><path d="M${x2},${y2} L${bx-Math.sin(a)*hw},${by+Math.cos(a)*hw} L${bx+Math.sin(a)*hw},${by-Math.cos(a)*hw} Z" fill="${col}"/>`; }
+/* ---------- molecules ---------- */
+function co2(x,y,s,op){ s=s||1; return `<g transform="translate(${x},${y}) scale(${s})" opacity="${op==null?1:op}"><line x1="-12" y1="0" x2="12" y2="0" stroke="#334155" stroke-width="3"/><circle cx="-12" cy="0" r="6.5" fill="#ef4444" stroke="#7f1d1d" stroke-width="1"/><circle cx="12" cy="0" r="6.5" fill="#ef4444" stroke="#7f1d1d" stroke-width="1"/><circle cx="0" cy="0" r="7.5" fill="#1f2937" stroke="#000" stroke-width="1"/></g>`; }
+function cAtom(x,y,s,glow){ s=s||1; return `<g transform="translate(${x},${y}) scale(${s})">${glow?'<circle r="17" fill="#ffd35c" opacity=".45"/><circle r="12.5" fill="none" stroke="#ffd35c" stroke-width="3"/>':''}<circle r="9" fill="#111827" stroke="#000" stroke-width="1"/><text y="4.5" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">C</text></g>`; }
+/* glucose ring (ball and stick): carbon = black */
+function glucose(x,y,s){ s=s||1; const R=26, pts=[]; for(let i=0;i<6;i++){ const a=-Math.PI/2+i*Math.PI/3; pts.push([Math.cos(a)*R, Math.sin(a)*R]); }
+  let g=`<g transform="translate(${x},${y}) scale(${s})">`;
+  pts.forEach((p,i)=>{ const q=pts[(i+1)%6]; g+=`<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="#475569" stroke-width="3"/>`; });
+  g+=`<line x1="${pts[5][0]}" y1="${pts[5][1]}" x2="${pts[5][0]-16}" y2="${pts[5][1]-16}" stroke="#475569" stroke-width="3"/>`;
+  [1,2,3,4].forEach(i=>{ const p=pts[i], d=Math.hypot(p[0],p[1]); g+=`<line x1="${p[0]}" y1="${p[1]}" x2="${p[0]*1.55}" y2="${p[1]*1.55}" stroke="#475569" stroke-width="2.4"/><circle cx="${p[0]*1.55}" cy="${p[1]*1.55}" r="5" fill="#ef4444" stroke="#7f1d1d"/>`; });
+  pts.forEach((p,i)=>{ g+= i===0?`<circle cx="${p[0]}" cy="${p[1]}" r="7" fill="#ef4444" stroke="#7f1d1d"/>`:`<circle cx="${p[0]}" cy="${p[1]}" r="7.5" fill="#1f2937" stroke="#000"/>`; });
+  g+=`<circle cx="${pts[5][0]-16}" cy="${pts[5][1]-16}" r="7.5" fill="#1f2937" stroke="#000"/><circle cx="${pts[5][0]-27}" cy="${pts[5][1]-22}" r="5" fill="#ef4444" stroke="#7f1d1d"/>`;
+  return g+'</g>'; }
+/* ---------- nature drawings ---------- */
+function sun(x,y,r){ let s=`<circle cx="${x}" cy="${y}" r="${r*1.5}" fill="#fde68a" opacity=".35"/><circle cx="${x}" cy="${y}" r="${r}" fill="#fbbf24" stroke="#f59e0b" stroke-width="2"/>`;
+  for(let i=0;i<10;i++){ const a=i*Math.PI/5; s+=`<line x1="${x+Math.cos(a)*r*1.25}" y1="${y+Math.sin(a)*r*1.25}" x2="${x+Math.cos(a)*r*1.65}" y2="${y+Math.sin(a)*r*1.65}" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>`; } return s; }
+function cloud(x,y,s,op){ s=s||1; return `<g transform="translate(${x},${y}) scale(${s})" opacity="${op||0.95}"><ellipse cx="0" cy="0" rx="34" ry="16" fill="#fff"/><ellipse cx="-20" cy="4" rx="22" ry="12" fill="#fff"/><ellipse cx="18" cy="-8" rx="22" ry="16" fill="#fff"/><ellipse cx="34" cy="4" rx="18" ry="11" fill="#fff"/></g>`; }
+/* broadleaf tree: x = trunk base center, y = ground, h = height */
+function tree(x,y,h,o){ o=o||{}; const c1=o.c1||'#2f7d32', c2=o.c2||'#3f9a43', c3=o.c3||'#1f5e24', tw=h*0.09;
+  let s=`<path d="M${x-tw},${y} C${x-tw*0.7},${y-h*0.25} ${x-tw*0.5},${y-h*0.4} ${x-tw*0.4},${y-h*0.55} L${x+tw*0.4},${y-h*0.55} C${x+tw*0.5},${y-h*0.4} ${x+tw*0.7},${y-h*0.25} ${x+tw},${y} Z" fill="#6b4423" stroke="#3f2713" stroke-width="1"/>`;
+  s+=`<path d="M${x},${y-h*0.45} L${x-h*0.16},${y-h*0.66} M${x},${y-h*0.5} L${x+h*0.14},${y-h*0.7}" stroke="#5a381c" stroke-width="${tw*0.5}" stroke-linecap="round"/>`;
+  const blobs=[[0,-0.72,0.3,0.22,c3],[-0.2,-0.64,0.2,0.16,c1],[0.2,-0.64,0.21,0.17,c1],[-0.1,-0.84,0.2,0.16,c2],[0.13,-0.86,0.19,0.15,c2],[0,-0.7,0.22,0.17,c2],[-0.24,-0.76,0.13,0.12,c2],[0.26,-0.76,0.13,0.11,c3]];
+  blobs.forEach(([dx,dy,rx,ry,c])=>{ s+=`<ellipse cx="${x+dx*h}" cy="${y+dy*h}" rx="${rx*h}" ry="${ry*h}" fill="${c}"/>`; });
+  const r=rng(Math.round(x*7+h)); for(let i=0;i<14;i++){ s+=`<circle cx="${x+(r()-0.5)*h*0.5}" cy="${y-h*(0.6+r()*0.32)}" r="${h*0.025}" fill="#7cc576" opacity=".5"/>`; }
+  return s; }
+function pine(x,y,h,c){ c=c||'#1f5130'; let s=`<rect x="${x-h*0.035}" y="${y-h*0.25}" width="${h*0.07}" height="${h*0.25}" fill="#5b3a24"/>`;
+  for(let i=0;i<4;i++){ const ty=y-h*0.2-i*h*0.2, w=h*(0.34-i*0.07); s+=`<path d="M${x-w},${ty} L${x},${ty-h*0.32} L${x+w},${ty} Z" fill="${c}" stroke="#123620" stroke-width=".8"/>`; } return s; }
+/* clover / small plant at ground (x,y) */
+function clover(x,y,s){ s=s||1; let g=`<g transform="translate(${x},${y}) scale(${s})">`;
+  const leaf=(dx,dy,a)=>{ let q=`<g transform="translate(${dx},${dy}) rotate(${a})">`; for(let i=0;i<3;i++){ const b=i*120-90; q+=`<ellipse cx="${Math.cos(b*Math.PI/180)*7}" cy="${Math.sin(b*Math.PI/180)*7}" rx="7.5" ry="6" transform="rotate(${b} ${Math.cos(b*Math.PI/180)*7} ${Math.sin(b*Math.PI/180)*7})" fill="#3f9a43" stroke="#1f5e24" stroke-width=".8"/><path d="M${Math.cos(b*Math.PI/180)*4},${Math.sin(b*Math.PI/180)*4} l${Math.cos(b*Math.PI/180)*5},${Math.sin(b*Math.PI/180)*5}" stroke="#d9f99d" stroke-width="1" opacity=".8"/>`; } return q+'</g>'; };
+  [[-14,-30,0,-6],[0,-42,10,0],[15,-28,-5,6],[-4,-20,20,-2]].forEach(([dx,dy,a,lean])=>{ g+=`<path d="M0,0 Q${lean},${dy/2} ${dx},${dy}" stroke="#2f6b2f" stroke-width="2" fill="none"/>`+leaf(dx,dy,a); });
+  g+=`<g transform="translate(9,-52)"><path d="M-9,10 Q-4,4 0,0" stroke="#2f6b2f" stroke-width="1.6" fill="none"/>${[0,1,2,3,4,5,6].map(i=>`<circle cx="${Math.cos(i*0.9)*4}" cy="${Math.sin(i*0.9)*4}" r="3" fill="#f5f5f4" stroke="#d6d3d1" stroke-width=".5"/>`).join('')}<circle r="3" fill="#fbcfe8"/></g>`;
+  return g+'</g>'; }
+function grassTufts(x0,x1,y,seed,col){ const r=rng(seed); let s=''; for(let x=x0;x<x1;x+=9+r()*8){ const h=6+r()*8; s+=`<path d="M${x},${y} l${-2-r()*2},${-h} M${x},${y} l${1},${-h*1.2} M${x},${y} l${3+r()*2},${-h*0.9}" stroke="${col||'#3f7d32'}" stroke-width="1.4" fill="none" stroke-linecap="round"/>`; } return s; }
+/* rabbit (cottontail), sitting, facing right; x,y = ground under body center */
+function rabbit(x,y,s,flip){ s=s||1; const f=flip?-1:1, fur='#9a8068', dk='#6e5641', out='#3b2b1d';
+  return `<g transform="translate(${x},${y}) scale(${f*s},${s})">
+  <ellipse cx="-2" cy="-1" rx="30" ry="4" fill="#000" opacity=".15"/>
+  <ellipse cx="-20" cy="-22" rx="8" ry="7" fill="#fff" stroke="#d6d3d1"/>
+  <path d="M-24,-8 C-28,-30 -10,-46 8,-42 C22,-39 26,-24 22,-10 C20,-4 12,-2 4,-2 L-16,-2 C-22,-2 -24,-4 -24,-8 Z" fill="${fur}" stroke="${out}" stroke-width="1.2"/>
+  <path d="M-18,-8 C-20,-24 -8,-32 4,-30 C-4,-24 -8,-16 -6,-4 Z" fill="${dk}" opacity=".45"/>
+  <ellipse cx="-8" cy="-8" rx="13" ry="9" fill="${fur}" stroke="${out}" stroke-width="1"/>
+  <path d="M-16,-2 q8,-2 18,0 q-2,3 -18,2 z" fill="${dk}" stroke="${out}" stroke-width=".8"/>
+  <path d="M14,-4 q5,-1 10,0 q0,3 -10,2 z" fill="${fur}" stroke="${out}" stroke-width=".8"/>
+  <path d="M10,-46 C6,-62 8,-76 14,-80 C20,-76 20,-60 16,-46 Z" fill="${fur}" stroke="${out}" stroke-width="1.1"/><path d="M12,-50 C10,-62 11,-72 14,-75 C17,-71 17,-61 15,-50 Z" fill="#e8b4a6"/>
+  <path d="M18,-44 C20,-60 26,-72 32,-74 C35,-68 30,-54 23,-43 Z" fill="${fur}" stroke="${out}" stroke-width="1.1"/>
+  <ellipse cx="22" cy="-36" rx="14" ry="11" fill="${fur}" stroke="${out}" stroke-width="1.2"/>
+  <ellipse cx="30" cy="-31" rx="7" ry="5.5" fill="#b59c84"/>
+  <circle cx="25" cy="-39" r="3" fill="#111"/><circle cx="26" cy="-40" r="1" fill="#fff"/>
+  <path d="M35,-32 l2,1 l-2,1 z" fill="#c9827a"/><path d="M34,-30 l10,-2 M34,-29 l10,2" stroke="${out}" stroke-width=".5"/></g>`; }
+/* red fox, standing, facing right */
+function fox(x,y,s,flip){ s=s||1; const f=flip?-1:1, fur='#c2561f', out='#3b1d0c';
+  return `<g transform="translate(${x},${y}) scale(${f*s},${s})">
+  <ellipse cx="0" cy="0" rx="40" ry="4" fill="#000" opacity=".15"/>
+  <path d="M-34,-30 C-58,-34 -74,-22 -78,-6 C-66,-14 -52,-16 -36,-20 Z" fill="${fur}" stroke="${out}" stroke-width="1"/><path d="M-78,-6 C-74,-14 -68,-18 -62,-18 C-66,-12 -70,-8 -78,-6 Z" fill="#fff"/>
+  <path d="M-36,-20 C-38,-36 -20,-42 0,-40 C14,-40 24,-38 28,-30 C30,-22 24,-14 14,-14 L-26,-14 C-32,-14 -36,-16 -36,-20 Z" fill="${fur}" stroke="${out}" stroke-width="1.2"/>
+  <path d="M-28,-16 l-3,16 h5 l2,-14 M-16,-15 l-1,15 h5 l0,-14 M8,-15 l1,15 h5 l-1,-15 M18,-17 l3,17 h5 l-3,-18" fill="#2b170b" stroke="#2b170b" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M20,-36 C26,-48 36,-50 44,-46 L58,-40 C60,-38 58,-35 54,-34 L40,-30 C32,-24 24,-26 20,-36 Z" fill="${fur}" stroke="${out}" stroke-width="1.2"/>
+  <path d="M42,-38 L58,-38 C58,-35 54,-34 50,-33 L40,-31 Z" fill="#fff"/><path d="M18,-30 C22,-22 30,-20 36,-24 C30,-26 24,-28 22,-34 Z" fill="#fff"/>
+  <path d="M30,-46 L30,-60 L39,-48 Z M38,-47 L42,-60 L46,-46 Z" fill="${fur}" stroke="${out}" stroke-width="1"/><path d="M32,-50 L32,-56 L36,-50 Z" fill="#2b170b"/>
+  <circle cx="44" cy="-42" r="2.3" fill="#111"/><circle cx="58" cy="-39" r="2" fill="#111"/></g>`; }
+/* fallen log with mushrooms */
+function logShrooms(x,y,s){ s=s||1; let g=`<g transform="translate(${x},${y}) scale(${s})">`;
+  g+=`<path d="M-70,-4 C-70,-30 60,-34 66,-24 C72,-14 70,0 62,2 L-62,4 C-68,4 -70,2 -70,-4 Z" fill="#7a5233" stroke="#3f2713" stroke-width="1.4"/>`;
+  g+=`<ellipse cx="64" cy="-12" rx="9" ry="15" fill="#c9a57a" stroke="#3f2713" stroke-width="1.2"/><ellipse cx="64" cy="-12" rx="5" ry="9" fill="none" stroke="#8b6a45"/><ellipse cx="64" cy="-12" rx="2" ry="4" fill="#8b6a45"/>`;
+  for(let i=0;i<6;i++) g+=`<path d="M${-60+i*20},${-24+i%2*3} q8,6 16,0" stroke="#4e3420" stroke-width="1.2" fill="none" opacity=".7"/>`;
+  g+=`<path d="M-50,-26 c6,-4 14,-2 16,4" fill="#3f8f3f" opacity=".8"/><path d="M10,-30 c8,-6 20,-4 24,2" fill="#4c9a3f" opacity=".75"/>`;
+  const sh=(mx,my,r,c)=>`<path d="M${mx-r*0.25},${my} L${mx-r*0.2},${my-r*1.1} L${mx+r*0.2},${my-r*1.1} L${mx+r*0.25},${my} Z" fill="#f5efe0" stroke="#a8a29e" stroke-width=".8"/><path d="M${mx-r},${my-r*1.05} C${mx-r},${my-r*2} ${mx+r},${my-r*2} ${mx+r},${my-r*1.05} Z" fill="${c}" stroke="#7c2d12" stroke-width="1"/><circle cx="${mx-r*0.4}" cy="${my-r*1.45}" r="${r*0.15}" fill="#fff" opacity=".8"/><circle cx="${mx+r*0.3}" cy="${my-r*1.6}" r="${r*0.12}" fill="#fff" opacity=".8"/>`;
+  g+=sh(-30,-26,9,'#b45309')+sh(-14,-28,6,'#c2410c')+sh(32,-28,11,'#a16207')+sh(48,-24,6,'#b45309');
+  g+=`<g transform="translate(-4,-6)"><ellipse rx="6" ry="4" fill="#1c1917"/><circle cx="6" cy="0" r="2.5" fill="#1c1917"/></g>`;
+  return g+'</g>'; }
+function waves(x0,x1,y,col,amp){ amp=amp||3; let d=`M${x0},${y}`; for(let x=x0;x<x1;x+=20) d+=` q5,${-amp} 10,0 t10,0`; return `<path d="${d}" stroke="${col||'#bfdbfe'}" stroke-width="1.6" fill="none" opacity=".8"/>`; }
+/* scallop / clam shell */
+function shell(x,y,s,c){ s=s||1; c=c||'#f1d7b8'; let g=`<g transform="translate(${x},${y}) scale(${s})"><path d="M0,0 L-18,-14 C-16,-28 16,-28 18,-14 Z" fill="${c}" stroke="#8a6a4a" stroke-width="1.1"/>`;
+  for(let i=-3;i<=3;i++) g+=`<path d="M0,0 L${i*5},-24" stroke="#a8825c" stroke-width=".9"/>`; return g+`<path d="M-5,0 h10 v3 h-10z" fill="${c}" stroke="#8a6a4a" stroke-width=".8"/></g>`; }
+function coral(x,y,s){ s=s||1; return `<g transform="translate(${x},${y}) scale(${s})" fill="none" stroke="#f9a8d4" stroke-width="5" stroke-linecap="round"><path d="M0,0 V-26 M0,-14 L-10,-24 V-32 M0,-20 L10,-30 V-38 M-10,-24 L-16,-30 M10,-30 L16,-34"/></g>`; }
+/* tiny plankton (diatom-like) */
+function plank(x,y,s,c){ s=s||1; c=c||'#84cc16'; return `<g transform="translate(${x},${y}) scale(${s})"><circle r="6" fill="${c}" stroke="#3f6212" stroke-width="1"/><circle r="3" fill="none" stroke="#3f6212" stroke-width=".8"/>${[0,1,2,3,4,5].map(i=>`<line x1="${Math.cos(i)*6}" y1="${Math.sin(i)*6}" x2="${Math.cos(i)*9}" y2="${Math.sin(i)*9}" stroke="#3f6212" stroke-width=".8"/>`).join('')}</g>`; }
+function fish(x,y,s,c,flip){ s=s||1; c=c||'#60a5fa'; const f=flip?-1:1; return `<g transform="translate(${x},${y}) scale(${f*s},${s})"><path d="M-20,0 C-12,-10 10,-10 18,-2 C20,0 20,2 18,3 C10,10 -12,10 -20,0 Z" fill="${c}" stroke="#0c2a44" stroke-width="1"/><path d="M-20,0 l-10,-7 l2,7 l-2,7 z" fill="${c}" stroke="#0c2a44" stroke-width="1"/><circle cx="12" cy="-1" r="1.8" fill="#111"/></g>`; }
+/* car, facing left; x,y = ground under car center */
+function car(x,y,s,col){ s=s||1; col=col||'#2563eb'; return `<g transform="translate(${x},${y}) scale(${s})">
+  <path d="M-38,-8 C-38,-16 -34,-19 -26,-20 L-16,-32 C-14,-34 -10,-35 -6,-35 L16,-35 C21,-35 24,-33 27,-29 L33,-20 C38,-19 40,-16 40,-12 L40,-6 L-38,-6 Z" fill="${col}" stroke="#0f172a" stroke-width="1.3"/>
+  <path d="M-13,-21 L-6,-31 L5,-31 L5,-21 Z M9,-21 L9,-31 L17,-31 C20,-31 22,-29 24,-26 L27,-21 Z" fill="#bfdbfe" stroke="#0f172a" stroke-width="1"/>
+  <rect x="-38" y="-14" width="6" height="4" fill="#fde68a"/><rect x="36" y="-14" width="4" height="4" fill="#ef4444"/>
+  <circle cx="-22" cy="-5" r="7.5" fill="#111827"/><circle cx="-22" cy="-5" r="3.2" fill="#9ca3af"/><circle cx="24" cy="-5" r="7.5" fill="#111827"/><circle cx="24" cy="-5" r="3.2" fill="#9ca3af"/>
+  <path d="M40,-9 h6" stroke="#4b5563" stroke-width="3"/></g>`; }
+function exhaust(x,y,s,op){ s=s||1; return `<g transform="translate(${x},${y}) scale(${s})" opacity="${op==null?.8:op}"><circle cx="0" cy="0" r="6" fill="#9ca3af"/><circle cx="-2" cy="-12" r="8" fill="#a1a1aa"/><circle cx="2" cy="-27" r="10" fill="#d4d4d8"/></g>`; }
+/* oil pump jack; x,y = ground */
+function pumpJack(x,y,s){ s=s||1; return `<g transform="translate(${x},${y}) scale(${s})">
+  <rect x="-34" y="-4" width="68" height="4" fill="#57534e"/>
+  <path d="M-4,-4 L4,-44 L12,-4 Z" fill="none" stroke="#1f2937" stroke-width="3"/>
+  <path d="M-30,-48 L36,-38" stroke="#b91c1c" stroke-width="6" stroke-linecap="round"/>
+  <path d="M-36,-56 C-42,-48 -42,-38 -34,-32 L-28,-36 C-32,-40 -32,-48 -28,-52 Z" fill="#7f1d1d"/>
+  <path d="M-34,-34 L-34,0" stroke="#1f2937" stroke-width="2"/>
+  <circle cx="26" cy="-18" r="9" fill="#374151"/><path d="M32,-38 L26,-18" stroke="#1f2937" stroke-width="3"/><rect x="18" y="-10" width="18" height="6" fill="#4b5563"/></g>`; }
+/* power plant with smokestacks; x,y = ground */
+function powerPlant(x,y,s,smoke){ s=s||1; let g=`<g transform="translate(${x},${y}) scale(${s})"><rect x="-40" y="-34" width="56" height="34" fill="#9ca3af" stroke="#374151" stroke-width="1.2"/><rect x="-34" y="-26" width="8" height="8" fill="#fde68a"/><rect x="-20" y="-26" width="8" height="8" fill="#fde68a"/><rect x="-6" y="-26" width="8" height="8" fill="#fde68a"/>
+  <path d="M14,0 L18,-70 L28,-70 L32,0 Z" fill="#d1d5db" stroke="#374151" stroke-width="1.2"/><path d="M18,-62 h10" stroke="#b91c1c" stroke-width="3"/>
+  <path d="M34,0 L37,-56 L45,-56 L48,0 Z" fill="#d1d5db" stroke="#374151" stroke-width="1.2"/><path d="M37,-50 h8" stroke="#b91c1c" stroke-width="3"/>`;
+  if(smoke!==false) g+=`<circle cx="24" cy="-80" r="9" fill="#a1a1aa" opacity=".85"/><circle cx="32" cy="-92" r="12" fill="#d4d4d8" opacity=".8"/><circle cx="44" cy="-106" r="14" fill="#e4e4e7" opacity=".7"/><circle cx="42" cy="-64" r="7" fill="#a1a1aa" opacity=".8"/>`;
+  return g+'</g>'; }
+/* rock strata block; returns svg with clip; o: coal, oil, limestone */
+function strata(x,y,w,h,seed,o){ o=o||{}; const r=rng(seed||3); const cols=['#a16207','#92400e','#b45309','#78350f','#a8a29e','#8b5e34']; let s='';
+  const n=o.n||5; for(let i=0;i<n;i++){ const y0=y+h*i/n, y1=y+h*(i+1)/n; let d=`M${x},${y0}`; for(let k=0;k<=8;k++) d+=` L${x+w*k/8},${y0+(r()-0.5)*h*0.05}`; d+=` L${x+w},${y1} L${x},${y1} Z`; s+=`<path d="${d}" fill="${cols[(i+(seed||0))%cols.length]}" opacity=".92"/>`; }
+  for(let i=0;i<w*h/900;i++) s+=`<circle cx="${x+r()*w}" cy="${y+r()*h}" r="${0.8+r()*1.6}" fill="#000" opacity=".12"/>`;
+  return s; }
+/* ---------- Keeling curve data (modeled to match the real pattern) ---------- */
+/* monthly seasonal swing at Mauna Loa, approximate (ppm above or below the yearly average) */
+const SEAS=[0.0,0.7,1.4,2.6,3.1,2.4,0.8,-1.3,-3.0,-3.2,-2.0,-0.8];
+function seas(m){ const i=Math.floor(m)%12, f=m-Math.floor(m); return lrp(SEAS[i],SEAS[(i+1)%12],f); }
+function trend(t){ const u=t-1958; return 315+0.8*u+0.0125*u*u; }
+const keeling=t=>trend(t)+seas(((t-Math.floor(t))*12+11.5)%12);
+/* full Keeling curve graph. o: {w,h,label,markers,notes} */
+function keelingFig(o){ o=o||{}; const W=760, H=o.h||380, gx=78, gy=40, gw=W-gx-30, gh=H-gy-70, y0=300, y1=430, t0=1958, t1=2025;
+  const X=t=>gx+gw*(t-t0)/(t1-t0), Y=v=>gy+gh*(1-(v-y0)/(y1-y0));
+  let s=`<svg viewBox="0 0 ${W} ${H}" class="fig" role="img" aria-label="${o.label||'A line graph of carbon dioxide in the air at Mauna Loa, Hawaii, from 1958 to today. The line zig-zags up and down every year, but overall it climbs from about 315 ppm in 1958 to about 420 ppm today.'}"><rect width="${W}" height="${H}" rx="14" fill="#f8fafc"/>`;
+  s+=tx(W/2,24,o.title||'Carbon dioxide (CO₂) in the air at Mauna Loa, Hawaii',16,'#0f172a','middle',true);
+  for(let v=y0;v<=y1;v+=20){ s+=`<line x1="${gx}" y1="${Y(v)}" x2="${gx+gw}" y2="${Y(v)}" stroke="#e2e8f0"/>`+tx(gx-8,Y(v)+5,v,13,'#334155','end'); }
+  for(let t=1960;t<=2020;t+=10){ s+=`<line x1="${X(t)}" y1="${gy+gh}" x2="${X(t)}" y2="${gy+gh+5}" stroke="#334155"/>`+tx(X(t),gy+gh+22,t,13,'#334155'); }
+  s+=`<line x1="${gx}" y1="${gy}" x2="${gx}" y2="${gy+gh}" stroke="#334155"/><line x1="${gx}" y1="${gy+gh}" x2="${gx+gw}" y2="${gy+gh}" stroke="#334155"/>`;
+  s+=`<text x="20" y="${gy+gh/2}" transform="rotate(-90 20 ${gy+gh/2})" text-anchor="middle" font-size="13" fill="#334155">CO₂ in the air (ppm)</text>`+tx(gx+gw/2,gy+gh+44,'Year',13,'#334155');
+  let d=''; for(let t=1958.2;t<=2024.95;t+=1/12){ d+=(d?'L':'M')+X(t).toFixed(1)+','+Y(keeling(t)).toFixed(1); }
+  s+=`<path d="${d}" fill="none" stroke="#dc2626" stroke-width="1.8" stroke-linejoin="round"/>`;
+  if(o.markers){ s+=mkr(X(1960),Y(315)-28,1)+mkr(X(2021),Y(420)-24,2); }
+  else if(o.notes!==false){ s+=`<circle cx="${X(1958.5)}" cy="${Y(315.5)}" r="5" fill="#0f172a"/><path d="M${X(1958.5)+4},${Y(315.5)-6} L${X(1961)},${Y(332)}" stroke="#0f172a"/>`+tx(X(1961)+2,Y(334),'about 315 ppm in 1958',13,'#0f172a','start',true);
+    s+=`<circle cx="${X(2023.5)}" cy="${Y(420)}" r="5" fill="#0f172a"/>`+tx(X(2023.5)-10,Y(420)-10,'about 420 ppm today',13,'#0f172a','end',true); }
+  if(o.zoomBox){ const a=X(2006), b=X(2010.0); s+=`<rect x="${a}" y="${Y(392)}" width="${b-a}" height="${Y(375)-Y(392)}" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="5 3"/>`+tx(a-6,Y(392)-6,'zoom in below',12,'#2563eb','end',true); }
+  s+=tx(gx+gw,H-8,'Graph drawn from the pattern of real measurements. Values are approximate.',11,'#64748b','end');
+  return s+'</svg>'; }
+/* zoomed-in years: shows the yearly zig-zag with months. o: {years:[a,b], label, markers} */
+function keelingZoom(o){ o=o||{}; const W=760, H=o.h||300, gx=78, gy=36, gw=W-gx-30, gh=H-gy-70, ta=o.ta||2006, tb=o.tb||2010;
+  let lo=1e9, hi=-1e9; for(let t=ta;t<=tb;t+=1/24){ const v=keeling(t); lo=Math.min(lo,v); hi=Math.max(hi,v); } const y0=Math.floor(lo-1), y1=Math.ceil(hi+1);
+  const X=t=>gx+gw*(t-ta)/(tb-ta), Y=v=>gy+gh*(1-(v-y0)/(y1-y0));
+  let s=`<svg viewBox="0 0 ${W} ${H}" class="fig" role="img" aria-label="${o.label||'A zoomed-in graph of four years. Each year, CO₂ rises to a high point in about May, then falls to a low point in about September or October, then rises again.'}"><rect width="${W}" height="${H}" rx="14" fill="#f8fafc"/>`;
+  s+=tx(W/2,22,o.title||`Zoomed in: ${ta} to ${tb-1}`,15,'#0f172a','middle',true);
+  for(let v=Math.ceil(y0/2)*2;v<=y1;v+=2){ s+=`<line x1="${gx}" y1="${Y(v)}" x2="${gx+gw}" y2="${Y(v)}" stroke="#e2e8f0"/>`+tx(gx-8,Y(v)+5,v,12,'#334155','end'); }
+  for(let t=ta;t<tb;t++){ s+=`<rect x="${X(t+5/12)}" y="${gy}" width="${X(t+9/12)-X(t+5/12)}" height="${gh}" fill="#dcfce7" opacity=".7"/>`; s+=`<line x1="${X(t)}" y1="${gy}" x2="${X(t)}" y2="${gy+gh+6}" stroke="#94a3b8"/>`+tx(X(t+0.5),gy+gh+40,t,13,'#334155','middle',true);
+    ['J','F','M','A','M','J','J','A','S','O','N','D'].forEach((m,i)=>{ s+=tx(X(t+(i+0.5)/12),gy+gh+18,m,10,'#64748b'); }); }
+  s+=`<line x1="${gx}" y1="${gy}" x2="${gx}" y2="${gy+gh}" stroke="#334155"/><line x1="${gx}" y1="${gy+gh}" x2="${gx+gw}" y2="${gy+gh}" stroke="#334155"/>`;
+  s+=`<text x="20" y="${gy+gh/2}" transform="rotate(-90 20 ${gy+gh/2})" text-anchor="middle" font-size="13" fill="#334155">CO₂ (ppm)</text>`;
+  let d=''; for(let t=ta;t<=tb;t+=1/48){ d+=(d?'L':'M')+X(t).toFixed(1)+','+Y(keeling(t)).toFixed(1); } s+=`<path d="${d}" fill="none" stroke="#dc2626" stroke-width="2.6"/>`;
+  if(o.markers){ s+=mkr(X(ta+1+4.5/12),Y(keeling(ta+1+4.5/12))-20,1)+mkr(X(ta+1+9/12),Y(keeling(ta+1+9/12))+22,2); }
+  else if(o.notes!==false){ const tp=ta+1+4.5/12, tl=ta+1+9.2/12; s+=tx(X(tp),Y(keeling(tp))-12,'high in May',12,'#0f172a','middle',true)+tx(X(tl),Y(keeling(tl))+20,'low in Sep–Oct',12,'#0f172a','middle',true); }
+  s+=`<rect x="${gx+8}" y="${gy+6}" width="14" height="10" fill="#dcfce7" stroke="#86efac"/>`+tx(gx+28,gy+15,'Northern Hemisphere summer (about June to September)',12,'#14532d','start');
+  return s+'</svg>'; }
+/* Mauna Loa observatory scene */
+
+/* ===== The Carbon Atom Journey Game (shared: stations, cards, landscape, tables, charts, sections 1, 2, 4, 5) ===== */
+const STN=[
+  {name:'Atmosphere', short:'Atmosphere', col:'#93c5fd'},
+  {name:'Plants', short:'Plants', col:'#86efac'},
+  {name:'Animals', short:'Animals', col:'#fcd34d'},
+  {name:'Soil and decomposers', short:'Soil', col:'#d6a676'},
+  {name:'Ocean', short:'Ocean', col:'#38bdf8'},
+  {name:'Ocean sediments and rocks', short:'Sediments, rocks', col:'#e2dccd'},
+  {name:'Fossil fuels', short:'Fossil fuels', col:'#a8a29e'}];
+const STN_NAMES=STN.map(s=>s.name);
+const PROCS=['Stays here (no move)','Photosynthesis','Cellular respiration','Eating (consumption)','Death and wastes','Decomposition','Dissolving into the ocean','Release from the ocean','Shells sink and are buried','Fossil fuel formation','Burning (combustion)','Volcano','Weathering of rock'];
+const NTURN=15;
+const ROUND_NAMES=['Round 1: natural cycle','Round 2: human impact'];
+/* station cards: CARDS[round][station] = 6 rows [goTo, process, what happens]; -1 goTo = stay */
+const C=(to,p,t)=>[to,p,t], STAY=t=>[-1,0,t];
+const CARD_ATM=[C(1,1,'A leaf takes in your CO₂ and makes sugar.'),C(1,1,'Grass takes in your CO₂ and makes sugar.'),C(4,6,'Your CO₂ dissolves into the ocean surface.'),STAY('The wind blows you around.'),STAY('You drift high over a city.'),STAY('You float above the clouds.')];
+const CARD_ANI=[C(0,2,'The animal breathes you out as CO₂.'),C(0,2,'The animal runs hard and breathes you out as CO₂.'),C(3,4,'You leave the animal in its wastes (poop).'),C(3,4,'The animal dies. Its body falls on the ground.'),STAY('You become part of the animal\'s muscle.'),C(2,3,'A fox eats the animal. You are still in an animal.')];
+const CARD_SOIL=[C(0,5,'A mushroom breaks down a dead leaf and releases you as CO₂.'),C(0,5,'Bacteria break down dead matter and release you as CO₂.'),C(0,5,'Worms and fungi break down dead matter. You leave as CO₂.'),STAY('You stay in the soil as humus (dark, rich soil).'),STAY('It is cold and dry. Decomposers work slowly.'),C(6,9,'You are buried in a swamp. Over millions of years, you become coal.')];
+const CARD_OCEAN=[C(0,7,'Warm water lets you bubble out as CO₂.'),C(5,8,'A clam uses you to build its shell. It dies, and the shell sinks to the sea floor.'),STAY('Plankton use you for photosynthesis.'),STAY('A fish eats the plankton. You are still in the ocean.'),STAY('You sink into the deep, cold ocean.'),STAY('Ocean currents carry you around the world.')];
+const CARD_ROCK=[C(0,11,'A volcano erupts and releases you as CO₂.'),C(4,12,'Rain slowly wears away the rock. A river carries you to the ocean.'),STAY('You are pressed into limestone rock.'),STAY('You stay locked in rock.'),STAY('Millions of years go by.'),STAY('More layers bury you deeper.')];
+const CARDS=[
+  [CARD_ATM,
+   [C(0,2,'The plant breaks down sugar for energy and releases you as CO₂.'),C(2,3,'A rabbit eats the leaf you are in.'),C(3,4,'Your leaf dies and falls to the ground.'),STAY('You become part of the trunk (wood).'),STAY('You are stored in a root.'),STAY('You are stored as starch in a seed.')],
+   CARD_ANI, CARD_SOIL, CARD_OCEAN, CARD_ROCK,
+   [STAY('You stay in coal deep underground.'),STAY('You stay in oil trapped in rock.'),STAY('You stay in natural gas underground.'),STAY('No one digs here.'),STAY('Millions of years go by.'),C(0,10,'People dig up a little coal and burn it to heat a home.')]],
+  [CARD_ATM,
+   [C(0,2,'The plant breaks down sugar for energy and releases you as CO₂.'),C(2,3,'A rabbit eats the leaf you are in.'),C(3,4,'Your leaf dies and falls to the ground.'),C(0,10,'People clear the forest and burn the trees.'),C(3,4,'The forest is cut down. Roots and branches are left to rot.'),STAY('You become part of the trunk (wood).')],
+   CARD_ANI, CARD_SOIL, CARD_OCEAN, CARD_ROCK,
+   [C(0,10,'A car burns gasoline made from oil.'),C(0,10,'A power plant burns coal to make electricity.'),C(0,10,'A factory burns natural gas.'),C(0,10,'A plane burns jet fuel.'),STAY('You stay in oil trapped in rock.'),STAY('You stay in coal deep underground.')]]];
+const cardRow=(r,s,roll)=>{ const c=CARDS[r][s][roll-1]; return {to:c[0]<0?s:c[0], p:c[1], t:c[2], stay:c[0]<0}; };
+
+/* ---------- small helpers ---------- */
+let UIDN=0; const uid=p=>p+'_'+(++UIDN);
+const f1=v=>(+v).toFixed(1);
+function hashStr(s){ let x=2166136261; for(const ch of String(s)){ x^=ch.charCodeAt(0); x=Math.imul(x,16777619); } return x>>>0; }
+function mulberry(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+
+/* ---------- a six-sided die ---------- */
+const PIPS={1:[[0,0]],2:[[-1,-1],[1,1]],3:[[-1,-1],[0,0],[1,1]],4:[[-1,-1],[1,-1],[-1,1],[1,1]],5:[[-1,-1],[1,-1],[0,0],[-1,1],[1,1]],6:[[-1,-1],[1,-1],[-1,0],[1,0],[-1,1],[1,1]]};
+function dieG(n,col){ return `<rect x="-26" y="-26" width="52" height="52" rx="10" fill="${col||'#fbfaf7'}" stroke="#64748b" stroke-width="2"/><rect x="-22" y="-24" width="44" height="6" rx="3" fill="#ffffff" opacity=".7"/>`+(n?PIPS[n].map(([a,b])=>`<circle cx="${a*13}" cy="${b*13}" r="5" fill="#1e293b"/>`).join(''):''); }
+const dieSVG=(n,px,rot)=>`<svg viewBox="-32 -32 64 64" width="${px||70}" height="${px||70}" role="img" aria-label="${n?'A die showing '+n:'A die'}"><g transform="rotate(${rot||0})">${dieG(n)}</g></svg>`;
+
+/* ---------- the carbon cycle landscape (stations live here) ---------- */
+const WW=900, WH=560;
+const ANC=[[450,66],[118,178],[300,226],[422,312],[735,330],[765,492],[232,465]];
+const ys=x=>x<=560?258+4*Math.sin(x/58):258+(x-560)*0.9;
+function worldSVG(o){ o=o||{}; const human=!!o.human, id=uid('w');
+  let s=`<svg viewBox="0 0 ${WW} ${WH}" role="img" aria-label="${o.label||'A carbon cycle landscape cut away to show underground. Sky with clouds and CO₂ molecules at the top. On land: a forest, a rabbit and a fox, a fallen log with mushrooms. Under the land: dark soil with roots, worms, and fungi, then rock layers with a black coal seam and a pocket of oil. On the right: the ocean with fish and plankton, a distant volcano island, and light-colored layers of shells and limestone under the sea floor.'+(human?' Near the coast there is a power plant with smoke and an oil pump, and part of the forest has been cut and burned.':'')}">
+  <defs><linearGradient id="${id}s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6fa8dc"/><stop offset="1" stop-color="#dcecf8"/></linearGradient>
+  <linearGradient id="${id}o" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2f86c4"/><stop offset="1" stop-color="#0b3a63"/></linearGradient>
+  <linearGradient id="${id}d" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a2414"/><stop offset="1" stop-color="#5e3d22"/></linearGradient>
+  <clipPath id="${id}c"><rect width="${WW}" height="${WH}" rx="14"/></clipPath>
+  <clipPath id="${id}sed"><path d="M575,258 C600,320 625,380 660,402 C730,418 820,422 ${WW},426 L${WW},${WH} L560,${WH} C565,470 585,380 600,330 Z"/></clipPath></defs><g clip-path="url(#${id}c)">`;
+  s+=`<rect width="${WW}" height="${WH}" fill="url(#${id}s)"/>`+sun(62,50,19)+cloud(250,58,1.05)+cloud(640,42,1.2)+cloud(560,118,0.6,0.85);
+  if(human) s+=`<rect width="${WW}" height="262" fill="#9a8f80" opacity=".16"/>`;
+  [[170,36],[330,128],[575,72],[705,138],[805,40],[248,196],[612,212],[455,150],[36,128],[380,30]].forEach(([x,y],i)=>s+=co2(x,y,0.72,0.9));
+  if(human) [[520,104],[780,96],[150,96],[300,74],[690,200]].forEach(([x,y])=>s+=co2(x,y,0.72,0.9));
+  /* distant hills and volcano island */
+  s+=`<path d="M0,240 C80,214 170,222 240,232 C320,206 420,214 520,236 L560,262 L0,262 Z" fill="#8fb4a0" opacity=".55"/>`;
+  s+=`<path d="M812,264 L860,218 Q872,210 884,218 L${WW},232 L${WW},264 Z" fill="#57534e" stroke="#3f3a36" stroke-width="1"/><path d="M856,222 Q872,214 886,222 L880,230 Q870,224 860,230 Z" fill="#292524"/>`;
+  s+=`<g opacity=".75"><circle cx="874" cy="200" r="9" fill="#a8a29e"/><circle cx="866" cy="184" r="12" fill="#d6d3d1"/><circle cx="880" cy="166" r="14" fill="#e7e5e4"/></g>`;
+  /* underground land: soil, then rock layers, coal and oil */
+  let surf=''; for(let x=0;x<=600;x+=10) surf+=`L${x},${f1(ys(x))} `;
+  s+=`<path d="M0,${WH} L0,${f1(ys(0))} ${surf} L640,${WH} Z" fill="url(#${id}d)"/>`;
+  s+=`<g clip-path="url(#${id}c)"><path d="M0,345 C150,338 330,352 640,344 L640,${WH} L0,${WH} Z" fill="#8b5e34"/>`+strata(0,345,640,215,4,{n:5})+`</g>`;
+  s+=`<path d="M0,452 C90,444 190,458 300,450 C380,445 440,452 480,458 L476,482 C430,476 360,474 300,478 C200,484 100,474 0,480 Z" fill="#111111" stroke="#000" stroke-width="1"/>`;
+  for(let i=0;i<9;i++) s+=`<path d="M${20+i*50},${462+(i%3)*4} l18,-2" stroke="#4b5563" stroke-width="1.2" opacity=".7"/>`;
+  s+=`<path d="M470,470 C485,442 560,438 585,462 C582,490 490,494 470,470 Z" fill="#1c1208" stroke="#000" stroke-width="1"/><path d="M486,462 C505,450 548,448 568,458" stroke="#6b4f2c" stroke-width="2" fill="none" opacity=".7"/>`;
+  /* topsoil details: humus, roots, worms, fungal threads */
+  s+=`<path d="M0,${f1(ys(0))} ${surf} L600,292 C420,288 200,294 0,288 Z" fill="#2b1a0e" opacity=".55"/>`;
+  [[45,1],[100,.9],[150,1.05],[205,.8]].forEach(([x,k])=>{ const y=ys(x); s+=`<path d="M${x},${f1(y)} q-10,22 -26,${36*k} M${x},${f1(y)} q4,26 -2,${50*k} M${x},${f1(y)} q12,20 28,${32*k}" stroke="#a47148" stroke-width="2" fill="none" opacity=".75"/>`; });
+  s+=`<path d="M268,318 q8,-6 16,0 t16,0 t14,-2" stroke="#e8a3a3" stroke-width="3.2" fill="none" stroke-linecap="round"/><path d="M120,330 q7,5 14,0 t14,0" stroke="#e8a3a3" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  for(let i=0;i<7;i++){ const x=380+i*14; s+=`<path d="M${x},270 q${i%2?6:-6},14 0,28 q${i%2?-5:5},10 2,20" stroke="#f5f0e6" stroke-width="1" fill="none" opacity=".6"/>`; }
+  /* ocean water, sea floor sediments */
+  s+=`<g clip-path="url(#${id}sed)">`; const sc=['#e2dccd','#cfc6b2','#ebe5d6','#bfb6a0','#d9d1bf','#c4bba6'];
+  for(let i=0;i<7;i++) s+=`<path d="M560,${300+i*40} C680,${330+i*38} 800,${360+i*34} ${WW},${400+i*30} L${WW},${WH} L560,${WH} Z" fill="${sc[i%6]}"/>`;
+  const rr=rng(91); for(let i=0;i<22;i++) s+=shell(610+rr()*280,445+rr()*105,0.32+rr()*0.18,['#f5ead7','#efe1c8','#fff7ea'][i%3]);
+  s+=`</g>`;
+  s+=`<path d="M575,258 L${WW},258 L${WW},426 C820,422 730,418 660,402 C625,380 600,320 575,258 Z" fill="url(#${id}o)" opacity=".96"/>`+waves(585,WW,260,'#dbeafe',2.4);
+  s+=fish(700,302,0.85,'#93c5fd')+fish(840,350,0.75,'#fbbf24',true)+fish(790,282,0.6,'#bae6fd');
+  [[620,280],[662,272],[700,268],[752,276],[812,272],[860,290],[648,306]].forEach(([x,y],i)=>s+=plank(x,y,0.65,i%2?'#a3e635':'#4ade80'));
+  s+=shell(690,404,0.6)+coral(640,392,0.6)+coral(860,424,0.7)+shell(800,420,0.5,'#fde2c4');
+  /* beach and grass */
+  s+=`<path d="M520,${f1(ys(520))} L604,${f1(ys(604))} L625,334 C600,316 560,292 520,${f1(ys(520)+9)} Z" fill="#dcc48f"/><path d="M520,${f1(ys(520))} L604,${f1(ys(604))}" stroke="#efe0b8" stroke-width="2"/>`;
+  s+=`<path d="M0,${f1(ys(0))} ${surf.split('L').filter(Boolean).filter(p=>+p.split(',')[0]<=530).map(p=>'L'+p).join('')} L530,${f1(ys(530)+7)} L0,${f1(ys(0)+7)} Z" fill="#5f8f3a"/>`+grassTufts(0,525,262,7,'#3f6f25');
+  /* forest (part cleared in the human round) */
+  s+=tree(45,ys(45)+2,128)+pine(100,ys(100)+2,118)+tree(152,ys(152)+2,122);
+  if(human){ [[196,1],[214,.8]].forEach(([x,k])=>s+=`<path d="M${x-6*k},${f1(ys(x)+3)} L${x-5*k},${f1(ys(x)-12*k)} L${x+5*k},${f1(ys(x)-14*k)} L${x+6*k},${f1(ys(x)+3)} Z" fill="#7a5233" stroke="#3f2713"/><ellipse cx="${x}" cy="${f1(ys(x)-13*k)}" rx="${5.5*k}" ry="2" fill="#c9a57a"/>`);
+    s+=`<path d="M200,${f1(ys(200)-2)} q4,-14 9,-20 q2,10 6,6 q3,-8 2,-16 q10,12 6,30 z" fill="#f97316" opacity=".9"/><path d="M205,${f1(ys(200)-4)} q3,-8 5,-11 q2,6 4,8 z" fill="#fde047"/>`+`<g opacity=".7"><circle cx="212" cy="214" r="9" fill="#78716c"/><circle cx="220" cy="196" r="12" fill="#a8a29e"/><circle cx="230" cy="176" r="14" fill="#d6d3d1"/></g>`; }
+  else s+=tree(205,ys(205)+2,104,{c1:'#2d6a2e',c2:'#3b8c3e'});
+  s+=rabbit(268,ys(268)+2,0.72)+fox(345,ys(345)+3,0.62);
+  s+=logShrooms(432,ys(432)+3,0.62);
+  if(human){ s+=powerPlant(500,ys(500)+2,0.62,true)+pumpJack(556,ys(556)+3,0.52)+`<path d="M546,${f1(ys(546)+3)} L534,452" stroke="#475569" stroke-width="2.4"/>`; }
+  /* name tags (simulation only) */
+  if(o.tags){ const T=[[450,22],[118,118],[300,170],[422,350],[735,388],[765,540],[232,512]];
+    STN.forEach((st0,i)=>{ const [x,y]=T[i], w=st0.name.length*7.1+18; s+=`<rect x="${f1(x-w/2)}" y="${y-14}" width="${f1(w)}" height="21" rx="6" fill="rgba(15,23,42,.78)"/>`+tx(x,y+1.5,st0.name,12.5,'#f8fafc','middle',true); }); }
+  if(o.arrows) s+=o.arrows;
+  if(o.hl!=null){ const [x,y]=ANC[o.hl]; s+=`<circle cx="${x}" cy="${y}" r="26" fill="none" stroke="#ffd35c" stroke-width="3" stroke-dasharray="6 4" opacity=".95"/>`; }
+  if(o.atom) s+=`<g class="cjatom" transform="translate(${o.atom[0]} ${o.atom[1]})">${cAtom(0,0,1.25,true)}</g><g class="cjflag"></g>`;
+  return s+'</g></svg>'; }
+
+/* process arrows for the labeling problem (zones sit on them) */
+const PROC_ZONES=[
+  {id:'z1', x:100, y:84,  w:130, ans:'Photosynthesis'},
+  {id:'z2', x:226, y:150, w:120, ans:'Eating (consumption)'},
+  {id:'z3', x:338, y:96,  w:130, ans:'Cellular respiration'},
+  {id:'z4', x:452, y:164, w:126, ans:'Decomposition'},
+  {id:'z5', x:552, y:96,  w:126, ans:'Burning (combustion)'},
+  {id:'z6', x:680, y:170, w:130, ans:'Dissolving into the ocean'},
+  {id:'z7', x:808, y:392, w:140, ans:'Shells sink and are buried'},
+  {id:'z8', x:330, y:398, w:136, ans:'Fossil fuel formation'}];
+function procArrows(){ const G='#1d4ed8', R='#dc2626', K='#f8fafc', B='#78350f';
+  return arw(100,26,100,140,G,5)+carw(176,186,226,128,262,214,'#15803d',4.5)+arw(334,206,334,26,R,5)+arw(446,236,452,26,R,5)
+    +arw(520,206,548,26,R,5)+arw(680,26,680,300,G,5)+arw(800,318,806,470,K,4.5)+arw(380,300,282,452,B,5); }
+
+/* ---------- printable station cards ---------- */
+function cardTable(r,si,o){ o=o||{}; const rows=CARDS[r][si].map((c,i)=>{ const to=c[0]<0?si:c[0];
+    return `<tr${o.hi===i+1?' class="hi"':''}><td class="rl">${o.print?`<svg viewBox="-32 -32 64 64" width="34" height="34">${dieG(i+1)}</svg>`:dieSVG(i+1,30)}<div class="rn">${i+1}</div></td><td>${c[2]}</td><td><b>${PROCS[c[1]]}</b></td><td>${c[0]<0?'<b>Stay</b> at '+STN[si].name:'Go to <b>'+STN[to].name+'</b>'}</td></tr>`; }).join('');
+  return `${o.print?'':'<div class="wide">'}<table class="nb cjcard"><tr><th>Roll</th><th>What happens to your carbon atom</th><th>Process</th><th>Where you go</th></tr>${rows}</table>${o.print?'':'</div>'}`; }
+const CHANGES=[1,6];
+function cardList(){ const out=[]; STN.forEach((s0,si)=>{ if(CHANGES.includes(si)){ out.push([0,si,'Round 1 card']); out.push([1,si,'Round 2 card (human impact)']); } else out.push([0,si,'Rounds 1 and 2']); }); return out; }
+function cardsHTML(){ return cardList().map(([r,si,lab])=>`<div class="cjcbox"><div class="cjchead"><b>Station ${si+1}: ${STN[si].name}</b> <span>${lab}</span></div>${cardTable(r,si)}</div>`).join(''); }
+function printCards(){
+  const css=`body{font-family:Arial,Helvetica,sans-serif;color:#111;margin:0;padding:18px} h1{font-size:20px;margin:0 0 4px} p.note{margin:0 0 12px;font-size:13px}
+   .cd{border:3px solid #111;border-radius:14px;padding:14px 16px;margin:0 0 16px;break-inside:avoid;page-break-inside:avoid}
+   .rn{font-weight:bold;font-size:13px} .cd h2{font-size:30px;margin:0} .cd .rd{font-size:16px;font-weight:bold;margin:2px 0 10px;color:#333} .cd.r2{border-style:dashed}
+   table{border-collapse:collapse;width:100%;font-size:15px} th,td{border:1.5px solid #111;padding:6px 8px;text-align:left;vertical-align:middle} th{background:#e5e7eb} td.rl{width:46px;text-align:center}
+   .pb{page-break-after:always;break-after:page} @page{size:letter;margin:0.5in} @media print{body{padding:0} .noprint{display:none}}`;
+  const list=cardList(); let body=''; list.forEach(([r,si,lab],i)=>{ body+=`<div class="cd${r?' r2':''}"><h2>Station ${si+1}: ${STN[si].name}</h2><div class="rd">${lab}</div>${cardTable(r,si,{print:true})}</div>`+(i%2===1&&i<list.length-1?'<div class="pb"></div>':''); });
+  const doc=`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Carbon Atom Journey Game: station cards</title><style>${css}<\/style></head><body><div class="noprint"><h1>The Carbon Atom Journey Game: station cards</h1><p class="note">Print on letter paper, cut apart, and put one card and one die at each station. Keep the two Round 2 cards (Plants and Fossil fuels) face down until Round 2.</p><button onclick="window.print()" style="font-size:16px;padding:8px 16px;margin-bottom:12px">Print</button></div>${body}</body></html>`;
+  const wdw=window.open('','_blank'); if(!wdw){ alert('Your browser blocked the new window. Allow pop-ups for this page, then try again.'); return; }
+  wdw.document.open(); wdw.document.write(doc); wdw.document.close(); setTimeout(()=>{ try{ wdw.focus(); wdw.print(); }catch(e){} },400); }
+
+/* ---------- predictions with a menu per row (same lock pattern as predictProblem) ---------- */
+const PRED_ROWS=[
+  {id:'Round 1',desc:'Where will your atom spend the most turns?',choices:STN_NAMES},
+  {id:'Round 1',desc:'Which station will be the hardest to leave?',choices:STN_NAMES},
+  {id:'Round 2',desc:'Compared with Round 1, how many turns will your atom spend in the atmosphere?',choices:['More turns in the atmosphere','Fewer turns in the atmosphere','About the same']},
+  {id:'Round 2',desc:'What will happen to carbon stored in fossil fuels?',choices:['More of it will move into the air','Less of it will move into the air','No change']}];
+function predictRows(parent,o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.rows.length);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb predtab"><tr><th>Round</th><th>What to predict</th><th>My prediction</th></tr>${o.rows.map((r,i)=>`<tr><td><b>${r.id}</b></td><td>${r.desc}</td><td><select data-i="${i}" aria-label="Prediction ${i+1}"><option value="">choose…</option>${r.choices.map(c=>`<option>${c}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select')];
+  sels.forEach((sl,i)=>{ sl.value=P.val[i]||''; sl.addEventListener('change',()=>{ P.val[i]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Lock in my predictions';
+  function paint(){ sels.forEach(sl=>sl.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Predictions saved.</b> You\'ll compare them with your results later. Page 3 is now unlocked.'; ui.cb.textContent='Predictions locked'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(sels.some(sl=>!sl.value)){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Choose a prediction in every row first.'; return; }
+    if(!confirm('Lock in your predictions? You can\'t change them after this.')) return;
+    P.first=o.rows.length; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.rows.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- journey table: one row per turn, menus only; completion credit when saved ---------- */
+function journeyData(id){ const v=st(id).val||{}; const g=k=>{ const x=v[k]; return x==null||x===''?null:+x; };
+  const rows=[]; for(let i=0;i<NTURN;i++) { const r=g(i+'_r'); rows.push({roll:r==null?null:r+1,p:g(i+'_p'),to:g(i+'_t')}); }
+  const at=[g('start')]; for(let i=1;i<NTURN;i++) at.push(rows[i-1].to);
+  return {at,rows}; }
+function journeyTable(parent,o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  if(o.intro) box.insertAdjacentHTML('beforeend',o.intro);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  const opt=(list,pre)=>`<option value="">${pre||'choose…'}</option>`+list.map((x,i)=>`<option value="${i}">${x}</option>`).join('');
+  let html=`<table class="nb datatab jtab"><tr><th>Turn</th><th>My atom is at</th><th>Die roll</th><th>Process on the card</th><th>After this turn, my atom is at</th></tr>`;
+  for(let i=0;i<NTURN;i++) html+=`<tr><td class="tn">${i+1}</td><td>${i===0?`<select class="ocell" data-k="start" aria-label="Start station">${opt(STN_NAMES,'start station…')}</select>`:`<span class="jat" data-i="${i}"></span>`}</td>
+    <td><select class="ocell jr" data-k="${i}_r" aria-label="Turn ${i+1} roll">${opt([1,2,3,4,5,6],'roll')}</select></td><td><select class="ocell" data-k="${i}_p" aria-label="Turn ${i+1} process">${opt(PROCS)}</select></td><td><select class="ocell" data-k="${i}_t" aria-label="Turn ${i+1} goes to">${opt(STN_NAMES)}</select></td></tr>`;
+  wrap.innerHTML=html+'</table>';
+  const sels=[...wrap.querySelectorAll('select')];
+  const upd=()=>{ const d=journeyData(o.id); wrap.querySelectorAll('.jat').forEach(e=>{ const a=d.at[+e.dataset.i]; e.textContent=a==null?'…':STN[a].name; }); };
+  sels.forEach(sl=>{ const k=sl.dataset.k; sl.value=P.val[k]??''; sl.addEventListener('change',()=>{ P.val[k]=sl.value; save(); upd(); }); });
+  upd();
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Save my '+o.short+' data';
+  function paint(){ sels.forEach(s=>s.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML=`<b>${o.short} data saved.</b> Your analysis uses these turns.`; ui.cb.textContent='Data saved'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const empty=sels.filter(s=>!s.value).length;
+    if(empty){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill in every menu first (${empty} still empty).`; return; }
+    const d=journeyData(o.id), bad=[]; d.rows.forEach((rw,i)=>{ const c=cardRow(o.round,d.at[i],rw.roll); if(c.p!==rw.p||c.to!==rw.to) bad.push(i+1); });
+    if(bad.length){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Turn${bad.length>1?'s':''} ${bad.join(', ')} ${bad.length>1?'do':'does'} not match the ${o.round?'Round 2':'Round 1'} station card. Look at the card for that station and roll: check the process and where the atom goes.`; return; }
+    if(!confirm('Save your '+o.short+' data? You can\'t change it after this, and your analysis will use these turns.')) return;
+    P.first=o.pts; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- reading the student's own data ---------- */
+function cjData(){ const J=[journeyData('j1'),journeyData('j2')];
+  const cnt=J.map(d=>STN.map((_,s)=>d.at.filter(a=>a===s).length));
+  const pc=(r,s)=>100*cnt[r][s]/NTURN;
+  const burn=J.map(d=>d.rows.filter(x=>x.p===10).length);
+  const grp=r=>[cnt[r][0],cnt[r][1]+cnt[r][2],cnt[r][3],cnt[r][4],cnt[r][5]+cnt[r][6]];
+  const most=r=>{ const g=grp(r), mx=Math.max(...g); const w=g.map((_,i)=>i).filter(i=>g[i]===mx); return w.length===1?w[0]:5; };
+  return {J,cnt,pc,burn,grp,most}; }
+const cellv=(v,r,c)=>{ const x=parseFloat((v||{})[r+'_'+c]); return isNaN(x)?null:x; };
+
+/* ---------- tally chart (drawn only from numbers the student typed) ---------- */
+const RCOL=['#45c8f0','#ffb454'];
+function tallySVG(v){ const W=760,H=360,X0=64,X1=740,Y0=272,Y1=58; let mx=1;
+  STN.forEach((_,s)=>[0,1].forEach(r=>{ const x=cellv(v,s,r); if(x!=null) mx=Math.max(mx,x); }));
+  const top=Math.max(5,Math.ceil(mx/5)*5), step=top<=10?1:top<=20?2:5, y=val=>Y0-(Y0-Y1)*val/top, gw=(X1-X0)/7, bw=30;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Bar graph of the number of turns your atom spent at each station in Round 1 and Round 2, from your tally table."><rect width="${W}" height="${H}" rx="12" fill="#0f1b2e"/>`;
+  for(let k=0;k<=top;k+=step) s+=`<line x1="${X0}" y1="${f1(y(k))}" x2="${X1}" y2="${f1(y(k))}" stroke="#2a3d5f"/><text x="${X0-8}" y="${f1(y(k)+4)}" text-anchor="end" font-size="12" fill="#a3b4cf">${k}</text>`;
+  s+=`<text x="18" y="${(Y0+Y1)/2}" font-size="13" fill="#a3b4cf" transform="rotate(-90 18 ${(Y0+Y1)/2})" text-anchor="middle">Number of turns</text>`;
+  s+=[0,1].map(r=>`<rect x="${210+r*190}" y="20" width="16" height="16" rx="3" fill="${RCOL[r]}"/><text x="${232+r*190}" y="33" font-size="13" fill="#e8eef8">${ROUND_NAMES[r]}</text>`).join('');
+  STN.forEach((st0,si)=>{ const cx=X0+gw*si+gw/2; const L=st0.name.split(' '); const lines=L.length>2?[L.slice(0,2).join(' '),L.slice(2).join(' ')]:st0.name==='Fossil fuels'||st0.name==='Soil and decomposers'?[L[0],L.slice(1).join(' ')]:[st0.name];
+    lines.forEach((ln,j)=>s+=`<text x="${f1(cx)}" y="${Y0+18+j*15}" text-anchor="middle" font-size="12" fill="#a3b4cf">${ln}</text>`);
+    [0,1].forEach(r=>{ const x=cellv(v,si,r); if(x==null) return; const bx=cx-bw-1+r*(bw+2);
+      s+=`<rect x="${f1(bx)}" y="${f1(y(x))}" width="${bw}" height="${f1(Y0-y(x))}" rx="3" fill="${RCOL[r]}"/><text x="${f1(bx+bw/2)}" y="${f1(y(x)-5)}" text-anchor="middle" font-size="11.5" fill="#e8eef8">${x}</text>`; }); });
+  s+=`<line x1="${X0}" y1="${Y0}" x2="${X1}" y2="${Y0}" stroke="#a3b4cf" stroke-width="1.5"/></svg>`;
+  const warn=[]; [0,1].forEach(r=>{ const col=STN.map((_,si)=>cellv(v,si,r)); if(col.every(x=>x!=null)){ const t=col.reduce((a,b)=>a+b,0); if(t!==NTURN) warn.push(`Round ${r+1} adds up to ${t} turns, not ${NTURN}.`); } });
+  if(st('j1').checked&&st('j2').checked){ const d=cjData(), off=[]; STN.forEach((st0,si)=>[0,1].forEach(r=>{ const x=cellv(v,si,r); if(x!=null&&x!==d.cnt[r][si]) off.push(`${st0.name} (Round ${r+1})`); })); if(off.length) warn.push(`These do not match your journey tables: ${off.join(', ')}. Count again.`); }
+  if(warn.length) s+=`<div class="fb no small">Check your numbers. ${warn.join(' ')}</div>`;
+  return s; }
+const tallyChart=v=>`<div class="cjchart">${tallySVG(v)}</div>`;
+
+/* ---------- the data tables used by both versions ---------- */
+function dataTables(num){
+  const w1=h('div',{}), w2=h('div',{}), wt=h('div',{});
+  journeyTable(w1,{id:'j1', part:'P3', num:num(), round:0, short:'Round 1', pts:3, q:'<b>Round 1: natural cycle.</b> Record all 15 turns.',
+    intro:'<p class="small muted" style="margin:0 0 6px">Turn 1: choose your start station. After that, the "My atom is at" column fills in by itself from your last turn. If the card says stay, choose the same station in the last column.</p>'});
+  journeyTable(w2,{id:'j2', part:'P3', num:num(), round:1, short:'Round 2', pts:3, q:'<b>Round 2: human impact.</b> Start at the same station as Round 1. Record all 15 turns. Use the Round 2 cards for Plants and Fossil fuels.'});
+  wt.insertAdjacentHTML('beforeend','<p style="margin-top:14px"><b>Tally.</b> Count how many turns your atom spent at each station: count each station in the "My atom is at" column. Each round should add up to 15. The graph draws as you type.</p>');
+  dataTableProblem(wt,{id:'tally', part:'P3', num:num(), q:'Number of turns at each station.', pts:2, corner:'Station', cols:['Round 1 turns','Round 2 turns'], rows:STN_NAMES, chart:tallyChart});
+  return {w1,w2,wt}; }
+
+/* ---------- Keeling curve with drop zones ---------- */
+function keelingDrag(){ const X=t=>78+652*(t-1958)/67, Y=v=>40+270*(1-(v-300)/130);
+  let s=keelingFig({h:380,notes:false,label:'A line graph of CO₂ in the air at Mauna Loa, Hawaii, from 1958 to today. The line zig-zags every year and climbs overall. Four boxes point to parts of the graph.'});
+  const pt=(t,v,x2,y2)=>`<circle cx="${f1(X(t))}" cy="${f1(Y(v))}" r="5" fill="#0f172a"/><path d="M${f1(X(t))},${f1(Y(v))} L${x2},${y2}" stroke="#0f172a" stroke-width="1.6"/>`;
+  return s.replace('</svg>',pt(1958.5,315.5,170,214)+pt(2023.5,420,640,74)+pt(1990,trend(1990),420,268)+pt(2000,trend(2000),360,112)+'</svg>'); }
+const KEEL_ZONES=[{id:'k1',x:170,y:214,w:200,ans:'About 315 ppm (1958)'},{id:'k2',x:540,y:74,w:200,ans:'About 420 ppm (today)'},{id:'k3',x:430,y:276,w:230,ans:'Yearly zig-zag: plants take in CO₂ each summer'},{id:'k4',x:250,y:112,w:230,ans:'Long-term rise: burning fossil fuels and clearing forests'}];
+
+function buildContent(sec){
+  let n=0; const num=()=>++n;
+  const say=(s,html)=>s.insertAdjacentHTML('beforeend',html);
+  /* ---------- 1. Setup ---------- */
+  say(sec[0],`<div class="phenbox"><b>Phenomenon:</b> Since 1958, scientists have measured carbon dioxide (CO₂) in the air on Mauna Loa in Hawaii. It went from about 315 ppm in 1958 to about 420 ppm today. The carbon atoms in that CO₂ are not new. They were somewhere else before. Where do carbon atoms go, and what are humans changing?</div>
+   <p><b>Game question:</b> Where does a carbon atom spend its time, and how do human activities change its journey?</p>
+   <p><b>Background.</b> Carbon is stored in <b>reservoirs</b>: the atmosphere, plants, animals, soil, the ocean, ocean sediments and rocks, and fossil fuels. <b>Processes</b> move carbon from one reservoir to another. Some moves are fast (days to hundreds of years). Others are slow (thousands to millions of years). In this game, <b>you are one carbon atom</b>.</p>
+   <div class="wide"><table class="nb cjkey"><tr><th>In the game</th><th>In real life</th></tr>
+    <tr><td>A station</td><td>A reservoir, where carbon is stored for a while</td></tr>
+    <tr><td>Rolling the die</td><td>Chance: no one controls which way one atom goes</td></tr>
+    <tr><td>The station card</td><td>The processes that move carbon, and how likely each one is</td></tr>
+    <tr><td>Round 1 cards</td><td>The natural carbon cycle, before people burned much fossil fuel (before about 1850)</td></tr>
+    <tr><td>Round 2 cards for Plants and Fossil fuels</td><td>Today: people burn coal, oil, and gas, and clear forests</td></tr></table></div>
+   ${SETUP_HTML}`);
+  dragProblem(sec[0],{id:'map', part:'P1', num:num(), q:'Where is each station in the real world? Drag each station name onto its place in the picture.',
+    svg:worldSVG({human:true}), vb:[WW,WH], zones:STN.map((s0,i)=>({id:'m'+i, x:ANC[i][0], y:ANC[i][1]+(i===5?6:0), w:i===3||i===5?190:i===0?140:124, ans:s0.name})), chips:STN_NAMES,
+    hint:'Air is at the top. Living things are on land. Dead matter is in the soil. Look under the sea floor and deep under the land.', done:'Each station is a real carbon reservoir.'});
+  choiceProblem(sec[0],{id:'q1', part:'P1', num:num(), q:'Check your understanding of the rules.',
+    parts:[{q:'<b>Part A:</b> You roll a 4, and the card says <b>Stay</b>. What do you do?',opts:['Record the turn, stay at this station, and roll again on your next turn','Roll again right away until you can move','Go to any station you want','Skip recording that turn'],ans:0},
+           {q:'<b>Part B:</b> What does the <b>process</b> on the card tell you?',opts:['How the carbon moves from one reservoir to the next','How many atoms are at the station','How long you must wait in line','Which student goes next'],ans:0},
+           {q:'<b>Part C:</b> What is different in Round 2?',opts:['The Plants and Fossil fuels cards change to show human activities','Every card changes','You start at a new station of your choice','You roll two dice'],ans:0},
+           {q:'<b>Part D:</b> Where do you start Round 2?',opts:['At the same station where you started Round 1','At the Atmosphere station','At the station where Round 1 ended','Anywhere'],ans:0}],
+    hint:'Re-read the rules and the procedure.', why:'Stay means record the turn and roll again next turn. The process is how carbon moves. In Round 2, only the Plants and Fossil fuels cards change, and you start where you started Round 1.'});
+  /* ---------- 2. Predict ---------- */
+  say(sec[1],`<p>Before you play, predict. Look at the station cards. There are no wrong predictions: you get full credit for making them, but you <b>can't change them</b> after you lock them in.</p>`);
+  predictRows(sec[1],{id:'pred', part:'P2', num:num(), q:'Make your predictions.', rows:PRED_ROWS});
+  writtenProblem(sec[1],{id:'hyp', part:'P2', num:num(), q:'Write a hypothesis about how Round 2 (human impact) will change where carbon goes, in the form <b>"If… then… because…"</b>.', pts:3, bank:['If','then','because','people burn','fossil fuels','forests','atmosphere','more turns','CO₂','released'],
+    groups:[['If… then… form',/\bif\b[\s\S]*\bthen\b/],['names the atmosphere or the air',/atmosphere|air|co2|co₂|carbon dioxide/],['a reason (burning or forests)',/because|burn|fossil|forest|tree|cut|clear|combust/]],
+    model:'If people burn more fossil fuels and clear more forests, then carbon atoms will spend more turns in the atmosphere, because burning releases stored carbon as CO₂.',
+    hint:'Say what changes in Round 2, what you think will happen to carbon in the air, and why.', why:'A testable hypothesis names the change, the predicted result, and the reason.'});
+  /* ---------- 3. Data / Play (lab and simulation differ) ---------- */
+  buildData(sec[2],num);
+  /* ---------- 4. Analysis ---------- */
+  const alock=h('div',{class:'fb info'}); alock.innerHTML='<b>Locked.</b> Save both journey tables and your tally on page 3 first.'; sec[3].appendChild(alock);
+  const awrap=h('div',{}); sec[3].appendChild(awrap);
+  const D=cjData;
+  window.anaRefresh=()=>{ const ok=!!st('j1').checked&&!!st('j2').checked&&!!st('tally').checked; alock.hidden=ok; awrap.hidden=!ok;
+    $$('.anachart',awrap).forEach(e=>{ e.innerHTML=tallySVG(st('tally').val); }); };
+  say(awrap,`<p>Use <b>your data</b> from page 3. The <b>turns</b> at a station = how many times that station is in the "My atom is at" column. Round percents to the nearest whole number.</p>
+    <div class="prob"><div class="pq">Your tally</div><div class="anachart cjchart"></div></div>`);
+  typedProblem(awrap,{id:'a1', part:'P4', num:num(), q:'<b>Count turns.</b> Use your journey tables.',
+    blanks:[{before:'<b>Part A:</b> Turns in the atmosphere in Round 1 =',calc:()=>D().cnt[0][0],tol:0,show:'count Atmosphere in Round 1'},
+            {before:'<b>Part B:</b> Turns in the atmosphere in Round 2 =',calc:()=>D().cnt[1][0],tol:0,show:'count Atmosphere in Round 2'},
+            {before:'<b>Part C:</b> Turns in living things (Plants + Animals) in Round 1 =',calc:()=>D().cnt[0][1]+D().cnt[0][2],tol:0,show:'Plants + Animals, Round 1'},
+            {before:'<b>Part D:</b> Turns in the slow-cycle reservoirs (Ocean sediments and rocks + Fossil fuels) in Round 1 =',calc:()=>D().cnt[0][5]+D().cnt[0][6],tol:0,show:'Sediments and rocks + Fossil fuels, Round 1'}],
+    hint:'Count each station in the "My atom is at" column. Add two stations together when the question says +.'});
+  typedProblem(awrap,{id:'a2', part:'P4', num:num(), q:'<b>Percent of time.</b> Percent = turns at the station ÷ 15 turns × 100.',
+    blanks:[{before:'<b>Part A:</b> Percent of Round 1 in the atmosphere =',calc:()=>D().pc(0,0),tol:1,after:'%',show:'Round 1 atmosphere turns ÷ 15 × 100'},
+            {before:'<b>Part B:</b> Percent of Round 2 in the atmosphere =',calc:()=>D().pc(1,0),tol:1,after:'%',show:'Round 2 atmosphere turns ÷ 15 × 100'},
+            {before:'<b>Part C:</b> Change in atmosphere turns (Round 2 minus Round 1) =',calc:()=>D().cnt[1][0]-D().cnt[0][0],tol:0,after:'turns <span class="small muted">(type a negative number if it went down)</span>',show:'Round 2 turns − Round 1 turns'}],
+    hint:'Divide by 15 (the number of turns), then multiply by 100. For Part C, subtract: Round 2 minus Round 1.'});
+  const mostOpts=['The atmosphere','Living things (Plants + Animals)','Soil and decomposers','The ocean','The slow cycle (Ocean sediments and rocks + Fossil fuels)','Two or more of these tied'];
+  const cmpFn=()=>{ const d=D(), a=d.cnt[0][0], b=d.cnt[1][0]; return b>a?0:b<a?1:2; };
+  choiceProblem(awrap,{id:'a3', part:'P4', num:num(), q:'Compare your two rounds.',
+    parts:[{q:'<b>Part A:</b> Group your Round 1 turns into the 5 groups below. Which group had the most turns?',opts:mostOpts,ans:-1,ansFn:()=>D().most(0)},
+           {q:'<b>Part B:</b> Which group had the most turns in Round 2?',opts:mostOpts,ans:-1,ansFn:()=>D().most(1)},
+           {q:'<b>Part C:</b> Compared with Round 1, in Round 2 your atom spent…',opts:['more turns in the atmosphere','fewer turns in the atmosphere','the same number of turns in the atmosphere'],ans:-1,ansFn:cmpFn}],
+    hint:'Look at your tally graph and your answers to the count questions.', why:'Your answers match your own data.'});
+  const rFn=f=>()=>{ const d=D(), a=f(d,0), b=f(d,1); return a&&!b?0:!a&&b?1:a&&b?2:3; };
+  const rOpts=['Only in Round 1','Only in Round 2','In both rounds','In neither round'];
+  choiceProblem(awrap,{id:'a4', part:'P4', num:num(), q:'Look for burning and fossil fuels in your journey tables.',
+    parts:[{q:'<b>Part A:</b> In which round did your atom move by <b>Burning (combustion)</b> at least once?',opts:rOpts,ans:-1,ansFn:rFn((d,r)=>d.burn[r]>0)},
+           {q:'<b>Part B:</b> In which round did your atom spend at least one turn at the <b>Fossil fuels</b> station?',opts:rOpts,ans:-1,ansFn:rFn((d,r)=>d.cnt[r][6]>0)}],
+    hint:'Look down the "Process on the card" column for Burning, and down the "My atom is at" column for Fossil fuels.', why:'Your answers match your own journey tables.'});
+  binProblem(awrap,{id:'a5', part:'P4', num:num(), q:'Which processes add CO₂ to the atmosphere, and which remove it? Sort each process.',
+    bins:[{k:'add',label:'Adds CO₂ to the air'},{k:'rem',label:'Removes CO₂ from the air'},{k:'no',label:'Moves carbon, but not into or out of the air'}],
+    items:[{t:'Photosynthesis',k:'rem'},{t:'Dissolving into the ocean',k:'rem'},{t:'Cellular respiration',k:'add'},{t:'Decomposition',k:'add'},{t:'Burning (combustion)',k:'add'},{t:'Release from the ocean',k:'add'},{t:'Volcano',k:'add'},{t:'Eating (consumption)',k:'no'},{t:'Shells sink and are buried',k:'no'},{t:'Fossil fuel formation',k:'no'}],
+    hint:'Use the station cards. Where does the carbon start, and where does it end up? If it ends up in the air, the process adds CO₂ to the air.', done:'Respiration, decomposition, burning, volcanoes, and release from the ocean add CO₂ to the air. Photosynthesis and dissolving remove it.'});
+  dragProblem(awrap,{id:'a6', part:'P4', num:num(), q:'Label the carbon cycle. Drag each process onto the arrow it matches.',
+    svg:worldSVG({human:true, arrows:procArrows(), label:'The carbon cycle landscape with eight arrows: from the sky down into a tree, from a tree to a rabbit, from a fox up to the sky, from a rotting log up to the sky, from a power plant up to the sky, from the sky down into the ocean, from the ocean down into the sea floor layers, and from the soil down to the coal seam.'}),
+    vb:[WW,WH], zones:PROC_ZONES, chips:[...PROC_ZONES.map(z=>z.ans),'Volcano'],
+    hint:'Follow each arrow: where does the carbon start, and where does it go? One label is extra.', done:'Every arrow is a process that moves carbon between reservoirs.'});
+  binProblem(awrap,{id:'a7', part:'P4', num:num(), q:'Fast cycle or slow cycle? Sort each event.',
+    bins:[{k:'f',label:'Fast cycle (days to hundreds of years)'},{k:'s',label:'Slow cycle (thousands to millions of years)'}],
+    items:[{t:'A leaf takes in CO₂',k:'f'},{t:'A rabbit breathes out CO₂',k:'f'},{t:'Fungi decompose a dead log',k:'f'},{t:'CO₂ dissolves into the ocean surface',k:'f'},{t:'Shells pile up and become limestone',k:'s'},{t:'Buried plankton become oil',k:'s'},{t:'Carbon stays locked in sea floor rock',k:'s'},{t:'A volcano releases CO₂ from deep rock',k:'s'}],
+    hint:'Living things, the air, and the ocean surface trade carbon quickly. Rocks and fossil fuels take millions of years.', done:'The fast cycle is air, living things, and the ocean surface. The slow cycle is rocks, sediments, and fossil fuels.'});
+  const ORD=['CO₂ from the air dissolves into the ocean','Plankton use the carbon for photosynthesis','The plankton die and sink to the sea floor','Mud buries them before they can decay','Over millions of years, heat and pressure turn them into oil','A car burns gasoline made from the oil, and CO₂ goes back into the air'];
+  const ow=h('div',{class:'ordwrap'}); awrap.appendChild(ow);
+  dragProblem(ow,{id:'a8', part:'P4', num:num(), q:'Put this carbon atom\'s journey in order. Drag each step into the right box, from first to last.', equation:true,
+    layout:[0,'↓',1,'↓',2,'↓',3,'↓',4,'↓',5], zones:ORD.map((t,i)=>({id:'o'+i, ans:t, ph:'Step '+(i+1)})), chips:ORD,
+    hint:'The atom starts in the air and ends in the air. It has to be buried before it can become oil.', done:'Air, ocean, plankton, sea floor, burial, oil, burning, and back to the air.'});
+  choiceProblem(awrap,{id:'a9', part:'P4', num:num(), q:'Think about what the Round 2 cards stand for.',
+    parts:[{q:'<b>Part A:</b> The new Fossil fuels card has many rolls that say "Burning." In real life, this stands for…',opts:['people burning coal, oil, and gas for cars, electricity, and factories','volcanoes erupting more often','fossil fuels forming faster today','plants doing more photosynthesis'],ans:0},
+           {q:'<b>Part B:</b> Burning fossil fuels moves carbon…',opts:['from the slow cycle (stored for millions of years) into the air, in a very short time','from the air into rocks','from the ocean into fossil fuels','nowhere: burning destroys carbon atoms'],ans:0},
+           {q:'<b>Part C:</b> Why does clearing and burning forests add CO₂ to the air?',opts:['Carbon stored in the wood is released, and fewer trees are left to take in CO₂ by photosynthesis','Trees make CO₂ when they grow','Cutting trees makes the ocean warmer','Wood has no carbon in it'],ans:0}],
+    hint:'Think about where the carbon in coal, oil, and wood came from, and how long it was stored.', why:'Burning moves old carbon from the slow cycle into the air quickly. Clearing forests releases stored carbon and removes plants that take in CO₂.'});
+  dragProblem(awrap,{id:'a10', part:'P4', num:num(), q:'Connect the game to real data. Drag each label onto the Keeling curve. Two labels are extra.',
+    svg:keelingDrag(), vb:[760,380], zones:KEEL_ZONES, chips:[...KEEL_ZONES.map(z=>z.ans),'About 1,000 ppm (today)','Long-term rise: more photosynthesis'],
+    hint:'The line starts low on the left (1958) and ends high on the right (today). The small wiggles happen every year.', done:'CO₂ went from about 315 ppm to about 420 ppm. The yearly zig-zag comes from plants, and the long rise comes mostly from burning fossil fuels and clearing forests.'});
+  choiceProblem(awrap,{id:'a11', part:'P4', num:num(), q:'Every model has <b>limitations</b> (ways it is not like real life). Which are limitations of this game?',
+    parts:[{q:'Select all that apply.',opts:['One turn stands for very different amounts of time: a day in a leaf, but millions of years in rock','The real chances change with the season, the temperature, and the place, but each card is the same all the time','15 turns for one atom is a small sample, so class data would be better','Real Earth has more paths, like carbon washing from soil into rivers','The game shows that carbon moves between reservoirs','Carbon atoms are created when fuel burns'],ans:[0,1,2,3]}],
+    hint:'A limitation is a way the game is different from the real world. Something the game shows well is not a limitation, and a false statement is not one either.', why:'Turns are not equal in time, real chances change, one atom is a small sample, and the real cycle has more paths.'});
+  writtenProblem(awrap,{id:'a12', part:'P4', num:num(), q:'Did your results match your predictions from page 2? Explain, using at least one number from your data.', pts:2, bank:['I predicted','but','my atom','turns','atmosphere','Round 1','Round 2','percent','matched','did not match'],
+    groups:[['refers to the prediction',/predict|thought|expected|guess|hypothes/],['uses a number from the data',/\d/]],
+    model:'I predicted my atom would spend more turns in the atmosphere in Round 2, and it did: it spent 4 turns there in Round 1 and 7 turns in Round 2, so my prediction matched.',
+    hint:'Say what you predicted, then give a number from your data.', why:'Comparing predictions with data is how scientists test their ideas.'});
+  /* ---------- 5. Conclusion ---------- */
+  say(sec[4],`<p>Write a <b>claim, evidence, and reasoning</b> conclusion that answers: <i>How have human activities changed the carbon cycle?</i> Use your game data <b>and</b> the Keeling curve (about 315 ppm in 1958, about 420 ppm today). One atom is a small sample: if your atom did not visit the air more in Round 2, say so, and explain why the real data still matter.</p>`);
+  writtenProblem(sec[4],{id:'k1', part:'P5', num:num(), q:'<b>Claim:</b> answer the question in one sentence.', pts:1, bank:['Humans','burning','fossil fuels','clearing forests','move more carbon','into the atmosphere','CO₂','increase'],
+    groups:[['says humans add or move carbon into the air',/(human|people|we|burn|fossil|forest|deforest)[\s\S]{0,100}(air|atmosphere|co2|co₂|carbon)|(air|atmosphere|co2|co₂|carbon)[\s\S]{0,100}(human|people|burn|fossil|forest)/]],
+    model:'Humans have changed the carbon cycle by burning fossil fuels and clearing forests, which moves more carbon into the atmosphere as CO₂.', hint:'Name what humans do and where the carbon goes.', why:'The claim answers the question.'});
+  writtenProblem(sec[4],{id:'k2', part:'P5', num:num(), q:'<b>Evidence:</b> give numbers from your game (Round 1 and Round 2) and from the Keeling curve.', pts:3, bank:['In Round 1','in Round 2','turns','percent','atmosphere','burning','Keeling curve','about 315 ppm','about 420 ppm','1958','today'],
+    groups:[['uses your game data',/round|turn|percent|%|my atom|our atom/],['uses the Keeling curve data',/315|420|ppm|keeling|mauna/],['uses numbers',/\d/]],
+    model:'In Round 1, my atom spent 4 of 15 turns in the atmosphere, and in Round 2 it spent 7 of 15 turns there. It moved by burning 2 times in Round 2. The Keeling curve shows CO₂ rose from about 315 ppm in 1958 to about 420 ppm today.',
+    hint:'Use your count and percent answers from Analysis, and the two Keeling curve numbers.', why:'Good evidence uses specific numbers from more than one source.'});
+  writtenProblem(sec[4],{id:'k3', part:'P5', num:num(), q:'<b>Reasoning:</b> explain <i>why</i> the evidence shows that humans changed the carbon cycle. Use the ideas of reservoirs, fast and slow cycles, and processes that add or remove CO₂.', pts:4, bank:['fossil fuels','slow cycle','millions of years','burning','releases','CO₂','forests','photosynthesis','adds','removes','builds up','atmosphere'],
+    groups:[['fossil fuels hold old carbon from the slow cycle',/slow|million|stored|buried|underground|old carbon|fossil/],['burning releases it as CO₂ into the air',/burn|combust/],['forests: released carbon and less photosynthesis',/forest|tree|deforest|photosynth/],['more added than removed, so CO₂ builds up',/build|add[\s\S]{0,40}(more|faster)|more[\s\S]{0,40}than|faster than|increas|rise|rising|go up|went up|accumulat/]],
+    model:'Fossil fuels hold carbon that the slow cycle stored underground for millions of years. Burning them releases that carbon into the air as CO₂ in a very short time. Clearing and burning forests also releases carbon, and it leaves fewer trees to remove CO₂ by photosynthesis. Humans add CO₂ faster than plants and the ocean can remove it, so CO₂ builds up in the atmosphere.',
+    hint:'Cover four ideas: where the carbon in fossil fuels came from, what burning does, what clearing forests does, and why CO₂ builds up.', why:'Burning fossil fuels and forests moves stored carbon into the air faster than it is removed, so CO₂ rises.'});
+  dataRefresh();
+}
+
+/* ===== The Carbon Atom Journey Game: in-person version (7 stations around the room) ===== */
+const SETUP_HTML=`<p><b>Materials (teacher):</b> the 9 station cards (print them below: 7 stations, plus a Round 2 card for Plants and for Fossil fuels), 7 six-sided dice (one per station; a cup to roll in keeps dice from rolling away), tape, and 7 signs or desks for the stations. <b>Each student:</b> this page on a Chromebook.</p>
+   <p><b>Setup (teacher):</b> place the 7 stations far apart around the room. Put one card and one die at each station. Keep the two Round 2 cards face down until Round 2. Spread students out so about the same number start at each station.</p>
+   <p><b>Rules:</b> one roll per turn. Read your roll on the card. Record the turn before you move. If the card says <b>Stay</b>, record the turn and roll again on your next turn. Walk to your new station and line up. No re-rolls, and no running.</p>
+   <p><b>Procedure:</b></p><ol class="proc">
+    <li>On page 2, make your predictions and lock them in.</li>
+    <li><b>Round 1: natural cycle.</b> Go to your start station. In Turn 1 of the Round 1 table, choose your start station.</li>
+    <li>Roll the die. On the card, find your roll. Record the roll, the process, and where your atom is after the turn.</li>
+    <li>Move to the new station (or stay). Roll again. Keep going until you have <b>15 turns</b>. Save your Round 1 data.</li>
+    <li><b>Round 2: human impact.</b> Your teacher swaps in the Round 2 cards for Plants and Fossil fuels. Go back to the <b>same start station</b> as Round 1. Play 15 more turns and record them.</li>
+    <li>Fill in the tally table on page 3. The graph draws as you type.</li></ol>
+   <details class="cjdet"><summary><b>Station cards</b> <span class="small muted">(teacher: print these)</span></summary>
+    <div class="btnrow" style="margin:6px 0 10px"><button class="btn ghost small" type="button" id="cjPrint">Print the station cards</button><span class="small muted">Opens the 9 cards on a printable page (2 cards per sheet).</span></div>
+    <div class="cjcards">${cardsHTML()}</div></details>`;
+function buildData(s,num){
+  const lock=h('div',{class:'fb info'}); lock.innerHTML='<b>Locked.</b> Lock in your predictions on page 2 first.'; s.appendChild(lock);
+  const dwrap=h('div',{}); s.appendChild(dwrap);
+  dwrap.insertAdjacentHTML('beforeend',`<p>Record every turn as you play. Use the menus. The station cards are on page 1 if you need to check one.</p>`);
+  const T=dataTables(num); dwrap.append(T.w1,T.w2);
+  const tlock=h('div',{class:'fb info'}); tlock.innerHTML='<b>Tally locked.</b> Save both journey tables first.'; dwrap.append(tlock,T.wt);
+  window.dataRefresh=()=>{ const ok=!!st('pred').checked, both=!!st('j1').checked&&!!st('j2').checked; lock.hidden=ok; dwrap.classList.toggle('off',!ok);
+    tlock.hidden=both; T.wt.classList.toggle('off',!both); if(window.anaRefresh) anaRefresh(); };
+  const pb=document.getElementById('cjPrint'); if(pb) pb.addEventListener('click',printCards);
+}
+
+/* ============================== BUILD / SCORE ============================== */
+function scoreAll(){ const parts=PARTS.slice(0,-1).map(p=>({k:p.k,label:p.label,got:0,max:0})); PROBS.forEach(pr=>{ const pt=parts.find(x=>x.k===pr.part); pt.got+=pr.score(); pt.max+=pr.max; });
+  return {parts, total:parts.reduce((a,b)=>a+b.got,0), max:parts.reduce((a,b)=>a+b.max,0)}; }
+function build(){
+  PROBS.length=0; const ws=$('#ws'); ws.innerHTML='';
+  $('#nav').innerHTML=PARTS.map((pt,i)=>`<button class="ntile" type="button" data-i="${i}" aria-label="${pt.title}"><span class="ic">${ico(i,22)}</span><span class="nm">${pt.label}</span></button>`).join('');
+  $$('#nav .ntile').forEach(b=>b.addEventListener('click',()=>showPart(+b.dataset.i)));
+  const secs=PARTS.map((pt,i)=>{ const el=h('section',{class:'sec',id:'part'+i}); const last=i===PARTS.length-1;
+    el.innerHTML=`<div class="sechead"><div class="badge"><span class="z">${i+1}</span>${ico(i,34)}</div><div><div class="meta">${last?'Grade':`Section ${i+1} of ${PARTS.length-1} · about ${pt.min} min`}</div><h2>${pt.title}</h2></div></div>`;
+    const c=h('div',{class:'card'}); el.appendChild(c);
+    const nav=h('div',{class:'secnav'});
+    const back=h('button',{class:'btn ghost',type:'button'},i===0?'':'← Back'); if(i===0) back.style.visibility='hidden'; back.addEventListener('click',()=>showPart(i-1));
+    nav.appendChild(back);
+    if(!last){ const nx=h('button',{class:'btn primary',type:'button'},i===PARTS.length-2?'See my grade →':`Next: ${PARTS[i+1].title} →`); nx.addEventListener('click',()=>showPart(i+1)); nav.appendChild(nx); }
+    el.appendChild(nav); ws.appendChild(el); return c; });
+  buildContent(secs);
+  secs[PARTS.length-1].id='turnin';
+  showPart(Math.min(S.cur||0,PARTS.length-1),true);
+  $('#whoami').textContent=S.student?`${S.student.first} ${S.student.last}`:''; refresh();
+}
+function showPart(i,noScroll){
+  S.cur=i; $$('#ws .sec').forEach((el,j)=>el.hidden=j!==i);
+  $$('#nav .ntile').forEach((t,j)=>t.classList.toggle('cur',j===i));
+  if(!noScroll){ save(); window.scrollTo(0,0); }
+}
+function refresh(){
+  const sc=scoreAll(), done=PROBS.filter(p=>p.checked()).length;
+  $('#scorePill').textContent=`${done}/${PROBS.length} checked · ${sc.total}/${sc.max} pts`;
+  PARTS.slice(0,-1).forEach((pt,i)=>{ const t=$(`#nav .ntile[data-i="${i}"]`); if(t) t.classList.toggle('done',PROBS.filter(p=>p.part===pt.k).every(p=>p.checked())); });
+  const t7=$(`#nav .ntile[data-i="${PARTS.length-1}"]`); if(t7) t7.classList.toggle('done',!!S.submittedAt);
+  const c=$('#turnin'); if(!c) return;
+  const rows=sc.parts.map(p=>`<tr><th>${p.label}</th><td>${p.got} / ${p.max}</td></tr>`).join('');
+  c.innerHTML=`<div style="display:flex;gap:22px;align-items:center;flex-wrap:wrap"><div class="big">${sc.total}/${sc.max}</div><div><h3 style="margin:0">${esc(S.student?S.student.first+' '+S.student.last:'')}</h3><p class="muted" style="margin:0">${done} of ${PROBS.length} problems checked</p></div></div>
+    <table class="res" style="margin-top:12px">${rows}</table>
+    <p class="small muted" style="margin-top:10px">Problems you haven't checked count as 0. You can turn in again later; your teacher sees the newest one.</p>
+    <div class="btnrow"><button class="btn primary" id="subBtn" type="button">${S.submittedAt?'Turn in again':'Turn in my lab'}</button><button class="btn ghost" id="csvBtn" type="button">Download CSV</button></div>
+    <p class="fb info sheetStatus" aria-live="polite">${S.sentAt?`Sent to your teacher ${new Date(S.sentAt).toLocaleString()}.`:'Not turned in yet.'}</p>`;
+  $('#subBtn').addEventListener('click',turnIn);
+  $('#csvBtn').addEventListener('click',()=>downloadCSV([recordRow()],`CarbonJourney_${(S.student&&S.student.last||'student').replace(/\W+/g,'')}.csv`));
+}
+const CSV_HEAD=['Student ID','Last Name','First Name','Period','Teacher','Activity','Score','Total','Percent',...PARTS.slice(0,-1).map(p=>p.label),'Date'];
+function recordRow(){ const st=S.student||{}, sc=scoreAll(); return [st.id||'',st.last||'',st.first||'',st.period||'',st.teacher||'',ACTIVITY,sc.total,sc.max,Math.round(100*sc.total/sc.max)+'%',...sc.parts.map(p=>p.got),new Date(S.submittedAt||Date.now()).toLocaleString()]; }
+function csvText(rows){ const q=v=>{ v=String(v==null?'':v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }; return [CSV_HEAD,...rows].map(r=>r.map(q).join(',')).join('\r\n')+'\r\n'; }
+function downloadCSV(rows,name){ const b=new Blob([csvText(rows)],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500); }
+const loadRecs=()=>{ try{ return (JSON.parse(localStorage.getItem(RECS))||[]).filter(r=>r.length===CSV_HEAD.length); }catch(e){ return []; } };
+function saveRecord(){ if(S.preview) return; const recs=loadRecs(), row=recordRow(); const i=recs.findIndex(r=>r[0]===row[0]&&r[1]===row[1]); if(i>=0) recs[i]=row; else recs.push(row); try{ localStorage.setItem(RECS,JSON.stringify(recs)); }catch(e){} }
+function turnIn(){
+  const left=PROBS.filter(p=>!p.checked()).length;
+  if(left&&!confirm(`${left} problem${left>1?'s':''} not checked yet (they count as 0). Turn in anyway?`)) return;
+  S.submittedAt=Date.now(); save(); saveRecord(); cloudSave(true); disarm(); refresh();
+  const msg=t=>$$('.sheetStatus').forEach(e=>e.textContent=t);
+  if(S.preview){ msg('Preview mode: nothing is sent.'); return; }
+  const st=S.student, sc=scoreAll();
+  const body={studentId:st.id||'',firstName:st.first||'',lastName:st.last||'',period:st.period||'',teacher:st.teacher||'',locks:'0',when:new Date().toString(),activity:ACTIVITY,score:String(sc.total),total:String(sc.max),
+    qlabels:sc.parts.map((p,i)=>'P'+(i+1)+' '+PARTS[i].label).join('|'),qpoints:sc.parts.map(p=>p.got).join('|'),qmax:sc.parts.map(p=>p.max).join('|')};
+  msg('Sending...');
+  fetch(sheetURL(),{method:'POST',mode:'no-cors',body:new URLSearchParams(body)}).then(()=>{ S.sentAt=new Date().toISOString(); save(); msg('Sent! Your teacher will see your score.'); }).catch(()=>msg("Couldn't send. Check the Wi-Fi and try again, or download the CSV."));
+}
+
+/* ============================== NO LOCKDOWN ON WORKSHEETS ============================== */
+let teacherOpen=false;
+function arm(){} function disarm(){} function showLock(){} function enterFS(){}
+['copy','cut','paste','contextmenu'].forEach(ev=>document.addEventListener(ev,e=>{ if(teacherOpen||S.preview) return; e.preventDefault(); }));
+
+/* ============================== SIGN IN ============================== */
+function showWS(){ $('#start').hidden=true; $('#top').hidden=false; $('#ws').hidden=false; build(); window.scrollTo(0,0); if(S.locked&&LOCKDOWN&&!S.lockOff) showLock(); else arm(); }
+function renderStart(){ const has=!!S.student; $('#resumeBox').hidden=!has; $('#startForm').hidden=has; $('#signinTitle').textContent=has?'Welcome back':'Sign in to start';
+  if(has) $('#resumeText').innerHTML=`Signed in as <b>${esc(S.student.first)} ${esc(S.student.last)}</b>, period ${esc(S.student.period)}.`; }
+$('#fPeriod').innerHTML='<option value="">Choose your period</option>'+periodList().map(p=>`<option>${esc(p)}</option>`).join('');
+$('#fTeacher').innerHTML='<option value="">Choose your teacher</option>'+teacherList().map(t=>`<option>${esc(t)}</option>`).join('');
+let starting=false;
+async function start(){
+  if(starting) return; starting=true;
+  try{
+    const v={first:$('#fFirst').value.trim(),last:$('#fLast').value.trim(),id:$('#fId').value.trim(),period:$('#fPeriod').value,teacher:$('#fTeacher').value};
+    const miss=[]; if(!v.first) miss.push('first name'); if(!v.last) miss.push('last name'); if(!v.id) miss.push('student ID'); if(!v.period) miss.push('period'); if(!v.teacher) miss.push('teacher');
+    const err=$('#formErr'); if(miss.length){ err.className='fb no'; err.textContent='Fill in your '+miss.join(', ')+'.'; err.hidden=false; return; }
+    if(LOCKDOWN) enterFS();
+    err.className='fb info'; err.textContent='Checking for your saved work...'; err.hidden=false;
+    const res=await cloudLoad(v); err.hidden=true;
+    if(res.status==='found'){ const d=res.data; d.student=Object.assign({},d.student||{},{first:v.first,period:v.period,teacher:v.teacher}); adopt(d); showWS(); note('✓ Your saved work was loaded'); return; }
+    const ns=fresh(); ns.student=v; adopt(ns); showWS(); cloudSave(true);
+  } catch(ex){ const er=$('#formErr'); er.className='fb no'; er.textContent='Something went wrong starting ('+(ex&&ex.message||ex)+'). Reload and try again.'; er.hidden=false; }
+  finally{ starting=false; }
+}
+$('#startBtn').addEventListener('click',start);
+$('#startForm').addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.tagName==='INPUT'){ e.preventDefault(); start(); } });
+$('#resumeBtn').addEventListener('click',async()=>{ const b=$('#resumeBtn'); b.disabled=true; b.textContent='Loading your work...'; if(LOCKDOWN&&!S.locked) enterFS();
+  const res=await cloudLoad(S.student); b.disabled=false; b.textContent='Continue my lab';
+  if(res.status==='found'&&(res.data.updatedAt||0)>(S.updatedAt||0)&&checkedCount(res.data)>=checkedCount(S)){ const d=res.data; d.student=S.student; adopt(d); note('✓ Your newest saved work was loaded'); } showWS(); });
+$('#notMeBtn').addEventListener('click',async()=>{ const b=$('#notMeBtn'); b.disabled=true;
+  try{ if(cloudOK()) await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); }catch(e){ b.disabled=false; $('#resumeErr').textContent="Can't back up the last student's work right now. Check the Wi-Fi, or ask your teacher."; $('#resumeErr').hidden=false; return; }
+  b.disabled=false; adopt(fresh()); ['#fFirst','#fLast','#fId','#fPeriod','#fTeacher'].forEach(s=>$(s).value=''); renderStart(); });
+
+/* ============================== TEACHER ============================== */
+function openTeacher(){ teacherOpen=true; $('#teachLogin').hidden=false; $('#teachPanel').hidden=true; $('#teachErr').hidden=true; $('#teachCode').value=''; $('#teachOv').classList.add('show'); setTimeout(()=>$('#teachCode').focus(),50); }
+function closeTeacher(){ $('#teachOv').classList.remove('show'); teacherOpen=false; }
+$('#teacherLink').addEventListener('click',openTeacher); $('#teachBtn').addEventListener('click',openTeacher);
+$('#teachCancel').addEventListener('click',closeTeacher);
+$('#teachCode').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#teachGo').click(); });
+$('#teachGo').addEventListener('click',()=>{ if(!codeIs($('#teachCode').value,TEACHER_CODE)){ $('#teachErr').hidden=false; return; } $('#teachLogin').hidden=true; $('#teachPanel').hidden=false; renderTeacher(); });
+function renderTeacher(){
+  const recs=loadRecs(), p=$('#teachPanel'), keyOn=document.body.classList.contains('keyon');
+  p.innerHTML=`<h2>Teacher tools</h2>
+    <div class="btnrow"><button class="btn ghost" id="tKey" type="button">${keyOn?'Hide answer key':'Answer key'}</button>
+      <button class="btn ghost" id="tPrev" type="button">${S.preview?'End preview':'Preview (saves nothing)'}</button>
+      <button class="btn ghost" id="tResetWrong" type="button">Reset all wrong answers</button>
+      <button class="btn ghost" id="tReset" type="button">Reset this Chromebook</button><button class="btn ghost" id="tClose" type="button">Close</button></div>
+    <h3 style="margin-top:16px">Scores saved on this Chromebook (${recs.length})</h3>
+    <div class="wide">${recs.length?`<table class="nb"><tr><th>Student</th><th>ID</th><th>Period</th><th>Score</th><th>Date</th></tr>${recs.map(r=>`<tr><td>${esc(r[1])}, ${esc(r[2])}</td><td>${esc(r[0])}</td><td>${esc(r[3])}</td><td>${r[6]}/${r[7]}</td><td>${esc(r[r.length-1])}</td></tr>`).join('')}</table>`:'<p class="muted">None yet.</p>'}</div>
+    <div class="btnrow"><button class="btn primary" id="tCsv" type="button" ${recs.length?'':'disabled'}>Download scores (CSV)</button></div>
+    <h3 style="margin-top:16px">Load a student's saved work</h3>
+    <div class="btnrow"><input class="code" id="tId" placeholder="Student ID" style="width:150px"><input class="code" id="tLast" placeholder="Last name" style="width:170px"><button class="btn ghost" id="tLoad" type="button">Load work</button></div>
+    <p class="fb info" id="tMsg" style="min-height:1em"></p>`;
+  const msg=t=>$('#tMsg').textContent=t;
+  $('#tKey').addEventListener('click',()=>{ document.body.classList.toggle('keyon'); renderTeacher(); msg(document.body.classList.contains('keyon')?'Answer key on: each box shows its answer, sort chips show their box, and correct choices have a dashed gold outline.':'Answer key off.'); });
+  $('#tPrev').addEventListener('click',()=>{ if(S.preview){ location.reload(); return; } const ns=fresh(); ns.preview=true; ns.student={first:'Teacher',last:'Preview',id:'0',period:'-',teacher:teacherList()[0]}; S=ns; closeTeacher(); showWS(); note('Preview: nothing is saved'); });
+  $('#tReset').addEventListener('click',()=>{ if(confirm('Erase this lab on this Chromebook? Work backed up to the Saved Student Work sheet is not deleted.')){ try{ localStorage.removeItem(STORE); }catch(e){} location.reload(); } });
+  $('#tResetWrong').addEventListener('click',()=>{
+    const wrong=PROBS.filter(pr=>{ const P=S.p[pr.id]||{}; return (P.tries||0)>0 && !P.right; });
+    if(!wrong.length){ msg('Nothing to reset: this student has no wrong answers.'); return; }
+    if(!confirm(`Reset ${wrong.length} problem${wrong.length>1?'s':''} that ${wrong.length>1?'are':'is'} wrong or on a second try for ${(S.student&&S.student.first)||'this student'}? Correct answers stay.`)) return;
+    wrong.forEach(pr=>{ delete S.p[pr.id]; });
+    save(); cloudSave(true); msg(`Reset ${wrong.length} problem${wrong.length>1?'s':''}. Reloading…`); setTimeout(()=>location.reload(),700); });
+  $('#tClose').addEventListener('click',closeTeacher);
+  $('#tCsv').addEventListener('click',()=>downloadCSV(recs,`CarbonJourney_scores_${new Date().toISOString().slice(0,10)}.csv`));
+  $('#tLoad').addEventListener('click',async()=>{ const s={id:$('#tId').value.trim(),last:$('#tLast').value.trim()}; if(!s.id||!s.last){ msg('Type the student ID and last name.'); return; } msg('Looking up saved work...');
+    const r=await cloudLoad(s); if(r.status==='found'){ adopt(r.data); closeTeacher(); renderStart(); $('#start').hidden=false; $('#ws').hidden=true; $('#top').hidden=true; } else msg(r.status==='none'?'No saved work found for that student.':"Couldn't reach the saved-work sheet."); });
+}
+
+if(!STORAGE_OK) $('#noStore').hidden=false;
+renderStart();
+})();
+</script>
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

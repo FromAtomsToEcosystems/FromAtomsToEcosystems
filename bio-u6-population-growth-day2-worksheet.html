@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Population Growth: Day 2 Practice | Biology Unit 6</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1626; --panel:#142136; --panel2:#1a2a44; --line:#2a3d5f; --line2:#3a5580;
+  --text:#e8eef8; --muted:#a3b4cf; --dim:#7488a9;
+  --leaf:#5fe3a9; --sun:#ffd35c; --r:#ffd35c; --sky:#45c8f0; --ok:#4ade80; --bad:#fb7185; --pink:#f472b6;
+  --font:'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+*{box-sizing:border-box} [hidden]{display:none !important}
+html,body{margin:0}
+body{background-color:var(--bg); background-image:linear-gradient(rgba(110,150,210,.065) 1px,transparent 1px),linear-gradient(90deg,rgba(110,150,210,.065) 1px,transparent 1px); background-size:32px 32px;
+  color:var(--text); font-family:var(--font); font-size:17px; line-height:1.55; -webkit-user-select:none; user-select:none}
+input,textarea{-webkit-user-select:text; user-select:text}
+h1,h2,h3,h4{margin:0 0 .45em; line-height:1.2; font-weight:600}
+h1{font-size:clamp(28px,4.4vw,40px); font-weight:700} h2{font-size:24px} h3{font-size:19px}
+p{margin:0 0 .75em} .muted{color:var(--muted)} .small{font-size:14px}
+sub,sup{font-size:.72em}
+:focus-visible{outline:3px solid var(--r); outline-offset:2px}
+.top{position:sticky; top:0; z-index:20; background:rgba(13,22,38,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+.top-in{max-width:1100px; margin:0 auto; padding:8px 16px; display:flex; gap:12px; align-items:center}
+.brand{font-weight:600; font-size:15px; white-space:nowrap} .brand span{display:block; font-weight:400; font-size:12px; color:var(--muted)}
+.nav{display:flex; gap:6px; flex:1; overflow-x:auto; padding:3px 2px}
+.ntile{flex:0 0 auto; width:54px; height:54px; border-radius:7px; border:1.5px solid var(--line2); background:var(--panel); color:var(--text); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer; position:relative; font:inherit; padding:0}
+.ntile .ic{color:var(--leaf); line-height:0} .ntile .nm{font-size:8.5px; color:var(--muted)}
+.ntile.cur{border-color:var(--r); background:rgba(255,211,92,.14)}
+.ntile.cur .nm{color:var(--r)}
+.secnav{display:flex; justify-content:space-between; gap:10px; margin-top:4px}
+.ntile.done::after{content:'✓'; position:absolute; top:1px; right:4px; font-size:10px; font-weight:700; color:var(--ok)}
+.scorepill{font-size:13px; padding:4px 10px; border-radius:999px; background:var(--panel2); white-space:nowrap}
+.savenote{font-size:12.5px; color:var(--ok); white-space:nowrap} @media (max-width:1300px){ .savenote{display:none} } @media (max-width:900px){ .scorepill{display:none} }
+main{max-width:1000px; margin:0 auto; padding:20px 16px 80px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin:0 0 18px}
+.sec{scroll-margin-top:80px}
+.sechead{display:flex; gap:14px; align-items:center; margin:28px 0 10px}
+.badge{width:66px; height:66px; border-radius:10px; border:2px solid var(--leaf); background:var(--panel); display:flex; align-items:center; justify-content:center; position:relative; flex:0 0 auto; color:var(--leaf)}
+.badge .z{position:absolute; top:3px; left:6px; font-size:11px; color:var(--muted)}
+.meta{color:var(--muted); font-size:14px}
+.btn{font:inherit; font-weight:600; font-size:15px; border-radius:10px; padding:10px 18px; cursor:pointer; border:1.5px solid transparent}
+.btn.primary{background:var(--r); color:#231a00} .btn.ghost{background:transparent; border-color:var(--line2); color:var(--text)}
+.btn.small{padding:6px 12px; font-size:14px} .btn:disabled{opacity:.45; cursor:not-allowed}
+.btnrow{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:12px}
+.field{display:flex; flex-direction:column; gap:4px; font-size:14px; color:var(--muted)}
+.field input,.field select{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px}
+.formgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin:10px 0}
+.fb{margin-top:10px; padding:10px 14px; border-radius:10px; font-size:15px}
+.fb.ok{background:rgba(74,222,128,.12); color:#c9f7d8} .fb.no{background:rgba(251,113,133,.12); color:#ffd3db} .fb.info{background:var(--panel2)}
+.prob{border-top:1px solid var(--line); padding-top:16px; margin-top:16px}
+.prob:first-of-type{border-top:none; padding-top:0; margin-top:0}
+.pq{font-weight:500; margin-bottom:8px}
+.pnum{display:inline-block; min-width:30px; font-weight:700; color:var(--leaf)}
+.pts{font-size:13px; color:var(--muted); font-weight:400}
+.hintbox{background:rgba(255,211,92,.08); border-left:3px solid var(--r); border-radius:8px; padding:8px 12px; margin-top:8px; font-size:15px}
+/* drag and drop */
+.figwrap{position:relative; width:100%}
+.figwrap svg{width:100%; height:auto; display:block; background:#0a1322; border:1px solid var(--line); border-radius:12px}
+.figwrap svg text{font-family:var(--font)}
+.zone{position:absolute; transform:translate(-50%,-50%); min-height:32px; border:2px dashed #8fb3e6; border-radius:9px; background:rgba(13,22,38,.92); color:var(--text); font:inherit; font-size:14px; font-weight:600; display:flex; align-items:center; justify-content:center; padding:2px 6px; cursor:pointer; text-align:center; line-height:1.15}
+.zone.empty{color:var(--dim); font-weight:400; font-size:12.5px}
+.zone.filled{border-style:solid; border-color:var(--r); background:#2b2410}
+.zone.hot{box-shadow:0 0 0 3px rgba(255,211,92,.5)}
+.zone.locked{opacity:.9}
+.zone.ok{border-color:var(--ok); background:#0f2e1d} .zone.no{border-color:var(--bad); background:#3a0f1a}
+.pool{display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 4px; padding:10px; border:1px dashed var(--line2); border-radius:10px; min-height:52px}
+.pool .lbl{width:100%; font-size:12.5px; color:var(--muted)}
+.chip{font:inherit; font-size:15px; font-weight:600; padding:6px 14px; border-radius:999px; border:1.5px solid var(--line2); background:var(--panel2); color:var(--text); cursor:grab; touch-action:none}
+.chip.sel{border-color:var(--r); background:rgba(255,211,92,.16); box-shadow:0 0 0 3px rgba(255,211,92,.35)}
+.bins{display:grid; gap:10px; margin-top:6px}
+.bin{border:2px dashed var(--line2); border-radius:12px; padding:10px; min-height:96px; cursor:pointer; background:rgba(13,22,38,.5)}
+.bin h4{margin:0 0 8px; font-size:15px; color:var(--leaf)} .bin.hot{border-color:var(--r)}
+.bin .chip{cursor:pointer; margin:3px} .bin .chip.ok{border-color:var(--ok); background:#0f2e1d} .bin .chip.no{border-color:var(--bad); background:#3a0f1a}
+.phenbox{background:rgba(244,114,182,.1); border-left:4px solid #f472b6; border-radius:8px; padding:10px 14px; margin-bottom:14px}
+.fixnote{font-size:12px; color:#ffd3db; font-weight:400}
+/* equation */
+.eq{display:flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:20px; font-weight:600; margin:10px 0}
+.eq .zone{position:static; transform:none; min-width:120px; min-height:40px}
+/* choices */
+.opts{display:grid; gap:8px; margin:6px 0}
+.opt{display:flex; gap:12px; align-items:center; text-align:left; background:var(--panel2); border:1.5px solid var(--line); color:var(--text); border-radius:10px; padding:9px 14px; font:inherit; font-size:16px; cursor:pointer}
+.opt .L{flex:0 0 26px; height:26px; border-radius:50%; display:grid; place-items:center; background:var(--bg); font-weight:600; font-size:13px}
+.opt.multi .L{border-radius:6px}
+.opt.sel{border-color:var(--r); background:rgba(255,211,92,.08)} .opt.sel .L{background:var(--r); color:#231a00}
+.opt.ok{border-color:var(--ok); background:rgba(74,222,128,.1)} .opt.no{border-color:var(--bad); background:rgba(251,113,133,.1)}
+.opt:disabled{cursor:default}
+input.blank{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:7px 10px; font:inherit; font-size:16px; width:170px}
+input.blank.ok{border-color:var(--ok)} input.blank.no{border-color:var(--bad)}
+.brow{margin:8px 0}
+/* answer key (teacher) */
+body.keyon .zone[data-key]::after{content:'key: ' attr(data-key); position:absolute; top:100%; left:50%; transform:translateX(-50%); font-size:11px; color:var(--r); white-space:nowrap; margin-top:2px}
+body.keyon .chip[data-key]::after{content:' → ' attr(data-key); font-size:11px; color:var(--r)}
+body.keyon .opt[data-key]{outline:2px dashed var(--r); outline-offset:2px}
+body.keyon input.blank[data-key]+.keytxt{display:inline}
+.wbank2{margin-top:8px; padding:8px 10px; border:1px dashed rgba(163,180,207,.5); border-radius:10px; font-size:14px; line-height:2}
+.wchip{font:inherit; font-size:14px; margin:2px 4px 2px 0; padding:2px 10px; border-radius:999px; border:1px solid rgba(163,180,207,.6); background:rgba(255,255,255,.06); color:inherit; cursor:pointer}
+.wchip:hover{border-color:#ffd35c}
+.wtext{width:100%; min-height:110px; font:inherit; padding:10px; border-radius:10px; border:1.5px solid var(--line,#2a3d5f); background:rgba(255,255,255,.04); color:inherit; resize:vertical}
+.wkey{display:none; margin-top:6px; font-size:14px; color:var(--r,#ffd35c)}
+body.keyon .wkey{display:block}
+.keytxt{display:none; font-size:12px; color:var(--r); margin-left:6px}
+.big{font-size:52px; font-weight:700; color:var(--r); line-height:1}
+table.res{border-collapse:collapse; width:100%} table.res th,table.res td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line)} table.res th{color:var(--muted); font-weight:400}
+.card.nostore{border:2px solid var(--bad); background:rgba(251,113,133,.08)}
+.overlay{position:fixed; inset:0; background:rgba(4,9,18,.94); z-index:100; display:none; align-items:center; justify-content:center; padding:20px}
+.overlay.show{display:flex}
+.modal{background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:24px; max-width:900px; width:100%; max-height:92vh; overflow:auto}
+input.code{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px; width:200px}
+table.nb{border-collapse:collapse; width:100%; font-size:14px} table.nb th,table.nb td{border:1px solid var(--line2); padding:6px 8px} table.nb th{background:var(--panel2)}
+.wide{overflow-x:auto}
+@media (max-width:700px){ .zone{font-size:11px; min-height:26px} .chip{font-size:13px; padding:5px 10px} }
+@media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important} }
+.prob + p,.prob + .phenbox,.prob + .figwrap{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.figwrap svg{background:#f8fafc}
+
+</style>
+</head>
+<body>
+<header class="top" id="top" hidden>
+  <div class="top-in">
+    <div class="brand">Population growth Day 2<span id="whoami"></span></div>
+    <nav class="nav" id="nav" aria-label="Worksheet parts"></nav>
+    <span class="scorepill" id="scorePill"></span>
+    <span class="savenote" id="saveNote" aria-live="polite"></span>
+    <button class="btn ghost small" id="teachBtn" type="button">Teacher</button>
+  </div>
+</header>
+
+<main>
+  <section id="start">
+    <div class="muted" style="margin-top:8px">Biology · Unit 6: Ecology · Worksheet · about 30 minutes</div>
+    <h1>Population Growth: Day 2 Practice</h1>
+    <p class="muted" style="font-size:18px;max-width:42em">Graph and read population data, calculate growth rate and percent change, find carrying capacity and limiting factors in new data sets, and explain with a claim, evidence, and reasoning.</p>
+    <div class="card"><h3>How it works</h3>
+      <p style="margin:0">Each problem gets <b>two tries</b>. Right on either try earns full credit. If your first try is wrong, you'll be told it isn't right yet (but not the answer), so look again and try once more. Wrong twice and the problem is marked wrong and locks. Stuck? Tap <b>Hint</b> before you check.</p></div>
+    <div class="card nostore" id="noStore" hidden><h3>This browser can't save your work</h3><p style="margin:0">You may be in guest or incognito mode. Sign in to your school account and open the worksheet again.</p></div>
+    <div class="card">
+      <h3 id="signinTitle">Sign in to start</h3>
+      <div id="resumeBox" hidden><p id="resumeText"></p>
+        <div class="btnrow"><button class="btn primary" id="resumeBtn" type="button">Continue my worksheet</button><button class="btn ghost small" id="notMeBtn" type="button">Not you? Sign in as a different student</button></div>
+        <div class="fb no" id="resumeErr" hidden></div></div>
+      <div id="startForm">
+        <div class="formgrid">
+          <label class="field">First name<input id="fFirst" autocomplete="off"></label><label class="field">Last name<input id="fLast" autocomplete="off"></label>
+          <label class="field">Student ID<input id="fId" inputmode="numeric" autocomplete="off"></label>
+          <label class="field">Period<select id="fPeriod"></select></label><label class="field">Teacher<select id="fTeacher"></select></label>
+        </div>
+        <p class="small muted">Your work saves as you go. On any Chromebook, sign in with the same student ID and last name to pick up where you left off.</p>
+        <div class="fb no" id="formErr" hidden></div>
+        <div class="btnrow"><button class="btn primary" type="button" id="startBtn">Start the worksheet</button></div>
+      </div>
+    </div>
+    <p style="text-align:center"><button class="btn ghost" id="teacherLink" type="button">Teacher: enter unlock code</button></p>
+  </section>
+  <div id="ws" hidden></div>
+</main>
+
+<div class="overlay" id="teachOv" role="dialog" aria-modal="true" aria-labelledby="tTitle">
+  <div class="modal"><div id="teachLogin"><h2 id="tTitle">Teacher</h2>
+    <div class="btnrow"><input class="code" id="teachCode" type="password" placeholder="Teacher code" autocomplete="off"><button class="btn primary" id="teachGo" type="button">Open</button><button class="btn ghost" id="teachCancel" type="button">Close</button></div>
+    <div class="fb no" id="teachErr" hidden>That code didn't work.</div></div><div id="teachPanel" hidden></div></div>
+</div>
+<div class="overlay" id="tabOv" role="dialog" aria-modal="true"><div class="modal" style="max-width:520px"><h2>This worksheet is open in another tab</h2><p>To keep your newest work safe, this copy stopped saving. Close the extra tab, then reload this one.</p><div class="btnrow"><button class="btn primary" type="button" onclick="location.reload()">Reload with my newest work</button></div></div></div>
+
+<script src="sheets-config.js"></script>
+<script>
+(function(){
+'use strict';
+/* ============================== SETTINGS ============================== */
+const LESSON_TITLE='Population Growth';           // unlock code = last word of this title
+const UNLOCK_CODE=LESSON_TITLE.trim().split(/\s+/).pop();
+const TEACHER_CODE='Teacher007';   // universal teacher-tools code
+const codeIs=(v,c)=>String(v||'').trim().toLowerCase()===String(c).toLowerCase();
+const WS_ID='bio-u6-population-growth-day2-worksheet', ACTIVITY='Population Growth Day 2 Worksheet';
+const BACKUP_URL='https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const SAVE_URL_BUILTIN='https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';
+const BACKUP_TEACHERS=['Austin','Mueller','McCue','Arce','Trimm','Garcia','Trimm/Callanan','Callanan'], BACKUP_PERIODS=['1','2','3','4','5','6','7','8'];
+const STORE='popGrowthDay2Worksheet_v1', RECS='popGrowthDay2Worksheet_records_v1';
+/* ===================================================================== */
+const teacherList=()=>{ try{ if(typeof TEACHERS!=='undefined'&&Array.isArray(TEACHERS)&&TEACHERS.length) return TEACHERS.map(String); }catch(e){} return BACKUP_TEACHERS; };
+const periodList=()=>{ try{ if(typeof PERIODS!=='undefined'&&Array.isArray(PERIODS)&&PERIODS.length) return PERIODS.map(String); }catch(e){} return BACKUP_PERIODS; };
+const sheetURL=()=>{ try{ if(typeof SHEETS_WEBHOOK_URL!=='undefined'&&SHEETS_WEBHOOK_URL&&String(SHEETS_WEBHOOK_URL).indexOf('PASTE')<0) return String(SHEETS_WEBHOOK_URL); }catch(e){} return BACKUP_URL; };
+const saveURL=()=>{ try{ if(typeof SAVE_WEBHOOK_URL!=='undefined'&&SAVE_WEBHOOK_URL&&String(SAVE_WEBHOOK_URL).indexOf('PASTE')<0) return String(SAVE_WEBHOOK_URL); }catch(e){} return SAVE_URL_BUILTIN; };
+const LOCKDOWN=false;   // worksheets never lock down
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const strip=s=>String(s).replace(/<[^>]+>/g,'');
+function h(tag,attrs,html){ const e=document.createElement(tag); if(attrs) for(const k in attrs){ if(attrs[k]===false||attrs[k]==null) continue; if(k==='class') e.className=attrs[k]; else if(k==='hidden') e.hidden=!!attrs[k]; else e.setAttribute(k,attrs[k]); } if(html!=null) e.innerHTML=html; return e; }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* ---------- state + saving ---------- */
+function fresh(){ return {ws:WS_ID, student:null, p:{}, ord:{}, locks:0, locked:false, lockOff:false, submittedAt:null, sentAt:null}; }
+let S; try{ S=JSON.parse(localStorage.getItem(STORE)); }catch(e){} if(!S||S.ws!==WS_ID) S=fresh();
+let STORAGE_OK=true, saveBlocked=false;
+try{ localStorage.setItem('__ps_t','1'); STORAGE_OK=localStorage.getItem('__ps_t')==='1'; localStorage.removeItem('__ps_t'); }catch(e){ STORAGE_OK=false; }
+function save(){
+  if(saveBlocked) return;
+  if(S.preview){ note('Preview: nothing is saved'); return; }
+  try{ const raw=localStorage.getItem(STORE); if(raw){ const st=JSON.parse(raw); if(st&&st.ws===WS_ID&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); return; } }
+    S.rev=(S.rev||0)+1; S.updatedAt=Date.now(); localStorage.setItem(STORE,JSON.stringify(S)); note(); cloudSave(false); }catch(e){}
+}
+window.addEventListener('storage',e=>{ if(e.key!==STORE||!e.newValue) return; try{ const st=JSON.parse(e.newValue); if(st&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); } }catch(_){} });
+const saveKey=st=>(String(st.id||'').replace(/\s+/g,'')+'-'+String(st.last||'').toLowerCase().replace(/[^a-z]/g,'')).toLowerCase();
+const checkedCount=st=>Object.values((st||S).p).filter(x=>x&&x.checked).length;
+let cloudTimer=null, cloudDirty=false, cloudBusy=false, cloudAt=null, cloudErr=false;
+const cloudOK=()=>!!saveURL()&&S.student&&!saveBlocked&&!S.preview;
+function cloudBody(){ const st=S.student||{}, sc=scoreAll();
+  return new URLSearchParams({code:saveKey(st), lesson:WS_ID, ver:String(S.updatedAt||Date.now()), prog:String((S.submittedAt?100000:0)+checkedCount(S)), studentId:st.id||'', lastName:st.last||'', firstName:st.first||'', period:st.period||'', teacher:st.teacher||'',
+    summary:S.submittedAt?`Turned in · ${sc.total}/${sc.max}`:`${checkedCount(S)} of ${PROBS.length} problems checked`, data:JSON.stringify(S)}); }
+function cloudSave(soon){ if(!cloudOK()) return; cloudDirty=true; if(soon){ clearTimeout(cloudTimer); cloudTimer=setTimeout(cloudFlush,1200); } else if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); }
+async function cloudFlush(){ cloudTimer=null; if(!cloudOK()||!cloudDirty) return; if(cloudBusy){ cloudTimer=setTimeout(cloudFlush,4000); return; } cloudBusy=true; cloudDirty=false;
+  try{ await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); cloudAt=new Date(); cloudErr=false; }catch(e){ cloudDirty=true; cloudErr=true; if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); } finally{ cloudBusy=false; note(); } }
+function cloudBeacon(){ if(!cloudOK()||!cloudDirty) return; try{ if(navigator.sendBeacon&&navigator.sendBeacon(saveURL(),cloudBody())) cloudDirty=false; }catch(e){} }
+async function cloudLoad(st){ const ctrl=new AbortController(), t=setTimeout(()=>ctrl.abort(),5000);
+  try{ const r=await fetch(saveURL()+'?'+new URLSearchParams({code:saveKey(st),lesson:WS_ID}),{signal:ctrl.signal}); const j=await r.json(); if(j&&j.found&&j.data){ const d=JSON.parse(j.data); if(d&&d.ws===WS_ID) return {status:'found',data:d}; } return {status:'none'}; }
+  catch(e){ return {status:'error'}; } finally{ clearTimeout(t); } }
+function adopt(ns){ let sr=0; try{ const raw=localStorage.getItem(STORE); if(raw) sr=JSON.parse(raw).rev||0; }catch(e){} ns.rev=Math.max(ns.rev||0,sr); S=ns; saveBlocked=false; save(); }
+function note(msg){ const n=$('#saveNote'); if(!n) return; const tm=d=>d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}); n.textContent=msg||(cloudErr?'✓ Saved on this Chromebook':'✓ Saved '+tm(new Date())+(cloudAt?' · backed up '+tm(cloudAt):'')); }
+document.addEventListener('visibilitychange',()=>{ if(document.hidden){ save(); cloudBeacon(); } });
+window.addEventListener('pagehide',()=>{ save(); cloudBeacon(); });
+
+/* ============================== DIAGRAMS ============================== */
+const FIG={};
+
+/* ============================== PROBLEMS ============================== */
+const PARTS=[
+ {k:'P1', label:'Graph it', title:'Graphing and reading population data', min:6, icon:'<path d="M3 20h18M3 20V4"/><circle cx="7" cy="17" r="1.2"/><circle cx="10" cy="14" r="1.2"/><circle cx="13" cy="9" r="1.2"/><circle cx="17" cy="7" r="1.2"/><path d="M7 17l3-3 3-5 4-2"/>'},
+ {k:'P2', label:'Calculate', title:'Growth rate and percent change', min:7, icon:'<circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/><path d="M19 5L5 19"/>'},
+ {k:'P3', label:'Find K', title:'Carrying capacity and limiting factors: sea otters', min:6, icon:'<path d="M3 21h18M3 21V3"/><path d="M3 6h18" stroke-dasharray="2 2"/><path d="M5 19c4 0 5-1 7-6s4-6.5 8-6.7"/>'},
+ {k:'P4', label:'New data', title:'A new data set: St. Paul Island reindeer', min:5, icon:'<path d="M3 21h18M3 21V3"/><path d="M3 9h18" stroke-dasharray="2 2"/><path d="M5 19c4 0 5-14 8-14s3 12 6 13"/>'},
+ {k:'P5', label:'CER', title:'Explain with CER', min:6, icon:'<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>'},
+ {k:'P6', label:'Grade', title:'Your grade', min:1, icon:'<rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4V2.5h6V4"/><path d="M8.5 13l2.5 2.5 4.5-5"/>'}
+];
+const KFIG={"flyTable": [[0, 10], [3, 24], [6, 60], [9, 130], [12, 210], [15, 260], [18, 285], [21, 295], [24, 300]], "g_s": "<svg style=\"width:190px;height:auto;display:block\" viewBox=\"0 0 300 190\" role=\"img\" aria-label=\"Graph that rises slowly, then fast, then levels off near 300\"><rect width=\"300\" height=\"190\" rx=\"14\" fill=\"#ffffff\"/><line x1=\"52\" y1=\"146.0\" x2=\"278\" y2=\"146.0\" stroke=\"#e2e8f0\"/><text x=\"45\" y=\"150.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"52\" y1=\"115.0\" x2=\"278\" y2=\"115.0\" stroke=\"#e2e8f0\"/><text x=\"45\" y=\"119.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">100</text><line x1=\"52\" y1=\"84.0\" x2=\"278\" y2=\"84.0\" stroke=\"#e2e8f0\"/><text x=\"45\" y=\"88.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">200</text><line x1=\"52\" y1=\"53.0\" x2=\"278\" y2=\"53.0\" stroke=\"#e2e8f0\"/><text x=\"45\" y=\"57.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">300</text><line x1=\"52\" y1=\"22.0\" x2=\"278\" y2=\"22.0\" stroke=\"#e2e8f0\"/><text x=\"45\" y=\"26.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">400</text><line x1=\"52.0\" y1=\"146\" x2=\"52.0\" y2=\"151\" stroke=\"#475569\"/><text x=\"52.0\" y=\"165\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"108.5\" y1=\"146\" x2=\"108.5\" y2=\"151\" stroke=\"#475569\"/><text x=\"108.5\" y=\"165\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">6</text><line x1=\"165.0\" y1=\"146\" x2=\"165.0\" y2=\"151\" stroke=\"#475569\"/><text x=\"165.0\" y=\"165\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">12</text><line x1=\"221.5\" y1=\"146\" x2=\"221.5\" y2=\"151\" stroke=\"#475569\"/><text x=\"221.5\" y=\"165\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">18</text><line x1=\"278.0\" y1=\"146\" x2=\"278.0\" y2=\"151\" stroke=\"#475569\"/><text x=\"278.0\" y=\"165\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">24</text><defs><clipPath id=\"q15gc_50\"><rect x=\"52\" y=\"14\" width=\"232\" height=\"134\"/></clipPath></defs><g clip-path=\"url(#q15gc_50)\"><path d=\"M52.0,142.9L80.3,138.6L108.5,127.4L136.8,105.7L165.0,80.9L193.3,65.4L221.5,57.7L249.8,54.5L278.0,53.0\" stroke=\"#2563eb\" stroke-width=\"3\" fill=\"none\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><circle cx=\"52.0\" cy=\"142.9\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"80.3\" cy=\"138.6\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"108.5\" cy=\"127.4\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"136.8\" cy=\"105.7\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"165.0\" cy=\"80.9\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"193.3\" cy=\"65.4\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"221.5\" cy=\"57.7\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"249.8\" cy=\"54.5\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"278.0\" cy=\"53.0\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/></g><line x1=\"52\" y1=\"146\" x2=\"278\" y2=\"146\" stroke=\"#475569\" stroke-width=\"1.6\"/><line x1=\"52\" y1=\"146\" x2=\"52\" y2=\"16\" stroke=\"#475569\" stroke-width=\"1.6\"/><text x=\"165\" y=\"178\" text-anchor=\"middle\" font-size=\"13.5\" fill=\"#16213a\" font-weight=\"700\">Days</text><text x=\"18\" y=\"84\" transform=\"rotate(-90 18 84)\" text-anchor=\"middle\" font-size=\"13\" fill=\"#16213a\" font-weight=\"700\">Flies</text></svg>", "g_j": "<svg style=\"width:190px;height:auto;display:block\" viewBox=\"0 0 300 190\" role=\"img\" aria-label=\"Graph that curves up faster and faster\"><rect width=\"300\" height=\"190\" rx=\"14\" fill=\"#ffffff\"/><line x1=\"52\" y1=\"146.0\" x2=\"278\" y2=\"146.0\" stroke=\"#e2e8f0\"/><text x=\"45\" y=\"150.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"52\" y1=\"115.0\" x2=\"278\" y2=\"115.0\" stroke=\"#e2e8f0\"/><text x=\"45\" y=\"119.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">100</text><line x1=\"52\" y1=\"84.0\" x2=\"278\" y2=\"84.0\" stroke=\"#e2e8f0\"/><text x=\"45\" y=\"88.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">200</text><line x1=\"52\" y1=\"53.0\" x2=\"278\" y2=\"53.0\" stroke=\"#e2e8f0\"/><text x=\"45\" y=\"57.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">300</text><line x1=\"52\" y1=\"22.0\" x2=\"278\" y2=\"22.0\" stroke=\"#e2e8f0\"/><text x=\"45\" y=\"26.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">400</text><line x1=\"52.0\" y1=\"146\" x2=\"52.0\" y2=\"151\" stroke=\"#475569\"/><text x=\"52.0\" y=\"165\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"108.5\" y1=\"146\" x2=\"108.5\" y2=\"151\" stroke=\"#475569\"/><text x=\"108.5\" y=\"165\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">6</text><line x1=\"165.0\" y1=\"146\" x2=\"165.0\" y2=\"151\" stroke=\"#475569\"/><text x=\"165.0\" y=\"165\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">12</text><line x1=\"221.5\" y1=\"146\" x2=\"221.5\" y2=\"151\" stroke=\"#475569\"/><text x=\"221.5\" y=\"165\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">18</text><line x1=\"278.0\" y1=\"146\" x2=\"278.0\" y2=\"151\" stroke=\"#475569\"/><text x=\"278.0\" y=\"165\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">24</text><defs><clipPath id=\"q16gc_51\"><rect x=\"52\" y=\"14\" width=\"232\" height=\"134\"/></clipPath></defs><g clip-path=\"url(#q16gc_51)\"><path d=\"M52.0,142.9L61.4,142.4L70.8,141.8L80.3,141.0L89.7,140.2L99.1,139.2L108.5,138.0L117.9,136.7L127.3,135.1L136.8,133.3L146.2,131.1L155.6,128.6L165.0,125.6L174.4,122.1L183.8,118.1L193.3,113.3L202.7,107.8L212.1,101.3L221.5,93.7L230.9,84.8L240.3,74.4L249.8,62.2L259.2,47.9\" stroke=\"#2563eb\" stroke-width=\"3\" fill=\"none\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><circle cx=\"52.0\" cy=\"142.9\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"61.4\" cy=\"142.4\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"70.8\" cy=\"141.8\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"80.3\" cy=\"141.0\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"89.7\" cy=\"140.2\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"99.1\" cy=\"139.2\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"108.5\" cy=\"138.0\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"117.9\" cy=\"136.7\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"127.3\" cy=\"135.1\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"136.8\" cy=\"133.3\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"146.2\" cy=\"131.1\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"155.6\" cy=\"128.6\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"165.0\" cy=\"125.6\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"174.4\" cy=\"122.1\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"183.8\" cy=\"118.1\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"193.3\" cy=\"113.3\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"202.7\" cy=\"107.8\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"212.1\" cy=\"101.3\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"221.5\" cy=\"93.7\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"230.9\" cy=\"84.8\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"240.3\" cy=\"74.4\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"249.8\" cy=\"62.2\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"259.2\" cy=\"47.9\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/></g><line x1=\"52\" y1=\"146\" x2=\"278\" y2=\"146\" stroke=\"#475569\" stroke-width=\"1.6\"/><line x1=\"52\" y1=\"146\" x2=\"52\" y2=\"16\" stroke=\"#475569\" stroke-width=\"1.6\"/><text x=\"165\" y=\"178\" text-anchor=\"middle\" font-size=\"13.5\" fill=\"#16213a\" font-weight=\"700\">Days</text><text x=\"18\" y=\"84\" transform=\"rotate(-90 18 84)\" text-anchor=\"middle\" font-size=\"13\" fill=\"#16213a\" font-weight=\"700\">Flies</text></svg>", "g_line": "<svg style=\"width:190px;height:auto;display:block\" viewBox=\"0 0 300 190\" role=\"img\" aria-label=\"Straight line going up\"><rect width=\"300\" height=\"190\" rx=\"14\" fill=\"#ffffff\"/><line x1=\"52\" y1=\"146.0\" x2=\"278\" y2=\"146.0\" stroke=\"#e2e8f0\"/><text x=\"45\" y=\"150.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"52\" y1=\"115.0\" x2=\"278\" y2=\"115.0\" stroke=\"#e2e8f0\"/><text x=\"45\" y=\"119.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">100</text><line x1=\"52\" y1=\"84.0\" x2=\"278\" y2=\"84.0\" stroke=\"#e2e8f0\"/><text x=\"45\" y=\"88.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">200</text><line x1=\"52\" y1=\"53.0\" x2=\"278\" y2=\"53.0\" stroke=\"#e2e8f0\"/><text x=\"45\" y=\"57.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">300</text><line x1=\"52\" y1=\"22.0\" x2=\"278\" y2=\"22.0\" stroke=\"#e2e8f0\"/><text x=\"45\" y=\"26.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">400</text><line x1=\"52.0\" y1=\"146\" x2=\"52.0\" y2=\"151\" stroke=\"#475569\"/><text x=\"52.0\" y=\"165\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"108.5\" y1=\"146\" x2=\"108.5\" y2=\"151\" stroke=\"#475569\"/><text x=\"108.5\" y=\"165\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">6</text><line x1=\"165.0\" y1=\"146\" x2=\"165.0\" y2=\"151\" stroke=\"#475569\"/><text x=\"165.0\" y=\"165\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">12</text><line x1=\"221.5\" y1=\"146\" x2=\"221.5\" y2=\"151\" stroke=\"#475569\"/><text x=\"221.5\" y=\"165\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">18</text><line x1=\"278.0\" y1=\"146\" x2=\"278.0\" y2=\"151\" stroke=\"#475569\"/><text x=\"278.0\" y=\"165\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">24</text><defs><clipPath id=\"q17gc_52\"><rect x=\"52\" y=\"14\" width=\"232\" height=\"134\"/></clipPath></defs><g clip-path=\"url(#q17gc_52)\"><path d=\"M52.0,142.9L80.3,131.3L108.5,119.7L136.8,108.0L165.0,96.4L193.3,84.8L221.5,73.2L249.8,61.5L278.0,49.9\" stroke=\"#2563eb\" stroke-width=\"3\" fill=\"none\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><circle cx=\"52.0\" cy=\"142.9\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"80.3\" cy=\"131.3\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"108.5\" cy=\"119.7\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"136.8\" cy=\"108.0\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"165.0\" cy=\"96.4\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"193.3\" cy=\"84.8\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"221.5\" cy=\"73.2\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"249.8\" cy=\"61.5\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"278.0\" cy=\"49.9\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/></g><line x1=\"52\" y1=\"146\" x2=\"278\" y2=\"146\" stroke=\"#475569\" stroke-width=\"1.6\"/><line x1=\"52\" y1=\"146\" x2=\"52\" y2=\"16\" stroke=\"#475569\" stroke-width=\"1.6\"/><text x=\"165\" y=\"178\" text-anchor=\"middle\" font-size=\"13.5\" fill=\"#16213a\" font-weight=\"700\">Days</text><text x=\"18\" y=\"84\" transform=\"rotate(-90 18 84)\" text-anchor=\"middle\" font-size=\"13\" fill=\"#16213a\" font-weight=\"700\">Flies</text></svg>", "g_crash": "<svg style=\"width:190px;height:auto;display:block\" viewBox=\"0 0 300 190\" role=\"img\" aria-label=\"Graph that rises high then crashes\"><rect width=\"300\" height=\"190\" rx=\"14\" fill=\"#ffffff\"/><line x1=\"52\" y1=\"146.0\" x2=\"278\" y2=\"146.0\" stroke=\"#e2e8f0\"/><text x=\"45\" y=\"150.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"52\" y1=\"115.0\" x2=\"278\" y2=\"115.0\" stroke=\"#e2e8f0\"/><text x=\"45\" y=\"119.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">100</text><line x1=\"52\" y1=\"84.0\" x2=\"278\" y2=\"84.0\" stroke=\"#e2e8f0\"/><text x=\"45\" y=\"88.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">200</text><line x1=\"52\" y1=\"53.0\" x2=\"278\" y2=\"53.0\" stroke=\"#e2e8f0\"/><text x=\"45\" y=\"57.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">300</text><line x1=\"52\" y1=\"22.0\" x2=\"278\" y2=\"22.0\" stroke=\"#e2e8f0\"/><text x=\"45\" y=\"26.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">400</text><line x1=\"52.0\" y1=\"146\" x2=\"52.0\" y2=\"151\" stroke=\"#475569\"/><text x=\"52.0\" y=\"165\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"108.5\" y1=\"146\" x2=\"108.5\" y2=\"151\" stroke=\"#475569\"/><text x=\"108.5\" y=\"165\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">6</text><line x1=\"165.0\" y1=\"146\" x2=\"165.0\" y2=\"151\" stroke=\"#475569\"/><text x=\"165.0\" y=\"165\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">12</text><line x1=\"221.5\" y1=\"146\" x2=\"221.5\" y2=\"151\" stroke=\"#475569\"/><text x=\"221.5\" y=\"165\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">18</text><line x1=\"278.0\" y1=\"146\" x2=\"278.0\" y2=\"151\" stroke=\"#475569\"/><text x=\"278.0\" y=\"165\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">24</text><defs><clipPath id=\"q18gc_53\"><rect x=\"52\" y=\"14\" width=\"232\" height=\"134\"/></clipPath></defs><g clip-path=\"url(#q18gc_53)\"><path d=\"M52.0,142.9L80.3,136.7L108.5,118.1L136.8,68.5L165.0,28.2L193.3,108.8L221.5,133.6L249.8,136.7L278.0,138.3\" stroke=\"#2563eb\" stroke-width=\"3\" fill=\"none\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><circle cx=\"52.0\" cy=\"142.9\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"80.3\" cy=\"136.7\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"108.5\" cy=\"118.1\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"136.8\" cy=\"68.5\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"165.0\" cy=\"28.2\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"193.3\" cy=\"108.8\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"221.5\" cy=\"133.6\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"249.8\" cy=\"136.7\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"278.0\" cy=\"138.3\" r=\"3\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/></g><line x1=\"52\" y1=\"146\" x2=\"278\" y2=\"146\" stroke=\"#475569\" stroke-width=\"1.6\"/><line x1=\"52\" y1=\"146\" x2=\"52\" y2=\"16\" stroke=\"#475569\" stroke-width=\"1.6\"/><text x=\"165\" y=\"178\" text-anchor=\"middle\" font-size=\"13.5\" fill=\"#16213a\" font-weight=\"700\">Days</text><text x=\"18\" y=\"84\" transform=\"rotate(-90 18 84)\" text-anchor=\"middle\" font-size=\"13\" fill=\"#16213a\" font-weight=\"700\">Flies</text></svg>", "w_fly": "<svg viewBox=\"0 0 640 360\" role=\"img\" aria-label=\"The fruit fly graph with three blank label boxes: near the flat start, the steep middle, and the flat top.\"><rect width=\"640\" height=\"360\" rx=\"14\" fill=\"#ffffff\"/><line x1=\"70\" y1=\"308.0\" x2=\"618\" y2=\"308.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"312.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"70\" y1=\"272.3\" x2=\"618\" y2=\"272.3\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"276.3\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">50</text><line x1=\"70\" y1=\"236.5\" x2=\"618\" y2=\"236.5\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"240.5\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">100</text><line x1=\"70\" y1=\"200.8\" x2=\"618\" y2=\"200.8\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"204.8\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">150</text><line x1=\"70\" y1=\"165.0\" x2=\"618\" y2=\"165.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"169.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">200</text><line x1=\"70\" y1=\"129.3\" x2=\"618\" y2=\"129.3\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"133.3\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">250</text><line x1=\"70\" y1=\"93.5\" x2=\"618\" y2=\"93.5\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"97.5\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">300</text><line x1=\"70\" y1=\"57.8\" x2=\"618\" y2=\"57.8\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"61.8\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">350</text><line x1=\"70\" y1=\"22.0\" x2=\"618\" y2=\"22.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"26.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">400</text><line x1=\"70.0\" y1=\"308\" x2=\"70.0\" y2=\"313\" stroke=\"#475569\"/><text x=\"70.0\" y=\"327\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"138.5\" y1=\"308\" x2=\"138.5\" y2=\"313\" stroke=\"#475569\"/><text x=\"138.5\" y=\"327\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">3</text><line x1=\"207.0\" y1=\"308\" x2=\"207.0\" y2=\"313\" stroke=\"#475569\"/><text x=\"207.0\" y=\"327\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">6</text><line x1=\"275.5\" y1=\"308\" x2=\"275.5\" y2=\"313\" stroke=\"#475569\"/><text x=\"275.5\" y=\"327\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">9</text><line x1=\"344.0\" y1=\"308\" x2=\"344.0\" y2=\"313\" stroke=\"#475569\"/><text x=\"344.0\" y=\"327\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">12</text><line x1=\"412.5\" y1=\"308\" x2=\"412.5\" y2=\"313\" stroke=\"#475569\"/><text x=\"412.5\" y=\"327\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">15</text><line x1=\"481.0\" y1=\"308\" x2=\"481.0\" y2=\"313\" stroke=\"#475569\"/><text x=\"481.0\" y=\"327\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">18</text><line x1=\"549.5\" y1=\"308\" x2=\"549.5\" y2=\"313\" stroke=\"#475569\"/><text x=\"549.5\" y=\"327\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">21</text><line x1=\"618.0\" y1=\"308\" x2=\"618.0\" y2=\"313\" stroke=\"#475569\"/><text x=\"618.0\" y=\"327\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">24</text><defs><clipPath id=\"q19gc_54\"><rect x=\"70\" y=\"14\" width=\"554\" height=\"296\"/></clipPath></defs><g clip-path=\"url(#q19gc_54)\"><path d=\"M70.0,300.9L138.5,290.8L207.0,265.1L275.5,215.1L344.0,157.8L412.5,122.1L481.0,104.2L549.5,97.1L618.0,93.5\" stroke=\"#2563eb\" stroke-width=\"3\" fill=\"none\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><circle cx=\"70.0\" cy=\"300.9\" r=\"5\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"138.5\" cy=\"290.8\" r=\"5\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"207.0\" cy=\"265.1\" r=\"5\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"275.5\" cy=\"215.1\" r=\"5\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"344.0\" cy=\"157.8\" r=\"5\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"412.5\" cy=\"122.1\" r=\"5\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"481.0\" cy=\"104.2\" r=\"5\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"549.5\" cy=\"97.1\" r=\"5\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"618.0\" cy=\"93.5\" r=\"5\" fill=\"#2563eb\" stroke=\"#ffffff\" stroke-width=\"1.5\"/></g><line x1=\"70\" y1=\"308\" x2=\"618\" y2=\"308\" stroke=\"#475569\" stroke-width=\"1.6\"/><line x1=\"70\" y1=\"308\" x2=\"70\" y2=\"16\" stroke=\"#475569\" stroke-width=\"1.6\"/><text x=\"344\" y=\"348\" text-anchor=\"middle\" font-size=\"13.5\" fill=\"#16213a\" font-weight=\"700\">Time (days)</text><text x=\"18\" y=\"165\" transform=\"rotate(-90 18 165)\" text-anchor=\"middle\" font-size=\"13\" fill=\"#16213a\" font-weight=\"700\">Fruit flies in the jar</text></svg>", "w_flyZ": [{"id": "a", "x": 122, "y": 232, "ans": "slow start", "w": 140}, {"id": "b", "x": 400, "y": 190, "ans": "fastest growth", "w": 160}, {"id": "c", "x": 500, "y": 60, "ans": "carrying capacity (K)", "w": 200}], "otterPic": "<svg viewBox=\"0 0 640 220\" role=\"img\" aria-label=\"A southern sea otter floating on its back in a kelp forest, holding a purple sea urchin on its chest.\"><defs><linearGradient id=\"q20ot_1\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#4b8fae\"/><stop offset=\"1\" stop-color=\"#22566e\"/></linearGradient></defs><rect width=\"640\" height=\"220\" rx=\"14\" fill=\"url(#q20ot_1)\"/><path d=\"M30,220 C50,170 10,130 36,90\" stroke=\"#7a6a2a\" stroke-width=\"4\" fill=\"none\"/><ellipse cx=\"38\" cy=\"92\" rx=\"14\" ry=\"5\" fill=\"#8a7a30\"/><path d=\"M85,220 C105,170 65,130 91,90\" stroke=\"#7a6a2a\" stroke-width=\"4\" fill=\"none\"/><ellipse cx=\"93\" cy=\"92\" rx=\"14\" ry=\"5\" fill=\"#8a7a30\"/><path d=\"M140,220 C160,170 120,130 146,90\" stroke=\"#7a6a2a\" stroke-width=\"4\" fill=\"none\"/><ellipse cx=\"148\" cy=\"92\" rx=\"14\" ry=\"5\" fill=\"#8a7a30\"/><path d=\"M195,220 C215,170 175,130 201,90\" stroke=\"#7a6a2a\" stroke-width=\"4\" fill=\"none\"/><ellipse cx=\"203\" cy=\"92\" rx=\"14\" ry=\"5\" fill=\"#8a7a30\"/><path d=\"M250,220 C270,170 230,130 256,90\" stroke=\"#7a6a2a\" stroke-width=\"4\" fill=\"none\"/><ellipse cx=\"258\" cy=\"92\" rx=\"14\" ry=\"5\" fill=\"#8a7a30\"/><path d=\"M305,220 C325,170 285,130 311,90\" stroke=\"#7a6a2a\" stroke-width=\"4\" fill=\"none\"/><ellipse cx=\"313\" cy=\"92\" rx=\"14\" ry=\"5\" fill=\"#8a7a30\"/><path d=\"M360,220 C380,170 340,130 366,90\" stroke=\"#7a6a2a\" stroke-width=\"4\" fill=\"none\"/><ellipse cx=\"368\" cy=\"92\" rx=\"14\" ry=\"5\" fill=\"#8a7a30\"/><path d=\"M415,220 C435,170 395,130 421,90\" stroke=\"#7a6a2a\" stroke-width=\"4\" fill=\"none\"/><ellipse cx=\"423\" cy=\"92\" rx=\"14\" ry=\"5\" fill=\"#8a7a30\"/><path d=\"M470,220 C490,170 450,130 476,90\" stroke=\"#7a6a2a\" stroke-width=\"4\" fill=\"none\"/><ellipse cx=\"478\" cy=\"92\" rx=\"14\" ry=\"5\" fill=\"#8a7a30\"/><path d=\"M525,220 C545,170 505,130 531,90\" stroke=\"#7a6a2a\" stroke-width=\"4\" fill=\"none\"/><ellipse cx=\"533\" cy=\"92\" rx=\"14\" ry=\"5\" fill=\"#8a7a30\"/><path d=\"M580,220 C600,170 560,130 586,90\" stroke=\"#7a6a2a\" stroke-width=\"4\" fill=\"none\"/><ellipse cx=\"588\" cy=\"92\" rx=\"14\" ry=\"5\" fill=\"#8a7a30\"/><path d=\"M635,220 C655,170 615,130 641,90\" stroke=\"#7a6a2a\" stroke-width=\"4\" fill=\"none\"/><ellipse cx=\"643\" cy=\"92\" rx=\"14\" ry=\"5\" fill=\"#8a7a30\"/><g transform=\"translate(320 110) scale(1.5)\"><path d=\"M-96,10 C-80,2 -70,0 -62,4 C-70,10 -82,14 -96,10Z\" fill=\"#3d2b1c\"/><path d=\"M-64,2 C-56,-14 -10,-22 30,-18 C52,-16 62,-6 60,6 C58,18 40,22 10,22 C-30,22 -58,18 -64,2Z\" fill=\"#4a3424\" stroke=\"#24180f\" stroke-width=\"1.2\"/><path d=\"M-40,-8 C-16,-16 18,-16 40,-10 C34,-2 -10,0 -40,-8Z\" fill=\"#7a5f45\" opacity=\".9\"/><path d=\"M-62,0 C-72,-10 -80,-12 -84,-8 C-78,-4 -70,0 -64,4Z M-54,-4 C-60,-16 -66,-20 -72,-18 C-66,-12 -60,-6 -56,-2Z\" fill=\"#3d2b1c\"/><circle cx=\"66\" cy=\"-14\" r=\"19\" fill=\"#d6c6ad\" stroke=\"#24180f\" stroke-width=\"1.2\"/><path d=\"M50,-4 C56,6 76,6 84,-4 C80,4 56,8 50,-4Z\" fill=\"#b9a688\"/><circle cx=\"56\" cy=\"-28\" r=\"4\" fill=\"#6b5640\"/><circle cx=\"80\" cy=\"-28\" r=\"4\" fill=\"#6b5640\"/><circle cx=\"60\" cy=\"-16\" r=\"2.4\" fill=\"#111\"/><circle cx=\"74\" cy=\"-16\" r=\"2.4\" fill=\"#111\"/><ellipse cx=\"67\" cy=\"-8\" rx=\"4.4\" ry=\"3\" fill=\"#2a1d14\"/><path d=\"M58,-6 l-12,-2 M58,-4 l-12,2 M76,-6 l12,-2 M76,-4 l12,2\" stroke=\"#3a2a1c\" stroke-width=\".6\"/><circle cx=\"26\" cy=\"-24\" r=\"10\" fill=\"#5b2a6e\"/><path d=\"M26,-24 l15.0,0.0\" stroke=\"#6b3380\" stroke-width=\"1.3\"/><path d=\"M26,-24 l13.5,6.5\" stroke=\"#6b3380\" stroke-width=\"1.3\"/><path d=\"M26,-24 l9.3,11.7\" stroke=\"#6b3380\" stroke-width=\"1.3\"/><path d=\"M26,-24 l3.3,14.6\" stroke=\"#6b3380\" stroke-width=\"1.3\"/><path d=\"M26,-24 l-3.4,14.6\" stroke=\"#6b3380\" stroke-width=\"1.3\"/><path d=\"M26,-24 l-9.4,11.7\" stroke=\"#6b3380\" stroke-width=\"1.3\"/><path d=\"M26,-24 l-13.6,6.4\" stroke=\"#6b3380\" stroke-width=\"1.3\"/><path d=\"M26,-24 l-15.0,-0.1\" stroke=\"#6b3380\" stroke-width=\"1.3\"/><path d=\"M26,-24 l-13.5,-6.6\" stroke=\"#6b3380\" stroke-width=\"1.3\"/><path d=\"M26,-24 l-9.2,-11.8\" stroke=\"#6b3380\" stroke-width=\"1.3\"/><path d=\"M26,-24 l-3.2,-14.7\" stroke=\"#6b3380\" stroke-width=\"1.3\"/><path d=\"M26,-24 l3.5,-14.6\" stroke=\"#6b3380\" stroke-width=\"1.3\"/><path d=\"M26,-24 l9.5,-11.6\" stroke=\"#6b3380\" stroke-width=\"1.3\"/><path d=\"M26,-24 l13.6,-6.3\" stroke=\"#6b3380\" stroke-width=\"1.3\"/><path d=\"M10,-10 C14,-22 18,-28 20,-30 M42,-10 C38,-22 34,-28 32,-30\" stroke=\"#4a3424\" stroke-width=\"7\" stroke-linecap=\"round\" fill=\"none\"/><path d=\"M-110,18 C-70,10 -30,24 10,18 C50,12 90,22 120,14\" stroke=\"#cfe6f2\" stroke-width=\"3\" fill=\"none\" opacity=\".85\"/></g><rect x=\"10\" y=\"190\" width=\"200\" height=\"22\" rx=\"7\" fill=\"#0d1626\" opacity=\".7\"/><text x=\"18\" y=\"206\" font-size=\"11.5\" fill=\"#f4ead8\">Central California coast</text></svg>", "otterChart": "<svg viewBox=\"0 0 620 320\" role=\"img\" aria-label=\"Graph of California sea otters: about 50 in 1938, about 1,800 in 1976, about 2,400 in 1995, then about 3,000 from 2007 to 2023.\"><rect width=\"620\" height=\"320\" rx=\"14\" fill=\"#ffffff\"/><line x1=\"70\" y1=\"268.0\" x2=\"598\" y2=\"268.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"272.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"70\" y1=\"232.9\" x2=\"598\" y2=\"232.9\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"236.9\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">500</text><line x1=\"70\" y1=\"197.7\" x2=\"598\" y2=\"197.7\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"201.7\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">1,000</text><line x1=\"70\" y1=\"162.6\" x2=\"598\" y2=\"162.6\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"166.6\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">1,500</text><line x1=\"70\" y1=\"127.4\" x2=\"598\" y2=\"127.4\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"131.4\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">2,000</text><line x1=\"70\" y1=\"92.3\" x2=\"598\" y2=\"92.3\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"96.3\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">2,500</text><line x1=\"70\" y1=\"57.1\" x2=\"598\" y2=\"57.1\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"61.1\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">3,000</text><line x1=\"70\" y1=\"22.0\" x2=\"598\" y2=\"22.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"26.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">3,500</text><line x1=\"70.0\" y1=\"268\" x2=\"70.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"70.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1930</text><line x1=\"122.8\" y1=\"268\" x2=\"122.8\" y2=\"273\" stroke=\"#475569\"/><text x=\"122.8\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1940</text><line x1=\"175.6\" y1=\"268\" x2=\"175.6\" y2=\"273\" stroke=\"#475569\"/><text x=\"175.6\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1950</text><line x1=\"228.4\" y1=\"268\" x2=\"228.4\" y2=\"273\" stroke=\"#475569\"/><text x=\"228.4\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1960</text><line x1=\"281.2\" y1=\"268\" x2=\"281.2\" y2=\"273\" stroke=\"#475569\"/><text x=\"281.2\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1970</text><line x1=\"334.0\" y1=\"268\" x2=\"334.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"334.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1980</text><line x1=\"386.8\" y1=\"268\" x2=\"386.8\" y2=\"273\" stroke=\"#475569\"/><text x=\"386.8\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1990</text><line x1=\"439.6\" y1=\"268\" x2=\"439.6\" y2=\"273\" stroke=\"#475569\"/><text x=\"439.6\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">2000</text><line x1=\"492.4\" y1=\"268\" x2=\"492.4\" y2=\"273\" stroke=\"#475569\"/><text x=\"492.4\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">2010</text><line x1=\"545.2\" y1=\"268\" x2=\"545.2\" y2=\"273\" stroke=\"#475569\"/><text x=\"545.2\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">2020</text><line x1=\"598.0\" y1=\"268\" x2=\"598.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"598.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">2030</text><defs><clipPath id=\"q21gc_55\"><rect x=\"70\" y=\"14\" width=\"534\" height=\"256\"/></clipPath></defs><g clip-path=\"url(#q21gc_55)\"><path d=\"M112.2,264.5L312.9,141.5L413.2,99.3L476.6,57.1L524.1,43.1L561.0,64.2\" stroke=\"#0e7490\" stroke-width=\"3\" fill=\"none\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><circle cx=\"112.2\" cy=\"264.5\" r=\"5\" fill=\"#0e7490\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"312.9\" cy=\"141.5\" r=\"5\" fill=\"#0e7490\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"413.2\" cy=\"99.3\" r=\"5\" fill=\"#0e7490\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"476.6\" cy=\"57.1\" r=\"5\" fill=\"#0e7490\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"524.1\" cy=\"43.1\" r=\"5\" fill=\"#0e7490\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"561.0\" cy=\"64.2\" r=\"5\" fill=\"#0e7490\" stroke=\"#ffffff\" stroke-width=\"1.5\"/></g><line x1=\"70\" y1=\"268\" x2=\"598\" y2=\"268\" stroke=\"#475569\" stroke-width=\"1.6\"/><line x1=\"70\" y1=\"268\" x2=\"70\" y2=\"16\" stroke=\"#475569\" stroke-width=\"1.6\"/><text x=\"334\" y=\"308\" text-anchor=\"middle\" font-size=\"13.5\" fill=\"#16213a\" font-weight=\"700\">Year</text><text x=\"18\" y=\"145\" transform=\"rotate(-90 18 145)\" text-anchor=\"middle\" font-size=\"13\" fill=\"#16213a\" font-weight=\"700\">Number of sea otters</text></svg>", "paulChart": "<svg viewBox=\"0 0 620 320\" role=\"img\" aria-label=\"Graph of St. Paul Island reindeer: about 25 in 1911, about 2,000 in 1938, and only about 8 in 1950.\"><rect width=\"620\" height=\"320\" rx=\"14\" fill=\"#ffffff\"/><line x1=\"70\" y1=\"268.0\" x2=\"598\" y2=\"268.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"272.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"70\" y1=\"218.8\" x2=\"598\" y2=\"218.8\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"222.8\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">500</text><line x1=\"70\" y1=\"169.6\" x2=\"598\" y2=\"169.6\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"173.6\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">1,000</text><line x1=\"70\" y1=\"120.4\" x2=\"598\" y2=\"120.4\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"124.4\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">1,500</text><line x1=\"70\" y1=\"71.2\" x2=\"598\" y2=\"71.2\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"75.2\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">2,000</text><line x1=\"70\" y1=\"22.0\" x2=\"598\" y2=\"22.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"26.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">2,500</text><line x1=\"70.0\" y1=\"268\" x2=\"70.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"70.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1910</text><line x1=\"128.7\" y1=\"268\" x2=\"128.7\" y2=\"273\" stroke=\"#475569\"/><text x=\"128.7\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1915</text><line x1=\"187.3\" y1=\"268\" x2=\"187.3\" y2=\"273\" stroke=\"#475569\"/><text x=\"187.3\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1920</text><line x1=\"246.0\" y1=\"268\" x2=\"246.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"246.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1925</text><line x1=\"304.7\" y1=\"268\" x2=\"304.7\" y2=\"273\" stroke=\"#475569\"/><text x=\"304.7\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1930</text><line x1=\"363.3\" y1=\"268\" x2=\"363.3\" y2=\"273\" stroke=\"#475569\"/><text x=\"363.3\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1935</text><line x1=\"422.0\" y1=\"268\" x2=\"422.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"422.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1940</text><line x1=\"480.7\" y1=\"268\" x2=\"480.7\" y2=\"273\" stroke=\"#475569\"/><text x=\"480.7\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1945</text><line x1=\"539.3\" y1=\"268\" x2=\"539.3\" y2=\"273\" stroke=\"#475569\"/><text x=\"539.3\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1950</text><line x1=\"598.0\" y1=\"268\" x2=\"598.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"598.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1955</text><defs><clipPath id=\"q22gc_56\"><rect x=\"70\" y=\"14\" width=\"534\" height=\"256\"/></clipPath></defs><g clip-path=\"url(#q22gc_56)\"><path d=\"M81.7,265.5L187.3,243.4L304.7,169.6L398.5,71.2L480.7,218.8L539.3,267.2\" stroke=\"#b45309\" stroke-width=\"3\" fill=\"none\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><circle cx=\"81.7\" cy=\"265.5\" r=\"5\" fill=\"#b45309\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"187.3\" cy=\"243.4\" r=\"5\" fill=\"#b45309\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"304.7\" cy=\"169.6\" r=\"5\" fill=\"#b45309\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"398.5\" cy=\"71.2\" r=\"5\" fill=\"#b45309\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"480.7\" cy=\"218.8\" r=\"5\" fill=\"#b45309\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"539.3\" cy=\"267.2\" r=\"5\" fill=\"#b45309\" stroke=\"#ffffff\" stroke-width=\"1.5\"/></g><line x1=\"70\" y1=\"268\" x2=\"598\" y2=\"268\" stroke=\"#475569\" stroke-width=\"1.6\"/><line x1=\"70\" y1=\"268\" x2=\"70\" y2=\"16\" stroke=\"#475569\" stroke-width=\"1.6\"/><text x=\"334\" y=\"308\" text-anchor=\"middle\" font-size=\"13.5\" fill=\"#16213a\" font-weight=\"700\">Year</text><text x=\"18\" y=\"145\" transform=\"rotate(-90 18 145)\" text-anchor=\"middle\" font-size=\"13\" fill=\"#16213a\" font-weight=\"700\">Number of reindeer</text></svg>"};
+const ico=(i,s)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PARTS[i].icon}</svg>`;
+const PROBS=[];   // every problem: {id, part, max, score(), key()}
+
+function probShell(parent, part, num, q, pts){
+  const box=h('div',{class:'prob'}); parent.appendChild(box);
+  box.innerHTML=`<div class="pq"><span class="pnum">${num}.</span> ${q} <span class="pts">(${pts} pt${pts>1?'s':''})</span></div>`;
+  return box;
+}
+function actions(box, o){ // Hint + Check buttons + feedback
+  const row=h('div',{class:'btnrow'}); const hb=h('button',{class:'btn ghost small',type:'button'},'Hint'); const cb=h('button',{class:'btn primary small',type:'button'},'Check');
+  row.append(hb,cb); box.appendChild(row);
+  const hint=h('div',{class:'hintbox',hidden:true},'💡 '+o.hint); box.appendChild(hint);
+  const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'}); box.appendChild(fb);
+  hb.addEventListener('click',()=>{ hint.hidden=!hint.hidden; });
+  return {row,hb,cb,hint,fb};
+}
+const st=id=>S.p[id]||(S.p[id]={});
+/* Two tries per problem. Right on try 1 or 2 = full credit. Wrong twice = marked wrong (credit for parts right on try 2).
+   The correct answer is never shown. */
+function gradeTry(P,res,max){ const n=res.filter(Boolean).length; P.tries=(P.tries||0)+1;
+  if(n===max){ P.first=max; P.checked=true; P.right=true; }
+  else if(P.tries>=2){ P.first=n; P.checked=true; P.right=false; }
+  return n===max; }
+function showTry(ui,P,max,doneText){
+  if(P.checked&&P.right){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML=`<b>Correct!</b> ${doneText||''}`; }
+  else if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`<b>Marked wrong.</b> You earned ${P.first} of ${max} point${max>1?'s':''}. Ask your teacher if you'd like to try it again.`; }
+  else if(P.tries===1){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=max>1?'<b>Not quite.</b> Something isn\'t right yet. You have <b>one more try</b>.':'<b>Not quite.</b> You have <b>one more try</b>.'; }
+  else ui.fb.hidden=true;
+  if(ui.cb) ui.cb.textContent=P.checked?'Checked':(P.tries===1?'Check (last try)':'Check'); }
+
+/* ---------- drag onto a diagram (or into equation slots) ---------- */
+function dragProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.zones.length);
+  let fig;
+  if(o.equation){ fig=h('div',{class:'eq'}); box.appendChild(fig); }
+  else { fig=h('div',{class:'figwrap'}); fig.innerHTML=o.svg; box.appendChild(fig); }
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.chips.map((_,i)=>i)));
+  const zoneEls={};
+  const groupAns=g=>o.zones.filter(z=>z.group===g).map(z=>z.ans);
+  if(o.equation){ o.layout.forEach(item=>{ if(typeof item==='string'){ fig.appendChild(h('span',null,item)); } else { const z=o.zones[item]; const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans}); fig.appendChild(b); zoneEls[z.id]=b; } }); }
+  else o.zones.forEach(z=>{ const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans});
+    b.style.left=(z.x/o.vb[0]*100)+'%'; b.style.top=(z.y/o.vb[1]*100)+'%'; b.style.width=((z.w||130)/o.vb[0]*100)+'%'; fig.appendChild(b); zoneEls[z.id]=b; });
+  function placedChips(){ return new Set(Object.values(P.place)); }
+  function render(){
+    const used=placedChips();
+    pool.innerHTML='<div class="lbl">Tap a label, then tap a box (or drag it). Tap a filled box to take its label back.</div>';
+    order.forEach(ci=>{ if(used.has(ci)) return; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true'},o.chips[ci]); c.disabled=!!P.checked;
+      c.addEventListener('click',()=>{ sel=sel===ci?null:ci; render(); });
+      c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+      pool.appendChild(c); });
+    if(P.checked&&!pool.querySelector('.chip')) pool.hidden=true;
+    o.zones.forEach(z=>{ const b=zoneEls[z.id]; const ci=P.place[z.id];
+      b.className='zone'+(ci==null?' empty':' filled')+(P.checked?' locked':'');
+      if(ci==null) b.innerHTML=z.ph||'drop here';
+      else b.innerHTML=o.chips[ci];
+      b.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; ui.hb.disabled=!!P.checked&&false;
+    showTry(ui,P,o.zones.length,o.done);
+  }
+  o.zones.forEach(z=>{ const b=zoneEls[z.id];
+    const drop=ci=>{ if(P.checked) return; if(ci==null){ if(P.place[z.id]!=null){ delete P.place[z.id]; save(); render(); } return; }
+      for(const k in P.place) if(P.place[k]===ci) delete P.place[k];
+      P.place[z.id]=ci; sel=null; save(); render(); };
+    b.addEventListener('click',()=>drop(sel));
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  ui.cb.addEventListener('click',()=>{
+    if(P.checked) return;
+    const empty=o.zones.filter(z=>P.place[z.id]==null).length;
+    if(empty){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill every box before you check. ${empty} still empty.`; return; }
+    const res={}; const usedInGroup={};
+    o.zones.forEach(z=>{ const t=o.chips[P.place[z.id]];
+      if(z.group){ const ans=groupAns(z.group); usedInGroup[z.group]=usedInGroup[z.group]||[]; const ok=ans.includes(t)&&!usedInGroup[z.group].includes(t); if(ok) usedInGroup[z.group].push(t); res[z.id]=ok; }
+      else res[z.id]=t===z.ans; });
+    gradeTry(P,Object.values(res),o.zones.length); save(); cloudSave(true); render(); refresh();
+  });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.zones.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- sort into bins ---------- */
+function binProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.items.length);
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const bins=h('div',{class:'bins',style:`grid-template-columns:repeat(${o.bins.length},minmax(0,1fr))`}); box.appendChild(bins);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.items.map((_,i)=>i)));
+  const binEls={};
+  o.bins.forEach(bn=>{ const b=h('div',{class:'bin',role:'button',tabindex:'0'},`<h4>${bn.label}</h4><div class="bchips"></div>`); bins.appendChild(b); binEls[bn.k]=b;
+    const drop=ci=>{ if(P.checked||ci==null) return; P.place[ci]=bn.k; sel=null; save(); render(); };
+    b.addEventListener('click',e=>{ if(e.target.closest('.chip')) return; drop(sel); });
+    b.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); drop(sel); } });
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  const binLabel=k=>(o.bins.find(b=>b.k===k)||{}).label;
+  function chipEl(ci,inBin){ const it=o.items[ci]; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true','data-key':binLabel(it.k)},it.t);
+    
+    c.disabled=!!P.checked;
+    c.addEventListener('click',e=>{ if(P.checked) return; if(inBin){ e.stopPropagation(); if(sel!=null&&sel!==ci){ P.place[sel]=P.place[ci]; sel=null; save(); render(); return; } delete P.place[ci]; save(); render(); return; } sel=sel===ci?null:ci; render(); });
+    c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+    return c; }
+  function render(){
+    pool.innerHTML='<div class="lbl">Tap an item, then tap the box it belongs in (or drag it). Tap a sorted item to take it back.</div>';
+    order.forEach(ci=>{ if(P.place[ci]==null) pool.appendChild(chipEl(ci,false)); });
+    pool.hidden=!!P.checked;
+    o.bins.forEach(bn=>{ const holder=$('.bchips',binEls[bn.k]); holder.innerHTML=''; order.forEach(ci=>{ if(P.place[ci]===bn.k) holder.appendChild(chipEl(ci,true)); }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,o.items.length,o.done);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const left=o.items.filter((_,i)=>P.place[i]==null).length;
+    if(left){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Sort every item before you check. ${left} still left.`; return; }
+    const res=o.items.map((it,i)=>P.place[i]===it.k); gradeTry(P,res,o.items.length); save(); cloudSave(true); render(); refresh(); });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.items.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- choice problems: one, two-part, or select-all ---------- */
+function choiceProblem(parent, o){   // o.parts: [{q, opts, ans (index or array for select-all)}]
+  const P=st(o.id); P.pick=P.pick||{};
+  const max=o.parts.length;
+  const box=probShell(parent,o.part,o.num,o.q,max);
+  const groups=[];
+  o.parts.forEach((pt,pi)=>{
+    const multi=Array.isArray(pt.ans);
+    if(pt.q) box.insertAdjacentHTML('beforeend',`<div style="margin:10px 0 4px">${pt.q}${multi?' <span class="small muted">(Select all that apply.)</span>':''}</div>`);
+    const ordKey=o.id+'_'+pi; const order=S.ord[ordKey]||(S.ord[ordKey]=shuffle(pt.opts.map((_,i)=>i)));
+    const wrap=h('div',{class:'opts'}); box.appendChild(wrap);
+    const btns={};
+    order.forEach((oi,pos)=>{ const correct=multi?pt.ans.includes(oi):oi===pt.ans;
+      const b=h('button',{class:'opt'+(multi?' multi':''),type:'button'},`<span class="L">${'ABCDEF'[pos]}</span><span>${pt.opts[oi]}</span>`); if(correct) b.dataset.key='1';
+      b.addEventListener('click',()=>{ if(P.checked) return; if(multi){ const s=new Set(P.pick[pi]||[]); s.has(oi)?s.delete(oi):s.add(oi); P.pick[pi]=[...s]; } else P.pick[pi]=oi; save(); paint(); });
+      wrap.appendChild(b); btns[oi]=b; });
+    groups.push({pt,multi,btns});
+  });
+  const ui=actions(box,o);
+  function gradePart(g,pi){ const pk=P.pick[pi]; if(g.multi){ const s=new Set(pk||[]); return g.pt.ans.length===s.size&&g.pt.ans.every(a=>s.has(a)); } return pk===g.pt.ans; }
+  function paint(){
+    groups.forEach((g,pi)=>{ const pk=P.pick[pi];
+      Object.entries(g.btns).forEach(([oi,b])=>{ oi=+oi; const picked=g.multi?(pk||[]).includes(oi):pk===oi; const correct=g.multi?g.pt.ans.includes(oi):oi===g.pt.ans;
+        b.className='opt'+(g.multi?' multi':'')+(picked?' sel':'')+(P.checked&&P.right&&picked?' ok':''); b.disabled=!!P.checked; }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,max,o.why);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const blank=groups.some((g,pi)=>g.multi?!(P.pick[pi]||[]).length:P.pick[pi]==null);
+    if(blank){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Answer every part before you check.'; return; }
+    gradeTry(P,groups.map((g,pi)=>gradePart(g,pi)),max); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- typed blanks (two tries, like every problem) ---------- */
+function typedProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.blanks.length);
+  const inputs=o.blanks.map((bl,i)=>{ const row=h('div',{class:'brow'}); row.innerHTML=`${bl.before} <input class="blank" type="text" aria-label="${esc(strip(bl.before))}" data-key="${esc(bl.show)}"><span class="keytxt">${bl.show}</span> ${bl.after||''}`; box.appendChild(row);
+    const inp=$('input',row); inp.value=P.val[i]||''; inp.addEventListener('input',()=>{ P.val[i]=inp.value; save(); }); return inp; });
+  const ui=actions(box,o);
+  const ok=(bl,v)=>{ v=String(v||'').trim().toLowerCase(); if(bl.num){ const n=parseFloat(v.replace(/[^0-9.]/g,'')); return !isNaN(n)&&n>=bl.num[0]&&n<=bl.num[1]; } return bl.accept.some(a=>v.replace(/\s+/g,' ')===a); };
+  function paint(){ inputs.forEach(inp=>{ inp.classList.remove('ok','no'); if(P.checked&&P.right) inp.classList.add('ok'); inp.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; showTry(ui,P,o.blanks.length,''); }
+  ui.cb.addEventListener('click',()=>{
+    if(inputs.some(inp=>!inp.value.trim())){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Fill in every blank before you check.'; return; }
+    if(P.checked) return;
+    const res=o.blanks.map((bl,i)=>ok(bl,inputs[i].value));
+    gradeTry(P,res,o.blanks.length); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.blanks.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- written answer, scored by key ideas (two tries, like every problem) ---------- */
+function writtenProblem(parent, o){
+  const P=st(o.id); if(P.val==null) P.val='';
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const ta=h('textarea',{class:'wtext',rows:'5','aria-label':'Your answer','data-key':o.model}); ta.value=P.val; box.appendChild(ta);
+  box.appendChild(h('div',{class:'wkey'},'<b>Key:</b> '+o.model));
+  if(o.bank){ const wb=h('div',{class:'wbank2'}); wb.innerHTML='<b>Word bank</b> <span class="small muted">(tap a word to add it)</span><br>'+o.bank.map(w=>`<button type="button" class="wchip">${w}</button>`).join('');
+    box.appendChild(wb);
+    wb.querySelectorAll('.wchip').forEach(c=>c.addEventListener('click',()=>{ if(ta.disabled) return; const w=c.textContent; const a=ta.selectionStart??ta.value.length, b=ta.selectionEnd??ta.value.length;
+      const before=ta.value.slice(0,a), after=ta.value.slice(b); const pre=(before&&!/\s$/.test(before))?' ':''; const ins=pre+w+' ';
+      ta.value=before+ins+after; ta.focus(); const p=a+ins.length; ta.setSelectionRange(p,p); ta.dispatchEvent(new Event('input',{bubbles:true})); })); }
+  ta.addEventListener('input',()=>{ P.val=ta.value; save(); });
+  const ui=actions(box,o);
+  const grade=()=>{ const t=ta.value.toLowerCase(); const hits=o.groups.filter(g=>g[1].test(t)).length; const n=Math.min(o.pts,hits); return Array.from({length:o.pts},(_,i)=>i<n); };
+  function paint(){ ta.disabled=!!P.checked; ui.cb.disabled=!!P.checked; showTry(ui,P,o.pts,o.why); }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(ta.value.trim().split(/\s+/).length<5){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Write a full answer (at least one complete sentence) before you check.'; return; }
+    gradeTry(P,grade(),o.pts); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ============================== WORKSHEET CONTENT ============================== */
+function buildContent(sec){
+  let n=0; const num=()=>++n;
+  const say=(s,html)=>s.insertAdjacentHTML('beforeend',html);
+  const fig=(k,cap)=>`<div class="figwrap" style="margin:10px 0">${KFIG[k]}${cap?`<div class="small muted" style="margin-top:4px">${cap}</div>`:''}</div>`;
+  const tbl=(head,rows)=>`<div class="wide"><table class="nb" style="width:100%;border-collapse:collapse"><tr>${head.map(x=>`<th>${x}</th>`).join('')}</tr>${rows.map(r=>`<tr>${r.map(x=>`<td>${x}</td>`).join('')}</tr>`).join('')}</table></div>`;
+  /* ---------------- 1. Graphing: fruit flies ---------------- */
+  say(sec[0],`<div class="phenbox"><b>Today:</b> apply what you learned to new data. You will graph and read population data, calculate growth rate and percent change, find carrying capacity and limiting factors, and explain with a claim, evidence, and reasoning.</div>
+   <p><b>Fruit flies in a jar.</b> A class put 10 fruit flies in a jar with a fixed amount of banana food and counted the flies every 3 days. <span class="small muted">(Modeled class data.)</span></p>`+tbl(['Day','0','3','6','9','12','15','18','21','24'],[['Flies',...KFIG.flyTable.map(p=>p[1])]]));
+  choiceProblem(sec[0],{id:'v1', part:'P1', num:num(), q:'If you graph this data, which graph would you get?',
+    parts:[{q:'',opts:[KFIG.g_j+'A curve that keeps getting steeper',KFIG.g_s+'A curve that rises, then levels off',KFIG.g_line+'A straight line',KFIG.g_crash+'A curve that rises, then crashes'],ans:1}],
+    hint:'Look at the last few numbers in the table. Do they keep growing fast, or do they stop changing much?', why:'The counts go up fast, then stay near 300: an S curve.'});
+  dragProblem(sec[0],{id:'v2', part:'P1', num:num(), q:'Here is the graph of the fly data. Label its three parts.', svg:KFIG.w_fly, vb:[640,360], zones:KFIG.w_flyZ,
+    chips:['slow start','fastest growth','carrying capacity (K)','crash'],
+    hint:'Growth is slow when there are few parents, fastest in the steep middle, and stops at K. One label is not used.', done:'Slow start, fastest growth in the middle, then K.'});
+  typedProblem(sec[0],{id:'v3', part:'P1', num:num(), q:'Read the fly data.',
+    blanks:[{before:'Carrying capacity of the jar: about',after:'flies',num:[290,310],show:'300'},{before:'Flies added between day 6 and day 9:',after:'flies',num:[70,70],show:'70'},{before:'Flies added between day 21 and day 24:',after:'flies',num:[5,5],show:'5'}],
+    hint:'K is where the numbers stop changing. To find how many were added, subtract the earlier count from the later count.'});
+  /* ---------------- 2. Calculate ---------------- */
+  say(sec[1],`<div class="phenbox"><b>Formulas:</b> change = (births + immigration) − (deaths + emigration). Growth rate (%) = change ÷ starting size × 100. Percent change = (new − old) ÷ old × 100. For a drop, find the percent decrease: (old − new) ÷ old × 100.</div>`);
+  say(sec[1],`<p><b>Tule elk.</b> Tule elk live only in California. A herd at Point Reyes started one year with <b>400 elk</b>. <span class="small muted">(Modeled numbers.)</span></p>`+tbl(['Births','Immigration','Deaths','Emigration'],[['72','8','44','16']]));
+  typedProblem(sec[1],{id:'v4', part:'P2', num:num(), q:'Use the tule elk table.',
+    blanks:[{before:'Change =',after:'elk',num:[20,20],show:'20'},{before:'Growth rate =',after:'% per year',num:[5,5],show:'5'},{before:'Population at the end of the year =',after:'elk',num:[420,420],show:'420'}],
+    hint:'(72 + 8) − (44 + 16) = change. Divide the change by 400 and multiply by 100. Add the change to 400 for the new size.'});
+  typedProblem(sec[1],{id:'v5', part:'P2', num:num(), q:'Calculate each percent change. Round to the nearest whole percent.',
+    blanks:[{before:'Sea otters: about 1,800 (1976) to about 3,000 (2007). Percent change =',after:'%',num:[66,67],show:'67'},{before:'St. Paul Island reindeer: about 25 (1911) to about 2,000 (1938). Percent change =',after:'%',num:[7900,7900],show:'7900'},{before:'A mouse population drops from 200 to 150. Percent decrease =',after:'%',num:[25,25],show:'25'}],
+    hint:'Subtract old from new, divide by old, then multiply by 100. Example: (3,000 − 1,800) ÷ 1,800 × 100.'});
+  choiceProblem(sec[1],{id:'v6', part:'P2', num:num(), q:'Two-part question.',
+    parts:[{q:'<b>Part A:</b> A population has 120 births, 0 immigration, 120 deaths, and 0 emigration. What is happening?',opts:['It is staying the same, like a population at carrying capacity','It is growing exponentially','It is crashing','You need the starting size to tell'],ans:0},
+           {q:'<b>Part B:</b> Population A grows from 100 to 150. Population B grows from 1,000 to 1,100. Which has the higher growth rate?',opts:['A: 50% versus 10%','B: it added 100, and A added only 50','They are the same','You can\'t compare them'],ans:0}],
+    hint:'If births equal deaths, the change is zero. For growth rate, divide each change by its own starting size.', why:'Change = 0, so the size stays the same. A grew 50%; B grew only 10%.'});
+  /* ---------------- 3. Sea otters ---------------- */
+  say(sec[2],`<p><b>California sea otters.</b> Hunters killed so many sea otters for their fur that they were thought to be gone from California. In 1938, a group of about 50 was found near Big Sur. Since then, the U.S. Geological Survey has counted them along the coast.</p>`+fig('otterPic')+fig('otterChart','Approximate, rounded survey counts (U.S. Geological Survey).'));
+  typedProblem(sec[2],{id:'v7', part:'P3', num:num(), q:'Read the sea otter graph.',
+    blanks:[{before:'About how many otters in 1976?',after:'otters',num:[1700,1900],show:'1800'},{before:'The population has stayed near about',after:'otters since 2007.',num:[2800,3200],show:'3000'}],
+    hint:'Find each year on the x-axis and read across to the y-axis.'});
+  binProblem(sec[2],{id:'v8', part:'P3', num:num(), q:'Scientists list many things that limit sea otters. Sort them.',
+    bins:[{k:'d',label:'Density-dependent'},{k:'i',label:'Density-independent'}],
+    items:[{t:'Otters compete for sea urchins, crabs, and clams',k:'d'},{t:'Parasites spread more easily among crowded otters',k:'d'},{t:'Not enough kelp-forest space for every otter\'s feeding area',k:'d'},{t:'A large oil spill along the coast',k:'i'},{t:'A season of very strong winter storms',k:'i'},{t:'A marine heat wave',k:'i'}],
+    hint:'Would it get worse if there were more otters crowded together?', done:'Food, parasites, and space depend on crowding. Oil spills, storms, and heat waves do not.'});
+  choiceProblem(sec[2],{id:'v9', part:'P3', num:num(), q:'Two-part question.',
+    parts:[{q:'<b>Part A:</b> Which pattern does the sea otter graph show from 1938 to 2023?',opts:['Fast growth that slowed and leveled off: logistic growth','Exponential growth that is still speeding up','Overshoot and crash','No change'],ans:0},
+           {q:'<b>Part B:</b> Otters eat sea urchins, and urchins eat kelp. If otters spread to a new stretch of coast with lots of urchins, what would happen to the carrying capacity for otters there?',opts:['It would be higher there, because there is more food','It would be zero','It would be exactly the same as everywhere else','Carrying capacity does not depend on food'],ans:0}],
+    hint:'Look at the last four points. K depends on food.', why:'The graph levels off near 3,000. More food in a new place means a higher K there.'});
+  /* ---------------- 4. St. Paul reindeer ---------------- */
+  say(sec[3],`<p><b>St. Paul Island.</b> In <b>1911</b>, about <b>25 reindeer</b> were brought to St. Paul Island, another island in the Bering Sea, Alaska. Like St. Matthew Island, it had lots of lichen and no wolves. Scientists recorded what happened.</p>`+fig('paulChart','Approximate, rounded counts (based on Victor Scheffer\'s 1951 report). Values between the labeled years are estimated.'));
+  choiceProblem(sec[3],{id:'v10', part:'P4', num:num(), q:'Use the St. Paul graph. Three-part question.',
+    parts:[{q:'<b>Part A:</b> What happened from 1911 to 1938?',opts:['Exponential growth: from about 25 to about 2,000','Logistic growth: it leveled off at K','A crash','The population stayed about the same'],ans:0},
+           {q:'<b>Part B:</b> What happened from 1938 to 1950?',opts:['Overshoot and crash: it fell to about 8','It leveled off at about 2,000','It kept growing','It doubled'],ans:0},
+           {q:'<b>Part C:</b> What is the most likely cause of the crash?',opts:['The reindeer ate the lichen faster than it could grow back, so food ran out','Wolves arrived','People moved all the reindeer away','The island got bigger'],ans:0}],
+    hint:'Compare this graph to St. Matthew Island. Lichen grows back very slowly.', why:'Like St. Matthew Island: exponential growth, overshoot, then a crash when the lichen ran out.'});
+  typedProblem(sec[3],{id:'v11', part:'P4', num:num(), q:'Calculate the crash.',
+    blanks:[{before:'Reindeer lost from 1938 to 1950: about',after:'reindeer',num:[1992,1992],show:'1992'},{before:'Percent decrease from 1938 to 1950: about',after:'%',num:[99,100],show:'99.6'}],
+    hint:'2,000 − 8 = reindeer lost. Percent decrease = (2,000 − 8) ÷ 2,000 × 100.'});
+  /* ---------------- 5. CER ---------------- */
+  writtenProblem(sec[4],{id:'v12', part:'P5', num:num(), q:'<b>Claim, evidence, reasoning.</b> Has the California sea otter population reached its carrying capacity? Write a <b>claim</b>, give <b>evidence</b> with numbers from the graph, and explain your <b>reasoning</b> using <b>carrying capacity</b> and <b>density-dependent</b> or <b>limiting factor</b>.', pts:4,
+    bank:['claim','evidence','reasoning','carrying capacity','leveled off','about 3,000','2007','density-dependent','limiting factor','food','competition','births','deaths'],
+    groups:[['claim: yes, it has reached / is near K',/(yes|has reached|is at|near|reached).{0,40}(carrying|capacity|\bk\b)|(carrying|capacity|\bk\b).{0,40}(reached|yes)/],['evidence: numbers from the graph (about 3,000 since 2007)',/3,?000|2007|2016|2023|2,?900|3,?200/],['reasoning: limiting factors such as food, competition, space, disease',/food|urchin|crab|compet|space|parasite|disease|limit|density.dependent/],['reasoning: births about equal deaths, so it levels off',/birth|death|equal|balance|level|flat|stopp?ed|steady/]],
+    model:'Claim: yes, the sea otter population seems to have reached its carrying capacity. Evidence: it grew from about 50 in 1938 to about 1,800 in 1976 and about 2,400 in 1995, but it has stayed near about 3,000 from 2007 to 2023. Reasoning: limiting factors such as competition for urchins and crabs, limited feeding space, and parasites are density-dependent. They get stronger as the population grows, so births and deaths are now about equal and the population has leveled off.',
+    hint:'Four ideas: your claim, numbers from the graph, the limiting factors, and why the population levels off (births and deaths).', why:'Claim + numbers + density-dependent limits + births about equal to deaths.'});
+}
+
+/* ============================== BUILD / SCORE ============================== */
+function scoreAll(){ const parts=PARTS.slice(0,-1).map(p=>({k:p.k,label:p.label,got:0,max:0})); PROBS.forEach(pr=>{ const pt=parts.find(x=>x.k===pr.part); pt.got+=pr.score(); pt.max+=pr.max; });
+  return {parts, total:parts.reduce((a,b)=>a+b.got,0), max:parts.reduce((a,b)=>a+b.max,0)}; }
+function build(){
+  PROBS.length=0; const ws=$('#ws'); ws.innerHTML='';
+  $('#nav').innerHTML=PARTS.map((pt,i)=>`<button class="ntile" type="button" data-i="${i}" aria-label="${pt.title}"><span class="ic">${ico(i,22)}</span><span class="nm">${pt.label}</span></button>`).join('');
+  $$('#nav .ntile').forEach(b=>b.addEventListener('click',()=>showPart(+b.dataset.i)));
+  const secs=PARTS.map((pt,i)=>{ const el=h('section',{class:'sec',id:'part'+i}); const last=i===PARTS.length-1;
+    el.innerHTML=`<div class="sechead"><div class="badge"><span class="z">${i+1}</span>${ico(i,34)}</div><div><div class="meta">${last?'Grade':`Section ${i+1} of ${PARTS.length-1} · about ${pt.min} min`}</div><h2>${pt.title}</h2></div></div>`;
+    const c=h('div',{class:'card'}); el.appendChild(c);
+    const nav=h('div',{class:'secnav'});
+    const back=h('button',{class:'btn ghost',type:'button'},i===0?'':'← Back'); if(i===0) back.style.visibility='hidden'; back.addEventListener('click',()=>showPart(i-1));
+    nav.appendChild(back);
+    if(!last){ const nx=h('button',{class:'btn primary',type:'button'},i===PARTS.length-2?'See my grade →':`Next: ${PARTS[i+1].title} →`); nx.addEventListener('click',()=>showPart(i+1)); nav.appendChild(nx); }
+    el.appendChild(nav); ws.appendChild(el); return c; });
+  buildContent(secs);
+  secs[PARTS.length-1].id='turnin';
+  showPart(Math.min(S.cur||0,PARTS.length-1),true);
+  $('#whoami').textContent=S.student?`${S.student.first} ${S.student.last}`:''; refresh();
+}
+function showPart(i,noScroll){
+  S.cur=i; $$('#ws .sec').forEach((el,j)=>el.hidden=j!==i);
+  $$('#nav .ntile').forEach((t,j)=>t.classList.toggle('cur',j===i));
+  if(!noScroll){ save(); window.scrollTo(0,0); }
+}
+function refresh(){
+  const sc=scoreAll(), done=PROBS.filter(p=>p.checked()).length;
+  $('#scorePill').textContent=`${done}/${PROBS.length} checked · ${sc.total}/${sc.max} pts`;
+  PARTS.slice(0,-1).forEach((pt,i)=>{ const t=$(`#nav .ntile[data-i="${i}"]`); if(t) t.classList.toggle('done',PROBS.filter(p=>p.part===pt.k).every(p=>p.checked())); });
+  const t7=$(`#nav .ntile[data-i="${PARTS.length-1}"]`); if(t7) t7.classList.toggle('done',!!S.submittedAt);
+  const c=$('#turnin'); if(!c) return;
+  const rows=sc.parts.map(p=>`<tr><th>${p.label}</th><td>${p.got} / ${p.max}</td></tr>`).join('');
+  c.innerHTML=`<div style="display:flex;gap:22px;align-items:center;flex-wrap:wrap"><div class="big">${sc.total}/${sc.max}</div><div><h3 style="margin:0">${esc(S.student?S.student.first+' '+S.student.last:'')}</h3><p class="muted" style="margin:0">${done} of ${PROBS.length} problems checked</p></div></div>
+    <table class="res" style="margin-top:12px">${rows}</table>
+    <p class="small muted" style="margin-top:10px">Problems you haven't checked count as 0. You can turn in again later; your teacher sees the newest one.</p>
+    <div class="btnrow"><button class="btn primary" id="subBtn" type="button">${S.submittedAt?'Turn in again':'Turn in my worksheet'}</button><button class="btn ghost" id="csvBtn" type="button">Download CSV</button></div>
+    <p class="fb info sheetStatus" aria-live="polite">${S.sentAt?`Sent to your teacher ${new Date(S.sentAt).toLocaleString()}.`:'Not turned in yet.'}</p>`;
+  $('#subBtn').addEventListener('click',turnIn);
+  $('#csvBtn').addEventListener('click',()=>downloadCSV([recordRow()],`PopulationGrowthDay2Worksheet_${(S.student&&S.student.last||'student').replace(/\W+/g,'')}.csv`));
+}
+const CSV_HEAD=['Student ID','Last Name','First Name','Period','Teacher','Activity','Score','Total','Percent',...PARTS.slice(0,-1).map(p=>p.label),'Date'];
+function recordRow(){ const st=S.student||{}, sc=scoreAll(); return [st.id||'',st.last||'',st.first||'',st.period||'',st.teacher||'',ACTIVITY,sc.total,sc.max,Math.round(100*sc.total/sc.max)+'%',...sc.parts.map(p=>p.got),new Date(S.submittedAt||Date.now()).toLocaleString()]; }
+function csvText(rows){ const q=v=>{ v=String(v==null?'':v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }; return [CSV_HEAD,...rows].map(r=>r.map(q).join(',')).join('\r\n')+'\r\n'; }
+function downloadCSV(rows,name){ const b=new Blob([csvText(rows)],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500); }
+const loadRecs=()=>{ try{ return (JSON.parse(localStorage.getItem(RECS))||[]).filter(r=>r.length===CSV_HEAD.length); }catch(e){ return []; } };
+function saveRecord(){ if(S.preview) return; const recs=loadRecs(), row=recordRow(); const i=recs.findIndex(r=>r[0]===row[0]&&r[1]===row[1]); if(i>=0) recs[i]=row; else recs.push(row); try{ localStorage.setItem(RECS,JSON.stringify(recs)); }catch(e){} }
+function turnIn(){
+  const left=PROBS.filter(p=>!p.checked()).length;
+  if(left&&!confirm(`${left} problem${left>1?'s':''} not checked yet (they count as 0). Turn in anyway?`)) return;
+  S.submittedAt=Date.now(); save(); saveRecord(); cloudSave(true); disarm(); refresh();
+  const msg=t=>$$('.sheetStatus').forEach(e=>e.textContent=t);
+  if(S.preview){ msg('Preview mode: nothing is sent.'); return; }
+  const st=S.student, sc=scoreAll();
+  const body={studentId:st.id||'',firstName:st.first||'',lastName:st.last||'',period:st.period||'',teacher:st.teacher||'',locks:'0',when:new Date().toString(),activity:ACTIVITY,score:String(sc.total),total:String(sc.max),
+    qlabels:sc.parts.map((p,i)=>'P'+(i+1)+' '+PARTS[i].label).join('|'),qpoints:sc.parts.map(p=>p.got).join('|'),qmax:sc.parts.map(p=>p.max).join('|')};
+  msg('Sending...');
+  fetch(sheetURL(),{method:'POST',mode:'no-cors',body:new URLSearchParams(body)}).then(()=>{ S.sentAt=new Date().toISOString(); save(); msg('Sent! Your teacher will see your score.'); }).catch(()=>msg("Couldn't send. Check the Wi-Fi and try again, or download the CSV."));
+}
+
+/* ============================== NO LOCKDOWN ON WORKSHEETS ============================== */
+let teacherOpen=false;
+function arm(){} function disarm(){} function showLock(){} function enterFS(){}
+['copy','cut','paste','contextmenu'].forEach(ev=>document.addEventListener(ev,e=>{ if(teacherOpen||S.preview) return; e.preventDefault(); }));
+
+/* ============================== SIGN IN ============================== */
+function showWS(){ $('#start').hidden=true; $('#top').hidden=false; $('#ws').hidden=false; build(); window.scrollTo(0,0); if(S.locked&&LOCKDOWN&&!S.lockOff) showLock(); else arm(); }
+function renderStart(){ const has=!!S.student; $('#resumeBox').hidden=!has; $('#startForm').hidden=has; $('#signinTitle').textContent=has?'Welcome back':'Sign in to start';
+  if(has) $('#resumeText').innerHTML=`Signed in as <b>${esc(S.student.first)} ${esc(S.student.last)}</b>, period ${esc(S.student.period)}.`; }
+$('#fPeriod').innerHTML='<option value="">Choose your period</option>'+periodList().map(p=>`<option>${esc(p)}</option>`).join('');
+$('#fTeacher').innerHTML='<option value="">Choose your teacher</option>'+teacherList().map(t=>`<option>${esc(t)}</option>`).join('');
+let starting=false;
+async function start(){
+  if(starting) return; starting=true;
+  try{
+    const v={first:$('#fFirst').value.trim(),last:$('#fLast').value.trim(),id:$('#fId').value.trim(),period:$('#fPeriod').value,teacher:$('#fTeacher').value};
+    const miss=[]; if(!v.first) miss.push('first name'); if(!v.last) miss.push('last name'); if(!v.id) miss.push('student ID'); if(!v.period) miss.push('period'); if(!v.teacher) miss.push('teacher');
+    const err=$('#formErr'); if(miss.length){ err.className='fb no'; err.textContent='Fill in your '+miss.join(', ')+'.'; err.hidden=false; return; }
+    if(LOCKDOWN) enterFS();
+    err.className='fb info'; err.textContent='Checking for your saved work...'; err.hidden=false;
+    const res=await cloudLoad(v); err.hidden=true;
+    if(res.status==='found'){ const d=res.data; d.student=Object.assign({},d.student||{},{first:v.first,period:v.period,teacher:v.teacher}); adopt(d); showWS(); note('✓ Your saved work was loaded'); return; }
+    const ns=fresh(); ns.student=v; adopt(ns); showWS(); cloudSave(true);
+  } catch(ex){ const er=$('#formErr'); er.className='fb no'; er.textContent='Something went wrong starting ('+(ex&&ex.message||ex)+'). Reload and try again.'; er.hidden=false; }
+  finally{ starting=false; }
+}
+$('#startBtn').addEventListener('click',start);
+$('#startForm').addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.tagName==='INPUT'){ e.preventDefault(); start(); } });
+$('#resumeBtn').addEventListener('click',async()=>{ const b=$('#resumeBtn'); b.disabled=true; b.textContent='Loading your work...'; if(LOCKDOWN&&!S.locked) enterFS();
+  const res=await cloudLoad(S.student); b.disabled=false; b.textContent='Continue my worksheet';
+  if(res.status==='found'&&(res.data.updatedAt||0)>(S.updatedAt||0)&&checkedCount(res.data)>=checkedCount(S)){ const d=res.data; d.student=S.student; adopt(d); note('✓ Your newest saved work was loaded'); } showWS(); });
+$('#notMeBtn').addEventListener('click',async()=>{ const b=$('#notMeBtn'); b.disabled=true;
+  try{ if(cloudOK()) await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); }catch(e){ b.disabled=false; $('#resumeErr').textContent="Can't back up the last student's work right now. Check the Wi-Fi, or ask your teacher."; $('#resumeErr').hidden=false; return; }
+  b.disabled=false; adopt(fresh()); ['#fFirst','#fLast','#fId','#fPeriod','#fTeacher'].forEach(s=>$(s).value=''); renderStart(); });
+
+/* ============================== TEACHER ============================== */
+function openTeacher(){ teacherOpen=true; $('#teachLogin').hidden=false; $('#teachPanel').hidden=true; $('#teachErr').hidden=true; $('#teachCode').value=''; $('#teachOv').classList.add('show'); setTimeout(()=>$('#teachCode').focus(),50); }
+function closeTeacher(){ $('#teachOv').classList.remove('show'); teacherOpen=false; }
+$('#teacherLink').addEventListener('click',openTeacher); $('#teachBtn').addEventListener('click',openTeacher);
+$('#teachCancel').addEventListener('click',closeTeacher);
+$('#teachCode').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#teachGo').click(); });
+$('#teachGo').addEventListener('click',()=>{ if(!codeIs($('#teachCode').value,TEACHER_CODE)){ $('#teachErr').hidden=false; return; } $('#teachLogin').hidden=true; $('#teachPanel').hidden=false; renderTeacher(); });
+function renderTeacher(){
+  const recs=loadRecs(), p=$('#teachPanel'), keyOn=document.body.classList.contains('keyon');
+  p.innerHTML=`<h2>Teacher tools</h2>
+    <div class="btnrow"><button class="btn ghost" id="tKey" type="button">${keyOn?'Hide answer key':'Answer key'}</button>
+      <button class="btn ghost" id="tPrev" type="button">${S.preview?'End preview':'Preview (saves nothing)'}</button>
+      <button class="btn ghost" id="tResetWrong" type="button">Reset all wrong answers</button>
+      <button class="btn ghost" id="tReset" type="button">Reset this Chromebook</button><button class="btn ghost" id="tClose" type="button">Close</button></div>
+    <h3 style="margin-top:16px">Scores saved on this Chromebook (${recs.length})</h3>
+    <div class="wide">${recs.length?`<table class="nb"><tr><th>Student</th><th>ID</th><th>Period</th><th>Score</th><th>Date</th></tr>${recs.map(r=>`<tr><td>${esc(r[1])}, ${esc(r[2])}</td><td>${esc(r[0])}</td><td>${esc(r[3])}</td><td>${r[6]}/${r[7]}</td><td>${esc(r[r.length-1])}</td></tr>`).join('')}</table>`:'<p class="muted">None yet.</p>'}</div>
+    <div class="btnrow"><button class="btn primary" id="tCsv" type="button" ${recs.length?'':'disabled'}>Download scores (CSV)</button></div>
+    <h3 style="margin-top:16px">Load a student's saved work</h3>
+    <div class="btnrow"><input class="code" id="tId" placeholder="Student ID" style="width:150px"><input class="code" id="tLast" placeholder="Last name" style="width:170px"><button class="btn ghost" id="tLoad" type="button">Load work</button></div>
+    <p class="fb info" id="tMsg" style="min-height:1em"></p>`;
+  const msg=t=>$('#tMsg').textContent=t;
+  $('#tKey').addEventListener('click',()=>{ document.body.classList.toggle('keyon'); renderTeacher(); msg(document.body.classList.contains('keyon')?'Answer key on: each box shows its answer, sort chips show their box, and correct choices have a dashed gold outline.':'Answer key off.'); });
+  $('#tPrev').addEventListener('click',()=>{ if(S.preview){ location.reload(); return; } const ns=fresh(); ns.preview=true; ns.student={first:'Teacher',last:'Preview',id:'0',period:'-',teacher:teacherList()[0]}; S=ns; closeTeacher(); showWS(); note('Preview: nothing is saved'); });
+  $('#tReset').addEventListener('click',()=>{ if(confirm('Erase this worksheet on this Chromebook? Work backed up to the Saved Student Work sheet is not deleted.')){ try{ localStorage.removeItem(STORE); }catch(e){} location.reload(); } });
+  $('#tResetWrong').addEventListener('click',()=>{
+    const wrong=PROBS.filter(pr=>{ const P=S.p[pr.id]||{}; return (P.tries||0)>0 && !P.right; });
+    if(!wrong.length){ msg('Nothing to reset: this student has no wrong answers.'); return; }
+    if(!confirm(`Reset ${wrong.length} problem${wrong.length>1?'s':''} that ${wrong.length>1?'are':'is'} wrong or on a second try for ${(S.student&&S.student.first)||'this student'}? Correct answers stay.`)) return;
+    wrong.forEach(pr=>{ delete S.p[pr.id]; });
+    save(); cloudSave(true); msg(`Reset ${wrong.length} problem${wrong.length>1?'s':''}. Reloading…`); setTimeout(()=>location.reload(),700); });
+  $('#tClose').addEventListener('click',closeTeacher);
+  $('#tCsv').addEventListener('click',()=>downloadCSV(recs,`PopulationGrowthDay2Worksheet_scores_${new Date().toISOString().slice(0,10)}.csv`));
+  $('#tLoad').addEventListener('click',async()=>{ const s={id:$('#tId').value.trim(),last:$('#tLast').value.trim()}; if(!s.id||!s.last){ msg('Type the student ID and last name.'); return; } msg('Looking up saved work...');
+    const r=await cloudLoad(s); if(r.status==='found'){ adopt(r.data); closeTeacher(); renderStart(); $('#start').hidden=false; $('#ws').hidden=true; $('#top').hidden=true; } else msg(r.status==='none'?'No saved work found for that student.':"Couldn't reach the saved-work sheet."); });
+}
+
+if(!STORAGE_OK) $('#noStore').hidden=false;
+renderStart();
+})();
+</script>
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

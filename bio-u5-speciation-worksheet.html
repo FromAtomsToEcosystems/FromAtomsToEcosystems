@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Speciation: Practice | Biology Unit 5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1626; --panel:#142136; --panel2:#1a2a44; --line:#2a3d5f; --line2:#3a5580;
+  --text:#e8eef8; --muted:#a3b4cf; --dim:#7488a9;
+  --leaf:#5fe3a9; --sun:#ffd35c; --r:#ffd35c; --sky:#45c8f0; --ok:#4ade80; --bad:#fb7185; --pink:#f472b6;
+  --font:'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+*{box-sizing:border-box} [hidden]{display:none !important}
+html,body{margin:0}
+body{background-color:var(--bg); background-image:linear-gradient(rgba(110,150,210,.065) 1px,transparent 1px),linear-gradient(90deg,rgba(110,150,210,.065) 1px,transparent 1px); background-size:32px 32px;
+  color:var(--text); font-family:var(--font); font-size:17px; line-height:1.55; -webkit-user-select:none; user-select:none}
+input,textarea{-webkit-user-select:text; user-select:text}
+h1,h2,h3,h4{margin:0 0 .45em; line-height:1.2; font-weight:600}
+h1{font-size:clamp(28px,4.4vw,40px); font-weight:700} h2{font-size:24px} h3{font-size:19px}
+p{margin:0 0 .75em} .muted{color:var(--muted)} .small{font-size:14px}
+sub,sup{font-size:.72em}
+:focus-visible{outline:3px solid var(--r); outline-offset:2px}
+.top{position:sticky; top:0; z-index:20; background:rgba(13,22,38,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+.top-in{max-width:1100px; margin:0 auto; padding:8px 16px; display:flex; gap:12px; align-items:center}
+.brand{font-weight:600; font-size:15px; white-space:nowrap} .brand span{display:block; font-weight:400; font-size:12px; color:var(--muted)}
+.nav{display:flex; gap:6px; flex:1; overflow-x:auto; padding:3px 2px}
+.ntile{flex:0 0 auto; width:54px; height:54px; border-radius:7px; border:1.5px solid var(--line2); background:var(--panel); color:var(--text); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer; position:relative; font:inherit; padding:0}
+.ntile .ic{color:var(--leaf); line-height:0} .ntile .nm{font-size:8.5px; color:var(--muted)}
+.ntile.cur{border-color:var(--r); background:rgba(255,211,92,.14)}
+.ntile.cur .nm{color:var(--r)}
+.secnav{display:flex; justify-content:space-between; gap:10px; margin-top:4px}
+.ntile.done::after{content:'✓'; position:absolute; top:1px; right:4px; font-size:10px; font-weight:700; color:var(--ok)}
+.scorepill{font-size:13px; padding:4px 10px; border-radius:999px; background:var(--panel2); white-space:nowrap}
+.savenote{font-size:12.5px; color:var(--ok); white-space:nowrap} @media (max-width:1300px){ .savenote{display:none} } @media (max-width:900px){ .scorepill{display:none} }
+main{max-width:1000px; margin:0 auto; padding:20px 16px 80px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin:0 0 18px}
+.sec{scroll-margin-top:80px}
+.sechead{display:flex; gap:14px; align-items:center; margin:28px 0 10px}
+.badge{width:66px; height:66px; border-radius:10px; border:2px solid var(--leaf); background:var(--panel); display:flex; align-items:center; justify-content:center; position:relative; flex:0 0 auto; color:var(--leaf)}
+.badge .z{position:absolute; top:3px; left:6px; font-size:11px; color:var(--muted)}
+.meta{color:var(--muted); font-size:14px}
+.btn{font:inherit; font-weight:600; font-size:15px; border-radius:10px; padding:10px 18px; cursor:pointer; border:1.5px solid transparent}
+.btn.primary{background:var(--r); color:#231a00} .btn.ghost{background:transparent; border-color:var(--line2); color:var(--text)}
+.btn.small{padding:6px 12px; font-size:14px} .btn:disabled{opacity:.45; cursor:not-allowed}
+.btnrow{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:12px}
+.field{display:flex; flex-direction:column; gap:4px; font-size:14px; color:var(--muted)}
+.field input,.field select{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px}
+.formgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin:10px 0}
+.fb{margin-top:10px; padding:10px 14px; border-radius:10px; font-size:15px}
+.fb.ok{background:rgba(74,222,128,.12); color:#c9f7d8} .fb.no{background:rgba(251,113,133,.12); color:#ffd3db} .fb.info{background:var(--panel2)}
+.prob{border-top:1px solid var(--line); padding-top:16px; margin-top:16px}
+.prob:first-of-type{border-top:none; padding-top:0; margin-top:0}
+.pq{font-weight:500; margin-bottom:8px}
+.pnum{display:inline-block; min-width:30px; font-weight:700; color:var(--leaf)}
+.pts{font-size:13px; color:var(--muted); font-weight:400}
+.hintbox{background:rgba(255,211,92,.08); border-left:3px solid var(--r); border-radius:8px; padding:8px 12px; margin-top:8px; font-size:15px}
+/* drag and drop */
+.figwrap{position:relative; width:100%}
+.figwrap svg{width:100%; height:auto; display:block; background:#0a1322; border:1px solid var(--line); border-radius:12px}
+.figwrap svg text{font-family:var(--font)}
+.zone{position:absolute; transform:translate(-50%,-50%); min-height:32px; border:2px dashed #8fb3e6; border-radius:9px; background:rgba(13,22,38,.92); color:var(--text); font:inherit; font-size:14px; font-weight:600; display:flex; align-items:center; justify-content:center; padding:2px 6px; cursor:pointer; text-align:center; line-height:1.15}
+.zone.empty{color:var(--dim); font-weight:400; font-size:12.5px}
+.zone.filled{border-style:solid; border-color:var(--r); background:#2b2410}
+.zone.hot{box-shadow:0 0 0 3px rgba(255,211,92,.5)}
+.zone.locked{opacity:.9}
+.zone.ok{border-color:var(--ok); background:#0f2e1d} .zone.no{border-color:var(--bad); background:#3a0f1a}
+.pool{display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 4px; padding:10px; border:1px dashed var(--line2); border-radius:10px; min-height:52px}
+.pool .lbl{width:100%; font-size:12.5px; color:var(--muted)}
+.chip{font:inherit; font-size:15px; font-weight:600; padding:6px 14px; border-radius:999px; border:1.5px solid var(--line2); background:var(--panel2); color:var(--text); cursor:grab; touch-action:none}
+.chip.sel{border-color:var(--r); background:rgba(255,211,92,.16); box-shadow:0 0 0 3px rgba(255,211,92,.35)}
+.bins{display:grid; gap:10px; margin-top:6px}
+.bin{border:2px dashed var(--line2); border-radius:12px; padding:10px; min-height:96px; cursor:pointer; background:rgba(13,22,38,.5)}
+.bin h4{margin:0 0 8px; font-size:15px; color:var(--leaf)} .bin.hot{border-color:var(--r)}
+.bin .chip{cursor:pointer; margin:3px} .bin .chip.ok{border-color:var(--ok); background:#0f2e1d} .bin .chip.no{border-color:var(--bad); background:#3a0f1a}
+.phenbox{background:rgba(244,114,182,.1); border-left:4px solid #f472b6; border-radius:8px; padding:10px 14px; margin-bottom:14px}
+.fixnote{font-size:12px; color:#ffd3db; font-weight:400}
+/* equation */
+.eq{display:flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:20px; font-weight:600; margin:10px 0}
+.eq .zone{position:static; transform:none; min-width:120px; min-height:40px}
+/* choices */
+.opts{display:grid; gap:8px; margin:6px 0}
+.opt{display:flex; gap:12px; align-items:center; text-align:left; background:var(--panel2); border:1.5px solid var(--line); color:var(--text); border-radius:10px; padding:9px 14px; font:inherit; font-size:16px; cursor:pointer}
+.opt .L{flex:0 0 26px; height:26px; border-radius:50%; display:grid; place-items:center; background:var(--bg); font-weight:600; font-size:13px}
+.opt.multi .L{border-radius:6px}
+.opt.sel{border-color:var(--r); background:rgba(255,211,92,.08)} .opt.sel .L{background:var(--r); color:#231a00}
+.opt.ok{border-color:var(--ok); background:rgba(74,222,128,.1)} .opt.no{border-color:var(--bad); background:rgba(251,113,133,.1)}
+.opt:disabled{cursor:default}
+input.blank{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:7px 10px; font:inherit; font-size:16px; width:170px}
+input.blank.ok{border-color:var(--ok)} input.blank.no{border-color:var(--bad)}
+.brow{margin:8px 0}
+/* answer key (teacher) */
+body.keyon .zone[data-key]::after{content:'key: ' attr(data-key); position:absolute; top:100%; left:50%; transform:translateX(-50%); font-size:11px; color:var(--r); white-space:nowrap; margin-top:2px}
+body.keyon .chip[data-key]::after{content:' → ' attr(data-key); font-size:11px; color:var(--r)}
+body.keyon .opt[data-key]{outline:2px dashed var(--r); outline-offset:2px}
+body.keyon input.blank[data-key]+.keytxt{display:inline}
+.wbank2{margin-top:8px; padding:8px 10px; border:1px dashed rgba(163,180,207,.5); border-radius:10px; font-size:14px; line-height:2}
+.wchip{font:inherit; font-size:14px; margin:2px 4px 2px 0; padding:2px 10px; border-radius:999px; border:1px solid rgba(163,180,207,.6); background:rgba(255,255,255,.06); color:inherit; cursor:pointer}
+.wchip:hover{border-color:#ffd35c}
+.wtext{width:100%; min-height:110px; font:inherit; padding:10px; border-radius:10px; border:1.5px solid var(--line,#2a3d5f); background:rgba(255,255,255,.04); color:inherit; resize:vertical}
+.wkey{display:none; margin-top:6px; font-size:14px; color:var(--r,#ffd35c)}
+body.keyon .wkey{display:block}
+.keytxt{display:none; font-size:12px; color:var(--r); margin-left:6px}
+.big{font-size:52px; font-weight:700; color:var(--r); line-height:1}
+table.res{border-collapse:collapse; width:100%} table.res th,table.res td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line)} table.res th{color:var(--muted); font-weight:400}
+.card.nostore{border:2px solid var(--bad); background:rgba(251,113,133,.08)}
+.overlay{position:fixed; inset:0; background:rgba(4,9,18,.94); z-index:100; display:none; align-items:center; justify-content:center; padding:20px}
+.overlay.show{display:flex}
+.modal{background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:24px; max-width:900px; width:100%; max-height:92vh; overflow:auto}
+input.code{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px; width:200px}
+table.nb{border-collapse:collapse; width:100%; font-size:14px} table.nb th,table.nb td{border:1px solid var(--line2); padding:6px 8px} table.nb th{background:var(--panel2)}
+.wide{overflow-x:auto}
+@media (max-width:700px){ .zone{font-size:11px; min-height:26px} .chip{font-size:13px; padding:5px 10px} }
+@media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important} }
+.prob + p,.prob + .phenbox,.prob + .figwrap{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.figwrap svg{background:#f8fafc}
+
+</style>
+</head>
+<body>
+<header class="top" id="top" hidden>
+  <div class="top-in">
+    <div class="brand">Speciation worksheet<span id="whoami"></span></div>
+    <nav class="nav" id="nav" aria-label="Worksheet parts"></nav>
+    <span class="scorepill" id="scorePill"></span>
+    <span class="savenote" id="saveNote" aria-live="polite"></span>
+    <button class="btn ghost small" id="teachBtn" type="button">Teacher</button>
+  </div>
+</header>
+
+<main>
+  <section id="start">
+    <div class="muted" style="margin-top:8px">Biology · Unit 5: Evolution · Worksheet · about 25 minutes</div>
+    <h1>Speciation: Practice</h1>
+    <p class="muted" style="font-size:18px;max-width:42em">Decide what counts as a species, calculate a gene pool, order the steps of speciation, sort isolation types, read drift data, and explain how gene flow works against new species.</p>
+    <div class="card"><h3>How it works</h3>
+      <p style="margin:0">Each problem gets <b>two tries</b>. Right on either try earns full credit. If your first try is wrong, you'll be told it isn't right yet (but not the answer), so look again and try once more. Wrong twice and the problem is marked wrong and locks. Stuck? Tap <b>Hint</b> before you check.</p></div>
+    <div class="card nostore" id="noStore" hidden><h3>This browser can't save your work</h3><p style="margin:0">You may be in guest or incognito mode. Sign in to your school account and open the worksheet again.</p></div>
+    <div class="card">
+      <h3 id="signinTitle">Sign in to start</h3>
+      <div id="resumeBox" hidden><p id="resumeText"></p>
+        <div class="btnrow"><button class="btn primary" id="resumeBtn" type="button">Continue my worksheet</button><button class="btn ghost small" id="notMeBtn" type="button">Not you? Sign in as a different student</button></div>
+        <div class="fb no" id="resumeErr" hidden></div></div>
+      <div id="startForm">
+        <div class="formgrid">
+          <label class="field">First name<input id="fFirst" autocomplete="off"></label><label class="field">Last name<input id="fLast" autocomplete="off"></label>
+          <label class="field">Student ID<input id="fId" inputmode="numeric" autocomplete="off"></label>
+          <label class="field">Period<select id="fPeriod"></select></label><label class="field">Teacher<select id="fTeacher"></select></label>
+        </div>
+        <p class="small muted">Your work saves as you go. On any Chromebook, sign in with the same student ID and last name to pick up where you left off.</p>
+        <div class="fb no" id="formErr" hidden></div>
+        <div class="btnrow"><button class="btn primary" type="button" id="startBtn">Start the worksheet</button></div>
+      </div>
+    </div>
+    <p style="text-align:center"><button class="btn ghost" id="teacherLink" type="button">Teacher: enter unlock code</button></p>
+  </section>
+  <div id="ws" hidden></div>
+</main>
+
+<div class="overlay" id="teachOv" role="dialog" aria-modal="true" aria-labelledby="tTitle">
+  <div class="modal"><div id="teachLogin"><h2 id="tTitle">Teacher</h2>
+    <div class="btnrow"><input class="code" id="teachCode" type="password" placeholder="Teacher code" autocomplete="off"><button class="btn primary" id="teachGo" type="button">Open</button><button class="btn ghost" id="teachCancel" type="button">Close</button></div>
+    <div class="fb no" id="teachErr" hidden>That code didn't work.</div></div><div id="teachPanel" hidden></div></div>
+</div>
+<div class="overlay" id="tabOv" role="dialog" aria-modal="true"><div class="modal" style="max-width:520px"><h2>This worksheet is open in another tab</h2><p>To keep your newest work safe, this copy stopped saving. Close the extra tab, then reload this one.</p><div class="btnrow"><button class="btn primary" type="button" onclick="location.reload()">Reload with my newest work</button></div></div></div>
+
+<script src="sheets-config.js"></script>
+<script>
+(function(){
+'use strict';
+/* ============================== SETTINGS ============================== */
+const LESSON_TITLE='Speciation';           // unlock code = last word of this title
+const UNLOCK_CODE=LESSON_TITLE.trim().split(/\s+/).pop();
+const TEACHER_CODE='Teacher007';   // universal teacher-tools code
+const codeIs=(v,c)=>String(v||'').trim().toLowerCase()===String(c).toLowerCase();
+const WS_ID='bio-u5-speciation-worksheet', ACTIVITY='Speciation Worksheet';
+const BACKUP_URL='https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const SAVE_URL_BUILTIN='https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';
+const BACKUP_TEACHERS=['Austin','Mueller','McCue','Arce','Trimm','Garcia','Trimm/Callanan','Callanan'], BACKUP_PERIODS=['1','2','3','4','5','6','7','8'];
+const STORE='speciationWorksheet_v1', RECS='speciationWorksheet_records_v1';
+/* ===================================================================== */
+const teacherList=()=>{ try{ if(typeof TEACHERS!=='undefined'&&Array.isArray(TEACHERS)&&TEACHERS.length) return TEACHERS.map(String); }catch(e){} return BACKUP_TEACHERS; };
+const periodList=()=>{ try{ if(typeof PERIODS!=='undefined'&&Array.isArray(PERIODS)&&PERIODS.length) return PERIODS.map(String); }catch(e){} return BACKUP_PERIODS; };
+const sheetURL=()=>{ try{ if(typeof SHEETS_WEBHOOK_URL!=='undefined'&&SHEETS_WEBHOOK_URL&&String(SHEETS_WEBHOOK_URL).indexOf('PASTE')<0) return String(SHEETS_WEBHOOK_URL); }catch(e){} return BACKUP_URL; };
+const saveURL=()=>{ try{ if(typeof SAVE_WEBHOOK_URL!=='undefined'&&SAVE_WEBHOOK_URL&&String(SAVE_WEBHOOK_URL).indexOf('PASTE')<0) return String(SAVE_WEBHOOK_URL); }catch(e){} return SAVE_URL_BUILTIN; };
+const LOCKDOWN=false;   // worksheets never lock down
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const strip=s=>String(s).replace(/<[^>]+>/g,'');
+function h(tag,attrs,html){ const e=document.createElement(tag); if(attrs) for(const k in attrs){ if(attrs[k]===false||attrs[k]==null) continue; if(k==='class') e.className=attrs[k]; else if(k==='hidden') e.hidden=!!attrs[k]; else e.setAttribute(k,attrs[k]); } if(html!=null) e.innerHTML=html; return e; }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* ---------- state + saving ---------- */
+function fresh(){ return {ws:WS_ID, student:null, p:{}, ord:{}, locks:0, locked:false, lockOff:false, submittedAt:null, sentAt:null}; }
+let S; try{ S=JSON.parse(localStorage.getItem(STORE)); }catch(e){} if(!S||S.ws!==WS_ID) S=fresh();
+let STORAGE_OK=true, saveBlocked=false;
+try{ localStorage.setItem('__ps_t','1'); STORAGE_OK=localStorage.getItem('__ps_t')==='1'; localStorage.removeItem('__ps_t'); }catch(e){ STORAGE_OK=false; }
+function save(){
+  if(saveBlocked) return;
+  if(S.preview){ note('Preview: nothing is saved'); return; }
+  try{ const raw=localStorage.getItem(STORE); if(raw){ const st=JSON.parse(raw); if(st&&st.ws===WS_ID&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); return; } }
+    S.rev=(S.rev||0)+1; S.updatedAt=Date.now(); localStorage.setItem(STORE,JSON.stringify(S)); note(); cloudSave(false); }catch(e){}
+}
+window.addEventListener('storage',e=>{ if(e.key!==STORE||!e.newValue) return; try{ const st=JSON.parse(e.newValue); if(st&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); } }catch(_){} });
+const saveKey=st=>(String(st.id||'').replace(/\s+/g,'')+'-'+String(st.last||'').toLowerCase().replace(/[^a-z]/g,'')).toLowerCase();
+const checkedCount=st=>Object.values((st||S).p).filter(x=>x&&x.checked).length;
+let cloudTimer=null, cloudDirty=false, cloudBusy=false, cloudAt=null, cloudErr=false;
+const cloudOK=()=>!!saveURL()&&S.student&&!saveBlocked&&!S.preview;
+function cloudBody(){ const st=S.student||{}, sc=scoreAll();
+  return new URLSearchParams({code:saveKey(st), lesson:WS_ID, ver:String(S.updatedAt||Date.now()), prog:String((S.submittedAt?100000:0)+checkedCount(S)), studentId:st.id||'', lastName:st.last||'', firstName:st.first||'', period:st.period||'', teacher:st.teacher||'',
+    summary:S.submittedAt?`Turned in · ${sc.total}/${sc.max}`:`${checkedCount(S)} of ${PROBS.length} problems checked`, data:JSON.stringify(S)}); }
+function cloudSave(soon){ if(!cloudOK()) return; cloudDirty=true; if(soon){ clearTimeout(cloudTimer); cloudTimer=setTimeout(cloudFlush,1200); } else if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); }
+async function cloudFlush(){ cloudTimer=null; if(!cloudOK()||!cloudDirty) return; if(cloudBusy){ cloudTimer=setTimeout(cloudFlush,4000); return; } cloudBusy=true; cloudDirty=false;
+  try{ await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); cloudAt=new Date(); cloudErr=false; }catch(e){ cloudDirty=true; cloudErr=true; if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); } finally{ cloudBusy=false; note(); } }
+function cloudBeacon(){ if(!cloudOK()||!cloudDirty) return; try{ if(navigator.sendBeacon&&navigator.sendBeacon(saveURL(),cloudBody())) cloudDirty=false; }catch(e){} }
+async function cloudLoad(st){ const ctrl=new AbortController(), t=setTimeout(()=>ctrl.abort(),5000);
+  try{ const r=await fetch(saveURL()+'?'+new URLSearchParams({code:saveKey(st),lesson:WS_ID}),{signal:ctrl.signal}); const j=await r.json(); if(j&&j.found&&j.data){ const d=JSON.parse(j.data); if(d&&d.ws===WS_ID) return {status:'found',data:d}; } return {status:'none'}; }
+  catch(e){ return {status:'error'}; } finally{ clearTimeout(t); } }
+function adopt(ns){ let sr=0; try{ const raw=localStorage.getItem(STORE); if(raw) sr=JSON.parse(raw).rev||0; }catch(e){} ns.rev=Math.max(ns.rev||0,sr); S=ns; saveBlocked=false; save(); }
+function note(msg){ const n=$('#saveNote'); if(!n) return; const tm=d=>d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}); n.textContent=msg||(cloudErr?'✓ Saved on this Chromebook':'✓ Saved '+tm(new Date())+(cloudAt?' · backed up '+tm(cloudAt):'')); }
+document.addEventListener('visibilitychange',()=>{ if(document.hidden){ save(); cloudBeacon(); } });
+window.addEventListener('pagehide',()=>{ save(); cloudBeacon(); });
+
+/* ============================== DIAGRAMS ============================== */
+const FIG={};
+
+/* ============================== PROBLEMS ============================== */
+const PARTS=[
+ {k:'P1', label:'Species', title:'Species and gene pools', min:5, icon:'<circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M3 20c0-3 2.5-5 5-5s5 2 5 5M11 20c0-3 2.5-5 5-5s5 2 5 5"/>'},
+ {k:'P2', label:'Split', title:'How a new species forms', min:4, icon:'<path d="M12 3c-2 4 2 7 0 10s2 6 0 8"/><circle cx="6" cy="10" r="2.2"/><circle cx="18" cy="14" r="2.2"/>'},
+ {k:'P3', label:'Isolation', title:'Three kinds of isolation', min:5, icon:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M15 4v16"/>'},
+ {k:'P4', label:'Drift', title:'Genetic drift', min:6, icon:'<path d="M3 18c3-8 5 2 8-6s4 0 6-4 3 2 4 0"/>'},
+ {k:'P5', label:'Gene flow', title:'Gene flow', min:5, icon:'<circle cx="6" cy="16" r="3"/><circle cx="18" cy="16" r="3"/><path d="M6 11c2-6 10-6 12 0"/><path d="M15.5 9.5L18 11l.5-3"/>'},
+ {k:'P6', label:'Grade', title:'Your grade', min:1, icon:'<rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4V2.5h6V4"/><path d="M8.5 13l2.5 2.5 4.5-5"/>'}
+];
+const KFIG={"pool": "<svg style=\"width:100%;max-width:560px;height:auto;display:block\" role=\"img\" aria-label=\"A population of 10 beetles with these genotypes: GG, GG, Gg, Gg, gg, gg, gg, gg, Gg, Gg. G = green allele, g = brown allele.\" viewBox=\"0 0 560 200\"><rect width=\"560\" height=\"200\" rx=\"12\" fill=\"#efe8d6\"/><g transform=\"translate(56,50) rotate(-20)\"><path d=\"M-10,-9 l-11,-7.4 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,-9 l11,-7.4 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-10,0 l-11,-2.4 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,0 l11,-2.4 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-10,9 l-11,2.6 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,9 l11,2.6 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-3,-21 q-4,-7 -9,-8 M3,-21 q4,-7 9,-8\" stroke=\"#14110f\" stroke-width=\"1.2\" fill=\"none\"/><ellipse cx=\"0\" cy=\"-19\" rx=\"5.6000000000000005\" ry=\"4\" fill=\"#14110f\"/><ellipse cx=\"0\" cy=\"-12.4\" rx=\"9.6\" ry=\"6\" fill=\"#317234\" stroke=\"#14110f\" stroke-width=\"1\"/><ellipse cx=\"0\" cy=\"3\" rx=\"12.4\" ry=\"16.4\" fill=\"#4caf50\" stroke=\"#14110f\" stroke-width=\"1.2\"/><line x1=\"0\" y1=\"-12.4\" x2=\"0\" y2=\"19\" stroke=\"#14110f\" stroke-width=\"1\"/><ellipse cx=\"-5\" cy=\"-3\" rx=\"2.4\" ry=\"5.6000000000000005\" fill=\"#fff\" opacity=\".35\"/></g><text x=\"56\" y=\"92\" text-anchor=\"middle\" font-size=\"16\" font-weight=\"700\" fill=\"#1e293b\">GG</text><g transform=\"translate(168,50) rotate(9)\"><path d=\"M-10,-9 l-11,-7.4 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,-9 l11,-7.4 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-10,0 l-11,-2.4 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,0 l11,-2.4 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-10,9 l-11,2.6 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,9 l11,2.6 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-3,-21 q-4,-7 -9,-8 M3,-21 q4,-7 9,-8\" stroke=\"#14110f\" stroke-width=\"1.2\" fill=\"none\"/><ellipse cx=\"0\" cy=\"-19\" rx=\"5.6000000000000005\" ry=\"4\" fill=\"#14110f\"/><ellipse cx=\"0\" cy=\"-12.4\" rx=\"9.6\" ry=\"6\" fill=\"#317234\" stroke=\"#14110f\" stroke-width=\"1\"/><ellipse cx=\"0\" cy=\"3\" rx=\"12.4\" ry=\"16.4\" fill=\"#4caf50\" stroke=\"#14110f\" stroke-width=\"1.2\"/><line x1=\"0\" y1=\"-12.4\" x2=\"0\" y2=\"19\" stroke=\"#14110f\" stroke-width=\"1\"/><ellipse cx=\"-5\" cy=\"-3\" rx=\"2.4\" ry=\"5.6000000000000005\" fill=\"#fff\" opacity=\".35\"/></g><text x=\"168\" y=\"92\" text-anchor=\"middle\" font-size=\"16\" font-weight=\"700\" fill=\"#1e293b\">GG</text><g transform=\"translate(280,50) rotate(-2)\"><path d=\"M-10,-9 l-11,-7.4 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,-9 l11,-7.4 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-10,0 l-11,-2.4 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,0 l11,-2.4 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-10,9 l-11,2.6 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,9 l11,2.6 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-3,-21 q-4,-7 -9,-8 M3,-21 q4,-7 9,-8\" stroke=\"#14110f\" stroke-width=\"1.2\" fill=\"none\"/><ellipse cx=\"0\" cy=\"-19\" rx=\"5.6000000000000005\" ry=\"4\" fill=\"#14110f\"/><ellipse cx=\"0\" cy=\"-12.4\" rx=\"9.6\" ry=\"6\" fill=\"#317234\" stroke=\"#14110f\" stroke-width=\"1\"/><ellipse cx=\"0\" cy=\"3\" rx=\"12.4\" ry=\"16.4\" fill=\"#4caf50\" stroke=\"#14110f\" stroke-width=\"1.2\"/><line x1=\"0\" y1=\"-12.4\" x2=\"0\" y2=\"19\" stroke=\"#14110f\" stroke-width=\"1\"/><ellipse cx=\"-5\" cy=\"-3\" rx=\"2.4\" ry=\"5.6000000000000005\" fill=\"#fff\" opacity=\".35\"/></g><text x=\"280\" y=\"92\" text-anchor=\"middle\" font-size=\"16\" font-weight=\"700\" fill=\"#1e293b\">Gg</text><g transform=\"translate(392,50) rotate(-13)\"><path d=\"M-10,-9 l-11,-7.4 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,-9 l11,-7.4 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-10,0 l-11,-2.4 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,0 l11,-2.4 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-10,9 l-11,2.6 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,9 l11,2.6 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-3,-21 q-4,-7 -9,-8 M3,-21 q4,-7 9,-8\" stroke=\"#14110f\" stroke-width=\"1.2\" fill=\"none\"/><ellipse cx=\"0\" cy=\"-19\" rx=\"5.6000000000000005\" ry=\"4\" fill=\"#14110f\"/><ellipse cx=\"0\" cy=\"-12.4\" rx=\"9.6\" ry=\"6\" fill=\"#317234\" stroke=\"#14110f\" stroke-width=\"1\"/><ellipse cx=\"0\" cy=\"3\" rx=\"12.4\" ry=\"16.4\" fill=\"#4caf50\" stroke=\"#14110f\" stroke-width=\"1.2\"/><line x1=\"0\" y1=\"-12.4\" x2=\"0\" y2=\"19\" stroke=\"#14110f\" stroke-width=\"1\"/><ellipse cx=\"-5\" cy=\"-3\" rx=\"2.4\" ry=\"5.6000000000000005\" fill=\"#fff\" opacity=\".35\"/></g><text x=\"392\" y=\"92\" text-anchor=\"middle\" font-size=\"16\" font-weight=\"700\" fill=\"#1e293b\">Gg</text><g transform=\"translate(504,50) rotate(16)\"><path d=\"M-10,-9 l-11,-7.4 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,-9 l11,-7.4 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-10,0 l-11,-2.4 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,0 l11,-2.4 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-10,9 l-11,2.6 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,9 l11,2.6 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-3,-21 q-4,-7 -9,-8 M3,-21 q4,-7 9,-8\" stroke=\"#14110f\" stroke-width=\"1.2\" fill=\"none\"/><ellipse cx=\"0\" cy=\"-19\" rx=\"5.6000000000000005\" ry=\"4\" fill=\"#14110f\"/><ellipse cx=\"0\" cy=\"-12.4\" rx=\"9.6\" ry=\"6\" fill=\"#5c3b1c\" stroke=\"#14110f\" stroke-width=\"1\"/><ellipse cx=\"0\" cy=\"3\" rx=\"12.4\" ry=\"16.4\" fill=\"#8d5a2b\" stroke=\"#14110f\" stroke-width=\"1.2\"/><line x1=\"0\" y1=\"-12.4\" x2=\"0\" y2=\"19\" stroke=\"#14110f\" stroke-width=\"1\"/><ellipse cx=\"-5\" cy=\"-3\" rx=\"2.4\" ry=\"5.6000000000000005\" fill=\"#fff\" opacity=\".35\"/></g><text x=\"504\" y=\"92\" text-anchor=\"middle\" font-size=\"16\" font-weight=\"700\" fill=\"#1e293b\">gg</text><g transform=\"translate(56,142) rotate(5)\"><path d=\"M-10,-9 l-11,-7.4 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,-9 l11,-7.4 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-10,0 l-11,-2.4 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,0 l11,-2.4 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-10,9 l-11,2.6 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,9 l11,2.6 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-3,-21 q-4,-7 -9,-8 M3,-21 q4,-7 9,-8\" stroke=\"#14110f\" stroke-width=\"1.2\" fill=\"none\"/><ellipse cx=\"0\" cy=\"-19\" rx=\"5.6000000000000005\" ry=\"4\" fill=\"#14110f\"/><ellipse cx=\"0\" cy=\"-12.4\" rx=\"9.6\" ry=\"6\" fill=\"#5c3b1c\" stroke=\"#14110f\" stroke-width=\"1\"/><ellipse cx=\"0\" cy=\"3\" rx=\"12.4\" ry=\"16.4\" fill=\"#8d5a2b\" stroke=\"#14110f\" stroke-width=\"1.2\"/><line x1=\"0\" y1=\"-12.4\" x2=\"0\" y2=\"19\" stroke=\"#14110f\" stroke-width=\"1\"/><ellipse cx=\"-5\" cy=\"-3\" rx=\"2.4\" ry=\"5.6000000000000005\" fill=\"#fff\" opacity=\".35\"/></g><text x=\"56\" y=\"184\" text-anchor=\"middle\" font-size=\"16\" font-weight=\"700\" fill=\"#1e293b\">gg</text><g transform=\"translate(168,142) rotate(-6)\"><path d=\"M-10,-9 l-11,-7.4 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,-9 l11,-7.4 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-10,0 l-11,-2.4 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,0 l11,-2.4 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-10,9 l-11,2.6 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,9 l11,2.6 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-3,-21 q-4,-7 -9,-8 M3,-21 q4,-7 9,-8\" stroke=\"#14110f\" stroke-width=\"1.2\" fill=\"none\"/><ellipse cx=\"0\" cy=\"-19\" rx=\"5.6000000000000005\" ry=\"4\" fill=\"#14110f\"/><ellipse cx=\"0\" cy=\"-12.4\" rx=\"9.6\" ry=\"6\" fill=\"#5c3b1c\" stroke=\"#14110f\" stroke-width=\"1\"/><ellipse cx=\"0\" cy=\"3\" rx=\"12.4\" ry=\"16.4\" fill=\"#8d5a2b\" stroke=\"#14110f\" stroke-width=\"1.2\"/><line x1=\"0\" y1=\"-12.4\" x2=\"0\" y2=\"19\" stroke=\"#14110f\" stroke-width=\"1\"/><ellipse cx=\"-5\" cy=\"-3\" rx=\"2.4\" ry=\"5.6000000000000005\" fill=\"#fff\" opacity=\".35\"/></g><text x=\"168\" y=\"184\" text-anchor=\"middle\" font-size=\"16\" font-weight=\"700\" fill=\"#1e293b\">gg</text><g transform=\"translate(280,142) rotate(-17)\"><path d=\"M-10,-9 l-11,-7.4 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,-9 l11,-7.4 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-10,0 l-11,-2.4 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,0 l11,-2.4 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-10,9 l-11,2.6 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,9 l11,2.6 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-3,-21 q-4,-7 -9,-8 M3,-21 q4,-7 9,-8\" stroke=\"#14110f\" stroke-width=\"1.2\" fill=\"none\"/><ellipse cx=\"0\" cy=\"-19\" rx=\"5.6000000000000005\" ry=\"4\" fill=\"#14110f\"/><ellipse cx=\"0\" cy=\"-12.4\" rx=\"9.6\" ry=\"6\" fill=\"#5c3b1c\" stroke=\"#14110f\" stroke-width=\"1\"/><ellipse cx=\"0\" cy=\"3\" rx=\"12.4\" ry=\"16.4\" fill=\"#8d5a2b\" stroke=\"#14110f\" stroke-width=\"1.2\"/><line x1=\"0\" y1=\"-12.4\" x2=\"0\" y2=\"19\" stroke=\"#14110f\" stroke-width=\"1\"/><ellipse cx=\"-5\" cy=\"-3\" rx=\"2.4\" ry=\"5.6000000000000005\" fill=\"#fff\" opacity=\".35\"/></g><text x=\"280\" y=\"184\" text-anchor=\"middle\" font-size=\"16\" font-weight=\"700\" fill=\"#1e293b\">gg</text><g transform=\"translate(392,142) rotate(12)\"><path d=\"M-10,-9 l-11,-7.4 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,-9 l11,-7.4 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-10,0 l-11,-2.4 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,0 l11,-2.4 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-10,9 l-11,2.6 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,9 l11,2.6 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-3,-21 q-4,-7 -9,-8 M3,-21 q4,-7 9,-8\" stroke=\"#14110f\" stroke-width=\"1.2\" fill=\"none\"/><ellipse cx=\"0\" cy=\"-19\" rx=\"5.6000000000000005\" ry=\"4\" fill=\"#14110f\"/><ellipse cx=\"0\" cy=\"-12.4\" rx=\"9.6\" ry=\"6\" fill=\"#317234\" stroke=\"#14110f\" stroke-width=\"1\"/><ellipse cx=\"0\" cy=\"3\" rx=\"12.4\" ry=\"16.4\" fill=\"#4caf50\" stroke=\"#14110f\" stroke-width=\"1.2\"/><line x1=\"0\" y1=\"-12.4\" x2=\"0\" y2=\"19\" stroke=\"#14110f\" stroke-width=\"1\"/><ellipse cx=\"-5\" cy=\"-3\" rx=\"2.4\" ry=\"5.6000000000000005\" fill=\"#fff\" opacity=\".35\"/></g><text x=\"392\" y=\"184\" text-anchor=\"middle\" font-size=\"16\" font-weight=\"700\" fill=\"#1e293b\">Gg</text><g transform=\"translate(504,142) rotate(1)\"><path d=\"M-10,-9 l-11,-7.4 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,-9 l11,-7.4 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-10,0 l-11,-2.4 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,0 l11,-2.4 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-10,9 l-11,2.6 l-2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M10,9 l11,2.6 l2.4,5\" stroke=\"#14110f\" stroke-width=\"1.6\" fill=\"none\"/><path d=\"M-3,-21 q-4,-7 -9,-8 M3,-21 q4,-7 9,-8\" stroke=\"#14110f\" stroke-width=\"1.2\" fill=\"none\"/><ellipse cx=\"0\" cy=\"-19\" rx=\"5.6000000000000005\" ry=\"4\" fill=\"#14110f\"/><ellipse cx=\"0\" cy=\"-12.4\" rx=\"9.6\" ry=\"6\" fill=\"#317234\" stroke=\"#14110f\" stroke-width=\"1\"/><ellipse cx=\"0\" cy=\"3\" rx=\"12.4\" ry=\"16.4\" fill=\"#4caf50\" stroke=\"#14110f\" stroke-width=\"1.2\"/><line x1=\"0\" y1=\"-12.4\" x2=\"0\" y2=\"19\" stroke=\"#14110f\" stroke-width=\"1\"/><ellipse cx=\"-5\" cy=\"-3\" rx=\"2.4\" ry=\"5.6000000000000005\" fill=\"#fff\" opacity=\".35\"/></g><text x=\"504\" y=\"184\" text-anchor=\"middle\" font-size=\"16\" font-weight=\"700\" fill=\"#1e293b\">Gg</text></svg>", "bottle": "<svg style=\"width:100%;max-width:560px;height:auto;display:block\" role=\"img\" aria-label=\"Marbles in a bottle: only a few pass through the narrow neck.\" viewBox=\"0 0 520 260\" >\n  <rect width=\"520\" height=\"260\" rx=\"14\" fill=\"#eef2f7\"/><path d=\"M60,40 L230,40 C240,40 240,100 250,110 L270,110 L270,150 L250,150 C240,160 240,220 230,220 L60,220 Z\" fill=\"#cfe3ee\" stroke=\"#4b6b80\" stroke-width=\"3\" opacity=\".8\"/><circle cx=\"126.33058984910838\" cy=\"89.48690414951989\" r=\"8\" fill=\"#e53935\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"210.67026748971193\" cy=\"113.66227280521262\" r=\"8\" fill=\"#1e88e5\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"172.14986282578874\" cy=\"94.72550154320987\" r=\"8\" fill=\"#fbc02d\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"214.71999314128942\" cy=\"120.3926397462277\" r=\"8\" fill=\"#43a047\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"132.70164609053498\" cy=\"128.0093664266118\" r=\"8\" fill=\"#e53935\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"213.00840192043896\" cy=\"162.3287680041152\" r=\"8\" fill=\"#1e88e5\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"130.7019890260631\" cy=\"149.95578275034293\" r=\"8\" fill=\"#fbc02d\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"177.88117283950618\" cy=\"60.45831189986283\" r=\"8\" fill=\"#43a047\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"205.9039780521262\" cy=\"164.14499742798353\" r=\"8\" fill=\"#e53935\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"200.94324417009602\" cy=\"81.5096664951989\" r=\"8\" fill=\"#1e88e5\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"112.87551440329219\" cy=\"104.34244255829904\" r=\"8\" fill=\"#fbc02d\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"197.50325788751712\" cy=\"148.50752314814815\" r=\"8\" fill=\"#43a047\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"192.1104252400549\" cy=\"108.38762431412894\" r=\"8\" fill=\"#e53935\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"124.35133744855966\" cy=\"162.99509173525377\" r=\"8\" fill=\"#1e88e5\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"94.47290809327846\" cy=\"163.7496784979424\" r=\"8\" fill=\"#fbc02d\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"150.87019890260632\" cy=\"133.9229895404664\" r=\"8\" fill=\"#43a047\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"118.97530864197532\" cy=\"139.74959276406037\" r=\"8\" fill=\"#e53935\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"83.47959533607681\" cy=\"113.20479681069959\" r=\"8\" fill=\"#1e88e5\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"123.88923182441701\" cy=\"61.449095507544584\" r=\"8\" fill=\"#fbc02d\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"143.41409465020575\" cy=\"82.93927897805213\" r=\"8\" fill=\"#43a047\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"211.18998628257887\" cy=\"190.2062114197531\" r=\"8\" fill=\"#e53935\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"157.83419067215362\" cy=\"84.29927554869684\" r=\"8\" fill=\"#1e88e5\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"104.3343621399177\" cy=\"185.89748371056243\" r=\"8\" fill=\"#fbc02d\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"104.2707475994513\" cy=\"153.08725565843622\" r=\"8\" fill=\"#43a047\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"159.37174211248288\" cy=\"105.8068629972565\" r=\"8\" fill=\"#e53935\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"188.40277777777777\" cy=\"61.957540294924556\" r=\"8\" fill=\"#1e88e5\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"89.38854595336076\" cy=\"195.1812628600823\" r=\"8\" fill=\"#fbc02d\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"175.1685528120713\" cy=\"174.30519118655693\" r=\"8\" fill=\"#43a047\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"162.2860082304527\" cy=\"194.45278206447188\" r=\"8\" fill=\"#e53935\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"213.21004801097394\" cy=\"74.82156635802468\" r=\"8\" fill=\"#1e88e5\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"111.89128943758573\" cy=\"193.12759344993142\" r=\"8\" fill=\"#fbc02d\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"212.65072016460906\" cy=\"196.71654235253772\" r=\"8\" fill=\"#43a047\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"102.40192043895748\" cy=\"130.34149948559673\" r=\"8\" fill=\"#e53935\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"156.20661865569275\" cy=\"65.6074031207133\" r=\"8\" fill=\"#1e88e5\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"106.16358024691358\" cy=\"117.08215449245542\" r=\"8\" fill=\"#fbc02d\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"83.63082990397805\" cy=\"120.07439557613168\" r=\"8\" fill=\"#43a047\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"214.78120713305898\" cy=\"130.07795353223594\" r=\"8\" fill=\"#e53935\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"169.49125514403292\" cy=\"148.8829518175583\" r=\"8\" fill=\"#1e88e5\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"203.56344307270234\" cy=\"92.35358796296296\" r=\"8\" fill=\"#fbc02d\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"194.28172153635117\" cy=\"144.87257801783264\" r=\"8\" fill=\"#43a047\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"260\" cy=\"122\" r=\"8\" fill=\"#e53935\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"262\" cy=\"139\" r=\"8\" fill=\"#1e88e5\" stroke=\"#1f2937\" stroke-width=\".8\"/><path d=\"M290,130 h40\" stroke=\"#1e293b\" stroke-width=\"3\"/><path d=\"M338,130 l-10,-7 v14 z\" fill=\"#1e293b\"/><circle cx=\"370\" cy=\"86\" r=\"8\" fill=\"#e53935\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"392\" cy=\"86\" r=\"8\" fill=\"#e53935\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"414\" cy=\"86\" r=\"8\" fill=\"#1e88e5\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"436\" cy=\"86\" r=\"8\" fill=\"#e53935\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"458\" cy=\"86\" r=\"8\" fill=\"#1e88e5\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"480\" cy=\"86\" r=\"8\" fill=\"#e53935\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"370\" cy=\"112\" r=\"8\" fill=\"#e53935\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"392\" cy=\"112\" r=\"8\" fill=\"#1e88e5\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"414\" cy=\"112\" r=\"8\" fill=\"#e53935\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"436\" cy=\"112\" r=\"8\" fill=\"#e53935\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"458\" cy=\"112\" r=\"8\" fill=\"#1e88e5\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"480\" cy=\"112\" r=\"8\" fill=\"#e53935\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"370\" cy=\"138\" r=\"8\" fill=\"#e53935\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"392\" cy=\"138\" r=\"8\" fill=\"#e53935\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"414\" cy=\"138\" r=\"8\" fill=\"#1e88e5\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"436\" cy=\"138\" r=\"8\" fill=\"#e53935\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"458\" cy=\"138\" r=\"8\" fill=\"#e53935\" stroke=\"#1f2937\" stroke-width=\".8\"/><circle cx=\"480\" cy=\"138\" r=\"8\" fill=\"#1e88e5\" stroke=\"#1f2937\" stroke-width=\".8\"/><text x=\"145\" y=\"246\" text-anchor=\"middle\" font-size=\"13\" fill=\"#1e293b\" font-weight=\"700\">Before: large population</text><text x=\"425\" y=\"190\" text-anchor=\"middle\" font-size=\"13\" fill=\"#1e293b\" font-weight=\"700\">After: survivors</text><text x=\"425\" y=\"208\" text-anchor=\"middle\" font-size=\"13\" fill=\"#1e293b\" font-weight=\"700\">reproduce</text></svg>", "driftdata": "<svg style=\"width:100%;max-width:560px;height:auto;display:block\" role=\"img\" aria-label=\"Two graphs of percent green beetles over 30 generations. Small populations A to D swing widely and three of them end at 0% or 100%. Large populations E to H stay between about 35% and 65%.\" viewBox=\"0 0 640 300\"><rect width=\"640\" height=\"300\" rx=\"12\" fill=\"#fff\"/><text x=\"168\" y=\"24\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#1e293b\">4 small populations (10 beetles)</text><line x1=\"48\" y1=\"240\" x2=\"288\" y2=\"240\" stroke=\"#e2e8f0\"/><text x=\"42\" y=\"244\" font-size=\"12\" text-anchor=\"end\" fill=\"#334155\">0%</text><line x1=\"48\" y1=\"140\" x2=\"288\" y2=\"140\" stroke=\"#e2e8f0\"/><text x=\"42\" y=\"144\" font-size=\"12\" text-anchor=\"end\" fill=\"#334155\">50%</text><line x1=\"48\" y1=\"40\" x2=\"288\" y2=\"40\" stroke=\"#e2e8f0\"/><text x=\"42\" y=\"44\" font-size=\"12\" text-anchor=\"end\" fill=\"#334155\">100%</text><path d=\"M48.0,140.0L56.0,160.0L64.0,120.0L72.0,120.0L80.0,100.0L88.0,100.0L96.0,80.0L104.0,60.0L112.0,80.0L120.0,120.0L128.0,120.0L136.0,120.0L144.0,80.0L152.0,60.0L160.0,60.0L168.0,60.0L176.0,40.0L184.0,40.0L192.0,40.0L200.0,40.0L208.0,40.0L216.0,40.0L224.0,40.0L232.0,40.0L240.0,40.0L248.0,40.0L256.0,40.0L264.0,40.0L272.0,40.0L280.0,40.0L288.0,40.0\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2.4\"/><text x=\"292\" y=\"42\" font-size=\"11\" fill=\"#dc2626\" font-weight=\"700\">A</text><path d=\"M48.0,140.0L56.0,120.0L64.0,120.0L72.0,140.0L80.0,160.0L88.0,120.0L96.0,120.0L104.0,120.0L112.0,80.0L120.0,120.0L128.0,120.0L136.0,80.0L144.0,60.0L152.0,60.0L160.0,100.0L168.0,60.0L176.0,60.0L184.0,100.0L192.0,180.0L200.0,220.0L208.0,220.0L216.0,200.0L224.0,180.0L232.0,180.0L240.0,160.0L248.0,140.0L256.0,140.0L264.0,120.0L272.0,100.0L280.0,120.0L288.0,140.0\" fill=\"none\" stroke=\"#2563eb\" stroke-width=\"2.4\"/><text x=\"292\" y=\"150\" font-size=\"11\" fill=\"#2563eb\" font-weight=\"700\">B</text><path d=\"M48.0,140.0L56.0,160.0L64.0,220.0L72.0,240.0L80.0,240.0L88.0,240.0L96.0,240.0L104.0,240.0L112.0,240.0L120.0,240.0L128.0,240.0L136.0,240.0L144.0,240.0L152.0,240.0L160.0,240.0L168.0,240.0L176.0,240.0L184.0,240.0L192.0,240.0L200.0,240.0L208.0,240.0L216.0,240.0L224.0,240.0L232.0,240.0L240.0,240.0L248.0,240.0L256.0,240.0L264.0,240.0L272.0,240.0L280.0,240.0L288.0,240.0\" fill=\"none\" stroke=\"#16a34a\" stroke-width=\"2.4\"/><text x=\"292\" y=\"242\" font-size=\"11\" fill=\"#16a34a\" font-weight=\"700\">C</text><path d=\"M48.0,140.0L56.0,160.0L64.0,200.0L72.0,200.0L80.0,220.0L88.0,220.0L96.0,240.0L104.0,240.0L112.0,240.0L120.0,240.0L128.0,240.0L136.0,240.0L144.0,240.0L152.0,240.0L160.0,240.0L168.0,240.0L176.0,240.0L184.0,240.0L192.0,240.0L200.0,240.0L208.0,240.0L216.0,240.0L224.0,240.0L232.0,240.0L240.0,240.0L248.0,240.0L256.0,240.0L264.0,240.0L272.0,240.0L280.0,240.0L288.0,240.0\" fill=\"none\" stroke=\"#9333ea\" stroke-width=\"2.4\"/><text x=\"292\" y=\"250\" font-size=\"11\" fill=\"#9333ea\" font-weight=\"700\">D</text><line x1=\"48\" y1=\"240\" x2=\"288\" y2=\"240\" stroke=\"#334155\"/><text x=\"168\" y=\"262\" text-anchor=\"middle\" font-size=\"12\" fill=\"#334155\">Generation (0 to 30)</text><text x=\"484\" y=\"24\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#1e293b\">4 large populations (100 beetles)</text><line x1=\"364\" y1=\"240\" x2=\"604\" y2=\"240\" stroke=\"#e2e8f0\"/><text x=\"358\" y=\"244\" font-size=\"12\" text-anchor=\"end\" fill=\"#334155\">0%</text><line x1=\"364\" y1=\"140\" x2=\"604\" y2=\"140\" stroke=\"#e2e8f0\"/><text x=\"358\" y=\"144\" font-size=\"12\" text-anchor=\"end\" fill=\"#334155\">50%</text><line x1=\"364\" y1=\"40\" x2=\"604\" y2=\"40\" stroke=\"#e2e8f0\"/><text x=\"358\" y=\"44\" font-size=\"12\" text-anchor=\"end\" fill=\"#334155\">100%</text><path d=\"M364.0,140.0L372.0,146.0L380.0,162.0L388.0,144.0L396.0,144.0L404.0,144.0L412.0,142.0L420.0,148.0L428.0,154.0L436.0,154.0L444.0,150.0L452.0,148.0L460.0,136.0L468.0,136.0L476.0,124.0L484.0,140.0L492.0,136.0L500.0,126.0L508.0,132.0L516.0,126.0L524.0,130.0L532.0,132.0L540.0,126.0L548.0,130.0L556.0,136.0L564.0,148.0L572.0,156.0L580.0,164.0L588.0,154.0L596.0,144.0L604.0,138.0\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2.4\"/><text x=\"608\" y=\"140\" font-size=\"11\" fill=\"#dc2626\" font-weight=\"700\">E</text><path d=\"M364.0,140.0L372.0,134.0L380.0,128.0L388.0,132.0L396.0,154.0L404.0,158.0L412.0,162.0L420.0,160.0L428.0,154.0L436.0,152.0L444.0,158.0L452.0,170.0L460.0,170.0L468.0,174.0L476.0,172.0L484.0,164.0L492.0,164.0L500.0,164.0L508.0,166.0L516.0,168.0L524.0,178.0L532.0,168.0L540.0,172.0L548.0,186.0L556.0,188.0L564.0,184.0L572.0,158.0L580.0,150.0L588.0,164.0L596.0,168.0L604.0,162.0\" fill=\"none\" stroke=\"#2563eb\" stroke-width=\"2.4\"/><text x=\"608\" y=\"172\" font-size=\"11\" fill=\"#2563eb\" font-weight=\"700\">F</text><path d=\"M364.0,140.0L372.0,140.0L380.0,126.0L388.0,118.0L396.0,134.0L404.0,142.0L412.0,140.0L420.0,154.0L428.0,154.0L436.0,148.0L444.0,138.0L452.0,140.0L460.0,152.0L468.0,156.0L476.0,144.0L484.0,150.0L492.0,130.0L500.0,132.0L508.0,130.0L516.0,114.0L524.0,120.0L532.0,122.0L540.0,128.0L548.0,124.0L556.0,124.0L564.0,122.0L572.0,122.0L580.0,118.0L588.0,126.0L596.0,120.0L604.0,130.0\" fill=\"none\" stroke=\"#16a34a\" stroke-width=\"2.4\"/><text x=\"608\" y=\"132\" font-size=\"11\" fill=\"#16a34a\" font-weight=\"700\">G</text><path d=\"M364.0,140.0L372.0,136.0L380.0,148.0L388.0,152.0L396.0,130.0L404.0,128.0L412.0,140.0L420.0,124.0L428.0,126.0L436.0,126.0L444.0,138.0L452.0,164.0L460.0,152.0L468.0,152.0L476.0,162.0L484.0,168.0L492.0,168.0L500.0,142.0L508.0,160.0L516.0,150.0L524.0,162.0L532.0,154.0L540.0,150.0L548.0,160.0L556.0,170.0L564.0,174.0L572.0,170.0L580.0,154.0L588.0,160.0L596.0,158.0L604.0,168.0\" fill=\"none\" stroke=\"#9333ea\" stroke-width=\"2.4\"/><text x=\"608\" y=\"178\" font-size=\"11\" fill=\"#9333ea\" font-weight=\"700\">H</text><line x1=\"364\" y1=\"240\" x2=\"604\" y2=\"240\" stroke=\"#334155\"/><text x=\"484\" y=\"262\" text-anchor=\"middle\" font-size=\"12\" fill=\"#334155\">Generation (0 to 30)</text><text x=\"12\" y=\"140\" transform=\"rotate(-90 12 140)\" font-size=\"12\" text-anchor=\"middle\" fill=\"#334155\">% green</text><text x=\"320\" y=\"292\" font-size=\"12\" text-anchor=\"middle\" fill=\"#64748b\">Modeled class data from the drift simulator. Every population started at 50% green.</text></svg>", "flow": "<svg style=\"width:100%;max-width:560px;height:auto;display:block\" role=\"img\" aria-label=\"Two meadows of flowers with a bee carrying pollen between them.\" viewBox=\"0 0 760 240\" >\n  <rect width=\"760\" height=\"240\" rx=\"14\" fill=\"#cde6f5\"/><rect y=\"120\" width=\"760\" height=\"120\" fill=\"#a7c46b\"/><path d=\"M300,240 C330,180 430,180 460,240 Z\" fill=\"#c2b07c\"/><path d=\"M166.83744855967078,158.60871056241427 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"171.83744855967078\" cy=\"158.60871056241427\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"168.3825335315455\" cy=\"163.36399314389004\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"162.79236358779605\" cy=\"161.54763682387664\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"162.79236358779605\" cy=\"155.6697843009519\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"168.3825335315455\" cy=\"153.8534279809385\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"166.83744855967078\" cy=\"158.60871056241427\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M191.7664609053498,166.85665294924553 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"196.7664609053498\" cy=\"166.85665294924553\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"193.31154587722452\" cy=\"171.6119355307213\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"187.72137593347506\" cy=\"169.7955792107079\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"187.72137593347506\" cy=\"163.91772668778316\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"193.31154587722452\" cy=\"162.10137036776976\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"191.7664609053498\" cy=\"166.85665294924553\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M62.806584362139915,188.25274348422496 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"67.80658436213992\" cy=\"188.25274348422496\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"64.35166933401466\" cy=\"193.00802606570073\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"58.76149939026518\" cy=\"191.19166974568734\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"58.76149939026518\" cy=\"185.3138172227626\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"64.35166933401464\" cy=\"183.4974609027492\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"62.806584362139915\" cy=\"188.25274348422496\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M119.95781893004116,176.13031550068587 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"124.95781893004116\" cy=\"176.13031550068587\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"121.5029039019159\" cy=\"180.88559808216164\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"115.91273395816643\" cy=\"179.06924176214824\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"115.91273395816641\" cy=\"173.1913892392235\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"121.50290390191589\" cy=\"171.3750329192101\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"119.95781893004116\" cy=\"176.13031550068587\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M223.22016460905348,163.82270233196158 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"228.22016460905348\" cy=\"163.82270233196158\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"224.7652495809282\" cy=\"168.57798491343735\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"219.17507963717875\" cy=\"166.76162859342395\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"219.17507963717875\" cy=\"160.8837760704992\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"224.7652495809282\" cy=\"159.0674197504858\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"223.22016460905348\" cy=\"163.82270233196158\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M232.59362139917695,184.66323731138544 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"237.59362139917695\" cy=\"184.66323731138544\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"234.13870637105168\" cy=\"189.4185198928612\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"228.54853642730222\" cy=\"187.60216357284781\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"228.54853642730222\" cy=\"181.72431104992307\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"234.13870637105168\" cy=\"179.90795472990968\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"232.59362139917695\" cy=\"184.66323731138544\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M248.07818930041154,191.9852537722908 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"253.07818930041154\" cy=\"191.9852537722908\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"249.62327427228627\" cy=\"196.74053635376657\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"244.0331043285368\" cy=\"194.92418003375317\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"244.0331043285368\" cy=\"189.04632751082843\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"249.62327427228627\" cy=\"187.22997119081504\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"248.07818930041154\" cy=\"191.9852537722908\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M129.67386831275718,219.12208504801097 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"134.67386831275718\" cy=\"219.12208504801097\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"131.2189532846319\" cy=\"223.87736762948674\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"125.62878334088245\" cy=\"222.06101130947334\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"125.62878334088244\" cy=\"216.1831587865486\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"131.2189532846319\" cy=\"214.3668024665352\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"129.67386831275718\" cy=\"219.12208504801097\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M217.380658436214,219.4070644718793 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"222.380658436214\" cy=\"219.4070644718793\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"218.92574340808872\" cy=\"224.16234705335506\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"213.33557346433926\" cy=\"222.34599073334167\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"213.33557346433926\" cy=\"216.46813821041692\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"218.92574340808872\" cy=\"214.65178189040353\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"217.380658436214\" cy=\"219.4070644718793\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M131.1985596707819,146.17352537722908 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"136.1985596707819\" cy=\"146.17352537722908\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"132.74364464265662\" cy=\"150.92880795870485\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"127.15347469890716\" cy=\"149.11245163869145\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"127.15347469890715\" cy=\"143.2345991157667\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"132.74364464265662\" cy=\"141.41824279575332\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"131.1985596707819\" cy=\"146.17352537722908\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M211.1275720164609,192.75480109739368 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"216.1275720164609\" cy=\"192.75480109739368\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"212.67265698833563\" cy=\"197.51008367886945\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"207.08248704458617\" cy=\"195.69372735885605\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"207.08248704458617\" cy=\"189.8158748359313\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"212.67265698833563\" cy=\"187.9995185159179\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"211.1275720164609\" cy=\"192.75480109739368\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M77.16769547325103,152.48422496570646 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"82.16769547325103\" cy=\"152.48422496570646\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"78.71278044512577\" cy=\"157.23950754718223\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"73.1226105013763\" cy=\"155.42315122716883\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"73.12261050137629\" cy=\"149.5452987042441\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"78.71278044512576\" cy=\"147.7289423842307\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"77.16769547325103\" cy=\"152.48422496570646\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M69.31893004115227,218.6951303155007 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"74.31893004115227\" cy=\"218.6951303155007\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"70.86401501302701\" cy=\"223.45041289697647\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"65.27384506927754\" cy=\"221.63405657696308\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"65.27384506927753\" cy=\"215.75620405403834\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"70.864015013027\" cy=\"213.93984773402494\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"69.31893004115227\" cy=\"218.6951303155007\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M47.58127572016461,184.72085048010973 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"52.58127572016461\" cy=\"184.72085048010973\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"49.12636069203935\" cy=\"189.4761330615855\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"43.536190748289876\" cy=\"187.6597767415721\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"43.536190748289876\" cy=\"181.78192421864736\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"49.12636069203935\" cy=\"179.96556789863396\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"47.58127572016461\" cy=\"184.72085048010973\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M111.95473251028805,163.89471879286694 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"116.95473251028805\" cy=\"163.89471879286694\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"113.4998174821628\" cy=\"168.6500013743427\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"107.90964753841331\" cy=\"166.8336450543293\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"107.90964753841331\" cy=\"160.95579253140457\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"113.49981748216278\" cy=\"159.13943621139117\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"111.95473251028805\" cy=\"163.89471879286694\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M122.43930041152264,189.5500685871056 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"127.43930041152264\" cy=\"189.5500685871056\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"123.98438538339738\" cy=\"194.30535116858138\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"118.3942154396479\" cy=\"192.48899484856798\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"118.3942154396479\" cy=\"186.61114232564324\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"123.98438538339737\" cy=\"184.79478600562985\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"122.43930041152264\" cy=\"189.5500685871056\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M179.03497942386832,215.02023319615913 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"184.03497942386832\" cy=\"215.02023319615913\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"180.58006439574305\" cy=\"219.7755157776349\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"174.9898944519936\" cy=\"217.9591594576215\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"174.9898944519936\" cy=\"212.08130693469676\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"180.58006439574305\" cy=\"210.26495061468336\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"179.03497942386832\" cy=\"215.02023319615913\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M141.7417695473251,193.6385459533608 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"146.7417695473251\" cy=\"193.6385459533608\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"143.28685451919984\" cy=\"198.39382853483656\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"137.69668457545038\" cy=\"196.57747221482316\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"137.69668457545038\" cy=\"190.69961969189842\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"143.28685451919984\" cy=\"188.88326337188502\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"141.7417695473251\" cy=\"193.6385459533608\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M110.559670781893,158.7383401920439 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"115.559670781893\" cy=\"158.7383401920439\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"112.10475575376775\" cy=\"163.49362277351966\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"106.51458581001827\" cy=\"161.67726645350626\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"106.51458581001826\" cy=\"155.79941393058152\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"112.10475575376773\" cy=\"153.98305761056812\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"110.559670781893\" cy=\"158.7383401920439\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M185.48868312757202,143.65294924554183 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"190.48868312757202\" cy=\"143.65294924554183\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"187.03376809944675\" cy=\"148.4082318270176\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"181.4435981556973\" cy=\"146.5918755070042\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"181.4435981556973\" cy=\"140.71402298407946\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"187.03376809944675\" cy=\"138.89766666406607\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"185.48868312757202\" cy=\"143.65294924554183\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M226.52880658436214,181.71570644718793 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"231.52880658436214\" cy=\"181.71570644718793\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"228.07389155623687\" cy=\"186.4709890286637\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"222.48372161248741\" cy=\"184.6546327086503\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"222.48372161248741\" cy=\"178.77678018572556\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"228.07389155623687\" cy=\"176.96042386571216\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"226.52880658436214\" cy=\"181.71570644718793\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M93.68004115226339,146.2599451303155 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"98.68004115226339\" cy=\"146.2599451303155\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"95.22512612413813\" cy=\"151.01522771179125\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"89.63495618038866\" cy=\"149.19887139177786\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"89.63495618038864\" cy=\"143.32101886885312\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"95.22512612413811\" cy=\"141.50466254883972\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"93.68004115226339\" cy=\"146.2599451303155\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M586.9423868312757,150.61899862825788 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"591.9423868312757\" cy=\"150.61899862825788\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"588.4874718031505\" cy=\"155.37428120973365\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"582.897301859401\" cy=\"153.55792488972025\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"582.897301859401\" cy=\"147.6800723667955\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"588.4874718031505\" cy=\"145.86371604678212\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"586.9423868312757\" cy=\"150.61899862825788\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M646.3158436213992,148.12620027434843 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"651.3158436213992\" cy=\"148.12620027434843\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"647.8609285932739\" cy=\"152.8814828558242\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"642.2707586495244\" cy=\"151.0651265358108\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"642.2707586495244\" cy=\"145.18727401288606\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"647.8609285932739\" cy=\"143.37091769287267\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"646.3158436213992\" cy=\"148.12620027434843\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M591.8004115226338,172.11488340192045 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"596.8004115226338\" cy=\"172.11488340192045\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"593.3454964945086\" cy=\"176.87016598339622\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"587.755326550759\" cy=\"175.05380966338282\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"587.755326550759\" cy=\"169.17595714045808\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"593.3454964945086\" cy=\"167.35960082044468\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"591.8004115226338\" cy=\"172.11488340192045\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M523.3960905349794,175.91838134430728 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"528.3960905349794\" cy=\"175.91838134430728\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"524.9411755068542\" cy=\"180.67366392578305\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"519.3510055631046\" cy=\"178.85730760576965\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"519.3510055631046\" cy=\"172.9794550828449\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"524.9411755068542\" cy=\"171.1630987628315\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"523.3960905349794\" cy=\"175.91838134430728\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M541.1028806584362,192.87002743484226 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"546.1028806584362\" cy=\"192.87002743484226\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"542.647965630311\" cy=\"197.62531001631802\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"537.0577956865615\" cy=\"195.80895369630463\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"537.0577956865615\" cy=\"189.9311011733799\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"542.647965630311\" cy=\"188.1147448533665\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"541.1028806584362\" cy=\"192.87002743484226\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M504.9207818930041,176.3031550068587 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"509.9207818930041\" cy=\"176.3031550068587\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"506.4658668648789\" cy=\"181.05843758833447\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"500.87569692112936\" cy=\"179.24208126832107\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"500.87569692112936\" cy=\"173.36422874539633\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"506.4658668648789\" cy=\"171.54787242538293\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"504.9207818930041\" cy=\"176.3031550068587\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M514.8497942386831,159.55109739369 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"519.8497942386831\" cy=\"159.55109739369\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"516.3948792105579\" cy=\"164.30637997516575\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"510.80470926680835\" cy=\"162.49002365515236\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"510.80470926680835\" cy=\"156.61217113222762\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"516.3948792105579\" cy=\"154.79581481221422\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"514.8497942386831\" cy=\"159.55109739369\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M670.8899176954733,175.9471879286694 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"675.8899176954733\" cy=\"175.9471879286694\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"672.435002667348\" cy=\"180.70247051014516\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"666.8448327235985\" cy=\"178.88611419013176\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"666.8448327235985\" cy=\"173.00826166720702\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"672.435002667348\" cy=\"171.19190534719363\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"670.8899176954733\" cy=\"175.9471879286694\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M593.0411522633744,178.82475994513032 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"598.0411522633744\" cy=\"178.82475994513032\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"594.5862372352492\" cy=\"183.5800425266061\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"588.9960672914997\" cy=\"181.7636862065927\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"588.9960672914997\" cy=\"175.88583368366795\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"594.5862372352492\" cy=\"174.06947736365456\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"593.0411522633744\" cy=\"178.82475994513032\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M621.3034979423869,201.51714677640604 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"626.3034979423869\" cy=\"201.51714677640604\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"622.8485829142617\" cy=\"206.2724293578818\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"617.2584129705122\" cy=\"204.4560730378684\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"617.2584129705122\" cy=\"198.57822051494367\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"622.8485829142617\" cy=\"196.76186419493027\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"621.3034979423869\" cy=\"201.51714677640604\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M615.6769547325102,197.3576817558299 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"620.6769547325102\" cy=\"197.3576817558299\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"617.222039704385\" cy=\"202.11296433730567\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"611.6318697606355\" cy=\"200.29660801729227\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"611.6318697606355\" cy=\"194.41875549436753\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"617.222039704385\" cy=\"192.60239917435413\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"615.6769547325102\" cy=\"197.3576817558299\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M676.1615226337449,199.67969821673526 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"681.1615226337449\" cy=\"199.67969821673526\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"677.7066076056196\" cy=\"204.43498079821103\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"672.1164376618701\" cy=\"202.61862447819763\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"672.1164376618701\" cy=\"196.7407719552729\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"677.7066076056196\" cy=\"194.9244156352595\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"676.1615226337449\" cy=\"199.67969821673526\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M662.7572016460905,161.81652949245543 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"667.7572016460905\" cy=\"161.81652949245543\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"664.3022866179653\" cy=\"166.5718120739312\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"658.7121166742157\" cy=\"164.7554557539178\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"658.7121166742157\" cy=\"158.87760323099306\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"664.3022866179653\" cy=\"157.06124691097966\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"662.7572016460905\" cy=\"161.81652949245543\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M675.4639917695473,197.10150891632372 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"680.4639917695473\" cy=\"197.10150891632372\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"677.0090767414221\" cy=\"201.8567914977995\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"671.4189067976725\" cy=\"200.0404351777861\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"671.4189067976725\" cy=\"194.16258265486135\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"677.0090767414221\" cy=\"192.34622633484796\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"675.4639917695473\" cy=\"197.10150891632372\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M574.2818930041152,178.8679698216735 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"579.2818930041152\" cy=\"178.8679698216735\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"575.82697797599\" cy=\"183.62325240314928\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"570.2368080322404\" cy=\"181.80689608313588\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"570.2368080322404\" cy=\"175.92904356021114\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"575.82697797599\" cy=\"174.11268724019774\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"574.2818930041152\" cy=\"178.8679698216735\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M699.2109053497943,140.44924554183814 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"704.2109053497943\" cy=\"140.44924554183814\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"700.7559903216691\" cy=\"145.2045281233139\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"695.1658203779195\" cy=\"143.3881718033005\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"695.1658203779195\" cy=\"137.51031928037577\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"700.7559903216691\" cy=\"135.69396296036237\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"699.2109053497943\" cy=\"140.44924554183814\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M670.2510288065844,195.1786694101509 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"675.2510288065844\" cy=\"195.1786694101509\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"671.7961137784591\" cy=\"199.93395199162666\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"666.2059438347096\" cy=\"198.11759567161326\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"666.2059438347096\" cy=\"192.23974314868852\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"671.7961137784591\" cy=\"190.42338682867512\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"670.2510288065844\" cy=\"195.1786694101509\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M587.4022633744855,216.38957475994513 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"592.4022633744855\" cy=\"216.38957475994513\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"588.9473483463603\" cy=\"221.1448573414209\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"583.3571784026108\" cy=\"219.3285010214075\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"583.3571784026108\" cy=\"213.45064849848276\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"588.9473483463603\" cy=\"211.63429217846937\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"587.4022633744855\" cy=\"216.38957475994513\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M550.664609053498,157.4152949245542 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"555.664609053498\" cy=\"157.4152949245542\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"552.2096940253728\" cy=\"162.17057750602996\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"546.6195240816232\" cy=\"160.35422118601656\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"546.6195240816232\" cy=\"154.47636866309182\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"552.2096940253728\" cy=\"152.66001234307842\" r=\"4.2\" fill=\"#8e5bd6\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"550.664609053498\" cy=\"157.4152949245542\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M660.0380658436214,211.58916323731137 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"665.0380658436214\" cy=\"211.58916323731137\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"661.5831508154962\" cy=\"216.34444581878714\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"655.9929808717467\" cy=\"214.52808949877374\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"655.9929808717467\" cy=\"208.650236975849\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"661.5831508154962\" cy=\"206.8338806558356\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"660.0380658436214\" cy=\"211.58916323731137\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M535.522633744856,172.24451303155007 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"540.522633744856\" cy=\"172.24451303155007\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"537.0677187167307\" cy=\"176.99979561302584\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"531.4775487729812\" cy=\"175.18343929301244\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"531.4775487729812\" cy=\"169.3055867700877\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"537.0677187167307\" cy=\"167.4892304500743\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"535.522633744856\" cy=\"172.24451303155007\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M517.1183127572017,152.71467764060355 v18\" stroke=\"#3f7d32\" stroke-width=\"2\"/><circle cx=\"522.1183127572017\" cy=\"152.71467764060355\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"518.6633977290765\" cy=\"157.46996022207932\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"513.0732277853269\" cy=\"155.65360390206592\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"513.0732277853269\" cy=\"149.77575137914118\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"518.6633977290765\" cy=\"147.9593950591278\" r=\"4.2\" fill=\"#ffffff\" stroke=\"#4b3b63\" stroke-width=\".5\"/><circle cx=\"517.1183127572017\" cy=\"152.71467764060355\" r=\"2.6\" fill=\"#f5c518\"/><path d=\"M250,90 C330,40 430,40 510,90\" stroke=\"#1e293b\" stroke-width=\"2.5\" fill=\"none\" stroke-dasharray=\"7 5\"/><path d=\"M516,95 l-14,-2 l8,-10 z\" fill=\"#1e293b\"/><g transform=\"translate(380,52)\"><ellipse cx=\"0\" cy=\"0\" rx=\"11\" ry=\"7\" fill=\"#f5c518\" stroke=\"#222\"/><path d=\"M-4,-7 v14 M2,-7 v14\" stroke=\"#222\" stroke-width=\"2.5\"/><ellipse cx=\"-2\" cy=\"-10\" rx=\"7\" ry=\"4\" fill=\"#fff\" opacity=\".8\" stroke=\"#888\"/><circle cx=\"11\" cy=\"0\" r=\"4\" fill=\"#222\"/><circle cx=\"-4\" cy=\"6\" r=\"3\" fill=\"#8e5bd6\"/></g><g transform=\"translate(380,190) rotate(90)\"><path d=\"M-6.5,-5.8500000000000005 l-7.15,-4.8100000000000005 l-1.56,3.25\" stroke=\"#14110f\" stroke-width=\"1.04\" fill=\"none\"/><path d=\"M6.5,-5.8500000000000005 l7.15,-4.8100000000000005 l1.56,3.25\" stroke=\"#14110f\" stroke-width=\"1.04\" fill=\"none\"/><path d=\"M-6.5,0 l-7.15,-1.56 l-1.56,3.25\" stroke=\"#14110f\" stroke-width=\"1.04\" fill=\"none\"/><path d=\"M6.5,0 l7.15,-1.56 l1.56,3.25\" stroke=\"#14110f\" stroke-width=\"1.04\" fill=\"none\"/><path d=\"M-6.5,5.8500000000000005 l-7.15,1.69 l-1.56,3.25\" stroke=\"#14110f\" stroke-width=\"1.04\" fill=\"none\"/><path d=\"M6.5,5.8500000000000005 l7.15,1.69 l1.56,3.25\" stroke=\"#14110f\" stroke-width=\"1.04\" fill=\"none\"/><path d=\"M-1.95,-13.65 q-2.6,-4.55 -5.8500000000000005,-5.2 M1.95,-13.65 q2.6,-4.55 5.8500000000000005,-5.2\" stroke=\"#14110f\" stroke-width=\"0.78\" fill=\"none\"/><ellipse cx=\"0\" cy=\"-12.35\" rx=\"3.6400000000000006\" ry=\"2.6\" fill=\"#14110f\"/><ellipse cx=\"0\" cy=\"-8.06\" rx=\"6.24\" ry=\"3.9\" fill=\"#1e5121\" stroke=\"#14110f\" stroke-width=\"0.65\"/><ellipse cx=\"0\" cy=\"1.95\" rx=\"8.06\" ry=\"10.66\" fill=\"#2e7d32\" stroke=\"#14110f\" stroke-width=\"0.78\"/><line x1=\"0\" y1=\"-8.06\" x2=\"0\" y2=\"12.35\" stroke=\"#14110f\" stroke-width=\"0.65\"/><ellipse cx=\"-3.25\" cy=\"-1.95\" rx=\"1.56\" ry=\"3.6400000000000006\" fill=\"#fff\" opacity=\".35\"/></g><text x=\"150\" y=\"110\" text-anchor=\"middle\" font-size=\"15\" fill=\"#1e293b\" font-weight=\"700\">Population 1</text><text x=\"610\" y=\"110\" text-anchor=\"middle\" font-size=\"15\" fill=\"#1e293b\" font-weight=\"700\">Population 2</text><text x=\"380\" y=\"24\" text-anchor=\"middle\" font-size=\"13\" fill=\"#1e293b\">pollen carried by a bee</text></svg>"};
+const ico=(i,s)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PARTS[i].icon}</svg>`;
+const PROBS=[];   // every problem: {id, part, max, score(), key()}
+
+function probShell(parent, part, num, q, pts){
+  const box=h('div',{class:'prob'}); parent.appendChild(box);
+  box.innerHTML=`<div class="pq"><span class="pnum">${num}.</span> ${q} <span class="pts">(${pts} pt${pts>1?'s':''})</span></div>`;
+  return box;
+}
+function actions(box, o){ // Hint + Check buttons + feedback
+  const row=h('div',{class:'btnrow'}); const hb=h('button',{class:'btn ghost small',type:'button'},'Hint'); const cb=h('button',{class:'btn primary small',type:'button'},'Check');
+  row.append(hb,cb); box.appendChild(row);
+  const hint=h('div',{class:'hintbox',hidden:true},'💡 '+o.hint); box.appendChild(hint);
+  const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'}); box.appendChild(fb);
+  hb.addEventListener('click',()=>{ hint.hidden=!hint.hidden; });
+  return {row,hb,cb,hint,fb};
+}
+const st=id=>S.p[id]||(S.p[id]={});
+/* Two tries per problem. Right on try 1 or 2 = full credit. Wrong twice = marked wrong (credit for parts right on try 2).
+   The correct answer is never shown. */
+function gradeTry(P,res,max){ const n=res.filter(Boolean).length; P.tries=(P.tries||0)+1;
+  if(n===max){ P.first=max; P.checked=true; P.right=true; }
+  else if(P.tries>=2){ P.first=n; P.checked=true; P.right=false; }
+  return n===max; }
+function showTry(ui,P,max,doneText){
+  if(P.checked&&P.right){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML=`<b>Correct!</b> ${doneText||''}`; }
+  else if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`<b>Marked wrong.</b> You earned ${P.first} of ${max} point${max>1?'s':''}. Ask your teacher if you'd like to try it again.`; }
+  else if(P.tries===1){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=max>1?'<b>Not quite.</b> Something isn\'t right yet. You have <b>one more try</b>.':'<b>Not quite.</b> You have <b>one more try</b>.'; }
+  else ui.fb.hidden=true;
+  if(ui.cb) ui.cb.textContent=P.checked?'Checked':(P.tries===1?'Check (last try)':'Check'); }
+
+/* ---------- drag onto a diagram (or into equation slots) ---------- */
+function dragProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.zones.length);
+  let fig;
+  if(o.equation){ fig=h('div',{class:'eq'}); box.appendChild(fig); }
+  else { fig=h('div',{class:'figwrap'}); fig.innerHTML=o.svg; box.appendChild(fig); }
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.chips.map((_,i)=>i)));
+  const zoneEls={};
+  const groupAns=g=>o.zones.filter(z=>z.group===g).map(z=>z.ans);
+  if(o.equation){ o.layout.forEach(item=>{ if(typeof item==='string'){ fig.appendChild(h('span',null,item)); } else { const z=o.zones[item]; const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans}); fig.appendChild(b); zoneEls[z.id]=b; } }); }
+  else o.zones.forEach(z=>{ const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans});
+    b.style.left=(z.x/o.vb[0]*100)+'%'; b.style.top=(z.y/o.vb[1]*100)+'%'; b.style.width=((z.w||130)/o.vb[0]*100)+'%'; fig.appendChild(b); zoneEls[z.id]=b; });
+  function placedChips(){ return new Set(Object.values(P.place)); }
+  function render(){
+    const used=placedChips();
+    pool.innerHTML='<div class="lbl">Tap a label, then tap a box (or drag it). Tap a filled box to take its label back.</div>';
+    order.forEach(ci=>{ if(used.has(ci)) return; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true'},o.chips[ci]); c.disabled=!!P.checked;
+      c.addEventListener('click',()=>{ sel=sel===ci?null:ci; render(); });
+      c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+      pool.appendChild(c); });
+    if(P.checked&&!pool.querySelector('.chip')) pool.hidden=true;
+    o.zones.forEach(z=>{ const b=zoneEls[z.id]; const ci=P.place[z.id];
+      b.className='zone'+(ci==null?' empty':' filled')+(P.checked?' locked':'');
+      if(ci==null) b.innerHTML=z.ph||'drop here';
+      else b.innerHTML=o.chips[ci];
+      b.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; ui.hb.disabled=!!P.checked&&false;
+    showTry(ui,P,o.zones.length,o.done);
+  }
+  o.zones.forEach(z=>{ const b=zoneEls[z.id];
+    const drop=ci=>{ if(P.checked) return; if(ci==null){ if(P.place[z.id]!=null){ delete P.place[z.id]; save(); render(); } return; }
+      for(const k in P.place) if(P.place[k]===ci) delete P.place[k];
+      P.place[z.id]=ci; sel=null; save(); render(); };
+    b.addEventListener('click',()=>drop(sel));
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  ui.cb.addEventListener('click',()=>{
+    if(P.checked) return;
+    const empty=o.zones.filter(z=>P.place[z.id]==null).length;
+    if(empty){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill every box before you check. ${empty} still empty.`; return; }
+    const res={}; const usedInGroup={};
+    o.zones.forEach(z=>{ const t=o.chips[P.place[z.id]];
+      if(z.group){ const ans=groupAns(z.group); usedInGroup[z.group]=usedInGroup[z.group]||[]; const ok=ans.includes(t)&&!usedInGroup[z.group].includes(t); if(ok) usedInGroup[z.group].push(t); res[z.id]=ok; }
+      else res[z.id]=t===z.ans; });
+    gradeTry(P,Object.values(res),o.zones.length); save(); cloudSave(true); render(); refresh();
+  });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.zones.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- sort into bins ---------- */
+function binProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.items.length);
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const bins=h('div',{class:'bins',style:`grid-template-columns:repeat(${o.bins.length},minmax(0,1fr))`}); box.appendChild(bins);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.items.map((_,i)=>i)));
+  const binEls={};
+  o.bins.forEach(bn=>{ const b=h('div',{class:'bin',role:'button',tabindex:'0'},`<h4>${bn.label}</h4><div class="bchips"></div>`); bins.appendChild(b); binEls[bn.k]=b;
+    const drop=ci=>{ if(P.checked||ci==null) return; P.place[ci]=bn.k; sel=null; save(); render(); };
+    b.addEventListener('click',e=>{ if(e.target.closest('.chip')) return; drop(sel); });
+    b.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); drop(sel); } });
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  const binLabel=k=>(o.bins.find(b=>b.k===k)||{}).label;
+  function chipEl(ci,inBin){ const it=o.items[ci]; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true','data-key':binLabel(it.k)},it.t);
+    
+    c.disabled=!!P.checked;
+    c.addEventListener('click',e=>{ if(P.checked) return; if(inBin){ e.stopPropagation(); if(sel!=null&&sel!==ci){ P.place[sel]=P.place[ci]; sel=null; save(); render(); return; } delete P.place[ci]; save(); render(); return; } sel=sel===ci?null:ci; render(); });
+    c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+    return c; }
+  function render(){
+    pool.innerHTML='<div class="lbl">Tap an item, then tap the box it belongs in (or drag it). Tap a sorted item to take it back.</div>';
+    order.forEach(ci=>{ if(P.place[ci]==null) pool.appendChild(chipEl(ci,false)); });
+    pool.hidden=!!P.checked;
+    o.bins.forEach(bn=>{ const holder=$('.bchips',binEls[bn.k]); holder.innerHTML=''; order.forEach(ci=>{ if(P.place[ci]===bn.k) holder.appendChild(chipEl(ci,true)); }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,o.items.length,o.done);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const left=o.items.filter((_,i)=>P.place[i]==null).length;
+    if(left){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Sort every item before you check. ${left} still left.`; return; }
+    const res=o.items.map((it,i)=>P.place[i]===it.k); gradeTry(P,res,o.items.length); save(); cloudSave(true); render(); refresh(); });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.items.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- choice problems: one, two-part, or select-all ---------- */
+function choiceProblem(parent, o){   // o.parts: [{q, opts, ans (index or array for select-all)}]
+  const P=st(o.id); P.pick=P.pick||{};
+  const max=o.parts.length;
+  const box=probShell(parent,o.part,o.num,o.q,max);
+  const groups=[];
+  o.parts.forEach((pt,pi)=>{
+    const multi=Array.isArray(pt.ans);
+    if(pt.q) box.insertAdjacentHTML('beforeend',`<div style="margin:10px 0 4px">${pt.q}${multi?' <span class="small muted">(Select all that apply.)</span>':''}</div>`);
+    const ordKey=o.id+'_'+pi; const order=S.ord[ordKey]||(S.ord[ordKey]=shuffle(pt.opts.map((_,i)=>i)));
+    const wrap=h('div',{class:'opts'}); box.appendChild(wrap);
+    const btns={};
+    order.forEach((oi,pos)=>{ const correct=multi?pt.ans.includes(oi):oi===pt.ans;
+      const b=h('button',{class:'opt'+(multi?' multi':''),type:'button'},`<span class="L">${'ABCDEF'[pos]}</span><span>${pt.opts[oi]}</span>`); if(correct) b.dataset.key='1';
+      b.addEventListener('click',()=>{ if(P.checked) return; if(multi){ const s=new Set(P.pick[pi]||[]); s.has(oi)?s.delete(oi):s.add(oi); P.pick[pi]=[...s]; } else P.pick[pi]=oi; save(); paint(); });
+      wrap.appendChild(b); btns[oi]=b; });
+    groups.push({pt,multi,btns});
+  });
+  const ui=actions(box,o);
+  function gradePart(g,pi){ const pk=P.pick[pi]; if(g.multi){ const s=new Set(pk||[]); return g.pt.ans.length===s.size&&g.pt.ans.every(a=>s.has(a)); } return pk===g.pt.ans; }
+  function paint(){
+    groups.forEach((g,pi)=>{ const pk=P.pick[pi];
+      Object.entries(g.btns).forEach(([oi,b])=>{ oi=+oi; const picked=g.multi?(pk||[]).includes(oi):pk===oi; const correct=g.multi?g.pt.ans.includes(oi):oi===g.pt.ans;
+        b.className='opt'+(g.multi?' multi':'')+(picked?' sel':'')+(P.checked&&P.right&&picked?' ok':''); b.disabled=!!P.checked; }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,max,o.why);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const blank=groups.some((g,pi)=>g.multi?!(P.pick[pi]||[]).length:P.pick[pi]==null);
+    if(blank){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Answer every part before you check.'; return; }
+    gradeTry(P,groups.map((g,pi)=>gradePart(g,pi)),max); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- typed blanks (two tries, like every problem) ---------- */
+function typedProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.blanks.length);
+  const inputs=o.blanks.map((bl,i)=>{ const row=h('div',{class:'brow'}); row.innerHTML=`${bl.before} <input class="blank" type="text" aria-label="${esc(strip(bl.before))}" data-key="${esc(bl.show)}"><span class="keytxt">${bl.show}</span> ${bl.after||''}`; box.appendChild(row);
+    const inp=$('input',row); inp.value=P.val[i]||''; inp.addEventListener('input',()=>{ P.val[i]=inp.value; save(); }); return inp; });
+  const ui=actions(box,o);
+  const ok=(bl,v)=>{ v=String(v||'').trim().toLowerCase(); if(bl.num){ const n=parseFloat(v.replace(/[^0-9.]/g,'')); return !isNaN(n)&&n>=bl.num[0]&&n<=bl.num[1]; } return bl.accept.some(a=>v.replace(/\s+/g,' ')===a); };
+  function paint(){ inputs.forEach(inp=>{ inp.classList.remove('ok','no'); if(P.checked&&P.right) inp.classList.add('ok'); inp.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; showTry(ui,P,o.blanks.length,''); }
+  ui.cb.addEventListener('click',()=>{
+    if(inputs.some(inp=>!inp.value.trim())){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Fill in every blank before you check.'; return; }
+    if(P.checked) return;
+    const res=o.blanks.map((bl,i)=>ok(bl,inputs[i].value));
+    gradeTry(P,res,o.blanks.length); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.blanks.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- written answer, scored by key ideas (two tries, like every problem) ---------- */
+function writtenProblem(parent, o){
+  const P=st(o.id); if(P.val==null) P.val='';
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const ta=h('textarea',{class:'wtext',rows:'5','aria-label':'Your answer','data-key':o.model}); ta.value=P.val; box.appendChild(ta);
+  box.appendChild(h('div',{class:'wkey'},'<b>Key:</b> '+o.model));
+  if(o.bank){ const wb=h('div',{class:'wbank2'}); wb.innerHTML='<b>Word bank</b> <span class="small muted">(tap a word to add it)</span><br>'+o.bank.map(w=>`<button type="button" class="wchip">${w}</button>`).join('');
+    box.appendChild(wb);
+    wb.querySelectorAll('.wchip').forEach(c=>c.addEventListener('click',()=>{ if(ta.disabled) return; const w=c.textContent; const a=ta.selectionStart??ta.value.length, b=ta.selectionEnd??ta.value.length;
+      const before=ta.value.slice(0,a), after=ta.value.slice(b); const pre=(before&&!/\s$/.test(before))?' ':''; const ins=pre+w+' ';
+      ta.value=before+ins+after; ta.focus(); const p=a+ins.length; ta.setSelectionRange(p,p); ta.dispatchEvent(new Event('input',{bubbles:true})); })); }
+  ta.addEventListener('input',()=>{ P.val=ta.value; save(); });
+  const ui=actions(box,o);
+  const grade=()=>{ const t=ta.value.toLowerCase(); const hits=o.groups.filter(g=>g[1].test(t)).length; const n=Math.min(o.pts,hits); return Array.from({length:o.pts},(_,i)=>i<n); };
+  function paint(){ ta.disabled=!!P.checked; ui.cb.disabled=!!P.checked; showTry(ui,P,o.pts,o.why); }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(ta.value.trim().split(/\s+/).length<5){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Write a full answer (at least one complete sentence) before you check.'; return; }
+    gradeTry(P,grade(),o.pts); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ============================== WORKSHEET CONTENT ============================== */
+function buildContent(sec){
+  let n=0; const num=()=>++n;
+  const say=(s,html)=>s.insertAdjacentHTML('beforeend',html);
+  const fig=(k,cap)=>`<div class="figwrap" style="margin:10px 0">${KFIG[k]}${cap?`<div class="small muted" style="margin-top:4px">${cap}</div>`:''}</div>`;
+  /* ---------------- 1. Species ---------------- */
+  say(sec[0],`<div class="phenbox"><b>Words to know:</b> A <b>species</b> is a group that can mate and produce <b>fertile</b> offspring. A <b>population</b> is all the members of one species in one area. Its <b>gene pool</b> is all of its alleles.</div>`);
+  binProblem(sec[0],{id:'w1', part:'P1', num:num(), q:'Are these the same species or different species?',
+    bins:[{k:'s',label:'Same species'},{k:'d',label:'Different species'}],
+    items:[{t:'Two house cats with different fur colors whose kittens grow up and have kittens',k:'s'},{t:'A wolf from Canada and a wolf from Alaska whose pups are fertile',k:'s'},{t:'Two oak trees whose acorns grow into trees that make acorns',k:'s'},{t:'A zebra and a horse: their baby almost always can\'t have babies',k:'d'},{t:'Two plants that never make seeds when their pollen is crossed',k:'d'},{t:'Two frogs that never mate, even in the same pond',k:'d'}],
+    hint:'Ask: can they mate, and can their babies have babies?', done:'Same species = they mate and the offspring are fertile.'});
+  say(sec[0],fig('pool','A beetle population. G = green allele, g = brown allele.'));
+  typedProblem(sec[0],{id:'w2', part:'P1', num:num(), q:'Use the beetle population above.',
+    blanks:[{before:'Each beetle has 2 color alleles. How many color alleles are in the gene pool?',after:'',accept:['20'],show:'20'},{before:'How many of them are G?',after:'',accept:['8'],show:'8'},{before:'What percent of the gene pool is G?',after:'%',accept:['40','40%'],show:'40'}],
+    hint:'10 beetles × 2 alleles. Count the G letters: GG has 2, Gg has 1. Percent = G ÷ total × 100.'});
+  choiceProblem(sec[0],{id:'w3', part:'P1', num:num(), q:'Two-part question.',
+    parts:[{q:'<b>Part A:</b> Why is a mule not proof that horses and donkeys are one species?',opts:['A mule is almost never fertile','A mule looks like a horse','A mule is stronger than a donkey','Mules live on farms'],ans:0},
+           {q:'<b>Part B:</b> If the percent of G alleles in a gene pool changes over generations, the population is:',opts:['Evolving','Becoming a new species right away','Staying the same','Losing its gene pool'],ans:0}],
+    hint:'Members of a species have fertile offspring. Evolution = allele frequencies change over generations.', why:'Mules are almost never fertile; changing allele frequencies = evolution.'});
+  /* ---------------- 2. How a new species forms ---------------- */
+  dragProblem(sec[1],{id:'w4', part:'P2', num:num(), q:'Put the steps of speciation in order. Drag a label into each box.', equation:true, layout:['1',0,'→ 2',1,'→ 3',2,'→ 4',3],
+    zones:[{id:'a',ans:'a barrier splits the population'},{id:'b',ans:'the groups stop mating'},{id:'c',ans:'gene pools change separately'},{id:'d',ans:'they can no longer interbreed'}],
+    chips:['a barrier splits the population','the groups stop mating','gene pools change separately','they can no longer interbreed','each animal decides to change'],
+    hint:'Isolation comes first. One label is not used.', done:'Split → stop mating → gene pools change separately → can no longer interbreed.'});
+  choiceProblem(sec[1],{id:'w5', part:'P2', num:num(), q:'Select <b>all</b> the things that can change each gene pool after a population is split.',
+    parts:[{opts:['Natural selection','New mutations','Genetic drift (chance)','The animals wanting to look different'],ans:[0,1,2]}],
+    hint:'Individuals can\'t choose their alleles.', why:'Selection, mutation, and drift change allele frequencies.'});
+  choiceProblem(sec[1],{id:'w6', part:'P2', num:num(), q:'Two-part question.',
+    parts:[{q:'<b>Part A:</b> Two populations have been apart for a long time. What test shows they are now two species?',opts:['When they meet, they can\'t mate or their offspring aren\'t fertile','They look a little different','They eat different foods','They live in different places'],ans:0},
+           {q:'<b>Part B:</b> What is this called?',opts:['Reproductive isolation','Gene flow','A gene pool','A mutation'],ans:0}],
+    hint:'Think back to the definition of a species.', why:'Two species can\'t produce fertile offspring together: reproductive isolation.'});
+  /* ---------------- 3. Isolation ---------------- */
+  say(sec[2],`<p><b>Geographic</b> = a physical barrier. <b>Behavioral</b> = different courtship (songs, dances, signals). <b>Temporal</b> = breeding at different times.</p>`);
+  binProblem(sec[2],{id:'w7', part:'P3', num:num(), q:'Which kind of isolation is each example?',
+    bins:[{k:'g',label:'Geographic'},{k:'b',label:'Behavioral'},{k:'t',label:'Temporal'}],
+    items:[{t:'A lava flow cuts a forest in two, splitting a snail population',k:'g'},{t:'Rising sea water turns one island into two',k:'g'},{t:'Male birds of two groups show off different feather displays',k:'b'},{t:'Two firefly groups use different flash patterns',k:'b'},{t:'One plant blooms at night; a similar plant blooms in the day',k:'t'},{t:'One trout group spawns in fall; the other in spring',k:'t'}],
+    hint:'Place, courtship, or timing?', done:'Place = geographic; courtship = behavioral; timing = temporal.'});
+  choiceProblem(sec[2],{id:'w8', part:'P3', num:num(), q:'Two-part question.',
+    parts:[{q:'<b>Part A:</b> Eastern and western meadowlarks look almost the same, and in some places they live side by side. What mostly keeps them from mating?',opts:['Their songs are different','A mountain range','They breed in different years','Nothing'],ans:0},
+           {q:'<b>Part B:</b> The Kaibab and Abert\'s squirrels are kept apart by:',opts:['The Grand Canyon (geographic isolation)','Different songs (behavioral isolation)','Different breeding times (temporal isolation)','Gene flow'],ans:0}],
+    hint:'One is about a behavior; one is about a place.', why:'Meadowlarks: behavioral. Squirrels: geographic.'});
+  /* ---------------- 4. Drift ---------------- */
+  say(sec[3],`<p><b>Genetic drift</b> is a random change in allele frequencies. It is strongest in small populations. A <b>bottleneck</b> is when a population suddenly becomes very small. The <b>founder effect</b> is when a few individuals start a new population.</p>${fig('bottle','The bottleneck effect, shown with marbles.')}`);
+  binProblem(sec[3],{id:'w9', part:'P4', num:num(), q:'Bottleneck effect or founder effect?',
+    bins:[{k:'b',label:'Bottleneck effect'},{k:'f',label:'Founder effect'}],
+    items:[{t:'Hunting leaves only a few dozen elephant seals',k:'b'},{t:'A wildfire kills most of a population of lizards',k:'b'},{t:'A flood wipes out all but 10 frogs in a pond',k:'b'},{t:'Three birds are blown to a new island and start a population',k:'f'},{t:'A few seeds float to a new beach and grow into a new population',k:'f'},{t:'A small group of people moves to a far valley and stays there for many generations',k:'f'}],
+    hint:'Bottleneck = the same population shrinks. Founder = a few leave and start somewhere new.', done:'Shrink = bottleneck; a few start a new population = founder.'});
+  say(sec[3],fig('driftdata','Results from the drift simulator.'));
+  typedProblem(sec[3],{id:'w10', part:'P4', num:num(), q:'Use the graphs above.',
+    blanks:[{before:'How many of the small populations (A to D) lost an allele completely (ended at 0% or 100%)?',after:'',accept:['3','three'],show:'3'},{before:'How many of the large populations (E to H) lost an allele?',after:'',accept:['0','zero','none'],show:'0'}],
+    hint:'Look for lines that end on the 0% or 100% line.'});
+  choiceProblem(sec[3],{id:'w11', part:'P4', num:num(), q:'Two-part question about the graphs.',
+    parts:[{q:'<b>Part A:</b> What do the graphs show?',opts:['Allele frequencies change much more in small populations','Allele frequencies change much more in large populations','All populations stay at exactly 50%','Green beetles were better at surviving'],ans:0},
+           {q:'<b>Part B:</b> Why?',opts:['Chance has a bigger effect when there are fewer individuals','Large populations have more mutations','Small populations choose their colors','Drift only happens in large populations'],ans:0}],
+    hint:'In the simulator, color did not affect survival.', why:'Drift is random and strongest in small populations.'});
+  /* ---------------- 5. Gene flow ---------------- */
+  say(sec[4],`<p><b>Gene flow</b> is the movement of alleles between populations when individuals, pollen, or seeds move and breed. It keeps populations alike.</p>${fig('flow','A bee carries pollen from one meadow to another.')}`);
+  binProblem(sec[4],{id:'w12', part:'P5', num:num(), q:'Does each change <b>increase</b> or <b>decrease</b> gene flow between two populations?',
+    bins:[{k:'u',label:'Increases gene flow'},{k:'d',label:'Decreases gene flow'}],
+    items:[{t:'A wildlife bridge is built over a busy freeway',k:'u'},{t:'Birds start flying back and forth between two islands',k:'u'},{t:'Bees carry pollen between two fields',k:'u'},{t:'A new dam blocks a river',k:'d'},{t:'A tall fence is built across a forest',k:'d'},{t:'Two groups start breeding in different seasons',k:'d'}],
+    hint:'Can individuals (or pollen) move between the groups and breed?', done:'Anything that lets individuals move and breed increases gene flow.'});
+  writtenProblem(sec[4],{id:'w13', part:'P5', num:num(), q:'Imagine a bridge across the Grand Canyon that squirrels could cross every day. Explain why the Kaibab and Abert\'s squirrels would be <b>less</b> likely to become two species. Use <b>gene flow</b>, <b>gene pool</b>, and <b>speciation</b>.', pts:3,
+    bank:['gene flow','gene pool','alleles','mate','similar','speciation','isolation','different'],
+    groups:[['squirrels could cross and mate (gene flow)',/gene flow|cross|mate|migrat|move/],['alleles mix, keeping the gene pools similar',/gene pool|mix|similar|alike|same/],['so isolation ends and speciation is less likely',/speciation|isolat|two species|new species|separate species/]],
+    model:'With a bridge, squirrels could cross the canyon and mate, so there would be gene flow. Alleles would mix between the two populations, keeping their gene pools similar. Without isolation, the gene pools would not change separately, so speciation would be less likely.',
+    hint:'Cover three ideas: squirrels could cross and mate, alleles would mix, and isolation would end.', why:'Gene flow mixes gene pools and works against speciation.'});
+}
+
+/* ============================== BUILD / SCORE ============================== */
+function scoreAll(){ const parts=PARTS.slice(0,-1).map(p=>({k:p.k,label:p.label,got:0,max:0})); PROBS.forEach(pr=>{ const pt=parts.find(x=>x.k===pr.part); pt.got+=pr.score(); pt.max+=pr.max; });
+  return {parts, total:parts.reduce((a,b)=>a+b.got,0), max:parts.reduce((a,b)=>a+b.max,0)}; }
+function build(){
+  PROBS.length=0; const ws=$('#ws'); ws.innerHTML='';
+  $('#nav').innerHTML=PARTS.map((pt,i)=>`<button class="ntile" type="button" data-i="${i}" aria-label="${pt.title}"><span class="ic">${ico(i,22)}</span><span class="nm">${pt.label}</span></button>`).join('');
+  $$('#nav .ntile').forEach(b=>b.addEventListener('click',()=>showPart(+b.dataset.i)));
+  const secs=PARTS.map((pt,i)=>{ const el=h('section',{class:'sec',id:'part'+i}); const last=i===PARTS.length-1;
+    el.innerHTML=`<div class="sechead"><div class="badge"><span class="z">${i+1}</span>${ico(i,34)}</div><div><div class="meta">${last?'Grade':`Section ${i+1} of ${PARTS.length-1} · about ${pt.min} min`}</div><h2>${pt.title}</h2></div></div>`;
+    const c=h('div',{class:'card'}); el.appendChild(c);
+    const nav=h('div',{class:'secnav'});
+    const back=h('button',{class:'btn ghost',type:'button'},i===0?'':'← Back'); if(i===0) back.style.visibility='hidden'; back.addEventListener('click',()=>showPart(i-1));
+    nav.appendChild(back);
+    if(!last){ const nx=h('button',{class:'btn primary',type:'button'},i===PARTS.length-2?'See my grade →':`Next: ${PARTS[i+1].title} →`); nx.addEventListener('click',()=>showPart(i+1)); nav.appendChild(nx); }
+    el.appendChild(nav); ws.appendChild(el); return c; });
+  buildContent(secs);
+  secs[PARTS.length-1].id='turnin';
+  showPart(Math.min(S.cur||0,PARTS.length-1),true);
+  $('#whoami').textContent=S.student?`${S.student.first} ${S.student.last}`:''; refresh();
+}
+function showPart(i,noScroll){
+  S.cur=i; $$('#ws .sec').forEach((el,j)=>el.hidden=j!==i);
+  $$('#nav .ntile').forEach((t,j)=>t.classList.toggle('cur',j===i));
+  if(!noScroll){ save(); window.scrollTo(0,0); }
+}
+function refresh(){
+  const sc=scoreAll(), done=PROBS.filter(p=>p.checked()).length;
+  $('#scorePill').textContent=`${done}/${PROBS.length} checked · ${sc.total}/${sc.max} pts`;
+  PARTS.slice(0,-1).forEach((pt,i)=>{ const t=$(`#nav .ntile[data-i="${i}"]`); if(t) t.classList.toggle('done',PROBS.filter(p=>p.part===pt.k).every(p=>p.checked())); });
+  const t7=$(`#nav .ntile[data-i="${PARTS.length-1}"]`); if(t7) t7.classList.toggle('done',!!S.submittedAt);
+  const c=$('#turnin'); if(!c) return;
+  const rows=sc.parts.map(p=>`<tr><th>${p.label}</th><td>${p.got} / ${p.max}</td></tr>`).join('');
+  c.innerHTML=`<div style="display:flex;gap:22px;align-items:center;flex-wrap:wrap"><div class="big">${sc.total}/${sc.max}</div><div><h3 style="margin:0">${esc(S.student?S.student.first+' '+S.student.last:'')}</h3><p class="muted" style="margin:0">${done} of ${PROBS.length} problems checked</p></div></div>
+    <table class="res" style="margin-top:12px">${rows}</table>
+    <p class="small muted" style="margin-top:10px">Problems you haven't checked count as 0. You can turn in again later; your teacher sees the newest one.</p>
+    <div class="btnrow"><button class="btn primary" id="subBtn" type="button">${S.submittedAt?'Turn in again':'Turn in my worksheet'}</button><button class="btn ghost" id="csvBtn" type="button">Download CSV</button></div>
+    <p class="fb info sheetStatus" aria-live="polite">${S.sentAt?`Sent to your teacher ${new Date(S.sentAt).toLocaleString()}.`:'Not turned in yet.'}</p>`;
+  $('#subBtn').addEventListener('click',turnIn);
+  $('#csvBtn').addEventListener('click',()=>downloadCSV([recordRow()],`SpeciationWorksheet_${(S.student&&S.student.last||'student').replace(/\W+/g,'')}.csv`));
+}
+const CSV_HEAD=['Student ID','Last Name','First Name','Period','Teacher','Activity','Score','Total','Percent',...PARTS.slice(0,-1).map(p=>p.label),'Date'];
+function recordRow(){ const st=S.student||{}, sc=scoreAll(); return [st.id||'',st.last||'',st.first||'',st.period||'',st.teacher||'',ACTIVITY,sc.total,sc.max,Math.round(100*sc.total/sc.max)+'%',...sc.parts.map(p=>p.got),new Date(S.submittedAt||Date.now()).toLocaleString()]; }
+function csvText(rows){ const q=v=>{ v=String(v==null?'':v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }; return [CSV_HEAD,...rows].map(r=>r.map(q).join(',')).join('\r\n')+'\r\n'; }
+function downloadCSV(rows,name){ const b=new Blob([csvText(rows)],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500); }
+const loadRecs=()=>{ try{ return (JSON.parse(localStorage.getItem(RECS))||[]).filter(r=>r.length===CSV_HEAD.length); }catch(e){ return []; } };
+function saveRecord(){ if(S.preview) return; const recs=loadRecs(), row=recordRow(); const i=recs.findIndex(r=>r[0]===row[0]&&r[1]===row[1]); if(i>=0) recs[i]=row; else recs.push(row); try{ localStorage.setItem(RECS,JSON.stringify(recs)); }catch(e){} }
+function turnIn(){
+  const left=PROBS.filter(p=>!p.checked()).length;
+  if(left&&!confirm(`${left} problem${left>1?'s':''} not checked yet (they count as 0). Turn in anyway?`)) return;
+  S.submittedAt=Date.now(); save(); saveRecord(); cloudSave(true); disarm(); refresh();
+  const msg=t=>$$('.sheetStatus').forEach(e=>e.textContent=t);
+  if(S.preview){ msg('Preview mode: nothing is sent.'); return; }
+  const st=S.student, sc=scoreAll();
+  const body={studentId:st.id||'',firstName:st.first||'',lastName:st.last||'',period:st.period||'',teacher:st.teacher||'',locks:'0',when:new Date().toString(),activity:ACTIVITY,score:String(sc.total),total:String(sc.max),
+    qlabels:sc.parts.map((p,i)=>'P'+(i+1)+' '+PARTS[i].label).join('|'),qpoints:sc.parts.map(p=>p.got).join('|'),qmax:sc.parts.map(p=>p.max).join('|')};
+  msg('Sending...');
+  fetch(sheetURL(),{method:'POST',mode:'no-cors',body:new URLSearchParams(body)}).then(()=>{ S.sentAt=new Date().toISOString(); save(); msg('Sent! Your teacher will see your score.'); }).catch(()=>msg("Couldn't send. Check the Wi-Fi and try again, or download the CSV."));
+}
+
+/* ============================== NO LOCKDOWN ON WORKSHEETS ============================== */
+let teacherOpen=false;
+function arm(){} function disarm(){} function showLock(){} function enterFS(){}
+['copy','cut','paste','contextmenu'].forEach(ev=>document.addEventListener(ev,e=>{ if(teacherOpen||S.preview) return; e.preventDefault(); }));
+
+/* ============================== SIGN IN ============================== */
+function showWS(){ $('#start').hidden=true; $('#top').hidden=false; $('#ws').hidden=false; build(); window.scrollTo(0,0); if(S.locked&&LOCKDOWN&&!S.lockOff) showLock(); else arm(); }
+function renderStart(){ const has=!!S.student; $('#resumeBox').hidden=!has; $('#startForm').hidden=has; $('#signinTitle').textContent=has?'Welcome back':'Sign in to start';
+  if(has) $('#resumeText').innerHTML=`Signed in as <b>${esc(S.student.first)} ${esc(S.student.last)}</b>, period ${esc(S.student.period)}.`; }
+$('#fPeriod').innerHTML='<option value="">Choose your period</option>'+periodList().map(p=>`<option>${esc(p)}</option>`).join('');
+$('#fTeacher').innerHTML='<option value="">Choose your teacher</option>'+teacherList().map(t=>`<option>${esc(t)}</option>`).join('');
+let starting=false;
+async function start(){
+  if(starting) return; starting=true;
+  try{
+    const v={first:$('#fFirst').value.trim(),last:$('#fLast').value.trim(),id:$('#fId').value.trim(),period:$('#fPeriod').value,teacher:$('#fTeacher').value};
+    const miss=[]; if(!v.first) miss.push('first name'); if(!v.last) miss.push('last name'); if(!v.id) miss.push('student ID'); if(!v.period) miss.push('period'); if(!v.teacher) miss.push('teacher');
+    const err=$('#formErr'); if(miss.length){ err.className='fb no'; err.textContent='Fill in your '+miss.join(', ')+'.'; err.hidden=false; return; }
+    if(LOCKDOWN) enterFS();
+    err.className='fb info'; err.textContent='Checking for your saved work...'; err.hidden=false;
+    const res=await cloudLoad(v); err.hidden=true;
+    if(res.status==='found'){ const d=res.data; d.student=Object.assign({},d.student||{},{first:v.first,period:v.period,teacher:v.teacher}); adopt(d); showWS(); note('✓ Your saved work was loaded'); return; }
+    const ns=fresh(); ns.student=v; adopt(ns); showWS(); cloudSave(true);
+  } catch(ex){ const er=$('#formErr'); er.className='fb no'; er.textContent='Something went wrong starting ('+(ex&&ex.message||ex)+'). Reload and try again.'; er.hidden=false; }
+  finally{ starting=false; }
+}
+$('#startBtn').addEventListener('click',start);
+$('#startForm').addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.tagName==='INPUT'){ e.preventDefault(); start(); } });
+$('#resumeBtn').addEventListener('click',async()=>{ const b=$('#resumeBtn'); b.disabled=true; b.textContent='Loading your work...'; if(LOCKDOWN&&!S.locked) enterFS();
+  const res=await cloudLoad(S.student); b.disabled=false; b.textContent='Continue my worksheet';
+  if(res.status==='found'&&(res.data.updatedAt||0)>(S.updatedAt||0)&&checkedCount(res.data)>=checkedCount(S)){ const d=res.data; d.student=S.student; adopt(d); note('✓ Your newest saved work was loaded'); } showWS(); });
+$('#notMeBtn').addEventListener('click',async()=>{ const b=$('#notMeBtn'); b.disabled=true;
+  try{ if(cloudOK()) await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); }catch(e){ b.disabled=false; $('#resumeErr').textContent="Can't back up the last student's work right now. Check the Wi-Fi, or ask your teacher."; $('#resumeErr').hidden=false; return; }
+  b.disabled=false; adopt(fresh()); ['#fFirst','#fLast','#fId','#fPeriod','#fTeacher'].forEach(s=>$(s).value=''); renderStart(); });
+
+/* ============================== TEACHER ============================== */
+function openTeacher(){ teacherOpen=true; $('#teachLogin').hidden=false; $('#teachPanel').hidden=true; $('#teachErr').hidden=true; $('#teachCode').value=''; $('#teachOv').classList.add('show'); setTimeout(()=>$('#teachCode').focus(),50); }
+function closeTeacher(){ $('#teachOv').classList.remove('show'); teacherOpen=false; }
+$('#teacherLink').addEventListener('click',openTeacher); $('#teachBtn').addEventListener('click',openTeacher);
+$('#teachCancel').addEventListener('click',closeTeacher);
+$('#teachCode').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#teachGo').click(); });
+$('#teachGo').addEventListener('click',()=>{ if(!codeIs($('#teachCode').value,TEACHER_CODE)){ $('#teachErr').hidden=false; return; } $('#teachLogin').hidden=true; $('#teachPanel').hidden=false; renderTeacher(); });
+function renderTeacher(){
+  const recs=loadRecs(), p=$('#teachPanel'), keyOn=document.body.classList.contains('keyon');
+  p.innerHTML=`<h2>Teacher tools</h2>
+    <div class="btnrow"><button class="btn ghost" id="tKey" type="button">${keyOn?'Hide answer key':'Answer key'}</button>
+      <button class="btn ghost" id="tPrev" type="button">${S.preview?'End preview':'Preview (saves nothing)'}</button>
+      <button class="btn ghost" id="tResetWrong" type="button">Reset all wrong answers</button>
+      <button class="btn ghost" id="tReset" type="button">Reset this Chromebook</button><button class="btn ghost" id="tClose" type="button">Close</button></div>
+    <h3 style="margin-top:16px">Scores saved on this Chromebook (${recs.length})</h3>
+    <div class="wide">${recs.length?`<table class="nb"><tr><th>Student</th><th>ID</th><th>Period</th><th>Score</th><th>Date</th></tr>${recs.map(r=>`<tr><td>${esc(r[1])}, ${esc(r[2])}</td><td>${esc(r[0])}</td><td>${esc(r[3])}</td><td>${r[6]}/${r[7]}</td><td>${esc(r[r.length-1])}</td></tr>`).join('')}</table>`:'<p class="muted">None yet.</p>'}</div>
+    <div class="btnrow"><button class="btn primary" id="tCsv" type="button" ${recs.length?'':'disabled'}>Download scores (CSV)</button></div>
+    <h3 style="margin-top:16px">Load a student's saved work</h3>
+    <div class="btnrow"><input class="code" id="tId" placeholder="Student ID" style="width:150px"><input class="code" id="tLast" placeholder="Last name" style="width:170px"><button class="btn ghost" id="tLoad" type="button">Load work</button></div>
+    <p class="fb info" id="tMsg" style="min-height:1em"></p>`;
+  const msg=t=>$('#tMsg').textContent=t;
+  $('#tKey').addEventListener('click',()=>{ document.body.classList.toggle('keyon'); renderTeacher(); msg(document.body.classList.contains('keyon')?'Answer key on: each box shows its answer, sort chips show their box, and correct choices have a dashed gold outline.':'Answer key off.'); });
+  $('#tPrev').addEventListener('click',()=>{ if(S.preview){ location.reload(); return; } const ns=fresh(); ns.preview=true; ns.student={first:'Teacher',last:'Preview',id:'0',period:'-',teacher:teacherList()[0]}; S=ns; closeTeacher(); showWS(); note('Preview: nothing is saved'); });
+  $('#tReset').addEventListener('click',()=>{ if(confirm('Erase this worksheet on this Chromebook? Work backed up to the Saved Student Work sheet is not deleted.')){ try{ localStorage.removeItem(STORE); }catch(e){} location.reload(); } });
+  $('#tResetWrong').addEventListener('click',()=>{
+    const wrong=PROBS.filter(pr=>{ const P=S.p[pr.id]||{}; return (P.tries||0)>0 && !P.right; });
+    if(!wrong.length){ msg('Nothing to reset: this student has no wrong answers.'); return; }
+    if(!confirm(`Reset ${wrong.length} problem${wrong.length>1?'s':''} that ${wrong.length>1?'are':'is'} wrong or on a second try for ${(S.student&&S.student.first)||'this student'}? Correct answers stay.`)) return;
+    wrong.forEach(pr=>{ delete S.p[pr.id]; });
+    save(); cloudSave(true); msg(`Reset ${wrong.length} problem${wrong.length>1?'s':''}. Reloading…`); setTimeout(()=>location.reload(),700); });
+  $('#tClose').addEventListener('click',closeTeacher);
+  $('#tCsv').addEventListener('click',()=>downloadCSV(recs,`SpeciationWorksheet_scores_${new Date().toISOString().slice(0,10)}.csv`));
+  $('#tLoad').addEventListener('click',async()=>{ const s={id:$('#tId').value.trim(),last:$('#tLast').value.trim()}; if(!s.id||!s.last){ msg('Type the student ID and last name.'); return; } msg('Looking up saved work...');
+    const r=await cloudLoad(s); if(r.status==='found'){ adopt(r.data); closeTeacher(); renderStart(); $('#start').hidden=false; $('#ws').hidden=true; $('#top').hidden=true; } else msg(r.status==='none'?'No saved work found for that student.':"Couldn't reach the saved-work sheet."); });
+}
+
+if(!STORAGE_OK) $('#noStore').hidden=false;
+renderStart();
+})();
+</script>
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

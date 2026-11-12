@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Food Webs and Energy Pyramids: Practice | Biology Unit 6</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1626; --panel:#142136; --panel2:#1a2a44; --line:#2a3d5f; --line2:#3a5580;
+  --text:#e8eef8; --muted:#a3b4cf; --dim:#7488a9;
+  --leaf:#5fe3a9; --sun:#ffd35c; --r:#ffd35c; --sky:#45c8f0; --ok:#4ade80; --bad:#fb7185; --pink:#f472b6;
+  --font:'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+*{box-sizing:border-box} [hidden]{display:none !important}
+html,body{margin:0}
+body{background-color:var(--bg); background-image:linear-gradient(rgba(110,150,210,.065) 1px,transparent 1px),linear-gradient(90deg,rgba(110,150,210,.065) 1px,transparent 1px); background-size:32px 32px;
+  color:var(--text); font-family:var(--font); font-size:17px; line-height:1.55; -webkit-user-select:none; user-select:none}
+input,textarea{-webkit-user-select:text; user-select:text}
+h1,h2,h3,h4{margin:0 0 .45em; line-height:1.2; font-weight:600}
+h1{font-size:clamp(28px,4.4vw,40px); font-weight:700} h2{font-size:24px} h3{font-size:19px}
+p{margin:0 0 .75em} .muted{color:var(--muted)} .small{font-size:14px}
+sub,sup{font-size:.72em}
+:focus-visible{outline:3px solid var(--r); outline-offset:2px}
+.top{position:sticky; top:0; z-index:20; background:rgba(13,22,38,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+.top-in{max-width:1100px; margin:0 auto; padding:8px 16px; display:flex; gap:12px; align-items:center}
+.brand{font-weight:600; font-size:15px; white-space:nowrap} .brand span{display:block; font-weight:400; font-size:12px; color:var(--muted)}
+.nav{display:flex; gap:6px; flex:1; overflow-x:auto; padding:3px 2px}
+.ntile{flex:0 0 auto; width:54px; height:54px; border-radius:7px; border:1.5px solid var(--line2); background:var(--panel); color:var(--text); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer; position:relative; font:inherit; padding:0}
+.ntile .ic{color:var(--leaf); line-height:0} .ntile .nm{font-size:8.5px; color:var(--muted)}
+.ntile.cur{border-color:var(--r); background:rgba(255,211,92,.14)}
+.ntile.cur .nm{color:var(--r)}
+.secnav{display:flex; justify-content:space-between; gap:10px; margin-top:4px}
+.ntile.done::after{content:'✓'; position:absolute; top:1px; right:4px; font-size:10px; font-weight:700; color:var(--ok)}
+.scorepill{font-size:13px; padding:4px 10px; border-radius:999px; background:var(--panel2); white-space:nowrap}
+.savenote{font-size:12.5px; color:var(--ok); white-space:nowrap} @media (max-width:1300px){ .savenote{display:none} } @media (max-width:900px){ .scorepill{display:none} }
+main{max-width:1000px; margin:0 auto; padding:20px 16px 80px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin:0 0 18px}
+.sec{scroll-margin-top:80px}
+.sechead{display:flex; gap:14px; align-items:center; margin:28px 0 10px}
+.badge{width:66px; height:66px; border-radius:10px; border:2px solid var(--leaf); background:var(--panel); display:flex; align-items:center; justify-content:center; position:relative; flex:0 0 auto; color:var(--leaf)}
+.badge .z{position:absolute; top:3px; left:6px; font-size:11px; color:var(--muted)}
+.meta{color:var(--muted); font-size:14px}
+.btn{font:inherit; font-weight:600; font-size:15px; border-radius:10px; padding:10px 18px; cursor:pointer; border:1.5px solid transparent}
+.btn.primary{background:var(--r); color:#231a00} .btn.ghost{background:transparent; border-color:var(--line2); color:var(--text)}
+.btn.small{padding:6px 12px; font-size:14px} .btn:disabled{opacity:.45; cursor:not-allowed}
+.btnrow{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:12px}
+.field{display:flex; flex-direction:column; gap:4px; font-size:14px; color:var(--muted)}
+.field input,.field select{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px}
+.formgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin:10px 0}
+.fb{margin-top:10px; padding:10px 14px; border-radius:10px; font-size:15px}
+.fb.ok{background:rgba(74,222,128,.12); color:#c9f7d8} .fb.no{background:rgba(251,113,133,.12); color:#ffd3db} .fb.info{background:var(--panel2)}
+.prob{border-top:1px solid var(--line); padding-top:16px; margin-top:16px}
+.prob:first-of-type{border-top:none; padding-top:0; margin-top:0}
+.pq{font-weight:500; margin-bottom:8px}
+.pnum{display:inline-block; min-width:30px; font-weight:700; color:var(--leaf)}
+.pts{font-size:13px; color:var(--muted); font-weight:400}
+.hintbox{background:rgba(255,211,92,.08); border-left:3px solid var(--r); border-radius:8px; padding:8px 12px; margin-top:8px; font-size:15px}
+/* drag and drop */
+.figwrap{position:relative; width:100%}
+.figwrap svg{width:100%; height:auto; display:block; background:#0a1322; border:1px solid var(--line); border-radius:12px}
+.figwrap svg text{font-family:var(--font)}
+.zone{position:absolute; transform:translate(-50%,-50%); min-height:32px; border:2px dashed #8fb3e6; border-radius:9px; background:rgba(13,22,38,.92); color:var(--text); font:inherit; font-size:14px; font-weight:600; display:flex; align-items:center; justify-content:center; padding:2px 6px; cursor:pointer; text-align:center; line-height:1.15}
+.zone.empty{color:var(--dim); font-weight:400; font-size:12.5px}
+.zone.filled{border-style:solid; border-color:var(--r); background:#2b2410}
+.zone.hot{box-shadow:0 0 0 3px rgba(255,211,92,.5)}
+.zone.locked{opacity:.9}
+.zone.ok{border-color:var(--ok); background:#0f2e1d} .zone.no{border-color:var(--bad); background:#3a0f1a}
+.pool{display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 4px; padding:10px; border:1px dashed var(--line2); border-radius:10px; min-height:52px}
+.pool .lbl{width:100%; font-size:12.5px; color:var(--muted)}
+.chip{font:inherit; font-size:15px; font-weight:600; padding:6px 14px; border-radius:999px; border:1.5px solid var(--line2); background:var(--panel2); color:var(--text); cursor:grab; touch-action:none}
+.chip.sel{border-color:var(--r); background:rgba(255,211,92,.16); box-shadow:0 0 0 3px rgba(255,211,92,.35)}
+.bins{display:grid; gap:10px; margin-top:6px}
+.bin{border:2px dashed var(--line2); border-radius:12px; padding:10px; min-height:96px; cursor:pointer; background:rgba(13,22,38,.5)}
+.bin h4{margin:0 0 8px; font-size:15px; color:var(--leaf)} .bin.hot{border-color:var(--r)}
+.bin .chip{cursor:pointer; margin:3px} .bin .chip.ok{border-color:var(--ok); background:#0f2e1d} .bin .chip.no{border-color:var(--bad); background:#3a0f1a}
+.phenbox{background:rgba(244,114,182,.1); border-left:4px solid #f472b6; border-radius:8px; padding:10px 14px; margin-bottom:14px}
+.fixnote{font-size:12px; color:#ffd3db; font-weight:400}
+/* equation */
+.eq{display:flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:20px; font-weight:600; margin:10px 0}
+.eq .zone{position:static; transform:none; min-width:120px; min-height:40px}
+/* choices */
+.opts{display:grid; gap:8px; margin:6px 0}
+.opt{display:flex; gap:12px; align-items:center; text-align:left; background:var(--panel2); border:1.5px solid var(--line); color:var(--text); border-radius:10px; padding:9px 14px; font:inherit; font-size:16px; cursor:pointer}
+.opt .L{flex:0 0 26px; height:26px; border-radius:50%; display:grid; place-items:center; background:var(--bg); font-weight:600; font-size:13px}
+.opt.multi .L{border-radius:6px}
+.opt.sel{border-color:var(--r); background:rgba(255,211,92,.08)} .opt.sel .L{background:var(--r); color:#231a00}
+.opt.ok{border-color:var(--ok); background:rgba(74,222,128,.1)} .opt.no{border-color:var(--bad); background:rgba(251,113,133,.1)}
+.opt:disabled{cursor:default}
+input.blank{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:7px 10px; font:inherit; font-size:16px; width:170px}
+input.blank.ok{border-color:var(--ok)} input.blank.no{border-color:var(--bad)}
+.brow{margin:8px 0}
+/* answer key (teacher) */
+body.keyon .zone[data-key]::after{content:'key: ' attr(data-key); position:absolute; top:100%; left:50%; transform:translateX(-50%); font-size:11px; color:var(--r); white-space:nowrap; margin-top:2px}
+body.keyon .chip[data-key]::after{content:' → ' attr(data-key); font-size:11px; color:var(--r)}
+body.keyon .opt[data-key]{outline:2px dashed var(--r); outline-offset:2px}
+body.keyon input.blank[data-key]+.keytxt{display:inline}
+.wbank2{margin-top:8px; padding:8px 10px; border:1px dashed rgba(163,180,207,.5); border-radius:10px; font-size:14px; line-height:2}
+.wchip{font:inherit; font-size:14px; margin:2px 4px 2px 0; padding:2px 10px; border-radius:999px; border:1px solid rgba(163,180,207,.6); background:rgba(255,255,255,.06); color:inherit; cursor:pointer}
+.wchip:hover{border-color:#ffd35c}
+.wtext{width:100%; min-height:110px; font:inherit; padding:10px; border-radius:10px; border:1.5px solid var(--line,#2a3d5f); background:rgba(255,255,255,.04); color:inherit; resize:vertical}
+.wkey{display:none; margin-top:6px; font-size:14px; color:var(--r,#ffd35c)}
+body.keyon .wkey{display:block}
+.keytxt{display:none; font-size:12px; color:var(--r); margin-left:6px}
+.big{font-size:52px; font-weight:700; color:var(--r); line-height:1}
+table.res{border-collapse:collapse; width:100%} table.res th,table.res td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line)} table.res th{color:var(--muted); font-weight:400}
+.card.nostore{border:2px solid var(--bad); background:rgba(251,113,133,.08)}
+.overlay{position:fixed; inset:0; background:rgba(4,9,18,.94); z-index:100; display:none; align-items:center; justify-content:center; padding:20px}
+.overlay.show{display:flex}
+.modal{background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:24px; max-width:900px; width:100%; max-height:92vh; overflow:auto}
+input.code{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px; width:200px}
+table.nb{border-collapse:collapse; width:100%; font-size:14px} table.nb th,table.nb td{border:1px solid var(--line2); padding:6px 8px} table.nb th{background:var(--panel2)}
+.wide{overflow-x:auto}
+@media (max-width:700px){ .zone{font-size:11px; min-height:26px} .chip{font-size:13px; padding:5px 10px} }
+@media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important} }
+.prob + p,.prob + .phenbox,.prob + .figwrap{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.figwrap svg{background:#f8fafc}
+
+</style>
+</head>
+<body>
+<header class="top" id="top" hidden>
+  <div class="top-in">
+    <div class="brand">Food webs worksheet<span id="whoami"></span></div>
+    <nav class="nav" id="nav" aria-label="Worksheet parts"></nav>
+    <span class="scorepill" id="scorePill"></span>
+    <span class="savenote" id="saveNote" aria-live="polite"></span>
+    <button class="btn ghost small" id="teachBtn" type="button">Teacher</button>
+  </div>
+</header>
+
+<main>
+  <section id="start">
+    <div class="muted" style="margin-top:8px">Biology · Unit 6: Ecology · Worksheet · about 25 minutes</div>
+    <h1>Food Webs and Energy Pyramids: Practice</h1>
+    <p class="muted" style="font-size:18px;max-width:42em">Sort producers, consumers, and decomposers, build food chains, read the chaparral food web, use the 10% rule, and explain why there is so little energy at the top.</p>
+    <div class="card"><h3>How it works</h3>
+      <p style="margin:0">Each problem gets <b>two tries</b>. Right on either try earns full credit. If your first try is wrong, you'll be told it isn't right yet (but not the answer), so look again and try once more. Wrong twice and the problem is marked wrong and locks. Stuck? Tap <b>Hint</b> before you check.</p></div>
+    <div class="card nostore" id="noStore" hidden><h3>This browser can't save your work</h3><p style="margin:0">You may be in guest or incognito mode. Sign in to your school account and open the worksheet again.</p></div>
+    <div class="card">
+      <h3 id="signinTitle">Sign in to start</h3>
+      <div id="resumeBox" hidden><p id="resumeText"></p>
+        <div class="btnrow"><button class="btn primary" id="resumeBtn" type="button">Continue my worksheet</button><button class="btn ghost small" id="notMeBtn" type="button">Not you? Sign in as a different student</button></div>
+        <div class="fb no" id="resumeErr" hidden></div></div>
+      <div id="startForm">
+        <div class="formgrid">
+          <label class="field">First name<input id="fFirst" autocomplete="off"></label><label class="field">Last name<input id="fLast" autocomplete="off"></label>
+          <label class="field">Student ID<input id="fId" inputmode="numeric" autocomplete="off"></label>
+          <label class="field">Period<select id="fPeriod"></select></label><label class="field">Teacher<select id="fTeacher"></select></label>
+        </div>
+        <p class="small muted">Your work saves as you go. On any Chromebook, sign in with the same student ID and last name to pick up where you left off.</p>
+        <div class="fb no" id="formErr" hidden></div>
+        <div class="btnrow"><button class="btn primary" type="button" id="startBtn">Start the worksheet</button></div>
+      </div>
+    </div>
+    <p style="text-align:center"><button class="btn ghost" id="teacherLink" type="button">Teacher: enter unlock code</button></p>
+  </section>
+  <div id="ws" hidden></div>
+</main>
+
+<div class="overlay" id="teachOv" role="dialog" aria-modal="true" aria-labelledby="tTitle">
+  <div class="modal"><div id="teachLogin"><h2 id="tTitle">Teacher</h2>
+    <div class="btnrow"><input class="code" id="teachCode" type="password" placeholder="Teacher code" autocomplete="off"><button class="btn primary" id="teachGo" type="button">Open</button><button class="btn ghost" id="teachCancel" type="button">Close</button></div>
+    <div class="fb no" id="teachErr" hidden>That code didn't work.</div></div><div id="teachPanel" hidden></div></div>
+</div>
+<div class="overlay" id="tabOv" role="dialog" aria-modal="true"><div class="modal" style="max-width:520px"><h2>This worksheet is open in another tab</h2><p>To keep your newest work safe, this copy stopped saving. Close the extra tab, then reload this one.</p><div class="btnrow"><button class="btn primary" type="button" onclick="location.reload()">Reload with my newest work</button></div></div></div>
+
+<script src="sheets-config.js"></script>
+<script>
+(function(){
+'use strict';
+/* ============================== SETTINGS ============================== */
+const LESSON_TITLE='Food Webs and Energy Pyramids';           // unlock code = last word of this title
+const UNLOCK_CODE=LESSON_TITLE.trim().split(/\s+/).pop();
+const TEACHER_CODE='Teacher007';   // universal teacher-tools code
+const codeIs=(v,c)=>String(v||'').trim().toLowerCase()===String(c).toLowerCase();
+const WS_ID='bio-u6-food-webs-energy-pyramids-worksheet', ACTIVITY='Food Webs Worksheet';
+const BACKUP_URL='https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const SAVE_URL_BUILTIN='https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';
+const BACKUP_TEACHERS=['Austin','Mueller','McCue','Arce','Trimm','Garcia','Trimm/Callanan','Callanan'], BACKUP_PERIODS=['1','2','3','4','5','6','7','8'];
+const STORE='foodWebsWorksheet_v1', RECS='foodWebsWorksheet_records_v1';
+/* ===================================================================== */
+const teacherList=()=>{ try{ if(typeof TEACHERS!=='undefined'&&Array.isArray(TEACHERS)&&TEACHERS.length) return TEACHERS.map(String); }catch(e){} return BACKUP_TEACHERS; };
+const periodList=()=>{ try{ if(typeof PERIODS!=='undefined'&&Array.isArray(PERIODS)&&PERIODS.length) return PERIODS.map(String); }catch(e){} return BACKUP_PERIODS; };
+const sheetURL=()=>{ try{ if(typeof SHEETS_WEBHOOK_URL!=='undefined'&&SHEETS_WEBHOOK_URL&&String(SHEETS_WEBHOOK_URL).indexOf('PASTE')<0) return String(SHEETS_WEBHOOK_URL); }catch(e){} return BACKUP_URL; };
+const saveURL=()=>{ try{ if(typeof SAVE_WEBHOOK_URL!=='undefined'&&SAVE_WEBHOOK_URL&&String(SAVE_WEBHOOK_URL).indexOf('PASTE')<0) return String(SAVE_WEBHOOK_URL); }catch(e){} return SAVE_URL_BUILTIN; };
+const LOCKDOWN=false;   // worksheets never lock down
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const strip=s=>String(s).replace(/<[^>]+>/g,'');
+function h(tag,attrs,html){ const e=document.createElement(tag); if(attrs) for(const k in attrs){ if(attrs[k]===false||attrs[k]==null) continue; if(k==='class') e.className=attrs[k]; else if(k==='hidden') e.hidden=!!attrs[k]; else e.setAttribute(k,attrs[k]); } if(html!=null) e.innerHTML=html; return e; }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* ---------- state + saving ---------- */
+function fresh(){ return {ws:WS_ID, student:null, p:{}, ord:{}, locks:0, locked:false, lockOff:false, submittedAt:null, sentAt:null}; }
+let S; try{ S=JSON.parse(localStorage.getItem(STORE)); }catch(e){} if(!S||S.ws!==WS_ID) S=fresh();
+let STORAGE_OK=true, saveBlocked=false;
+try{ localStorage.setItem('__ps_t','1'); STORAGE_OK=localStorage.getItem('__ps_t')==='1'; localStorage.removeItem('__ps_t'); }catch(e){ STORAGE_OK=false; }
+function save(){
+  if(saveBlocked) return;
+  if(S.preview){ note('Preview: nothing is saved'); return; }
+  try{ const raw=localStorage.getItem(STORE); if(raw){ const st=JSON.parse(raw); if(st&&st.ws===WS_ID&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); return; } }
+    S.rev=(S.rev||0)+1; S.updatedAt=Date.now(); localStorage.setItem(STORE,JSON.stringify(S)); note(); cloudSave(false); }catch(e){}
+}
+window.addEventListener('storage',e=>{ if(e.key!==STORE||!e.newValue) return; try{ const st=JSON.parse(e.newValue); if(st&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); } }catch(_){} });
+const saveKey=st=>(String(st.id||'').replace(/\s+/g,'')+'-'+String(st.last||'').toLowerCase().replace(/[^a-z]/g,'')).toLowerCase();
+const checkedCount=st=>Object.values((st||S).p).filter(x=>x&&x.checked).length;
+let cloudTimer=null, cloudDirty=false, cloudBusy=false, cloudAt=null, cloudErr=false;
+const cloudOK=()=>!!saveURL()&&S.student&&!saveBlocked&&!S.preview;
+function cloudBody(){ const st=S.student||{}, sc=scoreAll();
+  return new URLSearchParams({code:saveKey(st), lesson:WS_ID, ver:String(S.updatedAt||Date.now()), prog:String((S.submittedAt?100000:0)+checkedCount(S)), studentId:st.id||'', lastName:st.last||'', firstName:st.first||'', period:st.period||'', teacher:st.teacher||'',
+    summary:S.submittedAt?`Turned in · ${sc.total}/${sc.max}`:`${checkedCount(S)} of ${PROBS.length} problems checked`, data:JSON.stringify(S)}); }
+function cloudSave(soon){ if(!cloudOK()) return; cloudDirty=true; if(soon){ clearTimeout(cloudTimer); cloudTimer=setTimeout(cloudFlush,1200); } else if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); }
+async function cloudFlush(){ cloudTimer=null; if(!cloudOK()||!cloudDirty) return; if(cloudBusy){ cloudTimer=setTimeout(cloudFlush,4000); return; } cloudBusy=true; cloudDirty=false;
+  try{ await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); cloudAt=new Date(); cloudErr=false; }catch(e){ cloudDirty=true; cloudErr=true; if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); } finally{ cloudBusy=false; note(); } }
+function cloudBeacon(){ if(!cloudOK()||!cloudDirty) return; try{ if(navigator.sendBeacon&&navigator.sendBeacon(saveURL(),cloudBody())) cloudDirty=false; }catch(e){} }
+async function cloudLoad(st){ const ctrl=new AbortController(), t=setTimeout(()=>ctrl.abort(),5000);
+  try{ const r=await fetch(saveURL()+'?'+new URLSearchParams({code:saveKey(st),lesson:WS_ID}),{signal:ctrl.signal}); const j=await r.json(); if(j&&j.found&&j.data){ const d=JSON.parse(j.data); if(d&&d.ws===WS_ID) return {status:'found',data:d}; } return {status:'none'}; }
+  catch(e){ return {status:'error'}; } finally{ clearTimeout(t); } }
+function adopt(ns){ let sr=0; try{ const raw=localStorage.getItem(STORE); if(raw) sr=JSON.parse(raw).rev||0; }catch(e){} ns.rev=Math.max(ns.rev||0,sr); S=ns; saveBlocked=false; save(); }
+function note(msg){ const n=$('#saveNote'); if(!n) return; const tm=d=>d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}); n.textContent=msg||(cloudErr?'✓ Saved on this Chromebook':'✓ Saved '+tm(new Date())+(cloudAt?' · backed up '+tm(cloudAt):'')); }
+document.addEventListener('visibilitychange',()=>{ if(document.hidden){ save(); cloudBeacon(); } });
+window.addEventListener('pagehide',()=>{ save(); cloudBeacon(); });
+
+/* ============================== DIAGRAMS ============================== */
+const FIG={};
+
+/* ============================== PROBLEMS ============================== */
+const PARTS=[
+ {k:'P1', label:'Roles', title:'Producers, consumers, decomposers', min:4, icon:'<path d="M12 21V11"/><path d="M12 13c-4 0-6-3-6-7 4 0 6 3 6 7z"/><path d="M12 11c0-4 2-7 6-7 0 4-2 7-6 7z"/><path d="M4 21h16"/>'},
+ {k:'P2', label:'Chains', title:'Food chains and trophic levels', min:5, icon:'<circle cx="4" cy="12" r="2.5"/><circle cx="12" cy="12" r="2.5"/><circle cx="20" cy="12" r="2.5"/><path d="M6.5 12h3M14.5 12h3"/>'},
+ {k:'P3', label:'Webs', title:'Reading a food web', min:5, icon:'<circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><circle cx="7" cy="9" r="2"/><circle cx="17" cy="9" r="2"/><circle cx="12" cy="3.5" r="2"/><path d="M5.5 17l1-6M18.5 17l-1-6M6 17.5L16 10.5M8.5 7.5l2.2-2.5M15.5 7.5l-2.2-2.5"/>'},
+ {k:'P4', label:'10% rule', title:'The 10% rule', min:6, icon:'<path d="M3 21h18L12 3z"/><path d="M6.5 15h11M9.5 9h5"/>'},
+ {k:'P5', label:'Pyramids', title:'Pyramids, matter, and energy', min:6, icon:'<path d="M4 12a8 8 0 0 1 13.5-5.8"/><path d="M20 12a8 8 0 0 1-13.5 5.8"/><path d="M17.5 2.5v4h-4M6.5 21.5v-4h4"/>'},
+ {k:'P6', label:'Grade', title:'Your grade', min:1, icon:'<rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4V2.5h6V4"/><path d="M8.5 13l2.5 2.5 4.5-5"/>'}
+];
+const KFIG={"w_web": "<svg viewBox=\"0 0 620 430\" role=\"img\" aria-label=\"The chaparral food web from the lesson.\"><defs><clipPath id=\"q9nc_22\" clipPathUnits=\"userSpaceOnUse\"><circle cx=\"190\" cy=\"372\" r=\"32\"/><circle cx=\"450\" cy=\"372\" r=\"32\"/><circle cx=\"70\" cy=\"264\" r=\"32\"/><circle cx=\"300\" cy=\"264\" r=\"32\"/><circle cx=\"540\" cy=\"264\" r=\"32\"/><circle cx=\"150\" cy=\"160\" r=\"32\"/><circle cx=\"410\" cy=\"160\" r=\"32\"/><circle cx=\"80\" cy=\"58\" r=\"32\"/><circle cx=\"260\" cy=\"58\" r=\"32\"/><circle cx=\"540\" cy=\"58\" r=\"32\"/></clipPath></defs><rect width=\"620\" height=\"430\" rx=\"14\" fill=\"#ffffff\"/><rect x=\"6\" y=\"4\" width=\"608\" height=\"102\" rx=\"10\" fill=\"#fff7ed\" opacity=\"1\"/><rect x=\"6\" y=\"114\" width=\"608\" height=\"96\" rx=\"10\" fill=\"#f8fafc\" opacity=\"1\"/><rect x=\"6\" y=\"218\" width=\"608\" height=\"96\" rx=\"10\" fill=\"#f0fdf4\" opacity=\"1\"/><rect x=\"6\" y=\"322\" width=\"608\" height=\"104\" rx=\"10\" fill=\"#ecfccb\" opacity=\"1\"/><g class=\"wnode\" data-k=\"grass\" tabindex=\"-1\" role=\"img\" aria-label=\"Grasses\" style=\"\"><circle cx=\"190\" cy=\"372\" r=\"34\" fill=\"#f3f1e7\" stroke=\"#94a3b8\" stroke-width=\"2\"/><g clip-path=\"url(#q9nc_22)\"><g transform=\"translate(190.0 374.0) scale(0.86 0.86)\"><path d=\"M-24,24 Q-23.0,-6.0 -30,-28\" stroke=\"#c4ad62\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M-16,24 Q-16.0,-14.0 -24,-44\" stroke=\"#a9a057\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M-8,24 Q-7.0,-19.0 -14,-54\" stroke=\"#c9b46a\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M-2,24 Q-5.0,-17.0 0,-50\" stroke=\"#9aa354\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M4,24 Q2.0,-20.0 8,-56\" stroke=\"#cbb66e\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M10,24 Q11.0,-15.0 20,-46\" stroke=\"#b2a35c\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M18,24 Q20.0,-8.0 30,-32\" stroke=\"#c4ad62\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M-12,24 Q-8.0,-10.0 4,-36\" stroke=\"#8f9a4e\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M8,24 Q6.0,-12.0 -4,-40\" stroke=\"#d2bf78\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M-24,-43 Q-29,-41 -31,-34\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"-31\" cy=\"-33\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M-24,-36 Q-19,-34 -17,-27\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"-17\" cy=\"-26\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M-24,-29 Q-29,-27 -31,-20\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"-31\" cy=\"-19\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M-24,-22 Q-19,-20 -17,-13\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"-17\" cy=\"-12\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M0,-49 Q-5,-47 -7,-40\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"-7\" cy=\"-39\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M0,-42 Q5,-40 7,-33\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"7\" cy=\"-32\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M0,-35 Q-5,-33 -7,-26\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"-7\" cy=\"-25\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M0,-28 Q5,-26 7,-19\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"7\" cy=\"-18\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M8,-55 Q3,-53 1,-46\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"1\" cy=\"-45\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M8,-48 Q13,-46 15,-39\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"15\" cy=\"-38\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M8,-41 Q3,-39 1,-32\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"1\" cy=\"-31\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M8,-34 Q13,-32 15,-25\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"15\" cy=\"-24\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M20,-45 Q15,-43 13,-36\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"13\" cy=\"-35\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M20,-38 Q25,-36 27,-29\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"27\" cy=\"-28\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M20,-31 Q15,-29 13,-22\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"13\" cy=\"-21\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M20,-24 Q25,-22 27,-15\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"27\" cy=\"-14\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><ellipse cx=\"0\" cy=\"24\" rx=\"30\" ry=\"3\" fill=\"#7a6336\" opacity=\".35\"/></g></g><rect x=\"158.8\" y=\"409\" width=\"62.3\" height=\"18\" rx=\"9\" fill=\"#ffffff\" opacity=\".92\"/><text x=\"190\" y=\"422\" text-anchor=\"middle\" font-size=\"12.5\" fill=\"#16213a\" font-weight=\"700\">Grasses</text></g><g class=\"wnode\" data-k=\"toyon\" tabindex=\"-1\" role=\"img\" aria-label=\"Toyon (shrub)\" style=\"\"><circle cx=\"450\" cy=\"372\" r=\"34\" fill=\"#f3f1e7\" stroke=\"#94a3b8\" stroke-width=\"2\"/><g clip-path=\"url(#q9nc_22)\"><g transform=\"translate(450.0 375.0) scale(0.95 0.95)\"><path d=\"M-4,26 L-6,8 M-6,8 L-20,-8 M-6,8 L6,-14 M2,20 L18,0\" stroke=\"#5b4030\" stroke-width=\"3.2\" fill=\"none\" stroke-linecap=\"round\"/><ellipse cx=\"-24\" cy=\"-6\" rx=\"16\" ry=\"12.8\" fill=\"#2f5a2a\"/><ellipse cx=\"-20.9\" cy=\"-0.8\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(174.5 -20.9 -0.8)\" fill=\"#4f8a3c\"/><ellipse cx=\"-25.1\" cy=\"-3.5\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(158.2 -25.1 -3.5)\" fill=\"#3f7434\"/><ellipse cx=\"-35.3\" cy=\"-2.3\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(26.5 -35.3 -2.3)\" fill=\"#5d9a45\"/><ellipse cx=\"-17.5\" cy=\"-7.6\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(34.3 -17.5 -7.6)\" fill=\"#4f8a3c\"/><ellipse cx=\"-33.8\" cy=\"-11.9\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(76.8 -33.8 -11.9)\" fill=\"#3f7434\"/><ellipse cx=\"-8\" cy=\"-20\" rx=\"18\" ry=\"14.4\" fill=\"#3b6b31\"/><ellipse cx=\"-10.4\" cy=\"-22.2\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(48.8 -10.4 -22.2)\" fill=\"#4f8a3c\"/><ellipse cx=\"-17.6\" cy=\"-20.0\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(25.4 -17.6 -20.0)\" fill=\"#3f7434\"/><ellipse cx=\"-2.4\" cy=\"-11.8\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(81.6 -2.4 -11.8)\" fill=\"#5d9a45\"/><ellipse cx=\"-7.5\" cy=\"-28.9\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(112.4 -7.5 -28.9)\" fill=\"#4f8a3c\"/><ellipse cx=\"5.3\" cy=\"-23.5\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(12.8 5.3 -23.5)\" fill=\"#3f7434\"/><ellipse cx=\"12\" cy=\"-18\" rx=\"17\" ry=\"13.600000000000001\" fill=\"#2a4f26\"/><ellipse cx=\"13.3\" cy=\"-24.6\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(37.7 13.3 -24.6)\" fill=\"#4f8a3c\"/><ellipse cx=\"14.7\" cy=\"-9.7\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(82.2 14.7 -9.7)\" fill=\"#3f7434\"/><ellipse cx=\"13.9\" cy=\"-25.1\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(41.4 13.9 -25.1)\" fill=\"#5d9a45\"/><ellipse cx=\"21.5\" cy=\"-25.4\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(170.0 21.5 -25.4)\" fill=\"#4f8a3c\"/><ellipse cx=\"22.7\" cy=\"-21.5\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(3.3 22.7 -21.5)\" fill=\"#3f7434\"/><ellipse cx=\"24\" cy=\"-2\" rx=\"15\" ry=\"12\" fill=\"#2f5a2a\"/><ellipse cx=\"15.7\" cy=\"-7.7\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(156.2 15.7 -7.7)\" fill=\"#4f8a3c\"/><ellipse cx=\"33.6\" cy=\"-9.5\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(163.6 33.6 -9.5)\" fill=\"#3f7434\"/><ellipse cx=\"28.9\" cy=\"-3.5\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(100.7 28.9 -3.5)\" fill=\"#5d9a45\"/><ellipse cx=\"33.5\" cy=\"0.6\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(42.3 33.5 0.6)\" fill=\"#4f8a3c\"/><ellipse cx=\"34.3\" cy=\"-6.7\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(63.5 34.3 -6.7)\" fill=\"#3f7434\"/><ellipse cx=\"0\" cy=\"-2\" rx=\"17\" ry=\"13.600000000000001\" fill=\"#3b6b31\"/><ellipse cx=\"-6.6\" cy=\"-2.2\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(59.3 -6.6 -2.2)\" fill=\"#4f8a3c\"/><ellipse cx=\"-7.9\" cy=\"5.4\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(104.6 -7.9 5.4)\" fill=\"#3f7434\"/><ellipse cx=\"-7.2\" cy=\"4.8\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(94.6 -7.2 4.8)\" fill=\"#5d9a45\"/><ellipse cx=\"6.2\" cy=\"3.5\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(104.1 6.2 3.5)\" fill=\"#4f8a3c\"/><ellipse cx=\"-8.0\" cy=\"-9.2\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(28.2 -8.0 -9.2)\" fill=\"#3f7434\"/><ellipse cx=\"-16\" cy=\"8\" rx=\"12\" ry=\"9.600000000000001\" fill=\"#2a4f26\"/><ellipse cx=\"-7.8\" cy=\"4.5\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(121.9 -7.8 4.5)\" fill=\"#4f8a3c\"/><ellipse cx=\"-16.4\" cy=\"9.1\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(100.2 -16.4 9.1)\" fill=\"#3f7434\"/><ellipse cx=\"-22.1\" cy=\"8.8\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(38.1 -22.1 8.8)\" fill=\"#5d9a45\"/><ellipse cx=\"-17.3\" cy=\"9.2\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(10.5 -17.3 9.2)\" fill=\"#4f8a3c\"/><ellipse cx=\"-12.6\" cy=\"2.7\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(92.5 -12.6 2.7)\" fill=\"#3f7434\"/><ellipse cx=\"16\" cy=\"10\" rx=\"12\" ry=\"9.600000000000001\" fill=\"#2f5a2a\"/><ellipse cx=\"13.6\" cy=\"9.8\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(179.1 13.6 9.8)\" fill=\"#4f8a3c\"/><ellipse cx=\"22.8\" cy=\"5.7\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(165.3 22.8 5.7)\" fill=\"#3f7434\"/><ellipse cx=\"18.4\" cy=\"11.2\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(126.1 18.4 11.2)\" fill=\"#5d9a45\"/><ellipse cx=\"7.9\" cy=\"5.2\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(136.5 7.9 5.2)\" fill=\"#4f8a3c\"/><ellipse cx=\"16.9\" cy=\"6.6\" rx=\"5.2\" ry=\"2.1\" transform=\"rotate(91.4 16.9 6.6)\" fill=\"#3f7434\"/><circle cx=\"-21.0\" cy=\"-12.0\" r=\"2.3\" fill=\"#c62828\" stroke=\"#7f1414\" stroke-width=\".5\"/><circle cx=\"-17.8\" cy=\"-12.0\" r=\"2.3\" fill=\"#c62828\" stroke=\"#7f1414\" stroke-width=\".5\"/><circle cx=\"-14.6\" cy=\"-12.0\" r=\"2.3\" fill=\"#c62828\" stroke=\"#7f1414\" stroke-width=\".5\"/><circle cx=\"-21.0\" cy=\"-8.8\" r=\"2.3\" fill=\"#c62828\" stroke=\"#7f1414\" stroke-width=\".5\"/><circle cx=\"-17.8\" cy=\"-8.8\" r=\"2.3\" fill=\"#c62828\" stroke=\"#7f1414\" stroke-width=\".5\"/><circle cx=\"3.0\" cy=\"-26.0\" r=\"2.3\" fill=\"#c62828\" stroke=\"#7f1414\" stroke-width=\".5\"/><circle cx=\"6.2\" cy=\"-26.0\" r=\"2.3\" fill=\"#c62828\" stroke=\"#7f1414\" stroke-width=\".5\"/><circle cx=\"9.4\" cy=\"-26.0\" r=\"2.3\" fill=\"#c62828\" stroke=\"#7f1414\" stroke-width=\".5\"/><circle cx=\"3.0\" cy=\"-22.8\" r=\"2.3\" fill=\"#c62828\" stroke=\"#7f1414\" stroke-width=\".5\"/><circle cx=\"6.2\" cy=\"-22.8\" r=\"2.3\" fill=\"#c62828\" stroke=\"#7f1414\" stroke-width=\".5\"/><circle cx=\"17.0\" cy=\"-8.0\" r=\"2.3\" fill=\"#c62828\" stroke=\"#7f1414\" stroke-width=\".5\"/><circle cx=\"20.2\" cy=\"-8.0\" r=\"2.3\" fill=\"#c62828\" stroke=\"#7f1414\" stroke-width=\".5\"/><circle cx=\"23.4\" cy=\"-8.0\" r=\"2.3\" fill=\"#c62828\" stroke=\"#7f1414\" stroke-width=\".5\"/><circle cx=\"17.0\" cy=\"-4.8\" r=\"2.3\" fill=\"#c62828\" stroke=\"#7f1414\" stroke-width=\".5\"/><circle cx=\"20.2\" cy=\"-4.8\" r=\"2.3\" fill=\"#c62828\" stroke=\"#7f1414\" stroke-width=\".5\"/><circle cx=\"-7.0\" cy=\"4.0\" r=\"2.3\" fill=\"#c62828\" stroke=\"#7f1414\" stroke-width=\".5\"/><circle cx=\"-3.8\" cy=\"4.0\" r=\"2.3\" fill=\"#c62828\" stroke=\"#7f1414\" stroke-width=\".5\"/><circle cx=\"-0.6\" cy=\"4.0\" r=\"2.3\" fill=\"#c62828\" stroke=\"#7f1414\" stroke-width=\".5\"/><circle cx=\"-7.0\" cy=\"7.2\" r=\"2.3\" fill=\"#c62828\" stroke=\"#7f1414\" stroke-width=\".5\"/><circle cx=\"-3.8\" cy=\"7.2\" r=\"2.3\" fill=\"#c62828\" stroke=\"#7f1414\" stroke-width=\".5\"/><circle cx=\"19.0\" cy=\"10.0\" r=\"2.3\" fill=\"#c62828\" stroke=\"#7f1414\" stroke-width=\".5\"/><circle cx=\"22.2\" cy=\"10.0\" r=\"2.3\" fill=\"#c62828\" stroke=\"#7f1414\" stroke-width=\".5\"/><circle cx=\"25.4\" cy=\"10.0\" r=\"2.3\" fill=\"#c62828\" stroke=\"#7f1414\" stroke-width=\".5\"/><circle cx=\"19.0\" cy=\"13.2\" r=\"2.3\" fill=\"#c62828\" stroke=\"#7f1414\" stroke-width=\".5\"/><circle cx=\"22.2\" cy=\"13.2\" r=\"2.3\" fill=\"#c62828\" stroke=\"#7f1414\" stroke-width=\".5\"/></g></g><rect x=\"398.1\" y=\"409\" width=\"103.7\" height=\"18\" rx=\"9\" fill=\"#ffffff\" opacity=\".92\"/><text x=\"450\" y=\"422\" text-anchor=\"middle\" font-size=\"12.5\" fill=\"#16213a\" font-weight=\"700\">Toyon (shrub)</text></g><g class=\"wnode\" data-k=\"hopper\" tabindex=\"-1\" role=\"img\" aria-label=\"Grasshopper\" style=\"\"><circle cx=\"70\" cy=\"264\" r=\"34\" fill=\"#f3f1e7\" stroke=\"#94a3b8\" stroke-width=\"2\"/><g clip-path=\"url(#q9nc_22)\"><g transform=\"translate(64.0 268.0) scale(0.9 0.9)\"><path d=\"M-2,4 L-12,-16 L-30,14\" stroke=\"#6d7a2a\" stroke-width=\"3.6\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M-12,-16 L-30,14\" stroke=\"#4d5a1d\" stroke-width=\"1.6\"/>\n   <path d=\"M10,6 L12,18 M16,5 L22,16\" stroke=\"#5c6a24\" stroke-width=\"1.8\" fill=\"none\" stroke-linecap=\"round\"/>\n   <path d=\"M-30,2 C-24,-7 8,-10 22,-6 C29,-4 31,3 27,7 C12,10 -20,9 -30,2Z\" fill=\"#94a540\" stroke=\"#4d5a1d\" stroke-width=\"1\"/>\n   <path d=\"M-28,-1 C-14,-9 8,-10 18,-6 L16,-2 C2,-4 -16,-1 -28,1Z\" fill=\"#6e7d2c\" stroke=\"#4d5a1d\" stroke-width=\".8\"/>\n   <path d=\"M-20,6 l1,-6\" stroke=\"#6e7d2c\" stroke-width=\".8\"/><path d=\"M-14,6 l1,-6\" stroke=\"#6e7d2c\" stroke-width=\".8\"/><path d=\"M-8,6 l1,-6\" stroke=\"#6e7d2c\" stroke-width=\".8\"/><path d=\"M-2,6 l1,-6\" stroke=\"#6e7d2c\" stroke-width=\".8\"/>\n   <ellipse cx=\"25\" cy=\"1\" rx=\"7.5\" ry=\"7\" fill=\"#9fb047\" stroke=\"#4d5a1d\" stroke-width=\"1\"/><circle cx=\"27\" cy=\"-1\" r=\"2.2\" fill=\"#2a2a18\"/>\n   <path d=\"M27,-6 Q36,-20 50,-22 M25,-6 Q30,-22 42,-28\" stroke=\"#4d5a1d\" stroke-width=\"1.1\" fill=\"none\"/></g></g><rect x=\"25.0\" y=\"301\" width=\"89.9\" height=\"18\" rx=\"9\" fill=\"#ffffff\" opacity=\".92\"/><text x=\"70\" y=\"314\" text-anchor=\"middle\" font-size=\"12.5\" fill=\"#16213a\" font-weight=\"700\">Grasshopper</text></g><g class=\"wnode\" data-k=\"rabbit\" tabindex=\"-1\" role=\"img\" aria-label=\"Brush rabbit\" style=\"\"><circle cx=\"300\" cy=\"264\" r=\"34\" fill=\"#f3f1e7\" stroke=\"#94a3b8\" stroke-width=\"2\"/><g clip-path=\"url(#q9nc_22)\"><g transform=\"translate(298.0 268.0) scale(0.95 0.95)\"><defs><radialGradient id=\"q9rb_23\" cx=\"45%\" cy=\"30%\" r=\"75%\"><stop offset=\"0\" stop-color=\"#9c7c58\"/><stop offset=\"1\" stop-color=\"#5e4630\"/></radialGradient></defs>\n   <ellipse cx=\"-2\" cy=\"22\" rx=\"30\" ry=\"3\" fill=\"#000\" opacity=\".18\"/>\n   <ellipse cx=\"-30\" cy=\"4\" rx=\"5\" ry=\"4.5\" fill=\"#d8cfc2\"/>\n   <path d=\"M-30,6 C-32,-14 -10,-22 8,-16 C20,-12 24,2 20,12 C14,22 -22,24 -30,6Z\" fill=\"url(#q9rb_23)\" stroke=\"#3b2a1c\" stroke-width=\"1\"/>\n   <path d=\"M-26,8 C-22,-6 -10,-6 -6,6 C-4,16 -18,20 -26,8Z\" fill=\"#6e5238\" opacity=\".8\"/>\n   <ellipse cx=\"-8\" cy=\"20\" rx=\"12\" ry=\"3.4\" fill=\"#5e4630\"/><ellipse cx=\"14\" cy=\"20\" rx=\"5\" ry=\"3\" fill=\"#6e5238\"/>\n   <path d=\"M10,-12 C10,-24 22,-28 30,-22 C36,-18 36,-8 30,-4 C22,0 12,-2 10,-12Z\" fill=\"url(#q9rb_23)\" stroke=\"#3b2a1c\" stroke-width=\"1\"/>\n   <path d=\"M14,-22 C10,-36 14,-44 18,-40 C21,-36 20,-28 19,-22Z\" fill=\"#7d6044\" stroke=\"#3b2a1c\" stroke-width=\".9\"/>\n   <path d=\"M19,-23 C19,-37 25,-43 28,-38 C30,-34 26,-27 24,-22Z\" fill=\"#8a6c4e\" stroke=\"#3b2a1c\" stroke-width=\".9\"/><path d=\"M21,-25 C22,-33 25,-37 26,-35\" stroke=\"#c9a08a\" stroke-width=\"1.4\" fill=\"none\"/>\n   <circle cx=\"26\" cy=\"-15\" r=\"2.8\" fill=\"#151010\"/><circle cx=\"26.9\" cy=\"-15.9\" r=\".9\" fill=\"#fff\"/><circle cx=\"35\" cy=\"-9\" r=\"1.4\" fill=\"#4a3226\"/>\n   <path d=\"M33,-7 l8,-2 M33,-6 l8,2\" stroke=\"#d8cfc2\" stroke-width=\".5\"/></g></g><rect x=\"251.6\" y=\"301\" width=\"96.8\" height=\"18\" rx=\"9\" fill=\"#ffffff\" opacity=\".92\"/><text x=\"300\" y=\"314\" text-anchor=\"middle\" font-size=\"12.5\" fill=\"#16213a\" font-weight=\"700\">Brush rabbit</text></g><g class=\"wnode\" data-k=\"deer\" tabindex=\"-1\" role=\"img\" aria-label=\"Mule deer\" style=\"\"><circle cx=\"540\" cy=\"264\" r=\"34\" fill=\"#f3f1e7\" stroke=\"#94a3b8\" stroke-width=\"2\"/><g clip-path=\"url(#q9nc_22)\"><g transform=\"translate(534.0 270.0) scale(0.58 0.58)\"><defs><linearGradient id=\"q9dr_24\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#9a7d5e\"/><stop offset=\"1\" stop-color=\"#6f5640\"/></linearGradient></defs><ellipse cx=\"0\" cy=\"40\" rx=\"34\" ry=\"3\" fill=\"#000\" opacity=\".18\"/><path d=\"M-24,2 L-28,22 L-24,40 M-14,4 L-16,22 L-12,40 M14,4 L16,22 L14,40 M22,2 L26,22 L24,40\" stroke=\"#5e4834\" stroke-width=\"3.4\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M-26,40 l-3,1 M-14,40 l-3,1 M14,40 l-3,1 M24,40 l-3,1\" stroke=\"#1d1712\" stroke-width=\"3\"/><path d=\"M-32,-12 C-24,-22 10,-22 22,-16 C30,-12 30,2 24,6 C8,10 -20,10 -30,4 C-36,-2 -37,-8 -32,-12Z\" fill=\"url(#q9dr_24)\" stroke=\"#3e2f22\" stroke-width=\"1\"/><ellipse cx=\"-31\" cy=\"-4\" rx=\"6\" ry=\"8\" fill=\"#eee6d8\"/><path d=\"M-36,-10 C-40,-6 -40,0 -37,3\" stroke=\"#1d1712\" stroke-width=\"3\" stroke-linecap=\"round\" fill=\"none\"/><path d=\"M16,-16 C20,-28 26,-38 33,-44 L41,-38 C37,-28 31,-14 27,-6 Z\" fill=\"#8b6f52\" stroke=\"#3e2f22\" stroke-width=\"1\"/><path d=\"M31,-46 C37,-52 47,-50 54,-42 C56,-39 54,-36 50,-36 C44,-36 38,-35 33,-38Z\" fill=\"#7d634a\" stroke=\"#3e2f22\" stroke-width=\"1\"/><ellipse cx=\"51\" cy=\"-38\" rx=\"3\" ry=\"2.2\" fill=\"#1d1712\"/><path d=\"M34,-45 C26,-58 22,-62 20,-60 C20,-54 26,-48 32,-43Z\" fill=\"#8f735a\" stroke=\"#3e2f22\" stroke-width=\".9\"/><path d=\"M37,-47 C38,-60 42,-64 44,-62 C45,-56 42,-50 39,-46Z\" fill=\"#8f735a\" stroke=\"#3e2f22\" stroke-width=\".9\"/><circle cx=\"43\" cy=\"-44\" r=\"2\" fill=\"#120e0b\"/><path d=\"M34,-38 C38,-34 44,-33 48,-35\" stroke=\"#e8dccb\" stroke-width=\"2\" fill=\"none\" opacity=\".8\"/><path d=\"M36,-50 C34,-62 38,-72 46,-76 M38,-62 C42,-64 46,-68 46,-72 M40,-50 C44,-60 50,-64 56,-64 M48,-60 C52,-62 54,-66 54,-70\" stroke=\"#d8c7a4\" stroke-width=\"2\" fill=\"none\" stroke-linecap=\"round\"/></g></g><rect x=\"501.9\" y=\"301\" width=\"76.1\" height=\"18\" rx=\"9\" fill=\"#ffffff\" opacity=\".92\"/><text x=\"540\" y=\"314\" text-anchor=\"middle\" font-size=\"12.5\" fill=\"#16213a\" font-weight=\"700\">Mule deer</text></g><g class=\"wnode\" data-k=\"mouse\" tabindex=\"-1\" role=\"img\" aria-label=\"Deer mouse\" style=\"\"><circle cx=\"150\" cy=\"160\" r=\"34\" fill=\"#f3f1e7\" stroke=\"#94a3b8\" stroke-width=\"2\"/><g clip-path=\"url(#q9nc_22)\"><g transform=\"translate(154.0 164.0) scale(0.9 0.9)\"><ellipse cx=\"0\" cy=\"12\" rx=\"22\" ry=\"2.6\" fill=\"#000\" opacity=\".18\"/>\n   <path d=\"M-18,6 C-34,10 -46,0 -60,6\" stroke=\"#8e6a4c\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M-18,8 C-34,12 -46,2 -60,8\" stroke=\"#efe6da\" stroke-width=\"1.2\" fill=\"none\" opacity=\".9\"/>\n   <ellipse cx=\"-4\" cy=\"10\" rx=\"4\" ry=\"2\" fill=\"#e6c7ba\"/><ellipse cx=\"12\" cy=\"10\" rx=\"3.5\" ry=\"2\" fill=\"#e6c7ba\"/>\n   <ellipse cx=\"0\" cy=\"0\" rx=\"21\" ry=\"11\" fill=\"#9b7350\" stroke=\"#5c4128\" stroke-width=\"1\"/>\n   <path d=\"M-18,4 C-8,12 10,12 20,4 C16,10 -10,14 -18,4Z\" fill=\"#f1ebe2\"/>\n   <path d=\"M13,-9 C25,-10 32,-4 34,0 C30,4 22,6 14,6 Z\" fill=\"#9b7350\" stroke=\"#5c4128\" stroke-width=\"1\"/><path d=\"M18,4 C24,5 30,3 33,1\" stroke=\"#f1ebe2\" stroke-width=\"2.4\" fill=\"none\"/>\n   <ellipse cx=\"15\" cy=\"-12\" rx=\"6\" ry=\"7\" fill=\"#b08866\" stroke=\"#5c4128\" stroke-width=\"1\"/><ellipse cx=\"15\" cy=\"-12\" rx=\"3.2\" ry=\"4.2\" fill=\"#e2b0a6\"/>\n   <circle cx=\"24\" cy=\"-4\" r=\"2.6\" fill=\"#0b0b0b\"/><circle cx=\"24.8\" cy=\"-4.8\" r=\".8\" fill=\"#fff\"/><circle cx=\"34\" cy=\"0\" r=\"1.5\" fill=\"#7a4b4b\"/>\n   <path d=\"M32,1 l9,-3 M32,2 l9,2\" stroke=\"#6b5a45\" stroke-width=\".5\"/></g></g><rect x=\"108.5\" y=\"197\" width=\"83.0\" height=\"18\" rx=\"9\" fill=\"#ffffff\" opacity=\".92\"/><text x=\"150\" y=\"210\" text-anchor=\"middle\" font-size=\"12.5\" fill=\"#16213a\" font-weight=\"700\">Deer mouse</text></g><g class=\"wnode\" data-k=\"coyote\" tabindex=\"-1\" role=\"img\" aria-label=\"Coyote\" style=\"\"><circle cx=\"410\" cy=\"160\" r=\"34\" fill=\"#f3f1e7\" stroke=\"#94a3b8\" stroke-width=\"2\"/><g clip-path=\"url(#q9nc_22)\"><g transform=\"translate(406.0 164.0) scale(0.62 0.62)\"><defs><linearGradient id=\"q9cy_25\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#857766\"/><stop offset=\".7\" stop-color=\"#b3a58f\"/><stop offset=\"1\" stop-color=\"#ddd2bf\"/></linearGradient></defs>\n   <ellipse cx=\"0\" cy=\"34\" rx=\"36\" ry=\"3\" fill=\"#000\" opacity=\".18\"/>\n   <path d=\"M-32,-10 C-46,-8 -56,4 -56,20 C-52,24 -46,22 -42,16 C-40,8 -36,2 -30,0Z\" fill=\"#8c7e6c\" stroke=\"#4a3f32\" stroke-width=\"1\"/><path d=\"M-56,20 C-54,23 -50,24 -47,21 C-50,20 -53,18 -55,15Z\" fill=\"#1f1a14\"/>\n   <path d=\"M-27,0 L-31,17 L-28,33 M-15,3 L-15,33 M13,3 L16,19 L14,33 M22,0 L26,17 L24,33\" stroke=\"#8a7a64\" stroke-width=\"5.4\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\n   <path d=\"M-31,17 L-28,33 M14,19 L14,33\" stroke=\"#5e5242\" stroke-width=\"2\" fill=\"none\"/>\n   <path d=\"M-35,-12 C-28,-21 10,-23 22,-17 C29,-13 29,0 22,4 C6,9 -22,9 -32,3 C-39,-3 -39,-8 -35,-12Z\" fill=\"url(#q9cy_25)\" stroke=\"#4a3f32\" stroke-width=\"1\"/>\n   <path d=\"M-26,-17 C-14,-21 6,-21 16,-18\" stroke=\"#5f5446\" stroke-width=\"3.4\" fill=\"none\" opacity=\".75\"/>\n   <path d=\"M15,-14 C19,-25 27,-32 36,-32 C42,-32 47,-29 57,-23 C59,-21 58,-18 54,-18 L43,-16 C37,-10 28,-5 22,-4Z\" fill=\"#9c8d78\" stroke=\"#4a3f32\" stroke-width=\"1\"/>\n   <path d=\"M28,-30 L30,-45 L38,-32Z\" fill=\"#9c8d78\" stroke=\"#4a3f32\" stroke-width=\"1\"/><path d=\"M30.5,-33 L31.5,-41 L35.5,-33Z\" fill=\"#5a4636\"/>\n   <path d=\"M43,-19 C48,-17 52,-17 56,-19\" stroke=\"#efe6d4\" stroke-width=\"2.2\" fill=\"none\"/><circle cx=\"57\" cy=\"-21.5\" r=\"1.9\" fill=\"#111\"/><ellipse cx=\"40\" cy=\"-26\" rx=\"2.4\" ry=\"1.6\" fill=\"#c8a24a\"/><circle cx=\"40.4\" cy=\"-26\" r=\"1\" fill=\"#111\"/></g></g><rect x=\"382.3\" y=\"197\" width=\"55.4\" height=\"18\" rx=\"9\" fill=\"#ffffff\" opacity=\".92\"/><text x=\"410\" y=\"210\" text-anchor=\"middle\" font-size=\"12.5\" fill=\"#16213a\" font-weight=\"700\">Coyote</text></g><g class=\"wnode\" data-k=\"snake\" tabindex=\"-1\" role=\"img\" aria-label=\"Gopher snake\" style=\"\"><circle cx=\"80\" cy=\"58\" r=\"34\" fill=\"#f3f1e7\" stroke=\"#94a3b8\" stroke-width=\"2\"/><g clip-path=\"url(#q9nc_22)\"><g transform=\"translate(78.0 58.0) scale(0.62 0.62)\"><path d=\"M-46,16 C-34,6 -22,6 -14,16 C-6,25 8,25 14,13 C20,1 30,-3 40,-1\" stroke=\"#000\" stroke-width=\"8\" fill=\"none\" opacity=\".12\"/>\n   <path d=\"M-46,14 C-36,2 -22,2 -14,12 C-6,22 8,22 14,10 C20,-2 30,-6 40,-4\" stroke=\"#c9a566\" stroke-width=\"8\" fill=\"none\" stroke-linecap=\"round\"/>\n   <path d=\"M-46,14 C-36,2 -22,2 -14,12 C-6,22 8,22 14,10 C20,-2 30,-6 40,-4\" stroke=\"#6a4626\" stroke-width=\"8.4\" fill=\"none\" stroke-dasharray=\"5 6\" opacity=\".9\"/>\n   <path d=\"M-46,14 C-36,2 -22,2 -14,12\" stroke=\"#e3cc96\" stroke-width=\"2\" fill=\"none\" opacity=\".6\"/>\n   <path d=\"M-46,14 L-54,18\" stroke=\"#c9a566\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n   <path d=\"M38,-8 C46,-10 54,-7 55,-3 C54,1 46,3 38,1 Z\" fill=\"#c09a5c\" stroke=\"#5a3c20\" stroke-width=\"1\"/><path d=\"M40,-6 l6,-1\" stroke=\"#6a4626\" stroke-width=\"1.4\"/>\n   <circle cx=\"48\" cy=\"-5\" r=\"1.5\" fill=\"#111\"/><path d=\"M55,-3 l5,-1 l-2,1 l2,1z\" fill=\"#b33\" /></g></g><rect x=\"31.6\" y=\"95\" width=\"96.8\" height=\"18\" rx=\"9\" fill=\"#ffffff\" opacity=\".92\"/><text x=\"80\" y=\"108\" text-anchor=\"middle\" font-size=\"12.5\" fill=\"#16213a\" font-weight=\"700\">Gopher snake</text></g><g class=\"wnode\" data-k=\"hawk\" tabindex=\"-1\" role=\"img\" aria-label=\"Red-tailed hawk\" style=\"\"><circle cx=\"260\" cy=\"58\" r=\"34\" fill=\"#f3f1e7\" stroke=\"#94a3b8\" stroke-width=\"2\"/><g clip-path=\"url(#q9nc_22)\"><g transform=\"translate(260.0 54.0) scale(0.62 0.62)\"><defs><linearGradient id=\"q9hk_26\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\"><stop offset=\"0\" stop-color=\"#7a5536\"/><stop offset=\"1\" stop-color=\"#4e3421\"/></linearGradient></defs>\n   <path d=\"M-34,34 C-10,30 14,30 34,33\" stroke=\"#5b4030\" stroke-width=\"5\" stroke-linecap=\"round\" fill=\"none\"/>\n   <path d=\"M-8,18 L-16,46 L2,46 L4,18Z\" fill=\"#b8562c\" stroke=\"#5a2a14\" stroke-width=\"1\"/><path d=\"M-14,40 L1,40\" stroke=\"#5a2a14\" stroke-width=\"1.2\"/>\n   <path d=\"M-16,-18 C-21,0 -16,22 -2,27 C10,25 15,6 13,-10 C11,-21 -4,-26 -16,-18Z\" fill=\"url(#q9hk_26)\" stroke=\"#2f1f12\" stroke-width=\"1\"/>\n   <path d=\"M-6,-8 C-9,4 -6,18 2,22 C9,16 10,2 6,-8Z\" fill=\"#f1e7d6\"/>\n   <path d=\"M-4,8 l1.4,3\" stroke=\"#5a3b26\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M0,10 l1.4,3\" stroke=\"#5a3b26\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M4,8 l1.4,3\" stroke=\"#5a3b26\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M-2,12 l1.4,3\" stroke=\"#5a3b26\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M3,13 l1.4,3\" stroke=\"#5a3b26\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M-5,4 l1.4,3\" stroke=\"#5a3b26\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M6,4 l1.4,3\" stroke=\"#5a3b26\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n   <path d=\"M-18,-14 C-25,4 -18,26 -6,32 C-4,16 -7,-2 -11,-14Z\" fill=\"#5a3b26\" stroke=\"#2f1f12\" stroke-width=\"1\"/>\n   <path d=\"M-19,-6 C-16,-4 -12,-4 -9,-6\" stroke=\"#7d5a3e\" stroke-width=\"1\" fill=\"none\"/><path d=\"M-19,0 C-16,2 -12,2 -9,0\" stroke=\"#7d5a3e\" stroke-width=\"1\" fill=\"none\"/><path d=\"M-19,6 C-16,8 -12,8 -9,6\" stroke=\"#7d5a3e\" stroke-width=\"1\" fill=\"none\"/><path d=\"M-19,12 C-16,14 -12,14 -9,12\" stroke=\"#7d5a3e\" stroke-width=\"1\" fill=\"none\"/>\n   <circle cx=\"5\" cy=\"-24\" r=\"10\" fill=\"url(#q9hk_26)\" stroke=\"#2f1f12\" stroke-width=\"1\"/><path d=\"M2,-18 C5,-14 10,-14 12,-18\" fill=\"#f1e7d6\"/>\n   <path d=\"M13,-28 C19,-28 21,-23 19,-18 C18,-21 16,-22 13,-21Z\" fill=\"#3a3530\"/><path d=\"M12,-27 L14,-22\" stroke=\"#e8b830\" stroke-width=\"2.2\"/>\n   <circle cx=\"8\" cy=\"-26\" r=\"2.6\" fill=\"#a4561f\"/><circle cx=\"8\" cy=\"-26\" r=\"1.3\" fill=\"#111\"/><path d=\"M4,-29 L11,-29\" stroke=\"#3b2618\" stroke-width=\"1.4\"/>\n   <path d=\"M-6,30 l-2,5 M-4,30 l0,5 M2,30 l0,5 M4,30 l2,5\" stroke=\"#e8b830\" stroke-width=\"2\"/></g></g><rect x=\"201.3\" y=\"95\" width=\"117.5\" height=\"18\" rx=\"9\" fill=\"#ffffff\" opacity=\".92\"/><text x=\"260\" y=\"108\" text-anchor=\"middle\" font-size=\"12.5\" fill=\"#16213a\" font-weight=\"700\">Red-tailed hawk</text></g><g class=\"wnode\" data-k=\"lion\" tabindex=\"-1\" role=\"img\" aria-label=\"Mountain lion\" style=\"\"><circle cx=\"540\" cy=\"58\" r=\"34\" fill=\"#f3f1e7\" stroke=\"#94a3b8\" stroke-width=\"2\"/><g clip-path=\"url(#q9nc_22)\"><g transform=\"translate(536.0 60.0) scale(0.55 0.55)\"><defs><linearGradient id=\"q9ml_27\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#b98b5a\"/><stop offset=\".8\" stop-color=\"#d7b48a\"/><stop offset=\"1\" stop-color=\"#e8d2b2\"/></linearGradient></defs>\n   <ellipse cx=\"0\" cy=\"30\" rx=\"44\" ry=\"3\" fill=\"#000\" opacity=\".18\"/>\n   <path d=\"M-40,-4 C-60,0 -66,18 -60,28\" stroke=\"#b07f50\" stroke-width=\"6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M-62,22 C-62,26 -61,28 -60,29\" stroke=\"#2a1e14\" stroke-width=\"6.5\" stroke-linecap=\"round\"/>\n   <path d=\"M-34,0 C-39,10 -37,20 -32,29 L-23,29 C-25,20 -23,12 -18,4Z M-16,4 C-17,14 -16,22 -15,29 L-7,29 C-8,22 -7,14 -5,6Z M15,4 C16,14 16,22 15,29 L24,29 C24,22 24,14 26,4Z M28,2 C30,12 31,22 30,29 L39,29 C39,20 38,10 37,0Z\" fill=\"#b88a5a\" stroke=\"#5e4428\" stroke-width=\"1\"/>\n   <ellipse cx=\"-27\" cy=\"29\" rx=\"5.5\" ry=\"2.4\" fill=\"#a87b4e\" stroke=\"#5e4428\" stroke-width=\".8\"/><ellipse cx=\"-11\" cy=\"29\" rx=\"5.5\" ry=\"2.4\" fill=\"#a87b4e\" stroke=\"#5e4428\" stroke-width=\".8\"/><ellipse cx=\"19\" cy=\"29\" rx=\"5.5\" ry=\"2.4\" fill=\"#a87b4e\" stroke=\"#5e4428\" stroke-width=\".8\"/><ellipse cx=\"34\" cy=\"29\" rx=\"5.5\" ry=\"2.4\" fill=\"#a87b4e\" stroke=\"#5e4428\" stroke-width=\".8\"/>\n   <path d=\"M-44,-8 C-40,-19 -10,-21 10,-20 C26,-19 34,-17 38,-12 C43,-4 39,4 30,6 C14,10 -20,10 -36,6 C-45,2 -47,-2 -44,-8Z\" fill=\"url(#q9ml_27)\" stroke=\"#5e4428\" stroke-width=\"1\"/>\n<g transform=\"translate(44 -12) scale(1.22) translate(-44 12)\">   <path d=\"M30,-18 C34,-24 42,-26 50,-24 C56,-22 60,-16 59,-10 C58,-4 52,-2 46,-2 C40,-2 34,-6 32,-10Z\" fill=\"#c29462\" stroke=\"#5e4428\" stroke-width=\"1\"/>\n   <ellipse cx=\"54\" cy=\"-8\" rx=\"6\" ry=\"4.5\" fill=\"#efe2cc\"/><path d=\"M57,-11 l3,0\" stroke=\"#5a3a2a\" stroke-width=\"2.4\" stroke-linecap=\"round\"/>\n   <path d=\"M38,-24 C38,-30 44,-31 45,-25Z\" fill=\"#b07f50\" stroke=\"#5e4428\" stroke-width=\".9\"/><path d=\"M45,-25 C46,-31 52,-30 51,-24Z\" fill=\"#b07f50\" stroke=\"#5e4428\" stroke-width=\".9\"/>\n   <ellipse cx=\"49\" cy=\"-16\" rx=\"3\" ry=\"1.9\" fill=\"#d9a441\" stroke=\"#2a1e14\" stroke-width=\".9\"/><circle cx=\"49.5\" cy=\"-16\" r=\"1\" fill=\"#111\"/><path d=\"M50,-13 C51,-10 52,-9 53,-9\" stroke=\"#3e2a1c\" stroke-width=\".9\" fill=\"none\"/><path d=\"M50,-6 C49,-3 47,-2 45,-3\" stroke=\"#3e2a1c\" stroke-width=\"1.2\" fill=\"none\"/></g></g></g><rect x=\"488.1\" y=\"95\" width=\"103.7\" height=\"18\" rx=\"9\" fill=\"#ffffff\" opacity=\".92\"/><text x=\"540\" y=\"108\" text-anchor=\"middle\" font-size=\"12.5\" fill=\"#16213a\" font-weight=\"700\">Mountain lion</text></g><g opacity=\"1\"><line x1=\"162.5\" y1=\"347.2\" x2=\"132.2\" y2=\"320.0\" stroke=\"#334155\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M121.7,310.5 L137.0,314.7 L127.5,325.3 Z\" fill=\"#334155\"/></g><g opacity=\"1\"><line x1=\"473.7\" y1=\"343.6\" x2=\"486.7\" y2=\"328.0\" stroke=\"#334155\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M495.7,317.1 L492.1,332.6 L481.2,323.5 Z\" fill=\"#334155\"/></g><g opacity=\"1\"><line x1=\"216.4\" y1=\"346.1\" x2=\"234.9\" y2=\"327.9\" stroke=\"#334155\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M245.0,318.0 L239.9,333.0 L229.9,322.9 Z\" fill=\"#334155\"/></g><g opacity=\"1\"><line x1=\"183.1\" y1=\"335.6\" x2=\"164.3\" y2=\"235.9\" stroke=\"#334155\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M161.7,221.9 L171.3,234.6 L157.3,237.2 Z\" fill=\"#334155\"/></g><g opacity=\"1\"><line x1=\"92.6\" y1=\"234.7\" x2=\"96.7\" y2=\"229.3\" stroke=\"#334155\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M105.4,218.0 L102.3,233.6 L91.1,225.0 Z\" fill=\"#334155\"/></g><g opacity=\"1\"><line x1=\"326.9\" y1=\"238.6\" x2=\"370.6\" y2=\"197.2\" stroke=\"#334155\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M380.9,187.5 L375.5,202.4 L365.7,192.1 Z\" fill=\"#334155\"/></g><g opacity=\"1\"><line x1=\"443.1\" y1=\"335.6\" x2=\"424.3\" y2=\"235.9\" stroke=\"#334155\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M421.7,221.9 L431.3,234.6 L417.3,237.2 Z\" fill=\"#334155\"/></g><g opacity=\"1\"><line x1=\"129.1\" y1=\"129.5\" x2=\"125.2\" y2=\"123.9\" stroke=\"#334155\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M117.2,112.2 L131.1,119.9 L119.4,127.9 Z\" fill=\"#334155\"/></g><g opacity=\"1\"><line x1=\"292.9\" y1=\"227.7\" x2=\"274.7\" y2=\"133.8\" stroke=\"#334155\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M272.0,119.9 L281.7,132.5 L267.8,135.2 Z\" fill=\"#334155\"/></g><g opacity=\"1\"><line x1=\"117.0\" y1=\"58.0\" x2=\"205.8\" y2=\"58.0\" stroke=\"#334155\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M220.0,58.0 L205.8,65.1 L205.8,50.9 Z\" fill=\"#334155\"/></g><g opacity=\"1\"><line x1=\"540.0\" y1=\"227.0\" x2=\"540.0\" y2=\"134.2\" stroke=\"#334155\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M540.0,120.0 L547.1,134.2 L532.9,134.2 Z\" fill=\"#334155\"/></g></svg>", "w_pyr": "<svg viewBox=\"0 0 900 380\" role=\"img\" aria-label=\"A blank energy pyramid with four levels: producers, primary, secondary, and tertiary consumers.\"><rect width=\"900\" height=\"380\" rx=\"14\" fill=\"#ffffff\"/><path d=\"M40.0,364.0 L560.0,364.0 L495.0,283.0 L105.0,283.0 Z\" fill=\"#86efac\" stroke=\"#475569\" stroke-width=\"2\"/><circle cx=\"600\" cy=\"323.5\" r=\"25\" fill=\"#f3f1e7\" stroke=\"#94a3b8\" stroke-width=\"1.5\"/><g clip-path=\"url(#q10pc_280)\"><g transform=\"translate(600.0 325.5) scale(0.602 0.602)\"><path d=\"M-24,24 Q-23.0,-6.0 -30,-28\" stroke=\"#c4ad62\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M-16,24 Q-16.0,-14.0 -24,-44\" stroke=\"#a9a057\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M-8,24 Q-7.0,-19.0 -14,-54\" stroke=\"#c9b46a\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M-2,24 Q-5.0,-17.0 0,-50\" stroke=\"#9aa354\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M4,24 Q2.0,-20.0 8,-56\" stroke=\"#cbb66e\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M10,24 Q11.0,-15.0 20,-46\" stroke=\"#b2a35c\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M18,24 Q20.0,-8.0 30,-32\" stroke=\"#c4ad62\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M-12,24 Q-8.0,-10.0 4,-36\" stroke=\"#8f9a4e\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M8,24 Q6.0,-12.0 -4,-40\" stroke=\"#d2bf78\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M-24,-43 Q-29,-41 -31,-34\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"-31\" cy=\"-33\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M-24,-36 Q-19,-34 -17,-27\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"-17\" cy=\"-26\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M-24,-29 Q-29,-27 -31,-20\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"-31\" cy=\"-19\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M-24,-22 Q-19,-20 -17,-13\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"-17\" cy=\"-12\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M0,-49 Q-5,-47 -7,-40\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"-7\" cy=\"-39\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M0,-42 Q5,-40 7,-33\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"7\" cy=\"-32\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M0,-35 Q-5,-33 -7,-26\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"-7\" cy=\"-25\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M0,-28 Q5,-26 7,-19\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"7\" cy=\"-18\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M8,-55 Q3,-53 1,-46\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"1\" cy=\"-45\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M8,-48 Q13,-46 15,-39\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"15\" cy=\"-38\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M8,-41 Q3,-39 1,-32\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"1\" cy=\"-31\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M8,-34 Q13,-32 15,-25\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"15\" cy=\"-24\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M20,-45 Q15,-43 13,-36\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"13\" cy=\"-35\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M20,-38 Q25,-36 27,-29\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"27\" cy=\"-28\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M20,-31 Q15,-29 13,-22\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"13\" cy=\"-21\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M20,-24 Q25,-22 27,-15\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"27\" cy=\"-14\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><ellipse cx=\"0\" cy=\"24\" rx=\"30\" ry=\"3\" fill=\"#7a6336\" opacity=\".35\"/></g></g><clipPath id=\"q10pc_280\"><circle cx=\"600\" cy=\"323.5\" r=\"24\"/></clipPath><text x=\"634\" y=\"321.5\" text-anchor=\"start\" font-size=\"14\" fill=\"#16213a\" font-weight=\"700\">Producers</text><path d=\"M105.0,279.0 L495.0,279.0 L430.0,198.0 L170.0,198.0 Z\" fill=\"#fde68a\" stroke=\"#475569\" stroke-width=\"2\"/><circle cx=\"600\" cy=\"238.5\" r=\"25\" fill=\"#f3f1e7\" stroke=\"#94a3b8\" stroke-width=\"1.5\"/><g clip-path=\"url(#q10pc_281)\"><g transform=\"translate(598.0 242.5) scale(0.6649999999999999 0.6649999999999999)\"><defs><radialGradient id=\"q10rb_29\" cx=\"45%\" cy=\"30%\" r=\"75%\"><stop offset=\"0\" stop-color=\"#9c7c58\"/><stop offset=\"1\" stop-color=\"#5e4630\"/></radialGradient></defs>\n   <ellipse cx=\"-2\" cy=\"22\" rx=\"30\" ry=\"3\" fill=\"#000\" opacity=\".18\"/>\n   <ellipse cx=\"-30\" cy=\"4\" rx=\"5\" ry=\"4.5\" fill=\"#d8cfc2\"/>\n   <path d=\"M-30,6 C-32,-14 -10,-22 8,-16 C20,-12 24,2 20,12 C14,22 -22,24 -30,6Z\" fill=\"url(#q10rb_29)\" stroke=\"#3b2a1c\" stroke-width=\"1\"/>\n   <path d=\"M-26,8 C-22,-6 -10,-6 -6,6 C-4,16 -18,20 -26,8Z\" fill=\"#6e5238\" opacity=\".8\"/>\n   <ellipse cx=\"-8\" cy=\"20\" rx=\"12\" ry=\"3.4\" fill=\"#5e4630\"/><ellipse cx=\"14\" cy=\"20\" rx=\"5\" ry=\"3\" fill=\"#6e5238\"/>\n   <path d=\"M10,-12 C10,-24 22,-28 30,-22 C36,-18 36,-8 30,-4 C22,0 12,-2 10,-12Z\" fill=\"url(#q10rb_29)\" stroke=\"#3b2a1c\" stroke-width=\"1\"/>\n   <path d=\"M14,-22 C10,-36 14,-44 18,-40 C21,-36 20,-28 19,-22Z\" fill=\"#7d6044\" stroke=\"#3b2a1c\" stroke-width=\".9\"/>\n   <path d=\"M19,-23 C19,-37 25,-43 28,-38 C30,-34 26,-27 24,-22Z\" fill=\"#8a6c4e\" stroke=\"#3b2a1c\" stroke-width=\".9\"/><path d=\"M21,-25 C22,-33 25,-37 26,-35\" stroke=\"#c9a08a\" stroke-width=\"1.4\" fill=\"none\"/>\n   <circle cx=\"26\" cy=\"-15\" r=\"2.8\" fill=\"#151010\"/><circle cx=\"26.9\" cy=\"-15.9\" r=\".9\" fill=\"#fff\"/><circle cx=\"35\" cy=\"-9\" r=\"1.4\" fill=\"#4a3226\"/>\n   <path d=\"M33,-7 l8,-2 M33,-6 l8,2\" stroke=\"#d8cfc2\" stroke-width=\".5\"/></g></g><clipPath id=\"q10pc_281\"><circle cx=\"600\" cy=\"238.5\" r=\"24\"/></clipPath><text x=\"634\" y=\"236.5\" text-anchor=\"start\" font-size=\"14\" fill=\"#16213a\" font-weight=\"700\">Primary consumers</text><path d=\"M170.0,194.0 L430.0,194.0 L365.0,113.0 L235.0,113.0 Z\" fill=\"#fdba74\" stroke=\"#475569\" stroke-width=\"2\"/><circle cx=\"600\" cy=\"153.5\" r=\"25\" fill=\"#f3f1e7\" stroke=\"#94a3b8\" stroke-width=\"1.5\"/><g clip-path=\"url(#q10pc_282)\"><g transform=\"translate(598.0 153.5) scale(0.434 0.434)\"><path d=\"M-46,16 C-34,6 -22,6 -14,16 C-6,25 8,25 14,13 C20,1 30,-3 40,-1\" stroke=\"#000\" stroke-width=\"8\" fill=\"none\" opacity=\".12\"/>\n   <path d=\"M-46,14 C-36,2 -22,2 -14,12 C-6,22 8,22 14,10 C20,-2 30,-6 40,-4\" stroke=\"#c9a566\" stroke-width=\"8\" fill=\"none\" stroke-linecap=\"round\"/>\n   <path d=\"M-46,14 C-36,2 -22,2 -14,12 C-6,22 8,22 14,10 C20,-2 30,-6 40,-4\" stroke=\"#6a4626\" stroke-width=\"8.4\" fill=\"none\" stroke-dasharray=\"5 6\" opacity=\".9\"/>\n   <path d=\"M-46,14 C-36,2 -22,2 -14,12\" stroke=\"#e3cc96\" stroke-width=\"2\" fill=\"none\" opacity=\".6\"/>\n   <path d=\"M-46,14 L-54,18\" stroke=\"#c9a566\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n   <path d=\"M38,-8 C46,-10 54,-7 55,-3 C54,1 46,3 38,1 Z\" fill=\"#c09a5c\" stroke=\"#5a3c20\" stroke-width=\"1\"/><path d=\"M40,-6 l6,-1\" stroke=\"#6a4626\" stroke-width=\"1.4\"/>\n   <circle cx=\"48\" cy=\"-5\" r=\"1.5\" fill=\"#111\"/><path d=\"M55,-3 l5,-1 l-2,1 l2,1z\" fill=\"#b33\" /></g></g><clipPath id=\"q10pc_282\"><circle cx=\"600\" cy=\"153.5\" r=\"24\"/></clipPath><text x=\"634\" y=\"151.5\" text-anchor=\"start\" font-size=\"14\" fill=\"#16213a\" font-weight=\"700\">Secondary consumers</text><path d=\"M235.0,109.0 L365.0,109.0 L311.7,28.0 L288.3,28.0 Z\" fill=\"#fca5a5\" stroke=\"#475569\" stroke-width=\"2\"/><circle cx=\"600\" cy=\"68.5\" r=\"25\" fill=\"#f3f1e7\" stroke=\"#94a3b8\" stroke-width=\"1.5\"/><g clip-path=\"url(#q10pc_283)\"><g transform=\"translate(600.0 64.5) scale(0.434 0.434)\"><defs><linearGradient id=\"q10hk_30\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\"><stop offset=\"0\" stop-color=\"#7a5536\"/><stop offset=\"1\" stop-color=\"#4e3421\"/></linearGradient></defs>\n   <path d=\"M-34,34 C-10,30 14,30 34,33\" stroke=\"#5b4030\" stroke-width=\"5\" stroke-linecap=\"round\" fill=\"none\"/>\n   <path d=\"M-8,18 L-16,46 L2,46 L4,18Z\" fill=\"#b8562c\" stroke=\"#5a2a14\" stroke-width=\"1\"/><path d=\"M-14,40 L1,40\" stroke=\"#5a2a14\" stroke-width=\"1.2\"/>\n   <path d=\"M-16,-18 C-21,0 -16,22 -2,27 C10,25 15,6 13,-10 C11,-21 -4,-26 -16,-18Z\" fill=\"url(#q10hk_30)\" stroke=\"#2f1f12\" stroke-width=\"1\"/>\n   <path d=\"M-6,-8 C-9,4 -6,18 2,22 C9,16 10,2 6,-8Z\" fill=\"#f1e7d6\"/>\n   <path d=\"M-4,8 l1.4,3\" stroke=\"#5a3b26\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M0,10 l1.4,3\" stroke=\"#5a3b26\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M4,8 l1.4,3\" stroke=\"#5a3b26\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M-2,12 l1.4,3\" stroke=\"#5a3b26\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M3,13 l1.4,3\" stroke=\"#5a3b26\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M-5,4 l1.4,3\" stroke=\"#5a3b26\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M6,4 l1.4,3\" stroke=\"#5a3b26\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n   <path d=\"M-18,-14 C-25,4 -18,26 -6,32 C-4,16 -7,-2 -11,-14Z\" fill=\"#5a3b26\" stroke=\"#2f1f12\" stroke-width=\"1\"/>\n   <path d=\"M-19,-6 C-16,-4 -12,-4 -9,-6\" stroke=\"#7d5a3e\" stroke-width=\"1\" fill=\"none\"/><path d=\"M-19,0 C-16,2 -12,2 -9,0\" stroke=\"#7d5a3e\" stroke-width=\"1\" fill=\"none\"/><path d=\"M-19,6 C-16,8 -12,8 -9,6\" stroke=\"#7d5a3e\" stroke-width=\"1\" fill=\"none\"/><path d=\"M-19,12 C-16,14 -12,14 -9,12\" stroke=\"#7d5a3e\" stroke-width=\"1\" fill=\"none\"/>\n   <circle cx=\"5\" cy=\"-24\" r=\"10\" fill=\"url(#q10hk_30)\" stroke=\"#2f1f12\" stroke-width=\"1\"/><path d=\"M2,-18 C5,-14 10,-14 12,-18\" fill=\"#f1e7d6\"/>\n   <path d=\"M13,-28 C19,-28 21,-23 19,-18 C18,-21 16,-22 13,-21Z\" fill=\"#3a3530\"/><path d=\"M12,-27 L14,-22\" stroke=\"#e8b830\" stroke-width=\"2.2\"/>\n   <circle cx=\"8\" cy=\"-26\" r=\"2.6\" fill=\"#a4561f\"/><circle cx=\"8\" cy=\"-26\" r=\"1.3\" fill=\"#111\"/><path d=\"M4,-29 L11,-29\" stroke=\"#3b2618\" stroke-width=\"1.4\"/>\n   <path d=\"M-6,30 l-2,5 M-4,30 l0,5 M2,30 l0,5 M4,30 l2,5\" stroke=\"#e8b830\" stroke-width=\"2\"/></g></g><clipPath id=\"q10pc_283\"><circle cx=\"600\" cy=\"68.5\" r=\"24\"/></clipPath><text x=\"634\" y=\"66.5\" text-anchor=\"start\" font-size=\"14\" fill=\"#16213a\" font-weight=\"700\">Tertiary consumers</text></svg>", "w_pyrZ": [{"id": "p0", "x": 300, "y": 308, "w": 150, "ans": "20,000 kcal"}, {"id": "p1", "x": 300, "y": 223, "w": 150, "ans": "2,000 kcal"}, {"id": "p2", "x": 300, "y": 138, "w": 150, "ans": "200 kcal"}, {"id": "p3", "x": 300, "y": 53, "w": 150, "ans": "20 kcal"}], "w_chainBad": "<svg viewBox=\"0 0 640 150\" role=\"img\" aria-label=\"A student chain: arrows from the coyote to the brush rabbit to the grasses.\"><rect width=\"640\" height=\"150\" rx=\"14\" fill=\"#ffffff\"/><defs><clipPath id=\"q11ch_31\"><circle cx=\"65.0\" cy=\"62\" r=\"32\"/><circle cx=\"320.0\" cy=\"62\" r=\"32\"/><circle cx=\"575.0\" cy=\"62\" r=\"32\"/></clipPath></defs><circle cx=\"65.0\" cy=\"62\" r=\"34\" fill=\"#f3f1e7\" stroke=\"#94a3b8\" stroke-width=\"2\"/><g clip-path=\"url(#q11ch_31)\"><g transform=\"translate(61.0 66.0) scale(0.62 0.62)\"><defs><linearGradient id=\"q11cy_32\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#857766\"/><stop offset=\".7\" stop-color=\"#b3a58f\"/><stop offset=\"1\" stop-color=\"#ddd2bf\"/></linearGradient></defs>\n   <ellipse cx=\"0\" cy=\"34\" rx=\"36\" ry=\"3\" fill=\"#000\" opacity=\".18\"/>\n   <path d=\"M-32,-10 C-46,-8 -56,4 -56,20 C-52,24 -46,22 -42,16 C-40,8 -36,2 -30,0Z\" fill=\"#8c7e6c\" stroke=\"#4a3f32\" stroke-width=\"1\"/><path d=\"M-56,20 C-54,23 -50,24 -47,21 C-50,20 -53,18 -55,15Z\" fill=\"#1f1a14\"/>\n   <path d=\"M-27,0 L-31,17 L-28,33 M-15,3 L-15,33 M13,3 L16,19 L14,33 M22,0 L26,17 L24,33\" stroke=\"#8a7a64\" stroke-width=\"5.4\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\n   <path d=\"M-31,17 L-28,33 M14,19 L14,33\" stroke=\"#5e5242\" stroke-width=\"2\" fill=\"none\"/>\n   <path d=\"M-35,-12 C-28,-21 10,-23 22,-17 C29,-13 29,0 22,4 C6,9 -22,9 -32,3 C-39,-3 -39,-8 -35,-12Z\" fill=\"url(#q11cy_32)\" stroke=\"#4a3f32\" stroke-width=\"1\"/>\n   <path d=\"M-26,-17 C-14,-21 6,-21 16,-18\" stroke=\"#5f5446\" stroke-width=\"3.4\" fill=\"none\" opacity=\".75\"/>\n   <path d=\"M15,-14 C19,-25 27,-32 36,-32 C42,-32 47,-29 57,-23 C59,-21 58,-18 54,-18 L43,-16 C37,-10 28,-5 22,-4Z\" fill=\"#9c8d78\" stroke=\"#4a3f32\" stroke-width=\"1\"/>\n   <path d=\"M28,-30 L30,-45 L38,-32Z\" fill=\"#9c8d78\" stroke=\"#4a3f32\" stroke-width=\"1\"/><path d=\"M30.5,-33 L31.5,-41 L35.5,-33Z\" fill=\"#5a4636\"/>\n   <path d=\"M43,-19 C48,-17 52,-17 56,-19\" stroke=\"#efe6d4\" stroke-width=\"2.2\" fill=\"none\"/><circle cx=\"57\" cy=\"-21.5\" r=\"1.9\" fill=\"#111\"/><ellipse cx=\"40\" cy=\"-26\" rx=\"2.4\" ry=\"1.6\" fill=\"#c8a24a\"/><circle cx=\"40.4\" cy=\"-26\" r=\"1\" fill=\"#111\"/></g></g><text x=\"65.0\" y=\"113\" text-anchor=\"middle\" font-size=\"12.5\" fill=\"#16213a\" font-weight=\"700\">Coyote</text><g opacity=\"1\"><line x1=\"102.0\" y1=\"62.0\" x2=\"266.1\" y2=\"62.0\" stroke=\"#fb7185\" stroke-width=\"3.2\" stroke-linecap=\"round\"/><path d=\"M281.0,62.0 L266.1,69.4 L266.1,54.6 Z\" fill=\"#fb7185\"/></g><circle cx=\"320.0\" cy=\"62\" r=\"34\" fill=\"#f3f1e7\" stroke=\"#94a3b8\" stroke-width=\"2\"/><g clip-path=\"url(#q11ch_31)\"><g transform=\"translate(318.0 66.0) scale(0.95 0.95)\"><defs><radialGradient id=\"q11rb_33\" cx=\"45%\" cy=\"30%\" r=\"75%\"><stop offset=\"0\" stop-color=\"#9c7c58\"/><stop offset=\"1\" stop-color=\"#5e4630\"/></radialGradient></defs>\n   <ellipse cx=\"-2\" cy=\"22\" rx=\"30\" ry=\"3\" fill=\"#000\" opacity=\".18\"/>\n   <ellipse cx=\"-30\" cy=\"4\" rx=\"5\" ry=\"4.5\" fill=\"#d8cfc2\"/>\n   <path d=\"M-30,6 C-32,-14 -10,-22 8,-16 C20,-12 24,2 20,12 C14,22 -22,24 -30,6Z\" fill=\"url(#q11rb_33)\" stroke=\"#3b2a1c\" stroke-width=\"1\"/>\n   <path d=\"M-26,8 C-22,-6 -10,-6 -6,6 C-4,16 -18,20 -26,8Z\" fill=\"#6e5238\" opacity=\".8\"/>\n   <ellipse cx=\"-8\" cy=\"20\" rx=\"12\" ry=\"3.4\" fill=\"#5e4630\"/><ellipse cx=\"14\" cy=\"20\" rx=\"5\" ry=\"3\" fill=\"#6e5238\"/>\n   <path d=\"M10,-12 C10,-24 22,-28 30,-22 C36,-18 36,-8 30,-4 C22,0 12,-2 10,-12Z\" fill=\"url(#q11rb_33)\" stroke=\"#3b2a1c\" stroke-width=\"1\"/>\n   <path d=\"M14,-22 C10,-36 14,-44 18,-40 C21,-36 20,-28 19,-22Z\" fill=\"#7d6044\" stroke=\"#3b2a1c\" stroke-width=\".9\"/>\n   <path d=\"M19,-23 C19,-37 25,-43 28,-38 C30,-34 26,-27 24,-22Z\" fill=\"#8a6c4e\" stroke=\"#3b2a1c\" stroke-width=\".9\"/><path d=\"M21,-25 C22,-33 25,-37 26,-35\" stroke=\"#c9a08a\" stroke-width=\"1.4\" fill=\"none\"/>\n   <circle cx=\"26\" cy=\"-15\" r=\"2.8\" fill=\"#151010\"/><circle cx=\"26.9\" cy=\"-15.9\" r=\".9\" fill=\"#fff\"/><circle cx=\"35\" cy=\"-9\" r=\"1.4\" fill=\"#4a3226\"/>\n   <path d=\"M33,-7 l8,-2 M33,-6 l8,2\" stroke=\"#d8cfc2\" stroke-width=\".5\"/></g></g><text x=\"320.0\" y=\"113\" text-anchor=\"middle\" font-size=\"12.5\" fill=\"#16213a\" font-weight=\"700\">Brush rabbit</text><g opacity=\"1\"><line x1=\"357.0\" y1=\"62.0\" x2=\"521.1\" y2=\"62.0\" stroke=\"#fb7185\" stroke-width=\"3.2\" stroke-linecap=\"round\"/><path d=\"M536.0,62.0 L521.1,69.4 L521.1,54.6 Z\" fill=\"#fb7185\"/></g><circle cx=\"575.0\" cy=\"62\" r=\"34\" fill=\"#f3f1e7\" stroke=\"#94a3b8\" stroke-width=\"2\"/><g clip-path=\"url(#q11ch_31)\"><g transform=\"translate(575.0 64.0) scale(0.86 0.86)\"><path d=\"M-24,24 Q-23.0,-6.0 -30,-28\" stroke=\"#c4ad62\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M-16,24 Q-16.0,-14.0 -24,-44\" stroke=\"#a9a057\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M-8,24 Q-7.0,-19.0 -14,-54\" stroke=\"#c9b46a\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M-2,24 Q-5.0,-17.0 0,-50\" stroke=\"#9aa354\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M4,24 Q2.0,-20.0 8,-56\" stroke=\"#cbb66e\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M10,24 Q11.0,-15.0 20,-46\" stroke=\"#b2a35c\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M18,24 Q20.0,-8.0 30,-32\" stroke=\"#c4ad62\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M-12,24 Q-8.0,-10.0 4,-36\" stroke=\"#8f9a4e\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M8,24 Q6.0,-12.0 -4,-40\" stroke=\"#d2bf78\" stroke-width=\"2.6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M-24,-43 Q-29,-41 -31,-34\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"-31\" cy=\"-33\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M-24,-36 Q-19,-34 -17,-27\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"-17\" cy=\"-26\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M-24,-29 Q-29,-27 -31,-20\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"-31\" cy=\"-19\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M-24,-22 Q-19,-20 -17,-13\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"-17\" cy=\"-12\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M0,-49 Q-5,-47 -7,-40\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"-7\" cy=\"-39\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M0,-42 Q5,-40 7,-33\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"7\" cy=\"-32\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M0,-35 Q-5,-33 -7,-26\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"-7\" cy=\"-25\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M0,-28 Q5,-26 7,-19\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"7\" cy=\"-18\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M8,-55 Q3,-53 1,-46\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"1\" cy=\"-45\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M8,-48 Q13,-46 15,-39\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"15\" cy=\"-38\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M8,-41 Q3,-39 1,-32\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"1\" cy=\"-31\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M8,-34 Q13,-32 15,-25\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"15\" cy=\"-24\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M20,-45 Q15,-43 13,-36\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"13\" cy=\"-35\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M20,-38 Q25,-36 27,-29\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"27\" cy=\"-28\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M20,-31 Q15,-29 13,-22\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"13\" cy=\"-21\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><path d=\"M20,-24 Q25,-22 27,-15\" stroke=\"#b49a52\" stroke-width=\"1\" fill=\"none\"/><ellipse cx=\"27\" cy=\"-14\" rx=\"1.7\" ry=\"3.6\" fill=\"#dcc584\" stroke=\"#9c8444\" stroke-width=\".6\"/><ellipse cx=\"0\" cy=\"24\" rx=\"30\" ry=\"3\" fill=\"#7a6336\" opacity=\".35\"/></g></g><text x=\"575.0\" y=\"113\" text-anchor=\"middle\" font-size=\"12.5\" fill=\"#16213a\" font-weight=\"700\">Grasses</text></svg>"};
+const ico=(i,s)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PARTS[i].icon}</svg>`;
+const PROBS=[];   // every problem: {id, part, max, score(), key()}
+
+function probShell(parent, part, num, q, pts){
+  const box=h('div',{class:'prob'}); parent.appendChild(box);
+  box.innerHTML=`<div class="pq"><span class="pnum">${num}.</span> ${q} <span class="pts">(${pts} pt${pts>1?'s':''})</span></div>`;
+  return box;
+}
+function actions(box, o){ // Hint + Check buttons + feedback
+  const row=h('div',{class:'btnrow'}); const hb=h('button',{class:'btn ghost small',type:'button'},'Hint'); const cb=h('button',{class:'btn primary small',type:'button'},'Check');
+  row.append(hb,cb); box.appendChild(row);
+  const hint=h('div',{class:'hintbox',hidden:true},'💡 '+o.hint); box.appendChild(hint);
+  const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'}); box.appendChild(fb);
+  hb.addEventListener('click',()=>{ hint.hidden=!hint.hidden; });
+  return {row,hb,cb,hint,fb};
+}
+const st=id=>S.p[id]||(S.p[id]={});
+/* Two tries per problem. Right on try 1 or 2 = full credit. Wrong twice = marked wrong (credit for parts right on try 2).
+   The correct answer is never shown. */
+function gradeTry(P,res,max){ const n=res.filter(Boolean).length; P.tries=(P.tries||0)+1;
+  if(n===max){ P.first=max; P.checked=true; P.right=true; }
+  else if(P.tries>=2){ P.first=n; P.checked=true; P.right=false; }
+  return n===max; }
+function showTry(ui,P,max,doneText){
+  if(P.checked&&P.right){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML=`<b>Correct!</b> ${doneText||''}`; }
+  else if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`<b>Marked wrong.</b> You earned ${P.first} of ${max} point${max>1?'s':''}. Ask your teacher if you'd like to try it again.`; }
+  else if(P.tries===1){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=max>1?'<b>Not quite.</b> Something isn\'t right yet. You have <b>one more try</b>.':'<b>Not quite.</b> You have <b>one more try</b>.'; }
+  else ui.fb.hidden=true;
+  if(ui.cb) ui.cb.textContent=P.checked?'Checked':(P.tries===1?'Check (last try)':'Check'); }
+
+/* ---------- drag onto a diagram (or into equation slots) ---------- */
+function dragProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.zones.length);
+  let fig;
+  if(o.equation){ fig=h('div',{class:'eq'}); box.appendChild(fig); }
+  else { fig=h('div',{class:'figwrap'}); fig.innerHTML=o.svg; box.appendChild(fig); }
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.chips.map((_,i)=>i)));
+  const zoneEls={};
+  const groupAns=g=>o.zones.filter(z=>z.group===g).map(z=>z.ans);
+  if(o.equation){ o.layout.forEach(item=>{ if(typeof item==='string'){ fig.appendChild(h('span',null,item)); } else { const z=o.zones[item]; const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans}); fig.appendChild(b); zoneEls[z.id]=b; } }); }
+  else o.zones.forEach(z=>{ const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans});
+    b.style.left=(z.x/o.vb[0]*100)+'%'; b.style.top=(z.y/o.vb[1]*100)+'%'; b.style.width=((z.w||130)/o.vb[0]*100)+'%'; fig.appendChild(b); zoneEls[z.id]=b; });
+  function placedChips(){ return new Set(Object.values(P.place)); }
+  function render(){
+    const used=placedChips();
+    pool.innerHTML='<div class="lbl">Tap a label, then tap a box (or drag it). Tap a filled box to take its label back.</div>';
+    order.forEach(ci=>{ if(used.has(ci)) return; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true'},o.chips[ci]); c.disabled=!!P.checked;
+      c.addEventListener('click',()=>{ sel=sel===ci?null:ci; render(); });
+      c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+      pool.appendChild(c); });
+    if(P.checked&&!pool.querySelector('.chip')) pool.hidden=true;
+    o.zones.forEach(z=>{ const b=zoneEls[z.id]; const ci=P.place[z.id];
+      b.className='zone'+(ci==null?' empty':' filled')+(P.checked?' locked':'');
+      if(ci==null) b.innerHTML=z.ph||'drop here';
+      else b.innerHTML=o.chips[ci];
+      b.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; ui.hb.disabled=!!P.checked&&false;
+    showTry(ui,P,o.zones.length,o.done);
+  }
+  o.zones.forEach(z=>{ const b=zoneEls[z.id];
+    const drop=ci=>{ if(P.checked) return; if(ci==null){ if(P.place[z.id]!=null){ delete P.place[z.id]; save(); render(); } return; }
+      for(const k in P.place) if(P.place[k]===ci) delete P.place[k];
+      P.place[z.id]=ci; sel=null; save(); render(); };
+    b.addEventListener('click',()=>drop(sel));
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  ui.cb.addEventListener('click',()=>{
+    if(P.checked) return;
+    const empty=o.zones.filter(z=>P.place[z.id]==null).length;
+    if(empty){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill every box before you check. ${empty} still empty.`; return; }
+    const res={}; const usedInGroup={};
+    o.zones.forEach(z=>{ const t=o.chips[P.place[z.id]];
+      if(z.group){ const ans=groupAns(z.group); usedInGroup[z.group]=usedInGroup[z.group]||[]; const ok=ans.includes(t)&&!usedInGroup[z.group].includes(t); if(ok) usedInGroup[z.group].push(t); res[z.id]=ok; }
+      else res[z.id]=t===z.ans; });
+    gradeTry(P,Object.values(res),o.zones.length); save(); cloudSave(true); render(); refresh();
+  });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.zones.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- sort into bins ---------- */
+function binProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.items.length);
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const bins=h('div',{class:'bins',style:`grid-template-columns:repeat(${o.bins.length},minmax(0,1fr))`}); box.appendChild(bins);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.items.map((_,i)=>i)));
+  const binEls={};
+  o.bins.forEach(bn=>{ const b=h('div',{class:'bin',role:'button',tabindex:'0'},`<h4>${bn.label}</h4><div class="bchips"></div>`); bins.appendChild(b); binEls[bn.k]=b;
+    const drop=ci=>{ if(P.checked||ci==null) return; P.place[ci]=bn.k; sel=null; save(); render(); };
+    b.addEventListener('click',e=>{ if(e.target.closest('.chip')) return; drop(sel); });
+    b.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); drop(sel); } });
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  const binLabel=k=>(o.bins.find(b=>b.k===k)||{}).label;
+  function chipEl(ci,inBin){ const it=o.items[ci]; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true','data-key':binLabel(it.k)},it.t);
+    
+    c.disabled=!!P.checked;
+    c.addEventListener('click',e=>{ if(P.checked) return; if(inBin){ e.stopPropagation(); if(sel!=null&&sel!==ci){ P.place[sel]=P.place[ci]; sel=null; save(); render(); return; } delete P.place[ci]; save(); render(); return; } sel=sel===ci?null:ci; render(); });
+    c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+    return c; }
+  function render(){
+    pool.innerHTML='<div class="lbl">Tap an item, then tap the box it belongs in (or drag it). Tap a sorted item to take it back.</div>';
+    order.forEach(ci=>{ if(P.place[ci]==null) pool.appendChild(chipEl(ci,false)); });
+    pool.hidden=!!P.checked;
+    o.bins.forEach(bn=>{ const holder=$('.bchips',binEls[bn.k]); holder.innerHTML=''; order.forEach(ci=>{ if(P.place[ci]===bn.k) holder.appendChild(chipEl(ci,true)); }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,o.items.length,o.done);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const left=o.items.filter((_,i)=>P.place[i]==null).length;
+    if(left){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Sort every item before you check. ${left} still left.`; return; }
+    const res=o.items.map((it,i)=>P.place[i]===it.k); gradeTry(P,res,o.items.length); save(); cloudSave(true); render(); refresh(); });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.items.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- choice problems: one, two-part, or select-all ---------- */
+function choiceProblem(parent, o){   // o.parts: [{q, opts, ans (index or array for select-all)}]
+  const P=st(o.id); P.pick=P.pick||{};
+  const max=o.parts.length;
+  const box=probShell(parent,o.part,o.num,o.q,max);
+  const groups=[];
+  o.parts.forEach((pt,pi)=>{
+    const multi=Array.isArray(pt.ans);
+    if(pt.q) box.insertAdjacentHTML('beforeend',`<div style="margin:10px 0 4px">${pt.q}${multi?' <span class="small muted">(Select all that apply.)</span>':''}</div>`);
+    const ordKey=o.id+'_'+pi; const order=S.ord[ordKey]||(S.ord[ordKey]=shuffle(pt.opts.map((_,i)=>i)));
+    const wrap=h('div',{class:'opts'}); box.appendChild(wrap);
+    const btns={};
+    order.forEach((oi,pos)=>{ const correct=multi?pt.ans.includes(oi):oi===pt.ans;
+      const b=h('button',{class:'opt'+(multi?' multi':''),type:'button'},`<span class="L">${'ABCDEF'[pos]}</span><span>${pt.opts[oi]}</span>`); if(correct) b.dataset.key='1';
+      b.addEventListener('click',()=>{ if(P.checked) return; if(multi){ const s=new Set(P.pick[pi]||[]); s.has(oi)?s.delete(oi):s.add(oi); P.pick[pi]=[...s]; } else P.pick[pi]=oi; save(); paint(); });
+      wrap.appendChild(b); btns[oi]=b; });
+    groups.push({pt,multi,btns});
+  });
+  const ui=actions(box,o);
+  function gradePart(g,pi){ const pk=P.pick[pi]; if(g.multi){ const s=new Set(pk||[]); return g.pt.ans.length===s.size&&g.pt.ans.every(a=>s.has(a)); } return pk===g.pt.ans; }
+  function paint(){
+    groups.forEach((g,pi)=>{ const pk=P.pick[pi];
+      Object.entries(g.btns).forEach(([oi,b])=>{ oi=+oi; const picked=g.multi?(pk||[]).includes(oi):pk===oi; const correct=g.multi?g.pt.ans.includes(oi):oi===g.pt.ans;
+        b.className='opt'+(g.multi?' multi':'')+(picked?' sel':'')+(P.checked&&P.right&&picked?' ok':''); b.disabled=!!P.checked; }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,max,o.why);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const blank=groups.some((g,pi)=>g.multi?!(P.pick[pi]||[]).length:P.pick[pi]==null);
+    if(blank){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Answer every part before you check.'; return; }
+    gradeTry(P,groups.map((g,pi)=>gradePart(g,pi)),max); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- typed blanks (two tries, like every problem) ---------- */
+function typedProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.blanks.length);
+  const inputs=o.blanks.map((bl,i)=>{ const row=h('div',{class:'brow'}); row.innerHTML=`${bl.before} <input class="blank" type="text" aria-label="${esc(strip(bl.before))}" data-key="${esc(bl.show)}"><span class="keytxt">${bl.show}</span> ${bl.after||''}`; box.appendChild(row);
+    const inp=$('input',row); inp.value=P.val[i]||''; inp.addEventListener('input',()=>{ P.val[i]=inp.value; save(); }); return inp; });
+  const ui=actions(box,o);
+  const ok=(bl,v)=>{ v=String(v||'').trim().toLowerCase(); if(bl.num){ const n=parseFloat(v.replace(/[^0-9.]/g,'')); return !isNaN(n)&&n>=bl.num[0]&&n<=bl.num[1]; } return bl.accept.some(a=>v.replace(/\s+/g,' ')===a); };
+  function paint(){ inputs.forEach(inp=>{ inp.classList.remove('ok','no'); if(P.checked&&P.right) inp.classList.add('ok'); inp.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; showTry(ui,P,o.blanks.length,''); }
+  ui.cb.addEventListener('click',()=>{
+    if(inputs.some(inp=>!inp.value.trim())){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Fill in every blank before you check.'; return; }
+    if(P.checked) return;
+    const res=o.blanks.map((bl,i)=>ok(bl,inputs[i].value));
+    gradeTry(P,res,o.blanks.length); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.blanks.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- written answer, scored by key ideas (two tries, like every problem) ---------- */
+function writtenProblem(parent, o){
+  const P=st(o.id); if(P.val==null) P.val='';
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const ta=h('textarea',{class:'wtext',rows:'5','aria-label':'Your answer','data-key':o.model}); ta.value=P.val; box.appendChild(ta);
+  box.appendChild(h('div',{class:'wkey'},'<b>Key:</b> '+o.model));
+  if(o.bank){ const wb=h('div',{class:'wbank2'}); wb.innerHTML='<b>Word bank</b> <span class="small muted">(tap a word to add it)</span><br>'+o.bank.map(w=>`<button type="button" class="wchip">${w}</button>`).join('');
+    box.appendChild(wb);
+    wb.querySelectorAll('.wchip').forEach(c=>c.addEventListener('click',()=>{ if(ta.disabled) return; const w=c.textContent; const a=ta.selectionStart??ta.value.length, b=ta.selectionEnd??ta.value.length;
+      const before=ta.value.slice(0,a), after=ta.value.slice(b); const pre=(before&&!/\s$/.test(before))?' ':''; const ins=pre+w+' ';
+      ta.value=before+ins+after; ta.focus(); const p=a+ins.length; ta.setSelectionRange(p,p); ta.dispatchEvent(new Event('input',{bubbles:true})); })); }
+  ta.addEventListener('input',()=>{ P.val=ta.value; save(); });
+  const ui=actions(box,o);
+  const grade=()=>{ const t=ta.value.toLowerCase(); const hits=o.groups.filter(g=>g[1].test(t)).length; const n=Math.min(o.pts,hits); return Array.from({length:o.pts},(_,i)=>i<n); };
+  function paint(){ ta.disabled=!!P.checked; ui.cb.disabled=!!P.checked; showTry(ui,P,o.pts,o.why); }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(ta.value.trim().split(/\s+/).length<5){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Write a full answer (at least one complete sentence) before you check.'; return; }
+    gradeTry(P,grade(),o.pts); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ============================== WORKSHEET CONTENT ============================== */
+function buildContent(sec){
+  let n=0; const num=()=>++n;
+  const say=(s,html)=>s.insertAdjacentHTML('beforeend',html);
+  const fig=(k,cap)=>`<div class="figwrap" style="margin:10px 0">${KFIG[k]}${cap?`<div class="small muted" style="margin-top:4px">${cap}</div>`:''}</div>`;
+  /* ---------------- 1. Roles ---------------- */
+  say(sec[0],`<div class="phenbox"><b>Words to know:</b> <b>Producers</b> (autotrophs) make their own food. <b>Consumers</b> (heterotrophs) eat other organisms: <b>herbivores</b> eat plants, <b>carnivores</b> eat animals, <b>omnivores</b> eat both. <b>Decomposers</b> and <b>detritivores</b> break down dead matter.</div>`);
+  binProblem(sec[0],{id:'w1', part:'P1', num:num(), q:'Sort each California organism by its role.',
+    bins:[{k:'p',label:'Producer'},{k:'h',label:'Herbivore'},{k:'c',label:'Carnivore'},{k:'o',label:'Omnivore'},{k:'d',label:'Decomposer or detritivore'}],
+    items:[{t:'Valley oak tree',k:'p'},{t:'Pond algae',k:'p'},{t:'Cottontail rabbit (eats clover)',k:'h'},{t:'Monarch caterpillar (eats milkweed)',k:'h'},{t:'Bobcat (eats rabbits and birds)',k:'c'},{t:'Black bear (eats berries and fish)',k:'o'},{t:'Earthworm (eats dead leaves)',k:'d'},{t:'Mold growing on fallen fruit',k:'d'}],
+    hint:'Ask: does it make its own food? If not, what does it eat: plants, animals, both, or dead matter?', done:'Producers make food; consumers eat plants, animals, or both; decomposers and detritivores recycle dead matter.'});
+  choiceProblem(sec[0],{id:'w2', part:'P1', num:num(), q:'Two-part question.',
+    parts:[{q:'<b>Part A:</b> Where does a producer get the energy to make its food?',opts:['Sunlight, captured by photosynthesis','From eating other organisms','From the soil','From decomposers'],ans:0},
+           {q:'<b>Part B:</b> What do decomposers return to the soil?',opts:['Nutrients (matter) that plants can use again','Energy that plants use instead of sunlight','Sunlight','Heat that plants turn into food'],ans:0}],
+    hint:'Think back to Unit 2: what process do plants use? Then think: is energy or matter recycled?', why:'Producers use sunlight. Decomposers recycle nutrients, not energy.'});
+  /* ---------------- 2. Chains ---------------- */
+  say(sec[1],`<p><b>A pond food chain.</b> Mosquito larvae eat algae. Dragonfly nymphs eat mosquito larvae. Rainbow trout eat dragonfly nymphs.</p>`);
+  dragProblem(sec[1],{id:'w3', part:'P2', num:num(), q:'Build the food chain from the producer to the top. Drag a label into each box.', equation:true, layout:['Level 1',0,'→ Level 2',1,'→ Level 3',2,'→ Level 4',3],
+    zones:[{id:'a',ans:'algae'},{id:'b',ans:'mosquito larvae'},{id:'c',ans:'dragonfly nymphs'},{id:'d',ans:'rainbow trout'}],
+    chips:['algae','mosquito larvae','dragonfly nymphs','rainbow trout','sunlight'],
+    hint:'Start with the producer. Each next box is the organism that eats the one before it. One label is not used.', done:'algae → mosquito larvae → dragonfly nymphs → rainbow trout.'});
+  choiceProblem(sec[1],{id:'w4', part:'P2', num:num(), q:'Use the pond food chain. Two-part question.',
+    parts:[{q:'<b>Part A:</b> What is the dragonfly nymph?',opts:['A secondary consumer (level 3)','A primary consumer (level 2)','A tertiary consumer (level 4)','A producer (level 1)'],ans:0},
+           {q:'<b>Part B:</b> What is the rainbow trout?',opts:['A tertiary consumer (level 4)','A secondary consumer (level 3)','A producer','A decomposer'],ans:0}],
+    hint:'Count from the algae: algae is level 1.', why:'Algae 1, larvae 2, nymphs 3, trout 4.'});
+  say(sec[1],fig('w_chainBad','A student drew this chaparral food chain.'));
+  choiceProblem(sec[1],{id:'w5', part:'P2', num:num(), q:'Look at the student\'s chain. Two-part question.',
+    parts:[{q:'<b>Part A:</b> What is wrong with it?',opts:['The arrows point from the eater to the food, so they are backward','Coyotes do not eat rabbits','Grasses should be at the top','Nothing is wrong'],ans:0},
+           {q:'<b>Part B:</b> Which chain is correct?',opts:['grasses → brush rabbit → coyote','coyote → brush rabbit → grasses','brush rabbit → grasses → coyote','grasses → coyote → brush rabbit'],ans:0}],
+    hint:'Arrows show the direction energy moves.', why:'Arrows point from the food to the eater.'});
+  /* ---------------- 3. Webs ---------------- */
+  say(sec[2],fig('w_web','The chaparral food web from the lesson. Arrows point from the food to the eater.'));
+  typedProblem(sec[2],{id:'w6', part:'P3', num:num(), q:'Count using the food web. Type a number in each blank.',
+    blanks:[{before:'Number of organisms that eat grasses:',after:'',num:[3,3],show:'3'},{before:'Number of food sources the red-tailed hawk has:',after:'',num:[2,2],show:'2'},{before:'Number of producers in this web:',after:'',num:[2,2],show:'2'}],
+    hint:'Count the arrows that leave the grasses. Count the arrows that point into the hawk. Producers are on the bottom row.'});
+  choiceProblem(sec[2],{id:'w7', part:'P3', num:num(), q:'Use the food web.',
+    parts:[{q:'<b>Part A:</b> Select <b>all</b> the omnivores in this web.',opts:['Coyote','Deer mouse','Mule deer','Gopher snake'],ans:[0,1]},
+           {q:'<b>Part B:</b> A fire burns most of the toyon. Which animal is hurt the most, because toyon is its <b>only</b> food in this web?',opts:['Mule deer','Coyote','Brush rabbit','Red-tailed hawk'],ans:0}],
+    hint:'An omnivore has arrows coming in from a plant AND an animal. For Part B, find the animal with only one arrow coming in, from toyon.', why:'Coyotes and deer mice eat plants and animals. Toyon is the mule deer\'s only food here.'});
+  choiceProblem(sec[2],{id:'w8', part:'P3', num:num(), q:'A disease kills most of the <b>gopher snakes</b>.',
+    parts:[{q:'<b>Part A:</b> What will most likely happen to the deer mice?',opts:['They may increase, because fewer are eaten','They will decrease, because they lose food','Nothing will happen','They will become producers'],ans:0},
+           {q:'<b>Part B:</b> What may happen to the red-tailed hawks?',opts:['They lose one food source, so they may eat more brush rabbits','They will starve, because snakes are their only food','They will start eating grasses','They will increase'],ans:0}],
+    hint:'Follow the arrows into and out of the gopher snake.', why:'Fewer snakes means fewer mice are eaten. Hawks still have rabbits.'});
+  /* ---------------- 4. 10% rule ---------------- */
+  dragProblem(sec[3],{id:'w9', part:'P4', num:num(), q:'The producers store <b>20,000 kcal</b>. Use the 10% rule to label each level of the pyramid.', svg:KFIG.w_pyr, vb:[900,380], zones:KFIG.w_pyrZ,
+    chips:['20,000 kcal','2,000 kcal','200 kcal','20 kcal','2 kcal'],
+    hint:'Start at the bottom with 20,000. Each level up, divide by 10. One label is not used.', done:'20,000 → 2,000 → 200 → 20 kcal.'});
+  typedProblem(sec[3],{id:'w10', part:'P4', num:num(), q:'Use the 10% rule. Type the number only.',
+    blanks:[{before:'Producers store 80,000 kcal. Secondary consumers get about',after:'kcal.',num:[800,800],show:'800'},{before:'Tertiary consumers get 4 kcal. The producers stored about',after:'kcal.',num:[4000,4000],show:'4,000'},{before:'Primary consumers get 6,500 kcal. Tertiary consumers get about',after:'kcal.',num:[65,65],show:'65'}],
+    hint:'Count the steps. Going up, divide by 10 for each step. Going down, multiply by 10 for each step.'});
+  choiceProblem(sec[3],{id:'w11', part:'P4', num:num(), q:'Where does the energy go?',
+    parts:[{q:'Select <b>all</b> the reasons a rabbit does NOT pass most of its food energy to the coyote that eats it.',opts:['The rabbit used energy to move, grow, and stay warm, and it left as heat','Some of the grass the rabbit ate was not digested and left as waste','The coyote does not eat the bones and fur','The rabbit sends its energy back to the sun'],ans:[0,1,2]}],
+    hint:'Think: used for life processes, not digested, not eaten. Does energy ever go back to the sun?', why:'Energy is used and lost as heat, or never eaten or digested. It never returns to the sun.'});
+  /* ---------------- 5. Pyramids, matter, energy ---------------- */
+  binProblem(sec[4],{id:'w12', part:'P5', num:num(), q:'Is each statement about matter or energy?',
+    bins:[{k:'m',label:'Matter (cycles)'},{k:'e',label:'Energy (flows one way)'}],
+    items:[{t:'Nitrogen in an owl pellet ends up in a new oak leaf',k:'m'},{t:'Carbon dioxide a bear breathes out is used by a plant',k:'m'},{t:'Phosphorus in a fallen log returns to the soil',k:'m'},{t:'A lizard warms the air around it as it moves',k:'e'},{t:'Plants must keep getting new sunlight every day',k:'e'},{t:'Each trophic level has less of it than the level below',k:'e'}],
+    hint:'Atoms (carbon, nitrogen, phosphorus) are reused. Sunlight and heat are energy.', done:'Atoms cycle; energy comes in as light and leaves as heat.'});
+  choiceProblem(sec[4],{id:'w13', part:'P5', num:num(), q:'Two-part question.',
+    parts:[{q:'<b>Part A:</b> Why do food chains rarely have more than 4 or 5 levels?',opts:['Too little energy is left at the top to support another level','Top predators cannot see well','There are not enough plants on Earth','Matter runs out at the top'],ans:0},
+           {q:'<b>Part B:</b> DDT in seawater was very low, but pelicans had high levels. This is called...',opts:['Biomagnification','Photosynthesis','Decomposition','Cellular respiration'],ans:0}],
+    hint:'Each step keeps only about 10%. A poison that builds up level by level has a special name.', why:'Energy runs out after a few steps. DDT biomagnified in pelicans.'});
+  writtenProblem(sec[4],{id:'w14', part:'P5', num:num(), q:'In the chaparral, there are thousands of deer mice but only a few red-tailed hawks. Explain why. Use <b>energy</b>, <b>10%</b>, <b>trophic level</b>, and <b>heat</b>.', pts:3,
+    bank:['energy','10%','trophic level','heat','used','life processes','less','fewer','support','producers'],
+    groups:[['only about 10% passes to the next trophic level',/10|tenth|percent|%/],['the rest is used for life processes / lost as heat',/heat|used|respir|lost|not eaten|waste|digest/],['less energy at a higher level supports fewer animals',/fewer|few|less|support|not enough/],['hawks are at a higher trophic level than mice',/higher|trophic|level|top|eat(s)? (the )?mice|predator/]],
+    model:'Only about 10% of the energy at one trophic level passes to the next. Mice use most of their energy for life processes, and it leaves as heat. Hawks are at a higher trophic level than mice, so there is much less energy for them, and that energy can only support a few hawks.',
+    hint:'Cover: only about 10% passes up, the rest is lost as heat, and less energy can support fewer animals.', why:'About 90% of energy is lost at each step, so the higher level supports fewer animals.'});
+}
+
+/* ============================== BUILD / SCORE ============================== */
+function scoreAll(){ const parts=PARTS.slice(0,-1).map(p=>({k:p.k,label:p.label,got:0,max:0})); PROBS.forEach(pr=>{ const pt=parts.find(x=>x.k===pr.part); pt.got+=pr.score(); pt.max+=pr.max; });
+  return {parts, total:parts.reduce((a,b)=>a+b.got,0), max:parts.reduce((a,b)=>a+b.max,0)}; }
+function build(){
+  PROBS.length=0; const ws=$('#ws'); ws.innerHTML='';
+  $('#nav').innerHTML=PARTS.map((pt,i)=>`<button class="ntile" type="button" data-i="${i}" aria-label="${pt.title}"><span class="ic">${ico(i,22)}</span><span class="nm">${pt.label}</span></button>`).join('');
+  $$('#nav .ntile').forEach(b=>b.addEventListener('click',()=>showPart(+b.dataset.i)));
+  const secs=PARTS.map((pt,i)=>{ const el=h('section',{class:'sec',id:'part'+i}); const last=i===PARTS.length-1;
+    el.innerHTML=`<div class="sechead"><div class="badge"><span class="z">${i+1}</span>${ico(i,34)}</div><div><div class="meta">${last?'Grade':`Section ${i+1} of ${PARTS.length-1} · about ${pt.min} min`}</div><h2>${pt.title}</h2></div></div>`;
+    const c=h('div',{class:'card'}); el.appendChild(c);
+    const nav=h('div',{class:'secnav'});
+    const back=h('button',{class:'btn ghost',type:'button'},i===0?'':'← Back'); if(i===0) back.style.visibility='hidden'; back.addEventListener('click',()=>showPart(i-1));
+    nav.appendChild(back);
+    if(!last){ const nx=h('button',{class:'btn primary',type:'button'},i===PARTS.length-2?'See my grade →':`Next: ${PARTS[i+1].title} →`); nx.addEventListener('click',()=>showPart(i+1)); nav.appendChild(nx); }
+    el.appendChild(nav); ws.appendChild(el); return c; });
+  buildContent(secs);
+  secs[PARTS.length-1].id='turnin';
+  showPart(Math.min(S.cur||0,PARTS.length-1),true);
+  $('#whoami').textContent=S.student?`${S.student.first} ${S.student.last}`:''; refresh();
+}
+function showPart(i,noScroll){
+  S.cur=i; $$('#ws .sec').forEach((el,j)=>el.hidden=j!==i);
+  $$('#nav .ntile').forEach((t,j)=>t.classList.toggle('cur',j===i));
+  if(!noScroll){ save(); window.scrollTo(0,0); }
+}
+function refresh(){
+  const sc=scoreAll(), done=PROBS.filter(p=>p.checked()).length;
+  $('#scorePill').textContent=`${done}/${PROBS.length} checked · ${sc.total}/${sc.max} pts`;
+  PARTS.slice(0,-1).forEach((pt,i)=>{ const t=$(`#nav .ntile[data-i="${i}"]`); if(t) t.classList.toggle('done',PROBS.filter(p=>p.part===pt.k).every(p=>p.checked())); });
+  const t7=$(`#nav .ntile[data-i="${PARTS.length-1}"]`); if(t7) t7.classList.toggle('done',!!S.submittedAt);
+  const c=$('#turnin'); if(!c) return;
+  const rows=sc.parts.map(p=>`<tr><th>${p.label}</th><td>${p.got} / ${p.max}</td></tr>`).join('');
+  c.innerHTML=`<div style="display:flex;gap:22px;align-items:center;flex-wrap:wrap"><div class="big">${sc.total}/${sc.max}</div><div><h3 style="margin:0">${esc(S.student?S.student.first+' '+S.student.last:'')}</h3><p class="muted" style="margin:0">${done} of ${PROBS.length} problems checked</p></div></div>
+    <table class="res" style="margin-top:12px">${rows}</table>
+    <p class="small muted" style="margin-top:10px">Problems you haven't checked count as 0. You can turn in again later; your teacher sees the newest one.</p>
+    <div class="btnrow"><button class="btn primary" id="subBtn" type="button">${S.submittedAt?'Turn in again':'Turn in my worksheet'}</button><button class="btn ghost" id="csvBtn" type="button">Download CSV</button></div>
+    <p class="fb info sheetStatus" aria-live="polite">${S.sentAt?`Sent to your teacher ${new Date(S.sentAt).toLocaleString()}.`:'Not turned in yet.'}</p>`;
+  $('#subBtn').addEventListener('click',turnIn);
+  $('#csvBtn').addEventListener('click',()=>downloadCSV([recordRow()],`FoodWebsWorksheet_${(S.student&&S.student.last||'student').replace(/\W+/g,'')}.csv`));
+}
+const CSV_HEAD=['Student ID','Last Name','First Name','Period','Teacher','Activity','Score','Total','Percent',...PARTS.slice(0,-1).map(p=>p.label),'Date'];
+function recordRow(){ const st=S.student||{}, sc=scoreAll(); return [st.id||'',st.last||'',st.first||'',st.period||'',st.teacher||'',ACTIVITY,sc.total,sc.max,Math.round(100*sc.total/sc.max)+'%',...sc.parts.map(p=>p.got),new Date(S.submittedAt||Date.now()).toLocaleString()]; }
+function csvText(rows){ const q=v=>{ v=String(v==null?'':v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }; return [CSV_HEAD,...rows].map(r=>r.map(q).join(',')).join('\r\n')+'\r\n'; }
+function downloadCSV(rows,name){ const b=new Blob([csvText(rows)],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500); }
+const loadRecs=()=>{ try{ return (JSON.parse(localStorage.getItem(RECS))||[]).filter(r=>r.length===CSV_HEAD.length); }catch(e){ return []; } };
+function saveRecord(){ if(S.preview) return; const recs=loadRecs(), row=recordRow(); const i=recs.findIndex(r=>r[0]===row[0]&&r[1]===row[1]); if(i>=0) recs[i]=row; else recs.push(row); try{ localStorage.setItem(RECS,JSON.stringify(recs)); }catch(e){} }
+function turnIn(){
+  const left=PROBS.filter(p=>!p.checked()).length;
+  if(left&&!confirm(`${left} problem${left>1?'s':''} not checked yet (they count as 0). Turn in anyway?`)) return;
+  S.submittedAt=Date.now(); save(); saveRecord(); cloudSave(true); disarm(); refresh();
+  const msg=t=>$$('.sheetStatus').forEach(e=>e.textContent=t);
+  if(S.preview){ msg('Preview mode: nothing is sent.'); return; }
+  const st=S.student, sc=scoreAll();
+  const body={studentId:st.id||'',firstName:st.first||'',lastName:st.last||'',period:st.period||'',teacher:st.teacher||'',locks:'0',when:new Date().toString(),activity:ACTIVITY,score:String(sc.total),total:String(sc.max),
+    qlabels:sc.parts.map((p,i)=>'P'+(i+1)+' '+PARTS[i].label).join('|'),qpoints:sc.parts.map(p=>p.got).join('|'),qmax:sc.parts.map(p=>p.max).join('|')};
+  msg('Sending...');
+  fetch(sheetURL(),{method:'POST',mode:'no-cors',body:new URLSearchParams(body)}).then(()=>{ S.sentAt=new Date().toISOString(); save(); msg('Sent! Your teacher will see your score.'); }).catch(()=>msg("Couldn't send. Check the Wi-Fi and try again, or download the CSV."));
+}
+
+/* ============================== NO LOCKDOWN ON WORKSHEETS ============================== */
+let teacherOpen=false;
+function arm(){} function disarm(){} function showLock(){} function enterFS(){}
+['copy','cut','paste','contextmenu'].forEach(ev=>document.addEventListener(ev,e=>{ if(teacherOpen||S.preview) return; e.preventDefault(); }));
+
+/* ============================== SIGN IN ============================== */
+function showWS(){ $('#start').hidden=true; $('#top').hidden=false; $('#ws').hidden=false; build(); window.scrollTo(0,0); if(S.locked&&LOCKDOWN&&!S.lockOff) showLock(); else arm(); }
+function renderStart(){ const has=!!S.student; $('#resumeBox').hidden=!has; $('#startForm').hidden=has; $('#signinTitle').textContent=has?'Welcome back':'Sign in to start';
+  if(has) $('#resumeText').innerHTML=`Signed in as <b>${esc(S.student.first)} ${esc(S.student.last)}</b>, period ${esc(S.student.period)}.`; }
+$('#fPeriod').innerHTML='<option value="">Choose your period</option>'+periodList().map(p=>`<option>${esc(p)}</option>`).join('');
+$('#fTeacher').innerHTML='<option value="">Choose your teacher</option>'+teacherList().map(t=>`<option>${esc(t)}</option>`).join('');
+let starting=false;
+async function start(){
+  if(starting) return; starting=true;
+  try{
+    const v={first:$('#fFirst').value.trim(),last:$('#fLast').value.trim(),id:$('#fId').value.trim(),period:$('#fPeriod').value,teacher:$('#fTeacher').value};
+    const miss=[]; if(!v.first) miss.push('first name'); if(!v.last) miss.push('last name'); if(!v.id) miss.push('student ID'); if(!v.period) miss.push('period'); if(!v.teacher) miss.push('teacher');
+    const err=$('#formErr'); if(miss.length){ err.className='fb no'; err.textContent='Fill in your '+miss.join(', ')+'.'; err.hidden=false; return; }
+    if(LOCKDOWN) enterFS();
+    err.className='fb info'; err.textContent='Checking for your saved work...'; err.hidden=false;
+    const res=await cloudLoad(v); err.hidden=true;
+    if(res.status==='found'){ const d=res.data; d.student=Object.assign({},d.student||{},{first:v.first,period:v.period,teacher:v.teacher}); adopt(d); showWS(); note('✓ Your saved work was loaded'); return; }
+    const ns=fresh(); ns.student=v; adopt(ns); showWS(); cloudSave(true);
+  } catch(ex){ const er=$('#formErr'); er.className='fb no'; er.textContent='Something went wrong starting ('+(ex&&ex.message||ex)+'). Reload and try again.'; er.hidden=false; }
+  finally{ starting=false; }
+}
+$('#startBtn').addEventListener('click',start);
+$('#startForm').addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.tagName==='INPUT'){ e.preventDefault(); start(); } });
+$('#resumeBtn').addEventListener('click',async()=>{ const b=$('#resumeBtn'); b.disabled=true; b.textContent='Loading your work...'; if(LOCKDOWN&&!S.locked) enterFS();
+  const res=await cloudLoad(S.student); b.disabled=false; b.textContent='Continue my worksheet';
+  if(res.status==='found'&&(res.data.updatedAt||0)>(S.updatedAt||0)&&checkedCount(res.data)>=checkedCount(S)){ const d=res.data; d.student=S.student; adopt(d); note('✓ Your newest saved work was loaded'); } showWS(); });
+$('#notMeBtn').addEventListener('click',async()=>{ const b=$('#notMeBtn'); b.disabled=true;
+  try{ if(cloudOK()) await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); }catch(e){ b.disabled=false; $('#resumeErr').textContent="Can't back up the last student's work right now. Check the Wi-Fi, or ask your teacher."; $('#resumeErr').hidden=false; return; }
+  b.disabled=false; adopt(fresh()); ['#fFirst','#fLast','#fId','#fPeriod','#fTeacher'].forEach(s=>$(s).value=''); renderStart(); });
+
+/* ============================== TEACHER ============================== */
+function openTeacher(){ teacherOpen=true; $('#teachLogin').hidden=false; $('#teachPanel').hidden=true; $('#teachErr').hidden=true; $('#teachCode').value=''; $('#teachOv').classList.add('show'); setTimeout(()=>$('#teachCode').focus(),50); }
+function closeTeacher(){ $('#teachOv').classList.remove('show'); teacherOpen=false; }
+$('#teacherLink').addEventListener('click',openTeacher); $('#teachBtn').addEventListener('click',openTeacher);
+$('#teachCancel').addEventListener('click',closeTeacher);
+$('#teachCode').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#teachGo').click(); });
+$('#teachGo').addEventListener('click',()=>{ if(!codeIs($('#teachCode').value,TEACHER_CODE)){ $('#teachErr').hidden=false; return; } $('#teachLogin').hidden=true; $('#teachPanel').hidden=false; renderTeacher(); });
+function renderTeacher(){
+  const recs=loadRecs(), p=$('#teachPanel'), keyOn=document.body.classList.contains('keyon');
+  p.innerHTML=`<h2>Teacher tools</h2>
+    <div class="btnrow"><button class="btn ghost" id="tKey" type="button">${keyOn?'Hide answer key':'Answer key'}</button>
+      <button class="btn ghost" id="tPrev" type="button">${S.preview?'End preview':'Preview (saves nothing)'}</button>
+      <button class="btn ghost" id="tResetWrong" type="button">Reset all wrong answers</button>
+      <button class="btn ghost" id="tReset" type="button">Reset this Chromebook</button><button class="btn ghost" id="tClose" type="button">Close</button></div>
+    <h3 style="margin-top:16px">Scores saved on this Chromebook (${recs.length})</h3>
+    <div class="wide">${recs.length?`<table class="nb"><tr><th>Student</th><th>ID</th><th>Period</th><th>Score</th><th>Date</th></tr>${recs.map(r=>`<tr><td>${esc(r[1])}, ${esc(r[2])}</td><td>${esc(r[0])}</td><td>${esc(r[3])}</td><td>${r[6]}/${r[7]}</td><td>${esc(r[r.length-1])}</td></tr>`).join('')}</table>`:'<p class="muted">None yet.</p>'}</div>
+    <div class="btnrow"><button class="btn primary" id="tCsv" type="button" ${recs.length?'':'disabled'}>Download scores (CSV)</button></div>
+    <h3 style="margin-top:16px">Load a student's saved work</h3>
+    <div class="btnrow"><input class="code" id="tId" placeholder="Student ID" style="width:150px"><input class="code" id="tLast" placeholder="Last name" style="width:170px"><button class="btn ghost" id="tLoad" type="button">Load work</button></div>
+    <p class="fb info" id="tMsg" style="min-height:1em"></p>`;
+  const msg=t=>$('#tMsg').textContent=t;
+  $('#tKey').addEventListener('click',()=>{ document.body.classList.toggle('keyon'); renderTeacher(); msg(document.body.classList.contains('keyon')?'Answer key on: each box shows its answer, sort chips show their box, and correct choices have a dashed gold outline.':'Answer key off.'); });
+  $('#tPrev').addEventListener('click',()=>{ if(S.preview){ location.reload(); return; } const ns=fresh(); ns.preview=true; ns.student={first:'Teacher',last:'Preview',id:'0',period:'-',teacher:teacherList()[0]}; S=ns; closeTeacher(); showWS(); note('Preview: nothing is saved'); });
+  $('#tReset').addEventListener('click',()=>{ if(confirm('Erase this worksheet on this Chromebook? Work backed up to the Saved Student Work sheet is not deleted.')){ try{ localStorage.removeItem(STORE); }catch(e){} location.reload(); } });
+  $('#tResetWrong').addEventListener('click',()=>{
+    const wrong=PROBS.filter(pr=>{ const P=S.p[pr.id]||{}; return (P.tries||0)>0 && !P.right; });
+    if(!wrong.length){ msg('Nothing to reset: this student has no wrong answers.'); return; }
+    if(!confirm(`Reset ${wrong.length} problem${wrong.length>1?'s':''} that ${wrong.length>1?'are':'is'} wrong or on a second try for ${(S.student&&S.student.first)||'this student'}? Correct answers stay.`)) return;
+    wrong.forEach(pr=>{ delete S.p[pr.id]; });
+    save(); cloudSave(true); msg(`Reset ${wrong.length} problem${wrong.length>1?'s':''}. Reloading…`); setTimeout(()=>location.reload(),700); });
+  $('#tClose').addEventListener('click',closeTeacher);
+  $('#tCsv').addEventListener('click',()=>downloadCSV(recs,`FoodWebsWorksheet_scores_${new Date().toISOString().slice(0,10)}.csv`));
+  $('#tLoad').addEventListener('click',async()=>{ const s={id:$('#tId').value.trim(),last:$('#tLast').value.trim()}; if(!s.id||!s.last){ msg('Type the student ID and last name.'); return; } msg('Looking up saved work...');
+    const r=await cloudLoad(s); if(r.status==='found'){ adopt(r.data); closeTeacher(); renderStart(); $('#start').hidden=false; $('#ws').hidden=true; $('#top').hidden=true; } else msg(r.status==='none'?'No saved work found for that student.':"Couldn't reach the saved-work sheet."); });
+}
+
+if(!STORAGE_OK) $('#noStore').hidden=false;
+renderStart();
+})();
+</script>
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

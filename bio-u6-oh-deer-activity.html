@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oh Deer! Limiting Factors Game | Biology Unit 6</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1626; --panel:#142136; --panel2:#1a2a44; --line:#2a3d5f; --line2:#3a5580;
+  --text:#e8eef8; --muted:#a3b4cf; --dim:#7488a9;
+  --leaf:#5fe3a9; --sun:#ffd35c; --r:#ffd35c; --sky:#45c8f0; --ok:#4ade80; --bad:#fb7185; --pink:#f472b6;
+  --font:'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+*{box-sizing:border-box} [hidden]{display:none !important}
+html,body{margin:0}
+body{background-color:var(--bg); background-image:linear-gradient(rgba(110,150,210,.065) 1px,transparent 1px),linear-gradient(90deg,rgba(110,150,210,.065) 1px,transparent 1px); background-size:32px 32px;
+  color:var(--text); font-family:var(--font); font-size:17px; line-height:1.55; -webkit-user-select:none; user-select:none}
+input,textarea{-webkit-user-select:text; user-select:text}
+h1,h2,h3,h4{margin:0 0 .45em; line-height:1.2; font-weight:600}
+h1{font-size:clamp(28px,4.4vw,40px); font-weight:700} h2{font-size:24px} h3{font-size:19px}
+p{margin:0 0 .75em} .muted{color:var(--muted)} .small{font-size:14px}
+sub,sup{font-size:.72em}
+:focus-visible{outline:3px solid var(--r); outline-offset:2px}
+.top{position:sticky; top:0; z-index:20; background:rgba(13,22,38,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+.top-in{max-width:1100px; margin:0 auto; padding:8px 16px; display:flex; gap:12px; align-items:center}
+.brand{font-weight:600; font-size:15px; white-space:nowrap} .brand span{display:block; font-weight:400; font-size:12px; color:var(--muted)}
+.nav{display:flex; gap:6px; flex:1; overflow-x:auto; padding:3px 2px}
+.ntile{flex:0 0 auto; width:54px; height:54px; border-radius:7px; border:1.5px solid var(--line2); background:var(--panel); color:var(--text); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer; position:relative; font:inherit; padding:0}
+.ntile .ic{color:var(--leaf); line-height:0} .ntile .nm{font-size:8.5px; color:var(--muted)}
+.ntile.cur{border-color:var(--r); background:rgba(255,211,92,.14)}
+.ntile.cur .nm{color:var(--r)}
+.secnav{display:flex; justify-content:space-between; gap:10px; margin-top:4px}
+.ntile.done::after{content:'✓'; position:absolute; top:1px; right:4px; font-size:10px; font-weight:700; color:var(--ok)}
+.scorepill{font-size:13px; padding:4px 10px; border-radius:999px; background:var(--panel2); white-space:nowrap}
+.savenote{font-size:12.5px; color:var(--ok); white-space:nowrap} @media (max-width:1300px){ .savenote{display:none} } @media (max-width:900px){ .scorepill{display:none} }
+main{max-width:1000px; margin:0 auto; padding:20px 16px 80px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin:0 0 18px}
+.sec{scroll-margin-top:80px}
+.sechead{display:flex; gap:14px; align-items:center; margin:28px 0 10px}
+.badge{width:66px; height:66px; border-radius:10px; border:2px solid var(--leaf); background:var(--panel); display:flex; align-items:center; justify-content:center; position:relative; flex:0 0 auto; color:var(--leaf)}
+.badge .z{position:absolute; top:3px; left:6px; font-size:11px; color:var(--muted)}
+.meta{color:var(--muted); font-size:14px}
+.btn{font:inherit; font-weight:600; font-size:15px; border-radius:10px; padding:10px 18px; cursor:pointer; border:1.5px solid transparent}
+.btn.primary{background:var(--r); color:#231a00} .btn.ghost{background:transparent; border-color:var(--line2); color:var(--text)}
+.btn.small{padding:6px 12px; font-size:14px} .btn:disabled{opacity:.45; cursor:not-allowed}
+.btnrow{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:12px}
+.field{display:flex; flex-direction:column; gap:4px; font-size:14px; color:var(--muted)}
+.field input,.field select{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px}
+.formgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin:10px 0}
+.fb{margin-top:10px; padding:10px 14px; border-radius:10px; font-size:15px}
+.fb.ok{background:rgba(74,222,128,.12); color:#c9f7d8} .fb.no{background:rgba(251,113,133,.12); color:#ffd3db} .fb.info{background:var(--panel2)}
+.prob{border-top:1px solid var(--line); padding-top:16px; margin-top:16px}
+.prob:first-of-type{border-top:none; padding-top:0; margin-top:0}
+.pq{font-weight:500; margin-bottom:8px}
+.pnum{display:inline-block; min-width:30px; font-weight:700; color:var(--leaf)}
+.pts{font-size:13px; color:var(--muted); font-weight:400}
+.hintbox{background:rgba(255,211,92,.08); border-left:3px solid var(--r); border-radius:8px; padding:8px 12px; margin-top:8px; font-size:15px}
+/* drag and drop */
+.figwrap{position:relative; width:100%}
+.figwrap svg{width:100%; height:auto; display:block; background:#0a1322; border:1px solid var(--line); border-radius:12px}
+.figwrap svg text{font-family:var(--font)}
+.zone{position:absolute; transform:translate(-50%,-50%); min-height:32px; border:2px dashed #8fb3e6; border-radius:9px; background:rgba(13,22,38,.92); color:var(--text); font:inherit; font-size:14px; font-weight:600; display:flex; align-items:center; justify-content:center; padding:2px 6px; cursor:pointer; text-align:center; line-height:1.15}
+.zone.empty{color:var(--dim); font-weight:400; font-size:12.5px}
+.zone.filled{border-style:solid; border-color:var(--r); background:#2b2410}
+.zone.hot{box-shadow:0 0 0 3px rgba(255,211,92,.5)}
+.zone.locked{opacity:.9}
+.zone.ok{border-color:var(--ok); background:#0f2e1d} .zone.no{border-color:var(--bad); background:#3a0f1a}
+.pool{display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 4px; padding:10px; border:1px dashed var(--line2); border-radius:10px; min-height:52px}
+.pool .lbl{width:100%; font-size:12.5px; color:var(--muted)}
+.chip{font:inherit; font-size:15px; font-weight:600; padding:6px 14px; border-radius:999px; border:1.5px solid var(--line2); background:var(--panel2); color:var(--text); cursor:grab; touch-action:none}
+.chip.sel{border-color:var(--r); background:rgba(255,211,92,.16); box-shadow:0 0 0 3px rgba(255,211,92,.35)}
+.bins{display:grid; gap:10px; margin-top:6px}
+.bin{border:2px dashed var(--line2); border-radius:12px; padding:10px; min-height:96px; cursor:pointer; background:rgba(13,22,38,.5)}
+.bin h4{margin:0 0 8px; font-size:15px; color:var(--leaf)} .bin.hot{border-color:var(--r)}
+.bin .chip{cursor:pointer; margin:3px} .bin .chip.ok{border-color:var(--ok); background:#0f2e1d} .bin .chip.no{border-color:var(--bad); background:#3a0f1a}
+.phenbox{background:rgba(244,114,182,.1); border-left:4px solid #f472b6; border-radius:8px; padding:10px 14px; margin-bottom:14px}
+.fixnote{font-size:12px; color:#ffd3db; font-weight:400}
+/* equation */
+.eq{display:flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:20px; font-weight:600; margin:10px 0}
+.eq .zone{position:static; transform:none; min-width:120px; min-height:40px}
+/* choices */
+.opts{display:grid; gap:8px; margin:6px 0}
+.opt{display:flex; gap:12px; align-items:center; text-align:left; background:var(--panel2); border:1.5px solid var(--line); color:var(--text); border-radius:10px; padding:9px 14px; font:inherit; font-size:16px; cursor:pointer}
+.opt .L{flex:0 0 26px; height:26px; border-radius:50%; display:grid; place-items:center; background:var(--bg); font-weight:600; font-size:13px}
+.opt.multi .L{border-radius:6px}
+.opt.sel{border-color:var(--r); background:rgba(255,211,92,.08)} .opt.sel .L{background:var(--r); color:#231a00}
+.opt.ok{border-color:var(--ok); background:rgba(74,222,128,.1)} .opt.no{border-color:var(--bad); background:rgba(251,113,133,.1)}
+.opt:disabled{cursor:default}
+input.blank{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:7px 10px; font:inherit; font-size:16px; width:170px}
+input.blank.ok{border-color:var(--ok)} input.blank.no{border-color:var(--bad)}
+.brow{margin:8px 0}
+/* answer key (teacher) */
+body.keyon .zone[data-key]::after{content:'key: ' attr(data-key); position:absolute; top:100%; left:50%; transform:translateX(-50%); font-size:11px; color:var(--r); white-space:nowrap; margin-top:2px}
+body.keyon .chip[data-key]::after{content:' → ' attr(data-key); font-size:11px; color:var(--r)}
+body.keyon .opt[data-key]{outline:2px dashed var(--r); outline-offset:2px}
+body.keyon input.blank[data-key]+.keytxt{display:inline}
+.datatab select.ocell{font:inherit; padding:4px 6px; border-radius:8px; max-width:100%}
+.datatab input.dcell{width:72px; font:inherit; padding:4px 6px; border-radius:8px; text-align:center}
+.datachart svg{width:100%; height:auto; display:block; margin-top:10px}
+ol.proc li{margin:4px 0}
+.off{opacity:.35; pointer-events:none}
+.btbkey{display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; margin:6px 0 10px}.btbkey span{display:inline-block; width:16px; height:16px; border-radius:50%; vertical-align:middle; border:1px solid rgba(255,255,255,.4)}
+.simwrap{display:grid; grid-template-columns:minmax(150px,220px) 1fr; gap:18px; align-items:start; background:rgba(255,255,255,.04); border:1px solid var(--line,#2a3d5f); border-radius:14px; padding:14px}
+.simwrap.off{opacity:.35; pointer-events:none}
+.bigtube svg{width:100%; height:auto; display:block}.clock{text-align:center; font-weight:700; font-size:20px; margin-top:6px}
+.tg{display:block; margin:4px 0; font-size:17px}.tg input{transform:scale(1.3); margin-right:8px}
+.sensor{margin:10px 0; font-size:18px}.sensor b{font-size:24px; color:#ffd35c}
+.btn.on{outline:2px solid #ffd35c}
+.dot{display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:6px; vertical-align:middle}
+.predtab select{font:inherit; padding:4px 6px; border-radius:8px}
+#sChart svg{width:100%; height:auto; display:block}
+@media (max-width:700px){ .simwrap{grid-template-columns:1fr} .bigtube{max-width:180px; margin:0 auto} }
+.wbank2{margin-top:8px; padding:8px 10px; border:1px dashed rgba(163,180,207,.5); border-radius:10px; font-size:14px; line-height:2}
+.wchip{font:inherit; font-size:14px; margin:2px 4px 2px 0; padding:2px 10px; border-radius:999px; border:1px solid rgba(163,180,207,.6); background:rgba(255,255,255,.06); color:inherit; cursor:pointer}
+.wchip:hover{border-color:#ffd35c}
+.wtext{width:100%; min-height:110px; font:inherit; padding:10px; border-radius:10px; border:1.5px solid var(--line,#2a3d5f); background:rgba(255,255,255,.04); color:inherit; resize:vertical}
+.wkey{display:none; margin-top:6px; font-size:14px; color:var(--r,#ffd35c)}
+body.keyon .wkey{display:block}
+.keytxt{display:none; font-size:12px; color:var(--r); margin-left:6px}
+.big{font-size:52px; font-weight:700; color:var(--r); line-height:1}
+table.res{border-collapse:collapse; width:100%} table.res th,table.res td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line)} table.res th{color:var(--muted); font-weight:400}
+.card.nostore{border:2px solid var(--bad); background:rgba(251,113,133,.08)}
+.overlay{position:fixed; inset:0; background:rgba(4,9,18,.94); z-index:100; display:none; align-items:center; justify-content:center; padding:20px}
+.overlay.show{display:flex}
+.modal{background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:24px; max-width:900px; width:100%; max-height:92vh; overflow:auto}
+input.code{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px; width:200px}
+table.nb{border-collapse:collapse; width:100%; font-size:14px} table.nb th,table.nb td{border:1px solid var(--line2); padding:6px 8px} table.nb th{background:var(--panel2)}
+.wide{overflow-x:auto}
+@media (max-width:700px){ .zone{font-size:11px; min-height:26px} .chip{font-size:13px; padding:5px 10px} }
+@media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important} }
+.prob + p,.prob + .phenbox,.prob + .figwrap{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+
+.odfig svg{background:#f8fafc}
+.odkey td{vertical-align:top} .odkey td:first-child{width:46%}
+.datatab input.dcell{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); max-width:110px}
+.datatab input.dcell:disabled{opacity:1; color:var(--text); border-color:var(--line); background:var(--panel2)}
+.odchart svg{width:100%; height:auto; display:block; margin-top:10px}
+.ordwrap .eq{display:grid; grid-template-columns:auto minmax(0,1fr); gap:8px 12px; font-size:16px; align-items:center}
+.ordwrap .eq .zone{width:100%; min-height:42px; font-size:15px; justify-content:flex-start; text-align:left; padding:4px 10px}
+.ordwrap .chip{font-size:14px; text-align:left; border-radius:12px}
+.proc ul{margin:6px 0 4px; padding-left:20px} .proc ul li{margin:3px 0}
+.isstat{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; font-weight:600; margin-bottom:6px}
+.odcount{font-variant-numeric:tabular-nums; font-size:18px; color:var(--r); background:var(--bg); border:1px solid var(--line2); border-radius:8px; padding:2px 12px; font-weight:400}
+.odpic svg{width:100%; height:auto; display:block; border-radius:12px; max-width:780px; margin:0 auto}
+.evrow{display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:6px 0 10px}
+.evbtn.on{background:var(--r); color:#231a00; border-color:var(--r)}
+.evbtn:disabled{opacity:.45}
+.logtab td,.logtab th{font-size:14px; text-align:center; padding:4px 6px}
+@media (max-width:520px){ .predtab td,.predtab th{padding:5px} .predtab select{max-width:150px} .ordwrap .eq{grid-template-columns:1fr} .ordwrap .eq .zone{font-size:13px} }
+
+</style>
+</head>
+<body>
+<header class="top" id="top" hidden>
+  <div class="top-in">
+    <div class="brand">Oh Deer! game<span id="whoami"></span></div>
+    <nav class="nav" id="nav" aria-label="Worksheet parts"></nav>
+    <span class="scorepill" id="scorePill"></span>
+    <span class="savenote" id="saveNote" aria-live="polite"></span>
+    <button class="btn ghost small" id="teachBtn" type="button">Teacher</button>
+  </div>
+</header>
+
+<main>
+  <section id="start">
+    <div class="muted" style="margin-top:8px">Biology · Unit 6: Ecology · Activity · about 50 minutes</div>
+    <h1>Oh Deer! Limiting Factors Game</h1>
+    <p class="muted" style="font-size:18px;max-width:42em">Be a deer or part of the habitat, play 15 rounds outside, and graph what happens to the deer population when food, water, and shelter are limited.<span style="display:block;font-size:14px;margin-top:8px">Standards: NGSS HS-LS2-1 (factors that affect carrying capacity) and HS-LS2-2 (biodiversity and populations).</span></p>
+    <div class="card"><h3>How it works</h3>
+      <p style="margin:0">Each problem gets <b>two tries</b>. Right on either try earns full credit. If your first try is wrong, you'll be told it isn't right yet (but not the answer), so look again and try once more. Wrong twice and the problem is marked wrong and locks. Stuck? Tap <b>Hint</b> before you check.</p></div>
+    <div class="card nostore" id="noStore" hidden><h3>This browser can't save your work</h3><p style="margin:0">You may be in guest or incognito mode. Sign in to your school account and open the worksheet again.</p></div>
+    <div class="card">
+      <h3 id="signinTitle">Sign in to start</h3>
+      <div id="resumeBox" hidden><p id="resumeText"></p>
+        <div class="btnrow"><button class="btn primary" id="resumeBtn" type="button">Continue my lab</button><button class="btn ghost small" id="notMeBtn" type="button">Not you? Sign in as a different student</button></div>
+        <div class="fb no" id="resumeErr" hidden></div></div>
+      <div id="startForm">
+        <div class="formgrid">
+          <label class="field">First name<input id="fFirst" autocomplete="off"></label><label class="field">Last name<input id="fLast" autocomplete="off"></label>
+          <label class="field">Student ID<input id="fId" inputmode="numeric" autocomplete="off"></label>
+          <label class="field">Period<select id="fPeriod"></select></label><label class="field">Teacher<select id="fTeacher"></select></label>
+        </div>
+        <p class="small muted">Your work saves as you go. On any Chromebook, sign in with the same student ID and last name to pick up where you left off.</p>
+        <div class="fb no" id="formErr" hidden></div>
+        <div class="btnrow"><button class="btn primary" type="button" id="startBtn">Start the lab</button></div>
+      </div>
+    </div>
+    <p style="text-align:center"><button class="btn ghost" id="teacherLink" type="button">Teacher: enter unlock code</button></p>
+  </section>
+  <div id="ws" hidden></div>
+</main>
+
+<div class="overlay" id="teachOv" role="dialog" aria-modal="true" aria-labelledby="tTitle">
+  <div class="modal"><div id="teachLogin"><h2 id="tTitle">Teacher</h2>
+    <div class="btnrow"><input class="code" id="teachCode" type="password" placeholder="Teacher code" autocomplete="off"><button class="btn primary" id="teachGo" type="button">Open</button><button class="btn ghost" id="teachCancel" type="button">Close</button></div>
+    <div class="fb no" id="teachErr" hidden>That code didn't work.</div></div><div id="teachPanel" hidden></div></div>
+</div>
+<div class="overlay" id="tabOv" role="dialog" aria-modal="true"><div class="modal" style="max-width:520px"><h2>This lab is open in another tab</h2><p>To keep your newest work safe, this copy stopped saving. Close the extra tab, then reload this one.</p><div class="btnrow"><button class="btn primary" type="button" onclick="location.reload()">Reload with my newest work</button></div></div></div>
+
+<script src="sheets-config.js"></script>
+<script>
+(function(){
+'use strict';
+/* ============================== SETTINGS ============================== */
+const LESSON_TITLE='Population Growth';           // unlock code = last word of this title
+const UNLOCK_CODE=LESSON_TITLE.trim().split(/\s+/).pop();
+const TEACHER_CODE='Teacher007';   // universal teacher-tools code
+const codeIs=(v,c)=>String(v||'').trim().toLowerCase()===String(c).toLowerCase();
+const WS_ID='bio-u6-oh-deer-activity', ACTIVITY='Oh Deer Activity';
+const BACKUP_URL='https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const SAVE_URL_BUILTIN='https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';
+const BACKUP_TEACHERS=['Austin','Mueller','McCue','Arce','Trimm','Garcia','Trimm/Callanan','Callanan'], BACKUP_PERIODS=['1','2','3','4','5','6','7','8'];
+const STORE='ohDeerAct_v1', RECS='ohDeerAct_records_v1';
+/* ===================================================================== */
+const teacherList=()=>{ try{ if(typeof TEACHERS!=='undefined'&&Array.isArray(TEACHERS)&&TEACHERS.length) return TEACHERS.map(String); }catch(e){} return BACKUP_TEACHERS; };
+const periodList=()=>{ try{ if(typeof PERIODS!=='undefined'&&Array.isArray(PERIODS)&&PERIODS.length) return PERIODS.map(String); }catch(e){} return BACKUP_PERIODS; };
+const sheetURL=()=>{ try{ if(typeof SHEETS_WEBHOOK_URL!=='undefined'&&SHEETS_WEBHOOK_URL&&String(SHEETS_WEBHOOK_URL).indexOf('PASTE')<0) return String(SHEETS_WEBHOOK_URL); }catch(e){} return BACKUP_URL; };
+const saveURL=()=>{ try{ if(typeof SAVE_WEBHOOK_URL!=='undefined'&&SAVE_WEBHOOK_URL&&String(SAVE_WEBHOOK_URL).indexOf('PASTE')<0) return String(SAVE_WEBHOOK_URL); }catch(e){} return SAVE_URL_BUILTIN; };
+const LOCKDOWN=false;   // worksheets never lock down
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const strip=s=>String(s).replace(/<[^>]+>/g,'');
+function h(tag,attrs,html){ const e=document.createElement(tag); if(attrs) for(const k in attrs){ if(attrs[k]===false||attrs[k]==null) continue; if(k==='class') e.className=attrs[k]; else if(k==='hidden') e.hidden=!!attrs[k]; else e.setAttribute(k,attrs[k]); } if(html!=null) e.innerHTML=html; return e; }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* ---------- state + saving ---------- */
+function fresh(){ return {ws:WS_ID, student:null, p:{}, ord:{}, locks:0, locked:false, lockOff:false, submittedAt:null, sentAt:null}; }
+let S; try{ S=JSON.parse(localStorage.getItem(STORE)); }catch(e){} if(!S||S.ws!==WS_ID) S=fresh();
+let STORAGE_OK=true, saveBlocked=false;
+try{ localStorage.setItem('__ps_t','1'); STORAGE_OK=localStorage.getItem('__ps_t')==='1'; localStorage.removeItem('__ps_t'); }catch(e){ STORAGE_OK=false; }
+function save(){
+  if(saveBlocked) return;
+  if(S.preview){ note('Preview: nothing is saved'); return; }
+  try{ const raw=localStorage.getItem(STORE); if(raw){ const st=JSON.parse(raw); if(st&&st.ws===WS_ID&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); return; } }
+    S.rev=(S.rev||0)+1; S.updatedAt=Date.now(); localStorage.setItem(STORE,JSON.stringify(S)); note(); cloudSave(false); }catch(e){}
+}
+window.addEventListener('storage',e=>{ if(e.key!==STORE||!e.newValue) return; try{ const st=JSON.parse(e.newValue); if(st&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); } }catch(_){} });
+const saveKey=st=>(String(st.id||'').replace(/\s+/g,'')+'-'+String(st.last||'').toLowerCase().replace(/[^a-z]/g,'')).toLowerCase();
+const checkedCount=st=>Object.values((st||S).p).filter(x=>x&&x.checked).length;
+let cloudTimer=null, cloudDirty=false, cloudBusy=false, cloudAt=null, cloudErr=false;
+const cloudOK=()=>!!saveURL()&&S.student&&!saveBlocked&&!S.preview;
+function cloudBody(){ const st=S.student||{}, sc=scoreAll();
+  return new URLSearchParams({code:saveKey(st), lesson:WS_ID, ver:String(S.updatedAt||Date.now()), prog:String((S.submittedAt?100000:0)+checkedCount(S)), studentId:st.id||'', lastName:st.last||'', firstName:st.first||'', period:st.period||'', teacher:st.teacher||'',
+    summary:S.submittedAt?`Turned in · ${sc.total}/${sc.max}`:`${checkedCount(S)} of ${PROBS.length} problems checked`, data:JSON.stringify(S)}); }
+function cloudSave(soon){ if(!cloudOK()) return; cloudDirty=true; if(soon){ clearTimeout(cloudTimer); cloudTimer=setTimeout(cloudFlush,1200); } else if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); }
+async function cloudFlush(){ cloudTimer=null; if(!cloudOK()||!cloudDirty) return; if(cloudBusy){ cloudTimer=setTimeout(cloudFlush,4000); return; } cloudBusy=true; cloudDirty=false;
+  try{ await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); cloudAt=new Date(); cloudErr=false; }catch(e){ cloudDirty=true; cloudErr=true; if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); } finally{ cloudBusy=false; note(); } }
+function cloudBeacon(){ if(!cloudOK()||!cloudDirty) return; try{ if(navigator.sendBeacon&&navigator.sendBeacon(saveURL(),cloudBody())) cloudDirty=false; }catch(e){} }
+async function cloudLoad(st){ const ctrl=new AbortController(), t=setTimeout(()=>ctrl.abort(),5000);
+  try{ const r=await fetch(saveURL()+'?'+new URLSearchParams({code:saveKey(st),lesson:WS_ID}),{signal:ctrl.signal}); const j=await r.json(); if(j&&j.found&&j.data){ const d=JSON.parse(j.data); if(d&&d.ws===WS_ID) return {status:'found',data:d}; } return {status:'none'}; }
+  catch(e){ return {status:'error'}; } finally{ clearTimeout(t); } }
+function adopt(ns){ let sr=0; try{ const raw=localStorage.getItem(STORE); if(raw) sr=JSON.parse(raw).rev||0; }catch(e){} ns.rev=Math.max(ns.rev||0,sr); S=ns; saveBlocked=false; save(); }
+function note(msg){ const n=$('#saveNote'); if(!n) return; const tm=d=>d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}); n.textContent=msg||(cloudErr?'✓ Saved on this Chromebook':'✓ Saved '+tm(new Date())+(cloudAt?' · backed up '+tm(cloudAt):'')); }
+document.addEventListener('visibilitychange',()=>{ if(document.hidden){ save(); cloudBeacon(); } });
+window.addEventListener('pagehide',()=>{ save(); cloudBeacon(); });
+
+/* ============================== DIAGRAMS ============================== */
+/* ============================== PROBLEMS ============================== */
+const PARTS=[
+ {k:'P1', label:'Setup', title:'Purpose and setup', min:10, icon:'<path d="M4 20h16"/><path d="M6 20V9l6-4 6 4v11"/><path d="M10 20v-5h4v5"/>'},
+ {k:'P2', label:'Predict', title:'Predict', min:5, icon:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z"/>'},
+ {k:'P3', label:'Data', title:'Data', min:25, icon:'<rect x="3.5" y="4" width="17" height="16" rx="2"/><path d="M3.5 9h17M3.5 14.5h17M10 4v16"/>'},
+ {k:'P4', label:'Analysis', title:'Analysis', min:15, icon:'<path d="M3 21h18"/><path d="M5 17l4-7 4 5 3-8 4 6"/>'},
+ {k:'P5', label:'Conclusion', title:'Conclusion (CER)', min:8, icon:'<path d="M4 4h12l4 4v12H4z"/><path d="M8 11h8M8 15h6"/>'},
+ {k:'P6', label:'Grade', title:'Your grade', min:1, icon:'<rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4V2.5h6V4"/><path d="M8.5 13l2.5 2.5 4.5-5"/>'}
+];
+const ico=(i,s)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PARTS[i].icon}</svg>`;
+const PROBS=[];   // every problem: {id, part, max, score(), key()}
+
+function probShell(parent, part, num, q, pts){
+  const box=h('div',{class:'prob'}); parent.appendChild(box);
+  box.innerHTML=`<div class="pq"><span class="pnum">${num}.</span> ${q} <span class="pts">(${pts} pt${pts>1?'s':''})</span></div>`;
+  return box;
+}
+function actions(box, o){ // Hint + Check buttons + feedback
+  const row=h('div',{class:'btnrow'}); const hb=h('button',{class:'btn ghost small',type:'button'},'Hint'); const cb=h('button',{class:'btn primary small',type:'button'},'Check');
+  row.append(hb,cb); box.appendChild(row);
+  const hint=h('div',{class:'hintbox',hidden:true},'💡 '+o.hint); box.appendChild(hint);
+  const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'}); box.appendChild(fb);
+  hb.addEventListener('click',()=>{ hint.hidden=!hint.hidden; });
+  return {row,hb,cb,hint,fb};
+}
+const st=id=>S.p[id]||(S.p[id]={});
+/* Two tries per problem. Right on try 1 or 2 = full credit. Wrong twice = marked wrong (credit for parts right on try 2).
+   The correct answer is never shown. */
+function gradeTry(P,res,max){ const n=res.filter(Boolean).length; P.tries=(P.tries||0)+1;
+  if(n===max){ P.first=max; P.checked=true; P.right=true; }
+  else if(P.tries>=2){ P.first=n; P.checked=true; P.right=false; }
+  return n===max; }
+function showTry(ui,P,max,doneText){
+  if(P.checked&&P.right){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML=`<b>Correct!</b> ${doneText||''}`; }
+  else if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`<b>Marked wrong.</b> You earned ${P.first} of ${max} point${max>1?'s':''}. Ask your teacher if you'd like to try it again.`; }
+  else if(P.tries===1){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=max>1?'<b>Not quite.</b> Something isn\'t right yet. You have <b>one more try</b>.':'<b>Not quite.</b> You have <b>one more try</b>.'; }
+  else ui.fb.hidden=true;
+  if(ui.cb) ui.cb.textContent=P.checked?'Checked':(P.tries===1?'Check (last try)':'Check'); }
+
+/* ---------- drag onto a diagram (or into equation slots) ---------- */
+function dragProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.zones.length);
+  let fig;
+  if(o.equation){ fig=h('div',{class:'eq'}); box.appendChild(fig); }
+  else { fig=h('div',{class:'figwrap'}); fig.innerHTML=o.svg; box.appendChild(fig); }
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.chips.map((_,i)=>i)));
+  const zoneEls={};
+  const groupAns=g=>o.zones.filter(z=>z.group===g).map(z=>z.ans);
+  if(o.equation){ o.layout.forEach(item=>{ if(typeof item==='string'){ fig.appendChild(h('span',null,item)); } else { const z=o.zones[item]; const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans}); fig.appendChild(b); zoneEls[z.id]=b; } }); }
+  else o.zones.forEach(z=>{ const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans});
+    b.style.left=(z.x/o.vb[0]*100)+'%'; b.style.top=(z.y/o.vb[1]*100)+'%'; b.style.width=((z.w||130)/o.vb[0]*100)+'%'; fig.appendChild(b); zoneEls[z.id]=b; });
+  function placedChips(){ return new Set(Object.values(P.place)); }
+  function render(){
+    const used=placedChips();
+    pool.innerHTML='<div class="lbl">Tap a label, then tap a box (or drag it). Tap a filled box to take its label back.</div>';
+    order.forEach(ci=>{ if(used.has(ci)) return; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true'},o.chips[ci]); c.disabled=!!P.checked;
+      c.addEventListener('click',()=>{ sel=sel===ci?null:ci; render(); });
+      c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+      pool.appendChild(c); });
+    if(P.checked&&!pool.querySelector('.chip')) pool.hidden=true;
+    o.zones.forEach(z=>{ const b=zoneEls[z.id]; const ci=P.place[z.id];
+      b.className='zone'+(ci==null?' empty':' filled')+(P.checked?' locked':'');
+      if(ci==null) b.innerHTML=z.ph||'drop here';
+      else b.innerHTML=o.chips[ci];
+      b.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; ui.hb.disabled=!!P.checked&&false;
+    showTry(ui,P,o.zones.length,o.done);
+  }
+  o.zones.forEach(z=>{ const b=zoneEls[z.id];
+    const drop=ci=>{ if(P.checked) return; if(ci==null){ if(P.place[z.id]!=null){ delete P.place[z.id]; save(); render(); } return; }
+      for(const k in P.place) if(P.place[k]===ci) delete P.place[k];
+      P.place[z.id]=ci; sel=null; save(); render(); };
+    b.addEventListener('click',()=>drop(sel));
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  ui.cb.addEventListener('click',()=>{
+    if(P.checked) return;
+    const empty=o.zones.filter(z=>P.place[z.id]==null).length;
+    if(empty){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill every box before you check. ${empty} still empty.`; return; }
+    const res={}; const usedInGroup={};
+    o.zones.forEach(z=>{ const t=o.chips[P.place[z.id]];
+      if(z.group){ const ans=groupAns(z.group); usedInGroup[z.group]=usedInGroup[z.group]||[]; const ok=ans.includes(t)&&!usedInGroup[z.group].includes(t); if(ok) usedInGroup[z.group].push(t); res[z.id]=ok; }
+      else res[z.id]=t===z.ans; });
+    gradeTry(P,Object.values(res),o.zones.length); save(); cloudSave(true); render(); refresh();
+  });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.zones.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- sort into bins ---------- */
+function binProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.items.length);
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const bins=h('div',{class:'bins',style:`grid-template-columns:repeat(${o.bins.length},minmax(0,1fr))`}); box.appendChild(bins);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.items.map((_,i)=>i)));
+  const binEls={};
+  o.bins.forEach(bn=>{ const b=h('div',{class:'bin',role:'button',tabindex:'0'},`<h4>${bn.label}</h4><div class="bchips"></div>`); bins.appendChild(b); binEls[bn.k]=b;
+    const drop=ci=>{ if(P.checked||ci==null) return; P.place[ci]=bn.k; sel=null; save(); render(); };
+    b.addEventListener('click',e=>{ if(e.target.closest('.chip')) return; drop(sel); });
+    b.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); drop(sel); } });
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  const binLabel=k=>(o.bins.find(b=>b.k===k)||{}).label;
+  function chipEl(ci,inBin){ const it=o.items[ci]; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true','data-key':binLabel(it.k)},it.t);
+    
+    c.disabled=!!P.checked;
+    c.addEventListener('click',e=>{ if(P.checked) return; if(inBin){ e.stopPropagation(); if(sel!=null&&sel!==ci){ P.place[sel]=P.place[ci]; sel=null; save(); render(); return; } delete P.place[ci]; save(); render(); return; } sel=sel===ci?null:ci; render(); });
+    c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+    return c; }
+  function render(){
+    pool.innerHTML='<div class="lbl">Tap an item, then tap the box it belongs in (or drag it). Tap a sorted item to take it back.</div>';
+    order.forEach(ci=>{ if(P.place[ci]==null) pool.appendChild(chipEl(ci,false)); });
+    pool.hidden=!!P.checked;
+    o.bins.forEach(bn=>{ const holder=$('.bchips',binEls[bn.k]); holder.innerHTML=''; order.forEach(ci=>{ if(P.place[ci]===bn.k) holder.appendChild(chipEl(ci,true)); }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,o.items.length,o.done);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const left=o.items.filter((_,i)=>P.place[i]==null).length;
+    if(left){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Sort every item before you check. ${left} still left.`; return; }
+    const res=o.items.map((it,i)=>P.place[i]===it.k); gradeTry(P,res,o.items.length); save(); cloudSave(true); render(); refresh(); });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.items.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- choice problems: one, two-part, or select-all ---------- */
+function choiceProblem(parent, o){   // o.parts: [{q, opts, ans (index or array for select-all)}]
+  const P=st(o.id); P.pick=P.pick||{};
+  const max=o.parts.length;
+  const box=probShell(parent,o.part,o.num,o.q,max);
+  const groups=[];
+  o.parts.forEach((pt,pi)=>{
+    const multi=Array.isArray(pt.ans);
+    if(pt.q) box.insertAdjacentHTML('beforeend',`<div style="margin:10px 0 4px">${pt.q}${multi?' <span class="small muted">(Select all that apply.)</span>':''}</div>`);
+    const ordKey=o.id+'_'+pi; const order=S.ord[ordKey]||(S.ord[ordKey]=shuffle(pt.opts.map((_,i)=>i)));
+    const wrap=h('div',{class:'opts'}); box.appendChild(wrap);
+    const btns={};
+    order.forEach((oi,pos)=>{ const correct=multi?pt.ans.includes(oi):oi===pt.ans;
+      const b=h('button',{class:'opt'+(multi?' multi':''),type:'button'},`<span class="L">${'ABCDEF'[pos]}</span><span>${pt.opts[oi]}</span>`); if(correct) b.dataset.key='1';
+      b.addEventListener('click',()=>{ if(P.checked) return; if(multi){ const s=new Set(P.pick[pi]||[]); s.has(oi)?s.delete(oi):s.add(oi); P.pick[pi]=[...s]; } else P.pick[pi]=oi; save(); paint(); });
+      wrap.appendChild(b); btns[oi]=b; });
+    groups.push({pt,multi,btns});
+  });
+  const ui=actions(box,o);
+  function gradePart(g,pi){ const pk=P.pick[pi]; if(g.multi){ const s=new Set(pk||[]); return g.pt.ans.length===s.size&&g.pt.ans.every(a=>s.has(a)); } const ans=g.pt.ansFn?g.pt.ansFn():g.pt.ans; return pk===ans; }
+  function paint(){
+    groups.forEach((g,pi)=>{ const pk=P.pick[pi];
+      Object.entries(g.btns).forEach(([oi,b])=>{ oi=+oi; const picked=g.multi?(pk||[]).includes(oi):pk===oi; const correct=g.multi?g.pt.ans.includes(oi):oi===g.pt.ans;
+        b.className='opt'+(g.multi?' multi':'')+(picked?' sel':'')+(P.checked&&P.right&&picked?' ok':''); b.disabled=!!P.checked; }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,max,o.why);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const blank=groups.some((g,pi)=>g.multi?!(P.pick[pi]||[]).length:P.pick[pi]==null);
+    if(blank){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Answer every part before you check.'; return; }
+    gradeTry(P,groups.map((g,pi)=>gradePart(g,pi)),max); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- typed blanks (two tries, like every problem) ---------- */
+function typedProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.blanks.length);
+  const inputs=o.blanks.map((bl,i)=>{ const row=h('div',{class:'brow'}); row.innerHTML=`${bl.before} <input class="blank" type="text" aria-label="${esc(strip(bl.before))}" data-key="${esc(bl.show)}"><span class="keytxt">${bl.show}</span> ${bl.after||''}`; box.appendChild(row);
+    const inp=$('input',row); inp.value=P.val[i]||''; inp.addEventListener('input',()=>{ P.val[i]=inp.value; save(); }); return inp; });
+  const ui=actions(box,o);
+  const ok=(bl,v)=>{ v=String(v||'').trim().toLowerCase(); if(bl.calc){ const n=parseFloat(v.replace(/[\u2212\u2013\u2014]/g,'-').replace(/[^0-9.\-]/g,'')); const t=bl.calc(); return !isNaN(n)&&t!=null&&!isNaN(t)&&Math.abs(n-t)<=(bl.tol==null?0.15:bl.tol); } if(bl.num){ const n=parseFloat(v.replace(/[\u2212\u2013\u2014]/g,'-').replace(/[^0-9.\-]/g,'')); return !isNaN(n)&&n>=bl.num[0]&&n<=bl.num[1]; } return bl.accept.some(a=>v.replace(/\s+/g,' ')===a); };
+  function paint(){ inputs.forEach(inp=>{ inp.classList.remove('ok','no'); if(P.checked&&P.right) inp.classList.add('ok'); inp.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; showTry(ui,P,o.blanks.length,''); }
+  ui.cb.addEventListener('click',()=>{
+    if(inputs.some(inp=>!inp.value.trim())){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Fill in every blank before you check.'; return; }
+    if(P.checked) return;
+    const res=o.blanks.map((bl,i)=>ok(bl,inputs[i].value));
+    gradeTry(P,res,o.blanks.length); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.blanks.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- written answer, scored by key ideas (two tries, like every problem) ---------- */
+function writtenProblem(parent, o){
+  const P=st(o.id); if(P.val==null) P.val='';
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const ta=h('textarea',{class:'wtext',rows:'5','aria-label':'Your answer','data-key':o.model}); ta.value=P.val; box.appendChild(ta);
+  box.appendChild(h('div',{class:'wkey'},'<b>Key:</b> '+o.model));
+  if(o.bank){ const wb=h('div',{class:'wbank2'}); wb.innerHTML='<b>Word bank</b> <span class="small muted">(tap a word to add it)</span><br>'+o.bank.map(w=>`<button type="button" class="wchip">${w}</button>`).join('');
+    box.appendChild(wb);
+    wb.querySelectorAll('.wchip').forEach(c=>c.addEventListener('click',()=>{ if(ta.disabled) return; const w=c.textContent; const a=ta.selectionStart??ta.value.length, b=ta.selectionEnd??ta.value.length;
+      const before=ta.value.slice(0,a), after=ta.value.slice(b); const pre=(before&&!/\s$/.test(before))?' ':''; const ins=pre+w+' ';
+      ta.value=before+ins+after; ta.focus(); const p=a+ins.length; ta.setSelectionRange(p,p); ta.dispatchEvent(new Event('input',{bubbles:true})); })); }
+  ta.addEventListener('input',()=>{ P.val=ta.value; save(); });
+  const ui=actions(box,o);
+  const grade=()=>{ const t=ta.value.toLowerCase(); const hits=o.groups.filter(g=>g[1].test(t)).length; const n=Math.min(o.pts,hits); return Array.from({length:o.pts},(_,i)=>i<n); };
+  function paint(){ ta.disabled=!!P.checked; ui.cb.disabled=!!P.checked; showTry(ui,P,o.pts,o.why); }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(ta.value.trim().split(/\s+/).length<5){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Write a full answer (at least one complete sentence) before you check.'; return; }
+    gradeTry(P,grade(),o.pts); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- predictions: saved once, completion credit, never marked wrong ---------- */
+function predictProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.rows.length);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb predtab"><tr><th>${o.rowsLabel||'Tube'}</th><th>Setup</th><th>My prediction</th></tr>${o.rows.map((r,i)=>`<tr><td><b>${r.id}</b></td><td>${r.desc}</td><td><select data-i="${i}" aria-label="Prediction for ${r.id}"><option value="">choose…</option>${o.choices.map(c=>`<option>${c}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select')];
+  sels.forEach((sl,i)=>{ sl.value=P.val[i]||''; sl.addEventListener('change',()=>{ P.val[i]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Lock in my predictions';
+  function paint(){ sels.forEach(sl=>sl.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Predictions saved.</b> You\'ll compare them with your results later. Your observation table on page 3 is now unlocked.'; ui.cb.textContent='Predictions locked'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(sels.some(sl=>!sl.value)){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Choose a prediction for every tube first.'; return; }
+    if(!confirm('Lock in your predictions? You can\'t change them after this.')) return;
+    P.first=o.rows.length; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.rows.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- lab data table: groups type their own measurements; graph builds from them ---------- */
+function dataTableProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const cells=o.rows.length*o.cols.length;
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb datatab"><tr><th>${o.corner}</th>${o.cols.map(c=>`<th>${c}</th>`).join('')}</tr>${o.rows.map((r,i)=>`<tr><td><b>${r}</b></td>${o.cols.map((c,j)=>`<td><input class="dcell" inputmode="decimal" data-r="${i}" data-c="${j}" aria-label="${r}, ${c}"></td>`).join('')}</tr>`).join('')}</table>`;
+  const ins=[...wrap.querySelectorAll('input.dcell')];
+  const chart=h('div',{class:'datachart'}); box.appendChild(chart);
+  ins.forEach(inp=>{ const k=inp.dataset.r+'_'+inp.dataset.c; inp.value=P.val[k]??''; inp.addEventListener('input',()=>{ P.val[k]=inp.value; save(); draw(); }); });
+  function draw(){ chart.innerHTML=o.chart(P.val); }
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Save my data';
+  function paint(){ ins.forEach(i=>i.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Data saved.</b> Your analysis questions use these numbers.'; ui.cb.textContent='Data saved'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const bad=ins.filter(i=>i.value.trim()===''||isNaN(parseFloat(i.value)));
+    if(bad.length){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill in every box with a number first (${bad.length} still empty).`; bad[0].focus(); return; }
+    if(!confirm('Save your data? You can\'t change it after this, and your analysis will use these numbers.')) return;
+    P.first=o.pts; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  draw(); paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- observation table: each row has its own menu; completion credit when saved ---------- */
+function obsTableProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb datatab"><tr><th>Observation</th><th>What you saw</th></tr>${o.rows.map((r,i)=>`<tr><td>${r.q}</td><td><select class="ocell" data-r="${i}" aria-label="${r.q.replace(/<[^>]+>/g,'')}"><option value="">choose…</option>${r.opts.map(x=>`<option>${x}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select.ocell')];
+  sels.forEach(sl=>{ const k=sl.dataset.r; sl.value=P.val[k]||''; sl.addEventListener('change',()=>{ P.val[k]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Save my observations';
+  function paint(){ sels.forEach(s=>s.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Observations saved.</b> Your analysis questions use them.'; ui.cb.textContent='Observations saved'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const bad=sels.filter(s=>!s.value); if(bad.length){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Choose an answer in every row first (${bad.length} still empty).`; return; }
+    if(!confirm('Save your observations? You can\'t change them after this, and your analysis will use them.')) return;
+    P.first=o.pts; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ============================== WORKSHEET CONTENT ============================== */
+/* ===== Oh Deer! Limiting Factors Game (shared: rules, drawings, charts, sections 1, 2, 4, 5) ===== */
+const NR=15;                                   // rounds played
+const ROUND_ROWS=['Start',...Array.from({length:NR},(_,i)=>'After round '+(i+1))];
+const COUNT_COLS=['Deer','Habitat'];
+const EV_ROUNDS=[11,12,13,14,15];
+const EV_OPTS=['No event','Drought','Wildfire','Mountain lion'];
+const K_FROM=3, K_TO=10;                       // carrying capacity estimate: average of these rows (before any events)
+const NEEDS=['Food','Water','Shelter'];
+
+/* ---------- small helpers ---------- */
+let UIDN=0; const uid=p=>p+'_'+(++UIDN);
+const f1=v=>(+v).toFixed(1);
+function rng(seed){ let s=seed%233280; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
+const stx=(x,y,t,fs,col,anchor,bold)=>`<text x="${x}" y="${y}" text-anchor="${anchor||'middle'}" font-size="${fs||14}" fill="${col||'#e8eef8'}"${bold?' font-weight="700"':''}>${t}</text>`;
+function hashStr(s){ let x=2166136261; for(const ch of String(s)){ x^=ch.charCodeAt(0); x=Math.imul(x,16777619); } return x>>>0; }
+function mulberry(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+
+/* ---------- mule deer, side view facing right; (x,y) = ground (style from the Unit 6 lessons) ---------- */
+function deerG(x,y,s,o){ o=o||{}; const f=o.flip?-1:1, c=o.fawn?'#a87a4f':'#8b6b4a', d=o.fawn?'#7d5a3a':'#6b4f35', belly='#d8c4a2', step=o.step||0;
+  let g=`<g transform="translate(${f1(x)},${f1(y)}) scale(${f1(f*s*1000)/1000},${f1(s*1000)/1000}) translate(-80,-150)">`;
+  const leg=(x0,sw,col)=>{ const k=Math.sin(step+sw)*6; return `<path d="M${x0},88 C${x0+2},104 ${f1(x0+k)},112 ${f1(x0+1+k)},126 L${f1(x0+2+k*1.2)},148 L${f1(x0+6+k*1.2)},148 L${f1(x0+6+k)},126 C${f1(x0+8+k)},112 ${x0+9},100 ${x0+9},88 Z" fill="${col}"/>`; };
+  g+=leg(36,0,d)+leg(104,3,d);
+  g+=`<path d="M26,62 C30,52 48,50 70,52 C90,52 104,50 112,48 C120,46 126,52 126,60 C126,74 120,88 108,92 C90,96 60,96 42,92 C30,88 22,76 26,62 Z" fill="${c}"/>`;
+  g+=`<path d="M40,90 C60,96 90,96 108,92 C100,86 60,86 40,90 Z" fill="${belly}"/><ellipse cx="28" cy="64" rx="9" ry="13" fill="#efe6d4"/><path d="M22,58 C18,62 18,70 22,74" stroke="#111" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  if(o.fawn) g+=[[50,62],[64,58],[78,60],[92,57],[58,72],[74,70],[88,68],[102,64]].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.2" fill="#f3e9d6"/>`).join('');
+  g+=leg(48,3.2,c)+leg(116,0.2,c);
+  g+=`<path d="M108,52 C112,40 118,28 124,20 L136,22 C134,32 128,46 124,60 Z" fill="${c}"/>`;
+  g+=`<path d="M122,22 C126,12 136,10 146,14 L158,22 C161,25 160,29 156,30 L140,30 C134,30 128,28 122,22 Z" fill="${c}"/><path d="M146,28 C150,30 155,30 158,28" stroke="${belly}" stroke-width="2"/><circle cx="158" cy="24" r="2" fill="#111"/>`;
+  g+=`<ellipse cx="118" cy="10" rx="13" ry="6" transform="rotate(-30 118 10)" fill="${c}" stroke="${d}"/><ellipse cx="118" cy="10" rx="9" ry="3.5" transform="rotate(-30 118 10)" fill="#e3c9b0"/>`;
+  g+=`<circle cx="140" cy="18" r="2.2" fill="#111"/><circle cx="140.6" cy="17.4" r=".7" fill="#fff"/>`;
+  if(o.antlers) g+=`<path d="M130,12 C128,0 132,-10 140,-16 M132,2 C126,-4 124,-12 126,-18 M136,-8 C142,-10 146,-16 146,-22" stroke="#d7c3a1" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
+  return g+'</g>'; }
+
+/* ---------- mountain lion (cougar), side view facing left; (x,y) = ground ---------- */
+function cougarG(x,y,s,o){ o=o||{}; const c='#b98b5a', d='#8e6639', l='#e9d3b4';
+  let g=`<g transform="translate(${f1(x)},${f1(y)}) scale(${s})">`;
+  g+=`<path d="M58,-34 C80,-34 96,-30 104,-18 C110,-8 112,2 118,6 C112,8 104,2 100,-6 C96,-16 84,-22 66,-24 Z" fill="${c}"/><path d="M110,0 C114,4 118,6 120,6 C118,10 112,9 108,4 Z" fill="#3b2a1c"/>`;
+  g+=`<path d="M44,-24 L48,-2 L54,-2 L56,-22 Z M60,-26 L64,-2 L70,-2 L70,-26 Z" fill="${d}"/>`;
+  g+=`<path d="M-26,-38 C-20,-48 10,-50 40,-46 C58,-44 66,-38 66,-28 C66,-18 58,-12 44,-12 C20,-10 -4,-12 -20,-16 C-30,-20 -32,-30 -26,-38 Z" fill="${c}"/>`;
+  g+=`<path d="M-18,-16 C0,-12 24,-12 44,-13 C34,-18 0,-20 -16,-20 Z" fill="${l}" opacity=".8"/>`;
+  g+=`<path d="M-22,-24 L-24,-2 L-17,-2 L-14,-22 Z M-6,-20 L-6,-2 L1,-2 L2,-20 Z" fill="${c}"/><path d="M-26,-2 L-15,-2 M-8,-2 L3,-2" stroke="${d}" stroke-width="3" stroke-linecap="round"/>`;
+  g+=`<path d="M-22,-36 C-28,-44 -36,-50 -44,-50 C-52,-50 -58,-46 -60,-40 C-61,-34 -58,-30 -52,-28 C-44,-26 -32,-26 -24,-28 Z" fill="${c}"/>`;
+  g+=`<path d="M-60,-40 C-62,-36 -60,-31 -54,-30 C-56,-34 -56,-38 -60,-40 Z" fill="${l}"/><circle cx="-60" cy="-39" r="1.8" fill="#2a1d14"/>`;
+  g+=`<path d="M-44,-50 L-46,-58 L-40,-52 Z M-36,-48 L-35,-56 L-31,-49 Z" fill="${d}"/><ellipse cx="-50" cy="-44" rx="2" ry="1.6" fill="#1f2937"/><path d="M-56,-33 L-50,-32" stroke="#3b2a1c" stroke-width="1"/>`;
+  return g+'</g>'; }
+
+/* ---------- a student, front view (or back view); (x,y) = ground; about 185 units tall at s=1 ---------- */
+function kid(x,y,s,o){ o=o||{}; const sk=o.skin||'#c68e64', sh=o.shirt||'#2563eb', pa=o.pants||'#1e3a5f', hr=o.hair||'#2b1d14', pose=o.pose||'stand';
+  let g=`<g transform="translate(${f1(x)} ${f1(y)}) scale(${s})"><ellipse cx="0" cy="0" rx="26" ry="5" fill="#000" opacity=".18"/>`;
+  g+=`<path d="M-15,-82 L-14,-6 L-3,-6 L-1,-70 L1,-70 L3,-6 L14,-6 L15,-82 Z" fill="${pa}"/><path d="M-1,-70 L0,-50" stroke="#0b1220" stroke-width="1" opacity=".5"/>`;
+  g+=`<path d="M-16,-8 Q-19,1 -9,1 L-1,1 Q0,-5 -3,-8 Z M16,-8 Q19,1 9,1 L1,1 Q0,-5 3,-8 Z" fill="#f8fafc" stroke="#64748b" stroke-width="1"/>`;
+  g+=`<path d="M-19,-132 Q-23,-110 -17,-80 L17,-80 Q23,-110 19,-132 Q10,-139 0,-139 Q-10,-139 -19,-132 Z" fill="${sh}"/><path d="M-17,-84 L17,-84" stroke="#000" stroke-width="2" opacity=".15"/>`;
+  if(o.vest) g+=`<path d="M-17,-131 L-8,-134 L-4,-112 L4,-112 L8,-134 L17,-131 L16,-84 L-16,-84 Z" fill="${o.vest}" opacity=".92"/><path d="M-15,-100 L15,-100" stroke="#fef08a" stroke-width="2.5"/>`;
+  g+=`<rect x="-4.5" y="-145" width="9" height="9" fill="${sk}"/><ellipse cx="0" cy="-157" rx="12" ry="14" fill="${sk}"/>`;
+  if(o.back) g+=`<path d="M-12.5,-158 C-13,-172 -6,-173 0,-173 C6,-173 13,-172 12.5,-158 C12,-150 10,-146 0,-145 C-10,-146 -12,-150 -12.5,-158 Z" fill="${hr}"/>`;
+  else { g+=`<path d="M-12.5,-156 C-14,-170 -6,-173 0,-173 C7,-173 14,-169 12.5,-156 C10,-163 4,-165 -2,-164 C-7,-163 -10,-160 -12.5,-156 Z" fill="${hr}"/>`;
+    g+=`<circle cx="-4.5" cy="-157" r="1.5" fill="#1f1611"/><circle cx="4.5" cy="-157" r="1.5" fill="#1f1611"/><path d="M-4,-149 Q0,-146.5 4,-149" stroke="#7a3e2a" stroke-width="1.3" fill="none"/>`; }
+  const P={stand:[[24,-104],[25,-80]], food:[[28,-104],[5,-99]], water:[[27,-120],[3,-147]], shelter:[[31,-160],[3,-187]]}[pose];
+  [-1,1].forEach(sx=>{ const sxp=[sx*17,-130], el=[sx*P[0][0],P[0][1]], hd=[sx*P[1][0],P[1][1]];
+    g+=`<path d="M${sxp[0]},${sxp[1]} L${el[0]},${el[1]}" stroke="${sh}" stroke-width="10" stroke-linecap="round"/><path d="M${el[0]},${el[1]} L${hd[0]},${hd[1]}" stroke="${sk}" stroke-width="7.5" stroke-linecap="round"/><circle cx="${hd[0]}" cy="${hd[1]}" r="5" fill="${sk}" stroke="#00000022"/>`; });
+  return g+'</g>'; }
+
+/* ---------- need / resource icons (inside a circle) ---------- */
+function needIco(t,x,y,r,o){ o=o||{}; const bg=['#ecfccb','#dbeafe','#dcfce7'][t], st=['#65a30d','#2563eb','#166534'][t];
+  let g=`<g transform="translate(${f1(x)} ${f1(y)}) scale(${f1(r/14*100)/100})"><circle r="14" fill="${o.bg||bg}" stroke="${st}" stroke-width="2"/>`;
+  if(t===0) g+=`<path d="M0,9 C-1,2 -1,-4 0,-10" stroke="#4d7c0f" stroke-width="1.6" fill="none"/>${[[-1,-7,-35],[1,-3,30],[-1,1,-35],[1,5,30]].map(([sx,yy,a])=>`<ellipse cx="${sx*5}" cy="${yy}" rx="5.2" ry="2.4" transform="rotate(${a} ${sx*5} ${yy})" fill="#65a30d"/>`).join('')}<ellipse cx="6" cy="8" rx="2.6" ry="3.2" fill="#a16207"/><path d="M3.5,6 Q6,4 8.5,6" stroke="#713f12" stroke-width="1.6" fill="none"/>`;
+  else if(t===1) g+=`<path d="M0,-10 C4,-4 8,1 8,4.5 C8,9 4.5,11 0,11 C-4.5,11 -8,9 -8,4.5 C-8,1 -4,-4 0,-10 Z" fill="#3b82f6"/><path d="M-4,4 C-4,7 -2,8.5 0,8.6" stroke="#bfdbfe" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
+  else g+=`<path d="M0,-11 L7,-2 L4,-2 L9,5 L2,5 L2,10 L-2,10 L-2,5 L-9,5 L-4,-2 L-7,-2 Z" fill="#166534"/><path d="M-12,10 C-10,4 -6,4 -5,8 M12,10 C10,4 6,4 5,8" stroke="#15803d" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
+  return g+'</g>'; }
+const neutralTok=(x,y,r)=>`<g transform="translate(${f1(x)} ${f1(y)})"><circle r="${r}" fill="#9ca3af" stroke="#4b5563" stroke-width="2"/><circle r="${f1(r*0.45)}" fill="#d1d5db"/></g>`;
+
+/* ---------- event icons (graph markers and the field) ---------- */
+function evIco(e,x,y,s){ s=s||1; const T=`transform="translate(${f1(x)} ${f1(y)}) scale(${s})"`;
+  if(e==='Drought') return `<g ${T}><circle r="6.5" fill="#f59e0b"/>${[0,1,2,3,4,5,6,7].map(i=>{ const a=i*Math.PI/4; return `<line x1="${f1(Math.cos(a)*9)}" y1="${f1(Math.sin(a)*9)}" x2="${f1(Math.cos(a)*12.5)}" y2="${f1(Math.sin(a)*12.5)}" stroke="#f59e0b" stroke-width="2.2" stroke-linecap="round"/>`; }).join('')}</g>`;
+  if(e==='Wildfire') return `<g ${T}><path d="M0,12 C-11,6 -8,-6 -2,-14 C-1,-6 4,-6 3,-15 C12,-6 12,6 0,12 Z" fill="#f97316"/><path d="M0,11 C-5,7 -4,0 0,-5 C1,0 4,1 3,-4 C8,2 6,8 0,11 Z" fill="#fde047"/></g>`;
+  return `<g ${T}><ellipse cx="0" cy="4" rx="6.5" ry="5.5" fill="#d6b48a"/>${[[-7,-4],[-2.4,-8],[2.4,-8],[7,-4]].map(([a,b])=>`<ellipse cx="${a}" cy="${b}" rx="2.6" ry="3.2" fill="#d6b48a"/>`).join('')}</g>`; }
+const EV_COL={Drought:'#f59e0b',Wildfire:'#f97316','Mountain lion':'#d6b48a'};
+
+/* ---------- pictures ---------- */
+function fieldPic(){ const W=780,H=300, gid=uid('gr'), sk=uid('sk');
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Setup on a school field: a deer line marked by orange cones on the left and a habitat line marked by cones on the right, about 10 to 20 meters apart. A few students in vests stand on the deer line. More students stand on the habitat line."><defs><linearGradient id="${sk}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9cc8e8"/><stop offset="1" stop-color="#e3f0f7"/></linearGradient><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fae4a"/><stop offset="1" stop-color="#5f8f35"/></linearGradient></defs>`;
+  s+=`<rect width="${W}" height="${H}" rx="14" fill="url(#${sk})"/><path d="M0,120 C120,104 260,112 400,108 C540,104 660,112 ${W},106 L${W},${H} L0,${H} Z" fill="#a9c98a"/>`;
+  s+=`<path d="M0,130 L${W},130 L${W},${H} L0,${H} Z" fill="url(#${gid})"/>`;
+  for(let i=0;i<9;i++) s+=`<path d="M${i*90-20},${H} L${i*90+40},130 L${i*90+85},130 L${i*90+25},${H} Z" fill="#ffffff" opacity=".06"/>`;
+  s+=`<path d="M40,104 C60,80 90,78 110,100 Z M600,102 C625,72 670,74 700,98 Z" fill="#4d7a3a"/><rect x="250" y="88" width="260" height="20" rx="3" fill="#cbd5e1"/><rect x="250" y="84" width="260" height="6" fill="#94a3b8"/>`;
+  const cone=(x,y)=>`<path d="M${x-9},${y} L${x-3},${y-22} L${x+3},${y-22} L${x+9},${y} Z" fill="#f97316"/><path d="M${x-6.5},${y-9} L${x+6.5},${y-9}" stroke="#fff" stroke-width="3"/><rect x="${x-12}" y="${y-2}" width="24" height="4" rx="1.5" fill="#ea580c"/>`;
+  s+=`<path d="M150,268 L150,150" stroke="#ffffff" stroke-width="3" stroke-dasharray="10 8" opacity=".85"/><path d="M630,268 L630,150" stroke="#ffffff" stroke-width="3" stroke-dasharray="10 8" opacity=".85"/>`;
+  s+=cone(150,150)+cone(150,276)+cone(630,150)+cone(630,276);
+  const skins=['#c68e64','#8d5a3b','#e0b08a','#a8714a','#f1c9a5'], hairs=['#2b1d14','#111827','#6b3f1f','#1f1611','#3f2a1a'], shirts=['#2563eb','#16a34a','#9333ea','#0891b2','#dc2626','#475569','#ca8a04'];
+  [[118,196],[176,214],[128,240],[180,262]].forEach(([x,y],i)=>{ s+=kid(x,y,0.42+(y-190)*0.0012,{skin:skins[i%5],hair:hairs[(i+2)%5],shirt:shirts[(i+3)%7],vest:'#f97316',back:true}); });
+  [[600,186],[652,196],[604,212],[662,226],[612,240],[666,256],[618,268],[574,254],[568,224]].forEach(([x,y],i)=>{ s+=kid(x,y,0.4+(y-180)*0.0012,{skin:skins[(i+1)%5],hair:hairs[i%5],shirt:shirts[i%7],back:true}); });
+  s+=`<path d="M200,138 L580,138" stroke="#fef3c7" stroke-width="2.5"/><path d="M200,138 l12,-6 v12 Z M580,138 l-12,-6 v12 Z" fill="#fef3c7"/>`;
+  s+=`<rect x="300" y="146" width="180" height="24" rx="12" fill="#0d1626" opacity=".8"/>`+stx(390,163,'about 10 to 20 meters',13.5,'#fef3c7');
+  s+=`<rect x="78" y="282" width="144" height="0" fill="none"/>`;
+  s+=`<rect x="92" y="16" width="118" height="26" rx="13" fill="#0d1626" opacity=".85"/>`+stx(151,34,'Deer line',15,'#fdba74',null,true);
+  s+=`<rect x="560" y="16" width="140" height="26" rx="13" fill="#0d1626" opacity=".85"/>`+stx(630,34,'Habitat line',15,'#86efac',null,true);
+  return s+'</svg>'; }
+
+const SIGN_ORDER=['water','shelter','food'];   // left to right in the hand-sign picture
+function signsPic(){ const W=700,H=320;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Three students, each making a different hand sign: one with both hands over the mouth, one with hands together over the head, and one with both hands on the stomach."><rect width="${W}" height="${H}" rx="14" fill="#e8eef3"/><rect y="238" width="${W}" height="82" fill="#7fae4a"/><path d="M0,238 L${W},238" stroke="#5f8f35" stroke-width="3"/>`;
+  const opts=[{skin:'#8d5a3b',hair:'#111827',shirt:'#0891b2',pants:'#1e293b'},{skin:'#e0b08a',hair:'#6b3f1f',shirt:'#9333ea',pants:'#334155'},{skin:'#c68e64',hair:'#2b1d14',shirt:'#dc2626',pants:'#1e3a5f'}];
+  SIGN_ORDER.forEach((p,i)=>{ s+=kid(120+i*230,250,1.12,Object.assign({pose:p},opts[i])); });
+  return s+'</svg>'; }
+
+/* ---------- predictions with a menu per row (same lock pattern as predictProblem) ---------- */
+function predictRows(parent,o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.rows.length);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb predtab"><tr><th>Question</th><th>My prediction</th></tr>${o.rows.map((r,i)=>`<tr><td>${r.desc}</td><td><select data-i="${i}" aria-label="Prediction ${i+1}"><option value="">choose…</option>${r.choices.map(c=>`<option>${c}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select')];
+  sels.forEach((sl,i)=>{ sl.value=P.val[i]||''; sl.addEventListener('change',()=>{ P.val[i]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Lock in my predictions';
+  function paint(){ sels.forEach(sl=>sl.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Predictions saved.</b> You\'ll compare them with your results later. Page 3 is now unlocked.'; ui.cb.textContent='Predictions locked'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(sels.some(sl=>!sl.value)){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Choose a prediction in every row first.'; return; }
+    if(!confirm('Lock in your predictions? You can\'t change them after this.')) return;
+    P.first=o.rows.length; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.rows.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- reading the student's own tables ---------- */
+const cellv=(v,r,c)=>{ const x=parseFloat((v||{})[r+'_'+c]); return isNaN(x)?null:x; };
+function evList(){ const v=st('ev').val||{}; return EV_ROUNDS.map((R,i)=>({R,e:v[i]||'No event'})); }
+function odData(){ const v=st('deer').val||{}; const n=(r,c)=>cellv(v,r,c)||0;
+  const deer=ROUND_ROWS.map((_,r)=>n(r,0)), hab=ROUND_ROWS.map((_,r)=>n(r,1));
+  const mx=Math.max(...deer), maxR=deer.map((x,i)=>i).filter(i=>deer[i]===mx), iMax=maxR[0];
+  const late=deer.slice(5), mn=Math.min(...late), minR=deer.map((x,i)=>i).filter(i=>i>=5&&deer[i]===mn);
+  const ch=deer.slice(1).map((x,i)=>x-deer[i]);           // ch[i] = change during round i+1
+  const bigRise=Math.max(0,...ch), bigDrop=Math.max(0,...ch.map(x=>-x));
+  const K=deer.slice(K_FROM,K_TO+1).reduce((a,b)=>a+b,0)/(K_TO-K_FROM+1);
+  const tot=deer[iMax]+hab[iMax], pctPeak=tot>0?100*deer[iMax]/tot:0;
+  const ev=evList(), first=ev.find(x=>x.e!=='No event');
+  return {deer,hab,mx,maxR,iMax,mn,minR,ch,bigRise,bigDrop,K,pctPeak,ev,first}; }
+const roundAccept=idx=>idx.flatMap(i=>i===0?['0','start']:[String(i),'round '+i,'after round '+i]);
+
+/* ---------- graph of the student's own counts ---------- */
+const niceTop=mx=>{ const step=mx<=10?2:mx<=25?5:mx<=60?10:mx<=150?25:50; return [Math.max(step,Math.ceil(mx/step)*step),step]; };
+function deerSVG(v,o){ o=o||{}; const W=700,H=380,X0=66,X1=o.mark?640:676,Y0=300,Y1=70;
+  const deer=ROUND_ROWS.map((_,r)=>cellv(v,r,0)), hab=ROUND_ROWS.map((_,r)=>cellv(v,r,1));
+  let mx=10; [...deer,...hab].forEach(x=>{ if(x!=null) mx=Math.max(mx,x); });
+  const [top,step]=niceTop(mx), y=val=>Y0-(Y0-Y1)*val/top, gx=r=>X0+16+(X1-X0-32)*r/NR;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Line graph of ${o.mark?'the number of deer':'the number of deer and habitat players'} in each round, from your data table${o.mark?', with lettered parts to label':''}."><rect width="${W}" height="${H}" rx="12" fill="#0f1b2e"/>`;
+  evList().forEach(({R,e})=>{ if(e==='No event') return; s+=`<rect x="${f1(gx(R-1))}" y="${Y1-6}" width="${f1(gx(R)-gx(R-1))}" height="${Y0-Y1+6}" fill="${EV_COL[e]}" opacity=".16"/>`+evIco(e,(gx(R-1)+gx(R))/2,Y1-18,0.85); });
+  for(let k=0;k<=top;k+=step) s+=`<line x1="${X0}" y1="${f1(y(k))}" x2="${X1}" y2="${f1(y(k))}" stroke="#2a3d5f"/><text x="${X0-8}" y="${f1(y(k)+4)}" text-anchor="end" font-size="12" fill="#a3b4cf">${k}</text>`;
+  s+=`<text x="18" y="${(Y0+Y1)/2}" font-size="13" fill="#a3b4cf" transform="rotate(-90 18 ${(Y0+Y1)/2})" text-anchor="middle">Number of players</text>`;
+  for(let r=0;r<=NR;r++) s+=`<text x="${f1(gx(r))}" y="${Y0+18}" text-anchor="middle" font-size="12" fill="#a3b4cf">${r===0?'Start':r}</text>`;
+  s+=`<text x="${(X0+X1)/2}" y="${Y0+40}" text-anchor="middle" font-size="13" fill="#a3b4cf">Round (count after each round)</text>`;
+  // legend
+  s+=`<line x1="70" y1="24" x2="98" y2="24" stroke="#f59e0b" stroke-width="3.2"/><circle cx="84" cy="24" r="5" fill="#f59e0b" stroke="#0f1b2e" stroke-width="1.5"/>`+stx(104,29,'Deer',13,'#e8eef8','start');
+  if(!o.mark) s+=`<line x1="160" y1="24" x2="188" y2="24" stroke="#4ade80" stroke-width="2.4" stroke-dasharray="6 4"/><rect x="169" y="19" width="10" height="10" fill="#4ade80" stroke="#0f1b2e" stroke-width="1.5"/>`+stx(194,29,'Habitat',13,'#e8eef8','start');
+  EV_OPTS.slice(1).forEach((e,i)=>{ const x=380+i*104; s+=evIco(e,x,24,0.75)+stx(x+14,29,e,12.5,'#cbd5e1','start'); });
+  const line=(arr,col,w,dash,mk)=>{ let q=''; for(let r=0;r<NR;r++) if(arr[r]!=null&&arr[r+1]!=null) q+=`<line x1="${f1(gx(r))}" y1="${f1(y(arr[r]))}" x2="${f1(gx(r+1))}" y2="${f1(y(arr[r+1]))}" stroke="${col}" stroke-width="${w}"${dash?` stroke-dasharray="${dash}"`:''} class="pl"/>`;
+    arr.forEach((v2,r)=>{ if(v2==null) return; q+=mk==='c'?`<circle cx="${f1(gx(r))}" cy="${f1(y(v2))}" r="4.5" fill="${col}" stroke="#0f1b2e" stroke-width="1.5"/>`:`<rect x="${f1(gx(r)-4)}" y="${f1(y(v2)-4)}" width="8" height="8" fill="${col}" stroke="#0f1b2e" stroke-width="1.5"/>`; }); return q; };
+  if(!o.mark) s+=line(hab,'#4ade80',2.4,'6 4','s');
+  s+=line(deer,'#f59e0b',3.2,'','c');
+  if(o.mark&&deer.every(x=>x!=null)){ const d=odData(), lab=(L,x,yy,px,py)=>`<line x1="${f1(x)}" y1="${f1(yy)}" x2="${f1(px)}" y2="${f1(py)}" stroke="#ffd35c" stroke-width="1.6"/><circle cx="${f1(x)}" cy="${f1(yy)}" r="13" fill="#ffd35c" stroke="#0f1b2e" stroke-width="2"/>`+stx(f1(x),f1(yy+5.5),L,16,'#16213a',null,true);
+    const ky=y(d.K); s+=`<line x1="${X0}" y1="${f1(ky)}" x2="${X1}" y2="${f1(ky)}" stroke="#e8eef8" stroke-width="2.2" stroke-dasharray="10 7"/>`;
+    // A: the peak.  B: the biggest drop.  C: the dashed line.  D: the biggest rise up to the peak.
+    const pA=[gx(d.iMax),y(d.mx)];
+    const di=d.ch.findIndex(x=>-x===d.bigDrop&&d.bigDrop>0), bi=di<0?NR-1:di;
+    const pB=[(gx(bi)+gx(bi+1))/2,(y(d.deer[bi])+y(d.deer[bi+1]))/2];
+    let ri=-1, best=0; const lim=d.iMax>0?d.iMax:NR; for(let i=0;i<lim;i++) if(d.ch[i]>best){ best=d.ch[i]; ri=i; } if(ri<0) ri=0;
+    const pD=[(gx(ri)+gx(ri+1))/2,(y(d.deer[ri])+y(d.deer[ri+1]))/2];
+    const clampY=v2=>Math.max(Y1-2,Math.min(Y0-14,v2));
+    s+=lab('A',pA[0],Math.max(Y1-30,pA[1]-30),pA[0],pA[1]-5);
+    s+=lab('B',pB[0]+26,clampY(pB[1]+24),pB[0]+3,pB[1]+3);
+    s+=lab('C',X1+30,ky,X1,ky);
+    s+=lab('D',pD[0]-30,clampY(pD[1]-20),pD[0]-3,pD[1]-3); }
+  s+=`<line x1="${X0}" y1="${Y0}" x2="${X1}" y2="${Y0}" stroke="#a3b4cf" stroke-width="1.5"/></svg>`;
+  if(!o.mark){ const warn=[]; const tots=ROUND_ROWS.map((_,r)=>deer[r]!=null&&hab[r]!=null?deer[r]+hab[r]:null).filter(x=>x!=null);
+    if(tots.length>1&&tots.some(x=>x!==tots[0])) warn.push(`Deer + habitat should be the same every round, because every player is always deer or habitat. Your totals are: ${[...new Set(tots)].join(', ')}.`);
+    for(let r=1;r<=NR;r++) if(deer[r]!=null&&deer[r-1]!=null&&deer[r]>2*deer[r-1]){ warn.push(`Check ${ROUND_ROWS[r].toLowerCase()}: the deer can at most double in one round (each deer brings back only one new deer).`); break; }
+    if(warn.length) s+=`<div class="fb no small">Check your numbers. ${warn.join(' ')}</div>`; }
+  return s; }
+const deerChart=v=>`<div class="odchart">${deerSVG(v)}</div>`;
+function redrawCount(root){ const c=root.querySelector('.datachart'); if(c) c.innerHTML=deerChart(st('deer').val); }
+function hookEvents(root){ root.querySelectorAll('select.ocell').forEach(sl=>sl.addEventListener('change',()=>redrawCount(root))); }
+
+/* ---------- modeled S curve for labeling ---------- */
+function sCurveSVG(){ const W=680,H=340,X0=70,X1=650,Y0=290,Y1=50,top=600,K=500, y=v=>Y0-(Y0-Y1)*v/top, x=t=>X0+(X1-X0)*t/20, N=t=>K/(1+24*Math.exp(-0.45*t));
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Modeled S-shaped growth curve of a population over 20 years, with a dashed horizontal line near the top and four numbered points to label."><rect width="${W}" height="${H}" rx="12" fill="#0f1b2e"/>`;
+  for(let k=0;k<=top;k+=100) s+=`<line x1="${X0}" y1="${y(k)}" x2="${X1}" y2="${y(k)}" stroke="#22324f"/><text x="${X0-8}" y="${y(k)+4}" text-anchor="end" font-size="12" fill="#a3b4cf">${k}</text>`;
+  for(let t=0;t<=20;t+=5) s+=`<text x="${x(t)}" y="${Y0+18}" text-anchor="middle" font-size="12" fill="#a3b4cf">${t}</text>`;
+  s+=`<text x="${(X0+X1)/2}" y="${Y0+38}" text-anchor="middle" font-size="13" fill="#a3b4cf">Time (years)</text><text x="20" y="170" font-size="13" fill="#a3b4cf" transform="rotate(-90 20 170)" text-anchor="middle">Population size</text>`;
+  s+=`<line x1="${X0}" y1="${y(K)}" x2="${X1}" y2="${y(K)}" stroke="#e8eef8" stroke-width="2.2" stroke-dasharray="10 7"/>`;
+  let d=''; for(let t=0;t<=20.01;t+=0.25) d+=(t?'L':'M')+f1(x(t))+','+f1(y(N(t)))+' ';
+  s+=`<path d="${d}" stroke="#f59e0b" stroke-width="3.4" fill="none"/>`;
+  const pt=(n,t,lx,ly,px,py)=>`<line x1="${lx}" y1="${ly}" x2="${px}" y2="${py}" stroke="#ffd35c" stroke-width="1.5"/><circle cx="${f1(px)}" cy="${f1(py)}" r="4.5" fill="#ffd35c"/>`;
+  s+=pt(1,2,150,205,x(2),y(N(2)))+pt(2,7,395,255,x(7),y(N(7)))+pt(3,11,300,120,x(11),y(N(11)))+pt(4,0,585,150,600,y(K));
+  s+=stx(X1-6,Y1-14,'modeled data',11.5,'#7488a9','end');
+  return s+'</svg>'; }
+
+/* ---------- the model table ---------- */
+const MODEL_TABLE=`<div class="wide"><table class="nb odkey"><tr><th>In the game</th><th>In real life</th></tr>
+  <tr><td>A student on the deer line</td><td>One mule deer</td></tr>
+  <tr><td>A student on the habitat line</td><td>Food, water, or shelter in the deer's habitat</td></tr>
+  <tr><td>A deer finds a habitat student with the same sign</td><td>The deer finds the need it was looking for, so it survives</td></tr>
+  <tr><td>The habitat student goes back as a new deer</td><td>A surviving deer reproduces (a fawn is born)</td></tr>
+  <tr><td>A deer that finds no match becomes habitat</td><td>The deer dies; its body breaks down and returns nutrients to the soil</td></tr>
+  <tr><td>One round</td><td>About one year</td></tr></table></div>`;
+
+const PRED_ROWS=[
+  {desc:'Over 15 rounds, the number of deer will…',choices:['keep growing every round','grow, then level off and stay the same','go up and down','drop to zero and stay there']},
+  {desc:'The highest number of deer will be…',choices:['less than half of the players','about half of the players','more than half of the players']},
+  {desc:'When there are a lot of deer, the number of habitat players will be…',choices:['high','low','about the same as always']},
+  {desc:'An event like a drought will make the number of deer…',choices:['go down','go up','stay the same']}];
+
+function buildContent(sec){
+  let n=0; const num=()=>++n;
+  const say=(s,html)=>s.insertAdjacentHTML('beforeend',html);
+  /* ---------- 1. Setup ---------- */
+  say(sec[0],`<div class="phenbox"><b>Phenomenon:</b> The number of mule deer in a California mountain range is never the same two years in a row. Deer need food, water, and shelter, and the land only has so much of each. What decides how many deer an area can hold?</div>
+   <p><b>Activity question:</b> How do limiting factors (food, water, shelter, and events like drought) change the size of a deer population over time?</p>
+   <p><b>Background.</b> In this game, each student is either a <b>deer</b> or part of the <b>habitat</b>. To survive a round, a deer must find the one need it is looking for: <b>food</b>, <b>water</b>, or <b>shelter</b>. Each round stands for about one year.</p>
+   ${MODEL_TABLE}
+   ${SETUP_HTML}`);
+  choiceProblem(sec[0],{id:'q1', part:'P1', num:num(), q:'Check your understanding of the rules.',
+    parts:[{q:'<b>Part A:</b> A deer is looking for water. Which habitat student can it tag?',opts:['A student with both hands over the mouth','A student with both hands on the stomach','A student with hands together over the head','Any habitat student'],ans:0},
+           {q:'<b>Part B:</b> A deer finds a habitat student with the same sign. What happens?',opts:['The deer survives, and the habitat student comes back with it as a new deer','The deer and the habitat student both become habitat','The deer becomes habitat','Nothing changes'],ans:0},
+           {q:'<b>Part C:</b> A deer does not find a match. What happens?',opts:['It dies and becomes part of the habitat next round','It stays a deer and tries again','It becomes a mountain lion','It sits out for the rest of the game'],ans:0},
+           {q:'<b>Part D:</b> Can a deer change its sign after everyone turns around?',opts:['No, it keeps the sign it picked for the whole round','Yes, if it sees the sign it needs','Yes, but only in Round 1','Only if the teacher calls an event'],ans:0}],
+    hint:'Re-read the rules and the model table.', why:'Deer must match their sign, survivors bring back a new deer, deer with no match become habitat, and signs stay the same all round.'});
+  dragProblem(sec[0],{id:'q2', part:'P1', num:num(), q:'Label each hand sign. Drag <b>Food</b>, <b>Water</b>, or <b>Shelter</b> under each student.', svg:signsPic(), vb:[700,320],
+    zones:SIGN_ORDER.map((p,i)=>({id:'z'+i,x:120+i*230,y:292,w:150,ans:p[0].toUpperCase()+p.slice(1),ph:'drop here'})),
+    chips:['Food','Water','Shelter'], hint:'Food: hands on the stomach. Water: hands over the mouth. Shelter: hands together over the head, like a roof.', done:'Those are the three signs.'});
+  const ow=h('div',{class:'ordwrap'}); sec[0].appendChild(ow);
+  const STEPS=['Deer and habitat stand on their lines with their backs to each other','Everyone picks a need or a resource and makes the hand sign','The teacher says "Turn!" and everyone turns around','Each deer goes to a habitat student who shows the same sign','Deer with a match bring that student back as a new deer, and deer with no match become habitat','Count the deer and the habitat players and record the numbers'];
+  dragProblem(ow,{id:'q3', part:'P1', num:num(), q:'Put the steps of one round in order. Drag each step into place.', equation:true,
+    layout:STEPS.flatMap((_,i)=>['Step '+(i+1),i]), zones:STEPS.map((t,i)=>({id:'s'+i,ans:t,ph:'drop step here'})), chips:STEPS,
+    hint:'Signs are picked before anyone turns around. Counting happens at the very end.', done:'That is one round of the game.'});
+  /* ---------- 2. Predict ---------- */
+  say(sec[1],`<p>Before you play, predict. There are no wrong predictions: you get full credit for making them, but you <b>can't change them</b> after you lock them in.</p>`);
+  predictRows(sec[1],{id:'pred', part:'P2', num:num(), q:'Make your predictions.', rows:PRED_ROWS});
+  writtenProblem(sec[1],{id:'hyp', part:'P2', num:num(), q:'Write a hypothesis about what will happen to the number of deer, in the form <b>"If… then… because…"</b>.', pts:3, bank:['If','then','because','deer','habitat','food','water','shelter','grow','go down','population','limited'],
+    groups:[['If… then… form',/\bif\b[\s\S]*\bthen\b/],['says how the deer population will change',/grow|increas|decreas|go(es)? (up|down)|rise|drop|crash|level|stay|change|die/],['a reason',/because|habitat|food|water|shelter|limit|enough|resource/]],
+    model:'If the deer population grows, then it will go down again later, because there will not be enough food, water, and shelter in the habitat for all the deer.',
+    hint:'Say what will change, what you think will happen to the number of deer, and why.', why:'A testable hypothesis names the change, the predicted result, and the reason.'});
+  /* ---------- 3. Data / Experiment (activity and simulation differ) ---------- */
+  buildData(sec[2],num);
+  /* ---------- 4. Analysis ---------- */
+  const alock=h('div',{class:'fb info'}); alock.innerHTML='<b>Locked.</b> Save both tables on page 3 first.'; sec[3].appendChild(alock);
+  const awrap=h('div',{}); sec[3].appendChild(awrap);
+  const D=odData;
+  window.anaRefresh=()=>{ const ok=!!st('deer').checked&&!!st('ev').checked; alock.hidden=ok; awrap.hidden=!ok;
+    if(ok) $$('.anachart',awrap).forEach(e=>{ e.innerHTML=deerSVG(st('deer').val,{mark:e.dataset.c==='mark'}); }); };
+  say(awrap,`<p>Use <b>your data</b> from page 3. When a question asks for a round, type the round number (type <b>0</b> for the Start).</p>
+    <div class="prob"><div class="pq">Your data</div><div class="anachart odchart" data-c="all"></div></div>`);
+  typedProblem(awrap,{id:'a1', part:'P4', num:num(), q:'Find the highest and lowest points on your graph.', blanks:[
+      {before:'<b>Part A:</b> The highest number of deer =',calc:()=>D().mx,tol:0,show:'largest number in the Deer column'},
+      {before:'<b>Part B:</b> It happened after round',get accept(){ return roundAccept(D().maxR); },show:'round of the highest number'},
+      {before:'<b>Part C:</b> From after round 5 to the end, the lowest number of deer =',calc:()=>D().mn,tol:0,show:'smallest Deer number from round 5 on'},
+      {before:'<b>Part D:</b> That lowest number happened after round',get accept(){ return roundAccept(D().minR); },show:'round of that lowest number'}],
+    hint:'Read down the Deer column. If two rounds tie, either round is correct.'});
+  typedProblem(awrap,{id:'a2', part:'P4', num:num(), q:'A <b>boom</b> is a fast rise. A <b>crash</b> is a fast drop. Change in one round = deer after the round − deer before it.', blanks:[
+      {before:'<b>Part A:</b> The biggest rise in one round = ',calc:()=>D().bigRise,tol:0,after:'deer',show:'largest increase from one row to the next'},
+      {before:'<b>Part B:</b> The biggest drop in one round = ',calc:()=>D().bigDrop,tol:0,after:'deer (type it as a positive number)',show:'largest decrease from one row to the next'}],
+    hint:'Subtract each row from the row below it. Look for the largest increase and the largest decrease.'});
+  typedProblem(awrap,{id:'a3', part:'P4', num:num(), q:`<b>Estimate the carrying capacity.</b> In the game, the carrying capacity is about the number of deer the habitat can hold for a long time. Find the <b>average</b> number of deer from after round ${K_FROM} to after round ${K_TO} (${K_TO-K_FROM+1} numbers, before any events). Round to the nearest whole number.`, blanks:[
+      {before:'Carrying capacity estimate ≈',calc:()=>D().K,tol:1,after:'deer',show:'average of the 8 Deer numbers'}],
+    hint:`Add the ${K_TO-K_FROM+1} Deer numbers from after round ${K_FROM} to after round ${K_TO}, then divide by ${K_TO-K_FROM+1}.`});
+  dragProblem(awrap,{id:'a4', part:'P4', num:num(), q:'This is <b>your</b> deer graph. The dashed line is your carrying capacity estimate. Label each lettered part.', equation:true,
+    layout:['A =',0,'B =',1,'C =',2,'D =',3], zones:[{id:'A',ans:'Overshoot'},{id:'B',ans:'Crash'},{id:'C',ans:'Carrying capacity'},{id:'D',ans:'Growth'}],
+    chips:['Overshoot','Crash','Carrying capacity','Growth','Extinction','Migration'],
+    hint:'Overshoot = the population goes above carrying capacity. Crash = a fast drop. Growth = a fast rise. The flat dashed line is the carrying capacity.', done:'You labeled the parts of your own population graph.'});
+  { const bx=[...awrap.querySelectorAll('.prob')].pop(), eq=bx.querySelector('.eq'); const c=h('div',{class:'anachart odchart','data-c':'mark'}); bx.insertBefore(c,eq); }
+  const peakOpts=['It went down','It went up','It stayed the same','My highest number was after the last round'];
+  const habOpts=['The lowest (or tied for lowest) of any round','The highest of any round','Somewhere in the middle'];
+  choiceProblem(awrap,{id:'a5', part:'P4', num:num(), q:'Look closely at your peak (your highest number of deer).',
+    parts:[{q:'<b>Part A:</b> In the round right after your highest number, what happened to the number of deer?',opts:peakOpts,ans:-1,ansFn:()=>{ const d=D(), i=d.iMax; if(i>=NR) return 3; const c=d.deer[i+1]-d.deer[i]; return c<0?0:c>0?1:2; }},
+           {q:'<b>Part B:</b> At that same peak, the number of <b>habitat</b> players was…',opts:habOpts,ans:-1,ansFn:()=>{ const d=D(), hv=d.hab[d.iMax]; return hv<=Math.min(...d.hab)?0:hv>=Math.max(...d.hab)?1:2; }},
+           {q:'<b>Part C:</b> Was your highest number above your carrying capacity estimate?',opts:['Yes','No'],ans:-1,ansFn:()=>{ const d=D(); return d.mx>Math.round(d.K)?0:1; }}],
+    hint:'Use your data table: the Deer and Habitat numbers at your highest round, and your carrying capacity estimate.', why:'Your answers match your own data.'});
+  typedProblem(awrap,{id:'a6', part:'P4', num:num(), q:'At your highest number of deer (the first time, if it happened more than once), what percent of all the players were deer? Percent = deer ÷ (deer + habitat) × 100. Round to the nearest whole number.', blanks:[
+      {before:'Percent of players who were deer =',calc:()=>D().pctPeak,tol:1,after:'%',show:'deer ÷ all players × 100 at the peak'}],
+    hint:'Use the Deer and Habitat numbers in the same row as your highest number of deer.'});
+  writtenProblem(awrap,{id:'a7', part:'P4', num:num(), q:'Describe one <b>boom</b> and one <b>crash</b> in your data. Use numbers and round numbers from your table.', pts:3, bank:['the deer','grew from','to','after round','then','crashed','dropped','boom','crash','habitat'],
+    groups:[['describes a boom (a rise)',/grew|grow|increas|went up|rose|boom|doubl|jump/],['describes a crash (a drop)',/crash|drop|decreas|went down|fell|died|declin/],['uses numbers from the data',/\d/]],
+    model:'The deer boomed from 8 at the start to 24 after round 2. Then the population crashed from 24 to 10 after round 3, because there was not enough habitat for all the deer.',
+    hint:'Name a rise and a drop, with the numbers and the rounds.', why:'Booms and crashes are the fast rises and drops on your graph.'});
+  dragProblem(awrap,{id:'a8', part:'P4', num:num(), q:'This <b>modeled</b> graph shows logistic growth (an S curve). Label each point.', svg:sCurveSVG(), vb:[680,340],
+    zones:[{id:'s1',x:150,y:205,w:150,ans:'Slow growth: few parents'},{id:'s2',x:395,y:255,w:150,ans:'Fastest growth'},{id:'s3',x:300,y:120,w:150,ans:'Growth slows down'},{id:'s4',x:585,y:150,w:150,ans:'Carrying capacity (K)'}],
+    chips:['Slow growth: few parents','Fastest growth','Growth slows down','Carrying capacity (K)','Population crash'],
+    hint:'At the start there are only a few parents. Growth is fastest in the steep middle. Near the top, crowding slows growth. The flat dashed line is K.', done:'That is the shape of logistic growth.'});
+  const curveOpts=['It went up and down around a level, instead of leveling off smoothly','It leveled off smoothly, just like the S curve','It kept growing every round, like a J curve'];
+  choiceProblem(awrap,{id:'a9', part:'P4', num:num(), q:'Compare your graph with the S curve.',
+    parts:[{q:`<b>Part A:</b> From after round ${K_FROM} to after round ${K_TO}, how did your deer graph behave?`,opts:curveOpts,ans:-1,ansFn:()=>{ const d=D(), seg=d.deer.slice(K_FROM,K_TO+1);
+              if(d.deer.slice(1).every((x,i)=>x>=d.deer[i])&&d.deer[NR]>d.deer[0]) return 2; return Math.max(...seg)-Math.min(...seg)>=4?0:1; }},
+           {q:'<b>Part B:</b> Why can the deer in this game <b>overshoot</b> the carrying capacity?',opts:['Every deer that finds its need brings back a new deer, so the herd can double before the habitat runs short','The habitat grows bigger every round','Deer can pick two needs at once','Mountain lions bring new deer to the herd'],ans:0}],
+    hint:'Look at your graph from round 3 to round 10. Then think about what happens to the habitat when the herd doubles.', why:'Real populations often swing above and below carrying capacity, because births happen before the shortage is felt.'});
+  binProblem(awrap,{id:'a10', part:'P4', num:num(), q:'Sort the limiting factors. Does each one get <b>stronger when the herd is crowded</b> (density-dependent), or does it hit the herd <b>no matter how crowded</b> it is (density-independent)?',
+    bins:[{k:'dd',label:'Density-dependent'},{k:'di',label:'Density-independent'}],
+    items:[{t:'Deer compete for food in a crowded herd',k:'dd'},{t:'Too few water holes for all the deer',k:'dd'},{t:'Too few hiding places (shelter) for all the deer',k:'dd'},{t:'A disease spreads fast in a crowded herd',k:'dd'},{t:'Mountain lions catch more deer when deer are everywhere',k:'dd'},
+           {t:'A drought dries up the creeks',k:'di'},{t:'A wildfire burns the chaparral',k:'di'},{t:'A very cold, snowy winter',k:'di'},{t:'A flood washes out a valley',k:'di'}],
+    hint:'Ask: would this hurt 10 deer and 1,000 deer in the same way? If yes, it is density-independent.', done:'Crowding makes competition, disease, and predation stronger. Weather and fire do not depend on crowding.'});
+  const evDirOpts=['The number of deer went down','The number of deer went up','The number of deer stayed the same','My class had no events'];
+  const evKindOpts=['A density-independent factor','A density-dependent factor','My class had no events'];
+  choiceProblem(awrap,{id:'a11', part:'P4', num:num(), q:'Look at the <b>first event</b> in your events table (Rounds 11 to 15).',
+    parts:[{q:'<b>Part A:</b> Compare the deer number after that round with the deer number before it. What happened?',opts:evDirOpts,ans:-1,ansFn:()=>{ const d=D(); if(!d.first) return 3; const c=d.deer[d.first.R]-d.deer[d.first.R-1]; return c<0?0:c>0?1:2; }},
+           {q:'<b>Part B:</b> What kind of limiting factor was that event?',opts:evKindOpts,ans:-1,ansFn:()=>{ const d=D(); if(!d.first) return 2; return d.first.e==='Mountain lion'?1:0; }}],
+    hint:'Find the first round in your events table that is not "No event." Then use the Deer column. Drought and wildfire are weather and fire. A mountain lion is a predator.', why:'Your answers match your own data.'});
+  writtenProblem(awrap,{id:'a12', part:'P4', num:num(), q:'Explain <b>why</b> the deer population crashed after it got large. Use the words <b>habitat</b> and <b>density-dependent</b> (or crowded).', pts:3, bank:['too many deer','not enough','habitat','food','water','shelter','compete','crowded','density-dependent','died'],
+    groups:[['too many deer for the habitat',/too many|more deer than|not enough|ran out|limited|less habitat|fewer habitat|compet|short/],['names a need or the habitat',/food|water|shelter|habitat|resource/],['the crowding (density) idea',/crowd|density|dense|compet|more deer/]],
+    model:'When there were too many deer, there was not enough habitat (food, water, and shelter) for all of them. The deer had to compete, so many could not find their need and died. This is density-dependent: the more crowded the herd, the stronger the limit.',
+    hint:'What happened to the habitat when there were many deer? Why does crowding matter?', why:'A crowded herd runs short of habitat, so competition makes deaths go up: a density-dependent limit.'});
+  say(awrap,`<div class="prob"><div class="pq">Read: two real deer stories</div>
+    <p><b>The Kaibab Plateau (Arizona).</b> In the early 1900s, the Kaibab Plateau became a game reserve. Deer hunting was stopped, and hunters killed thousands of mountain lions, wolves, and coyotes. Reports from that time say the mule deer herd grew very large, then crashed in the late 1920s as the deer ate most of the plants they could reach, and many starved. Scientists today point out that the old deer counts were mostly rough guesses, and they still debate how big the boom really was. Cattle and sheep grazing and the weather may also have played a part. It is a famous story, but not exact data.</p>
+    <p><b>California mule deer and wildfire.</b> Large wildfires burn chaparral and forest where mule deer live. Right after a fire, deer lose food and places to hide, and some die or move away. Over the next few years, shrubs sprout again from roots and seeds. The young plants are often good food, so in some places deer find more food a few years after a fire. Very large, very hot fires can take much longer to recover.</p></div>`);
+  choiceProblem(awrap,{id:'a13', part:'P4', num:num(), q:'Use the two stories and what you learned in the game.',
+    parts:[{q:'<b>Part A:</b> In the Kaibab story, removing the predators most likely let the deer herd…',opts:['grow past what the plants could support (overshoot), then crash','stay at carrying capacity forever','shrink right away','find new food that never ran out'],ans:0},
+           {q:'<b>Part B:</b> Why should we be careful with the Kaibab story?',opts:['The old deer counts were rough guesses, and other causes, like grazing and weather, may also have mattered','Mule deer do not eat plants','There were never any predators on the Kaibab','Scientists proved the story was made up'],ans:0},
+           {q:'<b>Part C:</b> Right after a big wildfire, the carrying capacity of that land for mule deer most likely…',opts:['goes down, because food and shelter burned','goes up right away','stays exactly the same','becomes zero forever'],ans:0},
+           {q:'<b>Part D:</b> A few years later, young shrubs grow back. The carrying capacity for deer may…',opts:['go back up as food grows back','keep going down forever','have nothing to do with plants','depend only on the number of predators'],ans:0}],
+    hint:'Carrying capacity depends on how much food, water, and shelter the land has.', why:'Losing predators can let a herd overshoot. A fire lowers carrying capacity, and regrowth can raise it again. Old data should be used with care.'});
+  binProblem(awrap,{id:'a14', part:'P4', num:num(), q:'Every model has <b>limitations</b>. Sort each statement: is the game <b>like real deer</b>, or is it a way <b>real deer are different</b>?',
+    bins:[{k:'like',label:'Like real deer'},{k:'diff',label:'Real deer are different'}],
+    items:[{t:'Deer need food, water, and shelter to survive',k:'like'},{t:'When the habitat runs short, some deer die',k:'like'},{t:'More deer means more competition for the same habitat',k:'like'},{t:'Habitat can recover after the deer population drops',k:'like'},
+           {t:'Real deer need all three needs every year, not just one',k:'diff'},{t:'A real deer does not turn into food, water, or shelter right away',k:'diff'},{t:'Real does have about 1 or 2 fawns a year, and not every fawn lives',k:'diff'},{t:'Real plants can take years to grow back, not one round',k:'diff'}],
+    hint:'"Like real deer" = something the game shows well. "Different" = a way the game is simpler than real life.', done:'The game shows how limited habitat controls a population, but it simplifies needs, births, and regrowth.'});
+  writtenProblem(awrap,{id:'a15', part:'P4', num:num(), q:'Did your results match your predictions from page 2? Explain, using at least one number from your data.', pts:2, bank:['I predicted','but','the deer','after round','went up and down','matched','did not match','highest','habitat'],
+    groups:[['refers to the prediction',/predict|thought|expected|guess|hypothes/],['uses a number from the data',/\d/]],
+    model:'I predicted the deer would grow and then level off, but my data went up and down: the deer reached 24 after round 2 and dropped to 10 after round 3, so my prediction did not fully match.',
+    hint:'Say what you predicted, then give a number from your data.', why:'Comparing predictions with data is how scientists test their ideas.'});
+  /* ---------- 5. Conclusion ---------- */
+  say(sec[4],`<p>Write a <b>claim, evidence, and reasoning</b> conclusion that answers: <i>How do limiting factors change the size of a deer population over time?</i> Use your data.</p>`);
+  writtenProblem(sec[4],{id:'k1', part:'P5', num:num(), q:'<b>Claim:</b> answer the question in one sentence.', pts:1, bank:['The deer population','grew','crashed','went up and down','around','carrying capacity','limiting factors','food','water','shelter'],
+    groups:[['says how limiting factors change the population',/(limit|food|water|shelter|habitat|drought|fire|event|carrying)[\s\S]{0,120}(population|deer|number|size)|(population|deer|number|size)[\s\S]{0,120}(limit|food|water|shelter|habitat|drought|fire|event|carrying)/]],
+    model:'Limiting factors like food, water, and shelter kept the deer population from growing forever, so it went up and down around the carrying capacity.', hint:'Say what limiting factors did to the number of deer.', why:'The claim answers the question.'});
+  writtenProblem(sec[4],{id:'k2', part:'P5', num:num(), q:'<b>Evidence:</b> give numbers from your data: your highest number, a crash, and your carrying capacity estimate.', pts:3, bank:['highest','after round','dropped to','carrying capacity','about','deer','event','drought','wildfire'],
+    groups:[['the highest number or a boom',/high|peak|most|max|boom|grew|rose|reached/],['a crash or a drop',/crash|drop|fell|went down|decreas|lowest/],['numbers from the data',/\d/]],
+    model:'The deer reached a high of 24 after round 2, then dropped to 10 after round 3. From round 3 to round 10, the deer averaged about 16, which is my carrying capacity estimate.',
+    hint:'Use your answers from the Analysis page.', why:'Good evidence uses specific numbers.'});
+  writtenProblem(sec[4],{id:'k3', part:'P5', num:num(), q:'<b>Reasoning:</b> explain <i>why</i> the population changed this way. Use the ideas of limiting factors, carrying capacity, and density-dependent or density-independent factors.', pts:4, bank:['limiting factor','habitat','not enough','compete','carrying capacity','overshoot','density-dependent','density-independent','drought','died','reproduce'],
+    groups:[['limiting factors or not enough habitat',/limit|not enough|ran out|short|habitat|resource/],['carrying capacity or overshoot',/carrying|capacity|overshoot|\bk\b/],['density-dependent (crowding, competition)',/density.dependent|crowd|compet/],['density-independent events (drought, fire)',/density.independent|drought|fire|weather|event|winter|flood/]],
+    model:'When habitat was plentiful, most deer found their needs and reproduced, so the herd grew. When the herd got too big, it overshot the carrying capacity: there was not enough food, water, and shelter, so deer competed and many died. That is density-dependent. Events like a drought or wildfire are density-independent: they removed habitat no matter how many deer there were, so the deer dropped. Limiting factors kept the herd near the carrying capacity.',
+    hint:'Cover four ideas: limiting factors, carrying capacity or overshoot, density-dependent factors, and density-independent events.', why:'Limited habitat sets a carrying capacity. Crowding (density-dependent) and events like drought (density-independent) both push the herd down.'});
+  dataRefresh();
+}
+
+/* ===== Oh Deer!: in-person version (the class plays the game outside or in the gym) ===== */
+const SETUP_HTML=`<div class="figwrap odfig" style="margin:12px 0 8px">${fieldPic()}</div>
+   <p><b>Materials:</b> an open space about 20 meters long (a field, blacktop, or gym); 4 cones or tape to mark two lines about 10 to 20 meters apart; vests, armbands, or bandanas for the deer (optional); a whistle; a whiteboard or clipboard to keep the class count.</p>
+   <p><b>Safety:</b> walk fast or jog, do not sprint. Tag gently with two fingers on the shoulder. No pushing, pulling, or tackling. Look where you are going, and stop when you hear the whistle.</p>
+   <p><b>The hand signs:</b> <b>food</b> = both hands on your stomach. <b>water</b> = both hands over your mouth. <b>shelter</b> = hands together over your head, like a roof.</p>
+   <p><b>Rules:</b></p><ol class="proc">
+    <li><b>Start:</b> about 1 out of every 4 students are <b>deer</b> and stand on the deer line. Everyone else is <b>habitat</b> and stands on the habitat line. Both lines turn their backs to each other.</li>
+    <li><b>Pick a sign.</b> Each deer picks the one need it is looking for this round. Each habitat student picks what they will be: food, water, or shelter. Everyone makes their sign. No changing your sign after this.</li>
+    <li><b>Turn.</b> The teacher says "Turn!" Everyone turns around and keeps showing their sign. Habitat students stay on their line.</li>
+    <li><b>Find your need.</b> Each deer goes to a habitat student who shows the <b>same</b> sign and tags them. One deer per habitat student: the first deer to tag gets that student.</li>
+    <li><b>Survive and reproduce.</b> A deer that found its need takes that habitat student back to the deer line. That student is now a <b>new deer</b>.</li>
+    <li><b>No match.</b> A deer that did not find its need <b>dies</b>. It walks to the habitat line and is habitat next round. Habitat students who were not tagged stay habitat. If every deer dies, 2 habitat students become deer that wander in from a nearby area.</li>
+    <li><b>Count.</b> The recorder counts the deer and the habitat players and writes the numbers on the board.</li>
+    <li>Play <b>15 rounds</b>. Rounds 1 to 10 use the normal rules. In Rounds 11 to 15, your teacher may call one event at the start of a round:
+      <ul><li><b>Drought:</b> after everyone picks a sign, habitat students showing <b>water</b> sit down for that round. The water holes dried up.</li>
+      <li><b>Wildfire:</b> after everyone picks a sign, habitat students showing <b>shelter</b> sit down, and every other student showing <b>food</b> sits down too. The fire burned the brush.</li>
+      <li><b>Mountain lion:</b> one student stands between the lines as a mountain lion. When deer cross, the lion tags deer gently. A tagged deer is caught and is habitat next round.</li></ul></li>
+    <li>After the game, copy the class numbers and the events into the two tables on page 3.</li></ol>`;
+function buildData(s,num){
+  const lock=h('div',{class:'fb info'}); lock.innerHTML='<b>Locked.</b> Lock in your predictions on page 2 first.'; s.appendChild(lock);
+  const dwrap=h('div',{}); s.appendChild(dwrap);
+  dwrap.insertAdjacentHTML('beforeend',`<p>Your teacher keeps the class count on the board. Copy the <b>whole class</b> numbers here. The graph draws as you type. Mark the events in the second table, and they will show on the graph.</p>`);
+  dataTableProblem(dwrap,{id:'deer', part:'P3', num:num(), q:'Number of deer and habitat players at the start and after each round (whole class).', pts:6, corner:'Round', cols:COUNT_COLS, rows:ROUND_ROWS, chart:deerChart});
+  obsTableProblem(dwrap,{id:'ev', part:'P3', num:num(), q:'Events: what did your teacher call in Rounds 11 to 15? Choose "No event" if there was none.', pts:2, rows:EV_ROUNDS.map(R=>({q:'Round '+R, opts:EV_OPTS}))});
+  hookEvents(dwrap);
+  window.dataRefresh=()=>{ const ok=!!st('pred').checked; lock.hidden=ok; dwrap.classList.toggle('off',!ok); redrawCount(dwrap); if(window.anaRefresh) anaRefresh(); };
+}
+
+/* ============================== BUILD / SCORE ============================== */
+function scoreAll(){ const parts=PARTS.slice(0,-1).map(p=>({k:p.k,label:p.label,got:0,max:0})); PROBS.forEach(pr=>{ const pt=parts.find(x=>x.k===pr.part); pt.got+=pr.score(); pt.max+=pr.max; });
+  return {parts, total:parts.reduce((a,b)=>a+b.got,0), max:parts.reduce((a,b)=>a+b.max,0)}; }
+function build(){
+  PROBS.length=0; const ws=$('#ws'); ws.innerHTML='';
+  $('#nav').innerHTML=PARTS.map((pt,i)=>`<button class="ntile" type="button" data-i="${i}" aria-label="${pt.title}"><span class="ic">${ico(i,22)}</span><span class="nm">${pt.label}</span></button>`).join('');
+  $$('#nav .ntile').forEach(b=>b.addEventListener('click',()=>showPart(+b.dataset.i)));
+  const secs=PARTS.map((pt,i)=>{ const el=h('section',{class:'sec',id:'part'+i}); const last=i===PARTS.length-1;
+    el.innerHTML=`<div class="sechead"><div class="badge"><span class="z">${i+1}</span>${ico(i,34)}</div><div><div class="meta">${last?'Grade':`Section ${i+1} of ${PARTS.length-1} · about ${pt.min} min`}</div><h2>${pt.title}</h2></div></div>`;
+    const c=h('div',{class:'card'}); el.appendChild(c);
+    const nav=h('div',{class:'secnav'});
+    const back=h('button',{class:'btn ghost',type:'button'},i===0?'':'← Back'); if(i===0) back.style.visibility='hidden'; back.addEventListener('click',()=>showPart(i-1));
+    nav.appendChild(back);
+    if(!last){ const nx=h('button',{class:'btn primary',type:'button'},i===PARTS.length-2?'See my grade →':`Next: ${PARTS[i+1].title} →`); nx.addEventListener('click',()=>showPart(i+1)); nav.appendChild(nx); }
+    el.appendChild(nav); ws.appendChild(el); return c; });
+  buildContent(secs);
+  secs[PARTS.length-1].id='turnin';
+  showPart(Math.min(S.cur||0,PARTS.length-1),true);
+  $('#whoami').textContent=S.student?`${S.student.first} ${S.student.last}`:''; refresh();
+}
+function showPart(i,noScroll){
+  S.cur=i; $$('#ws .sec').forEach((el,j)=>el.hidden=j!==i);
+  $$('#nav .ntile').forEach((t,j)=>t.classList.toggle('cur',j===i));
+  if(!noScroll){ save(); window.scrollTo(0,0); }
+}
+function refresh(){
+  const sc=scoreAll(), done=PROBS.filter(p=>p.checked()).length;
+  $('#scorePill').textContent=`${done}/${PROBS.length} checked · ${sc.total}/${sc.max} pts`;
+  PARTS.slice(0,-1).forEach((pt,i)=>{ const t=$(`#nav .ntile[data-i="${i}"]`); if(t) t.classList.toggle('done',PROBS.filter(p=>p.part===pt.k).every(p=>p.checked())); });
+  const t7=$(`#nav .ntile[data-i="${PARTS.length-1}"]`); if(t7) t7.classList.toggle('done',!!S.submittedAt);
+  const c=$('#turnin'); if(!c) return;
+  const rows=sc.parts.map(p=>`<tr><th>${p.label}</th><td>${p.got} / ${p.max}</td></tr>`).join('');
+  c.innerHTML=`<div style="display:flex;gap:22px;align-items:center;flex-wrap:wrap"><div class="big">${sc.total}/${sc.max}</div><div><h3 style="margin:0">${esc(S.student?S.student.first+' '+S.student.last:'')}</h3><p class="muted" style="margin:0">${done} of ${PROBS.length} problems checked</p></div></div>
+    <table class="res" style="margin-top:12px">${rows}</table>
+    <p class="small muted" style="margin-top:10px">Problems you haven't checked count as 0. You can turn in again later; your teacher sees the newest one.</p>
+    <div class="btnrow"><button class="btn primary" id="subBtn" type="button">${S.submittedAt?'Turn in again':'Turn in my lab'}</button><button class="btn ghost" id="csvBtn" type="button">Download CSV</button></div>
+    <p class="fb info sheetStatus" aria-live="polite">${S.sentAt?`Sent to your teacher ${new Date(S.sentAt).toLocaleString()}.`:'Not turned in yet.'}</p>`;
+  $('#subBtn').addEventListener('click',turnIn);
+  $('#csvBtn').addEventListener('click',()=>downloadCSV([recordRow()],`OhDeerActivity_${(S.student&&S.student.last||'student').replace(/\W+/g,'')}.csv`));
+}
+const CSV_HEAD=['Student ID','Last Name','First Name','Period','Teacher','Activity','Score','Total','Percent',...PARTS.slice(0,-1).map(p=>p.label),'Date'];
+function recordRow(){ const st=S.student||{}, sc=scoreAll(); return [st.id||'',st.last||'',st.first||'',st.period||'',st.teacher||'',ACTIVITY,sc.total,sc.max,Math.round(100*sc.total/sc.max)+'%',...sc.parts.map(p=>p.got),new Date(S.submittedAt||Date.now()).toLocaleString()]; }
+function csvText(rows){ const q=v=>{ v=String(v==null?'':v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }; return [CSV_HEAD,...rows].map(r=>r.map(q).join(',')).join('\r\n')+'\r\n'; }
+function downloadCSV(rows,name){ const b=new Blob([csvText(rows)],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500); }
+const loadRecs=()=>{ try{ return (JSON.parse(localStorage.getItem(RECS))||[]).filter(r=>r.length===CSV_HEAD.length); }catch(e){ return []; } };
+function saveRecord(){ if(S.preview) return; const recs=loadRecs(), row=recordRow(); const i=recs.findIndex(r=>r[0]===row[0]&&r[1]===row[1]); if(i>=0) recs[i]=row; else recs.push(row); try{ localStorage.setItem(RECS,JSON.stringify(recs)); }catch(e){} }
+function turnIn(){
+  const left=PROBS.filter(p=>!p.checked()).length;
+  if(left&&!confirm(`${left} problem${left>1?'s':''} not checked yet (they count as 0). Turn in anyway?`)) return;
+  S.submittedAt=Date.now(); save(); saveRecord(); cloudSave(true); disarm(); refresh();
+  const msg=t=>$$('.sheetStatus').forEach(e=>e.textContent=t);
+  if(S.preview){ msg('Preview mode: nothing is sent.'); return; }
+  const st=S.student, sc=scoreAll();
+  const body={studentId:st.id||'',firstName:st.first||'',lastName:st.last||'',period:st.period||'',teacher:st.teacher||'',locks:'0',when:new Date().toString(),activity:ACTIVITY,score:String(sc.total),total:String(sc.max),
+    qlabels:sc.parts.map((p,i)=>'P'+(i+1)+' '+PARTS[i].label).join('|'),qpoints:sc.parts.map(p=>p.got).join('|'),qmax:sc.parts.map(p=>p.max).join('|')};
+  msg('Sending...');
+  fetch(sheetURL(),{method:'POST',mode:'no-cors',body:new URLSearchParams(body)}).then(()=>{ S.sentAt=new Date().toISOString(); save(); msg('Sent! Your teacher will see your score.'); }).catch(()=>msg("Couldn't send. Check the Wi-Fi and try again, or download the CSV."));
+}
+
+/* ============================== NO LOCKDOWN ON WORKSHEETS ============================== */
+let teacherOpen=false;
+function arm(){} function disarm(){} function showLock(){} function enterFS(){}
+['copy','cut','paste','contextmenu'].forEach(ev=>document.addEventListener(ev,e=>{ if(teacherOpen||S.preview) return; e.preventDefault(); }));
+
+/* ============================== SIGN IN ============================== */
+function showWS(){ $('#start').hidden=true; $('#top').hidden=false; $('#ws').hidden=false; build(); window.scrollTo(0,0); if(S.locked&&LOCKDOWN&&!S.lockOff) showLock(); else arm(); }
+function renderStart(){ const has=!!S.student; $('#resumeBox').hidden=!has; $('#startForm').hidden=has; $('#signinTitle').textContent=has?'Welcome back':'Sign in to start';
+  if(has) $('#resumeText').innerHTML=`Signed in as <b>${esc(S.student.first)} ${esc(S.student.last)}</b>, period ${esc(S.student.period)}.`; }
+$('#fPeriod').innerHTML='<option value="">Choose your period</option>'+periodList().map(p=>`<option>${esc(p)}</option>`).join('');
+$('#fTeacher').innerHTML='<option value="">Choose your teacher</option>'+teacherList().map(t=>`<option>${esc(t)}</option>`).join('');
+let starting=false;
+async function start(){
+  if(starting) return; starting=true;
+  try{
+    const v={first:$('#fFirst').value.trim(),last:$('#fLast').value.trim(),id:$('#fId').value.trim(),period:$('#fPeriod').value,teacher:$('#fTeacher').value};
+    const miss=[]; if(!v.first) miss.push('first name'); if(!v.last) miss.push('last name'); if(!v.id) miss.push('student ID'); if(!v.period) miss.push('period'); if(!v.teacher) miss.push('teacher');
+    const err=$('#formErr'); if(miss.length){ err.className='fb no'; err.textContent='Fill in your '+miss.join(', ')+'.'; err.hidden=false; return; }
+    if(LOCKDOWN) enterFS();
+    err.className='fb info'; err.textContent='Checking for your saved work...'; err.hidden=false;
+    const res=await cloudLoad(v); err.hidden=true;
+    if(res.status==='found'){ const d=res.data; d.student=Object.assign({},d.student||{},{first:v.first,period:v.period,teacher:v.teacher}); adopt(d); showWS(); note('✓ Your saved work was loaded'); return; }
+    const ns=fresh(); ns.student=v; adopt(ns); showWS(); cloudSave(true);
+  } catch(ex){ const er=$('#formErr'); er.className='fb no'; er.textContent='Something went wrong starting ('+(ex&&ex.message||ex)+'). Reload and try again.'; er.hidden=false; }
+  finally{ starting=false; }
+}
+$('#startBtn').addEventListener('click',start);
+$('#startForm').addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.tagName==='INPUT'){ e.preventDefault(); start(); } });
+$('#resumeBtn').addEventListener('click',async()=>{ const b=$('#resumeBtn'); b.disabled=true; b.textContent='Loading your work...'; if(LOCKDOWN&&!S.locked) enterFS();
+  const res=await cloudLoad(S.student); b.disabled=false; b.textContent='Continue my lab';
+  if(res.status==='found'&&(res.data.updatedAt||0)>(S.updatedAt||0)&&checkedCount(res.data)>=checkedCount(S)){ const d=res.data; d.student=S.student; adopt(d); note('✓ Your newest saved work was loaded'); } showWS(); });
+$('#notMeBtn').addEventListener('click',async()=>{ const b=$('#notMeBtn'); b.disabled=true;
+  try{ if(cloudOK()) await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); }catch(e){ b.disabled=false; $('#resumeErr').textContent="Can't back up the last student's work right now. Check the Wi-Fi, or ask your teacher."; $('#resumeErr').hidden=false; return; }
+  b.disabled=false; adopt(fresh()); ['#fFirst','#fLast','#fId','#fPeriod','#fTeacher'].forEach(s=>$(s).value=''); renderStart(); });
+
+/* ============================== TEACHER ============================== */
+function openTeacher(){ teacherOpen=true; $('#teachLogin').hidden=false; $('#teachPanel').hidden=true; $('#teachErr').hidden=true; $('#teachCode').value=''; $('#teachOv').classList.add('show'); setTimeout(()=>$('#teachCode').focus(),50); }
+function closeTeacher(){ $('#teachOv').classList.remove('show'); teacherOpen=false; }
+$('#teacherLink').addEventListener('click',openTeacher); $('#teachBtn').addEventListener('click',openTeacher);
+$('#teachCancel').addEventListener('click',closeTeacher);
+$('#teachCode').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#teachGo').click(); });
+$('#teachGo').addEventListener('click',()=>{ if(!codeIs($('#teachCode').value,TEACHER_CODE)){ $('#teachErr').hidden=false; return; } $('#teachLogin').hidden=true; $('#teachPanel').hidden=false; renderTeacher(); });
+function renderTeacher(){
+  const recs=loadRecs(), p=$('#teachPanel'), keyOn=document.body.classList.contains('keyon');
+  p.innerHTML=`<h2>Teacher tools</h2>
+    <div class="btnrow"><button class="btn ghost" id="tKey" type="button">${keyOn?'Hide answer key':'Answer key'}</button>
+      <button class="btn ghost" id="tPrev" type="button">${S.preview?'End preview':'Preview (saves nothing)'}</button>
+      <button class="btn ghost" id="tResetWrong" type="button">Reset all wrong answers</button>
+      <button class="btn ghost" id="tReset" type="button">Reset this Chromebook</button><button class="btn ghost" id="tClose" type="button">Close</button></div>
+    <h3 style="margin-top:16px">Scores saved on this Chromebook (${recs.length})</h3>
+    <div class="wide">${recs.length?`<table class="nb"><tr><th>Student</th><th>ID</th><th>Period</th><th>Score</th><th>Date</th></tr>${recs.map(r=>`<tr><td>${esc(r[1])}, ${esc(r[2])}</td><td>${esc(r[0])}</td><td>${esc(r[3])}</td><td>${r[6]}/${r[7]}</td><td>${esc(r[r.length-1])}</td></tr>`).join('')}</table>`:'<p class="muted">None yet.</p>'}</div>
+    <div class="btnrow"><button class="btn primary" id="tCsv" type="button" ${recs.length?'':'disabled'}>Download scores (CSV)</button></div>
+    <h3 style="margin-top:16px">Load a student's saved work</h3>
+    <div class="btnrow"><input class="code" id="tId" placeholder="Student ID" style="width:150px"><input class="code" id="tLast" placeholder="Last name" style="width:170px"><button class="btn ghost" id="tLoad" type="button">Load work</button></div>
+    <p class="fb info" id="tMsg" style="min-height:1em"></p>`;
+  const msg=t=>$('#tMsg').textContent=t;
+  $('#tKey').addEventListener('click',()=>{ document.body.classList.toggle('keyon'); renderTeacher(); msg(document.body.classList.contains('keyon')?'Answer key on: each box shows its answer, sort chips show their box, and correct choices have a dashed gold outline.':'Answer key off.'); });
+  $('#tPrev').addEventListener('click',()=>{ if(S.preview){ location.reload(); return; } const ns=fresh(); ns.preview=true; ns.student={first:'Teacher',last:'Preview',id:'0',period:'-',teacher:teacherList()[0]}; S=ns; closeTeacher(); showWS(); note('Preview: nothing is saved'); });
+  $('#tReset').addEventListener('click',()=>{ if(confirm('Erase this lab on this Chromebook? Work backed up to the Saved Student Work sheet is not deleted.')){ try{ localStorage.removeItem(STORE); }catch(e){} location.reload(); } });
+  $('#tResetWrong').addEventListener('click',()=>{
+    const wrong=PROBS.filter(pr=>{ const P=S.p[pr.id]||{}; return (P.tries||0)>0 && !P.right; });
+    if(!wrong.length){ msg('Nothing to reset: this student has no wrong answers.'); return; }
+    if(!confirm(`Reset ${wrong.length} problem${wrong.length>1?'s':''} that ${wrong.length>1?'are':'is'} wrong or on a second try for ${(S.student&&S.student.first)||'this student'}? Correct answers stay.`)) return;
+    wrong.forEach(pr=>{ delete S.p[pr.id]; });
+    save(); cloudSave(true); msg(`Reset ${wrong.length} problem${wrong.length>1?'s':''}. Reloading…`); setTimeout(()=>location.reload(),700); });
+  $('#tClose').addEventListener('click',closeTeacher);
+  $('#tCsv').addEventListener('click',()=>downloadCSV(recs,`OhDeerActivity_scores_${new Date().toISOString().slice(0,10)}.csv`));
+  $('#tLoad').addEventListener('click',async()=>{ const s={id:$('#tId').value.trim(),last:$('#tLast').value.trim()}; if(!s.id||!s.last){ msg('Type the student ID and last name.'); return; } msg('Looking up saved work...');
+    const r=await cloudLoad(s); if(r.status==='found'){ adopt(r.data); closeTeacher(); renderStart(); $('#start').hidden=false; $('#ws').hidden=true; $('#top').hidden=true; } else msg(r.status==='none'?'No saved work found for that student.':"Couldn't reach the saved-work sheet."); });
+}
+
+if(!STORAGE_OK) $('#noStore').hidden=false;
+renderStart();
+})();
+</script>
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

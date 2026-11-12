@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Population Growth: Practice | Biology Unit 6</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1626; --panel:#142136; --panel2:#1a2a44; --line:#2a3d5f; --line2:#3a5580;
+  --text:#e8eef8; --muted:#a3b4cf; --dim:#7488a9;
+  --leaf:#5fe3a9; --sun:#ffd35c; --r:#ffd35c; --sky:#45c8f0; --ok:#4ade80; --bad:#fb7185; --pink:#f472b6;
+  --font:'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+*{box-sizing:border-box} [hidden]{display:none !important}
+html,body{margin:0}
+body{background-color:var(--bg); background-image:linear-gradient(rgba(110,150,210,.065) 1px,transparent 1px),linear-gradient(90deg,rgba(110,150,210,.065) 1px,transparent 1px); background-size:32px 32px;
+  color:var(--text); font-family:var(--font); font-size:17px; line-height:1.55; -webkit-user-select:none; user-select:none}
+input,textarea{-webkit-user-select:text; user-select:text}
+h1,h2,h3,h4{margin:0 0 .45em; line-height:1.2; font-weight:600}
+h1{font-size:clamp(28px,4.4vw,40px); font-weight:700} h2{font-size:24px} h3{font-size:19px}
+p{margin:0 0 .75em} .muted{color:var(--muted)} .small{font-size:14px}
+sub,sup{font-size:.72em}
+:focus-visible{outline:3px solid var(--r); outline-offset:2px}
+.top{position:sticky; top:0; z-index:20; background:rgba(13,22,38,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+.top-in{max-width:1100px; margin:0 auto; padding:8px 16px; display:flex; gap:12px; align-items:center}
+.brand{font-weight:600; font-size:15px; white-space:nowrap} .brand span{display:block; font-weight:400; font-size:12px; color:var(--muted)}
+.nav{display:flex; gap:6px; flex:1; overflow-x:auto; padding:3px 2px}
+.ntile{flex:0 0 auto; width:54px; height:54px; border-radius:7px; border:1.5px solid var(--line2); background:var(--panel); color:var(--text); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer; position:relative; font:inherit; padding:0}
+.ntile .ic{color:var(--leaf); line-height:0} .ntile .nm{font-size:8.5px; color:var(--muted)}
+.ntile.cur{border-color:var(--r); background:rgba(255,211,92,.14)}
+.ntile.cur .nm{color:var(--r)}
+.secnav{display:flex; justify-content:space-between; gap:10px; margin-top:4px}
+.ntile.done::after{content:'✓'; position:absolute; top:1px; right:4px; font-size:10px; font-weight:700; color:var(--ok)}
+.scorepill{font-size:13px; padding:4px 10px; border-radius:999px; background:var(--panel2); white-space:nowrap}
+.savenote{font-size:12.5px; color:var(--ok); white-space:nowrap} @media (max-width:1300px){ .savenote{display:none} } @media (max-width:900px){ .scorepill{display:none} }
+main{max-width:1000px; margin:0 auto; padding:20px 16px 80px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin:0 0 18px}
+.sec{scroll-margin-top:80px}
+.sechead{display:flex; gap:14px; align-items:center; margin:28px 0 10px}
+.badge{width:66px; height:66px; border-radius:10px; border:2px solid var(--leaf); background:var(--panel); display:flex; align-items:center; justify-content:center; position:relative; flex:0 0 auto; color:var(--leaf)}
+.badge .z{position:absolute; top:3px; left:6px; font-size:11px; color:var(--muted)}
+.meta{color:var(--muted); font-size:14px}
+.btn{font:inherit; font-weight:600; font-size:15px; border-radius:10px; padding:10px 18px; cursor:pointer; border:1.5px solid transparent}
+.btn.primary{background:var(--r); color:#231a00} .btn.ghost{background:transparent; border-color:var(--line2); color:var(--text)}
+.btn.small{padding:6px 12px; font-size:14px} .btn:disabled{opacity:.45; cursor:not-allowed}
+.btnrow{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:12px}
+.field{display:flex; flex-direction:column; gap:4px; font-size:14px; color:var(--muted)}
+.field input,.field select{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px}
+.formgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin:10px 0}
+.fb{margin-top:10px; padding:10px 14px; border-radius:10px; font-size:15px}
+.fb.ok{background:rgba(74,222,128,.12); color:#c9f7d8} .fb.no{background:rgba(251,113,133,.12); color:#ffd3db} .fb.info{background:var(--panel2)}
+.prob{border-top:1px solid var(--line); padding-top:16px; margin-top:16px}
+.prob:first-of-type{border-top:none; padding-top:0; margin-top:0}
+.pq{font-weight:500; margin-bottom:8px}
+.pnum{display:inline-block; min-width:30px; font-weight:700; color:var(--leaf)}
+.pts{font-size:13px; color:var(--muted); font-weight:400}
+.hintbox{background:rgba(255,211,92,.08); border-left:3px solid var(--r); border-radius:8px; padding:8px 12px; margin-top:8px; font-size:15px}
+/* drag and drop */
+.figwrap{position:relative; width:100%}
+.figwrap svg{width:100%; height:auto; display:block; background:#0a1322; border:1px solid var(--line); border-radius:12px}
+.figwrap svg text{font-family:var(--font)}
+.zone{position:absolute; transform:translate(-50%,-50%); min-height:32px; border:2px dashed #8fb3e6; border-radius:9px; background:rgba(13,22,38,.92); color:var(--text); font:inherit; font-size:14px; font-weight:600; display:flex; align-items:center; justify-content:center; padding:2px 6px; cursor:pointer; text-align:center; line-height:1.15}
+.zone.empty{color:var(--dim); font-weight:400; font-size:12.5px}
+.zone.filled{border-style:solid; border-color:var(--r); background:#2b2410}
+.zone.hot{box-shadow:0 0 0 3px rgba(255,211,92,.5)}
+.zone.locked{opacity:.9}
+.zone.ok{border-color:var(--ok); background:#0f2e1d} .zone.no{border-color:var(--bad); background:#3a0f1a}
+.pool{display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 4px; padding:10px; border:1px dashed var(--line2); border-radius:10px; min-height:52px}
+.pool .lbl{width:100%; font-size:12.5px; color:var(--muted)}
+.chip{font:inherit; font-size:15px; font-weight:600; padding:6px 14px; border-radius:999px; border:1.5px solid var(--line2); background:var(--panel2); color:var(--text); cursor:grab; touch-action:none}
+.chip.sel{border-color:var(--r); background:rgba(255,211,92,.16); box-shadow:0 0 0 3px rgba(255,211,92,.35)}
+.bins{display:grid; gap:10px; margin-top:6px}
+.bin{border:2px dashed var(--line2); border-radius:12px; padding:10px; min-height:96px; cursor:pointer; background:rgba(13,22,38,.5)}
+.bin h4{margin:0 0 8px; font-size:15px; color:var(--leaf)} .bin.hot{border-color:var(--r)}
+.bin .chip{cursor:pointer; margin:3px} .bin .chip.ok{border-color:var(--ok); background:#0f2e1d} .bin .chip.no{border-color:var(--bad); background:#3a0f1a}
+.phenbox{background:rgba(244,114,182,.1); border-left:4px solid #f472b6; border-radius:8px; padding:10px 14px; margin-bottom:14px}
+.fixnote{font-size:12px; color:#ffd3db; font-weight:400}
+/* equation */
+.eq{display:flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:20px; font-weight:600; margin:10px 0}
+.eq .zone{position:static; transform:none; min-width:120px; min-height:40px}
+/* choices */
+.opts{display:grid; gap:8px; margin:6px 0}
+.opt{display:flex; gap:12px; align-items:center; text-align:left; background:var(--panel2); border:1.5px solid var(--line); color:var(--text); border-radius:10px; padding:9px 14px; font:inherit; font-size:16px; cursor:pointer}
+.opt .L{flex:0 0 26px; height:26px; border-radius:50%; display:grid; place-items:center; background:var(--bg); font-weight:600; font-size:13px}
+.opt.multi .L{border-radius:6px}
+.opt.sel{border-color:var(--r); background:rgba(255,211,92,.08)} .opt.sel .L{background:var(--r); color:#231a00}
+.opt.ok{border-color:var(--ok); background:rgba(74,222,128,.1)} .opt.no{border-color:var(--bad); background:rgba(251,113,133,.1)}
+.opt:disabled{cursor:default}
+input.blank{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:7px 10px; font:inherit; font-size:16px; width:170px}
+input.blank.ok{border-color:var(--ok)} input.blank.no{border-color:var(--bad)}
+.brow{margin:8px 0}
+/* answer key (teacher) */
+body.keyon .zone[data-key]::after{content:'key: ' attr(data-key); position:absolute; top:100%; left:50%; transform:translateX(-50%); font-size:11px; color:var(--r); white-space:nowrap; margin-top:2px}
+body.keyon .chip[data-key]::after{content:' → ' attr(data-key); font-size:11px; color:var(--r)}
+body.keyon .opt[data-key]{outline:2px dashed var(--r); outline-offset:2px}
+body.keyon input.blank[data-key]+.keytxt{display:inline}
+.wbank2{margin-top:8px; padding:8px 10px; border:1px dashed rgba(163,180,207,.5); border-radius:10px; font-size:14px; line-height:2}
+.wchip{font:inherit; font-size:14px; margin:2px 4px 2px 0; padding:2px 10px; border-radius:999px; border:1px solid rgba(163,180,207,.6); background:rgba(255,255,255,.06); color:inherit; cursor:pointer}
+.wchip:hover{border-color:#ffd35c}
+.wtext{width:100%; min-height:110px; font:inherit; padding:10px; border-radius:10px; border:1.5px solid var(--line,#2a3d5f); background:rgba(255,255,255,.04); color:inherit; resize:vertical}
+.wkey{display:none; margin-top:6px; font-size:14px; color:var(--r,#ffd35c)}
+body.keyon .wkey{display:block}
+.keytxt{display:none; font-size:12px; color:var(--r); margin-left:6px}
+.big{font-size:52px; font-weight:700; color:var(--r); line-height:1}
+table.res{border-collapse:collapse; width:100%} table.res th,table.res td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line)} table.res th{color:var(--muted); font-weight:400}
+.card.nostore{border:2px solid var(--bad); background:rgba(251,113,133,.08)}
+.overlay{position:fixed; inset:0; background:rgba(4,9,18,.94); z-index:100; display:none; align-items:center; justify-content:center; padding:20px}
+.overlay.show{display:flex}
+.modal{background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:24px; max-width:900px; width:100%; max-height:92vh; overflow:auto}
+input.code{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px; width:200px}
+table.nb{border-collapse:collapse; width:100%; font-size:14px} table.nb th,table.nb td{border:1px solid var(--line2); padding:6px 8px} table.nb th{background:var(--panel2)}
+.wide{overflow-x:auto}
+@media (max-width:700px){ .zone{font-size:11px; min-height:26px} .chip{font-size:13px; padding:5px 10px} }
+@media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important} }
+.prob + p,.prob + .phenbox,.prob + .figwrap{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.figwrap svg{background:#f8fafc}
+
+</style>
+</head>
+<body>
+<header class="top" id="top" hidden>
+  <div class="top-in">
+    <div class="brand">Population growth worksheet<span id="whoami"></span></div>
+    <nav class="nav" id="nav" aria-label="Worksheet parts"></nav>
+    <span class="scorepill" id="scorePill"></span>
+    <span class="savenote" id="saveNote" aria-live="polite"></span>
+    <button class="btn ghost small" id="teachBtn" type="button">Teacher</button>
+  </div>
+</header>
+
+<main>
+  <section id="start">
+    <div class="muted" style="margin-top:8px">Biology · Unit 6: Ecology · Worksheet · about 25 minutes</div>
+    <h1>Population Growth: Practice</h1>
+    <p class="muted" style="font-size:18px;max-width:42em">Label how populations change, calculate density, change, and growth rate, compare J and S curves, sort limiting factors, and explain overshoot and carrying capacity.</p>
+    <div class="card"><h3>How it works</h3>
+      <p style="margin:0">Each problem gets <b>two tries</b>. Right on either try earns full credit. If your first try is wrong, you'll be told it isn't right yet (but not the answer), so look again and try once more. Wrong twice and the problem is marked wrong and locks. Stuck? Tap <b>Hint</b> before you check.</p></div>
+    <div class="card nostore" id="noStore" hidden><h3>This browser can't save your work</h3><p style="margin:0">You may be in guest or incognito mode. Sign in to your school account and open the worksheet again.</p></div>
+    <div class="card">
+      <h3 id="signinTitle">Sign in to start</h3>
+      <div id="resumeBox" hidden><p id="resumeText"></p>
+        <div class="btnrow"><button class="btn primary" id="resumeBtn" type="button">Continue my worksheet</button><button class="btn ghost small" id="notMeBtn" type="button">Not you? Sign in as a different student</button></div>
+        <div class="fb no" id="resumeErr" hidden></div></div>
+      <div id="startForm">
+        <div class="formgrid">
+          <label class="field">First name<input id="fFirst" autocomplete="off"></label><label class="field">Last name<input id="fLast" autocomplete="off"></label>
+          <label class="field">Student ID<input id="fId" inputmode="numeric" autocomplete="off"></label>
+          <label class="field">Period<select id="fPeriod"></select></label><label class="field">Teacher<select id="fTeacher"></select></label>
+        </div>
+        <p class="small muted">Your work saves as you go. On any Chromebook, sign in with the same student ID and last name to pick up where you left off.</p>
+        <div class="fb no" id="formErr" hidden></div>
+        <div class="btnrow"><button class="btn primary" type="button" id="startBtn">Start the worksheet</button></div>
+      </div>
+    </div>
+    <p style="text-align:center"><button class="btn ghost" id="teacherLink" type="button">Teacher: enter unlock code</button></p>
+  </section>
+  <div id="ws" hidden></div>
+</main>
+
+<div class="overlay" id="teachOv" role="dialog" aria-modal="true" aria-labelledby="tTitle">
+  <div class="modal"><div id="teachLogin"><h2 id="tTitle">Teacher</h2>
+    <div class="btnrow"><input class="code" id="teachCode" type="password" placeholder="Teacher code" autocomplete="off"><button class="btn primary" id="teachGo" type="button">Open</button><button class="btn ghost" id="teachCancel" type="button">Close</button></div>
+    <div class="fb no" id="teachErr" hidden>That code didn't work.</div></div><div id="teachPanel" hidden></div></div>
+</div>
+<div class="overlay" id="tabOv" role="dialog" aria-modal="true"><div class="modal" style="max-width:520px"><h2>This worksheet is open in another tab</h2><p>To keep your newest work safe, this copy stopped saving. Close the extra tab, then reload this one.</p><div class="btnrow"><button class="btn primary" type="button" onclick="location.reload()">Reload with my newest work</button></div></div></div>
+
+<script src="sheets-config.js"></script>
+<script>
+(function(){
+'use strict';
+/* ============================== SETTINGS ============================== */
+const LESSON_TITLE='Population Growth';           // unlock code = last word of this title
+const UNLOCK_CODE=LESSON_TITLE.trim().split(/\s+/).pop();
+const TEACHER_CODE='Teacher007';   // universal teacher-tools code
+const codeIs=(v,c)=>String(v||'').trim().toLowerCase()===String(c).toLowerCase();
+const WS_ID='bio-u6-population-growth-worksheet', ACTIVITY='Population Growth Worksheet';
+const BACKUP_URL='https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const SAVE_URL_BUILTIN='https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';
+const BACKUP_TEACHERS=['Austin','Mueller','McCue','Arce','Trimm','Garcia','Trimm/Callanan','Callanan'], BACKUP_PERIODS=['1','2','3','4','5','6','7','8'];
+const STORE='popGrowthWorksheet_v1', RECS='popGrowthWorksheet_records_v1';
+/* ===================================================================== */
+const teacherList=()=>{ try{ if(typeof TEACHERS!=='undefined'&&Array.isArray(TEACHERS)&&TEACHERS.length) return TEACHERS.map(String); }catch(e){} return BACKUP_TEACHERS; };
+const periodList=()=>{ try{ if(typeof PERIODS!=='undefined'&&Array.isArray(PERIODS)&&PERIODS.length) return PERIODS.map(String); }catch(e){} return BACKUP_PERIODS; };
+const sheetURL=()=>{ try{ if(typeof SHEETS_WEBHOOK_URL!=='undefined'&&SHEETS_WEBHOOK_URL&&String(SHEETS_WEBHOOK_URL).indexOf('PASTE')<0) return String(SHEETS_WEBHOOK_URL); }catch(e){} return BACKUP_URL; };
+const saveURL=()=>{ try{ if(typeof SAVE_WEBHOOK_URL!=='undefined'&&SAVE_WEBHOOK_URL&&String(SAVE_WEBHOOK_URL).indexOf('PASTE')<0) return String(SAVE_WEBHOOK_URL); }catch(e){} return SAVE_URL_BUILTIN; };
+const LOCKDOWN=false;   // worksheets never lock down
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const strip=s=>String(s).replace(/<[^>]+>/g,'');
+function h(tag,attrs,html){ const e=document.createElement(tag); if(attrs) for(const k in attrs){ if(attrs[k]===false||attrs[k]==null) continue; if(k==='class') e.className=attrs[k]; else if(k==='hidden') e.hidden=!!attrs[k]; else e.setAttribute(k,attrs[k]); } if(html!=null) e.innerHTML=html; return e; }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* ---------- state + saving ---------- */
+function fresh(){ return {ws:WS_ID, student:null, p:{}, ord:{}, locks:0, locked:false, lockOff:false, submittedAt:null, sentAt:null}; }
+let S; try{ S=JSON.parse(localStorage.getItem(STORE)); }catch(e){} if(!S||S.ws!==WS_ID) S=fresh();
+let STORAGE_OK=true, saveBlocked=false;
+try{ localStorage.setItem('__ps_t','1'); STORAGE_OK=localStorage.getItem('__ps_t')==='1'; localStorage.removeItem('__ps_t'); }catch(e){ STORAGE_OK=false; }
+function save(){
+  if(saveBlocked) return;
+  if(S.preview){ note('Preview: nothing is saved'); return; }
+  try{ const raw=localStorage.getItem(STORE); if(raw){ const st=JSON.parse(raw); if(st&&st.ws===WS_ID&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); return; } }
+    S.rev=(S.rev||0)+1; S.updatedAt=Date.now(); localStorage.setItem(STORE,JSON.stringify(S)); note(); cloudSave(false); }catch(e){}
+}
+window.addEventListener('storage',e=>{ if(e.key!==STORE||!e.newValue) return; try{ const st=JSON.parse(e.newValue); if(st&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); } }catch(_){} });
+const saveKey=st=>(String(st.id||'').replace(/\s+/g,'')+'-'+String(st.last||'').toLowerCase().replace(/[^a-z]/g,'')).toLowerCase();
+const checkedCount=st=>Object.values((st||S).p).filter(x=>x&&x.checked).length;
+let cloudTimer=null, cloudDirty=false, cloudBusy=false, cloudAt=null, cloudErr=false;
+const cloudOK=()=>!!saveURL()&&S.student&&!saveBlocked&&!S.preview;
+function cloudBody(){ const st=S.student||{}, sc=scoreAll();
+  return new URLSearchParams({code:saveKey(st), lesson:WS_ID, ver:String(S.updatedAt||Date.now()), prog:String((S.submittedAt?100000:0)+checkedCount(S)), studentId:st.id||'', lastName:st.last||'', firstName:st.first||'', period:st.period||'', teacher:st.teacher||'',
+    summary:S.submittedAt?`Turned in · ${sc.total}/${sc.max}`:`${checkedCount(S)} of ${PROBS.length} problems checked`, data:JSON.stringify(S)}); }
+function cloudSave(soon){ if(!cloudOK()) return; cloudDirty=true; if(soon){ clearTimeout(cloudTimer); cloudTimer=setTimeout(cloudFlush,1200); } else if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); }
+async function cloudFlush(){ cloudTimer=null; if(!cloudOK()||!cloudDirty) return; if(cloudBusy){ cloudTimer=setTimeout(cloudFlush,4000); return; } cloudBusy=true; cloudDirty=false;
+  try{ await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); cloudAt=new Date(); cloudErr=false; }catch(e){ cloudDirty=true; cloudErr=true; if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); } finally{ cloudBusy=false; note(); } }
+function cloudBeacon(){ if(!cloudOK()||!cloudDirty) return; try{ if(navigator.sendBeacon&&navigator.sendBeacon(saveURL(),cloudBody())) cloudDirty=false; }catch(e){} }
+async function cloudLoad(st){ const ctrl=new AbortController(), t=setTimeout(()=>ctrl.abort(),5000);
+  try{ const r=await fetch(saveURL()+'?'+new URLSearchParams({code:saveKey(st),lesson:WS_ID}),{signal:ctrl.signal}); const j=await r.json(); if(j&&j.found&&j.data){ const d=JSON.parse(j.data); if(d&&d.ws===WS_ID) return {status:'found',data:d}; } return {status:'none'}; }
+  catch(e){ return {status:'error'}; } finally{ clearTimeout(t); } }
+function adopt(ns){ let sr=0; try{ const raw=localStorage.getItem(STORE); if(raw) sr=JSON.parse(raw).rev||0; }catch(e){} ns.rev=Math.max(ns.rev||0,sr); S=ns; saveBlocked=false; save(); }
+function note(msg){ const n=$('#saveNote'); if(!n) return; const tm=d=>d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}); n.textContent=msg||(cloudErr?'✓ Saved on this Chromebook':'✓ Saved '+tm(new Date())+(cloudAt?' · backed up '+tm(cloudAt):'')); }
+document.addEventListener('visibilitychange',()=>{ if(document.hidden){ save(); cloudBeacon(); } });
+window.addEventListener('pagehide',()=>{ save(); cloudBeacon(); });
+
+/* ============================== DIAGRAMS ============================== */
+const FIG={};
+
+/* ============================== PROBLEMS ============================== */
+const PARTS=[
+ {k:'P1', label:'Measure', title:'Measuring a population', min:6, icon:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8" cy="8" r="1.3"/><circle cx="15" cy="7" r="1.3"/><circle cx="11" cy="12" r="1.3"/><circle cx="7" cy="16" r="1.3"/><circle cx="16" cy="15.5" r="1.3"/>'},
+ {k:'P2', label:'J curve', title:'Exponential growth', min:4, icon:'<path d="M3 21h18M3 21V3"/><path d="M5 19c6 0 9-3 11-14"/>'},
+ {k:'P3', label:'S curve', title:'Logistic growth and carrying capacity', min:5, icon:'<path d="M3 21h18M3 21V3"/><path d="M3 6h18" stroke-dasharray="2 2"/><path d="M5 19c4 0 5-1 7-6s4-6.5 8-6.7"/>'},
+ {k:'P4', label:'Factors', title:'Limiting factors', min:4, icon:'<circle cx="7" cy="9" r="2"/><circle cx="12" cy="7" r="2"/><circle cx="10" cy="12.5" r="2"/><path d="M15.5 21c-2-1.5-2-4 0-6 .5 1.5 1.5 2 2-1 2 2 3 5 1 7"/><path d="M3 21h9"/>'},
+ {k:'P5', label:'Overshoot', title:'Overshoot, crash, and humans', min:6, icon:'<path d="M3 21h18M3 21V3"/><path d="M3 9h18" stroke-dasharray="2 2"/><path d="M5 19c4 0 5-14 8-14s3 12 6 13"/>'},
+ {k:'P6', label:'Grade', title:'Your grade', min:1, icon:'<rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4V2.5h6V4"/><path d="M8.5 13l2.5 2.5 4.5-5"/>'}
+];
+const KFIG={"w_flow": "<svg viewBox=\"0 0 560 320\" role=\"img\" aria-label=\"A reindeer herd with four numbered arrows: two arrows coming in and two going out. Each has a blank label box.\"><defs><radialGradient id=\"q9fl_37\" cx=\"50%\" cy=\"45%\" r=\"60%\"><stop offset=\"0\" stop-color=\"#8a9a62\"/><stop offset=\"1\" stop-color=\"#5b6a3c\"/></radialGradient></defs><rect width=\"560\" height=\"320\" rx=\"14\" fill=\"#f8fafc\"/><ellipse cx=\"280\" cy=\"170\" rx=\"160\" ry=\"104\" fill=\"url(#q9fl_37)\" stroke=\"#64748b\" stroke-width=\"2\" stroke-dasharray=\"7 5\"/><g transform=\"translate(228.0 161.1) scale(0.6)\" opacity=\"0.85\"><path d=\"M0,0 Q-3.5,-5.3 -6.9,-6.9\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-6.9\" cy=\"-6.9\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-1.6,-6.9 -3.2,-8.8\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-3.2\" cy=\"-8.8\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q2.1,-7.9 4.1,-9.8\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"4.1\" cy=\"-9.8\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q2.9,-4.6 5.8,-6.0\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"5.8\" cy=\"-6.0\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q5.8,-1.1 11.5,-1.9\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"11.5\" cy=\"-1.9\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q3.4,2.6 6.7,2.4\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"6.7\" cy=\"2.4\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q0.8,4.3 1.6,4.3\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"1.6\" cy=\"4.3\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-3.3,3.7 -6.5,3.7\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-6.5\" cy=\"3.7\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-3.5,-0.4 -7.1,-1.1\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-7.1\" cy=\"-1.1\" r=\"1.8\" fill=\"#eef0dc\"/><ellipse cx=\"0\" cy=\"1\" rx=\"10\" ry=\"3\" fill=\"#b9c29b\" opacity=\".8\"/></g><g transform=\"translate(253.4 121.3) scale(0.6)\" opacity=\"0.85\"><path d=\"M0,0 Q-4.2,-5.8 -8.3,-7.4\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-8.3\" cy=\"-7.4\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-1.1,-8.2 -2.2,-10.2\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-2.2\" cy=\"-10.2\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q2.1,-8.4 4.1,-10.4\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"4.1\" cy=\"-10.4\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q3.2,-3.9 6.4,-5.2\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"6.4\" cy=\"-5.2\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q4.9,-1.3 9.8,-2.2\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"9.8\" cy=\"-2.2\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q3.6,1.7 7.2,1.4\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"7.2\" cy=\"1.4\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-0.0,3.0 -0.0,2.8\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-0.0\" cy=\"2.8\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-2.0,1.8 -4.1,1.4\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-4.1\" cy=\"1.4\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-3.9,-0.3 -7.7,-1.0\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-7.7\" cy=\"-1.0\" r=\"1.8\" fill=\"#eef0dc\"/><ellipse cx=\"0\" cy=\"1\" rx=\"10\" ry=\"3\" fill=\"#b9c29b\" opacity=\".8\"/></g><g transform=\"translate(231.5 221.5) scale(0.6)\" opacity=\"0.85\"><path d=\"M0,0 Q-3.1,-5.6 -6.3,-7.2\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-6.3\" cy=\"-7.2\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-1.0,-7.5 -2.1,-9.4\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-2.1\" cy=\"-9.4\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q1.2,-6.3 2.4,-8.1\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"2.4\" cy=\"-8.1\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q3.6,-5.0 7.2,-6.5\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"7.2\" cy=\"-6.5\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q3.8,-1.7 7.6,-2.6\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"7.6\" cy=\"-2.6\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q3.1,1.6 6.3,1.2\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"6.3\" cy=\"1.2\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q0.1,4.0 0.1,4.0\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"0.1\" cy=\"4.0\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-3.1,3.4 -6.2,3.2\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-6.2\" cy=\"3.2\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-5.5,0.8 -10.9,0.2\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-10.9\" cy=\"0.2\" r=\"1.8\" fill=\"#eef0dc\"/><ellipse cx=\"0\" cy=\"1\" rx=\"10\" ry=\"3\" fill=\"#b9c29b\" opacity=\".8\"/></g><g transform=\"translate(340.4 215.0) scale(0.6)\" opacity=\"0.85\"><path d=\"M0,0 Q-2.8,-5.5 -5.5,-7.1\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-5.5\" cy=\"-7.1\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-2.0,-8.4 -4.1,-10.5\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-4.1\" cy=\"-10.5\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q1.6,-8.6 3.2,-10.7\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"3.2\" cy=\"-10.7\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q4.6,-4.4 9.3,-5.8\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"9.3\" cy=\"-5.8\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q3.5,-0.7 7.0,-1.5\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"7.0\" cy=\"-1.5\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q3.8,2.3 7.5,2.0\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"7.5\" cy=\"2.0\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q1.2,4.1 2.4,4.1\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"2.4\" cy=\"4.1\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-2.1,2.6 -4.2,2.4\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-4.2\" cy=\"2.4\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-5.0,-0.5 -9.9,-1.3\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-9.9\" cy=\"-1.3\" r=\"1.8\" fill=\"#eef0dc\"/><ellipse cx=\"0\" cy=\"1\" rx=\"10\" ry=\"3\" fill=\"#b9c29b\" opacity=\".8\"/></g><g transform=\"translate(304.3 214.2) scale(0.6)\" opacity=\"0.85\"><path d=\"M0,0 Q-4.2,-6.0 -8.5,-7.7\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-8.5\" cy=\"-7.7\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-1.6,-7.7 -3.2,-9.6\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-3.2\" cy=\"-9.6\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q1.6,-8.1 3.2,-10.2\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"3.2\" cy=\"-10.2\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q3.2,-4.9 6.4,-6.4\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"6.4\" cy=\"-6.4\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q3.8,-1.7 7.5,-2.7\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"7.5\" cy=\"-2.7\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q4.1,2.9 8.3,2.7\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"8.3\" cy=\"2.7\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q0.7,2.7 1.5,2.4\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"1.5\" cy=\"2.4\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-2.7,4.2 -5.4,4.3\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-5.4\" cy=\"4.3\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-5.5,-0.2 -10.9,-0.9\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-10.9\" cy=\"-0.9\" r=\"1.8\" fill=\"#eef0dc\"/><ellipse cx=\"0\" cy=\"1\" rx=\"10\" ry=\"3\" fill=\"#b9c29b\" opacity=\".8\"/></g><g transform=\"translate(177.7 193.4) scale(0.6)\" opacity=\"0.85\"><path d=\"M0,0 Q-2.9,-4.8 -5.7,-6.2\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-5.7\" cy=\"-6.2\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-0.8,-7.6 -1.6,-9.5\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-1.6\" cy=\"-9.5\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q1.8,-7.2 3.5,-9.0\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"3.5\" cy=\"-9.0\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q4.8,-4.7 9.6,-6.1\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"9.6\" cy=\"-6.1\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q4.8,-0.8 9.6,-1.6\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"9.6\" cy=\"-1.6\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q3.9,2.7 7.8,2.4\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"7.8\" cy=\"2.4\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q0.5,2.2 1.0,1.9\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"1.0\" cy=\"1.9\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-2.3,3.8 -4.6,3.8\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-4.6\" cy=\"3.8\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-4.2,-0.5 -8.4,-1.2\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-8.4\" cy=\"-1.2\" r=\"1.8\" fill=\"#eef0dc\"/><ellipse cx=\"0\" cy=\"1\" rx=\"10\" ry=\"3\" fill=\"#b9c29b\" opacity=\".8\"/></g><g transform=\"translate(301.9 140.1) scale(0.6)\" opacity=\"0.85\"><path d=\"M0,0 Q-3.2,-5.0 -6.4,-6.5\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-6.4\" cy=\"-6.5\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-0.4,-7.0 -0.9,-8.8\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-0.9\" cy=\"-8.8\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q1.8,-7.0 3.5,-8.8\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"3.5\" cy=\"-8.8\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q4.7,-5.8 9.3,-7.4\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"9.3\" cy=\"-7.4\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q4.8,-0.4 9.6,-1.2\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"9.6\" cy=\"-1.2\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q3.4,3.2 6.7,3.0\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"6.7\" cy=\"3.0\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q0.1,4.9 0.1,5.0\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"0.1\" cy=\"5.0\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-2.4,2.8 -4.7,2.6\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-4.7\" cy=\"2.6\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-4.3,0.4 -8.6,-0.2\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-8.6\" cy=\"-0.2\" r=\"1.8\" fill=\"#eef0dc\"/><ellipse cx=\"0\" cy=\"1\" rx=\"10\" ry=\"3\" fill=\"#b9c29b\" opacity=\".8\"/></g><g transform=\"translate(367.6 137.6) scale(0.6)\" opacity=\"0.85\"><path d=\"M0,0 Q-4.0,-6.1 -7.9,-7.8\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-7.9\" cy=\"-7.8\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-2.0,-8.7 -4.0,-10.8\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-4.0\" cy=\"-10.8\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q2.6,-7.8 5.3,-9.7\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"5.3\" cy=\"-9.7\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q3.1,-4.1 6.2,-5.5\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"6.2\" cy=\"-5.5\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q4.3,-1.3 8.7,-2.1\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"8.7\" cy=\"-2.1\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q3.0,2.7 5.9,2.5\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"5.9\" cy=\"2.5\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q1.2,4.4 2.5,4.5\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"2.5\" cy=\"4.5\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-2.1,2.3 -4.2,2.0\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-4.2\" cy=\"2.0\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-4.5,1.0 -9.1,0.5\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-9.1\" cy=\"0.5\" r=\"1.8\" fill=\"#eef0dc\"/><ellipse cx=\"0\" cy=\"1\" rx=\"10\" ry=\"3\" fill=\"#b9c29b\" opacity=\".8\"/></g><g transform=\"translate(176.2 152.4) scale(0.6)\" opacity=\"0.85\"><path d=\"M0,0 Q-4.2,-7.0 -8.5,-8.9\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-8.5\" cy=\"-8.9\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-1.3,-8.1 -2.6,-10.1\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-2.6\" cy=\"-10.1\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q1.7,-8.9 3.5,-11.0\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"3.5\" cy=\"-11.0\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q4.9,-5.9 9.9,-7.5\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"9.9\" cy=\"-7.5\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q5.6,-1.7 11.1,-2.7\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"11.1\" cy=\"-2.7\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q3.3,1.1 6.7,0.6\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"6.7\" cy=\"0.6\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q0.0,4.3 0.1,4.4\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"0.1\" cy=\"4.4\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-3.3,3.4 -6.6,3.3\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-6.6\" cy=\"3.3\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-3.8,0.0 -7.6,-0.6\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-7.6\" cy=\"-0.6\" r=\"1.8\" fill=\"#eef0dc\"/><ellipse cx=\"0\" cy=\"1\" rx=\"10\" ry=\"3\" fill=\"#b9c29b\" opacity=\".8\"/></g><g transform=\"translate(360.4 145.1) scale(0.6)\" opacity=\"0.85\"><path d=\"M0,0 Q-3.5,-6.3 -7.1,-8.0\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-7.1\" cy=\"-8.0\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-0.8,-8.1 -1.5,-10.1\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-1.5\" cy=\"-10.1\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q1.6,-8.2 3.2,-10.2\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"3.2\" cy=\"-10.2\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q5.0,-4.5 9.9,-5.9\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"9.9\" cy=\"-5.9\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q5.4,-1.3 10.9,-2.1\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"10.9\" cy=\"-2.1\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q2.1,1.5 4.2,1.1\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"4.2\" cy=\"1.1\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-0.1,2.9 -0.1,2.7\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-0.1\" cy=\"2.7\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-2.2,3.7 -4.4,3.7\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-4.4\" cy=\"3.7\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-3.9,-0.7 -7.8,-1.5\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-7.8\" cy=\"-1.5\" r=\"1.8\" fill=\"#eef0dc\"/><ellipse cx=\"0\" cy=\"1\" rx=\"10\" ry=\"3\" fill=\"#b9c29b\" opacity=\".8\"/></g><g transform=\"translate(326.3 209.9) scale(0.6)\" opacity=\"0.85\"><path d=\"M0,0 Q-2.5,-5.0 -5.0,-6.5\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-5.0\" cy=\"-6.5\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-1.4,-6.2 -2.8,-7.9\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-2.8\" cy=\"-7.9\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q2.0,-8.7 4.0,-10.8\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"4.0\" cy=\"-10.8\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q3.9,-4.5 7.8,-5.9\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"7.8\" cy=\"-5.9\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q4.7,-1.5 9.3,-2.4\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"9.3\" cy=\"-2.4\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q2.9,2.4 5.8,2.1\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"5.8\" cy=\"2.1\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q0.6,2.3 1.2,2.0\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"1.2\" cy=\"2.0\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-2.9,2.8 -5.9,2.6\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-5.9\" cy=\"2.6\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-5.1,0.7 -10.3,0.1\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-10.3\" cy=\"0.1\" r=\"1.8\" fill=\"#eef0dc\"/><ellipse cx=\"0\" cy=\"1\" rx=\"10\" ry=\"3\" fill=\"#b9c29b\" opacity=\".8\"/></g><g transform=\"translate(324.8 173.1) scale(0.6)\" opacity=\"0.85\"><path d=\"M0,0 Q-4.4,-6.1 -8.8,-7.8\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-8.8\" cy=\"-7.8\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-1.6,-8.9 -3.2,-11.1\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-3.2\" cy=\"-11.1\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q1.6,-7.2 3.2,-9.1\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"3.2\" cy=\"-9.1\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q3.8,-4.6 7.6,-6.0\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"7.6\" cy=\"-6.0\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q3.9,-1.1 7.7,-1.9\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"7.7\" cy=\"-1.9\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q3.2,2.0 6.3,1.6\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"6.3\" cy=\"1.6\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q0.4,2.7 0.7,2.5\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"0.7\" cy=\"2.5\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-1.6,2.1 -3.2,1.8\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-3.2\" cy=\"1.8\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-4.0,-0.4 -8.1,-1.2\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-8.1\" cy=\"-1.2\" r=\"1.8\" fill=\"#eef0dc\"/><ellipse cx=\"0\" cy=\"1\" rx=\"10\" ry=\"3\" fill=\"#b9c29b\" opacity=\".8\"/></g><g transform=\"translate(302.5 108.5) scale(0.6)\" opacity=\"0.85\"><path d=\"M0,0 Q-2.9,-5.2 -5.8,-6.7\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-5.8\" cy=\"-6.7\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-0.7,-6.7 -1.3,-8.5\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-1.3\" cy=\"-8.5\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q1.6,-7.5 3.2,-9.4\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"3.2\" cy=\"-9.4\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q3.1,-4.3 6.1,-5.6\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"6.1\" cy=\"-5.6\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q4.6,-0.3 9.2,-1.0\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"9.2\" cy=\"-1.0\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q3.6,1.3 7.1,0.9\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"7.1\" cy=\"0.9\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q1.1,4.1 2.2,4.1\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"2.2\" cy=\"4.1\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-2.4,3.8 -4.7,3.8\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-4.7\" cy=\"3.8\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-5.2,1.0 -10.5,0.5\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-10.5\" cy=\"0.5\" r=\"1.8\" fill=\"#eef0dc\"/><ellipse cx=\"0\" cy=\"1\" rx=\"10\" ry=\"3\" fill=\"#b9c29b\" opacity=\".8\"/></g><g transform=\"translate(267.9 218.6) scale(0.6)\" opacity=\"0.85\"><path d=\"M0,0 Q-4.3,-5.7 -8.6,-7.3\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-8.6\" cy=\"-7.3\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-1.4,-7.8 -2.8,-9.7\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-2.8\" cy=\"-9.7\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q2.0,-8.0 4.0,-10.0\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"4.0\" cy=\"-10.0\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q3.1,-4.5 6.2,-5.9\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"6.2\" cy=\"-5.9\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q4.7,-0.7 9.4,-1.5\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"9.4\" cy=\"-1.5\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q3.9,2.3 7.7,2.0\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"7.7\" cy=\"2.0\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-0.1,3.5 -0.1,3.5\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-0.1\" cy=\"3.5\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-2.2,4.3 -4.4,4.4\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-4.4\" cy=\"4.4\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-3.9,-0.7 -7.7,-1.5\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-7.7\" cy=\"-1.5\" r=\"1.8\" fill=\"#eef0dc\"/><ellipse cx=\"0\" cy=\"1\" rx=\"10\" ry=\"3\" fill=\"#b9c29b\" opacity=\".8\"/></g><g transform=\"translate(383.2 206.1) scale(0.6)\" opacity=\"0.85\"><path d=\"M0,0 Q-3.4,-5.5 -6.8,-7.1\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-6.8\" cy=\"-7.1\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-0.8,-6.4 -1.6,-8.1\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-1.6\" cy=\"-8.1\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q1.5,-6.0 3.0,-7.7\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"3.0\" cy=\"-7.7\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q4.4,-4.4 8.7,-5.8\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"8.7\" cy=\"-5.8\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q5.5,-0.0 10.9,-0.7\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"10.9\" cy=\"-0.7\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q3.2,2.9 6.4,2.8\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"6.4\" cy=\"2.8\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-0.1,5.1 -0.3,5.3\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-0.3\" cy=\"5.3\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-2.5,2.7 -4.9,2.5\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-4.9\" cy=\"2.5\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-3.5,0.1 -7.0,-0.5\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-7.0\" cy=\"-0.5\" r=\"1.8\" fill=\"#eef0dc\"/><ellipse cx=\"0\" cy=\"1\" rx=\"10\" ry=\"3\" fill=\"#b9c29b\" opacity=\".8\"/></g><g transform=\"translate(282.6 119.8) scale(0.6)\" opacity=\"0.85\"><path d=\"M0,0 Q-2.8,-4.7 -5.7,-6.2\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-5.7\" cy=\"-6.2\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-0.6,-7.0 -1.1,-8.8\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-1.1\" cy=\"-8.8\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q1.7,-8.1 3.5,-10.1\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"3.5\" cy=\"-10.1\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q3.9,-4.8 7.8,-6.2\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"7.8\" cy=\"-6.2\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q4.0,-1.7 7.9,-2.6\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"7.9\" cy=\"-2.6\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q4.0,2.0 8.1,1.7\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"8.1\" cy=\"1.7\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q1.3,4.3 2.6,4.4\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"2.6\" cy=\"4.4\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-2.5,3.0 -5.0,2.8\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-5.0\" cy=\"2.8\" r=\"1.8\" fill=\"#eef0dc\"/><path d=\"M0,0 Q-3.8,-0.5 -7.6,-1.2\" stroke=\"#d7dcc0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"-7.6\" cy=\"-1.2\" r=\"1.8\" fill=\"#eef0dc\"/><ellipse cx=\"0\" cy=\"1\" rx=\"10\" ry=\"3\" fill=\"#b9c29b\" opacity=\".8\"/></g><g transform=\"translate(230.0 150.0) scale(0.34 0.34)\" opacity=\"1\"><defs><linearGradient id=\"q9rd_38\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#8d735c\"/><stop offset=\"1\" stop-color=\"#6b5544\"/></linearGradient></defs><path d=\"M-30,6 C-33,22 -30,32 -34,46 M24,6 C26,22 22,32 25,46\" stroke=\"#2e241c\" stroke-width=\"5.5\" fill=\"none\" stroke-linecap=\"round\" opacity=\".75\"/><path d=\"M-44,-14 C-42,-24 -22,-26 0,-25 C14,-25 26,-28 32,-20 C40,-12 40,4 32,10 C18,16 -16,16 -34,11 C-46,7 -48,-4 -44,-14 Z\" fill=\"url(#q9rd_38)\" stroke=\"#2a1f17\" stroke-width=\"1\"/><path d=\"M-30,10 C-12,15 14,15 30,9 C20,17 -14,18 -30,10Z\" fill=\"#e4dccd\" opacity=\".55\"/><path d=\"M-45,-12 C-50,-8 -50,2 -45,6 C-42,0 -42,-8 -45,-12Z\" fill=\"#e4dccd\"/><path d=\"M-46,-12 l-5,4\" stroke=\"#e4dccd\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M-38,4 C-40,20 -36,30 -40,46 M18,8 C20,22 16,32 18,46\" stroke=\"#2e241c\" stroke-width=\"6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M-44,45 h8 M-37,47 h7 M14,45 h8 M21,47 h7\" stroke=\"#151110\" stroke-width=\"3.4\" stroke-linecap=\"round\"/><path d=\"M22,-22 C40,-22 52,-14 60,-4 L50,6 C42,0 34,-4 26,-2 Z\" fill=\"#8d735c\" stroke=\"#2a1f17\" stroke-width=\"1\"/><path d=\"M30,-4 C36,4 40,8 44,10 C40,4 36,0 30,-4Z\" fill=\"#e4dccd\"/><g transform=\"translate(8 40) rotate(38 56 -44)\"><path d=\"M44,-52 C50,-58 60,-56 66,-50 C72,-46 80,-42 82,-36 C82,-32 78,-30 72,-31 C64,-32 54,-32 48,-36 C42,-40 40,-48 44,-52 Z\" fill=\"#8d735c\" stroke=\"#2a1f17\" stroke-width=\"1\"/><path d=\"M74,-40 C79,-38 82,-36 82,-34 C79,-32 75,-32 72,-33Z\" fill=\"#3a2e26\"/><path d=\"M54,-36 C60,-33 68,-32 74,-32\" stroke=\"#e4dccd\" stroke-width=\"2\" fill=\"none\" opacity=\".7\"/><circle cx=\"60\" cy=\"-47\" r=\"2.1\" fill=\"#0d0b0a\"/><circle cx=\"60.7\" cy=\"-47.7\" r=\".6\" fill=\"#fff\"/><path d=\"M48,-52 C42,-58 38,-58 36,-56 C40,-52 44,-50 48,-50Z\" fill=\"#6b5544\" stroke=\"#2a1f17\" stroke-width=\".8\"/><path d=\"M50,-55 C44,-72 40,-86 30,-98 M44,-74 C50,-82 52,-90 50,-98 M38,-88 C34,-94 30,-96 24,-96 M32,-96 C30,-104 34,-110 38,-112 M48,-60 C56,-64 62,-62 64,-58 M47,-70 C40,-72 36,-70 34,-66\" stroke=\"#9c8363\" stroke-width=\"4.2\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M50,-55 C44,-72 40,-86 30,-98 M44,-74 C50,-82 52,-90 50,-98 M38,-88 C34,-94 30,-96 24,-96 M32,-96 C30,-104 34,-110 38,-112 M48,-60 C56,-64 62,-62 64,-58 M47,-70 C40,-72 36,-70 34,-66\" stroke=\"#d6c3a0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/></g></g><g transform=\"translate(310.0 142.0) scale(-0.32 0.32)\" opacity=\"1\"><defs><linearGradient id=\"q9rd_39\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#8d735c\"/><stop offset=\"1\" stop-color=\"#6b5544\"/></linearGradient></defs><path d=\"M-30,6 C-33,22 -30,32 -34,46 M24,6 C26,22 22,32 25,46\" stroke=\"#2e241c\" stroke-width=\"5.5\" fill=\"none\" stroke-linecap=\"round\" opacity=\".75\"/><path d=\"M-44,-14 C-42,-24 -22,-26 0,-25 C14,-25 26,-28 32,-20 C40,-12 40,4 32,10 C18,16 -16,16 -34,11 C-46,7 -48,-4 -44,-14 Z\" fill=\"url(#q9rd_39)\" stroke=\"#2a1f17\" stroke-width=\"1\"/><path d=\"M-30,10 C-12,15 14,15 30,9 C20,17 -14,18 -30,10Z\" fill=\"#e4dccd\" opacity=\".55\"/><path d=\"M-45,-12 C-50,-8 -50,2 -45,6 C-42,0 -42,-8 -45,-12Z\" fill=\"#e4dccd\"/><path d=\"M-46,-12 l-5,4\" stroke=\"#e4dccd\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M-38,4 C-40,20 -36,30 -40,46 M18,8 C20,22 16,32 18,46\" stroke=\"#2e241c\" stroke-width=\"6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M-44,45 h8 M-37,47 h7 M14,45 h8 M21,47 h7\" stroke=\"#151110\" stroke-width=\"3.4\" stroke-linecap=\"round\"/><path d=\"M20,-24 C30,-30 40,-42 48,-50 L62,-38 C54,-28 44,-12 34,-4 Z\" fill=\"#8d735c\" stroke=\"#2a1f17\" stroke-width=\"1\"/><path d=\"M34,-6 C40,-14 46,-24 52,-32 C54,-22 50,-6 44,6 C42,0 38,-4 34,-6Z\" fill=\"#e4dccd\"/><path d=\"M38,0 l-1,8 M42,2 l0,8 M46,0 l1,7\" stroke=\"#e4dccd\" stroke-width=\"2.4\" stroke-linecap=\"round\"/><g transform=\"\"><path d=\"M44,-52 C50,-58 60,-56 66,-50 C72,-46 80,-42 82,-36 C82,-32 78,-30 72,-31 C64,-32 54,-32 48,-36 C42,-40 40,-48 44,-52 Z\" fill=\"#8d735c\" stroke=\"#2a1f17\" stroke-width=\"1\"/><path d=\"M74,-40 C79,-38 82,-36 82,-34 C79,-32 75,-32 72,-33Z\" fill=\"#3a2e26\"/><path d=\"M54,-36 C60,-33 68,-32 74,-32\" stroke=\"#e4dccd\" stroke-width=\"2\" fill=\"none\" opacity=\".7\"/><circle cx=\"60\" cy=\"-47\" r=\"2.1\" fill=\"#0d0b0a\"/><circle cx=\"60.7\" cy=\"-47.7\" r=\".6\" fill=\"#fff\"/><path d=\"M48,-52 C42,-58 38,-58 36,-56 C40,-52 44,-50 48,-50Z\" fill=\"#6b5544\" stroke=\"#2a1f17\" stroke-width=\".8\"/><path d=\"M50,-55 C44,-72 40,-86 30,-98 M44,-74 C50,-82 52,-90 50,-98 M38,-88 C34,-94 30,-96 24,-96 M32,-96 C30,-104 34,-110 38,-112 M48,-60 C56,-64 62,-62 64,-58 M47,-70 C40,-72 36,-70 34,-66\" stroke=\"#9c8363\" stroke-width=\"4.2\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M50,-55 C44,-72 40,-86 30,-98 M44,-74 C50,-82 52,-90 50,-98 M38,-88 C34,-94 30,-96 24,-96 M32,-96 C30,-104 34,-110 38,-112 M48,-60 C56,-64 62,-62 64,-58 M47,-70 C40,-72 36,-70 34,-66\" stroke=\"#d6c3a0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/></g></g><g transform=\"translate(270.0 200.0) scale(0.4 0.4)\" opacity=\"1\"><defs><linearGradient id=\"q9rd_40\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#8d735c\"/><stop offset=\"1\" stop-color=\"#6b5544\"/></linearGradient></defs><path d=\"M-30,6 C-33,22 -30,32 -34,46 M24,6 C26,22 22,32 25,46\" stroke=\"#2e241c\" stroke-width=\"5.5\" fill=\"none\" stroke-linecap=\"round\" opacity=\".75\"/><path d=\"M-44,-14 C-42,-24 -22,-26 0,-25 C14,-25 26,-28 32,-20 C40,-12 40,4 32,10 C18,16 -16,16 -34,11 C-46,7 -48,-4 -44,-14 Z\" fill=\"url(#q9rd_40)\" stroke=\"#2a1f17\" stroke-width=\"1\"/><path d=\"M-30,10 C-12,15 14,15 30,9 C20,17 -14,18 -30,10Z\" fill=\"#e4dccd\" opacity=\".55\"/><path d=\"M-45,-12 C-50,-8 -50,2 -45,6 C-42,0 -42,-8 -45,-12Z\" fill=\"#e4dccd\"/><path d=\"M-46,-12 l-5,4\" stroke=\"#e4dccd\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M-38,4 C-40,20 -36,30 -40,46 M18,8 C20,22 16,32 18,46\" stroke=\"#2e241c\" stroke-width=\"6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M-44,45 h8 M-37,47 h7 M14,45 h8 M21,47 h7\" stroke=\"#151110\" stroke-width=\"3.4\" stroke-linecap=\"round\"/><path d=\"M20,-24 C30,-30 40,-42 48,-50 L62,-38 C54,-28 44,-12 34,-4 Z\" fill=\"#8d735c\" stroke=\"#2a1f17\" stroke-width=\"1\"/><path d=\"M34,-6 C40,-14 46,-24 52,-32 C54,-22 50,-6 44,6 C42,0 38,-4 34,-6Z\" fill=\"#e4dccd\"/><path d=\"M38,0 l-1,8 M42,2 l0,8 M46,0 l1,7\" stroke=\"#e4dccd\" stroke-width=\"2.4\" stroke-linecap=\"round\"/><g transform=\"\"><path d=\"M44,-52 C50,-58 60,-56 66,-50 C72,-46 80,-42 82,-36 C82,-32 78,-30 72,-31 C64,-32 54,-32 48,-36 C42,-40 40,-48 44,-52 Z\" fill=\"#8d735c\" stroke=\"#2a1f17\" stroke-width=\"1\"/><path d=\"M74,-40 C79,-38 82,-36 82,-34 C79,-32 75,-32 72,-33Z\" fill=\"#3a2e26\"/><path d=\"M54,-36 C60,-33 68,-32 74,-32\" stroke=\"#e4dccd\" stroke-width=\"2\" fill=\"none\" opacity=\".7\"/><circle cx=\"60\" cy=\"-47\" r=\"2.1\" fill=\"#0d0b0a\"/><circle cx=\"60.7\" cy=\"-47.7\" r=\".6\" fill=\"#fff\"/><path d=\"M48,-52 C42,-58 38,-58 36,-56 C40,-52 44,-50 48,-50Z\" fill=\"#6b5544\" stroke=\"#2a1f17\" stroke-width=\".8\"/><path d=\"M50,-55 C44,-72 40,-86 30,-98 M44,-74 C50,-82 52,-90 50,-98 M38,-88 C34,-94 30,-96 24,-96 M32,-96 C30,-104 34,-110 38,-112 M48,-60 C56,-64 62,-62 64,-58 M47,-70 C40,-72 36,-70 34,-66\" stroke=\"#9c8363\" stroke-width=\"4.2\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M50,-55 C44,-72 40,-86 30,-98 M44,-74 C50,-82 52,-90 50,-98 M38,-88 C34,-94 30,-96 24,-96 M32,-96 C30,-104 34,-110 38,-112 M48,-60 C56,-64 62,-62 64,-58 M47,-70 C40,-72 36,-70 34,-66\" stroke=\"#d6c3a0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/></g></g><g transform=\"translate(350.0 196.0) scale(-0.36 0.36)\" opacity=\"1\"><defs><linearGradient id=\"q9rd_41\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#8d735c\"/><stop offset=\"1\" stop-color=\"#6b5544\"/></linearGradient></defs><path d=\"M-30,6 C-33,22 -30,32 -34,46 M24,6 C26,22 22,32 25,46\" stroke=\"#2e241c\" stroke-width=\"5.5\" fill=\"none\" stroke-linecap=\"round\" opacity=\".75\"/><path d=\"M-44,-14 C-42,-24 -22,-26 0,-25 C14,-25 26,-28 32,-20 C40,-12 40,4 32,10 C18,16 -16,16 -34,11 C-46,7 -48,-4 -44,-14 Z\" fill=\"url(#q9rd_41)\" stroke=\"#2a1f17\" stroke-width=\"1\"/><path d=\"M-30,10 C-12,15 14,15 30,9 C20,17 -14,18 -30,10Z\" fill=\"#e4dccd\" opacity=\".55\"/><path d=\"M-45,-12 C-50,-8 -50,2 -45,6 C-42,0 -42,-8 -45,-12Z\" fill=\"#e4dccd\"/><path d=\"M-46,-12 l-5,4\" stroke=\"#e4dccd\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M-38,4 C-40,20 -36,30 -40,46 M18,8 C20,22 16,32 18,46\" stroke=\"#2e241c\" stroke-width=\"6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M-44,45 h8 M-37,47 h7 M14,45 h8 M21,47 h7\" stroke=\"#151110\" stroke-width=\"3.4\" stroke-linecap=\"round\"/><path d=\"M22,-22 C40,-22 52,-14 60,-4 L50,6 C42,0 34,-4 26,-2 Z\" fill=\"#8d735c\" stroke=\"#2a1f17\" stroke-width=\"1\"/><path d=\"M30,-4 C36,4 40,8 44,10 C40,4 36,0 30,-4Z\" fill=\"#e4dccd\"/><g transform=\"translate(8 40) rotate(38 56 -44)\"><path d=\"M44,-52 C50,-58 60,-56 66,-50 C72,-46 80,-42 82,-36 C82,-32 78,-30 72,-31 C64,-32 54,-32 48,-36 C42,-40 40,-48 44,-52 Z\" fill=\"#8d735c\" stroke=\"#2a1f17\" stroke-width=\"1\"/><path d=\"M74,-40 C79,-38 82,-36 82,-34 C79,-32 75,-32 72,-33Z\" fill=\"#3a2e26\"/><path d=\"M54,-36 C60,-33 68,-32 74,-32\" stroke=\"#e4dccd\" stroke-width=\"2\" fill=\"none\" opacity=\".7\"/><circle cx=\"60\" cy=\"-47\" r=\"2.1\" fill=\"#0d0b0a\"/><circle cx=\"60.7\" cy=\"-47.7\" r=\".6\" fill=\"#fff\"/><path d=\"M48,-52 C42,-58 38,-58 36,-56 C40,-52 44,-50 48,-50Z\" fill=\"#6b5544\" stroke=\"#2a1f17\" stroke-width=\".8\"/><path d=\"M50,-55 C44,-72 40,-86 30,-98 M44,-74 C50,-82 52,-90 50,-98 M38,-88 C34,-94 30,-96 24,-96 M32,-96 C30,-104 34,-110 38,-112 M48,-60 C56,-64 62,-62 64,-58 M47,-70 C40,-72 36,-70 34,-66\" stroke=\"#9c8363\" stroke-width=\"4.2\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M50,-55 C44,-72 40,-86 30,-98 M44,-74 C50,-82 52,-90 50,-98 M38,-88 C34,-94 30,-96 24,-96 M32,-96 C30,-104 34,-110 38,-112 M48,-60 C56,-64 62,-62 64,-58 M47,-70 C40,-72 36,-70 34,-66\" stroke=\"#d6c3a0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/></g></g><g transform=\"translate(200.0 206.0) scale(-0.33 0.33)\" opacity=\"1\"><defs><linearGradient id=\"q9rd_42\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#8d735c\"/><stop offset=\"1\" stop-color=\"#6b5544\"/></linearGradient></defs><path d=\"M-30,6 C-33,22 -30,32 -34,46 M24,6 C26,22 22,32 25,46\" stroke=\"#2e241c\" stroke-width=\"5.5\" fill=\"none\" stroke-linecap=\"round\" opacity=\".75\"/><path d=\"M-44,-14 C-42,-24 -22,-26 0,-25 C14,-25 26,-28 32,-20 C40,-12 40,4 32,10 C18,16 -16,16 -34,11 C-46,7 -48,-4 -44,-14 Z\" fill=\"url(#q9rd_42)\" stroke=\"#2a1f17\" stroke-width=\"1\"/><path d=\"M-30,10 C-12,15 14,15 30,9 C20,17 -14,18 -30,10Z\" fill=\"#e4dccd\" opacity=\".55\"/><path d=\"M-45,-12 C-50,-8 -50,2 -45,6 C-42,0 -42,-8 -45,-12Z\" fill=\"#e4dccd\"/><path d=\"M-46,-12 l-5,4\" stroke=\"#e4dccd\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M-38,4 C-40,20 -36,30 -40,46 M18,8 C20,22 16,32 18,46\" stroke=\"#2e241c\" stroke-width=\"6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M-44,45 h8 M-37,47 h7 M14,45 h8 M21,47 h7\" stroke=\"#151110\" stroke-width=\"3.4\" stroke-linecap=\"round\"/><path d=\"M20,-24 C30,-30 40,-42 48,-50 L62,-38 C54,-28 44,-12 34,-4 Z\" fill=\"#8d735c\" stroke=\"#2a1f17\" stroke-width=\"1\"/><path d=\"M34,-6 C40,-14 46,-24 52,-32 C54,-22 50,-6 44,6 C42,0 38,-4 34,-6Z\" fill=\"#e4dccd\"/><path d=\"M38,0 l-1,8 M42,2 l0,8 M46,0 l1,7\" stroke=\"#e4dccd\" stroke-width=\"2.4\" stroke-linecap=\"round\"/><g transform=\"\"><path d=\"M44,-52 C50,-58 60,-56 66,-50 C72,-46 80,-42 82,-36 C82,-32 78,-30 72,-31 C64,-32 54,-32 48,-36 C42,-40 40,-48 44,-52 Z\" fill=\"#8d735c\" stroke=\"#2a1f17\" stroke-width=\"1\"/><path d=\"M74,-40 C79,-38 82,-36 82,-34 C79,-32 75,-32 72,-33Z\" fill=\"#3a2e26\"/><path d=\"M54,-36 C60,-33 68,-32 74,-32\" stroke=\"#e4dccd\" stroke-width=\"2\" fill=\"none\" opacity=\".7\"/><circle cx=\"60\" cy=\"-47\" r=\"2.1\" fill=\"#0d0b0a\"/><circle cx=\"60.7\" cy=\"-47.7\" r=\".6\" fill=\"#fff\"/><path d=\"M48,-52 C42,-58 38,-58 36,-56 C40,-52 44,-50 48,-50Z\" fill=\"#6b5544\" stroke=\"#2a1f17\" stroke-width=\".8\"/><path d=\"M50,-55 C44,-72 40,-86 30,-98 M44,-74 C50,-82 52,-90 50,-98 M38,-88 C34,-94 30,-96 24,-96 M32,-96 C30,-104 34,-110 38,-112 M48,-60 C56,-64 62,-62 64,-58 M47,-70 C40,-72 36,-70 34,-66\" stroke=\"#9c8363\" stroke-width=\"4.2\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M50,-55 C44,-72 40,-86 30,-98 M44,-74 C50,-82 52,-90 50,-98 M38,-88 C34,-94 30,-96 24,-96 M32,-96 C30,-104 34,-110 38,-112 M48,-60 C56,-64 62,-62 64,-58 M47,-70 C40,-72 36,-70 34,-66\" stroke=\"#d6c3a0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/></g></g><g transform=\"translate(300.0 214.0) scale(0.223 0.22319999999999998)\" opacity=\"1\"><defs><linearGradient id=\"q9rd_43\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#8d735c\"/><stop offset=\"1\" stop-color=\"#6b5544\"/></linearGradient></defs><path d=\"M-30,6 C-33,22 -30,32 -34,46 M24,6 C26,22 22,32 25,46\" stroke=\"#2e241c\" stroke-width=\"5.5\" fill=\"none\" stroke-linecap=\"round\" opacity=\".75\"/><path d=\"M-44,-14 C-42,-24 -22,-26 0,-25 C14,-25 26,-28 32,-20 C40,-12 40,4 32,10 C18,16 -16,16 -34,11 C-46,7 -48,-4 -44,-14 Z\" fill=\"url(#q9rd_43)\" stroke=\"#2a1f17\" stroke-width=\"1\"/><path d=\"M-30,10 C-12,15 14,15 30,9 C20,17 -14,18 -30,10Z\" fill=\"#e4dccd\" opacity=\".55\"/><path d=\"M-45,-12 C-50,-8 -50,2 -45,6 C-42,0 -42,-8 -45,-12Z\" fill=\"#e4dccd\"/><path d=\"M-46,-12 l-5,4\" stroke=\"#e4dccd\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M-38,4 C-40,20 -36,30 -40,46 M18,8 C20,22 16,32 18,46\" stroke=\"#2e241c\" stroke-width=\"6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M-44,45 h8 M-37,47 h7 M14,45 h8 M21,47 h7\" stroke=\"#151110\" stroke-width=\"3.4\" stroke-linecap=\"round\"/><path d=\"M20,-24 C30,-30 40,-42 48,-50 L62,-38 C54,-28 44,-12 34,-4 Z\" fill=\"#8d735c\" stroke=\"#2a1f17\" stroke-width=\"1\"/><path d=\"M34,-6 C40,-14 46,-24 52,-32 C54,-22 50,-6 44,6 C42,0 38,-4 34,-6Z\" fill=\"#e4dccd\"/><path d=\"M38,0 l-1,8 M42,2 l0,8 M46,0 l1,7\" stroke=\"#e4dccd\" stroke-width=\"2.4\" stroke-linecap=\"round\"/><g transform=\"\"><path d=\"M44,-52 C50,-58 60,-56 66,-50 C72,-46 80,-42 82,-36 C82,-32 78,-30 72,-31 C64,-32 54,-32 48,-36 C42,-40 40,-48 44,-52 Z\" fill=\"#8d735c\" stroke=\"#2a1f17\" stroke-width=\"1\"/><path d=\"M74,-40 C79,-38 82,-36 82,-34 C79,-32 75,-32 72,-33Z\" fill=\"#3a2e26\"/><path d=\"M54,-36 C60,-33 68,-32 74,-32\" stroke=\"#e4dccd\" stroke-width=\"2\" fill=\"none\" opacity=\".7\"/><circle cx=\"60\" cy=\"-47\" r=\"2.1\" fill=\"#0d0b0a\"/><circle cx=\"60.7\" cy=\"-47.7\" r=\".6\" fill=\"#fff\"/><path d=\"M48,-52 C42,-58 38,-58 36,-56 C40,-52 44,-50 48,-50Z\" fill=\"#6b5544\" stroke=\"#2a1f17\" stroke-width=\".8\"/></g></g><line x1=\"120.0\" y1=\"36.0\" x2=\"176.8\" y2=\"75.0\" stroke=\"#16a34a\" stroke-width=\"7\" stroke-linecap=\"round\"/><path d=\"M190.0,84.0 L181.9,67.5 L171.7,82.4 Z\" fill=\"#16a34a\"/><circle cx=\"92\" cy=\"30\" r=\"15\" fill=\"#ffd35c\" stroke=\"#16213a\" stroke-width=\"2\"/><text x=\"92\" y=\"36\" text-anchor=\"middle\" font-size=\"17\" fill=\"#16213a\" font-weight=\"700\">1</text><line x1=\"14.0\" y1=\"180.0\" x2=\"88.0\" y2=\"176.7\" stroke=\"#16a34a\" stroke-width=\"7\" stroke-linecap=\"round\"/><path d=\"M104.0,176.0 L87.6,167.7 L88.4,185.7 Z\" fill=\"#16a34a\"/><circle cx=\"56\" cy=\"150\" r=\"15\" fill=\"#ffd35c\" stroke=\"#16213a\" stroke-width=\"2\"/><text x=\"56\" y=\"156\" text-anchor=\"middle\" font-size=\"17\" fill=\"#16213a\" font-weight=\"700\">2</text><g transform=\"translate(52.0 206.0) scale(0.24 0.24)\" opacity=\"1\"><defs><linearGradient id=\"q9rd_44\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#8d735c\"/><stop offset=\"1\" stop-color=\"#6b5544\"/></linearGradient></defs><path d=\"M-30,6 C-33,22 -30,32 -34,46 M24,6 C26,22 22,32 25,46\" stroke=\"#2e241c\" stroke-width=\"5.5\" fill=\"none\" stroke-linecap=\"round\" opacity=\".75\"/><path d=\"M-44,-14 C-42,-24 -22,-26 0,-25 C14,-25 26,-28 32,-20 C40,-12 40,4 32,10 C18,16 -16,16 -34,11 C-46,7 -48,-4 -44,-14 Z\" fill=\"url(#q9rd_44)\" stroke=\"#2a1f17\" stroke-width=\"1\"/><path d=\"M-30,10 C-12,15 14,15 30,9 C20,17 -14,18 -30,10Z\" fill=\"#e4dccd\" opacity=\".55\"/><path d=\"M-45,-12 C-50,-8 -50,2 -45,6 C-42,0 -42,-8 -45,-12Z\" fill=\"#e4dccd\"/><path d=\"M-46,-12 l-5,4\" stroke=\"#e4dccd\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M-38,4 C-40,20 -36,30 -40,46 M18,8 C20,22 16,32 18,46\" stroke=\"#2e241c\" stroke-width=\"6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M-44,45 h8 M-37,47 h7 M14,45 h8 M21,47 h7\" stroke=\"#151110\" stroke-width=\"3.4\" stroke-linecap=\"round\"/><path d=\"M20,-24 C30,-30 40,-42 48,-50 L62,-38 C54,-28 44,-12 34,-4 Z\" fill=\"#8d735c\" stroke=\"#2a1f17\" stroke-width=\"1\"/><path d=\"M34,-6 C40,-14 46,-24 52,-32 C54,-22 50,-6 44,6 C42,0 38,-4 34,-6Z\" fill=\"#e4dccd\"/><path d=\"M38,0 l-1,8 M42,2 l0,8 M46,0 l1,7\" stroke=\"#e4dccd\" stroke-width=\"2.4\" stroke-linecap=\"round\"/><g transform=\"\"><path d=\"M44,-52 C50,-58 60,-56 66,-50 C72,-46 80,-42 82,-36 C82,-32 78,-30 72,-31 C64,-32 54,-32 48,-36 C42,-40 40,-48 44,-52 Z\" fill=\"#8d735c\" stroke=\"#2a1f17\" stroke-width=\"1\"/><path d=\"M74,-40 C79,-38 82,-36 82,-34 C79,-32 75,-32 72,-33Z\" fill=\"#3a2e26\"/><path d=\"M54,-36 C60,-33 68,-32 74,-32\" stroke=\"#e4dccd\" stroke-width=\"2\" fill=\"none\" opacity=\".7\"/><circle cx=\"60\" cy=\"-47\" r=\"2.1\" fill=\"#0d0b0a\"/><circle cx=\"60.7\" cy=\"-47.7\" r=\".6\" fill=\"#fff\"/><path d=\"M48,-52 C42,-58 38,-58 36,-56 C40,-52 44,-50 48,-50Z\" fill=\"#6b5544\" stroke=\"#2a1f17\" stroke-width=\".8\"/><path d=\"M50,-55 C44,-72 40,-86 30,-98 M44,-74 C50,-82 52,-90 50,-98 M38,-88 C34,-94 30,-96 24,-96 M32,-96 C30,-104 34,-110 38,-112 M48,-60 C56,-64 62,-62 64,-58 M47,-70 C40,-72 36,-70 34,-66\" stroke=\"#9c8363\" stroke-width=\"4.2\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M50,-55 C44,-72 40,-86 30,-98 M44,-74 C50,-82 52,-90 50,-98 M38,-88 C34,-94 30,-96 24,-96 M32,-96 C30,-104 34,-110 38,-112 M48,-60 C56,-64 62,-62 64,-58 M47,-70 C40,-72 36,-70 34,-66\" stroke=\"#d6c3a0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/></g></g><line x1=\"372.0\" y1=\"258.0\" x2=\"394.6\" y2=\"289.1\" stroke=\"#dc2626\" stroke-width=\"7\" stroke-linecap=\"round\"/><path d=\"M404.0,302.0 L401.9,283.8 L387.3,294.4 Z\" fill=\"#dc2626\"/><circle cx=\"430\" cy=\"300\" r=\"15\" fill=\"#ffd35c\" stroke=\"#16213a\" stroke-width=\"2\"/><text x=\"430\" y=\"306\" text-anchor=\"middle\" font-size=\"17\" fill=\"#16213a\" font-weight=\"700\">3</text><line x1=\"450.0\" y1=\"170.0\" x2=\"524.0\" y2=\"166.7\" stroke=\"#dc2626\" stroke-width=\"7\" stroke-linecap=\"round\"/><path d=\"M540.0,166.0 L523.6,157.7 L524.4,175.7 Z\" fill=\"#dc2626\"/><circle cx=\"494\" cy=\"136\" r=\"15\" fill=\"#ffd35c\" stroke=\"#16213a\" stroke-width=\"2\"/><text x=\"494\" y=\"142\" text-anchor=\"middle\" font-size=\"17\" fill=\"#16213a\" font-weight=\"700\">4</text><g transform=\"translate(520.0 206.0) scale(0.24 0.24)\" opacity=\"1\"><defs><linearGradient id=\"q9rd_45\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#8d735c\"/><stop offset=\"1\" stop-color=\"#6b5544\"/></linearGradient></defs><path d=\"M-30,6 C-33,22 -30,32 -34,46 M24,6 C26,22 22,32 25,46\" stroke=\"#2e241c\" stroke-width=\"5.5\" fill=\"none\" stroke-linecap=\"round\" opacity=\".75\"/><path d=\"M-44,-14 C-42,-24 -22,-26 0,-25 C14,-25 26,-28 32,-20 C40,-12 40,4 32,10 C18,16 -16,16 -34,11 C-46,7 -48,-4 -44,-14 Z\" fill=\"url(#q9rd_45)\" stroke=\"#2a1f17\" stroke-width=\"1\"/><path d=\"M-30,10 C-12,15 14,15 30,9 C20,17 -14,18 -30,10Z\" fill=\"#e4dccd\" opacity=\".55\"/><path d=\"M-45,-12 C-50,-8 -50,2 -45,6 C-42,0 -42,-8 -45,-12Z\" fill=\"#e4dccd\"/><path d=\"M-46,-12 l-5,4\" stroke=\"#e4dccd\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M-38,4 C-40,20 -36,30 -40,46 M18,8 C20,22 16,32 18,46\" stroke=\"#2e241c\" stroke-width=\"6\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M-44,45 h8 M-37,47 h7 M14,45 h8 M21,47 h7\" stroke=\"#151110\" stroke-width=\"3.4\" stroke-linecap=\"round\"/><path d=\"M20,-24 C30,-30 40,-42 48,-50 L62,-38 C54,-28 44,-12 34,-4 Z\" fill=\"#8d735c\" stroke=\"#2a1f17\" stroke-width=\"1\"/><path d=\"M34,-6 C40,-14 46,-24 52,-32 C54,-22 50,-6 44,6 C42,0 38,-4 34,-6Z\" fill=\"#e4dccd\"/><path d=\"M38,0 l-1,8 M42,2 l0,8 M46,0 l1,7\" stroke=\"#e4dccd\" stroke-width=\"2.4\" stroke-linecap=\"round\"/><g transform=\"\"><path d=\"M44,-52 C50,-58 60,-56 66,-50 C72,-46 80,-42 82,-36 C82,-32 78,-30 72,-31 C64,-32 54,-32 48,-36 C42,-40 40,-48 44,-52 Z\" fill=\"#8d735c\" stroke=\"#2a1f17\" stroke-width=\"1\"/><path d=\"M74,-40 C79,-38 82,-36 82,-34 C79,-32 75,-32 72,-33Z\" fill=\"#3a2e26\"/><path d=\"M54,-36 C60,-33 68,-32 74,-32\" stroke=\"#e4dccd\" stroke-width=\"2\" fill=\"none\" opacity=\".7\"/><circle cx=\"60\" cy=\"-47\" r=\"2.1\" fill=\"#0d0b0a\"/><circle cx=\"60.7\" cy=\"-47.7\" r=\".6\" fill=\"#fff\"/><path d=\"M48,-52 C42,-58 38,-58 36,-56 C40,-52 44,-50 48,-50Z\" fill=\"#6b5544\" stroke=\"#2a1f17\" stroke-width=\".8\"/><path d=\"M50,-55 C44,-72 40,-86 30,-98 M44,-74 C50,-82 52,-90 50,-98 M38,-88 C34,-94 30,-96 24,-96 M32,-96 C30,-104 34,-110 38,-112 M48,-60 C56,-64 62,-62 64,-58 M47,-70 C40,-72 36,-70 34,-66\" stroke=\"#9c8363\" stroke-width=\"4.2\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M50,-55 C44,-72 40,-86 30,-98 M44,-74 C50,-82 52,-90 50,-98 M38,-88 C34,-94 30,-96 24,-96 M32,-96 C30,-104 34,-110 38,-112 M48,-60 C56,-64 62,-62 64,-58 M47,-70 C40,-72 36,-70 34,-66\" stroke=\"#d6c3a0\" stroke-width=\"2.4\" fill=\"none\" stroke-linecap=\"round\"/></g></g></svg>", "w_flowZ": [{"id": "a", "x": 196, "y": 28, "ans": "births", "w": 130}, {"id": "b", "x": 76, "y": 252, "ans": "immigration", "w": 140}, {"id": "c", "x": 500, "y": 296, "ans": "deaths", "w": 110}, {"id": "d", "x": 470, "y": 96, "ans": "emigration", "w": 140}], "w_js": "<svg viewBox=\"0 0 640 360\" role=\"img\" aria-label=\"A graph with an orange curve that shoots up, a green curve that levels off, and a dashed line where the green curve levels off. Each has a blank label box.\"><rect width=\"640\" height=\"360\" rx=\"14\" fill=\"#ffffff\"/><line x1=\"70\" y1=\"308.0\" x2=\"618\" y2=\"308.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"312.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"70\" y1=\"267.1\" x2=\"618\" y2=\"267.1\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"271.1\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">100</text><line x1=\"70\" y1=\"226.3\" x2=\"618\" y2=\"226.3\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"230.3\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">200</text><line x1=\"70\" y1=\"185.4\" x2=\"618\" y2=\"185.4\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"189.4\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">300</text><line x1=\"70\" y1=\"144.6\" x2=\"618\" y2=\"144.6\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"148.6\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">400</text><line x1=\"70\" y1=\"103.7\" x2=\"618\" y2=\"103.7\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"107.7\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">500</text><line x1=\"70\" y1=\"62.9\" x2=\"618\" y2=\"62.9\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"66.9\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">600</text><line x1=\"70\" y1=\"22.0\" x2=\"618\" y2=\"22.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"26.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">700</text><line x1=\"70.0\" y1=\"308\" x2=\"70.0\" y2=\"313\" stroke=\"#475569\"/><text x=\"70.0\" y=\"327\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"161.3\" y1=\"308\" x2=\"161.3\" y2=\"313\" stroke=\"#475569\"/><text x=\"161.3\" y=\"327\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">5</text><line x1=\"252.7\" y1=\"308\" x2=\"252.7\" y2=\"313\" stroke=\"#475569\"/><text x=\"252.7\" y=\"327\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">10</text><line x1=\"344.0\" y1=\"308\" x2=\"344.0\" y2=\"313\" stroke=\"#475569\"/><text x=\"344.0\" y=\"327\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">15</text><line x1=\"435.3\" y1=\"308\" x2=\"435.3\" y2=\"313\" stroke=\"#475569\"/><text x=\"435.3\" y=\"327\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">20</text><line x1=\"526.7\" y1=\"308\" x2=\"526.7\" y2=\"313\" stroke=\"#475569\"/><text x=\"526.7\" y=\"327\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">25</text><line x1=\"618.0\" y1=\"308\" x2=\"618.0\" y2=\"313\" stroke=\"#475569\"/><text x=\"618.0\" y=\"327\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">30</text><line x1=\"70\" y1=\"103.7\" x2=\"618\" y2=\"103.7\" stroke=\"#b45309\" stroke-width=\"2.2\" stroke-dasharray=\"8 6\" opacity=\"1\"/><defs><clipPath id=\"q10gc_46\"><rect x=\"70\" y=\"14\" width=\"554\" height=\"296\"/></clipPath></defs><g clip-path=\"url(#q10gc_46)\"><path d=\"M70.0,303.9L74.6,303.6L79.1,303.2L83.7,302.8L88.3,302.4L92.8,301.9L97.4,301.4L102.0,300.8L106.5,300.3L111.1,299.6L115.7,298.9L120.2,298.1L124.8,297.3L129.4,296.4L133.9,295.5L138.5,294.4L143.1,293.3L147.6,292.1L152.2,290.8L156.8,289.3L161.3,287.8L165.9,286.1L170.5,284.3L175.0,282.3L179.6,280.1L184.2,277.8L188.7,275.3L193.3,272.6L197.9,269.6L202.4,266.4L207.0,263.0L211.6,259.2L216.1,255.1L220.7,250.7L225.3,246.0L229.8,240.8L234.4,235.2L239.0,229.2L243.5,222.6L248.1,215.5L252.7,207.8L257.2,199.4L261.8,190.4L266.4,180.6L270.9,170.0L275.5,158.5L280.1,146.0L284.6,132.5L289.2,117.9L293.8,102.1L298.3,84.9L302.9,66.3L307.5,46.2L312.0,24.4\" stroke=\"#ea580c\" stroke-width=\"4\" fill=\"none\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><path d=\"M70.0,303.9L74.6,303.6L79.1,303.2L83.7,302.8L88.3,302.4L92.8,302.0L97.4,301.5L102.0,301.0L106.5,300.4L111.1,299.8L115.7,299.1L120.2,298.4L124.8,297.7L129.4,296.8L133.9,296.0L138.5,295.0L143.1,294.0L147.6,293.0L152.2,291.8L156.8,290.6L161.3,289.2L165.9,287.8L170.5,286.3L175.0,284.7L179.6,283.0L184.2,281.2L188.7,279.3L193.3,277.3L197.9,275.1L202.4,272.9L207.0,270.5L211.6,268.0L216.1,265.3L220.7,262.6L225.3,259.7L229.8,256.7L234.4,253.5L239.0,250.3L243.5,246.9L248.1,243.4L252.7,239.8L257.2,236.2L261.8,232.4L266.4,228.5L270.9,224.6L275.5,220.7L280.1,216.6L284.6,212.6L289.2,208.5L293.8,204.4L298.3,200.3L302.9,196.3L307.5,192.2L312.0,188.3L316.6,184.3L321.2,180.4L325.7,176.7L330.3,172.9L334.9,169.3L339.4,165.8L344.0,162.4L348.6,159.1L353.1,156.0L357.7,152.9L362.3,150.0L366.8,147.2L371.4,144.5L376.0,142.0L380.5,139.5L385.1,137.2L389.7,135.1L394.2,133.0L398.8,131.0L403.4,129.2L407.9,127.5L412.5,125.8L417.1,124.3L421.6,122.9L426.2,121.5L430.8,120.3L435.3,119.1L439.9,118.0L444.5,117.0L449.0,116.0L453.6,115.1L458.2,114.3L462.7,113.5L467.3,112.8L471.9,112.1L476.4,111.5L481.0,110.9L485.6,110.4L490.1,109.9L494.7,109.4L499.3,109.0L503.8,108.6L508.4,108.2L513.0,107.9L517.5,107.6L522.1,107.3L526.7,107.0L531.2,106.8L535.8,106.5L540.4,106.3L544.9,106.1L549.5,105.9L554.1,105.8L558.6,105.6L563.2,105.5L567.8,105.3L572.3,105.2L576.9,105.1L581.5,105.0L586.0,104.9L590.6,104.8L595.2,104.7L599.7,104.6L604.3,104.6L608.9,104.5L613.4,104.4L618.0,104.4\" stroke=\"#16a34a\" stroke-width=\"4\" fill=\"none\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></g><line x1=\"70\" y1=\"308\" x2=\"618\" y2=\"308\" stroke=\"#475569\" stroke-width=\"1.6\"/><line x1=\"70\" y1=\"308\" x2=\"70\" y2=\"16\" stroke=\"#475569\" stroke-width=\"1.6\"/><text x=\"344\" y=\"348\" text-anchor=\"middle\" font-size=\"13.5\" fill=\"#16213a\" font-weight=\"700\">Time (years)</text><text x=\"18\" y=\"165\" transform=\"rotate(-90 18 165)\" text-anchor=\"middle\" font-size=\"13\" fill=\"#16213a\" font-weight=\"700\">Population size</text></svg>", "w_jsZ": [{"id": "a", "x": 185, "y": 52, "ans": "J curve (exponential)", "w": 190}, {"id": "b", "x": 470, "y": 225, "ans": "S curve (logistic)", "w": 180}, {"id": "c", "x": 515, "y": 76, "ans": "carrying capacity (K)", "w": 200}], "w_rein": "<svg viewBox=\"0 0 560 320\" role=\"img\" aria-label=\"A graph of the St. Matthew Island reindeer: about 29 in 1944, about 1,350 in 1957, about 6,000 in 1963, and about 42 in 1966.\"><rect width=\"560\" height=\"320\" rx=\"14\" fill=\"#ffffff\"/><line x1=\"70\" y1=\"268.0\" x2=\"514\" y2=\"268.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"272.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"70\" y1=\"232.9\" x2=\"514\" y2=\"232.9\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"236.9\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">1,000</text><line x1=\"70\" y1=\"197.7\" x2=\"514\" y2=\"197.7\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"201.7\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">2,000</text><line x1=\"70\" y1=\"162.6\" x2=\"514\" y2=\"162.6\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"166.6\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">3,000</text><line x1=\"70\" y1=\"127.4\" x2=\"514\" y2=\"127.4\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"131.4\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">4,000</text><line x1=\"70\" y1=\"92.3\" x2=\"514\" y2=\"92.3\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"96.3\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">5,000</text><line x1=\"70\" y1=\"57.1\" x2=\"514\" y2=\"57.1\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"61.1\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">6,000</text><line x1=\"70\" y1=\"22.0\" x2=\"514\" y2=\"22.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"26.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">7,000</text><line x1=\"70.0\" y1=\"268\" x2=\"70.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"70.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1940</text><line x1=\"144.0\" y1=\"268\" x2=\"144.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"144.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1945</text><line x1=\"218.0\" y1=\"268\" x2=\"218.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"218.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1950</text><line x1=\"292.0\" y1=\"268\" x2=\"292.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"292.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1955</text><line x1=\"366.0\" y1=\"268\" x2=\"366.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"366.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1960</text><line x1=\"440.0\" y1=\"268\" x2=\"440.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"440.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1965</text><line x1=\"514.0\" y1=\"268\" x2=\"514.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"514.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1970</text><defs><clipPath id=\"q11gc_47\"><rect x=\"70\" y=\"14\" width=\"450\" height=\"256\"/></clipPath></defs><g clip-path=\"url(#q11gc_47)\"><path d=\"M129.2,267.0L321.6,220.6L410.4,57.1L454.8,266.5\" stroke=\"#b45309\" stroke-width=\"3\" fill=\"none\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><circle cx=\"129.2\" cy=\"267.0\" r=\"5\" fill=\"#b45309\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"321.6\" cy=\"220.6\" r=\"5\" fill=\"#b45309\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"410.4\" cy=\"57.1\" r=\"5\" fill=\"#b45309\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"454.8\" cy=\"266.5\" r=\"5\" fill=\"#b45309\" stroke=\"#ffffff\" stroke-width=\"1.5\"/></g><text x=\"129.2\" y=\"249.7\" text-anchor=\"middle\" font-size=\"12\" fill=\"#7c2d12\">about 29</text><text x=\"315.7\" y=\"210.0\" text-anchor=\"end\" font-size=\"12\" fill=\"#7c2d12\">about 1,350</text><text x=\"383.8\" y=\"46.6\" text-anchor=\"middle\" font-size=\"12\" fill=\"#7c2d12\">about 6,000</text><text x=\"460.7\" y=\"236.4\" text-anchor=\"start\" font-size=\"12\" fill=\"#7c2d12\">about 42</text><line x1=\"70\" y1=\"268\" x2=\"514\" y2=\"268\" stroke=\"#475569\" stroke-width=\"1.6\"/><line x1=\"70\" y1=\"268\" x2=\"70\" y2=\"16\" stroke=\"#475569\" stroke-width=\"1.6\"/><text x=\"292\" y=\"308\" text-anchor=\"middle\" font-size=\"13.5\" fill=\"#16213a\" font-weight=\"700\">Year</text><text x=\"18\" y=\"145\" transform=\"rotate(-90 18 145)\" text-anchor=\"middle\" font-size=\"13\" fill=\"#16213a\" font-weight=\"700\">Number of reindeer</text></svg>", "w_human": "<svg viewBox=\"0 0 560 320\" role=\"img\" aria-label=\"A graph of world human population from 1800 to 2022, rising from about 1 billion to about 8 billion. The curve is J-shaped.\"><rect width=\"560\" height=\"320\" rx=\"14\" fill=\"#ffffff\"/><line x1=\"70\" y1=\"268.0\" x2=\"538\" y2=\"268.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"272.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"70\" y1=\"240.7\" x2=\"538\" y2=\"240.7\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"244.7\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">1</text><line x1=\"70\" y1=\"213.3\" x2=\"538\" y2=\"213.3\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"217.3\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">2</text><line x1=\"70\" y1=\"186.0\" x2=\"538\" y2=\"186.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"190.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">3</text><line x1=\"70\" y1=\"158.7\" x2=\"538\" y2=\"158.7\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"162.7\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">4</text><line x1=\"70\" y1=\"131.3\" x2=\"538\" y2=\"131.3\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"135.3\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">5</text><line x1=\"70\" y1=\"104.0\" x2=\"538\" y2=\"104.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"108.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">6</text><line x1=\"70\" y1=\"76.7\" x2=\"538\" y2=\"76.7\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"80.7\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">7</text><line x1=\"70\" y1=\"49.3\" x2=\"538\" y2=\"49.3\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"53.3\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">8</text><line x1=\"70\" y1=\"22.0\" x2=\"538\" y2=\"22.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"26.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">9</text><line x1=\"70.0\" y1=\"268\" x2=\"70.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"70.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1800</text><line x1=\"171.7\" y1=\"268\" x2=\"171.7\" y2=\"273\" stroke=\"#475569\"/><text x=\"171.7\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1850</text><line x1=\"273.5\" y1=\"268\" x2=\"273.5\" y2=\"273\" stroke=\"#475569\"/><text x=\"273.5\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1900</text><line x1=\"375.2\" y1=\"268\" x2=\"375.2\" y2=\"273\" stroke=\"#475569\"/><text x=\"375.2\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1950</text><line x1=\"477.0\" y1=\"268\" x2=\"477.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"477.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">2000</text><defs><clipPath id=\"q12gc_48\"><rect x=\"70\" y=\"14\" width=\"474\" height=\"256\"/></clipPath></defs><g clip-path=\"url(#q12gc_48)\"><path d=\"M70.0,240.7L171.7,235.2L273.5,224.3L328.4,213.3L375.2,199.7L395.6,186.0L424.1,158.7L450.5,131.3L474.9,104.0L499.3,76.7L521.7,49.3\" stroke=\"#7c3aed\" stroke-width=\"3\" fill=\"none\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><circle cx=\"70.0\" cy=\"240.7\" r=\"4.2\" fill=\"#7c3aed\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"171.7\" cy=\"235.2\" r=\"4.2\" fill=\"#7c3aed\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"273.5\" cy=\"224.3\" r=\"4.2\" fill=\"#7c3aed\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"328.4\" cy=\"213.3\" r=\"4.2\" fill=\"#7c3aed\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"375.2\" cy=\"199.7\" r=\"4.2\" fill=\"#7c3aed\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"395.6\" cy=\"186.0\" r=\"4.2\" fill=\"#7c3aed\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"424.1\" cy=\"158.7\" r=\"4.2\" fill=\"#7c3aed\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"450.5\" cy=\"131.3\" r=\"4.2\" fill=\"#7c3aed\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"474.9\" cy=\"104.0\" r=\"4.2\" fill=\"#7c3aed\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"499.3\" cy=\"76.7\" r=\"4.2\" fill=\"#7c3aed\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"521.7\" cy=\"49.3\" r=\"4.2\" fill=\"#7c3aed\" stroke=\"#ffffff\" stroke-width=\"1.5\"/></g><text x=\"493.2\" y=\"35.7\" text-anchor=\"middle\" font-size=\"12.5\" fill=\"#5b21b6\" font-weight=\"700\">about 8 billion</text><line x1=\"70\" y1=\"268\" x2=\"538\" y2=\"268\" stroke=\"#475569\" stroke-width=\"1.6\"/><line x1=\"70\" y1=\"268\" x2=\"70\" y2=\"16\" stroke=\"#475569\" stroke-width=\"1.6\"/><text x=\"304\" y=\"308\" text-anchor=\"middle\" font-size=\"13.5\" fill=\"#16213a\" font-weight=\"700\">Year</text><text x=\"18\" y=\"145\" transform=\"rotate(-90 18 145)\" text-anchor=\"middle\" font-size=\"13\" fill=\"#16213a\" font-weight=\"700\">People (billions)</text></svg>"};
+const ico=(i,s)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PARTS[i].icon}</svg>`;
+const PROBS=[];   // every problem: {id, part, max, score(), key()}
+
+function probShell(parent, part, num, q, pts){
+  const box=h('div',{class:'prob'}); parent.appendChild(box);
+  box.innerHTML=`<div class="pq"><span class="pnum">${num}.</span> ${q} <span class="pts">(${pts} pt${pts>1?'s':''})</span></div>`;
+  return box;
+}
+function actions(box, o){ // Hint + Check buttons + feedback
+  const row=h('div',{class:'btnrow'}); const hb=h('button',{class:'btn ghost small',type:'button'},'Hint'); const cb=h('button',{class:'btn primary small',type:'button'},'Check');
+  row.append(hb,cb); box.appendChild(row);
+  const hint=h('div',{class:'hintbox',hidden:true},'💡 '+o.hint); box.appendChild(hint);
+  const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'}); box.appendChild(fb);
+  hb.addEventListener('click',()=>{ hint.hidden=!hint.hidden; });
+  return {row,hb,cb,hint,fb};
+}
+const st=id=>S.p[id]||(S.p[id]={});
+/* Two tries per problem. Right on try 1 or 2 = full credit. Wrong twice = marked wrong (credit for parts right on try 2).
+   The correct answer is never shown. */
+function gradeTry(P,res,max){ const n=res.filter(Boolean).length; P.tries=(P.tries||0)+1;
+  if(n===max){ P.first=max; P.checked=true; P.right=true; }
+  else if(P.tries>=2){ P.first=n; P.checked=true; P.right=false; }
+  return n===max; }
+function showTry(ui,P,max,doneText){
+  if(P.checked&&P.right){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML=`<b>Correct!</b> ${doneText||''}`; }
+  else if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`<b>Marked wrong.</b> You earned ${P.first} of ${max} point${max>1?'s':''}. Ask your teacher if you'd like to try it again.`; }
+  else if(P.tries===1){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=max>1?'<b>Not quite.</b> Something isn\'t right yet. You have <b>one more try</b>.':'<b>Not quite.</b> You have <b>one more try</b>.'; }
+  else ui.fb.hidden=true;
+  if(ui.cb) ui.cb.textContent=P.checked?'Checked':(P.tries===1?'Check (last try)':'Check'); }
+
+/* ---------- drag onto a diagram (or into equation slots) ---------- */
+function dragProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.zones.length);
+  let fig;
+  if(o.equation){ fig=h('div',{class:'eq'}); box.appendChild(fig); }
+  else { fig=h('div',{class:'figwrap'}); fig.innerHTML=o.svg; box.appendChild(fig); }
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.chips.map((_,i)=>i)));
+  const zoneEls={};
+  const groupAns=g=>o.zones.filter(z=>z.group===g).map(z=>z.ans);
+  if(o.equation){ o.layout.forEach(item=>{ if(typeof item==='string'){ fig.appendChild(h('span',null,item)); } else { const z=o.zones[item]; const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans}); fig.appendChild(b); zoneEls[z.id]=b; } }); }
+  else o.zones.forEach(z=>{ const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans});
+    b.style.left=(z.x/o.vb[0]*100)+'%'; b.style.top=(z.y/o.vb[1]*100)+'%'; b.style.width=((z.w||130)/o.vb[0]*100)+'%'; fig.appendChild(b); zoneEls[z.id]=b; });
+  function placedChips(){ return new Set(Object.values(P.place)); }
+  function render(){
+    const used=placedChips();
+    pool.innerHTML='<div class="lbl">Tap a label, then tap a box (or drag it). Tap a filled box to take its label back.</div>';
+    order.forEach(ci=>{ if(used.has(ci)) return; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true'},o.chips[ci]); c.disabled=!!P.checked;
+      c.addEventListener('click',()=>{ sel=sel===ci?null:ci; render(); });
+      c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+      pool.appendChild(c); });
+    if(P.checked&&!pool.querySelector('.chip')) pool.hidden=true;
+    o.zones.forEach(z=>{ const b=zoneEls[z.id]; const ci=P.place[z.id];
+      b.className='zone'+(ci==null?' empty':' filled')+(P.checked?' locked':'');
+      if(ci==null) b.innerHTML=z.ph||'drop here';
+      else b.innerHTML=o.chips[ci];
+      b.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; ui.hb.disabled=!!P.checked&&false;
+    showTry(ui,P,o.zones.length,o.done);
+  }
+  o.zones.forEach(z=>{ const b=zoneEls[z.id];
+    const drop=ci=>{ if(P.checked) return; if(ci==null){ if(P.place[z.id]!=null){ delete P.place[z.id]; save(); render(); } return; }
+      for(const k in P.place) if(P.place[k]===ci) delete P.place[k];
+      P.place[z.id]=ci; sel=null; save(); render(); };
+    b.addEventListener('click',()=>drop(sel));
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  ui.cb.addEventListener('click',()=>{
+    if(P.checked) return;
+    const empty=o.zones.filter(z=>P.place[z.id]==null).length;
+    if(empty){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill every box before you check. ${empty} still empty.`; return; }
+    const res={}; const usedInGroup={};
+    o.zones.forEach(z=>{ const t=o.chips[P.place[z.id]];
+      if(z.group){ const ans=groupAns(z.group); usedInGroup[z.group]=usedInGroup[z.group]||[]; const ok=ans.includes(t)&&!usedInGroup[z.group].includes(t); if(ok) usedInGroup[z.group].push(t); res[z.id]=ok; }
+      else res[z.id]=t===z.ans; });
+    gradeTry(P,Object.values(res),o.zones.length); save(); cloudSave(true); render(); refresh();
+  });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.zones.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- sort into bins ---------- */
+function binProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.items.length);
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const bins=h('div',{class:'bins',style:`grid-template-columns:repeat(${o.bins.length},minmax(0,1fr))`}); box.appendChild(bins);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.items.map((_,i)=>i)));
+  const binEls={};
+  o.bins.forEach(bn=>{ const b=h('div',{class:'bin',role:'button',tabindex:'0'},`<h4>${bn.label}</h4><div class="bchips"></div>`); bins.appendChild(b); binEls[bn.k]=b;
+    const drop=ci=>{ if(P.checked||ci==null) return; P.place[ci]=bn.k; sel=null; save(); render(); };
+    b.addEventListener('click',e=>{ if(e.target.closest('.chip')) return; drop(sel); });
+    b.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); drop(sel); } });
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  const binLabel=k=>(o.bins.find(b=>b.k===k)||{}).label;
+  function chipEl(ci,inBin){ const it=o.items[ci]; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true','data-key':binLabel(it.k)},it.t);
+    
+    c.disabled=!!P.checked;
+    c.addEventListener('click',e=>{ if(P.checked) return; if(inBin){ e.stopPropagation(); if(sel!=null&&sel!==ci){ P.place[sel]=P.place[ci]; sel=null; save(); render(); return; } delete P.place[ci]; save(); render(); return; } sel=sel===ci?null:ci; render(); });
+    c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+    return c; }
+  function render(){
+    pool.innerHTML='<div class="lbl">Tap an item, then tap the box it belongs in (or drag it). Tap a sorted item to take it back.</div>';
+    order.forEach(ci=>{ if(P.place[ci]==null) pool.appendChild(chipEl(ci,false)); });
+    pool.hidden=!!P.checked;
+    o.bins.forEach(bn=>{ const holder=$('.bchips',binEls[bn.k]); holder.innerHTML=''; order.forEach(ci=>{ if(P.place[ci]===bn.k) holder.appendChild(chipEl(ci,true)); }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,o.items.length,o.done);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const left=o.items.filter((_,i)=>P.place[i]==null).length;
+    if(left){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Sort every item before you check. ${left} still left.`; return; }
+    const res=o.items.map((it,i)=>P.place[i]===it.k); gradeTry(P,res,o.items.length); save(); cloudSave(true); render(); refresh(); });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.items.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- choice problems: one, two-part, or select-all ---------- */
+function choiceProblem(parent, o){   // o.parts: [{q, opts, ans (index or array for select-all)}]
+  const P=st(o.id); P.pick=P.pick||{};
+  const max=o.parts.length;
+  const box=probShell(parent,o.part,o.num,o.q,max);
+  const groups=[];
+  o.parts.forEach((pt,pi)=>{
+    const multi=Array.isArray(pt.ans);
+    if(pt.q) box.insertAdjacentHTML('beforeend',`<div style="margin:10px 0 4px">${pt.q}${multi?' <span class="small muted">(Select all that apply.)</span>':''}</div>`);
+    const ordKey=o.id+'_'+pi; const order=S.ord[ordKey]||(S.ord[ordKey]=shuffle(pt.opts.map((_,i)=>i)));
+    const wrap=h('div',{class:'opts'}); box.appendChild(wrap);
+    const btns={};
+    order.forEach((oi,pos)=>{ const correct=multi?pt.ans.includes(oi):oi===pt.ans;
+      const b=h('button',{class:'opt'+(multi?' multi':''),type:'button'},`<span class="L">${'ABCDEF'[pos]}</span><span>${pt.opts[oi]}</span>`); if(correct) b.dataset.key='1';
+      b.addEventListener('click',()=>{ if(P.checked) return; if(multi){ const s=new Set(P.pick[pi]||[]); s.has(oi)?s.delete(oi):s.add(oi); P.pick[pi]=[...s]; } else P.pick[pi]=oi; save(); paint(); });
+      wrap.appendChild(b); btns[oi]=b; });
+    groups.push({pt,multi,btns});
+  });
+  const ui=actions(box,o);
+  function gradePart(g,pi){ const pk=P.pick[pi]; if(g.multi){ const s=new Set(pk||[]); return g.pt.ans.length===s.size&&g.pt.ans.every(a=>s.has(a)); } return pk===g.pt.ans; }
+  function paint(){
+    groups.forEach((g,pi)=>{ const pk=P.pick[pi];
+      Object.entries(g.btns).forEach(([oi,b])=>{ oi=+oi; const picked=g.multi?(pk||[]).includes(oi):pk===oi; const correct=g.multi?g.pt.ans.includes(oi):oi===g.pt.ans;
+        b.className='opt'+(g.multi?' multi':'')+(picked?' sel':'')+(P.checked&&P.right&&picked?' ok':''); b.disabled=!!P.checked; }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,max,o.why);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const blank=groups.some((g,pi)=>g.multi?!(P.pick[pi]||[]).length:P.pick[pi]==null);
+    if(blank){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Answer every part before you check.'; return; }
+    gradeTry(P,groups.map((g,pi)=>gradePart(g,pi)),max); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- typed blanks (two tries, like every problem) ---------- */
+function typedProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.blanks.length);
+  const inputs=o.blanks.map((bl,i)=>{ const row=h('div',{class:'brow'}); row.innerHTML=`${bl.before} <input class="blank" type="text" aria-label="${esc(strip(bl.before))}" data-key="${esc(bl.show)}"><span class="keytxt">${bl.show}</span> ${bl.after||''}`; box.appendChild(row);
+    const inp=$('input',row); inp.value=P.val[i]||''; inp.addEventListener('input',()=>{ P.val[i]=inp.value; save(); }); return inp; });
+  const ui=actions(box,o);
+  const ok=(bl,v)=>{ v=String(v||'').trim().toLowerCase(); if(bl.num){ const n=parseFloat(v.replace(/[^0-9.]/g,'')); return !isNaN(n)&&n>=bl.num[0]&&n<=bl.num[1]; } return bl.accept.some(a=>v.replace(/\s+/g,' ')===a); };
+  function paint(){ inputs.forEach(inp=>{ inp.classList.remove('ok','no'); if(P.checked&&P.right) inp.classList.add('ok'); inp.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; showTry(ui,P,o.blanks.length,''); }
+  ui.cb.addEventListener('click',()=>{
+    if(inputs.some(inp=>!inp.value.trim())){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Fill in every blank before you check.'; return; }
+    if(P.checked) return;
+    const res=o.blanks.map((bl,i)=>ok(bl,inputs[i].value));
+    gradeTry(P,res,o.blanks.length); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.blanks.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- written answer, scored by key ideas (two tries, like every problem) ---------- */
+function writtenProblem(parent, o){
+  const P=st(o.id); if(P.val==null) P.val='';
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const ta=h('textarea',{class:'wtext',rows:'5','aria-label':'Your answer','data-key':o.model}); ta.value=P.val; box.appendChild(ta);
+  box.appendChild(h('div',{class:'wkey'},'<b>Key:</b> '+o.model));
+  if(o.bank){ const wb=h('div',{class:'wbank2'}); wb.innerHTML='<b>Word bank</b> <span class="small muted">(tap a word to add it)</span><br>'+o.bank.map(w=>`<button type="button" class="wchip">${w}</button>`).join('');
+    box.appendChild(wb);
+    wb.querySelectorAll('.wchip').forEach(c=>c.addEventListener('click',()=>{ if(ta.disabled) return; const w=c.textContent; const a=ta.selectionStart??ta.value.length, b=ta.selectionEnd??ta.value.length;
+      const before=ta.value.slice(0,a), after=ta.value.slice(b); const pre=(before&&!/\s$/.test(before))?' ':''; const ins=pre+w+' ';
+      ta.value=before+ins+after; ta.focus(); const p=a+ins.length; ta.setSelectionRange(p,p); ta.dispatchEvent(new Event('input',{bubbles:true})); })); }
+  ta.addEventListener('input',()=>{ P.val=ta.value; save(); });
+  const ui=actions(box,o);
+  const grade=()=>{ const t=ta.value.toLowerCase(); const hits=o.groups.filter(g=>g[1].test(t)).length; const n=Math.min(o.pts,hits); return Array.from({length:o.pts},(_,i)=>i<n); };
+  function paint(){ ta.disabled=!!P.checked; ui.cb.disabled=!!P.checked; showTry(ui,P,o.pts,o.why); }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(ta.value.trim().split(/\s+/).length<5){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Write a full answer (at least one complete sentence) before you check.'; return; }
+    gradeTry(P,grade(),o.pts); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ============================== WORKSHEET CONTENT ============================== */
+function buildContent(sec){
+  let n=0; const num=()=>++n;
+  const say=(s,html)=>s.insertAdjacentHTML('beforeend',html);
+  const fig=(k,cap)=>`<div class="figwrap" style="margin:10px 0">${KFIG[k]}${cap?`<div class="small muted" style="margin-top:4px">${cap}</div>`:''}</div>`;
+  /* ---------------- 1. Measuring ---------------- */
+  say(sec[0],`<div class="phenbox"><b>Formulas:</b> density = number ÷ area. change = (births + immigration) − (deaths + emigration). growth rate (%) = change ÷ starting size × 100.</div>`);
+  dragProblem(sec[0],{id:'w1', part:'P1', num:num(), q:'Label the four ways a population changes. Drag a label into each box.', svg:KFIG.w_flow, vb:[560,320], zones:KFIG.w_flowZ,
+    chips:['births','immigration','deaths','emigration','density'],
+    hint:'Arrows pointing in add individuals. Arrows pointing out remove them. Moving in or out is migration; being born or dying is not. One label is not used.', done:'In: births and immigration. Out: deaths and emigration.'});
+  typedProblem(sec[0],{id:'w2', part:'P1', num:num(), q:'Calculate the density. Show your work on paper.',
+    blanks:[{before:'A 5 km² marsh has 400 ducks. Density =',after:'ducks per km²',num:[80,80],show:'80'},{before:'A 12 km² island has 60 foxes. Density =',after:'foxes per km²',num:[5,5],show:'5'}],
+    hint:'Density = number of individuals ÷ area. Divide the animals by the square kilometers.'});
+  typedProblem(sec[0],{id:'w3', part:'P1', num:num(), q:'A herd of 500 elk. In one year: 120 calves are born, 30 elk move in, 80 die, and 20 move out.',
+    blanks:[{before:'Change =',after:'elk',num:[50,50],show:'50'},{before:'Growth rate =',after:'% per year',num:[10,10],show:'10'}],
+    hint:'Change = (120 + 30) − (80 + 20). Then divide the change by 500 and multiply by 100.'});
+  /* ---------------- 2. Exponential ---------------- */
+  typedProblem(sec[1],{id:'w4', part:'P2', num:num(), q:'A population of aphids (tiny insects) doubles every week. Start with 10 aphids.',
+    blanks:[{before:'After 1 week:',after:'aphids',num:[20,20],show:'20'},{before:'After 3 weeks:',after:'aphids',num:[80,80],show:'80'},{before:'After 5 weeks:',after:'aphids',num:[320,320],show:'320'}],
+    hint:'Double the number once for each week: 10, 20, 40, ...'});
+  choiceProblem(sec[1],{id:'w5', part:'P2', num:num(), q:'Two-part question.',
+    parts:[{q:'<b>Part A:</b> Which statement describes <b>exponential growth</b>?',opts:['The population grows by more and more each year','The population grows by the same number each year','The population levels off','The population drops to zero'],ans:0},
+           {q:'<b>Part B:</b> When does exponential growth happen in nature?',opts:['When a species has plenty of food and space and few predators','When food is running out','When the population is at carrying capacity','When a drought hits'],ans:0}],
+    hint:'Think about the bacteria doubling and the first years on St. Matthew Island.', why:'Exponential growth speeds up, and it happens when resources are plentiful.'});
+  /* ---------------- 3. Logistic ---------------- */
+  dragProblem(sec[2],{id:'w6', part:'P3', num:num(), q:'Label the graph. Drag a label into each box.', svg:KFIG.w_js, vb:[640,360], zones:KFIG.w_jsZ,
+    chips:['J curve (exponential)','S curve (logistic)','carrying capacity (K)','overshoot'],
+    hint:'The curve that shoots up has no limits. The curve that levels off is limited. The dashed line is where it levels off. One label is not used.', done:'Orange = J curve; green = S curve; dashed line = K.'});
+  choiceProblem(sec[2],{id:'w7', part:'P3', num:num(), q:'Use the graph above. Three-part question.',
+    parts:[{q:'<b>Part A:</b> What is the carrying capacity?',opts:['About 500','About 700','About 250','About 30'],ans:0},
+           {q:'<b>Part B:</b> On the S curve, when is the population growing fastest?',opts:['Around year 12, in the steep middle','At year 0','At year 30','It grows at the same speed the whole time'],ans:0},
+           {q:'<b>Part C:</b> At carrying capacity, how do births and deaths compare?',opts:['They are about equal','Births are much higher','Deaths are much higher','There are no births'],ans:0}],
+    hint:'K is where the S curve goes flat. The steepest part of the curve is the fastest growth.', why:'K is about 500. Growth is fastest in the steep middle. At K, births = deaths.'});
+  /* ---------------- 4. Factors ---------------- */
+  binProblem(sec[3],{id:'w8', part:'P4', num:num(), q:'Is each limiting factor density-dependent or density-independent?',
+    bins:[{k:'d',label:'Density-dependent'},{k:'i',label:'Density-independent'}],
+    items:[{t:'Owls catch more mice when there are many mice',k:'d'},{t:'Too many trees compete for sunlight',k:'d'},{t:'A virus spreads through a crowded chicken farm',k:'d'},{t:'A hurricane destroys a bird nesting island',k:'i'},{t:'An early frost kills insects',k:'i'},{t:'A wildfire burns a forest in the Sierra Nevada',k:'i'}],
+    hint:'Ask: would this be worse if the population were more crowded? If yes, it is density-dependent.', done:'Predators, competition, and disease get worse with crowding. Weather and fire do not.'});
+  choiceProblem(sec[3],{id:'w9', part:'P4', num:num(), q:'Two-part question.',
+    parts:[{q:'<b>Part A:</b> A drought in California\'s Central Valley dries up ponds. Many frogs die whether there are 50 or 5,000 of them. What kind of factor is the drought?',opts:['Density-independent','Density-dependent','Not a limiting factor','Immigration'],ans:0},
+           {q:'<b>Part B:</b> Select <b>all</b> the density-dependent factors.',opts:['Competition for food','Disease','Parasites','A volcano erupting'],ans:[0,1,2]}],
+    hint:'Density-independent factors do the same damage no matter how crowded the population is.', why:'Drought is density-independent. Competition, disease, and parasites depend on crowding.'});
+  /* ---------------- 5. Overshoot ---------------- */
+  say(sec[4],fig('w_rein','St. Matthew Island reindeer (counts are rounded and approximate).'));
+  choiceProblem(sec[4],{id:'w10', part:'P5', num:num(), q:'Use the reindeer graph. Two-part question.',
+    parts:[{q:'<b>Part A:</b> What happened between 1963 and 1966?',opts:['Overshoot and crash: the population fell from about 6,000 to about 42','Logistic growth: the population leveled off','Exponential growth','Immigration from Alaska'],ans:0},
+           {q:'<b>Part B:</b> About what percent of the reindeer died? Use (6,000 − 42) ÷ 6,000 × 100.',opts:['About 99%','About 42%','About 60%','About 6%'],ans:0}],
+    hint:'5,958 ÷ 6,000 is very close to 1.', why:'They crashed: about 5,958 of 6,000, or about 99%, died.'});
+  say(sec[4],fig('w_human','World human population (rounded estimates).'));
+  typedProblem(sec[4],{id:'w11', part:'P5', num:num(), q:'Read the human population graph.',
+    blanks:[{before:'People on Earth in 1800: about',after:'billion',num:[1,1],show:'1'},{before:'People on Earth in 2022: about',after:'billion',num:[8,8],show:'8'}],
+    hint:'Read the first and last points. The y-axis is in billions.'});
+  writtenProblem(sec[4],{id:'w12', part:'P5', num:num(), q:'Explain why carrying capacity can <b>change</b>. Give one example of something that lowers K and one that raises K. Use <b>carrying capacity</b>, <b>food</b>, and <b>environment</b>.', pts:3,
+    bank:['carrying capacity','food','water','space','environment','drought','fire','overgrazing','lowers','raises','wet year','technology'],
+    groups:[['K depends on resources like food, water, space',/food|water|space|resource|shelter/],['something lowers K (drought, fire, overgrazing, lichen eaten)',/drought|fire|overgraz|overeat|ate the|eaten|less food|lower|decreas|go(es)? down/],['something raises K (wet year, more plants, farming, medicine)',/wet|rain|more (food|plants)|farm|medicine|technolog|rais|increas|go(es)? up|higher/],['the environment changes',/environment|chang/]],
+    model:'Carrying capacity depends on resources in the environment, like food, water, and space. When the environment changes, K changes. A drought or overgrazing means less food, so K goes down, like on St. Matthew Island. A wet year with lots of plants gives more food, so K goes up.',
+    hint:'Cover these ideas: K depends on resources, something that lowers it, something that raises it, and the environment changing.', why:'K depends on food, water, and space, so it goes down with drought or overgrazing and up with more resources.'});
+}
+
+/* ============================== BUILD / SCORE ============================== */
+function scoreAll(){ const parts=PARTS.slice(0,-1).map(p=>({k:p.k,label:p.label,got:0,max:0})); PROBS.forEach(pr=>{ const pt=parts.find(x=>x.k===pr.part); pt.got+=pr.score(); pt.max+=pr.max; });
+  return {parts, total:parts.reduce((a,b)=>a+b.got,0), max:parts.reduce((a,b)=>a+b.max,0)}; }
+function build(){
+  PROBS.length=0; const ws=$('#ws'); ws.innerHTML='';
+  $('#nav').innerHTML=PARTS.map((pt,i)=>`<button class="ntile" type="button" data-i="${i}" aria-label="${pt.title}"><span class="ic">${ico(i,22)}</span><span class="nm">${pt.label}</span></button>`).join('');
+  $$('#nav .ntile').forEach(b=>b.addEventListener('click',()=>showPart(+b.dataset.i)));
+  const secs=PARTS.map((pt,i)=>{ const el=h('section',{class:'sec',id:'part'+i}); const last=i===PARTS.length-1;
+    el.innerHTML=`<div class="sechead"><div class="badge"><span class="z">${i+1}</span>${ico(i,34)}</div><div><div class="meta">${last?'Grade':`Section ${i+1} of ${PARTS.length-1} · about ${pt.min} min`}</div><h2>${pt.title}</h2></div></div>`;
+    const c=h('div',{class:'card'}); el.appendChild(c);
+    const nav=h('div',{class:'secnav'});
+    const back=h('button',{class:'btn ghost',type:'button'},i===0?'':'← Back'); if(i===0) back.style.visibility='hidden'; back.addEventListener('click',()=>showPart(i-1));
+    nav.appendChild(back);
+    if(!last){ const nx=h('button',{class:'btn primary',type:'button'},i===PARTS.length-2?'See my grade →':`Next: ${PARTS[i+1].title} →`); nx.addEventListener('click',()=>showPart(i+1)); nav.appendChild(nx); }
+    el.appendChild(nav); ws.appendChild(el); return c; });
+  buildContent(secs);
+  secs[PARTS.length-1].id='turnin';
+  showPart(Math.min(S.cur||0,PARTS.length-1),true);
+  $('#whoami').textContent=S.student?`${S.student.first} ${S.student.last}`:''; refresh();
+}
+function showPart(i,noScroll){
+  S.cur=i; $$('#ws .sec').forEach((el,j)=>el.hidden=j!==i);
+  $$('#nav .ntile').forEach((t,j)=>t.classList.toggle('cur',j===i));
+  if(!noScroll){ save(); window.scrollTo(0,0); }
+}
+function refresh(){
+  const sc=scoreAll(), done=PROBS.filter(p=>p.checked()).length;
+  $('#scorePill').textContent=`${done}/${PROBS.length} checked · ${sc.total}/${sc.max} pts`;
+  PARTS.slice(0,-1).forEach((pt,i)=>{ const t=$(`#nav .ntile[data-i="${i}"]`); if(t) t.classList.toggle('done',PROBS.filter(p=>p.part===pt.k).every(p=>p.checked())); });
+  const t7=$(`#nav .ntile[data-i="${PARTS.length-1}"]`); if(t7) t7.classList.toggle('done',!!S.submittedAt);
+  const c=$('#turnin'); if(!c) return;
+  const rows=sc.parts.map(p=>`<tr><th>${p.label}</th><td>${p.got} / ${p.max}</td></tr>`).join('');
+  c.innerHTML=`<div style="display:flex;gap:22px;align-items:center;flex-wrap:wrap"><div class="big">${sc.total}/${sc.max}</div><div><h3 style="margin:0">${esc(S.student?S.student.first+' '+S.student.last:'')}</h3><p class="muted" style="margin:0">${done} of ${PROBS.length} problems checked</p></div></div>
+    <table class="res" style="margin-top:12px">${rows}</table>
+    <p class="small muted" style="margin-top:10px">Problems you haven't checked count as 0. You can turn in again later; your teacher sees the newest one.</p>
+    <div class="btnrow"><button class="btn primary" id="subBtn" type="button">${S.submittedAt?'Turn in again':'Turn in my worksheet'}</button><button class="btn ghost" id="csvBtn" type="button">Download CSV</button></div>
+    <p class="fb info sheetStatus" aria-live="polite">${S.sentAt?`Sent to your teacher ${new Date(S.sentAt).toLocaleString()}.`:'Not turned in yet.'}</p>`;
+  $('#subBtn').addEventListener('click',turnIn);
+  $('#csvBtn').addEventListener('click',()=>downloadCSV([recordRow()],`PopulationGrowthWorksheet_${(S.student&&S.student.last||'student').replace(/\W+/g,'')}.csv`));
+}
+const CSV_HEAD=['Student ID','Last Name','First Name','Period','Teacher','Activity','Score','Total','Percent',...PARTS.slice(0,-1).map(p=>p.label),'Date'];
+function recordRow(){ const st=S.student||{}, sc=scoreAll(); return [st.id||'',st.last||'',st.first||'',st.period||'',st.teacher||'',ACTIVITY,sc.total,sc.max,Math.round(100*sc.total/sc.max)+'%',...sc.parts.map(p=>p.got),new Date(S.submittedAt||Date.now()).toLocaleString()]; }
+function csvText(rows){ const q=v=>{ v=String(v==null?'':v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }; return [CSV_HEAD,...rows].map(r=>r.map(q).join(',')).join('\r\n')+'\r\n'; }
+function downloadCSV(rows,name){ const b=new Blob([csvText(rows)],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500); }
+const loadRecs=()=>{ try{ return (JSON.parse(localStorage.getItem(RECS))||[]).filter(r=>r.length===CSV_HEAD.length); }catch(e){ return []; } };
+function saveRecord(){ if(S.preview) return; const recs=loadRecs(), row=recordRow(); const i=recs.findIndex(r=>r[0]===row[0]&&r[1]===row[1]); if(i>=0) recs[i]=row; else recs.push(row); try{ localStorage.setItem(RECS,JSON.stringify(recs)); }catch(e){} }
+function turnIn(){
+  const left=PROBS.filter(p=>!p.checked()).length;
+  if(left&&!confirm(`${left} problem${left>1?'s':''} not checked yet (they count as 0). Turn in anyway?`)) return;
+  S.submittedAt=Date.now(); save(); saveRecord(); cloudSave(true); disarm(); refresh();
+  const msg=t=>$$('.sheetStatus').forEach(e=>e.textContent=t);
+  if(S.preview){ msg('Preview mode: nothing is sent.'); return; }
+  const st=S.student, sc=scoreAll();
+  const body={studentId:st.id||'',firstName:st.first||'',lastName:st.last||'',period:st.period||'',teacher:st.teacher||'',locks:'0',when:new Date().toString(),activity:ACTIVITY,score:String(sc.total),total:String(sc.max),
+    qlabels:sc.parts.map((p,i)=>'P'+(i+1)+' '+PARTS[i].label).join('|'),qpoints:sc.parts.map(p=>p.got).join('|'),qmax:sc.parts.map(p=>p.max).join('|')};
+  msg('Sending...');
+  fetch(sheetURL(),{method:'POST',mode:'no-cors',body:new URLSearchParams(body)}).then(()=>{ S.sentAt=new Date().toISOString(); save(); msg('Sent! Your teacher will see your score.'); }).catch(()=>msg("Couldn't send. Check the Wi-Fi and try again, or download the CSV."));
+}
+
+/* ============================== NO LOCKDOWN ON WORKSHEETS ============================== */
+let teacherOpen=false;
+function arm(){} function disarm(){} function showLock(){} function enterFS(){}
+['copy','cut','paste','contextmenu'].forEach(ev=>document.addEventListener(ev,e=>{ if(teacherOpen||S.preview) return; e.preventDefault(); }));
+
+/* ============================== SIGN IN ============================== */
+function showWS(){ $('#start').hidden=true; $('#top').hidden=false; $('#ws').hidden=false; build(); window.scrollTo(0,0); if(S.locked&&LOCKDOWN&&!S.lockOff) showLock(); else arm(); }
+function renderStart(){ const has=!!S.student; $('#resumeBox').hidden=!has; $('#startForm').hidden=has; $('#signinTitle').textContent=has?'Welcome back':'Sign in to start';
+  if(has) $('#resumeText').innerHTML=`Signed in as <b>${esc(S.student.first)} ${esc(S.student.last)}</b>, period ${esc(S.student.period)}.`; }
+$('#fPeriod').innerHTML='<option value="">Choose your period</option>'+periodList().map(p=>`<option>${esc(p)}</option>`).join('');
+$('#fTeacher').innerHTML='<option value="">Choose your teacher</option>'+teacherList().map(t=>`<option>${esc(t)}</option>`).join('');
+let starting=false;
+async function start(){
+  if(starting) return; starting=true;
+  try{
+    const v={first:$('#fFirst').value.trim(),last:$('#fLast').value.trim(),id:$('#fId').value.trim(),period:$('#fPeriod').value,teacher:$('#fTeacher').value};
+    const miss=[]; if(!v.first) miss.push('first name'); if(!v.last) miss.push('last name'); if(!v.id) miss.push('student ID'); if(!v.period) miss.push('period'); if(!v.teacher) miss.push('teacher');
+    const err=$('#formErr'); if(miss.length){ err.className='fb no'; err.textContent='Fill in your '+miss.join(', ')+'.'; err.hidden=false; return; }
+    if(LOCKDOWN) enterFS();
+    err.className='fb info'; err.textContent='Checking for your saved work...'; err.hidden=false;
+    const res=await cloudLoad(v); err.hidden=true;
+    if(res.status==='found'){ const d=res.data; d.student=Object.assign({},d.student||{},{first:v.first,period:v.period,teacher:v.teacher}); adopt(d); showWS(); note('✓ Your saved work was loaded'); return; }
+    const ns=fresh(); ns.student=v; adopt(ns); showWS(); cloudSave(true);
+  } catch(ex){ const er=$('#formErr'); er.className='fb no'; er.textContent='Something went wrong starting ('+(ex&&ex.message||ex)+'). Reload and try again.'; er.hidden=false; }
+  finally{ starting=false; }
+}
+$('#startBtn').addEventListener('click',start);
+$('#startForm').addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.tagName==='INPUT'){ e.preventDefault(); start(); } });
+$('#resumeBtn').addEventListener('click',async()=>{ const b=$('#resumeBtn'); b.disabled=true; b.textContent='Loading your work...'; if(LOCKDOWN&&!S.locked) enterFS();
+  const res=await cloudLoad(S.student); b.disabled=false; b.textContent='Continue my worksheet';
+  if(res.status==='found'&&(res.data.updatedAt||0)>(S.updatedAt||0)&&checkedCount(res.data)>=checkedCount(S)){ const d=res.data; d.student=S.student; adopt(d); note('✓ Your newest saved work was loaded'); } showWS(); });
+$('#notMeBtn').addEventListener('click',async()=>{ const b=$('#notMeBtn'); b.disabled=true;
+  try{ if(cloudOK()) await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); }catch(e){ b.disabled=false; $('#resumeErr').textContent="Can't back up the last student's work right now. Check the Wi-Fi, or ask your teacher."; $('#resumeErr').hidden=false; return; }
+  b.disabled=false; adopt(fresh()); ['#fFirst','#fLast','#fId','#fPeriod','#fTeacher'].forEach(s=>$(s).value=''); renderStart(); });
+
+/* ============================== TEACHER ============================== */
+function openTeacher(){ teacherOpen=true; $('#teachLogin').hidden=false; $('#teachPanel').hidden=true; $('#teachErr').hidden=true; $('#teachCode').value=''; $('#teachOv').classList.add('show'); setTimeout(()=>$('#teachCode').focus(),50); }
+function closeTeacher(){ $('#teachOv').classList.remove('show'); teacherOpen=false; }
+$('#teacherLink').addEventListener('click',openTeacher); $('#teachBtn').addEventListener('click',openTeacher);
+$('#teachCancel').addEventListener('click',closeTeacher);
+$('#teachCode').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#teachGo').click(); });
+$('#teachGo').addEventListener('click',()=>{ if(!codeIs($('#teachCode').value,TEACHER_CODE)){ $('#teachErr').hidden=false; return; } $('#teachLogin').hidden=true; $('#teachPanel').hidden=false; renderTeacher(); });
+function renderTeacher(){
+  const recs=loadRecs(), p=$('#teachPanel'), keyOn=document.body.classList.contains('keyon');
+  p.innerHTML=`<h2>Teacher tools</h2>
+    <div class="btnrow"><button class="btn ghost" id="tKey" type="button">${keyOn?'Hide answer key':'Answer key'}</button>
+      <button class="btn ghost" id="tPrev" type="button">${S.preview?'End preview':'Preview (saves nothing)'}</button>
+      <button class="btn ghost" id="tResetWrong" type="button">Reset all wrong answers</button>
+      <button class="btn ghost" id="tReset" type="button">Reset this Chromebook</button><button class="btn ghost" id="tClose" type="button">Close</button></div>
+    <h3 style="margin-top:16px">Scores saved on this Chromebook (${recs.length})</h3>
+    <div class="wide">${recs.length?`<table class="nb"><tr><th>Student</th><th>ID</th><th>Period</th><th>Score</th><th>Date</th></tr>${recs.map(r=>`<tr><td>${esc(r[1])}, ${esc(r[2])}</td><td>${esc(r[0])}</td><td>${esc(r[3])}</td><td>${r[6]}/${r[7]}</td><td>${esc(r[r.length-1])}</td></tr>`).join('')}</table>`:'<p class="muted">None yet.</p>'}</div>
+    <div class="btnrow"><button class="btn primary" id="tCsv" type="button" ${recs.length?'':'disabled'}>Download scores (CSV)</button></div>
+    <h3 style="margin-top:16px">Load a student's saved work</h3>
+    <div class="btnrow"><input class="code" id="tId" placeholder="Student ID" style="width:150px"><input class="code" id="tLast" placeholder="Last name" style="width:170px"><button class="btn ghost" id="tLoad" type="button">Load work</button></div>
+    <p class="fb info" id="tMsg" style="min-height:1em"></p>`;
+  const msg=t=>$('#tMsg').textContent=t;
+  $('#tKey').addEventListener('click',()=>{ document.body.classList.toggle('keyon'); renderTeacher(); msg(document.body.classList.contains('keyon')?'Answer key on: each box shows its answer, sort chips show their box, and correct choices have a dashed gold outline.':'Answer key off.'); });
+  $('#tPrev').addEventListener('click',()=>{ if(S.preview){ location.reload(); return; } const ns=fresh(); ns.preview=true; ns.student={first:'Teacher',last:'Preview',id:'0',period:'-',teacher:teacherList()[0]}; S=ns; closeTeacher(); showWS(); note('Preview: nothing is saved'); });
+  $('#tReset').addEventListener('click',()=>{ if(confirm('Erase this worksheet on this Chromebook? Work backed up to the Saved Student Work sheet is not deleted.')){ try{ localStorage.removeItem(STORE); }catch(e){} location.reload(); } });
+  $('#tResetWrong').addEventListener('click',()=>{
+    const wrong=PROBS.filter(pr=>{ const P=S.p[pr.id]||{}; return (P.tries||0)>0 && !P.right; });
+    if(!wrong.length){ msg('Nothing to reset: this student has no wrong answers.'); return; }
+    if(!confirm(`Reset ${wrong.length} problem${wrong.length>1?'s':''} that ${wrong.length>1?'are':'is'} wrong or on a second try for ${(S.student&&S.student.first)||'this student'}? Correct answers stay.`)) return;
+    wrong.forEach(pr=>{ delete S.p[pr.id]; });
+    save(); cloudSave(true); msg(`Reset ${wrong.length} problem${wrong.length>1?'s':''}. Reloading…`); setTimeout(()=>location.reload(),700); });
+  $('#tClose').addEventListener('click',closeTeacher);
+  $('#tCsv').addEventListener('click',()=>downloadCSV(recs,`PopulationGrowthWorksheet_scores_${new Date().toISOString().slice(0,10)}.csv`));
+  $('#tLoad').addEventListener('click',async()=>{ const s={id:$('#tId').value.trim(),last:$('#tLast').value.trim()}; if(!s.id||!s.last){ msg('Type the student ID and last name.'); return; } msg('Looking up saved work...');
+    const r=await cloudLoad(s); if(r.status==='found'){ adopt(r.data); closeTeacher(); renderStart(); $('#start').hidden=false; $('#ws').hidden=true; $('#top').hidden=true; } else msg(r.status==='none'?'No saved work found for that student.':"Couldn't reach the saved-work sheet."); });
+}
+
+if(!STORAGE_OK) $('#noStore').hidden=false;
+renderStart();
+})();
+</script>
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

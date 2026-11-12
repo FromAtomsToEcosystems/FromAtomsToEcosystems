@@ -203,7 +203,7 @@ const icon = k => `<svg viewBox="0 0 24 24" fill="none" stroke="#c28a00" stroke-
 const BL = [];
 let SEC = 0;
 const norm = s => String(s || '').toLowerCase().replace(/[−–—]/g, '-').replace(/[_\s]+/g, ' ').replace(/[^a-z0-9.\-+/° ]/g, '').replace(/ /g, '').trim();
-function numOf(s) { const m = String(s || '').replace(/[−–—]/g, '-').replace(/,/g, '').match(/-?\d*\.?\d+/); return m ? parseFloat(m[0]) : NaN; }
+function numOf(s) { s = String(s || '').replace(/[−–—]/g, '-').replace(/,/g, '').replace(/\s*[x×*·]\s*10\s*\^\s*\(?\s*([+-]?\d+)\s*\)?/i, 'e$1'); const m = s.match(/-?\d*\.?\d+(e[+-]?\d+)?/i); return m ? parseFloat(m[0]) : NaN; }
 function b(id, ans, w) { BL.push({ id, ans, sec: SEC, kind: 'b' }); return `<input class="b" id="${id}" style="width:${w || 80}px" autocomplete="off" spellcheck="false" aria-label="blank">`; }
 const EQN = ['①', '②', '③', '④', '⑤', '⑥', '⑦'];
 function pick(id, ans) { BL.push({ id, ans, sec: SEC, kind: 'pick' }); return `<select class="b" id="${id}" aria-label="equation number"><option value=""> </option>${EQN.map((e, i) => `<option value="${i + 1}">${e}</option>`).join('')}</select>`; }

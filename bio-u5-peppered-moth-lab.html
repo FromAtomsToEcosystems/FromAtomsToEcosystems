@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peppered Moth Lab: Camouflage and Selection | Biology Unit 5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1626; --panel:#142136; --panel2:#1a2a44; --line:#2a3d5f; --line2:#3a5580;
+  --text:#e8eef8; --muted:#a3b4cf; --dim:#7488a9;
+  --leaf:#5fe3a9; --sun:#ffd35c; --r:#ffd35c; --sky:#45c8f0; --ok:#4ade80; --bad:#fb7185; --pink:#f472b6;
+  --font:'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+*{box-sizing:border-box} [hidden]{display:none !important}
+html,body{margin:0}
+body{background-color:var(--bg); background-image:linear-gradient(rgba(110,150,210,.065) 1px,transparent 1px),linear-gradient(90deg,rgba(110,150,210,.065) 1px,transparent 1px); background-size:32px 32px;
+  color:var(--text); font-family:var(--font); font-size:17px; line-height:1.55; -webkit-user-select:none; user-select:none}
+input,textarea{-webkit-user-select:text; user-select:text}
+h1,h2,h3,h4{margin:0 0 .45em; line-height:1.2; font-weight:600}
+h1{font-size:clamp(28px,4.4vw,40px); font-weight:700} h2{font-size:24px} h3{font-size:19px}
+p{margin:0 0 .75em} .muted{color:var(--muted)} .small{font-size:14px}
+sub,sup{font-size:.72em}
+:focus-visible{outline:3px solid var(--r); outline-offset:2px}
+.top{position:sticky; top:0; z-index:20; background:rgba(13,22,38,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+.top-in{max-width:1100px; margin:0 auto; padding:8px 16px; display:flex; gap:12px; align-items:center}
+.brand{font-weight:600; font-size:15px; white-space:nowrap} .brand span{display:block; font-weight:400; font-size:12px; color:var(--muted)}
+.nav{display:flex; gap:6px; flex:1; overflow-x:auto; padding:3px 2px}
+.ntile{flex:0 0 auto; width:54px; height:54px; border-radius:7px; border:1.5px solid var(--line2); background:var(--panel); color:var(--text); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer; position:relative; font:inherit; padding:0}
+.ntile .ic{color:var(--leaf); line-height:0} .ntile .nm{font-size:8.5px; color:var(--muted)}
+.ntile.cur{border-color:var(--r); background:rgba(255,211,92,.14)}
+.ntile.cur .nm{color:var(--r)}
+.secnav{display:flex; justify-content:space-between; gap:10px; margin-top:4px}
+.ntile.done::after{content:'✓'; position:absolute; top:1px; right:4px; font-size:10px; font-weight:700; color:var(--ok)}
+.scorepill{font-size:13px; padding:4px 10px; border-radius:999px; background:var(--panel2); white-space:nowrap}
+.savenote{font-size:12.5px; color:var(--ok); white-space:nowrap} @media (max-width:1300px){ .savenote{display:none} } @media (max-width:900px){ .scorepill{display:none} }
+main{max-width:1000px; margin:0 auto; padding:20px 16px 80px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin:0 0 18px}
+.sec{scroll-margin-top:80px}
+.sechead{display:flex; gap:14px; align-items:center; margin:28px 0 10px}
+.badge{width:66px; height:66px; border-radius:10px; border:2px solid var(--leaf); background:var(--panel); display:flex; align-items:center; justify-content:center; position:relative; flex:0 0 auto; color:var(--leaf)}
+.badge .z{position:absolute; top:3px; left:6px; font-size:11px; color:var(--muted)}
+.meta{color:var(--muted); font-size:14px}
+.btn{font:inherit; font-weight:600; font-size:15px; border-radius:10px; padding:10px 18px; cursor:pointer; border:1.5px solid transparent}
+.btn.primary{background:var(--r); color:#231a00} .btn.ghost{background:transparent; border-color:var(--line2); color:var(--text)}
+.btn.small{padding:6px 12px; font-size:14px} .btn:disabled{opacity:.45; cursor:not-allowed}
+.btnrow{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:12px}
+.field{display:flex; flex-direction:column; gap:4px; font-size:14px; color:var(--muted)}
+.field input,.field select{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px}
+.formgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin:10px 0}
+.fb{margin-top:10px; padding:10px 14px; border-radius:10px; font-size:15px}
+.fb.ok{background:rgba(74,222,128,.12); color:#c9f7d8} .fb.no{background:rgba(251,113,133,.12); color:#ffd3db} .fb.info{background:var(--panel2)}
+.prob{border-top:1px solid var(--line); padding-top:16px; margin-top:16px}
+.prob:first-of-type{border-top:none; padding-top:0; margin-top:0}
+.pq{font-weight:500; margin-bottom:8px}
+.pnum{display:inline-block; min-width:30px; font-weight:700; color:var(--leaf)}
+.pts{font-size:13px; color:var(--muted); font-weight:400}
+.hintbox{background:rgba(255,211,92,.08); border-left:3px solid var(--r); border-radius:8px; padding:8px 12px; margin-top:8px; font-size:15px}
+/* drag and drop */
+.figwrap{position:relative; width:100%}
+.figwrap svg{width:100%; height:auto; display:block; background:#0a1322; border:1px solid var(--line); border-radius:12px}
+.figwrap svg text{font-family:var(--font)}
+.zone{position:absolute; transform:translate(-50%,-50%); min-height:32px; border:2px dashed #8fb3e6; border-radius:9px; background:rgba(13,22,38,.92); color:var(--text); font:inherit; font-size:14px; font-weight:600; display:flex; align-items:center; justify-content:center; padding:2px 6px; cursor:pointer; text-align:center; line-height:1.15}
+.zone.empty{color:var(--dim); font-weight:400; font-size:12.5px}
+.zone.filled{border-style:solid; border-color:var(--r); background:#2b2410}
+.zone.hot{box-shadow:0 0 0 3px rgba(255,211,92,.5)}
+.zone.locked{opacity:.9}
+.zone.ok{border-color:var(--ok); background:#0f2e1d} .zone.no{border-color:var(--bad); background:#3a0f1a}
+.pool{display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 4px; padding:10px; border:1px dashed var(--line2); border-radius:10px; min-height:52px}
+.pool .lbl{width:100%; font-size:12.5px; color:var(--muted)}
+.chip{font:inherit; font-size:15px; font-weight:600; padding:6px 14px; border-radius:999px; border:1.5px solid var(--line2); background:var(--panel2); color:var(--text); cursor:grab; touch-action:none}
+.chip.sel{border-color:var(--r); background:rgba(255,211,92,.16); box-shadow:0 0 0 3px rgba(255,211,92,.35)}
+.bins{display:grid; gap:10px; margin-top:6px}
+.bin{border:2px dashed var(--line2); border-radius:12px; padding:10px; min-height:96px; cursor:pointer; background:rgba(13,22,38,.5)}
+.bin h4{margin:0 0 8px; font-size:15px; color:var(--leaf)} .bin.hot{border-color:var(--r)}
+.bin .chip{cursor:pointer; margin:3px} .bin .chip.ok{border-color:var(--ok); background:#0f2e1d} .bin .chip.no{border-color:var(--bad); background:#3a0f1a}
+.phenbox{background:rgba(244,114,182,.1); border-left:4px solid #f472b6; border-radius:8px; padding:10px 14px; margin-bottom:14px}
+.fixnote{font-size:12px; color:#ffd3db; font-weight:400}
+/* equation */
+.eq{display:flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:20px; font-weight:600; margin:10px 0}
+.eq .zone{position:static; transform:none; min-width:120px; min-height:40px}
+/* choices */
+.opts{display:grid; gap:8px; margin:6px 0}
+.opt{display:flex; gap:12px; align-items:center; text-align:left; background:var(--panel2); border:1.5px solid var(--line); color:var(--text); border-radius:10px; padding:9px 14px; font:inherit; font-size:16px; cursor:pointer}
+.opt .L{flex:0 0 26px; height:26px; border-radius:50%; display:grid; place-items:center; background:var(--bg); font-weight:600; font-size:13px}
+.opt.multi .L{border-radius:6px}
+.opt.sel{border-color:var(--r); background:rgba(255,211,92,.08)} .opt.sel .L{background:var(--r); color:#231a00}
+.opt.ok{border-color:var(--ok); background:rgba(74,222,128,.1)} .opt.no{border-color:var(--bad); background:rgba(251,113,133,.1)}
+.opt:disabled{cursor:default}
+input.blank{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:7px 10px; font:inherit; font-size:16px; width:170px}
+input.blank.ok{border-color:var(--ok)} input.blank.no{border-color:var(--bad)}
+.brow{margin:8px 0}
+/* answer key (teacher) */
+body.keyon .zone[data-key]::after{content:'key: ' attr(data-key); position:absolute; top:100%; left:50%; transform:translateX(-50%); font-size:11px; color:var(--r); white-space:nowrap; margin-top:2px}
+body.keyon .chip[data-key]::after{content:' → ' attr(data-key); font-size:11px; color:var(--r)}
+body.keyon .opt[data-key]{outline:2px dashed var(--r); outline-offset:2px}
+body.keyon input.blank[data-key]+.keytxt{display:inline}
+.datatab select.ocell{font:inherit; padding:4px 6px; border-radius:8px; max-width:100%}
+.datatab input.dcell{width:72px; font:inherit; padding:4px 6px; border-radius:8px; text-align:center}
+.datachart svg{width:100%; height:auto; display:block; margin-top:10px}
+ol.proc li{margin:4px 0}
+.off{opacity:.35; pointer-events:none}
+.btbkey{display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; margin:6px 0 10px}.btbkey span{display:inline-block; width:16px; height:16px; border-radius:50%; vertical-align:middle; border:1px solid rgba(255,255,255,.4)}
+.simwrap{display:grid; grid-template-columns:minmax(150px,220px) 1fr; gap:18px; align-items:start; background:rgba(255,255,255,.04); border:1px solid var(--line,#2a3d5f); border-radius:14px; padding:14px}
+.simwrap.off{opacity:.35; pointer-events:none}
+.bigtube svg{width:100%; height:auto; display:block}.clock{text-align:center; font-weight:700; font-size:20px; margin-top:6px}
+.tg{display:block; margin:4px 0; font-size:17px}.tg input{transform:scale(1.3); margin-right:8px}
+.sensor{margin:10px 0; font-size:18px}.sensor b{font-size:24px; color:#ffd35c}
+.btn.on{outline:2px solid #ffd35c}
+.dot{display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:6px; vertical-align:middle}
+.predtab select{font:inherit; padding:4px 6px; border-radius:8px}
+#sChart svg{width:100%; height:auto; display:block}
+@media (max-width:700px){ .simwrap{grid-template-columns:1fr} .bigtube{max-width:180px; margin:0 auto} }
+.wbank2{margin-top:8px; padding:8px 10px; border:1px dashed rgba(163,180,207,.5); border-radius:10px; font-size:14px; line-height:2}
+.wchip{font:inherit; font-size:14px; margin:2px 4px 2px 0; padding:2px 10px; border-radius:999px; border:1px solid rgba(163,180,207,.6); background:rgba(255,255,255,.06); color:inherit; cursor:pointer}
+.wchip:hover{border-color:#ffd35c}
+.wtext{width:100%; min-height:110px; font:inherit; padding:10px; border-radius:10px; border:1.5px solid var(--line,#2a3d5f); background:rgba(255,255,255,.04); color:inherit; resize:vertical}
+.wkey{display:none; margin-top:6px; font-size:14px; color:var(--r,#ffd35c)}
+body.keyon .wkey{display:block}
+.keytxt{display:none; font-size:12px; color:var(--r); margin-left:6px}
+.big{font-size:52px; font-weight:700; color:var(--r); line-height:1}
+table.res{border-collapse:collapse; width:100%} table.res th,table.res td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line)} table.res th{color:var(--muted); font-weight:400}
+.card.nostore{border:2px solid var(--bad); background:rgba(251,113,133,.08)}
+.overlay{position:fixed; inset:0; background:rgba(4,9,18,.94); z-index:100; display:none; align-items:center; justify-content:center; padding:20px}
+.overlay.show{display:flex}
+.modal{background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:24px; max-width:900px; width:100%; max-height:92vh; overflow:auto}
+input.code{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px; width:200px}
+table.nb{border-collapse:collapse; width:100%; font-size:14px} table.nb th,table.nb td{border:1px solid var(--line2); padding:6px 8px} table.nb th{background:var(--panel2)}
+.wide{overflow-x:auto}
+@media (max-width:700px){ .zone{font-size:11px; min-height:26px} .chip{font-size:13px; padding:5px 10px} }
+@media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important} }
+.prob + p,.prob + .phenbox,.prob + .figwrap{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+
+.vbench{background:rgba(255,255,255,.04); border:1px solid #2a3d5f; border-radius:14px; padding:12px; margin-bottom:12px}
+.datatab input.dcell{background:var(--bg); color:var(--text); border:1.5px solid var(--line2)}
+.datatab input.dcell:disabled,.datatab select.ocell:disabled{opacity:1; color:var(--text); border-color:var(--line); background:var(--panel2)}
+.datatab select.ocell{background:var(--bg); color:var(--text); border:1.5px solid var(--line2)}
+.gtab th,.gtab td{text-align:center} .gtab td:first-child{text-align:left; white-space:nowrap} .gtab td.na{color:var(--dim); font-size:12.5px}
+.gtab input.dcell{width:64px}
+.predtab select{background:var(--bg); color:var(--text); border:1.5px solid var(--line2)}
+.cmpchart svg,.datachart svg{width:100%; height:auto; display:block; margin-top:10px}
+.figwrap svg{background:transparent; border:none}
+.huntbar{display:flex; flex-wrap:wrap; gap:8px 18px; align-items:center; margin:0 0 8px}
+.huntstat{background:var(--panel2); border-radius:999px; padding:3px 12px; font-size:15px} .huntstat b{color:var(--r); font-variant-numeric:tabular-nums}
+.hunt{max-width:760px; margin:0 auto}
+.huntsvg{width:100%; height:auto; display:block; border-radius:12px; touch-action:manipulation; cursor:crosshair; -webkit-tap-highlight-color:transparent}
+.huntsvg .moth{cursor:crosshair} .huntsvg .moth.gone{opacity:0; transition:opacity .25s}
+.huntsvg .peck{animation:peck .45s ease-out forwards; transform-box:fill-box; transform-origin:center}
+@keyframes peck{from{opacity:1; transform:scale(.4)} to{opacity:0; transform:scale(1.5)}}
+@media (max-width:520px){ #part2 .card{padding:14px 10px} .vbench{padding:6px} .huntstat{font-size:14px} .gtab input.dcell{width:52px} }
+
+</style>
+</head>
+<body>
+<header class="top" id="top" hidden>
+  <div class="top-in">
+    <div class="brand">Peppered moth lab<span id="whoami"></span></div>
+    <nav class="nav" id="nav" aria-label="Worksheet parts"></nav>
+    <span class="scorepill" id="scorePill"></span>
+    <span class="savenote" id="saveNote" aria-live="polite"></span>
+    <button class="btn ghost small" id="teachBtn" type="button">Teacher</button>
+  </div>
+</header>
+
+<main>
+  <section id="start">
+    <div class="muted" style="margin-top:8px">Biology · Unit 5: Evolution · Lab · about 50 minutes</div>
+    <h1>Peppered Moth Lab: Camouflage and Selection</h1>
+    <p class="muted" style="font-size:18px;max-width:42em">Be a hungry bird. Hunt paper moths on white paper and on newspaper, and see what happens to the moth population over three generations.</p>
+    <div class="card"><h3>How it works</h3>
+      <p style="margin:0">Each problem gets <b>two tries</b>. Right on either try earns full credit. If your first try is wrong, you'll be told it isn't right yet (but not the answer), so look again and try once more. Wrong twice and the problem is marked wrong and locks. Stuck? Tap <b>Hint</b> before you check.</p></div>
+    <div class="card nostore" id="noStore" hidden><h3>This browser can't save your work</h3><p style="margin:0">You may be in guest or incognito mode. Sign in to your school account and open the worksheet again.</p></div>
+    <div class="card">
+      <h3 id="signinTitle">Sign in to start</h3>
+      <div id="resumeBox" hidden><p id="resumeText"></p>
+        <div class="btnrow"><button class="btn primary" id="resumeBtn" type="button">Continue my lab</button><button class="btn ghost small" id="notMeBtn" type="button">Not you? Sign in as a different student</button></div>
+        <div class="fb no" id="resumeErr" hidden></div></div>
+      <div id="startForm">
+        <div class="formgrid">
+          <label class="field">First name<input id="fFirst" autocomplete="off"></label><label class="field">Last name<input id="fLast" autocomplete="off"></label>
+          <label class="field">Student ID<input id="fId" inputmode="numeric" autocomplete="off"></label>
+          <label class="field">Period<select id="fPeriod"></select></label><label class="field">Teacher<select id="fTeacher"></select></label>
+        </div>
+        <p class="small muted">Your work saves as you go. On any Chromebook, sign in with the same student ID and last name to pick up where you left off.</p>
+        <div class="fb no" id="formErr" hidden></div>
+        <div class="btnrow"><button class="btn primary" type="button" id="startBtn">Start the lab</button></div>
+      </div>
+    </div>
+    <p style="text-align:center"><button class="btn ghost" id="teacherLink" type="button">Teacher: enter unlock code</button></p>
+  </section>
+  <div id="ws" hidden></div>
+</main>
+
+<div class="overlay" id="teachOv" role="dialog" aria-modal="true" aria-labelledby="tTitle">
+  <div class="modal"><div id="teachLogin"><h2 id="tTitle">Teacher</h2>
+    <div class="btnrow"><input class="code" id="teachCode" type="password" placeholder="Teacher code" autocomplete="off"><button class="btn primary" id="teachGo" type="button">Open</button><button class="btn ghost" id="teachCancel" type="button">Close</button></div>
+    <div class="fb no" id="teachErr" hidden>That code didn't work.</div></div><div id="teachPanel" hidden></div></div>
+</div>
+<div class="overlay" id="tabOv" role="dialog" aria-modal="true"><div class="modal" style="max-width:520px"><h2>This lab is open in another tab</h2><p>To keep your newest work safe, this copy stopped saving. Close the extra tab, then reload this one.</p><div class="btnrow"><button class="btn primary" type="button" onclick="location.reload()">Reload with my newest work</button></div></div></div>
+
+<script src="sheets-config.js"></script>
+<script>
+(function(){
+'use strict';
+/* ============================== SETTINGS ============================== */
+const LESSON_TITLE='Evidence of Evolution';           // unlock code = last word of this title
+const UNLOCK_CODE=LESSON_TITLE.trim().split(/\s+/).pop();
+const TEACHER_CODE='Teacher007';   // universal teacher-tools code
+const codeIs=(v,c)=>String(v||'').trim().toLowerCase()===String(c).toLowerCase();
+const WS_ID='bio-u5-peppered-moth-lab', ACTIVITY='Peppered Moth Lab';
+const BACKUP_URL='https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const SAVE_URL_BUILTIN='https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';
+const BACKUP_TEACHERS=['Austin','Mueller','McCue','Arce','Trimm','Garcia','Trimm/Callanan','Callanan'], BACKUP_PERIODS=['1','2','3','4','5','6','7','8'];
+const STORE='pepperedMothLab_v1', RECS='pepperedMothLab_records_v1';
+/* ===================================================================== */
+const teacherList=()=>{ try{ if(typeof TEACHERS!=='undefined'&&Array.isArray(TEACHERS)&&TEACHERS.length) return TEACHERS.map(String); }catch(e){} return BACKUP_TEACHERS; };
+const periodList=()=>{ try{ if(typeof PERIODS!=='undefined'&&Array.isArray(PERIODS)&&PERIODS.length) return PERIODS.map(String); }catch(e){} return BACKUP_PERIODS; };
+const sheetURL=()=>{ try{ if(typeof SHEETS_WEBHOOK_URL!=='undefined'&&SHEETS_WEBHOOK_URL&&String(SHEETS_WEBHOOK_URL).indexOf('PASTE')<0) return String(SHEETS_WEBHOOK_URL); }catch(e){} return BACKUP_URL; };
+const saveURL=()=>{ try{ if(typeof SAVE_WEBHOOK_URL!=='undefined'&&SAVE_WEBHOOK_URL&&String(SAVE_WEBHOOK_URL).indexOf('PASTE')<0) return String(SAVE_WEBHOOK_URL); }catch(e){} return SAVE_URL_BUILTIN; };
+const LOCKDOWN=false;   // worksheets never lock down
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const strip=s=>String(s).replace(/<[^>]+>/g,'');
+function h(tag,attrs,html){ const e=document.createElement(tag); if(attrs) for(const k in attrs){ if(attrs[k]===false||attrs[k]==null) continue; if(k==='class') e.className=attrs[k]; else if(k==='hidden') e.hidden=!!attrs[k]; else e.setAttribute(k,attrs[k]); } if(html!=null) e.innerHTML=html; return e; }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* ---------- state + saving ---------- */
+function fresh(){ return {ws:WS_ID, student:null, p:{}, ord:{}, locks:0, locked:false, lockOff:false, submittedAt:null, sentAt:null}; }
+let S; try{ S=JSON.parse(localStorage.getItem(STORE)); }catch(e){} if(!S||S.ws!==WS_ID) S=fresh();
+let STORAGE_OK=true, saveBlocked=false;
+try{ localStorage.setItem('__ps_t','1'); STORAGE_OK=localStorage.getItem('__ps_t')==='1'; localStorage.removeItem('__ps_t'); }catch(e){ STORAGE_OK=false; }
+function save(){
+  if(saveBlocked) return;
+  if(S.preview){ note('Preview: nothing is saved'); return; }
+  try{ const raw=localStorage.getItem(STORE); if(raw){ const st=JSON.parse(raw); if(st&&st.ws===WS_ID&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); return; } }
+    S.rev=(S.rev||0)+1; S.updatedAt=Date.now(); localStorage.setItem(STORE,JSON.stringify(S)); note(); cloudSave(false); }catch(e){}
+}
+window.addEventListener('storage',e=>{ if(e.key!==STORE||!e.newValue) return; try{ const st=JSON.parse(e.newValue); if(st&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); } }catch(_){} });
+const saveKey=st=>(String(st.id||'').replace(/\s+/g,'')+'-'+String(st.last||'').toLowerCase().replace(/[^a-z]/g,'')).toLowerCase();
+const checkedCount=st=>Object.values((st||S).p).filter(x=>x&&x.checked).length;
+let cloudTimer=null, cloudDirty=false, cloudBusy=false, cloudAt=null, cloudErr=false;
+const cloudOK=()=>!!saveURL()&&S.student&&!saveBlocked&&!S.preview;
+function cloudBody(){ const st=S.student||{}, sc=scoreAll();
+  return new URLSearchParams({code:saveKey(st), lesson:WS_ID, ver:String(S.updatedAt||Date.now()), prog:String((S.submittedAt?100000:0)+checkedCount(S)), studentId:st.id||'', lastName:st.last||'', firstName:st.first||'', period:st.period||'', teacher:st.teacher||'',
+    summary:S.submittedAt?`Turned in · ${sc.total}/${sc.max}`:`${checkedCount(S)} of ${PROBS.length} problems checked`, data:JSON.stringify(S)}); }
+function cloudSave(soon){ if(!cloudOK()) return; cloudDirty=true; if(soon){ clearTimeout(cloudTimer); cloudTimer=setTimeout(cloudFlush,1200); } else if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); }
+async function cloudFlush(){ cloudTimer=null; if(!cloudOK()||!cloudDirty) return; if(cloudBusy){ cloudTimer=setTimeout(cloudFlush,4000); return; } cloudBusy=true; cloudDirty=false;
+  try{ await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); cloudAt=new Date(); cloudErr=false; }catch(e){ cloudDirty=true; cloudErr=true; if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); } finally{ cloudBusy=false; note(); } }
+function cloudBeacon(){ if(!cloudOK()||!cloudDirty) return; try{ if(navigator.sendBeacon&&navigator.sendBeacon(saveURL(),cloudBody())) cloudDirty=false; }catch(e){} }
+async function cloudLoad(st){ const ctrl=new AbortController(), t=setTimeout(()=>ctrl.abort(),5000);
+  try{ const r=await fetch(saveURL()+'?'+new URLSearchParams({code:saveKey(st),lesson:WS_ID}),{signal:ctrl.signal}); const j=await r.json(); if(j&&j.found&&j.data){ const d=JSON.parse(j.data); if(d&&d.ws===WS_ID) return {status:'found',data:d}; } return {status:'none'}; }
+  catch(e){ return {status:'error'}; } finally{ clearTimeout(t); } }
+function adopt(ns){ let sr=0; try{ const raw=localStorage.getItem(STORE); if(raw) sr=JSON.parse(raw).rev||0; }catch(e){} ns.rev=Math.max(ns.rev||0,sr); S=ns; saveBlocked=false; save(); }
+function note(msg){ const n=$('#saveNote'); if(!n) return; const tm=d=>d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}); n.textContent=msg||(cloudErr?'✓ Saved on this Chromebook':'✓ Saved '+tm(new Date())+(cloudAt?' · backed up '+tm(cloudAt):'')); }
+document.addEventListener('visibilitychange',()=>{ if(document.hidden){ save(); cloudBeacon(); } });
+window.addEventListener('pagehide',()=>{ save(); cloudBeacon(); });
+
+/* ============================== DIAGRAMS ============================== */
+/* ============================== PROBLEMS ============================== */
+const PARTS=[
+ {k:'P1', label:'Setup', title:'Purpose and setup', min:10, icon:'<path d="M12 3v18"/><path d="M12 7c-3-3-8-2-8 2s4 5 8 3"/><path d="M12 7c3-3 8-2 8 2s-4 5-8 3"/><path d="M12 12c-2 2-5 3-5 6M12 12c2 2 5 3 5 6"/>'},
+ {k:'P2', label:'Predict', title:'Predict', min:5, icon:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z"/>'},
+ {k:'P3', label:'Data', title:'Data', min:20, icon:'<rect x="3.5" y="4" width="17" height="16" rx="2"/><path d="M3.5 9h17M3.5 14.5h17M10 4v16"/>'},
+ {k:'P4', label:'Analysis', title:'Analysis', min:12, icon:'<path d="M3 21h18"/><path d="M5 17l5-5 4 3 6-7"/>'},
+ {k:'P5', label:'Conclusion', title:'Conclusion (CER)', min:8, icon:'<path d="M4 4h12l4 4v12H4z"/><path d="M8 11h8M8 15h6"/>'},
+ {k:'P6', label:'Grade', title:'Your grade', min:1, icon:'<rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4V2.5h6V4"/><path d="M8.5 13l2.5 2.5 4.5-5"/>'}
+];
+const ico=(i,s)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PARTS[i].icon}</svg>`;
+const PROBS=[];   // every problem: {id, part, max, score(), key()}
+
+function probShell(parent, part, num, q, pts){
+  const box=h('div',{class:'prob'}); parent.appendChild(box);
+  box.innerHTML=`<div class="pq"><span class="pnum">${num}.</span> ${q} <span class="pts">(${pts} pt${pts>1?'s':''})</span></div>`;
+  return box;
+}
+function actions(box, o){ // Hint + Check buttons + feedback
+  const row=h('div',{class:'btnrow'}); const hb=h('button',{class:'btn ghost small',type:'button'},'Hint'); const cb=h('button',{class:'btn primary small',type:'button'},'Check');
+  row.append(hb,cb); box.appendChild(row);
+  const hint=h('div',{class:'hintbox',hidden:true},'💡 '+o.hint); box.appendChild(hint);
+  const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'}); box.appendChild(fb);
+  hb.addEventListener('click',()=>{ hint.hidden=!hint.hidden; });
+  return {row,hb,cb,hint,fb};
+}
+const st=id=>S.p[id]||(S.p[id]={});
+/* Two tries per problem. Right on try 1 or 2 = full credit. Wrong twice = marked wrong (credit for parts right on try 2).
+   The correct answer is never shown. */
+function gradeTry(P,res,max){ const n=res.filter(Boolean).length; P.tries=(P.tries||0)+1;
+  if(n===max){ P.first=max; P.checked=true; P.right=true; }
+  else if(P.tries>=2){ P.first=n; P.checked=true; P.right=false; }
+  return n===max; }
+function showTry(ui,P,max,doneText){
+  if(P.checked&&P.right){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML=`<b>Correct!</b> ${doneText||''}`; }
+  else if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`<b>Marked wrong.</b> You earned ${P.first} of ${max} point${max>1?'s':''}. Ask your teacher if you'd like to try it again.`; }
+  else if(P.tries===1){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=max>1?'<b>Not quite.</b> Something isn\'t right yet. You have <b>one more try</b>.':'<b>Not quite.</b> You have <b>one more try</b>.'; }
+  else ui.fb.hidden=true;
+  if(ui.cb) ui.cb.textContent=P.checked?'Checked':(P.tries===1?'Check (last try)':'Check'); }
+
+/* ---------- drag onto a diagram (or into equation slots) ---------- */
+function dragProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.zones.length);
+  let fig;
+  if(o.equation){ fig=h('div',{class:'eq'}); box.appendChild(fig); }
+  else { fig=h('div',{class:'figwrap'}); fig.innerHTML=o.svg; box.appendChild(fig); }
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.chips.map((_,i)=>i)));
+  const zoneEls={};
+  const groupAns=g=>o.zones.filter(z=>z.group===g).map(z=>z.ans);
+  if(o.equation){ o.layout.forEach(item=>{ if(typeof item==='string'){ fig.appendChild(h('span',null,item)); } else { const z=o.zones[item]; const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans}); fig.appendChild(b); zoneEls[z.id]=b; } }); }
+  else o.zones.forEach(z=>{ const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans});
+    b.style.left=(z.x/o.vb[0]*100)+'%'; b.style.top=(z.y/o.vb[1]*100)+'%'; b.style.width=((z.w||130)/o.vb[0]*100)+'%'; fig.appendChild(b); zoneEls[z.id]=b; });
+  function placedChips(){ return new Set(Object.values(P.place)); }
+  function render(){
+    const used=placedChips();
+    pool.innerHTML='<div class="lbl">Tap a label, then tap a box (or drag it). Tap a filled box to take its label back.</div>';
+    order.forEach(ci=>{ if(used.has(ci)) return; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true'},o.chips[ci]); c.disabled=!!P.checked;
+      c.addEventListener('click',()=>{ sel=sel===ci?null:ci; render(); });
+      c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+      pool.appendChild(c); });
+    if(P.checked&&!pool.querySelector('.chip')) pool.hidden=true;
+    o.zones.forEach(z=>{ const b=zoneEls[z.id]; const ci=P.place[z.id];
+      b.className='zone'+(ci==null?' empty':' filled')+(P.checked?' locked':'');
+      if(ci==null) b.innerHTML=z.ph||'drop here';
+      else b.innerHTML=o.chips[ci];
+      b.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; ui.hb.disabled=!!P.checked&&false;
+    showTry(ui,P,o.zones.length,o.done);
+  }
+  o.zones.forEach(z=>{ const b=zoneEls[z.id];
+    const drop=ci=>{ if(P.checked) return; if(ci==null){ if(P.place[z.id]!=null){ delete P.place[z.id]; save(); render(); } return; }
+      for(const k in P.place) if(P.place[k]===ci) delete P.place[k];
+      P.place[z.id]=ci; sel=null; save(); render(); };
+    b.addEventListener('click',()=>drop(sel));
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  ui.cb.addEventListener('click',()=>{
+    if(P.checked) return;
+    const empty=o.zones.filter(z=>P.place[z.id]==null).length;
+    if(empty){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill every box before you check. ${empty} still empty.`; return; }
+    const res={}; const usedInGroup={};
+    o.zones.forEach(z=>{ const t=o.chips[P.place[z.id]];
+      if(z.group){ const ans=groupAns(z.group); usedInGroup[z.group]=usedInGroup[z.group]||[]; const ok=ans.includes(t)&&!usedInGroup[z.group].includes(t); if(ok) usedInGroup[z.group].push(t); res[z.id]=ok; }
+      else res[z.id]=t===z.ans; });
+    gradeTry(P,Object.values(res),o.zones.length); save(); cloudSave(true); render(); refresh();
+  });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.zones.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- sort into bins ---------- */
+function binProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.items.length);
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const bins=h('div',{class:'bins',style:`grid-template-columns:repeat(${o.bins.length},minmax(0,1fr))`}); box.appendChild(bins);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.items.map((_,i)=>i)));
+  const binEls={};
+  o.bins.forEach(bn=>{ const b=h('div',{class:'bin',role:'button',tabindex:'0'},`<h4>${bn.label}</h4><div class="bchips"></div>`); bins.appendChild(b); binEls[bn.k]=b;
+    const drop=ci=>{ if(P.checked||ci==null) return; P.place[ci]=bn.k; sel=null; save(); render(); };
+    b.addEventListener('click',e=>{ if(e.target.closest('.chip')) return; drop(sel); });
+    b.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); drop(sel); } });
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  const binLabel=k=>(o.bins.find(b=>b.k===k)||{}).label;
+  function chipEl(ci,inBin){ const it=o.items[ci]; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true','data-key':binLabel(it.k)},it.t);
+    
+    c.disabled=!!P.checked;
+    c.addEventListener('click',e=>{ if(P.checked) return; if(inBin){ e.stopPropagation(); if(sel!=null&&sel!==ci){ P.place[sel]=P.place[ci]; sel=null; save(); render(); return; } delete P.place[ci]; save(); render(); return; } sel=sel===ci?null:ci; render(); });
+    c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+    return c; }
+  function render(){
+    pool.innerHTML='<div class="lbl">Tap an item, then tap the box it belongs in (or drag it). Tap a sorted item to take it back.</div>';
+    order.forEach(ci=>{ if(P.place[ci]==null) pool.appendChild(chipEl(ci,false)); });
+    pool.hidden=!!P.checked;
+    o.bins.forEach(bn=>{ const holder=$('.bchips',binEls[bn.k]); holder.innerHTML=''; order.forEach(ci=>{ if(P.place[ci]===bn.k) holder.appendChild(chipEl(ci,true)); }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,o.items.length,o.done);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const left=o.items.filter((_,i)=>P.place[i]==null).length;
+    if(left){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Sort every item before you check. ${left} still left.`; return; }
+    const res=o.items.map((it,i)=>P.place[i]===it.k); gradeTry(P,res,o.items.length); save(); cloudSave(true); render(); refresh(); });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.items.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- choice problems: one, two-part, or select-all ---------- */
+function choiceProblem(parent, o){   // o.parts: [{q, opts, ans (index or array for select-all)}]
+  const P=st(o.id); P.pick=P.pick||{};
+  const max=o.parts.length;
+  const box=probShell(parent,o.part,o.num,o.q,max);
+  const groups=[];
+  o.parts.forEach((pt,pi)=>{
+    const multi=Array.isArray(pt.ans);
+    if(pt.q) box.insertAdjacentHTML('beforeend',`<div style="margin:10px 0 4px">${pt.q}${multi?' <span class="small muted">(Select all that apply.)</span>':''}</div>`);
+    const ordKey=o.id+'_'+pi; const order=S.ord[ordKey]||(S.ord[ordKey]=shuffle(pt.opts.map((_,i)=>i)));
+    const wrap=h('div',{class:'opts'}); box.appendChild(wrap);
+    const btns={};
+    order.forEach((oi,pos)=>{ const correct=multi?pt.ans.includes(oi):oi===pt.ans;
+      const b=h('button',{class:'opt'+(multi?' multi':''),type:'button'},`<span class="L">${'ABCDEF'[pos]}</span><span>${pt.opts[oi]}</span>`); if(correct) b.dataset.key='1';
+      b.addEventListener('click',()=>{ if(P.checked) return; if(multi){ const s=new Set(P.pick[pi]||[]); s.has(oi)?s.delete(oi):s.add(oi); P.pick[pi]=[...s]; } else P.pick[pi]=oi; save(); paint(); });
+      wrap.appendChild(b); btns[oi]=b; });
+    groups.push({pt,multi,btns});
+  });
+  const ui=actions(box,o);
+  function gradePart(g,pi){ const pk=P.pick[pi]; if(g.multi){ const s=new Set(pk||[]); return g.pt.ans.length===s.size&&g.pt.ans.every(a=>s.has(a)); } const ans=g.pt.ansFn?g.pt.ansFn():g.pt.ans; return pk===ans; }
+  function paint(){
+    groups.forEach((g,pi)=>{ const pk=P.pick[pi];
+      Object.entries(g.btns).forEach(([oi,b])=>{ oi=+oi; const picked=g.multi?(pk||[]).includes(oi):pk===oi; const correct=g.multi?g.pt.ans.includes(oi):oi===g.pt.ans;
+        b.className='opt'+(g.multi?' multi':'')+(picked?' sel':'')+(P.checked&&P.right&&picked?' ok':''); b.disabled=!!P.checked; }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,max,o.why);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const blank=groups.some((g,pi)=>g.multi?!(P.pick[pi]||[]).length:P.pick[pi]==null);
+    if(blank){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Answer every part before you check.'; return; }
+    gradeTry(P,groups.map((g,pi)=>gradePart(g,pi)),max); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- typed blanks (two tries, like every problem) ---------- */
+function typedProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.blanks.length);
+  const inputs=o.blanks.map((bl,i)=>{ const row=h('div',{class:'brow'}); row.innerHTML=`${bl.before} <input class="blank" type="text" aria-label="${esc(strip(bl.before))}" data-key="${esc(bl.show)}"><span class="keytxt">${bl.show}</span> ${bl.after||''}`; box.appendChild(row);
+    const inp=$('input',row); inp.value=P.val[i]||''; inp.addEventListener('input',()=>{ P.val[i]=inp.value; save(); }); return inp; });
+  const ui=actions(box,o);
+  const ok=(bl,v)=>{ v=String(v||'').trim().toLowerCase(); if(bl.calc){ const n=parseFloat(v.replace(/[\u2212\u2013\u2014]/g,'-').replace(/[^0-9.\-]/g,'')); const t=bl.calc(); return !isNaN(n)&&t!=null&&!isNaN(t)&&Math.abs(n-t)<=(bl.tol==null?0.15:bl.tol); } if(bl.num){ const n=parseFloat(v.replace(/[\u2212\u2013\u2014]/g,'-').replace(/[^0-9.\-]/g,'')); return !isNaN(n)&&n>=bl.num[0]&&n<=bl.num[1]; } return bl.accept.some(a=>v.replace(/\s+/g,' ')===a); };
+  function paint(){ inputs.forEach(inp=>{ inp.classList.remove('ok','no'); if(P.checked&&P.right) inp.classList.add('ok'); inp.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; showTry(ui,P,o.blanks.length,''); }
+  ui.cb.addEventListener('click',()=>{
+    if(inputs.some(inp=>!inp.value.trim())){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Fill in every blank before you check.'; return; }
+    if(P.checked) return;
+    const res=o.blanks.map((bl,i)=>ok(bl,inputs[i].value));
+    gradeTry(P,res,o.blanks.length); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.blanks.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- written answer, scored by key ideas (two tries, like every problem) ---------- */
+function writtenProblem(parent, o){
+  const P=st(o.id); if(P.val==null) P.val='';
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const ta=h('textarea',{class:'wtext',rows:'5','aria-label':'Your answer','data-key':o.model}); ta.value=P.val; box.appendChild(ta);
+  box.appendChild(h('div',{class:'wkey'},'<b>Key:</b> '+o.model));
+  if(o.bank){ const wb=h('div',{class:'wbank2'}); wb.innerHTML='<b>Word bank</b> <span class="small muted">(tap a word to add it)</span><br>'+o.bank.map(w=>`<button type="button" class="wchip">${w}</button>`).join('');
+    box.appendChild(wb);
+    wb.querySelectorAll('.wchip').forEach(c=>c.addEventListener('click',()=>{ if(ta.disabled) return; const w=c.textContent; const a=ta.selectionStart??ta.value.length, b=ta.selectionEnd??ta.value.length;
+      const before=ta.value.slice(0,a), after=ta.value.slice(b); const pre=(before&&!/\s$/.test(before))?' ':''; const ins=pre+w+' ';
+      ta.value=before+ins+after; ta.focus(); const p=a+ins.length; ta.setSelectionRange(p,p); ta.dispatchEvent(new Event('input',{bubbles:true})); })); }
+  ta.addEventListener('input',()=>{ P.val=ta.value; save(); });
+  const ui=actions(box,o);
+  const grade=()=>{ const t=ta.value.toLowerCase(); const hits=o.groups.filter(g=>g[1].test(t)).length; const n=Math.min(o.pts,hits); return Array.from({length:o.pts},(_,i)=>i<n); };
+  function paint(){ ta.disabled=!!P.checked; ui.cb.disabled=!!P.checked; showTry(ui,P,o.pts,o.why); }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(ta.value.trim().split(/\s+/).length<5){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Write a full answer (at least one complete sentence) before you check.'; return; }
+    gradeTry(P,grade(),o.pts); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- predictions: saved once, completion credit, never marked wrong ---------- */
+function predictProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.rows.length);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb predtab"><tr><th>${o.rowsLabel||'Tube'}</th><th>Setup</th><th>My prediction</th></tr>${o.rows.map((r,i)=>`<tr><td><b>${r.id}</b></td><td>${r.desc}</td><td><select data-i="${i}" aria-label="Prediction for ${r.id}"><option value="">choose…</option>${o.choices.map(c=>`<option>${c}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select')];
+  sels.forEach((sl,i)=>{ sl.value=P.val[i]||''; sl.addEventListener('change',()=>{ P.val[i]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Lock in my predictions';
+  function paint(){ sels.forEach(sl=>sl.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Predictions saved.</b> You\'ll compare them with your results later. Your observation table on page 3 is now unlocked.'; ui.cb.textContent='Predictions locked'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(sels.some(sl=>!sl.value)){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Choose a prediction for every tube first.'; return; }
+    if(!confirm('Lock in your predictions? You can\'t change them after this.')) return;
+    P.first=o.rows.length; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.rows.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- lab data table: groups type their own measurements; graph builds from them ---------- */
+function dataTableProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const cells=o.rows.length*o.cols.length;
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb datatab"><tr><th>${o.corner}</th>${o.cols.map(c=>`<th>${c}</th>`).join('')}</tr>${o.rows.map((r,i)=>`<tr><td><b>${r}</b></td>${o.cols.map((c,j)=>`<td><input class="dcell" inputmode="decimal" data-r="${i}" data-c="${j}" aria-label="${r}, ${c}"></td>`).join('')}</tr>`).join('')}</table>`;
+  const ins=[...wrap.querySelectorAll('input.dcell')];
+  const chart=h('div',{class:'datachart'}); box.appendChild(chart);
+  ins.forEach(inp=>{ const k=inp.dataset.r+'_'+inp.dataset.c; inp.value=P.val[k]??''; inp.addEventListener('input',()=>{ P.val[k]=inp.value; save(); draw(); }); });
+  function draw(){ chart.innerHTML=o.chart(P.val); }
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Save my data';
+  function paint(){ ins.forEach(i=>i.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Data saved.</b> Your analysis questions use these numbers.'; ui.cb.textContent='Data saved'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const bad=ins.filter(i=>i.value.trim()===''||isNaN(parseFloat(i.value)));
+    if(bad.length){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill in every box with a number first (${bad.length} still empty).`; bad[0].focus(); return; }
+    if(!confirm('Save your data? You can\'t change it after this, and your analysis will use these numbers.')) return;
+    P.first=o.pts; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  draw(); paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- observation table: each row has its own menu; completion credit when saved ---------- */
+function obsTableProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb datatab"><tr><th>Observation</th><th>What you saw</th></tr>${o.rows.map((r,i)=>`<tr><td>${r.q}</td><td><select class="ocell" data-r="${i}" aria-label="${r.q.replace(/<[^>]+>/g,'')}"><option value="">choose…</option>${r.opts.map(x=>`<option>${x}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select.ocell')];
+  sels.forEach(sl=>{ const k=sl.dataset.r; sl.value=P.val[k]||''; sl.addEventListener('change',()=>{ P.val[k]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Save my observations';
+  function paint(){ sels.forEach(s=>s.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Observations saved.</b> Your analysis questions use them.'; ui.cb.textContent='Observations saved'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const bad=sels.filter(s=>!s.value); if(bad.length){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Choose an answer in every row first (${bad.length} still empty).`; return; }
+    if(!confirm('Save your observations? You can\'t change them after this, and your analysis will use them.')) return;
+    P.first=o.pts; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ============================== WORKSHEET CONTENT ============================== */
+/* ===== Peppered moth lab: realistic art (moths, bark, materials) ===== */
+function hashStr(s){ let x=2166136261; for(const ch of String(s)){ x^=ch.charCodeAt(0); x=Math.imul(x,16777619); } return x>>>0; }
+function mulberry(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+const f1=v=>(Math.round(v*10)/10);
+/* A peppered moth (Biston betularia) at rest, wings flat, head up. Local size: about 54 wide, 34 tall.
+   form: 'L' = light (typica, white with black peppering), 'D' = dark (carbonaria). */
+const MOTH_FW='M1.2,-5.5 C7,-8.6 17,-7.4 26.5,2.6 C24.6,6.4 20.8,11.2 15.6,15.6 C10.4,15.2 4.6,12.4 1,9.6 Z';
+const MOTH_HW='M1,6.4 C7,7.4 14.4,11 17.4,14.8 C15.2,19.4 9.6,21.4 4.4,20.4 C2.4,17.6 1.2,12.8 1,6.4 Z';
+function mothG(x,y,sc,rot,form,seed,cls){
+  const r=mulberry(seed), dk=form==='D';
+  const base=dk?['#2f2a25','#221e1a']:['#ebe7dc','#d9d4c6'], line=dk?'#171411':'#3a352f';
+  const gid='mg'+seed;
+  let g=`<g class="${cls||''}" transform="translate(${f1(x)} ${f1(y)}) rotate(${Math.round(rot)}) scale(${sc.toFixed(2)})">`;
+  g+=`<defs><linearGradient id="${gid}" x1="0" y1="-8" x2="0" y2="20" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${base[0]}"/><stop offset="1" stop-color="${base[1]}"/></linearGradient></defs>`;
+  const wing=(d,side)=>`<path d="${d}" transform="scale(${side} 1)" fill="url(#${gid})" stroke="${dk?'#1a1714':'#8d877b'}" stroke-width=".5"/>`;
+  g+=wing(MOTH_HW,1)+wing(MOTH_HW,-1)+wing(MOTH_FW,1)+wing(MOTH_FW,-1);
+  /* peppering and cross lines */
+  let sp='';
+  for(const side of [1,-1]){
+    const n=dk?10:95;
+    for(let i=0;i<n;i++){ const u=r(), v=r(); // point inside forewing triangle-ish region
+      const px=2+u*22, py=-5+v*19 - (px>18?(px-18)*0.2:0); if(py>15-(px-2)*0.1||py< -6+px*0.35-2) continue;
+      const rr=dk?0.3+r()*0.4:(r()<0.12?0.55+r()*0.35:0.18+r()*0.32); sp+=`<circle cx="${f1(side*px)}" cy="${f1(py)}" r="${rr.toFixed(2)}" fill="${dk?'#3a342e':'#2c2823'}" opacity="${dk?0.6:(0.5+r()*0.5).toFixed(2)}"/>`; }
+    for(let i=0;i<(dk?3:26);i++){ const px=2+r()*13, py=8+r()*10; if(py>19-px*0.4) continue; sp+=`<circle cx="${f1(side*px)}" cy="${f1(py)}" r="${(0.18+r()*0.4).toFixed(2)}" fill="${dk?'#3a342e':'#2c2823'}" opacity=".65"/>`; }
+    if(!dk){ const zig=(pts)=>`<path d="M${pts.map(p=>f1(side*p[0])+','+f1(p[1])).join(' L')}" fill="none" stroke="${line}" stroke-width=".45" opacity=".55" stroke-linejoin="round"/>`;
+      g+=''; sp+=zig([[3,-3],[6,-1.5],[7.4,1.5],[9.4,1],[10.2,4.6],[7,8.6]]);
+      sp+=zig([[11,-4.4],[14,-1],[16.4,0],[16.8,3.4],[19.6,4.2],[17.6,8],[14.4,13.4]]); }
+  }
+  g+=`<g clip-path="none">${sp}</g>`;
+  /* body: thorax (furry), head, antennae */
+  g+=`<ellipse cx="0" cy="7.5" rx="2.1" ry="8" fill="${dk?'#1c1916':'#cfc9ba'}" stroke="${dk?'#141210':'#8d877b'}" stroke-width=".4"/>`;
+  g+=`<ellipse cx="0" cy="-2.2" rx="3.4" ry="4.6" fill="${dk?'#26221e':'#e2ddd0'}" stroke="${dk?'#141210':'#7d776c'}" stroke-width=".45"/>`;
+  if(!dk) g+=`<circle cx="-1" cy="-3" r=".6" fill="#2c2823"/><circle cx="1.2" cy="-1.4" r=".5" fill="#2c2823"/><circle cx=".2" cy=".6" r=".5" fill="#2c2823"/>`;
+  g+=`<ellipse cx="0" cy="-7.4" rx="2.1" ry="1.7" fill="${dk?'#1e1a17':'#bfb8a8'}"/>`;
+  for(const side of [1,-1]){ g+=`<path d="M${side*0.9},-8.6 Q${side*4},-12.4 ${side*9.5},-11.2" fill="none" stroke="${dk?'#1a1714':'#5e584e'}" stroke-width=".55"/>`;
+    for(let i=1;i<7;i++){ const t=i/7, ax=side*(0.9+t*8.6), ay=-8.6-t*3.6+t*t*1.6; g+=`<line x1="${f1(ax)}" y1="${f1(ay)}" x2="${f1(ax+side*0.6)}" y2="${f1(ay-1.3)}" stroke="${dk?'#1a1714':'#6e685d'}" stroke-width=".3"/>`; } }
+  return g+'</g>'; }
+
+/* Tree bark made with SVG noise filters. kind: 'lichen' (pale, covered in lichens) or 'soot' (blackened by soot). */
+function barkDefs(kind,id){
+  if(kind==='lichen') return `<filter id="${id}" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+   <feFlood flood-color="#7a7266" result="base"/>
+   <feTurbulence type="fractalNoise" baseFrequency="0.07 0.006" numOctaves="4" seed="11" result="t1"/>
+   <feColorMatrix in="t1" type="matrix" values="0 0 0 0 .25  0 0 0 0 .22  0 0 0 0 .19  -4.2 0 0 0 2.25" result="fiss"/>
+   <feColorMatrix in="t1" type="matrix" values="0 0 0 0 .62  0 0 0 0 .59  0 0 0 0 .54  4 0 0 0 -2.3" result="ridge"/>
+   <feTurbulence type="fractalNoise" baseFrequency="0.016" numOctaves="4" seed="4" result="t2"/>
+   <feColorMatrix in="t2" type="matrix" values="0 0 0 0 .86  0 0 0 0 .86  0 0 0 0 .80  16 0 0 0 -6.7" result="lich1"/>
+   <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="3" seed="23" result="t3"/>
+   <feColorMatrix in="t3" type="matrix" values="0 0 0 0 .76  0 0 0 0 .79  0 0 0 0 .71  16 0 0 0 -8.3" result="lich2"/>
+   <feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="2" seed="31" result="t5"/>
+   <feColorMatrix in="t5" type="matrix" values="0 0 0 0 .93  0 0 0 0 .92  0 0 0 0 .87  14 0 0 0 -8.2" result="lich3"/>
+   <feMerge result="lich"><feMergeNode in="lich1"/><feMergeNode in="lich2"/><feMergeNode in="lich3"/></feMerge>
+   <feTurbulence type="fractalNoise" baseFrequency="0.3" numOctaves="2" seed="7" result="t4"/>
+   <feColorMatrix in="t4" type="matrix" values="0 0 0 0 .17  0 0 0 0 .16  0 0 0 0 .14  16 0 0 0 -11.3" result="spk"/>
+   <feComposite in="spk" in2="lich" operator="in" result="spkL"/>
+   <feMerge><feMergeNode in="base"/><feMergeNode in="fiss"/><feMergeNode in="ridge"/><feMergeNode in="lich"/><feMergeNode in="spkL"/></feMerge></filter>`;
+  return `<filter id="${id}" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+   <feFlood flood-color="#2b2622" result="base"/>
+   <feTurbulence type="fractalNoise" baseFrequency="0.07 0.006" numOctaves="4" seed="11" result="t1"/>
+   <feColorMatrix in="t1" type="matrix" values="0 0 0 0 .07  0 0 0 0 .06  0 0 0 0 .05  -4.2 0 0 0 2.25" result="fiss"/>
+   <feColorMatrix in="t1" type="matrix" values="0 0 0 0 .27  0 0 0 0 .24  0 0 0 0 .21  4 0 0 0 -2.3" result="ridge"/>
+   <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" seed="4" result="t2"/>
+   <feColorMatrix in="t2" type="matrix" values="0 0 0 0 .13  0 0 0 0 .115  0 0 0 0 .10  6 0 0 0 -2.8" result="grime"/>
+   <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="2" seed="7" result="t4"/>
+   <feColorMatrix in="t4" type="matrix" values="0 0 0 0 .30  0 0 0 0 .27  0 0 0 0 .24  12 0 0 0 -7.6" result="spk"/>
+   <feMerge><feMergeNode in="base"/><feMergeNode in="grime"/><feMergeNode in="fiss"/><feMergeNode in="ridge"/><feMergeNode in="spk"/></feMerge></filter>`; }
+const barkRect=(id,w,h,x,y)=>`<rect x="${x||0}" y="${y||0}" width="${w}" height="${h}" filter="url(#${id})"/>`;
+
+/* the two forms, side by side on a plain card (no bark, so it does not hint at a result) */
+const FORMS_PIC=`<svg viewBox="0 0 520 190" role="img" aria-label="The two forms of the peppered moth: a light moth, white with black speckles, and a dark moth, almost black. Both are about 4 to 5 centimeters across.">
+ <rect width="520" height="190" rx="14" fill="#cbd5e1"/>
+ ${mothG(140,86,2.9,0,'L',101)}${mothG(380,86,2.9,0,'D',202)}
+ <text x="140" y="176" text-anchor="middle" font-size="15" fill="#16213a" font-weight="600">Light form</text><text x="380" y="176" text-anchor="middle" font-size="15" fill="#16213a" font-weight="600">Dark form</text></svg>`;
+
+/* materials for the hands-on lab */
+function newsprint(x,y,w,h,id){ let s=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#d9d6cc" stroke="#9c988c" stroke-width="1.2"/>`;
+  s+=`<rect x="${x+8}" y="${y+8}" width="${w-16}" height="13" fill="#4b4741"/>`;
+  const r=mulberry(hashStr(id)); const cols=3, cw=(w-16-8)/cols;
+  for(let c=0;c<cols;c++) for(let ly=y+28; ly<y+h-8; ly+=5.2){ const lw=cw*(0.6+r()*0.4); if(r()<0.06) continue; s+=`<rect x="${(x+8+c*(cw+4)).toFixed(1)}" y="${ly.toFixed(1)}" width="${lw.toFixed(1)}" height="2.4" fill="#5d5951" opacity="${(0.55+r()*0.35).toFixed(2)}"/>`; }
+  s+=`<rect x="${x+8+cw+4}" y="${y+34}" width="${cw}" height="30" fill="#8d897f"/>`;
+  return s; }
+const MAT_PIC=`<svg viewBox="0 0 760 230" role="img" aria-label="Materials: a sheet of white paper, a sheet of newspaper, a hole punch, a pile of white paper circles, a pile of newspaper circles, forceps, a cup, and a timer.">
+ <rect width="760" height="230" rx="14" fill="#f1f5f9"/>
+ <rect x="22" y="28" width="126" height="160" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/><rect x="26" y="186" width="122" height="4" fill="#cbd5e1" opacity=".6"/>
+ <text x="85" y="215" text-anchor="middle" font-size="14" fill="#5b6b86">white paper</text>
+ ${newsprint(168,28,126,160,'np1')}<text x="231" y="215" text-anchor="middle" font-size="14" fill="#5b6b86">newspaper</text>
+ <g transform="translate(320 92)"><rect x="0" y="34" width="96" height="30" rx="6" fill="#475569"/><rect x="6" y="40" width="84" height="8" rx="3" fill="#334155"/>
+  <path d="M8 34 L18 4 Q22 -2 30 0 L90 12 Q96 14 94 22 L88 34 Z" fill="#64748b" stroke="#334155" stroke-width="1.4"/><circle cx="34" cy="46" r="5" fill="#0f172a"/><rect x="86" y="40" width="14" height="18" rx="3" fill="#94a3b8"/></g>
+ <text x="368" y="215" text-anchor="middle" font-size="14" fill="#5b6b86">hole punch</text>
+ ${(()=>{ const r=mulberry(77); let s=''; for(let i=0;i<22;i++){ const a=r()*6.28, d=Math.sqrt(r())*26; s+=`<circle cx="${(470+Math.cos(a)*d).toFixed(1)}" cy="${(140+Math.sin(a)*d*0.6).toFixed(1)}" r="5.2" fill="#ffffff" stroke="#b8c2d0" stroke-width=".8"/>`; }
+   for(let i=0;i<22;i++){ const a=r()*6.28, d=Math.sqrt(r())*26; const cx=(470+Math.cos(a)*d).toFixed(1), cy=(80+Math.sin(a)*d*0.6).toFixed(1); s+=`<circle cx="${cx}" cy="${cy}" r="5.2" fill="#cfccc2" stroke="#8d897f" stroke-width=".8"/><rect x="${cx-3.5}" y="${cy-2}" width="7" height="1.3" fill="#5d5951"/><rect x="${cx-3}" y="${+cy+1}" width="5" height="1.3" fill="#5d5951"/>`; } return s; })()}
+ <text x="470" y="215" text-anchor="middle" font-size="14" fill="#5b6b86">paper moths</text>
+ <g transform="translate(540 60) rotate(28)"><path d="M0 0 L5 0 L9 110 L6 112 Z" fill="#cbd5e1" stroke="#64748b" stroke-width="1"/><path d="M5 -2 L10 -2 L8 110 L6 112 Z" fill="#e2e8f0" stroke="#64748b" stroke-width="1"/><rect x="1" y="24" width="9" height="34" rx="2" fill="#94a3b8" opacity=".7"/></g>
+ <text x="560" y="215" text-anchor="middle" font-size="14" fill="#5b6b86">forceps</text>
+ <path d="M612 110 L620 186 Q634 192 648 186 L656 110 Z" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/><ellipse cx="634" cy="110" rx="22" ry="6" fill="#fde68a" stroke="#b45309" stroke-width="1.5"/>
+ <text x="634" y="215" text-anchor="middle" font-size="14" fill="#5b6b86">cup</text>
+ <g transform="translate(712 120)"><rect x="-6" y="-48" width="12" height="10" rx="2" fill="#475569"/><circle r="36" fill="#e2e8f0" stroke="#334155" stroke-width="4"/><circle r="29" fill="#ffffff"/>
+  ${[0,1,2,3,4,5,6,7,8,9,10,11].map(i=>`<line x1="0" y1="-27" x2="0" y2="-23" stroke="#334155" stroke-width="1.6" transform="rotate(${i*30})"/>`).join('')}<line x1="0" y1="0" x2="12" y2="-18" stroke="#dc2626" stroke-width="2.4" stroke-linecap="round"/><circle r="3" fill="#334155"/></g>
+ <text x="712" y="215" text-anchor="middle" font-size="14" fill="#5b6b86">timer</text></svg>`;
+
+/* ===== Peppered moth lab (shared: predictions, generation tables, charts, sections 1, 2, 4, 5) ===== */
+const BGS=[{k:'L', id:'tL', name:'Lichen bark', lab:'white paper', bark:'lichen'},{k:'S', id:'tS', name:'Sooty bark', lab:'newspaper', bark:'soot'}];
+const NEAT=20, EAT=20;   // start with 20 light + 20 dark; the bird eats 20 each generation
+
+/* ---------- predictions with a menu per row (same lock pattern as predictProblem) ---------- */
+function predictRows(parent,o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.rows.length);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb predtab"><tr><th>Background</th><th>What to predict</th><th>My prediction</th></tr>${o.rows.map((r,i)=>`<tr><td><b>${r.id}</b></td><td>${r.desc}</td><td><select data-i="${i}" aria-label="Prediction: ${esc(r.id)}, ${esc(strip(r.desc))}"><option value="">choose…</option>${r.choices.map(c=>`<option>${c}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select')];
+  sels.forEach((sl,i)=>{ sl.value=P.val[i]||''; sl.addEventListener('change',()=>{ P.val[i]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Lock in my predictions';
+  function paint(){ sels.forEach(sl=>sl.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Predictions saved.</b> You\'ll compare them with your results later. Page 3 is now unlocked.'; ui.cb.textContent='Predictions locked'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(sels.some(sl=>!sl.value)){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Choose a prediction in every row first.'; return; }
+    if(!confirm('Lock in your predictions? You can\'t change them after this.')) return;
+    P.first=o.rows.length; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.rows.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- generation data table (a dataTableProblem with a chart, plus an optional check against the virtual bench) ---------- */
+const GCOLS=['Light moths at start','Dark moths at start','Light survivors','Dark survivors'];
+const GROWS=['Generation 1','Generation 2','Generation 3','Generation 4 (offspring)'];
+function gNums(v){ v=v||{}; const n=(r,c)=>{ const x=parseFloat(v[r+'_'+c]); return isNaN(x)?null:x; };
+  return {L:[0,1,2,3].map(r=>n(r,0)), D:[0,1,2,3].map(r=>n(r,1)), sL:[0,1,2].map(r=>n(r,2)), sD:[0,1,2].map(r=>n(r,3))}; }
+const GD=id=>gNums(st(id).val);
+const pctD=(d,g)=>{ const a=d.L[g], b=d.D[g]; return (a==null||b==null||a+b===0)?NaN:100*b/(a+b); };
+function genTableProblem(parent,o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb datatab gtab"><tr><th>${o.corner}</th>${GCOLS.map(c=>`<th>${c}</th>`).join('')}</tr>${GROWS.map((r,i)=>`<tr><td><b>${r}</b></td>${GCOLS.map((c,j)=>i===3&&j>1?'<td class="na">no hunt</td>':`<td><input class="dcell" inputmode="numeric" data-r="${i}" data-c="${j}" aria-label="${o.corner}, ${r}, ${c}"></td>`).join('')}</tr>`).join('')}</table>`;
+  const ins=[...wrap.querySelectorAll('input.dcell')];
+  const chart=h('div',{class:'datachart'}); box.appendChild(chart);
+  ins.forEach(inp=>{ const k=inp.dataset.r+'_'+inp.dataset.c; inp.value=P.val[k]??''; inp.addEventListener('input',()=>{ P.val[k]=inp.value; save(); draw(); }); });
+  function draw(){ chart.innerHTML=genChart(P.val,o.title); }
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Save my data';
+  function paint(){ ins.forEach(i=>i.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Data saved.</b> Your analysis questions use these numbers.'; ui.cb.textContent='Data saved'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const bad=ins.filter(i=>i.value.trim()===''||isNaN(parseFloat(i.value)));
+    if(bad.length){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill in every box with a number first (${bad.length} still empty).`; bad[0].focus(); return; }
+    const mis=o.verify?o.verify(gNums(P.val)):''; if(mis){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=mis; return; }
+    if(!confirm('Save your data? You can\'t change it after this, and your analysis will use these numbers.')) return;
+    P.first=o.pts; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  draw(); paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* stacked bars: the population at the start of each generation */
+const CL='#e7e2d4', CD='#3a332c';
+function genChart(v,title){ const d=gNums(v); const W=640,H=310, X0=70, Y0=250, Y1=66, bw=74, gap=(W-X0-30-4*bw)/4;
+  const tot=[0,1,2,3].map(g=>(d.L[g]||0)+(d.D[g]||0)), mx=Math.max(40,...tot), top=Math.ceil(mx/10)*10, y=val=>Y0-(Y0-Y1)*val/top;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Bar graph: light and dark moths at the start of each generation, ${esc(title)}."><rect width="${W}" height="${H}" rx="12" fill="#f8fafc"/>
+   <text x="${X0}" y="26" font-size="15" font-weight="600" fill="#16213a">${title}: moths at the start of each generation</text>`;
+  for(let v2=0;v2<=top;v2+=10) s+=`<line x1="${X0}" y1="${y(v2)}" x2="${W-20}" y2="${y(v2)}" stroke="#e2e8f0"/><text x="${X0-8}" y="${y(v2)+4}" text-anchor="end" font-size="12" fill="#5b6b86">${v2}</text>`;
+  s+=`<text x="22" y="${(Y0+Y1)/2}" font-size="13" fill="#5b6b86" transform="rotate(-90 22 ${(Y0+Y1)/2})" text-anchor="middle">Number of moths</text>`;
+  [0,1,2,3].forEach(g=>{ const x=X0+gap/2+g*(bw+gap), l=d.L[g]||0, k=d.D[g]||0;
+    if(l+k>0){ s+=`<rect x="${x}" y="${y(k)}" width="${bw}" height="${Y0-y(k)}" fill="${CD}"/><rect x="${x}" y="${y(k+l)}" width="${bw}" height="${y(k)-y(k+l)}" fill="${CL}" stroke="#8d877b" stroke-width="1"/>`;
+      const p=pctD(d,g); if(!isNaN(p)) s+=`<text x="${x+bw/2}" y="${y(k+l)-6}" text-anchor="middle" font-size="12.5" fill="#16213a">${Math.round(p)}% dark</text>`; }
+    s+=`<text x="${x+bw/2}" y="${Y0+18}" text-anchor="middle" font-size="13" fill="#334155">Gen ${g+1}</text>`; });
+  s+=`<line x1="${X0}" y1="${Y0}" x2="${W-20}" y2="${Y0}" stroke="#64748b" stroke-width="1.5"/>
+   <rect x="${X0}" y="${H-28}" width="16" height="14" fill="${CL}" stroke="#8d877b"/><text x="${X0+22}" y="${H-16}" font-size="13" fill="#334155">Light moths</text>
+   <rect x="${X0+130}" y="${H-28}" width="16" height="14" fill="${CD}"/><text x="${X0+152}" y="${H-16}" font-size="13" fill="#334155">Dark moths</text></svg>`;
+  const notes=[];
+  [0,1,2].forEach(g=>{ const a=d.sL[g], b=d.sD[g]; if(a!=null&&b!=null&&d.L[g]!=null&&d.D[g]!=null&&a+b!==d.L[g]+d.D[g]-EAT) notes.push(`Generation ${g+1}: the survivors add up to ${a+b}. The bird eats ${EAT}, so ${d.L[g]+d.D[g]-EAT} should survive.`);
+    if(a!=null&&d.L[g+1]!=null&&d.L[g+1]!==2*a) notes.push(`Generation ${g+2} light moths should be 2 × ${a} = ${2*a} (each survivor has 2 offspring).`);
+    if(b!=null&&d.D[g+1]!=null&&d.D[g+1]!==2*b) notes.push(`Generation ${g+2} dark moths should be 2 × ${b} = ${2*b} (each survivor has 2 offspring).`);
+    if(a!=null&&d.L[g]!=null&&a>d.L[g]) notes.push(`Generation ${g+1}: more light survivors than light moths at the start.`);
+    if(b!=null&&d.D[g]!=null&&b>d.D[g]) notes.push(`Generation ${g+1}: more dark survivors than dark moths at the start.`); });
+  return s+(notes.length?`<div class="fb no small"><b>Check your numbers:</b> ${notes.join(' ')}</div>`:''); }
+/* line graph of percent dark, both backgrounds (Analysis) */
+function pctChart(){ const W=640,H=300, X0=70, X1=520, Y0=240, Y1=40, x=g=>X0+(X1-X0)*g/3, y=p=>Y0-(Y0-Y1)*p/100;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Line graph of percent dark moths in each generation, for lichen bark and sooty bark, from your data."><rect width="${W}" height="${H}" rx="12" fill="#f8fafc"/>`;
+  for(let p=0;p<=100;p+=20) s+=`<line x1="${X0}" y1="${y(p)}" x2="${X1}" y2="${y(p)}" stroke="#e2e8f0"/><text x="${X0-8}" y="${y(p)+4}" text-anchor="end" font-size="12" fill="#5b6b86">${p}%</text>`;
+  s+=`<text x="22" y="${(Y0+Y1)/2}" font-size="13" fill="#5b6b86" transform="rotate(-90 22 ${(Y0+Y1)/2})" text-anchor="middle">Percent dark moths</text>`;
+  [0,1,2,3].forEach(g=>s+=`<text x="${x(g)}" y="${Y0+20}" text-anchor="middle" font-size="13" fill="#334155">Gen ${g+1}</text>`);
+  s+=`<text x="${(X0+X1)/2}" y="${H-12}" text-anchor="middle" font-size="13" fill="#5b6b86">Generation</text>`;
+  const ser=[[BGS[0],'#4d7c0f','4 0'],[BGS[1],'#1e293b','8 5']], ends=[];
+  ser.forEach(([b,c,da])=>{ const d=GD(b.id), pts=[0,1,2,3].map(g=>[g,pctD(d,g)]).filter(q=>!isNaN(q[1])); if(!pts.length) return;
+    s+=`<polyline points="${pts.map(q=>x(q[0])+','+y(q[1]).toFixed(1)).join(' ')}" fill="none" stroke="${c}" stroke-width="3" stroke-dasharray="${da}"/>`+pts.map(q=>`<circle cx="${x(q[0])}" cy="${y(q[1]).toFixed(1)}" r="5" fill="${c}"/>`).join('');
+    const last=pts[pts.length-1]; ends.push({t:b.name,c,y:y(last[1])}); });
+  if(ends.length===2&&Math.abs(ends[0].y-ends[1].y)<16){ const m=(ends[0].y+ends[1].y)/2, up=ends[0].y<=ends[1].y?0:1; ends[up].y=m-9; ends[1-up].y=m+9; }
+  ends.forEach(e=>s+=`<text x="${X1+10}" y="${(e.y+4).toFixed(1)}" font-size="13" font-weight="600" fill="${e.c}">${e.t}</text>`);
+  return s+`<line x1="${X0}" y1="${Y0}" x2="${X1}" y2="${Y0}" stroke="#64748b" stroke-width="1.5"/></svg>`; }
+
+const OBS_ROWS=[
+  {q:'On the <b>lichen bark</b>, which moths were easier for the bird to find?', opts:['Light moths','Dark moths','About the same']},
+  {q:'On the <b>sooty bark</b>, which moths were easier for the bird to find?', opts:['Light moths','Dark moths','About the same']}];
+
+function buildContent(sec){
+  let n=0; const num=()=>++n;
+  const say=(s,html)=>s.insertAdjacentHTML('beforeend',html);
+  /* ---------- 1. Setup ---------- */
+  say(sec[0],`<div class="phenbox"><b>Phenomenon:</b> The peppered moth lives in England. It flies at night and rests on tree trunks during the day. Birds hunt the resting moths <b>by sight</b>. In the 1800s, smoke from coal-burning factories killed the pale lichens on many trees and covered the bark with black soot. How could the color of the bark change a whole moth population?</div>
+   <p><b>Lab question:</b> How does the color of the tree bark affect which moths survive, and how does that change the population over generations?</p>
+   <p><b>Background.</b> Peppered moths come in two forms. Color is an <b>inherited</b> trait: it is controlled by a gene, so offspring usually have the same color as their parents. A moth can't change its color during its life.</p>
+   <div class="figwrap" style="margin:8px 0 12px;max-width:560px">${FORMS_PIC}</div>
+   <p>In this lab you will <b>model</b> natural selection. The moths will be on one of two backgrounds:</p>
+   <div class="wide"><table class="nb"><tr><th>Background</th><th>What it models</th></tr><tr><td><b>Lichen bark</b>${SIM?'':' (white paper)'}</td><td>Clean tree bark covered in pale lichens, like trees before the factories</td></tr><tr><td><b>Sooty bark</b>${SIM?'':' (newspaper)'}</td><td>Tree bark blackened by soot from factory smoke</td></tr></table></div>
+   ${SETUP_HTML}`);
+  choiceProblem(sec[0],{id:'q1', part:'P1', num:num(), q:'Check your understanding of the model.',
+    parts:[{q:'<b>Part A:</b> In this model, what does the bird picking up moths stand for?',opts:['Predators eating the moths they can find','Moths having offspring','Moths changing color','Factories making soot'],ans:0},
+           {q:'<b>Part B:</b> Why must the bird look away (or wait) until the moths are spread out?',opts:['So the bird has to find the moths by sight, like a real bird','So the moths can move to a better spot','So the bird can choose its favorite color first','So the moths can change color'],ans:0},
+           {q:'<b>Part C:</b> Why does each survivor have offspring that are the <b>same color</b>?',opts:['Color is inherited, so offspring get their parents\' alleles','The offspring choose a color that matches the bark','The bird decides their color','Soot paints the offspring'],ans:0}],
+    hint:'Re-read the background. Think about what each part of the model stands for in real life.', why:'The bird is the predator, it finds moths by sight, and color is inherited.'});
+  typedProblem(sec[0],{id:'q2', part:'P1', num:num(), q:'Practice the "reproduce" step. In one round, <b>12 light</b> and <b>8 dark</b> moths survive. Each survivor has <b>2 offspring</b> of the same color.',
+    blanks:[{before:'<b>Part A:</b> Light moths in the next generation =',num:[24,24],show:'24'},
+            {before:'<b>Part B:</b> Dark moths in the next generation =',num:[16,16],show:'16'},
+            {before:'<b>Part C:</b> Percent dark in the next generation =',num:[39.5,40.5],after:'%',show:'40'}],
+    hint:'Multiply each number of survivors by 2. Percent dark = dark ÷ total × 100.'});
+  /* ---------- 2. Predict ---------- */
+  say(sec[1],`<p>Before you start, predict. There are no wrong predictions: you get full credit for making them, but you <b>can't change them</b> after you lock them in.</p>`);
+  predictRows(sec[1],{id:'pred', part:'P2', num:num(), q:'Make your predictions. Each background starts with 20 light and 20 dark moths.',
+    rows:[{id:'Lichen bark',desc:'Which form will survive better?',choices:['Light moths','Dark moths','Both the same']},
+          {id:'Lichen bark',desc:'What will happen to the <b>percent dark</b> over 3 generations?',choices:['It will go up','It will go down','It will stay about the same']},
+          {id:'Sooty bark',desc:'Which form will survive better?',choices:['Light moths','Dark moths','Both the same']},
+          {id:'Sooty bark',desc:'What will happen to the <b>percent dark</b> over 3 generations?',choices:['It will go up','It will go down','It will stay about the same']}]});
+  writtenProblem(sec[1],{id:'hyp', part:'P2', num:num(), q:'Write a hypothesis for <b>one</b> background in the form <b>"If… then… because…"</b>.', pts:3, bank:['If','then','because','lichen bark','sooty bark','light moths','dark moths','survive','birds','see','percent dark','go up','go down'],
+    groups:[['If… then… form',/\bif\b[\s\S]*\bthen\b/],['names a moth form or the percent',/light|dark|white|black|percent|%/],['a reason',/because|see|hide|blend|camoufl|stand out|notice|spot|match/]],
+    model:'If the moths live on sooty bark, then the percent of dark moths will go up, because birds will not see the dark moths as easily as the light moths.',
+    hint:'Pick a background. Say what will happen to the light or dark moths, and why.', why:'A testable hypothesis names the condition, the predicted result, and the reason.'});
+  /* ---------- 3. Data / Experiment (lab and simulation differ) ---------- */
+  buildData(sec[2],num);
+  /* ---------- 4. Analysis ---------- */
+  const alock=h('div',{class:'fb info'}); alock.innerHTML='<b>Locked.</b> Save both data tables and your observations on page 3 first.'; sec[3].appendChild(alock);
+  const awrap=h('div',{}); sec[3].appendChild(awrap);
+  const dL=()=>GD('tL'), dS=()=>GD('tS');
+  window.anaRefresh=()=>{ const ok=!!st('tL').checked&&!!st('tS').checked&&!!st('obs').checked; alock.hidden=ok; awrap.hidden=!ok; $$('.pctchart').forEach(e=>e.innerHTML=pctChart()); };
+  say(awrap,`<p>Use <b>your data</b> from page 3. Percent dark = dark moths ÷ all moths × 100. Round to the nearest whole number.</p>`);
+  typedProblem(awrap,{id:'a1', part:'P4', num:num(), q:'Percent dark moths, from your tables.',
+    blanks:[{before:'<b>Part A:</b> Lichen bark, generation 1: percent dark =',calc:()=>pctD(dL(),0),tol:1,after:'%',show:'dark ÷ total × 100 (gen 1)'},
+            {before:'<b>Part B:</b> Lichen bark, generation 4: percent dark =',calc:()=>pctD(dL(),3),tol:1,after:'%',show:'dark ÷ total × 100 (gen 4)'},
+            {before:'<b>Part C:</b> Sooty bark, generation 1: percent dark =',calc:()=>pctD(dS(),0),tol:1,after:'%',show:'dark ÷ total × 100 (gen 1)'},
+            {before:'<b>Part D:</b> Sooty bark, generation 4: percent dark =',calc:()=>pctD(dS(),3),tol:1,after:'%',show:'dark ÷ total × 100 (gen 4)'}],
+    hint:'Use the "at start" columns. Add light and dark to get the total, then divide the dark number by the total and multiply by 100.'});
+  say(awrap,`<div class="prob"><div class="pq">Your data: percent dark in each generation</div><div class="pctchart cmpchart">${pctChart()}</div></div>`);
+  const trend=d=>{ const a=Math.round(pctD(d,0)), b=Math.round(pctD(d,3)); return b>a?0:b<a?1:2; };
+  choiceProblem(awrap,{id:'a2', part:'P4', num:num(), q:'Describe the change in <b>your</b> data from generation 1 to generation 4.',
+    parts:[{q:'<b>Part A:</b> On lichen bark, the percent dark…',opts:['went up','went down','stayed the same'],ans:-1,ansFn:()=>trend(dL())},
+           {q:'<b>Part B:</b> On sooty bark, the percent dark…',opts:['went up','went down','stayed the same'],ans:-1,ansFn:()=>trend(dS())}],
+    hint:'Compare your answers to Part A and Part B (lichen), then Part C and Part D (sooty) in the question above.', why:'Your answers match your own data.'});
+  const fit=d=>{ const a=d.sL[0], b=d.sD[0]; return a>b?0:b>a?1:2; };
+  choiceProblem(awrap,{id:'a3', part:'P4', num:num(), q:'<b>Fitness</b> means how well an organism survives and reproduces. In generation 1, each background started with 20 light and 20 dark moths.',
+    parts:[{q:'<b>Part A:</b> In your generation 1 on <b>lichen bark</b>, which form had more survivors (higher fitness)?',opts:['Light moths','Dark moths','They were equal'],ans:-1,ansFn:()=>fit(dL())},
+           {q:'<b>Part B:</b> In your generation 1 on <b>sooty bark</b>, which form had more survivors (higher fitness)?',opts:['Light moths','Dark moths','They were equal'],ans:-1,ansFn:()=>fit(dS())},
+           {q:'<b>Part C:</b> Which statement about fitness fits a model like this one?',opts:['Fitness depends on the environment: the same color can be helpful on one bark and harmful on another','One color always has the highest fitness everywhere','The biggest, strongest moth always has the highest fitness','Fitness only means how long a moth lives'],ans:0}],
+    hint:'Look at the "survivors" columns in the generation 1 row of each table.', why:'Your answers match your data. Fitness depends on how well a trait fits the environment.'});
+  choiceProblem(awrap,{id:'a4', part:'P4', num:num(), q:'What kind of selection is this?',
+    parts:[{q:'<b>Part A:</b> When one form survives better and the population shifts toward that form, generation after generation, this is…',opts:['directional selection','stabilizing selection','disruptive selection','artificial selection'],ans:0},
+           {q:'<b>Part B:</b> In this model, what caused the selection?',opts:['A predator (the bird) found and ate the moths that were easier to see','The moths chose which offspring to have','The paper or bark changed the moths\' alleles','Every moth had exactly the same chance to be eaten'],ans:0}],
+    hint:'Directional selection favors one end (one form). Stabilizing favors the middle. Disruptive favors both ends.', why:'Selection by a predator that shifts the population toward one form is directional selection.'});
+  say(awrap,`<div class="prob"><div class="pq">The real peppered moths</div>
+    <p>Before about 1850, almost all peppered moths near Manchester, England, were the light form. During the <b>Industrial Revolution</b>, coal smoke killed the pale lichens on tree trunks and covered the bark with soot. The dark form (called <i>carbonaria</i>) is caused by an inherited allele. It was first recorded near Manchester in 1848. By 1895, about <b>98%</b> of the peppered moths there were dark.</p>
+    <p>In 1956, Britain passed a <b>Clean Air Act</b>. The soot slowly went away and lichens grew back. Over the next 50 years, the dark form became rare again in most of Britain. Near Liverpool, it fell from about 90% around 1960 to under 10% by about 2000 (rounded numbers).</p>
+    <p>Scientists tested the idea that birds caused these changes. In the 1950s, <b>Bernard Kettlewell</b> released marked moths in a sooty wood and in a clean wood. More of the form that matched the bark survived to be caught again. From 2001 to 2007, <b>Michael Majerus</b> watched birds eat moths resting on trees in a clean area. Birds ate more of the dark moths. Their results supported bird predation as a main cause.</p></div>`);
+  choiceProblem(awrap,{id:'a5', part:'P4', num:num(), q:'Connect your model to the real history.',
+    parts:[{q:'<b>Part A:</b> Which of your backgrounds is most like the trees near Manchester in 1895?',opts:['Sooty bark','Lichen bark'],ans:0},
+           {q:'<b>Part B:</b> After the Clean Air Act, lichens grew back. What happened to the percent of dark moths, and why?',opts:['It went down, because on clean bark the dark moths were easier for birds to see','It went up, because clean air causes dark mutations','It stayed at 98%, because moths can\'t evolve','It went down, because each dark moth turned light'],ans:0},
+           {q:'<b>Part C:</b> How do Kettlewell\'s and Majerus\'s results compare with your model?',opts:['Like the model, birds ate more of the moths that did not match the bark','Unlike the model, birds did not eat moths at all','Like the model, moths changed color to hide','Unlike the model, the color of the bark did not matter'],ans:0}],
+    hint:'Soot made the bark dark. Clean air let the lichens grow back.', why:'Sooty bark favored dark moths. When the bark got clean again, birds found the dark moths more easily, so the dark form became rare.'});
+  choiceProblem(awrap,{id:'a6', part:'P4', num:num(), q:'Did the moths <b>choose</b> to change color?',
+    parts:[{q:'<b>Part A:</b> During your lab, did any single moth change its color?',opts:['No, each moth kept the same color its whole life','Yes, some light moths turned dark','Yes, some dark moths turned light'],ans:0},
+           {q:'<b>Part B:</b> Where did the dark form of the real moth come from?',opts:['A random mutation that was already in the population before it was helpful','The moths tried hard to become dark','Soot stained the moths','The birds caused it'],ans:0},
+           {q:'<b>Part C:</b> So what changed over the generations?',opts:['How common each color was in the population','The color of each moth','The alleles inside each moth','How the moths decided to look'],ans:0}],
+    hint:'Individuals do not evolve. Populations do.', why:'Variation came first, from mutation. Selection changed how common each form was. Individual moths never changed.'});
+  choiceProblem(awrap,{id:'a7', part:'P4', num:num(), q:'Every model has <b>limitations</b> (ways it is not like real life). Which are real limitations of this model?',
+    parts:[{q:'Select all that apply.',opts:['Real birds hunt in different ways than a person picking up paper','Real moths rest in different spots, like under branches, not only on open bark','Real moths do not have exactly 2 offspring each','Real moths come in more than two shades, including in-between forms','The bird in the model finds moths by sight, like a real bird','Color is inherited in the model, like in real moths'],ans:[0,1,2,3]}],
+    hint:'A limitation is a way the model is different from real life. Two of the choices are ways the model is like real life.', why:'Real predators, resting spots, family sizes, and colors are more complex than the model.'});
+  writtenProblem(awrap,{id:'a8', part:'P4', num:num(), q:'Did your results match your predictions from page 2? Explain, using at least one number from your data.', pts:2, bank:['I predicted','on lichen bark','on sooty bark','percent dark','went up','went down','but','because','survived'],
+    groups:[['refers to the prediction',/predict|thought|expected|guess|hypothes/],['uses a number from the data',/\d/]],
+    model:'I predicted dark moths would survive better on sooty bark. On sooty bark the percent dark went from 50% to 85%, so my prediction was right.',
+    hint:'Say what you predicted, then give a number from your data.', why:'Comparing predictions with data is how scientists test their ideas.'});
+  /* ---------- 5. Conclusion ---------- */
+  say(sec[4],`<p>Write a <b>claim, evidence, reasoning (CER)</b> conclusion that answers: <i>How does the color of the tree bark affect which moths survive, and how did this change the peppered moth population in England?</i></p>`);
+  writtenProblem(sec[4],{id:'k1', part:'P5', num:num(), q:'<b>Claim:</b> answer the question in one or two sentences.', pts:2, bank:['moths that match the bark','survive','reproduce','sooty bark','lichen bark','dark moths','light moths','more common','England'],
+    groups:[['which moths survive (the ones that match the bark)',/match|blend|camoufl|hide|same color|(dark|black)[\s\S]{0,40}(soot|dark bark)|(soot|dark bark)[\s\S]{0,40}(dark|black)|(light|white)[\s\S]{0,40}(lichen|light bark|clean)|(lichen|light bark|clean)[\s\S]{0,40}(light|white)/],['how the population changed',/common|percent|population|increase|decrease|went up|went down|more|fewer|rose|fell|evolv/]],
+    model:'Moths that match the color of the bark survive better. In England, dark moths became more common when soot covered the trees, and less common again after the air was cleaned.',
+    hint:'Say which moths survive on each kind of bark, and what happened to the population.', why:'The claim answers both parts of the question.'});
+  writtenProblem(sec[4],{id:'k2', part:'P5', num:num(), q:'<b>Evidence:</b> give numbers from <b>your data</b> for both backgrounds, and one fact from the real history.', pts:3, bank:['lichen bark','sooty bark','percent dark','generation 1','generation 4','50%','98%','1895','Clean Air Act'],
+    groups:[['lichen bark data',/lichen|white|light bark|clean bark/],['sooty bark data',/soot|newspaper|dark bark|black bark/],['uses numbers or percents',/\d/]],
+    model:'On lichen bark, the percent dark went from 50% in generation 1 to 15% in generation 4. On sooty bark, it went from 50% to 80%. Near Manchester, about 98% of peppered moths were dark by 1895.',
+    hint:'Use your percent answers from Analysis, and one number from "The real peppered moths."', why:'Good evidence uses specific numbers.'});
+  writtenProblem(sec[4],{id:'k3', part:'P5', num:num(), q:'<b>Reasoning:</b> explain <i>why</i> the population changed. Use the words <b>camouflage</b> (or blend in), <b>survive</b>, <b>reproduce</b>, and <b>inherited</b>.', pts:4, bank:['camouflage','blend in','birds','see','survive','reproduce','offspring','inherited','allele','generation','natural selection','directional'],
+    groups:[['moths that blend in are eaten less by birds',/camoufl|blend|hide|hidden|harder to see|stand out|easier to see|match/],['survivors reproduce',/surviv|reproduc|offspring|babies|have young/],['color is inherited, so the form becomes more common each generation',/inherit|allele|gene|pass|parents/],['names natural selection, or the change over generations',/natural selection|directional|selection|generation|evolv|over time/]],
+    model:'Birds hunt by sight, so moths with camouflage that blends in with the bark are eaten less. Those moths survive and reproduce more. Color is inherited, so their offspring have the same color, and that form becomes more common each generation. This is directional natural selection. When soot made the bark dark, dark moths were favored; after clean air laws, light moths were favored again.',
+    hint:'Cover four ideas: who gets eaten, who survives and reproduces, why the offspring look like their parents, and what this process is called.', why:'Predators remove the moths that stand out; survivors reproduce; color is inherited; the population shifts over generations (natural selection).'});
+  dataRefresh();
+}
+
+/* ===== Peppered moth lab: hands-on version (paper moths, white paper and newspaper) ===== */
+const SIM=false;
+const SETUP_HTML=`<div class="figwrap" style="margin:12px 0 8px">${MAT_PIC}</div>
+   <p><b>Materials (per group of 2 or 3):</b> 1 sheet of white paper ("lichen bark"), 1 sheet of newspaper ("sooty bark"), a hole punch (or about 60 pre-cut light circles and 60 pre-cut newspaper circles), forceps (or use your fingertips) for the bird's beak, a cup for the bird's "stomach," and a timer.</p>
+   <p><b>Safety:</b> forceps have sharp tips. Point them down and away from people. Pick up every paper circle when you finish.</p>
+   <p><b>Procedure:</b></p><ol class="proc">
+    <li>Punch about 60 light moths from white paper and 60 dark moths from newspaper. You need extras for the offspring.</li>
+    <li>On page 2, make your predictions and lock them in.</li>
+    <li>Lay the <b>white paper</b> (lichen bark) flat on the table. Choose one person to be the <b>bird</b>.</li>
+    <li>The bird looks away. A partner spreads <b>20 light</b> and <b>20 dark</b> moths evenly over the paper. Record these numbers in the generation 1 row.</li>
+    <li>The partner starts the timer and says "go." The bird picks up moths <b>one at a time</b>, as fast as it can, and drops each one in the cup. Stop when the bird has eaten <b>20 moths</b>.</li>
+    <li>Count the moths still on the paper. Record the light survivors and the dark survivors.</li>
+    <li><b>Reproduce:</b> each survivor has 2 offspring of the same color. Multiply each number of survivors by 2. That is the next generation (40 moths again). Clear the paper and spread the new generation while the bird looks away.</li>
+    <li>Repeat steps 5 to 7 for generations 2 and 3. Then record the generation 4 offspring (no hunt for generation 4).</li>
+    <li>Switch birds. Repeat steps 4 to 8 on the <b>newspaper</b> (sooty bark), starting again with 20 light and 20 dark moths.</li></ol>`;
+function buildData(s,num){
+  const lock=h('div',{class:'fb info'}); lock.innerHTML='<b>Locked.</b> Lock in your predictions on page 2 first.'; s.appendChild(lock);
+  const dwrap=h('div',{}); s.appendChild(dwrap);
+  dwrap.insertAdjacentHTML('beforeend',`<p>Record your numbers after every hunt. Each hunt, the bird eats exactly ${EAT} moths, so ${NEAT*2-EAT} moths survive. Each survivor has 2 offspring, so every generation starts with 40 moths.</p>`);
+  genTableProblem(dwrap,{id:'tL', part:'P3', num:num(), q:'<b>Lichen bark</b> (white paper): record your data.', pts:4, corner:'Lichen bark', title:'Lichen bark'});
+  genTableProblem(dwrap,{id:'tS', part:'P3', num:num(), q:'<b>Sooty bark</b> (newspaper): record your data.', pts:4, corner:'Sooty bark', title:'Sooty bark'});
+  obsTableProblem(dwrap,{id:'obs', part:'P3', num:num(), q:'Record what you observed during the hunts.', pts:2, rows:OBS_ROWS});
+  window.dataRefresh=()=>{ const ok=!!st('pred').checked; lock.hidden=ok; dwrap.classList.toggle('off',!ok); if(window.anaRefresh) anaRefresh(); };
+}
+
+/* ============================== BUILD / SCORE ============================== */
+function scoreAll(){ const parts=PARTS.slice(0,-1).map(p=>({k:p.k,label:p.label,got:0,max:0})); PROBS.forEach(pr=>{ const pt=parts.find(x=>x.k===pr.part); pt.got+=pr.score(); pt.max+=pr.max; });
+  return {parts, total:parts.reduce((a,b)=>a+b.got,0), max:parts.reduce((a,b)=>a+b.max,0)}; }
+function build(){
+  PROBS.length=0; const ws=$('#ws'); ws.innerHTML='';
+  $('#nav').innerHTML=PARTS.map((pt,i)=>`<button class="ntile" type="button" data-i="${i}" aria-label="${pt.title}"><span class="ic">${ico(i,22)}</span><span class="nm">${pt.label}</span></button>`).join('');
+  $$('#nav .ntile').forEach(b=>b.addEventListener('click',()=>showPart(+b.dataset.i)));
+  const secs=PARTS.map((pt,i)=>{ const el=h('section',{class:'sec',id:'part'+i}); const last=i===PARTS.length-1;
+    el.innerHTML=`<div class="sechead"><div class="badge"><span class="z">${i+1}</span>${ico(i,34)}</div><div><div class="meta">${last?'Grade':`Section ${i+1} of ${PARTS.length-1} · about ${pt.min} min`}</div><h2>${pt.title}</h2></div></div>`;
+    const c=h('div',{class:'card'}); el.appendChild(c);
+    const nav=h('div',{class:'secnav'});
+    const back=h('button',{class:'btn ghost',type:'button'},i===0?'':'← Back'); if(i===0) back.style.visibility='hidden'; back.addEventListener('click',()=>showPart(i-1));
+    nav.appendChild(back);
+    if(!last){ const nx=h('button',{class:'btn primary',type:'button'},i===PARTS.length-2?'See my grade →':`Next: ${PARTS[i+1].title} →`); nx.addEventListener('click',()=>showPart(i+1)); nav.appendChild(nx); }
+    el.appendChild(nav); ws.appendChild(el); return c; });
+  buildContent(secs);
+  secs[PARTS.length-1].id='turnin';
+  showPart(Math.min(S.cur||0,PARTS.length-1),true);
+  $('#whoami').textContent=S.student?`${S.student.first} ${S.student.last}`:''; refresh();
+}
+function showPart(i,noScroll){
+  S.cur=i; $$('#ws .sec').forEach((el,j)=>el.hidden=j!==i);
+  $$('#nav .ntile').forEach((t,j)=>t.classList.toggle('cur',j===i));
+  if(!noScroll){ save(); window.scrollTo(0,0); }
+}
+function refresh(){
+  const sc=scoreAll(), done=PROBS.filter(p=>p.checked()).length;
+  $('#scorePill').textContent=`${done}/${PROBS.length} checked · ${sc.total}/${sc.max} pts`;
+  PARTS.slice(0,-1).forEach((pt,i)=>{ const t=$(`#nav .ntile[data-i="${i}"]`); if(t) t.classList.toggle('done',PROBS.filter(p=>p.part===pt.k).every(p=>p.checked())); });
+  const t7=$(`#nav .ntile[data-i="${PARTS.length-1}"]`); if(t7) t7.classList.toggle('done',!!S.submittedAt);
+  const c=$('#turnin'); if(!c) return;
+  const rows=sc.parts.map(p=>`<tr><th>${p.label}</th><td>${p.got} / ${p.max}</td></tr>`).join('');
+  c.innerHTML=`<div style="display:flex;gap:22px;align-items:center;flex-wrap:wrap"><div class="big">${sc.total}/${sc.max}</div><div><h3 style="margin:0">${esc(S.student?S.student.first+' '+S.student.last:'')}</h3><p class="muted" style="margin:0">${done} of ${PROBS.length} problems checked</p></div></div>
+    <table class="res" style="margin-top:12px">${rows}</table>
+    <p class="small muted" style="margin-top:10px">Problems you haven't checked count as 0. You can turn in again later; your teacher sees the newest one.</p>
+    <div class="btnrow"><button class="btn primary" id="subBtn" type="button">${S.submittedAt?'Turn in again':'Turn in my lab'}</button><button class="btn ghost" id="csvBtn" type="button">Download CSV</button></div>
+    <p class="fb info sheetStatus" aria-live="polite">${S.sentAt?`Sent to your teacher ${new Date(S.sentAt).toLocaleString()}.`:'Not turned in yet.'}</p>`;
+  $('#subBtn').addEventListener('click',turnIn);
+  $('#csvBtn').addEventListener('click',()=>downloadCSV([recordRow()],`PepperedMothLab_${(S.student&&S.student.last||'student').replace(/\W+/g,'')}.csv`));
+}
+const CSV_HEAD=['Student ID','Last Name','First Name','Period','Teacher','Activity','Score','Total','Percent',...PARTS.slice(0,-1).map(p=>p.label),'Date'];
+function recordRow(){ const st=S.student||{}, sc=scoreAll(); return [st.id||'',st.last||'',st.first||'',st.period||'',st.teacher||'',ACTIVITY,sc.total,sc.max,Math.round(100*sc.total/sc.max)+'%',...sc.parts.map(p=>p.got),new Date(S.submittedAt||Date.now()).toLocaleString()]; }
+function csvText(rows){ const q=v=>{ v=String(v==null?'':v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }; return [CSV_HEAD,...rows].map(r=>r.map(q).join(',')).join('\r\n')+'\r\n'; }
+function downloadCSV(rows,name){ const b=new Blob([csvText(rows)],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500); }
+const loadRecs=()=>{ try{ return (JSON.parse(localStorage.getItem(RECS))||[]).filter(r=>r.length===CSV_HEAD.length); }catch(e){ return []; } };
+function saveRecord(){ if(S.preview) return; const recs=loadRecs(), row=recordRow(); const i=recs.findIndex(r=>r[0]===row[0]&&r[1]===row[1]); if(i>=0) recs[i]=row; else recs.push(row); try{ localStorage.setItem(RECS,JSON.stringify(recs)); }catch(e){} }
+function turnIn(){
+  const left=PROBS.filter(p=>!p.checked()).length;
+  if(left&&!confirm(`${left} problem${left>1?'s':''} not checked yet (they count as 0). Turn in anyway?`)) return;
+  S.submittedAt=Date.now(); save(); saveRecord(); cloudSave(true); disarm(); refresh();
+  const msg=t=>$$('.sheetStatus').forEach(e=>e.textContent=t);
+  if(S.preview){ msg('Preview mode: nothing is sent.'); return; }
+  const st=S.student, sc=scoreAll();
+  const body={studentId:st.id||'',firstName:st.first||'',lastName:st.last||'',period:st.period||'',teacher:st.teacher||'',locks:'0',when:new Date().toString(),activity:ACTIVITY,score:String(sc.total),total:String(sc.max),
+    qlabels:sc.parts.map((p,i)=>'P'+(i+1)+' '+PARTS[i].label).join('|'),qpoints:sc.parts.map(p=>p.got).join('|'),qmax:sc.parts.map(p=>p.max).join('|')};
+  msg('Sending...');
+  fetch(sheetURL(),{method:'POST',mode:'no-cors',body:new URLSearchParams(body)}).then(()=>{ S.sentAt=new Date().toISOString(); save(); msg('Sent! Your teacher will see your score.'); }).catch(()=>msg("Couldn't send. Check the Wi-Fi and try again, or download the CSV."));
+}
+
+/* ============================== NO LOCKDOWN ON WORKSHEETS ============================== */
+let teacherOpen=false;
+function arm(){} function disarm(){} function showLock(){} function enterFS(){}
+['copy','cut','paste','contextmenu'].forEach(ev=>document.addEventListener(ev,e=>{ if(teacherOpen||S.preview) return; e.preventDefault(); }));
+
+/* ============================== SIGN IN ============================== */
+function showWS(){ $('#start').hidden=true; $('#top').hidden=false; $('#ws').hidden=false; build(); window.scrollTo(0,0); if(S.locked&&LOCKDOWN&&!S.lockOff) showLock(); else arm(); }
+function renderStart(){ const has=!!S.student; $('#resumeBox').hidden=!has; $('#startForm').hidden=has; $('#signinTitle').textContent=has?'Welcome back':'Sign in to start';
+  if(has) $('#resumeText').innerHTML=`Signed in as <b>${esc(S.student.first)} ${esc(S.student.last)}</b>, period ${esc(S.student.period)}.`; }
+$('#fPeriod').innerHTML='<option value="">Choose your period</option>'+periodList().map(p=>`<option>${esc(p)}</option>`).join('');
+$('#fTeacher').innerHTML='<option value="">Choose your teacher</option>'+teacherList().map(t=>`<option>${esc(t)}</option>`).join('');
+let starting=false;
+async function start(){
+  if(starting) return; starting=true;
+  try{
+    const v={first:$('#fFirst').value.trim(),last:$('#fLast').value.trim(),id:$('#fId').value.trim(),period:$('#fPeriod').value,teacher:$('#fTeacher').value};
+    const miss=[]; if(!v.first) miss.push('first name'); if(!v.last) miss.push('last name'); if(!v.id) miss.push('student ID'); if(!v.period) miss.push('period'); if(!v.teacher) miss.push('teacher');
+    const err=$('#formErr'); if(miss.length){ err.className='fb no'; err.textContent='Fill in your '+miss.join(', ')+'.'; err.hidden=false; return; }
+    if(LOCKDOWN) enterFS();
+    err.className='fb info'; err.textContent='Checking for your saved work...'; err.hidden=false;
+    const res=await cloudLoad(v); err.hidden=true;
+    if(res.status==='found'){ const d=res.data; d.student=Object.assign({},d.student||{},{first:v.first,period:v.period,teacher:v.teacher}); adopt(d); showWS(); note('✓ Your saved work was loaded'); return; }
+    const ns=fresh(); ns.student=v; adopt(ns); showWS(); cloudSave(true);
+  } catch(ex){ const er=$('#formErr'); er.className='fb no'; er.textContent='Something went wrong starting ('+(ex&&ex.message||ex)+'). Reload and try again.'; er.hidden=false; }
+  finally{ starting=false; }
+}
+$('#startBtn').addEventListener('click',start);
+$('#startForm').addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.tagName==='INPUT'){ e.preventDefault(); start(); } });
+$('#resumeBtn').addEventListener('click',async()=>{ const b=$('#resumeBtn'); b.disabled=true; b.textContent='Loading your work...'; if(LOCKDOWN&&!S.locked) enterFS();
+  const res=await cloudLoad(S.student); b.disabled=false; b.textContent='Continue my lab';
+  if(res.status==='found'&&(res.data.updatedAt||0)>(S.updatedAt||0)&&checkedCount(res.data)>=checkedCount(S)){ const d=res.data; d.student=S.student; adopt(d); note('✓ Your newest saved work was loaded'); } showWS(); });
+$('#notMeBtn').addEventListener('click',async()=>{ const b=$('#notMeBtn'); b.disabled=true;
+  try{ if(cloudOK()) await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); }catch(e){ b.disabled=false; $('#resumeErr').textContent="Can't back up the last student's work right now. Check the Wi-Fi, or ask your teacher."; $('#resumeErr').hidden=false; return; }
+  b.disabled=false; adopt(fresh()); ['#fFirst','#fLast','#fId','#fPeriod','#fTeacher'].forEach(s=>$(s).value=''); renderStart(); });
+
+/* ============================== TEACHER ============================== */
+function openTeacher(){ teacherOpen=true; $('#teachLogin').hidden=false; $('#teachPanel').hidden=true; $('#teachErr').hidden=true; $('#teachCode').value=''; $('#teachOv').classList.add('show'); setTimeout(()=>$('#teachCode').focus(),50); }
+function closeTeacher(){ $('#teachOv').classList.remove('show'); teacherOpen=false; }
+$('#teacherLink').addEventListener('click',openTeacher); $('#teachBtn').addEventListener('click',openTeacher);
+$('#teachCancel').addEventListener('click',closeTeacher);
+$('#teachCode').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#teachGo').click(); });
+$('#teachGo').addEventListener('click',()=>{ if(!codeIs($('#teachCode').value,TEACHER_CODE)){ $('#teachErr').hidden=false; return; } $('#teachLogin').hidden=true; $('#teachPanel').hidden=false; renderTeacher(); });
+function renderTeacher(){
+  const recs=loadRecs(), p=$('#teachPanel'), keyOn=document.body.classList.contains('keyon');
+  p.innerHTML=`<h2>Teacher tools</h2>
+    <div class="btnrow"><button class="btn ghost" id="tKey" type="button">${keyOn?'Hide answer key':'Answer key'}</button>
+      <button class="btn ghost" id="tPrev" type="button">${S.preview?'End preview':'Preview (saves nothing)'}</button>
+      <button class="btn ghost" id="tResetWrong" type="button">Reset all wrong answers</button>
+      <button class="btn ghost" id="tReset" type="button">Reset this Chromebook</button><button class="btn ghost" id="tClose" type="button">Close</button></div>
+    <h3 style="margin-top:16px">Scores saved on this Chromebook (${recs.length})</h3>
+    <div class="wide">${recs.length?`<table class="nb"><tr><th>Student</th><th>ID</th><th>Period</th><th>Score</th><th>Date</th></tr>${recs.map(r=>`<tr><td>${esc(r[1])}, ${esc(r[2])}</td><td>${esc(r[0])}</td><td>${esc(r[3])}</td><td>${r[6]}/${r[7]}</td><td>${esc(r[r.length-1])}</td></tr>`).join('')}</table>`:'<p class="muted">None yet.</p>'}</div>
+    <div class="btnrow"><button class="btn primary" id="tCsv" type="button" ${recs.length?'':'disabled'}>Download scores (CSV)</button></div>
+    <h3 style="margin-top:16px">Load a student's saved work</h3>
+    <div class="btnrow"><input class="code" id="tId" placeholder="Student ID" style="width:150px"><input class="code" id="tLast" placeholder="Last name" style="width:170px"><button class="btn ghost" id="tLoad" type="button">Load work</button></div>
+    <p class="fb info" id="tMsg" style="min-height:1em"></p>`;
+  const msg=t=>$('#tMsg').textContent=t;
+  $('#tKey').addEventListener('click',()=>{ document.body.classList.toggle('keyon'); renderTeacher(); msg(document.body.classList.contains('keyon')?'Answer key on: each box shows its answer, sort chips show their box, and correct choices have a dashed gold outline.':'Answer key off.'); });
+  $('#tPrev').addEventListener('click',()=>{ if(S.preview){ location.reload(); return; } const ns=fresh(); ns.preview=true; ns.student={first:'Teacher',last:'Preview',id:'0',period:'-',teacher:teacherList()[0]}; S=ns; closeTeacher(); showWS(); note('Preview: nothing is saved'); });
+  $('#tReset').addEventListener('click',()=>{ if(confirm('Erase this lab on this Chromebook? Work backed up to the Saved Student Work sheet is not deleted.')){ try{ localStorage.removeItem(STORE); }catch(e){} location.reload(); } });
+  $('#tResetWrong').addEventListener('click',()=>{
+    const wrong=PROBS.filter(pr=>{ const P=S.p[pr.id]||{}; return (P.tries||0)>0 && !P.right; });
+    if(!wrong.length){ msg('Nothing to reset: this student has no wrong answers.'); return; }
+    if(!confirm(`Reset ${wrong.length} problem${wrong.length>1?'s':''} that ${wrong.length>1?'are':'is'} wrong or on a second try for ${(S.student&&S.student.first)||'this student'}? Correct answers stay.`)) return;
+    wrong.forEach(pr=>{ delete S.p[pr.id]; });
+    save(); cloudSave(true); msg(`Reset ${wrong.length} problem${wrong.length>1?'s':''}. Reloading…`); setTimeout(()=>location.reload(),700); });
+  $('#tClose').addEventListener('click',closeTeacher);
+  $('#tCsv').addEventListener('click',()=>downloadCSV(recs,`PepperedMothLab_scores_${new Date().toISOString().slice(0,10)}.csv`));
+  $('#tLoad').addEventListener('click',async()=>{ const s={id:$('#tId').value.trim(),last:$('#tLast').value.trim()}; if(!s.id||!s.last){ msg('Type the student ID and last name.'); return; } msg('Looking up saved work...');
+    const r=await cloudLoad(s); if(r.status==='found'){ adopt(r.data); closeTeacher(); renderStart(); $('#start').hidden=false; $('#ws').hidden=true; $('#top').hidden=true; } else msg(r.status==='none'?'No saved work found for that student.':"Couldn't reach the saved-work sheet."); });
+}
+
+if(!STORAGE_OK) $('#noStore').hidden=false;
+renderStart();
+})();
+</script>
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

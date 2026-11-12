@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Karyotype Analysis Lab | Biology Unit 4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1626; --panel:#142136; --panel2:#1a2a44; --line:#2a3d5f; --line2:#3a5580;
+  --text:#e8eef8; --muted:#a3b4cf; --dim:#7488a9;
+  --leaf:#5fe3a9; --sun:#ffd35c; --r:#ffd35c; --sky:#45c8f0; --ok:#4ade80; --bad:#fb7185; --pink:#f472b6;
+  --font:'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+*{box-sizing:border-box} [hidden]{display:none !important}
+html,body{margin:0}
+body{background-color:var(--bg); background-image:linear-gradient(rgba(110,150,210,.065) 1px,transparent 1px),linear-gradient(90deg,rgba(110,150,210,.065) 1px,transparent 1px); background-size:32px 32px;
+  color:var(--text); font-family:var(--font); font-size:17px; line-height:1.55; -webkit-user-select:none; user-select:none}
+input,textarea{-webkit-user-select:text; user-select:text}
+h1,h2,h3,h4{margin:0 0 .45em; line-height:1.2; font-weight:600}
+h1{font-size:clamp(28px,4.4vw,40px); font-weight:700} h2{font-size:24px} h3{font-size:19px}
+p{margin:0 0 .75em} .muted{color:var(--muted)} .small{font-size:14px}
+sub,sup{font-size:.72em}
+:focus-visible{outline:3px solid var(--r); outline-offset:2px}
+.top{position:sticky; top:0; z-index:20; background:rgba(13,22,38,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+.top-in{max-width:1100px; margin:0 auto; padding:8px 16px; display:flex; gap:12px; align-items:center}
+.brand{font-weight:600; font-size:15px; white-space:nowrap} .brand span{display:block; font-weight:400; font-size:12px; color:var(--muted)}
+.nav{display:flex; gap:6px; flex:1; overflow-x:auto; padding:3px 2px}
+.ntile{flex:0 0 auto; width:54px; height:54px; border-radius:7px; border:1.5px solid var(--line2); background:var(--panel); color:var(--text); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer; position:relative; font:inherit; padding:0}
+.ntile .ic{color:var(--leaf); line-height:0} .ntile .nm{font-size:8.5px; color:var(--muted)}
+.ntile.cur{border-color:var(--r); background:rgba(255,211,92,.14)}
+.ntile.cur .nm{color:var(--r)}
+.secnav{display:flex; justify-content:space-between; gap:10px; margin-top:4px}
+.ntile.done::after{content:'✓'; position:absolute; top:1px; right:4px; font-size:10px; font-weight:700; color:var(--ok)}
+.scorepill{font-size:13px; padding:4px 10px; border-radius:999px; background:var(--panel2); white-space:nowrap}
+.savenote{font-size:12.5px; color:var(--ok); white-space:nowrap} @media (max-width:1300px){ .savenote{display:none} } @media (max-width:900px){ .scorepill{display:none} }
+main{max-width:1000px; margin:0 auto; padding:20px 16px 80px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin:0 0 18px}
+.sec{scroll-margin-top:80px}
+.sechead{display:flex; gap:14px; align-items:center; margin:28px 0 10px}
+.badge{width:66px; height:66px; border-radius:10px; border:2px solid var(--leaf); background:var(--panel); display:flex; align-items:center; justify-content:center; position:relative; flex:0 0 auto; color:var(--leaf)}
+.badge .z{position:absolute; top:3px; left:6px; font-size:11px; color:var(--muted)}
+.meta{color:var(--muted); font-size:14px}
+.btn{font:inherit; font-weight:600; font-size:15px; border-radius:10px; padding:10px 18px; cursor:pointer; border:1.5px solid transparent}
+.btn.primary{background:var(--r); color:#231a00} .btn.ghost{background:transparent; border-color:var(--line2); color:var(--text)}
+.btn.small{padding:6px 12px; font-size:14px} .btn:disabled{opacity:.45; cursor:not-allowed}
+.btnrow{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:12px}
+.field{display:flex; flex-direction:column; gap:4px; font-size:14px; color:var(--muted)}
+.field input,.field select{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px}
+.formgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin:10px 0}
+.fb{margin-top:10px; padding:10px 14px; border-radius:10px; font-size:15px}
+.fb.ok{background:rgba(74,222,128,.12); color:#c9f7d8} .fb.no{background:rgba(251,113,133,.12); color:#ffd3db} .fb.info{background:var(--panel2)}
+.prob{border-top:1px solid var(--line); padding-top:16px; margin-top:16px}
+.prob:first-of-type{border-top:none; padding-top:0; margin-top:0}
+.pq{font-weight:500; margin-bottom:8px}
+.pnum{display:inline-block; min-width:30px; font-weight:700; color:var(--leaf)}
+.pts{font-size:13px; color:var(--muted); font-weight:400}
+.hintbox{background:rgba(255,211,92,.08); border-left:3px solid var(--r); border-radius:8px; padding:8px 12px; margin-top:8px; font-size:15px}
+/* drag and drop */
+.figwrap{position:relative; width:100%}
+.figwrap svg{width:100%; height:auto; display:block; background:#0a1322; border:1px solid var(--line); border-radius:12px}
+.figwrap svg text{font-family:var(--font)}
+.zone{position:absolute; transform:translate(-50%,-50%); min-height:32px; border:2px dashed #8fb3e6; border-radius:9px; background:rgba(13,22,38,.92); color:var(--text); font:inherit; font-size:14px; font-weight:600; display:flex; align-items:center; justify-content:center; padding:2px 6px; cursor:pointer; text-align:center; line-height:1.15}
+.zone.empty{color:var(--dim); font-weight:400; font-size:12.5px}
+.zone.filled{border-style:solid; border-color:var(--r); background:#2b2410}
+.zone.hot{box-shadow:0 0 0 3px rgba(255,211,92,.5)}
+.zone.locked{opacity:.9}
+.zone.ok{border-color:var(--ok); background:#0f2e1d} .zone.no{border-color:var(--bad); background:#3a0f1a}
+.pool{display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 4px; padding:10px; border:1px dashed var(--line2); border-radius:10px; min-height:52px}
+.pool .lbl{width:100%; font-size:12.5px; color:var(--muted)}
+.chip{font:inherit; font-size:15px; font-weight:600; padding:6px 14px; border-radius:999px; border:1.5px solid var(--line2); background:var(--panel2); color:var(--text); cursor:grab; touch-action:none}
+.chip.sel{border-color:var(--r); background:rgba(255,211,92,.16); box-shadow:0 0 0 3px rgba(255,211,92,.35)}
+.bins{display:grid; gap:10px; margin-top:6px}
+.bin{border:2px dashed var(--line2); border-radius:12px; padding:10px; min-height:96px; cursor:pointer; background:rgba(13,22,38,.5)}
+.bin h4{margin:0 0 8px; font-size:15px; color:var(--leaf)} .bin.hot{border-color:var(--r)}
+.bin .chip{cursor:pointer; margin:3px} .bin .chip.ok{border-color:var(--ok); background:#0f2e1d} .bin .chip.no{border-color:var(--bad); background:#3a0f1a}
+.phenbox{background:rgba(244,114,182,.1); border-left:4px solid #f472b6; border-radius:8px; padding:10px 14px; margin-bottom:14px}
+.fixnote{font-size:12px; color:#ffd3db; font-weight:400}
+/* equation */
+.eq{display:flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:20px; font-weight:600; margin:10px 0}
+.eq .zone{position:static; transform:none; min-width:120px; min-height:40px}
+/* choices */
+.opts{display:grid; gap:8px; margin:6px 0}
+.opt{display:flex; gap:12px; align-items:center; text-align:left; background:var(--panel2); border:1.5px solid var(--line); color:var(--text); border-radius:10px; padding:9px 14px; font:inherit; font-size:16px; cursor:pointer}
+.opt .L{flex:0 0 26px; height:26px; border-radius:50%; display:grid; place-items:center; background:var(--bg); font-weight:600; font-size:13px}
+.opt.multi .L{border-radius:6px}
+.opt.sel{border-color:var(--r); background:rgba(255,211,92,.08)} .opt.sel .L{background:var(--r); color:#231a00}
+.opt.ok{border-color:var(--ok); background:rgba(74,222,128,.1)} .opt.no{border-color:var(--bad); background:rgba(251,113,133,.1)}
+.opt:disabled{cursor:default}
+input.blank{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:7px 10px; font:inherit; font-size:16px; width:170px}
+input.blank.ok{border-color:var(--ok)} input.blank.no{border-color:var(--bad)}
+.brow{margin:8px 0}
+/* answer key (teacher) */
+body.keyon .zone[data-key]::after{content:'key: ' attr(data-key); position:absolute; top:100%; left:50%; transform:translateX(-50%); font-size:11px; color:var(--r); white-space:nowrap; margin-top:2px}
+body.keyon .chip[data-key]::after{content:' → ' attr(data-key); font-size:11px; color:var(--r)}
+body.keyon .opt[data-key]{outline:2px dashed var(--r); outline-offset:2px}
+body.keyon input.blank[data-key]+.keytxt{display:inline}
+.datatab select.ocell{font:inherit; padding:4px 6px; border-radius:8px; max-width:100%}
+.datatab input.dcell{width:72px; font:inherit; padding:4px 6px; border-radius:8px; text-align:center}
+.datachart svg{width:100%; height:auto; display:block; margin-top:10px}
+ol.proc li{margin:4px 0}
+.off{opacity:.35; pointer-events:none}
+.btbkey{display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; margin:6px 0 10px}.btbkey span{display:inline-block; width:16px; height:16px; border-radius:50%; vertical-align:middle; border:1px solid rgba(255,255,255,.4)}
+.simwrap{display:grid; grid-template-columns:minmax(150px,220px) 1fr; gap:18px; align-items:start; background:rgba(255,255,255,.04); border:1px solid var(--line,#2a3d5f); border-radius:14px; padding:14px}
+.simwrap.off{opacity:.35; pointer-events:none}
+.bigtube svg{width:100%; height:auto; display:block}.clock{text-align:center; font-weight:700; font-size:20px; margin-top:6px}
+.tg{display:block; margin:4px 0; font-size:17px}.tg input{transform:scale(1.3); margin-right:8px}
+.sensor{margin:10px 0; font-size:18px}.sensor b{font-size:24px; color:#ffd35c}
+.btn.on{outline:2px solid #ffd35c}
+.dot{display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:6px; vertical-align:middle}
+.predtab select{font:inherit; padding:4px 6px; border-radius:8px}
+#sChart svg{width:100%; height:auto; display:block}
+@media (max-width:700px){ .simwrap{grid-template-columns:1fr} .bigtube{max-width:180px; margin:0 auto} }
+.wbank2{margin-top:8px; padding:8px 10px; border:1px dashed rgba(163,180,207,.5); border-radius:10px; font-size:14px; line-height:2}
+.wchip{font:inherit; font-size:14px; margin:2px 4px 2px 0; padding:2px 10px; border-radius:999px; border:1px solid rgba(163,180,207,.6); background:rgba(255,255,255,.06); color:inherit; cursor:pointer}
+.wchip:hover{border-color:#ffd35c}
+.wtext{width:100%; min-height:110px; font:inherit; padding:10px; border-radius:10px; border:1.5px solid var(--line,#2a3d5f); background:rgba(255,255,255,.04); color:inherit; resize:vertical}
+.wkey{display:none; margin-top:6px; font-size:14px; color:var(--r,#ffd35c)}
+body.keyon .wkey{display:block}
+.keytxt{display:none; font-size:12px; color:var(--r); margin-left:6px}
+.big{font-size:52px; font-weight:700; color:var(--r); line-height:1}
+table.res{border-collapse:collapse; width:100%} table.res th,table.res td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line)} table.res th{color:var(--muted); font-weight:400}
+.card.nostore{border:2px solid var(--bad); background:rgba(251,113,133,.08)}
+.overlay{position:fixed; inset:0; background:rgba(4,9,18,.94); z-index:100; display:none; align-items:center; justify-content:center; padding:20px}
+.overlay.show{display:flex}
+.modal{background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:24px; max-width:900px; width:100%; max-height:92vh; overflow:auto}
+input.code{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px; width:200px}
+table.nb{border-collapse:collapse; width:100%; font-size:14px} table.nb th,table.nb td{border:1px solid var(--line2); padding:6px 8px} table.nb th{background:var(--panel2)}
+.wide{overflow-x:auto}
+@media (max-width:700px){ .zone{font-size:11px; min-height:26px} .chip{font-size:13px; padding:5px 10px} }
+@media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important} }
+.prob + p,.prob + .phenbox,.prob + .figwrap{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+
+.refnote{background:#fffdf5;color:#1f2937;border:1px solid #e5d9a6;border-radius:10px;padding:12px 14px;margin:8px 0 12px;font-size:15px;line-height:1.45}
+.refnote .rnhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;border-bottom:2px solid #1f2937;padding-bottom:4px;margin-bottom:8px;font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+.refnote .rnhead b{font-size:17px;text-transform:none;letter-spacing:0}
+.refnote .rngrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:6px 14px;margin-bottom:8px}
+.refnote .rngrid span,.refnote p span{display:block;font-size:11.5px;color:#6b7280;text-transform:uppercase;letter-spacing:.04em}
+.refnote p{margin:0}
+.casepick{background:var(--panel2);border:1.5px solid var(--line2);border-radius:12px;padding:14px;margin:16px 0}
+.spreadwrap{max-width:520px;margin:0 auto}
+.figwrap .spreadwrap svg,.spreadwrap svg{border:none;background:transparent}
+details.refbox{margin:12px 0;border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:rgba(255,255,255,.03)}
+details.refbox summary{cursor:pointer;font-weight:600}
+.tkey{border:1.5px dashed var(--r);border-radius:10px;padding:10px;margin:14px 0}
+.tkey table{color:var(--text);margin-top:6px}
+.ktray{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;padding:10px;border:1px dashed #94a3b8;border-radius:10px;background:#f8fafc;min-height:60px}
+.ktray .small{color:#475569}
+.kchr{background:#fff;border:2px solid #cbd5e1;border-radius:8px;padding:4px 6px;cursor:pointer;min-width:40px;min-height:44px;display:flex;align-items:flex-end;justify-content:center}
+.kchr svg{display:block}
+.kchr.sel{border-color:#d97706;box-shadow:0 0 0 3px rgba(255,211,92,.7)}
+.kslots{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px;background:#f8fafc;border-radius:10px;padding:10px}
+.kslot{background:#fff;border:2px dashed #94a3b8;border-radius:8px;padding:4px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;color:#334155;font:inherit;font-size:14px;font-weight:700}
+.kslot svg{display:block;max-width:100%;height:auto}
+.kslot:hover,.kchr:hover{border-color:#d97706}
+
+</style>
+</head>
+<body>
+<header class="top" id="top" hidden>
+  <div class="top-in">
+    <div class="brand">Karyotype lab<span id="whoami"></span></div>
+    <nav class="nav" id="nav" aria-label="Worksheet parts"></nav>
+    <span class="scorepill" id="scorePill"></span>
+    <span class="savenote" id="saveNote" aria-live="polite"></span>
+    <button class="btn ghost small" id="teachBtn" type="button">Teacher</button>
+  </div>
+</header>
+
+<main>
+  <section id="start">
+    <div class="muted" style="margin-top:8px">Biology · Unit 4: Genetics · Lab · about 50 minutes</div>
+    <h1>Karyotype Analysis Lab</h1>
+    <p class="muted" style="font-size:18px;max-width:42em">Be a cytogenetics lab technician: cut out a patient's chromosomes, match them into pairs, and find out what the karyotype shows.</p>
+    <div class="card"><h3>How it works</h3>
+      <p style="margin:0">Each problem gets <b>two tries</b>. Right on either try earns full credit. If your first try is wrong, you'll be told it isn't right yet (but not the answer), so look again and try once more. Wrong twice and the problem is marked wrong and locks. Stuck? Tap <b>Hint</b> before you check.</p></div>
+    <div class="card nostore" id="noStore" hidden><h3>This browser can't save your work</h3><p style="margin:0">You may be in guest or incognito mode. Sign in to your school account and open the worksheet again.</p></div>
+    <div class="card">
+      <h3 id="signinTitle">Sign in to start</h3>
+      <div id="resumeBox" hidden><p id="resumeText"></p>
+        <div class="btnrow"><button class="btn primary" id="resumeBtn" type="button">Continue my lab</button><button class="btn ghost small" id="notMeBtn" type="button">Not you? Sign in as a different student</button></div>
+        <div class="fb no" id="resumeErr" hidden></div></div>
+      <div id="startForm">
+        <div class="formgrid">
+          <label class="field">First name<input id="fFirst" autocomplete="off"></label><label class="field">Last name<input id="fLast" autocomplete="off"></label>
+          <label class="field">Student ID<input id="fId" inputmode="numeric" autocomplete="off"></label>
+          <label class="field">Period<select id="fPeriod"></select></label><label class="field">Teacher<select id="fTeacher"></select></label>
+        </div>
+        <p class="small muted">Your work saves as you go. On any Chromebook, sign in with the same student ID and last name to pick up where you left off.</p>
+        <div class="fb no" id="formErr" hidden></div>
+        <div class="btnrow"><button class="btn primary" type="button" id="startBtn">Start the lab</button></div>
+      </div>
+    </div>
+    <p style="text-align:center"><button class="btn ghost" id="teacherLink" type="button">Teacher: enter unlock code</button></p>
+  </section>
+  <div id="ws" hidden></div>
+</main>
+
+<div class="overlay" id="teachOv" role="dialog" aria-modal="true" aria-labelledby="tTitle">
+  <div class="modal"><div id="teachLogin"><h2 id="tTitle">Teacher</h2>
+    <div class="btnrow"><input class="code" id="teachCode" type="password" placeholder="Teacher code" autocomplete="off"><button class="btn primary" id="teachGo" type="button">Open</button><button class="btn ghost" id="teachCancel" type="button">Close</button></div>
+    <div class="fb no" id="teachErr" hidden>That code didn't work.</div></div><div id="teachPanel" hidden></div></div>
+</div>
+<div class="overlay" id="tabOv" role="dialog" aria-modal="true"><div class="modal" style="max-width:520px"><h2>This lab is open in another tab</h2><p>To keep your newest work safe, this copy stopped saving. Close the extra tab, then reload this one.</p><div class="btnrow"><button class="btn primary" type="button" onclick="location.reload()">Reload with my newest work</button></div></div></div>
+
+<script src="sheets-config.js"></script>
+<script>
+(function(){
+'use strict';
+/* ============================== SETTINGS ============================== */
+const LESSON_TITLE='Chromosomes and Karyotypes';           // unlock code = last word of this title
+const UNLOCK_CODE=LESSON_TITLE.trim().split(/\s+/).pop();
+const TEACHER_CODE='Teacher007';   // universal teacher-tools code
+const codeIs=(v,c)=>String(v||'').trim().toLowerCase()===String(c).toLowerCase();
+const WS_ID='bio-u4-karyotype-lab', ACTIVITY='Karyotype Analysis Lab';
+const BACKUP_URL='https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const SAVE_URL_BUILTIN='https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';
+const BACKUP_TEACHERS=['Austin','Mueller','McCue','Arce','Trimm','Garcia','Trimm/Callanan','Callanan'], BACKUP_PERIODS=['1','2','3','4','5','6','7','8'];
+const STORE='karyotypeLab_v1', RECS='karyotypeLab_records_v1';
+/* ===================================================================== */
+const teacherList=()=>{ try{ if(typeof TEACHERS!=='undefined'&&Array.isArray(TEACHERS)&&TEACHERS.length) return TEACHERS.map(String); }catch(e){} return BACKUP_TEACHERS; };
+const periodList=()=>{ try{ if(typeof PERIODS!=='undefined'&&Array.isArray(PERIODS)&&PERIODS.length) return PERIODS.map(String); }catch(e){} return BACKUP_PERIODS; };
+const sheetURL=()=>{ try{ if(typeof SHEETS_WEBHOOK_URL!=='undefined'&&SHEETS_WEBHOOK_URL&&String(SHEETS_WEBHOOK_URL).indexOf('PASTE')<0) return String(SHEETS_WEBHOOK_URL); }catch(e){} return BACKUP_URL; };
+const saveURL=()=>{ try{ if(typeof SAVE_WEBHOOK_URL!=='undefined'&&SAVE_WEBHOOK_URL&&String(SAVE_WEBHOOK_URL).indexOf('PASTE')<0) return String(SAVE_WEBHOOK_URL); }catch(e){} return SAVE_URL_BUILTIN; };
+const LOCKDOWN=false;   // worksheets never lock down
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const strip=s=>String(s).replace(/<[^>]+>/g,'');
+function h(tag,attrs,html){ const e=document.createElement(tag); if(attrs) for(const k in attrs){ if(attrs[k]===false||attrs[k]==null) continue; if(k==='class') e.className=attrs[k]; else if(k==='hidden') e.hidden=!!attrs[k]; else e.setAttribute(k,attrs[k]); } if(html!=null) e.innerHTML=html; return e; }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* ---------- state + saving ---------- */
+function fresh(){ return {ws:WS_ID, student:null, p:{}, ord:{}, locks:0, locked:false, lockOff:false, submittedAt:null, sentAt:null}; }
+let S; try{ S=JSON.parse(localStorage.getItem(STORE)); }catch(e){} if(!S||S.ws!==WS_ID) S=fresh();
+let STORAGE_OK=true, saveBlocked=false;
+try{ localStorage.setItem('__ps_t','1'); STORAGE_OK=localStorage.getItem('__ps_t')==='1'; localStorage.removeItem('__ps_t'); }catch(e){ STORAGE_OK=false; }
+function save(){
+  if(saveBlocked) return;
+  if(S.preview){ note('Preview: nothing is saved'); return; }
+  try{ const raw=localStorage.getItem(STORE); if(raw){ const st=JSON.parse(raw); if(st&&st.ws===WS_ID&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); return; } }
+    S.rev=(S.rev||0)+1; S.updatedAt=Date.now(); localStorage.setItem(STORE,JSON.stringify(S)); note(); cloudSave(false); }catch(e){}
+}
+window.addEventListener('storage',e=>{ if(e.key!==STORE||!e.newValue) return; try{ const st=JSON.parse(e.newValue); if(st&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); } }catch(_){} });
+const saveKey=st=>(String(st.id||'').replace(/\s+/g,'')+'-'+String(st.last||'').toLowerCase().replace(/[^a-z]/g,'')).toLowerCase();
+const checkedCount=st=>Object.values((st||S).p).filter(x=>x&&x.checked).length;
+let cloudTimer=null, cloudDirty=false, cloudBusy=false, cloudAt=null, cloudErr=false;
+const cloudOK=()=>!!saveURL()&&S.student&&!saveBlocked&&!S.preview;
+function cloudBody(){ const st=S.student||{}, sc=scoreAll();
+  return new URLSearchParams({code:saveKey(st), lesson:WS_ID, ver:String(S.updatedAt||Date.now()), prog:String((S.submittedAt?100000:0)+checkedCount(S)), studentId:st.id||'', lastName:st.last||'', firstName:st.first||'', period:st.period||'', teacher:st.teacher||'',
+    summary:S.submittedAt?`Turned in · ${sc.total}/${sc.max}`:`${checkedCount(S)} of ${PROBS.length} problems checked`, data:JSON.stringify(S)}); }
+function cloudSave(soon){ if(!cloudOK()) return; cloudDirty=true; if(soon){ clearTimeout(cloudTimer); cloudTimer=setTimeout(cloudFlush,1200); } else if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); }
+async function cloudFlush(){ cloudTimer=null; if(!cloudOK()||!cloudDirty) return; if(cloudBusy){ cloudTimer=setTimeout(cloudFlush,4000); return; } cloudBusy=true; cloudDirty=false;
+  try{ await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); cloudAt=new Date(); cloudErr=false; }catch(e){ cloudDirty=true; cloudErr=true; if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); } finally{ cloudBusy=false; note(); } }
+function cloudBeacon(){ if(!cloudOK()||!cloudDirty) return; try{ if(navigator.sendBeacon&&navigator.sendBeacon(saveURL(),cloudBody())) cloudDirty=false; }catch(e){} }
+async function cloudLoad(st){ const ctrl=new AbortController(), t=setTimeout(()=>ctrl.abort(),5000);
+  try{ const r=await fetch(saveURL()+'?'+new URLSearchParams({code:saveKey(st),lesson:WS_ID}),{signal:ctrl.signal}); const j=await r.json(); if(j&&j.found&&j.data){ const d=JSON.parse(j.data); if(d&&d.ws===WS_ID) return {status:'found',data:d}; } return {status:'none'}; }
+  catch(e){ return {status:'error'}; } finally{ clearTimeout(t); } }
+function adopt(ns){ let sr=0; try{ const raw=localStorage.getItem(STORE); if(raw) sr=JSON.parse(raw).rev||0; }catch(e){} ns.rev=Math.max(ns.rev||0,sr); S=ns; saveBlocked=false; save(); }
+function note(msg){ const n=$('#saveNote'); if(!n) return; const tm=d=>d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}); n.textContent=msg||(cloudErr?'✓ Saved on this Chromebook':'✓ Saved '+tm(new Date())+(cloudAt?' · backed up '+tm(cloudAt):'')); }
+document.addEventListener('visibilitychange',()=>{ if(document.hidden){ save(); cloudBeacon(); } });
+window.addEventListener('pagehide',()=>{ save(); cloudBeacon(); });
+
+/* ============================== DIAGRAMS ============================== */
+/* ============================== PROBLEMS ============================== */
+const PARTS=[
+ {k:'P1', label:'Setup', title:'Purpose and setup', min:10, icon:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>'},
+ {k:'P2', label:'Predict', title:'Predict', min:5, icon:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z"/>'},
+ {k:'P3', label:'Observe', title:'Observations', min:25, icon:'<path d="M7 4v6a2 2 0 0 0 4 0V4"/><path d="M9 12v3"/><path d="M13 4v6a2 2 0 0 0 4 0V4"/><path d="M15 12v3"/><path d="M5 20h14"/>'},
+ {k:'P4', label:'Analysis', title:'Analysis', min:12, icon:'<path d="M3 21h18"/><path d="M5 17l5-5 4 3 6-7"/>'},
+ {k:'P5', label:'Conclusion', title:'Conclusion (CER)', min:8, icon:'<path d="M4 4h12l4 4v12H4z"/><path d="M8 11h8M8 15h6"/>'},
+ {k:'P6', label:'Grade', title:'Your grade', min:1, icon:'<rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4V2.5h6V4"/><path d="M8.5 13l2.5 2.5 4.5-5"/>'}
+];
+const ico=(i,s)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PARTS[i].icon}</svg>`;
+const PROBS=[];   // every problem: {id, part, max, score(), key()}
+
+function probShell(parent, part, num, q, pts){
+  const box=h('div',{class:'prob'}); parent.appendChild(box);
+  box.innerHTML=`<div class="pq"><span class="pnum">${num}.</span> ${q} <span class="pts">(${pts} pt${pts>1?'s':''})</span></div>`;
+  return box;
+}
+function actions(box, o){ // Hint + Check buttons + feedback
+  const row=h('div',{class:'btnrow'}); const hb=h('button',{class:'btn ghost small',type:'button'},'Hint'); const cb=h('button',{class:'btn primary small',type:'button'},'Check');
+  row.append(hb,cb); box.appendChild(row);
+  const hint=h('div',{class:'hintbox',hidden:true},'💡 '+o.hint); box.appendChild(hint);
+  const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'}); box.appendChild(fb);
+  hb.addEventListener('click',()=>{ hint.hidden=!hint.hidden; });
+  return {row,hb,cb,hint,fb};
+}
+const st=id=>S.p[id]||(S.p[id]={});
+/* Two tries per problem. Right on try 1 or 2 = full credit. Wrong twice = marked wrong (credit for parts right on try 2).
+   The correct answer is never shown. */
+function gradeTry(P,res,max){ const n=res.filter(Boolean).length; P.tries=(P.tries||0)+1;
+  if(n===max){ P.first=max; P.checked=true; P.right=true; }
+  else if(P.tries>=2){ P.first=n; P.checked=true; P.right=false; }
+  return n===max; }
+function showTry(ui,P,max,doneText){
+  if(P.checked&&P.right){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML=`<b>Correct!</b> ${doneText||''}`; }
+  else if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`<b>Marked wrong.</b> You earned ${P.first} of ${max} point${max>1?'s':''}. Ask your teacher if you'd like to try it again.`; }
+  else if(P.tries===1){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=max>1?'<b>Not quite.</b> Something isn\'t right yet. You have <b>one more try</b>.':'<b>Not quite.</b> You have <b>one more try</b>.'; }
+  else ui.fb.hidden=true;
+  if(ui.cb) ui.cb.textContent=P.checked?'Checked':(P.tries===1?'Check (last try)':'Check'); }
+
+/* ---------- drag onto a diagram (or into equation slots) ---------- */
+function dragProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.zones.length);
+  let fig;
+  if(o.equation){ fig=h('div',{class:'eq'}); box.appendChild(fig); }
+  else { fig=h('div',{class:'figwrap'}); fig.innerHTML=o.svg; box.appendChild(fig); }
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.chips.map((_,i)=>i)));
+  const zoneEls={};
+  const groupAns=g=>o.zones.filter(z=>z.group===g).map(z=>z.ans);
+  if(o.equation){ o.layout.forEach(item=>{ if(typeof item==='string'){ fig.appendChild(h('span',null,item)); } else { const z=o.zones[item]; const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans}); fig.appendChild(b); zoneEls[z.id]=b; } }); }
+  else o.zones.forEach(z=>{ const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans});
+    b.style.left=(z.x/o.vb[0]*100)+'%'; b.style.top=(z.y/o.vb[1]*100)+'%'; b.style.width=((z.w||130)/o.vb[0]*100)+'%'; fig.appendChild(b); zoneEls[z.id]=b; });
+  function placedChips(){ return new Set(Object.values(P.place)); }
+  function render(){
+    const used=placedChips();
+    pool.innerHTML='<div class="lbl">Tap a label, then tap a box (or drag it). Tap a filled box to take its label back.</div>';
+    order.forEach(ci=>{ if(used.has(ci)) return; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true'},o.chips[ci]); c.disabled=!!P.checked;
+      c.addEventListener('click',()=>{ sel=sel===ci?null:ci; render(); });
+      c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+      pool.appendChild(c); });
+    if(P.checked&&!pool.querySelector('.chip')) pool.hidden=true;
+    o.zones.forEach(z=>{ const b=zoneEls[z.id]; const ci=P.place[z.id];
+      b.className='zone'+(ci==null?' empty':' filled')+(P.checked?' locked':'');
+      if(ci==null) b.innerHTML=z.ph||'drop here';
+      else b.innerHTML=o.chips[ci];
+      b.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; ui.hb.disabled=!!P.checked&&false;
+    showTry(ui,P,o.zones.length,o.done);
+  }
+  o.zones.forEach(z=>{ const b=zoneEls[z.id];
+    const drop=ci=>{ if(P.checked) return; if(ci==null){ if(P.place[z.id]!=null){ delete P.place[z.id]; save(); render(); } return; }
+      for(const k in P.place) if(P.place[k]===ci) delete P.place[k];
+      P.place[z.id]=ci; sel=null; save(); render(); };
+    b.addEventListener('click',()=>drop(sel));
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  ui.cb.addEventListener('click',()=>{
+    if(P.checked) return;
+    const empty=o.zones.filter(z=>P.place[z.id]==null).length;
+    if(empty){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill every box before you check. ${empty} still empty.`; return; }
+    const res={}; const usedInGroup={};
+    o.zones.forEach(z=>{ const t=o.chips[P.place[z.id]];
+      if(z.group){ const ans=groupAns(z.group); usedInGroup[z.group]=usedInGroup[z.group]||[]; const ok=ans.includes(t)&&!usedInGroup[z.group].includes(t); if(ok) usedInGroup[z.group].push(t); res[z.id]=ok; }
+      else res[z.id]=t===z.ans; });
+    gradeTry(P,Object.values(res),o.zones.length); save(); cloudSave(true); render(); refresh();
+  });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.zones.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- sort into bins ---------- */
+function binProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.items.length);
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const bins=h('div',{class:'bins',style:`grid-template-columns:repeat(${o.bins.length},minmax(0,1fr))`}); box.appendChild(bins);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.items.map((_,i)=>i)));
+  const binEls={};
+  o.bins.forEach(bn=>{ const b=h('div',{class:'bin',role:'button',tabindex:'0'},`<h4>${bn.label}</h4><div class="bchips"></div>`); bins.appendChild(b); binEls[bn.k]=b;
+    const drop=ci=>{ if(P.checked||ci==null) return; P.place[ci]=bn.k; sel=null; save(); render(); };
+    b.addEventListener('click',e=>{ if(e.target.closest('.chip')) return; drop(sel); });
+    b.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); drop(sel); } });
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  const binLabel=k=>(o.bins.find(b=>b.k===k)||{}).label;
+  function chipEl(ci,inBin){ const it=o.items[ci]; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true','data-key':binLabel(it.k)},it.t);
+    
+    c.disabled=!!P.checked;
+    c.addEventListener('click',e=>{ if(P.checked) return; if(inBin){ e.stopPropagation(); if(sel!=null&&sel!==ci){ P.place[sel]=P.place[ci]; sel=null; save(); render(); return; } delete P.place[ci]; save(); render(); return; } sel=sel===ci?null:ci; render(); });
+    c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+    return c; }
+  function render(){
+    pool.innerHTML='<div class="lbl">Tap an item, then tap the box it belongs in (or drag it). Tap a sorted item to take it back.</div>';
+    order.forEach(ci=>{ if(P.place[ci]==null) pool.appendChild(chipEl(ci,false)); });
+    pool.hidden=!!P.checked;
+    o.bins.forEach(bn=>{ const holder=$('.bchips',binEls[bn.k]); holder.innerHTML=''; order.forEach(ci=>{ if(P.place[ci]===bn.k) holder.appendChild(chipEl(ci,true)); }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,o.items.length,o.done);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const left=o.items.filter((_,i)=>P.place[i]==null).length;
+    if(left){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Sort every item before you check. ${left} still left.`; return; }
+    const res=o.items.map((it,i)=>P.place[i]===it.k); gradeTry(P,res,o.items.length); save(); cloudSave(true); render(); refresh(); });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.items.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- choice problems: one, two-part, or select-all ---------- */
+function choiceProblem(parent, o){   // o.parts: [{q, opts, ans (index or array for select-all)}]
+  const P=st(o.id); P.pick=P.pick||{};
+  const max=o.parts.length;
+  const box=probShell(parent,o.part,o.num,o.q,max);
+  const groups=[];
+  o.parts.forEach((pt,pi)=>{
+    const multi=Array.isArray(pt.ans);
+    if(pt.q) box.insertAdjacentHTML('beforeend',`<div style="margin:10px 0 4px">${pt.q}${multi?' <span class="small muted">(Select all that apply.)</span>':''}</div>`);
+    const ordKey=o.id+'_'+pi; const order=S.ord[ordKey]||(S.ord[ordKey]=shuffle(pt.opts.map((_,i)=>i)));
+    const wrap=h('div',{class:'opts'}); box.appendChild(wrap);
+    const btns={};
+    order.forEach((oi,pos)=>{ const correct=multi?pt.ans.includes(oi):oi===pt.ans;
+      const b=h('button',{class:'opt'+(multi?' multi':''),type:'button'},`<span class="L">${'ABCDEF'[pos]}</span><span>${pt.opts[oi]}</span>`); if(correct) b.dataset.key='1';
+      b.addEventListener('click',()=>{ if(P.checked) return; if(multi){ const s=new Set(P.pick[pi]||[]); s.has(oi)?s.delete(oi):s.add(oi); P.pick[pi]=[...s]; } else P.pick[pi]=oi; save(); paint(); });
+      wrap.appendChild(b); btns[oi]=b; });
+    groups.push({pt,multi,btns});
+  });
+  const ui=actions(box,o);
+  function gradePart(g,pi){ const pk=P.pick[pi]; if(g.multi){ const s=new Set(pk||[]); return g.pt.ans.length===s.size&&g.pt.ans.every(a=>s.has(a)); } const ans=g.pt.ansFn?g.pt.ansFn():g.pt.ans; return pk===ans; }
+  function paint(){
+    groups.forEach((g,pi)=>{ const pk=P.pick[pi];
+      Object.entries(g.btns).forEach(([oi,b])=>{ oi=+oi; const picked=g.multi?(pk||[]).includes(oi):pk===oi; const correct=g.multi?g.pt.ans.includes(oi):oi===g.pt.ans;
+        b.className='opt'+(g.multi?' multi':'')+(picked?' sel':'')+(P.checked&&P.right&&picked?' ok':''); b.disabled=!!P.checked; }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,max,o.why);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const blank=groups.some((g,pi)=>g.multi?!(P.pick[pi]||[]).length:P.pick[pi]==null);
+    if(blank){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Answer every part before you check.'; return; }
+    gradeTry(P,groups.map((g,pi)=>gradePart(g,pi)),max); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- typed blanks (two tries, like every problem) ---------- */
+function typedProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.blanks.length);
+  const inputs=o.blanks.map((bl,i)=>{ const row=h('div',{class:'brow'}); row.innerHTML=`${bl.before} <input class="blank" type="text" aria-label="${esc(strip(bl.before))}" data-key="${esc(bl.show)}"><span class="keytxt">${bl.show}</span> ${bl.after||''}`; box.appendChild(row);
+    const inp=$('input',row); inp.value=P.val[i]||''; inp.addEventListener('input',()=>{ P.val[i]=inp.value; save(); }); return inp; });
+  const ui=actions(box,o);
+  const ok=(bl,v)=>{ v=String(v||'').trim().toLowerCase(); if(bl.calc){ const n=parseFloat(v.replace(/[\u2212\u2013\u2014]/g,'-').replace(/[^0-9.\-]/g,'')); const t=bl.calc(); return !isNaN(n)&&t!=null&&!isNaN(t)&&Math.abs(n-t)<=(bl.tol==null?0.15:bl.tol); } if(bl.num){ const n=parseFloat(v.replace(/[\u2212\u2013\u2014]/g,'-').replace(/[^0-9.\-]/g,'')); return !isNaN(n)&&n>=bl.num[0]&&n<=bl.num[1]; } return bl.accept.some(a=>v.replace(/\s+/g,' ')===a); };
+  function paint(){ inputs.forEach(inp=>{ inp.classList.remove('ok','no'); if(P.checked&&P.right) inp.classList.add('ok'); inp.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; showTry(ui,P,o.blanks.length,''); }
+  ui.cb.addEventListener('click',()=>{
+    if(inputs.some(inp=>!inp.value.trim())){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Fill in every blank before you check.'; return; }
+    if(P.checked) return;
+    const res=o.blanks.map((bl,i)=>ok(bl,inputs[i].value));
+    gradeTry(P,res,o.blanks.length); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.blanks.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- written answer, scored by key ideas (two tries, like every problem) ---------- */
+function writtenProblem(parent, o){
+  const P=st(o.id); if(P.val==null) P.val='';
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const ta=h('textarea',{class:'wtext',rows:'5','aria-label':'Your answer','data-key':o.model}); ta.value=P.val; box.appendChild(ta);
+  box.appendChild(h('div',{class:'wkey'},'<b>Key:</b> '+o.model));
+  if(o.bank){ const wb=h('div',{class:'wbank2'}); wb.innerHTML='<b>Word bank</b> <span class="small muted">(tap a word to add it)</span><br>'+o.bank.map(w=>`<button type="button" class="wchip">${w}</button>`).join('');
+    box.appendChild(wb);
+    wb.querySelectorAll('.wchip').forEach(c=>c.addEventListener('click',()=>{ if(ta.disabled) return; const w=c.textContent; const a=ta.selectionStart??ta.value.length, b=ta.selectionEnd??ta.value.length;
+      const before=ta.value.slice(0,a), after=ta.value.slice(b); const pre=(before&&!/\s$/.test(before))?' ':''; const ins=pre+w+' ';
+      ta.value=before+ins+after; ta.focus(); const p=a+ins.length; ta.setSelectionRange(p,p); ta.dispatchEvent(new Event('input',{bubbles:true})); })); }
+  ta.addEventListener('input',()=>{ P.val=ta.value; save(); });
+  const ui=actions(box,o);
+  const grade=()=>{ const t=ta.value.toLowerCase(); const hits=o.groups.filter(g=>g[1].test(t)).length; const n=Math.min(o.pts,hits); return Array.from({length:o.pts},(_,i)=>i<n); };
+  function paint(){ ta.disabled=!!P.checked; ui.cb.disabled=!!P.checked; showTry(ui,P,o.pts,o.why); }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(ta.value.trim().split(/\s+/).length<5){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Write a full answer (at least one complete sentence) before you check.'; return; }
+    gradeTry(P,grade(),o.pts); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- predictions: saved once, completion credit, never marked wrong ---------- */
+function predictProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.rows.length);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb predtab"><tr><th>${o.rowsLabel||'Tube'}</th><th>Setup</th><th>My prediction</th></tr>${o.rows.map((r,i)=>`<tr><td><b>${r.id}</b></td><td>${r.desc}</td><td><select data-i="${i}" aria-label="Prediction for ${r.id}"><option value="">choose…</option>${o.choices.map(c=>`<option>${c}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select')];
+  sels.forEach((sl,i)=>{ sl.value=P.val[i]||''; sl.addEventListener('change',()=>{ P.val[i]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Lock in my predictions';
+  function paint(){ sels.forEach(sl=>sl.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Predictions saved.</b> You\'ll compare them with your results later. Your observation table on page 3 is now unlocked.'; ui.cb.textContent='Predictions locked'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(sels.some(sl=>!sl.value)){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Choose a prediction for every tube first.'; return; }
+    if(!confirm('Lock in your predictions? You can\'t change them after this.')) return;
+    P.first=o.rows.length; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.rows.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- lab data table: groups type their own measurements; graph builds from them ---------- */
+function dataTableProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const cells=o.rows.length*o.cols.length;
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb datatab"><tr><th>${o.corner}</th>${o.cols.map(c=>`<th>${c}</th>`).join('')}</tr>${o.rows.map((r,i)=>`<tr><td><b>${r}</b></td>${o.cols.map((c,j)=>`<td><input class="dcell" inputmode="decimal" data-r="${i}" data-c="${j}" aria-label="${r}, ${c}"></td>`).join('')}</tr>`).join('')}</table>`;
+  const ins=[...wrap.querySelectorAll('input.dcell')];
+  const chart=h('div',{class:'datachart'}); box.appendChild(chart);
+  ins.forEach(inp=>{ const k=inp.dataset.r+'_'+inp.dataset.c; inp.value=P.val[k]??''; inp.addEventListener('input',()=>{ P.val[k]=inp.value; save(); draw(); }); });
+  function draw(){ chart.innerHTML=o.chart(P.val); }
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Save my data';
+  function paint(){ ins.forEach(i=>i.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Data saved.</b> Your analysis questions use these numbers.'; ui.cb.textContent='Data saved'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const bad=ins.filter(i=>i.value.trim()===''||isNaN(parseFloat(i.value)));
+    if(bad.length){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill in every box with a number first (${bad.length} still empty).`; bad[0].focus(); return; }
+    if(!confirm('Save your data? You can\'t change it after this, and your analysis will use these numbers.')) return;
+    P.first=o.pts; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  draw(); paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- observation table: each row has its own menu; completion credit when saved ---------- */
+function obsTableProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb datatab"><tr><th>Observation</th><th>What you saw</th></tr>${o.rows.map((r,i)=>`<tr><td>${r.q}</td><td><select class="ocell" data-r="${i}" aria-label="${r.q.replace(/<[^>]+>/g,'')}"><option value="">choose…</option>${r.opts.map(x=>`<option>${x}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select.ocell')];
+  sels.forEach(sl=>{ const k=sl.dataset.r; sl.value=P.val[k]||''; sl.addEventListener('change',()=>{ P.val[k]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Save my observations';
+  function paint(){ sels.forEach(s=>s.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Observations saved.</b> Your analysis questions use them.'; ui.cb.textContent='Observations saved'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const bad=sels.filter(s=>!s.value); if(bad.length){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Choose an answer in every row first (${bad.length} still empty).`; return; }
+    if(!confirm('Save your observations? You can\'t change them after this, and your analysis will use them.')) return;
+    P.first=o.pts; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ============================== WORKSHEET CONTENT ============================== */
+/* ===== Karyotype Analysis Lab: shared content (cases, chromosome drawings, problems) ===== */
+/* ---------- realistic banded chromosomes (copied from the Unit 4 lesson; clip ids made unique) ---------- */
+const CHR_LEN={1:248,2:242,3:198,4:190,5:181,6:171,7:159,8:145,9:138,10:134,11:135,12:133,13:114,14:107,15:102,16:90,17:83,18:80,19:59,20:64,21:47,22:51,X:156,Y:57};
+const CHR_CEN={1:.48,2:.39,3:.46,4:.27,5:.27,6:.36,7:.38,8:.31,9:.34,10:.30,11:.39,12:.27,13:.13,14:.13,15:.14,16:.41,17:.30,18:.22,19:.45,20:.44,21:.27,22:.25,X:.39,Y:.18};
+function bandsFor(id){ let s=0; String(id).split('').forEach(c=>s=s*31+c.charCodeAt(0)); s=(s*9301+id.length*49297)%233280; const r=()=>{ s=(s*9301+49297)%233280; return s/233280; };
+  const n=4+Math.floor(CHR_LEN[id]/30), out=[]; for(let i=0;i<n;i++){ const p=(i+0.3+r()*0.5)/n; if(Math.abs(p-CHR_CEN[id])<0.05) continue; out.push([p,0.25+r()*0.6]); } return out; }
+const BANDS={}; Object.keys(CHR_LEN).forEach(k=>BANDS[k]=bandsFor(k));
+let KCID=0;   // unique clip-path ids for every chromosome drawn on the page
+/* one condensed (copied) chromosome, drawn vertically with its top at (x,y). o.sis draws the faint line between sister chromatids */
+function chromo(id,x,y,sc,o){ o=o||{}; const L=CHR_LEN[id]*sc, w=o.w||11, c=Math.min(Math.max(CHR_CEN[id]*L, w*1.05), L-w*1.05), fill=o.fill||'#ece6f6', band=o.band||'#5b3f86', pinch=w*0.28;
+  const gid='kc'+(++KCID);
+  const d=L<w*2.3?`M${x},${y+w/2} Q${x},${y} ${x+w/2},${y} Q${x+w},${y} ${x+w},${y+w/2} L${x+w},${y+L-w/2} Q${x+w},${y+L} ${x+w/2},${y+L} Q${x},${y+L} ${x},${y+L-w/2} Z`:`M${x},${y+w/2} Q${x},${y} ${x+w/2},${y} Q${x+w},${y} ${x+w},${y+w/2} L${x+w},${y+c-w*0.5} Q${x+w-pinch},${y+c} ${x+w},${y+c+w*0.5} L${x+w},${y+L-w/2} Q${x+w},${y+L} ${x+w/2},${y+L} Q${x},${y+L} ${x},${y+L-w/2} L${x},${y+c+w*0.5} Q${x+pinch},${y+c} ${x},${y+c-w*0.5} Z`;
+  let s=`<g opacity="${o.op==null?1:o.op}"><clipPath id="${gid}"><path d="${d}"/></clipPath><path d="${d}" fill="${fill}"/><g clip-path="url(#${gid})">`;
+  BANDS[id].forEach(([p,t])=>{ if(p*L<c+w*0.3&&p*L>c-w*0.3) return; s+=`<rect x="${x}" y="${(y+p*L-t*2.2*sc*2.5).toFixed(1)}" width="${w}" height="${Math.max(1.2,t*5*sc*2.5).toFixed(1)}" fill="${band}" opacity="${0.5+t*0.5}"/>`; });
+  if(o.sis&&L>w*2.3){ const xm=(x+w/2).toFixed(1); s+=`<path d="M${xm},${(y+w*0.45).toFixed(1)} V${(y+c-w*0.55).toFixed(1)} M${xm},${(y+c+w*0.55).toFixed(1)} V${(y+L-w*0.45).toFixed(1)}" stroke="${o.sisCol||'rgba(255,255,255,.55)'}" stroke-width="${(w*0.09).toFixed(2)}"/>`; }
+  s+=`</g><path d="${d}" fill="none" stroke="${o.stroke||'#3b2a5c'}" stroke-width="${o.sw||1.2}"/>`;
+  return s+'</g>'; }
+/* a whole karyotype. o.sex: 'XY' | 'XX' | 'XXY' | 'X'; o.extra: {21:3}; o.only: row indexes to draw */
+const ROWS=[[1,2,3,4,5],[6,7,8,9,10,11,12],[13,14,15,16,17,18],[19,20,21,22,'sex']];
+function karyo(o){ o=o||{}; const W=o.W||760, sc=o.sc||0.36, sex=o.sex||'XY', extra=o.extra||{}, only=o.only||[0,1,2,3];
+  const rowH=[CHR_LEN[1]*sc, CHR_LEN[6]*sc, CHR_LEN[13]*sc, CHR_LEN.X*sc], label=18, gap=16, top=o.top==null?14:o.top;
+  let H=top; only.forEach(ri=>H+=rowH[ri]+label+gap);
+  let s=`<svg viewBox="0 0 ${W} ${H}" class="fig" role="img" aria-label="${o.label||'A karyotype: chromosomes arranged in numbered pairs from largest to smallest'}"><rect width="${W}" height="${H}" rx="14" fill="#f8fafc"/>`;
+  let y=top;
+  only.forEach(ri=>{ const row=ROWS[ri], slot=W/row.length;
+    row.forEach((id,ci)=>{ const cx=slot*ci+slot/2; let ids;
+      if(id==='sex') ids=sex.split(''); else ids=Array(extra[id]||2).fill(id);
+      const n=ids.length, cw=11, gp=4, tw=n*cw+(n-1)*gp; let x=cx-tw/2;
+      const base=y+rowH[ri];
+      ids.forEach(k=>{ const L=CHR_LEN[k]*sc; s+=chromo(k,x,base-L,sc,{sis:1}); x+=cw+gp; });
+      s+=`<line x1="${cx-tw/2-2}" y1="${base+5}" x2="${cx+tw/2+2}" y2="${base+5}" stroke="#94a3b8" stroke-width="1.2"/>`;
+      s+=`<text x="${cx}" y="${base+18}" text-anchor="middle" font-size="12" fill="#334155" font-weight="${id==='sex'?700:400}">${id==='sex'?(o.sexLabel||'X/Y'):id}</text>`; });
+    y+=rowH[ri]+label+gap; });
+  return s+'</svg>'; }
+
+/* ---------- the patients (cases) ---------- */
+const CASES={
+ A:{sex:'XX', extra:{21:3}, cond:'t21', seed:1103, age:'Newborn (2 days old)', why:'During the newborn exam, the doctor heard a heart murmur (an unusual heart sound). The doctor ordered a karyotype to check the baby\'s chromosomes.'},
+ B:{sex:'XY', extra:{},     cond:'typ', seed:2207, age:'34 years old', why:'The patient and their partner have tried to have a baby for 2 years. The fertility doctor ordered a karyotype as one of the routine tests.'},
+ C:{sex:'X',  extra:{},     cond:'tur', seed:3301, age:'12 years old', why:'The patient is growing more slowly than expected. The doctor ordered a karyotype to look for a chromosome cause.'},
+ D:{sex:'XX', extra:{18:3}, cond:'t18', seed:4409, age:'Newborn (1 day old)', why:'The baby was smaller than expected at birth and has a heart problem. The care team ordered a karyotype.'},
+ E:{sex:'XX', extra:{},     cond:'typ', seed:5503, age:'13 years old', why:'The patient is shorter than most classmates. The doctor ordered a karyotype to rule out a chromosome cause.'},
+ F:{sex:'XXY',extra:{},     cond:'kli', seed:6607, age:'31 years old', why:'The patient and their partner have tried to have a baby for 3 years. The fertility doctor ordered a karyotype.'},
+ G:{sex:'XY', extra:{13:3}, cond:'t13', seed:7703, age:'Newborn (1 day old)', why:'The care team found a heart problem soon after birth and ordered a karyotype.'}
+};
+const CASE_KEYS=Object.keys(CASES);
+const COND={ // index used by the analysis menus
+ typ:{i:0, name:'No chromosome condition (typical karyotype)', abn:'None', pass:0},
+ t13:{i:1, name:'Patau syndrome (trisomy 13)', abn:'Extra chromosome 13', pass:3},
+ t18:{i:2, name:'Edwards syndrome (trisomy 18)', abn:'Extra chromosome 18', pass:3},
+ t21:{i:3, name:'Down syndrome (trisomy 21)', abn:'Extra chromosome 21', pass:1},
+ kli:{i:4, name:'Klinefelter syndrome', abn:'Extra X chromosome', pass:2},
+ tur:{i:5, name:'Turner syndrome', abn:'Missing sex chromosome (only one X)', pass:2}};
+const SEX_OPTS=['XX','XY','XXY','X only (just one X)'];
+const ABN_OPTS=['None: every pair has two chromosomes','An extra chromosome 13','An extra chromosome 18','An extra chromosome 21','An extra X chromosome','A missing sex chromosome (only one X)'];
+const DX_OPTS=['No chromosome condition (typical karyotype)','Patau syndrome (trisomy 13)','Edwards syndrome (trisomy 18)','Down syndrome (trisomy 21)','Klinefelter syndrome','Turner syndrome'];
+const PASS_OPTS=['No: the karyotype is typical, so there is no chromosome condition to pass on.',
+  'Possibly: in meiosis, the extra chromosome can go into an egg or sperm, so some of the patient\'s sex cells could carry it.',
+  'Unlikely: people with this condition usually cannot make working eggs or sperm.',
+  'Very unlikely: most babies with this condition do not live long enough to have children.',
+  'Yes, always: every egg or sperm the patient makes will have the extra or missing chromosome.'];
+function caseIds(c){ const C=CASES[c], out=[]; for(let k=1;k<=22;k++){ const n=C.extra[k]||2; for(let i=0;i<n;i++) out.push(String(k)); } C.sex.split('').forEach(x=>out.push(x)); return out; }
+function caseInfo(c){ const C=CASES[c]; if(!C) return null; const ids=caseIds(c), extraK=Object.keys(C.extra)[0];
+  const kary=ids.length+','+C.sex+(extraK?',+'+extraK:'');
+  return {c, C, total:ids.length, male:C.sex.includes('Y'), sexI:{XX:0,XY:1,XXY:2,X:3}[C.sex], cond:C.cond, ci:COND[C.cond].i, kary, name:COND[C.cond].name, pass:COND[C.cond].pass}; }
+
+/* ---------- metaphase spread layout: scattered, rotated, no overlaps (same layout on screen and on paper) ---------- */
+const SPW=600, SPH=720, SPSC=0.6, SPWD=16;
+const SP_CACHE={};
+function rng(seed){ let s=seed%233280; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
+function segDist(a,b){ // distance between segments a=[x1,y1,x2,y2], b
+  const d=(p,q)=>{ const [px,py]=p, [x1,y1,x2,y2]=q, dx=x2-x1, dy=y2-y1, L2=dx*dx+dy*dy; let t=L2?((px-x1)*dx+(py-y1)*dy)/L2:0; t=Math.max(0,Math.min(1,t)); const ex=x1+t*dx-px, ey=y1+t*dy-py; return Math.sqrt(ex*ex+ey*ey); };
+  const cross=(p1,p2,p3,p4)=>{ const o=(a,b,c)=>Math.sign((b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0])); return o(p1,p2,p3)!==o(p1,p2,p4)&&o(p3,p4,p1)!==o(p3,p4,p2); };
+  if(cross([a[0],a[1]],[a[2],a[3]],[b[0],b[1]],[b[2],b[3]])) return 0;
+  return Math.min(d([a[0],a[1]],b),d([a[2],a[3]],b),d([b[0],b[1]],a),d([b[2],b[3]],a)); }
+function spreadLayout(c){
+  if(SP_CACHE[c]) return SP_CACHE[c];
+  const r=rng(CASES[c].seed); const ids=caseIds(c).map((id,i)=>({id,k:r()}));
+  ids.sort((a,b)=>CHR_LEN[b.id]-CHR_LEN[a.id]||a.k-b.k);
+  const nuclei=[{x:60+r()*60,y:70+r()*80,r:52},{x:SPW-80-r()*40,y:SPH-90-r()*60,r:46}];
+  const placed=[]; const ecx=SPW/2, ecy=SPH/2+10, erx=SPW/2-16, ery=SPH/2-24;
+  ids.forEach(it=>{ const L=CHR_LEN[it.id]*SPSC; let best=null;
+    for(let gap=20, tries=0; !best && tries<6; tries++, gap-=3){
+      for(let k=0;k<3000;k++){ const rot=r()*180-90, th=rot*Math.PI/180, hx=-Math.sin(th)*(L/2-SPWD/2), hy=Math.cos(th)*(L/2-SPWD/2);
+        const cx=ecx+(r()*2-1)*erx, cy=ecy+(r()*2-1)*ery; const seg=[cx-hx,cy-hy,cx+hx,cy+hy];
+        const inE=(x,y)=>((x-ecx)/erx)**2+((y-ecy)/ery)**2<=1;
+        if(!inE(seg[0],seg[1])||!inE(seg[2],seg[3])) continue;
+        if(Math.min(seg[0],seg[2])<SPWD+4||Math.max(seg[0],seg[2])>SPW-SPWD-4||Math.min(seg[1],seg[3])<SPWD+4||Math.max(seg[1],seg[3])>SPH-SPWD-4) continue;
+        if(placed.some(p=>segDist(p.seg,seg)<SPWD+gap)) continue;
+        if(nuclei.some(n=>segDist([n.x,n.y,n.x,n.y],seg)<n.r+SPWD)) continue;
+        best={id:it.id,cx,cy,rot,seg}; break; } }
+    if(!best) throw new Error('spread layout failed for '+c+' '+it.id);
+    placed.push(best); });
+  // shuffle drawing order so nothing in the markup follows chromosome number
+  const order=placed.map((p,i)=>({p,k:r()})).sort((a,b)=>a.k-b.k).map(o=>o.p);
+  return SP_CACHE[c]={items:order,nuclei}; }
+/* o.print: plain white paper version for cutting out */
+function spreadSVG(c,o){ o=o||{}; const lay=spreadLayout(c), g='kg'+(++KCID), n='kn'+(++KCID);
+  let s=`<svg viewBox="0 0 ${SPW} ${SPH}" role="img" aria-label="Microscope photo of all the chromosomes from one of Patient ${c}'s white blood cells, stopped in metaphase and stained. The chromosomes are scattered, turned in different directions, and not labeled.">`;
+  if(o.print){ s+=`<rect width="${SPW}" height="${SPH}" fill="#fff"/>`; }
+  else { s+=`<defs><radialGradient id="${g}" cx="50%" cy="48%" r="70%"><stop offset="0" stop-color="#f6f3f8"/><stop offset=".72" stop-color="#e9e4ee"/><stop offset="1" stop-color="#b9b3c2"/></radialGradient>
+      <radialGradient id="${n}" cx="45%" cy="40%" r="65%"><stop offset="0" stop-color="#8b6fb3"/><stop offset=".8" stop-color="#5e4389"/><stop offset="1" stop-color="#4a336f"/></radialGradient></defs>
+      <rect width="${SPW}" height="${SPH}" rx="14" fill="url(#${g})"/>`;
+    const rr=rng(CASES[c].seed+17);
+    for(let i=0;i<70;i++) s+=`<circle cx="${(rr()*SPW).toFixed(1)}" cy="${(rr()*SPH).toFixed(1)}" r="${(0.6+rr()*1.6).toFixed(1)}" fill="#7a6a92" opacity="${(0.12+rr()*0.25).toFixed(2)}"/>`;
+    lay.nuclei.forEach(nu=>{ s+=`<ellipse cx="${nu.x.toFixed(1)}" cy="${nu.y.toFixed(1)}" rx="${nu.r}" ry="${(nu.r*0.86).toFixed(1)}" fill="url(#${n})" stroke="#3f2b60" stroke-width="1.2" transform="rotate(${Math.round(nu.x)%40-20} ${nu.x.toFixed(1)} ${nu.y.toFixed(1)})"/>`;
+      for(let i=0;i<26;i++){ const a=rr()*6.283, d=rr()*nu.r*0.75; s+=`<circle cx="${(nu.x+Math.cos(a)*d).toFixed(1)}" cy="${(nu.y+Math.sin(a)*d*0.86).toFixed(1)}" r="${(1.5+rr()*3).toFixed(1)}" fill="#3a2659" opacity="${(0.25+rr()*0.35).toFixed(2)}"/>`; } }); }
+  const fill=o.print?'#ebe6f2':'#cdbfe0', band=o.print?'#3b2a5c':'#3d2862', stroke=o.print?'#2a1d42':'#33224f';
+  lay.items.forEach(it=>{ const L=CHR_LEN[it.id]*SPSC; s+=`<g transform="rotate(${it.rot.toFixed(1)} ${it.cx.toFixed(1)} ${it.cy.toFixed(1)})">${chromo(it.id,+(it.cx-SPWD/2).toFixed(1),+(it.cy-L/2).toFixed(1),SPSC,{w:SPWD,sis:1,fill,band,stroke,sw:1.3})}</g>`; });
+  if(!o.print) s+=`<rect x="${SPW-150}" y="${SPH-30}" width="84" height="5" fill="#1e1530"/><text x="${SPW-108}" y="${SPH-36}" text-anchor="middle" font-size="13" fill="#1e1530">10 µm</text>`;
+  return s+'</svg>'; }
+
+/* ---------- printable pages: the spread to cut out + a blank karyotype form ---------- */
+function formSVG(){ const W=SPW, rowH=[CHR_LEN[1],CHR_LEN[6],CHR_LEN[13],CHR_LEN.X].map(v=>v*SPSC+14); let y=6, s='';
+  ROWS.forEach((row,ri)=>{ const slot=W/row.length; const base=y+rowH[ri];
+    row.forEach((id,ci)=>{ const cx=slot*ci+slot/2, hw=Math.min(slot*0.36,40);
+      s+=`<line x1="${(cx-hw).toFixed(1)}" y1="${base}" x2="${(cx+hw).toFixed(1)}" y2="${base}" stroke="#111" stroke-width="1.6"/><text x="${cx.toFixed(1)}" y="${base+17}" text-anchor="middle" font-size="14" font-family="Arial" fill="#111" font-weight="${id==='sex'?700:400}">${id==='sex'?'23':id}</text>`; });
+    y=base+38; });
+  return `<svg viewBox="0 0 ${W} ${Math.ceil(y)}" role="img" aria-label="Blank karyotype form with numbered lines 1 to 23">${s}</svg>`; }
+function printCase(c){
+  const w=window.open('','_blank'); if(!w){ alert('Your browser blocked the print window. Allow pop-ups for this page, then try again.'); return; }
+  const head=t=>`<div class="hd"><h1>Karyotype Analysis Lab · Patient ${c} · ${t}</h1><div class="nm">Names: ______________________________ &nbsp; Period: ____</div></div>`;
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Patient ${c} chromosomes</title><style>
+    @page{size:letter;margin:.45in} *{box-sizing:border-box} body{margin:0;font-family:Arial,Helvetica,sans-serif;color:#111}
+    .pg{break-after:page;page-break-after:always} .pg:last-of-type{break-after:auto;page-break-after:auto}
+    .hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;border-bottom:2px solid #111;padding-bottom:4px;margin-bottom:6px} h1{font-size:15px;margin:0} .nm{font-size:12px;white-space:nowrap}
+    p{font-size:12.5px;margin:0 0 6px} svg{display:block;width:7.1in;height:auto;margin:0 auto}
+    .rec{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:10px;font-size:13px;margin-top:8px} .rec div{border:1.5px solid #111;border-radius:6px;padding:6px 8px;height:.55in}
+    .bar{position:sticky;top:0;background:#fffbe6;border-bottom:1px solid #e5d9a6;padding:10px;font-size:14px;text-align:center} @media print{.bar{display:none}}
+  <\/style></head><body><div class="bar">Two pages: the chromosome photo and the karyotype form. <button onclick="window.print()">Print</button></div>
+  <div class="pg">${head('Chromosome photo (one cell)')}<p><b>1.</b> Count the chromosomes first and write the number here: ______ &nbsp; <b>2.</b> Cut out each chromosome. Leave a thin white border. Keep the small ones safe.</p>${spreadSVG(c,{print:true})}</div>
+  <div class="pg">${head('Karyotype form')}<p>Match the pairs by <b>size</b>, <b>centromere position</b>, and <b>band pattern</b>. Glue each chromosome above its line, from largest (1) to smallest (22). Put the sex chromosomes on line 23.</p>${formSVG()}
+    <div class="rec"><div>Total chromosomes:</div><div>Sex chromosomes:</div><div>Extra or missing chromosome:</div></div></div>
+  <script>window.onload=function(){ setTimeout(function(){ window.focus(); window.print(); },400); };<\/script></body></html>`);
+  w.document.close(); }
+
+/* ---------- figures ---------- */
+const REF_K=()=>karyo({sex:'XY',sexLabel:'X  Y',label:'Reference: a typical karyotype, with pairs 1 to 22 and an X and a Y chromosome.'});
+function referralCard(c){ const C=CASES[c]; return `<div class="refnote"><div class="rnhead"><span>Cytogenetics Lab · Karyotype request</span><b>Patient ${c}</b></div>
+  <div class="rngrid"><div><span>Age</span>${C.age}</div><div><span>Sample</span>Blood, 5 mL (green-top tube)</div><div><span>Test ordered</span>Chromosome analysis (karyotype)</div></div>
+  <p><span>Reason for the test</span>${C.why}</p></div>`; }
+function condTable(){ return `<div class="wide"><table class="nb"><tr><th>Condition</th><th>Karyotype</th><th>Total</th></tr>
+  <tr><td>Typical male</td><td>46,XY</td><td>46</td></tr><tr><td>Typical female</td><td>46,XX</td><td>46</td></tr>
+  <tr><td>Down syndrome (trisomy 21)</td><td>47,XX,+21 or 47,XY,+21</td><td>47</td></tr>
+  <tr><td>Edwards syndrome (trisomy 18)</td><td>47,XX,+18 or 47,XY,+18</td><td>47</td></tr>
+  <tr><td>Patau syndrome (trisomy 13)</td><td>47,XX,+13 or 47,XY,+13</td><td>47</td></tr>
+  <tr><td>Klinefelter syndrome</td><td>47,XXY</td><td>47</td></tr><tr><td>Turner syndrome</td><td>45,X</td><td>45</td></tr></table></div>
+  <p class="small muted" style="margin-top:6px">How to read it: <b>47,XX,+21</b> means 47 chromosomes in total, the sex chromosomes are X and X, and there is an extra (+) chromosome 21.</p>`; }
+function teacherKey(withPrint){ return `<div class="wkey tkey"><b>Teacher answer key (only visible with the answer key on)</b><div class="wide"><table class="nb"><tr><th>Case</th><th>Karyotype</th><th>Total</th><th>Sex</th><th>Condition</th>${withPrint?'<th>Print</th>':''}</tr>${CASE_KEYS.map(k=>{ const I=caseInfo(k); return `<tr><td><b>${k}</b></td><td>${I.kary}</td><td>${I.total}</td><td>${I.male?'Male':'Female'}</td><td>${I.name}</td>${withPrint?`<td><button class="btn ghost small tprint" type="button" data-c="${k}">Print ${k}</button></td>`:''}</tr>`; }).join('')}</table></div></div>`; }
+const MAT_PIC=(()=>{ const r=rng(99); let s=`<svg viewBox="0 0 760 250" role="img" aria-label="Materials: a printed chromosome photo, a blank karyotype form, scissors, a glue stick, and a pencil."><rect width="760" height="250" rx="14" fill="#f8fafc"/>`;
+  // printed photo page with small generic shapes (not any patient)
+  s+=`<g transform="rotate(-4 120 125)"><rect x="40" y="25" width="160" height="205" fill="#fff" stroke="#94a3b8" stroke-width="1.5"/><rect x="52" y="36" width="136" height="6" fill="#cbd5e1"/>`;
+  for(let i=0;i<34;i++){ const x=56+r()*124, y=52+r()*165, L=6+r()*18, a=r()*180; s+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="4" height="${L.toFixed(1)}" rx="2" fill="#6b5a8a" transform="rotate(${a.toFixed(0)} ${(x+2).toFixed(1)} ${(y+L/2).toFixed(1)})"/>`; }
+  s+=`</g><g transform="rotate(3 315 125)"><rect x="235" y="25" width="160" height="205" fill="#fff" stroke="#94a3b8" stroke-width="1.5"/><rect x="247" y="36" width="136" height="6" fill="#cbd5e1"/>`;
+  [[5,70],[7,115],[6,155],[5,200]].forEach(([n,y])=>{ for(let i=0;i<n;i++){ const sw=136/n, x=247+sw*i+sw*0.2; s+=`<line x1="${x.toFixed(1)}" y1="${y}" x2="${(x+sw*0.6).toFixed(1)}" y2="${y}" stroke="#334155" stroke-width="1.4"/>`; } });
+  s+=`</g>`;
+  // scissors (slightly open)
+  s+=`<g transform="translate(530 118) rotate(-20)"><path d="M-4 -3 L118 -20 Q123 -19 120 -15 L4 6 Z" fill="#d1d5db" stroke="#4b5563" stroke-width="1.5"/><path d="M-4 3 L118 20 Q123 19 120 15 L4 -6 Z" fill="#e5e7eb" stroke="#4b5563" stroke-width="1.5"/>
+    <path d="M-4 -3 L-30 -16" stroke="#1d4ed8" stroke-width="9" stroke-linecap="round"/><path d="M-4 3 L-30 16" stroke="#1d4ed8" stroke-width="9" stroke-linecap="round"/>
+    <ellipse cx="-56" cy="-24" rx="27" ry="17" fill="none" stroke="#2563eb" stroke-width="10"/><ellipse cx="-56" cy="24" rx="27" ry="17" fill="none" stroke="#2563eb" stroke-width="10"/><circle cx="0" cy="0" r="4.5" fill="#6b7280" stroke="#374151"/></g>`;
+  // glue stick
+  s+=`<g transform="translate(640 60)"><rect x="0" y="40" width="44" height="140" rx="6" fill="#7c3aed"/><rect x="0" y="40" width="44" height="22" fill="#6d28d9"/><rect x="4" y="66" width="36" height="60" rx="3" fill="#ede9fe"/><text x="22" y="100" text-anchor="middle" font-size="11" fill="#5b21b6" font-weight="700">GLUE</text><rect x="-2" y="0" width="48" height="44" rx="6" fill="#a78bfa" stroke="#6d28d9"/></g>`;
+  // pencil
+  s+=`<g transform="translate(430 215) rotate(-6)"><rect x="0" y="0" width="150" height="12" fill="#facc15" stroke="#a16207"/><path d="M150 0 L172 6 L150 12 Z" fill="#fde7c4" stroke="#a16207"/><path d="M165 4 L172 6 L165 8 Z" fill="#334155"/><rect x="-14" y="0" width="14" height="12" fill="#f472b6" stroke="#9d174d"/></g>`;
+  return s+'</svg>'; })();
+
+/* ---------- problems shared by both versions ---------- */
+const OBS_ROWS=[
+  {q:'Total number of chromosomes', opts:['44','45','46','47','48']},
+  {q:'Sex chromosomes (pair 23)', opts:['XX','XY','XXY','X only','Other']},
+  {q:'Any pair with an extra or missing chromosome?', opts:['None: every pair has 2',...Array.from({length:22},(_,i)=>'Pair '+(i+1)),'Sex chromosomes (pair 23)']}];
+const OBS=()=>st('obs').val||{};
+const CASE_RE={ // flexible key-idea patterns for each kind of case (student text is lowercased)
+  typ:/typical|normal|no (chromosome |chromosomal )?(condition|disorder|syndrome|problem|abnormal)|healthy|nothing (is )?(wrong|extra|missing)|no (extra|missing)/,
+  t21:/down|trisomy ?(21|twenty)|(extra|three|3)[\s\S]{0,40}21|21[\s\S]{0,40}(three|3|extra)/,
+  t18:/edward|trisomy ?(18|eighteen)|(extra|three|3)[\s\S]{0,40}18|18[\s\S]{0,40}(three|3|extra)/,
+  t13:/patau|trisomy ?(13|thirteen)|(extra|three|3)[\s\S]{0,40}13|13[\s\S]{0,40}(three|3|extra)/,
+  kli:/klinef|kline|xxy|extra x|two x[\s\S]{0,30}y/,
+  tur:/turner|45,? ?x\b|x only|(only|one|single|1)( \w+){0,2} x\b|missing[\s\S]{0,30}(x|sex)|no (second|other) (x|sex)/};
+function evidenceRe(I){ const s=I.C.sex;
+  if(I.cond==='typ') return s==='XY'?/\bxy\b|x and (a |an |one )?y|one x and one y|an x and a y/:/\bxx\b|two x|x and (an)?(other|another)? ?x\b/;
+  return CASE_RE[I.cond]; }
+function models(I){ const tot=I.total, pid='Patient '+I.c;
+  const sexTxt={XY:'one X and one Y',XX:'two X chromosomes',XXY:'X, X, and Y (XXY)',X:'only one X and no second sex chromosome'}[I.C.sex];
+  const ex=Object.keys(I.C.extra)[0];
+  const claim=I.cond==='typ'?`${pid}'s karyotype shows ${tot} chromosomes and is a typical ${I.male?'male':'female'} karyotype, so it shows no chromosome condition.`
+    :`${pid}'s karyotype shows ${tot} chromosomes, which indicates ${I.name}.`;
+  const evid=`I counted ${tot} chromosomes. `+(ex?`Pair ${ex} has three copies instead of two (an extra chromosome ${ex}), and pair 23 is ${sexTxt}.`:I.cond==='typ'?`Every pair has two chromosomes, and pair 23 is ${sexTxt}.`:`Pairs 1 to 22 each have two chromosomes, but pair 23 is ${sexTxt}.`);
+  const reas=I.cond==='typ'?`A typical person has 46 chromosomes in 23 pairs. My patient has 46, with no extra or missing chromosome, and pair 23 shows the patient is ${I.male?'male (XY)':'female (XX)'}. So the karyotype is typical.`
+    :`A typical person has 46 chromosomes in 23 pairs. My patient has ${tot} because of ${tot>46?'an extra':'a missing'} chromosome, which matches ${I.name}. It probably came from nondisjunction: a pair did not separate when an egg or sperm formed. The sex chromosomes show the patient is ${I.male?'male':'female'}.`;
+  return {claim,evid,reas}; }
+
+function buildShared(sec, I, hooks){
+  let n=0; const num=()=>++n;
+  const say=(s,html)=>s.insertAdjacentHTML('beforeend',html);
+  const IC=I||caseInfo('B');   // placeholder until a case is locked (later sections stay locked until then)
+  /* ---------- 1. Purpose and setup ---------- */
+  say(sec[0],`<div class="phenbox"><b>Phenomenon:</b> A doctor sends a blood sample to a <b>cytogenetics lab</b> (a lab that studies chromosomes) with one question: do this patient's chromosomes look typical? Today, you are the lab technician.</div>
+   <p><b>Lab question:</b> What does your patient's karyotype show, and what condition (if any) does it indicate?</p>
+   <p><b>Background.</b> Most body cells have <b>46 chromosomes</b> in <b>23 pairs</b>. Pairs 1 to 22 are <b>autosomes</b>, numbered from largest to smallest. Pair 23 is the <b>sex chromosomes</b>: XX (female) or XY (male). To read a karyotype, you answer three questions: How many chromosomes? Male or female? Is any chromosome extra or missing?</p>
+   <p><b>Reference: chromosome conditions</b> <span class="small muted">(use this to name what you find)</span></p>${condTable()}`);
+  hooks.setup(sec[0], num, say);
+  say(sec[0],teacherKey(!SIM));
+  choiceProblem(sec[0],{id:'q1', part:'P1', num:num(), q:'Check your understanding.',
+    parts:[{q:'<b>Part A:</b> What is a karyotype?',opts:['A picture of all of a person\'s chromosomes, arranged in pairs from largest to smallest','A list of a person\'s blood types','A single gene that is copied','A photo of one cell\'s nucleus before it divides'],ans:0},
+           {q:'<b>Part B:</b> How many chromosomes are in a typical human body cell?',opts:['46','23','47','92'],ans:0},
+           {q:'<b>Part C:</b> Which chromosomes are pair 23?',opts:['The sex chromosomes (X and Y)','The two largest autosomes','Extra chromosomes that some people have','The smallest autosomes'],ans:0}],
+    hint:'Re-read the background above.', why:'A karyotype shows all chromosomes in pairs. Typical cells have 46. Pair 23 is the sex chromosomes.'});
+  /* ---------- 2. Predict ---------- */
+  const plock=h('div',{class:'fb info'}); plock.innerHTML='<b>Locked.</b> Choose and lock in your case on page 1 first.'; sec[1].appendChild(plock);
+  const pwrap=h('div',{}); sec[1].appendChild(pwrap);
+  say(pwrap,`<p>Read your patient's referral note again. Then predict what the karyotype will show. There are no wrong predictions: you get full credit for making them, but you <b>can't change them</b> after you lock them in.</p>`);
+  if(I) say(pwrap,referralCard(I.c));
+  predictProblem(pwrap,{id:'pred', part:'P2', num:num(), q:'Make your predictions.', rowsLabel:'#',
+    rows:[{id:'1',desc:'How many chromosomes do you predict your patient has?'},{id:'2',desc:'Do you predict your patient is male or female?'}],
+    choices:['44','45','46','47','48'], hint:''});
+  { const pb=pwrap.querySelectorAll('.prob'), sl=pb[pb.length-1].querySelectorAll('select')[1]; if(sl){ sl.innerHTML='<option value="">choose…</option><option>Male</option><option>Female</option>'; sl.value=(st('pred').val||{})[1]||''; } }
+  writtenProblem(pwrap,{id:'hyp', part:'P2', num:num(), q:'Explain your predictions in one or two sentences. What did you base them on?', pts:2, bank:['I predict','46','47','45','male','female','because','most people','the referral note','the patient'],
+    groups:[['states a prediction (a number, or male / female)',/\b4[4-8]\b|\bmale|female|\bboy|girl|\bxx\b|\bxy\b/],['gives a reason',/because|since|\bso\b|note|age|newborn|baby|typical|most people|usual|normal|reason|guess|think/]],
+    model:'I predict 46 chromosomes and female, because most people have 46 chromosomes and the referral note did not tell me anything for sure.',
+    hint:'Say your number and male or female, then say why.', why:'A prediction with a reason is something you can test with data.'});
+  /* ---------- 3. Observations ---------- */
+  const lock=h('div',{class:'fb info'}); lock.innerHTML='<b>Locked.</b> Lock in your predictions on page 2 first.'; sec[2].appendChild(lock);
+  const top=hooks.observe(sec[2]);    // the hands-on photo + print, or the virtual bench
+  const dwrap=h('div',{}); sec[2].appendChild(dwrap);
+  say(dwrap,`<h3 style="margin-top:6px">Record your observations</h3><p class="small muted">Use ${SIM?'the karyotype you finished on the virtual bench':'the karyotype your group glued together'}. Count carefully, especially the small chromosomes.</p>`);
+  obsTableProblem(dwrap,{id:'obs', part:'P3', num:num(), q:'Record what your karyotype shows.', pts:3, rows:OBS_ROWS});
+  writtenProblem(dwrap,{id:'notes', part:'P3', num:num(), q:'<b>Observations:</b> describe your karyotype in your own words. How many chromosomes? What is in pair 23? Does any pair have more or fewer than two?', pts:2, bank:['I counted','chromosomes','pair','pair 23','X','Y','two','three','one','extra','missing','every pair'],
+    groups:[['describes the count or the pairs',/\d|pair|count/],['describes pair 23 or an extra / missing chromosome',/\bx\b|\by\b|xx|xy|extra|missing|three|only one|sex/]],
+    model:models(IC).evid, hint:'Say your total, what pair 23 looks like, and whether any pair has 3 (or only 1).', why:'Careful observations are the data for this lab.'});
+  window.dataRefresh=()=>{ const cs=!!I, ok=cs&&!!st('pred').checked, ran=hooks.ran(); plock.hidden=cs; pwrap.classList.toggle('off',!cs);
+    lock.hidden=ok; hooks.gate(ok); dwrap.classList.toggle('off',!(ok&&ran)); if(window.anaRefresh) anaRefresh(); };
+  /* ---------- 4. Analysis ---------- */
+  const alock=h('div',{class:'fb info'}); alock.innerHTML='<b>Locked.</b> Save your observations on page 3 first.'; sec[3].appendChild(alock);
+  const awrap=h('div',{}); sec[3].appendChild(awrap);
+  const obsBox=h('div',{class:'fb info',style:'margin:0 0 14px'}); awrap.appendChild(obsBox);
+  window.anaRefresh=()=>{ const ok=!!st('obs').checked; alock.hidden=ok; awrap.hidden=!ok;
+    const o=OBS(); obsBox.innerHTML=`<b>Patient ${IC.c}: your saved observations.</b> Total: <b>${esc(o[0]||'?')}</b> · Pair 23: <b>${esc(o[1]||'?')}</b> · Extra or missing: <b>${esc(o[2]||'?')}</b>`; };
+  say(awrap,`<p>Your answers are checked against your patient's <b>true</b> karyotype (checked by a second lab technician). If your count was off, look at your karyotype again.</p>`);
+  typedProblem(awrap,{id:'a1', part:'P4', num:num(), q:'How many chromosomes are in each of your patient\'s body cells?',
+    blanks:[{before:'Total number of chromosomes:', calc:()=>IC.total, tol:0, show:String(IC.total), after:''}],
+    hint:'Count pair by pair: 2 per pair is typical. Check pairs 13 to 22 and pair 23 closely.', why:''});
+  choiceProblem(awrap,{id:'a2', part:'P4', num:num(), q:'Read your patient\'s karyotype.',
+    parts:[{q:'<b>Part A:</b> What are the sex chromosomes (pair 23)?',opts:SEX_OPTS,ans:IC.sexI},
+           {q:'<b>Part B:</b> Is the patient male or female?',opts:['Male','Female'],ans:IC.male?0:1},
+           {q:'<b>Part C:</b> Is any chromosome extra or missing?',opts:ABN_OPTS,ans:IC.ci},
+           {q:'<b>Part D:</b> What does the karyotype indicate? (Use the reference table on page 1.)',opts:DX_OPTS,ans:IC.ci}],
+    hint:'A Y chromosome means male. Look for a pair with three chromosomes, or a pair 23 with one or three.', why:'Your answers match your patient\'s karyotype.'});
+  choiceProblem(awrap,{id:'a3', part:'P4', num:num(), q:'Think about how the karyotype was made.',
+    parts:[{q:'<b>Part A:</b> Why does the lab stop the cells in metaphase?',opts:['In metaphase, chromosomes are copied and coiled up as tightly as they get, so they are thick and easy to see','In metaphase, the cell has no chromosomes','Metaphase is when the cell makes new DNA','So the cells stay alive forever'],ans:0},
+           {q:'<b>Part B:</b> Why does the lab use white blood cells, not red blood cells?',opts:['Red blood cells have no nucleus, so they have no chromosomes','Red blood cells are too big for the microscope','White blood cells have more chromosomes','Red blood cells are a different species'],ans:0},
+           {q:'<b>Part C:</b> Why are the chromosomes stained?',opts:['The stain makes light and dark bands, so each pair has its own pattern','The stain adds extra chromosomes','The stain makes the cells divide faster','The stain shows which genes are turned on'],ans:0}],
+    hint:'Think back to the steps for making a karyotype in the lesson.', why:'Metaphase chromosomes are the most coiled and visible; only cells with a nucleus have chromosomes; banding shows each pair\'s pattern.'});
+  choiceProblem(awrap,{id:'a4', part:'P4', num:num(), q:'How do you know two chromosomes are a matching (homologous) pair?',
+    parts:[{opts:['Same size','Same centromere position','Same band (stripe) pattern','Same color of stain','They were next to each other in the photo','They point in the same direction'],ans:[0,1,2]}],
+    hint:'Every chromosome gets the same stain, and they land randomly in the photo.', why:'Homologous chromosomes match in size, centromere position, and banding pattern.'});
+  typedProblem(awrap,{id:'a5', part:'P4', num:num(), q:'Nondisjunction math. During meiosis, one pair of chromosomes does not separate.',
+    blanks:[{before:'An egg forms with <b>24</b> chromosomes. A typical sperm (23) fertilizes it. The baby\'s cells have', num:[47,47], show:'47', after:'chromosomes.'},
+            {before:'An egg forms with <b>22</b> chromosomes. A typical sperm (23) fertilizes it. The baby\'s cells have', num:[45,45], show:'45', after:'chromosomes.'}],
+    hint:'Add the egg and the sperm.', why:''});
+  choiceProblem(awrap,{id:'a6', part:'P4', num:num(), q:'Where do extra or missing chromosomes come from?',
+    parts:[{q:'<b>Part A:</b> What is nondisjunction?',opts:['When a pair of chromosomes does not separate as an egg or sperm forms','When a chromosome breaks in a skin cell','When a cell makes a copy of its DNA','When a sperm cell has 23 chromosomes'],ans:0},
+           {q:'<b>Part B:</b> If a person has a trisomy, when did the mistake most likely happen?',opts:['When an egg or sperm formed in one of the parents (meiosis), before the person existed','After the person was born, in their blood cells only','When the lab stained the cells','Each time the person catches a cold'],ans:0}],
+    hint:'An extra chromosome in every body cell had to be there in the very first cell.', why:'Nondisjunction in meiosis makes an egg or sperm with 24 or 22 chromosomes, so the first cell of the baby already has 47 or 45.'});
+  choiceProblem(awrap,{id:'a7', part:'P4', num:num(), q:'Could your patient\'s sex cells (eggs or sperm) pass this karyotype on to children?',
+    parts:[{opts:PASS_OPTS,ans:IC.pass}],
+    hint:'First decide if your patient has a condition. Then think about meiosis and about what the condition does to the body.', why:'Your answer fits your patient\'s karyotype.'});
+  writtenProblem(awrap,{id:'a8', part:'P4', num:num(), q:'Did your observations on page 3 match your patient\'s true karyotype? Explain any difference (or how you made sure you were right).', pts:2, bank:['my observations','matched','did not match','I counted','I missed','small chromosomes','pair 23','extra','because'],
+    groups:[['refers to your observations or count',/observ|record|count|table|i (saw|found|wrote|got|said|put)|my (data|answer|karyotype)/],['says whether they matched, and why',/match|same|agree|differ|wrong|right|correct|mistake|miscount|missed|off by|checked/]],
+    model:`Yes, my observations matched. I counted ${IC.total} chromosomes and recorded pair 23 correctly, because I checked each pair twice before saving.`,
+    hint:'Compare your table on page 3 with your answers above.', why:'Comparing your data with the checked result is how labs catch mistakes.'});
+  /* ---------- 5. Conclusion ---------- */
+  const M=models(IC);
+  say(sec[4],`<p>Write a <b>claim–evidence–reasoning</b> conclusion that answers: <i>What does your patient's karyotype show, and what condition (if any) does it indicate?</i></p>`);
+  writtenProblem(sec[4],{id:'k1', part:'P5', num:num(), q:'<b>Claim:</b> answer the lab question in one sentence.', pts:2, bank:['Patient','karyotype','shows','chromosomes','typical','indicates','syndrome','no condition'],
+    groups:[['states the total number of chromosomes',new RegExp('\\b'+IC.total+'\\b')],['names the condition (or says it is typical)',CASE_RE[IC.cond]]],
+    model:M.claim, hint:'Give the total number and name the condition, or say "typical".', why:'The claim answers the lab question.'});
+  writtenProblem(sec[4],{id:'k2', part:'P5', num:num(), q:'<b>Evidence:</b> describe what you saw in the karyotype that supports your claim.', pts:2, bank:['I counted','pair','pair 23','X','Y','three copies','only one','two','every pair'],
+    groups:[['gives the count',new RegExp('\\b'+IC.total+'\\b')],['describes the key pair (pair 23, or the extra or missing chromosome)',evidenceRe(IC)]],
+    model:M.evid, hint:'Use your count and what you saw in the pairs, especially pair 23.', why:'Good evidence uses specific observations.'});
+  writtenProblem(sec[4],{id:'k3', part:'P5', num:num(), q:'<b>Reasoning:</b> explain <i>why</i> your evidence supports your claim.', pts:3, bank:['typical','46','23 pairs','extra','missing','nondisjunction','egg','sperm','male','female','sex chromosomes'],
+    groups:[['compares with a typical karyotype (46, 23 pairs)',/46|23 pairs|two of each|normal number|typical|usual/],['explains what pair 23 shows',/\bx|\by\b|male|female|sex chromosome/],['explains the extra / missing chromosome or its cause',/nondisjunction|did ?n.?t separate|not separate|extra|missing|meiosis|egg|sperm/]],
+    model:M.reas, hint:'Cover three ideas: what is typical, what pair 23 tells you, and what an extra or missing chromosome means (or that there is none).', why:'Reasoning connects your evidence to the claim using what a typical karyotype looks like.'});
+  dataRefresh();
+}
+
+/* ===== Karyotype Analysis Lab: hands-on version (cut and glue) ===== */
+const SIM=false;
+function buildContent(sec){
+  const CS=st('case'); const I=CS.c&&CASES[CS.c]?caseInfo(CS.c):null;
+  let topEl;
+  buildShared(sec, I, {
+    setup(s0, num, say){
+      say(s0,`<div class="figwrap" style="margin:12px 0 8px">${MAT_PIC}</div>
+       <p><b>Materials (per group):</b> your patient's printed chromosome photo and blank karyotype form (2 pages), scissors, a glue stick, a pencil, and a cup or envelope to hold small pieces.</p>
+       <p><b>Safety:</b> carry scissors closed and pointed down. Pick up all paper scraps when you finish.</p>
+       <p><b>Procedure:</b></p><ol class="proc">
+        <li>Choose the case letter your teacher gave your group and lock it in (below). Read the referral note.</li>
+        <li>On page 2, make your predictions and lock them in.</li>
+        <li>On page 3, press <b>Print my patient's chromosomes</b>. You get 2 pages: the chromosome photo and a blank karyotype form.</li>
+        <li><b>Before you cut,</b> count the chromosomes in the photo. Write the number at the top of the page.</li>
+        <li>Cut out each chromosome. Leave a thin white border. Put the small ones in the cup so they don't get lost.</li>
+        <li>Find the matching pairs: same <b>size</b>, same <b>centromere position</b> (the pinch), and same <b>band pattern</b>. Use the reference karyotype on page 3.</li>
+        <li>Arrange the pairs from largest (1) to smallest (22). Put the sex chromosomes on line 23.</li>
+        <li>Check your work with your partner, then glue each chromosome above its line.</li>
+        <li>Record your observations on page 3. Give your glued karyotype form to your teacher.</li></ol>`);
+      const box=h('div',{class:'casepick'}); s0.appendChild(box);
+      if(I){ box.innerHTML=`<h3 style="margin:0 0 4px">Your patient: Patient ${I.c}</h3><p class="small muted" style="margin:0 0 8px">Case locked. If this is not the letter your teacher gave you, ask your teacher.</p>${referralCard(I.c)}`; }
+      else {
+        box.innerHTML=`<h3 style="margin:0 0 4px">Choose your case</h3><p style="margin:0 0 6px">Your teacher gives your group a case letter. Choose it and lock it in. <b>You can't change it after this.</b></p>
+          <div class="btnrow"><label class="field" style="min-width:200px">Case letter<select class="casesel"><option value="">choose…</option>${CASE_KEYS.map(k=>`<option value="${k}">Patient ${k}</option>`).join('')}</select></label><button class="btn primary caselock" type="button" style="align-self:flex-end">Lock in my case</button></div>
+          <div class="fb no" hidden></div>`;
+        const sel=$('.casesel',box), fb=$('.fb',box);
+        $('.caselock',box).addEventListener('click',()=>{ const v=sel.value; if(!v){ fb.hidden=false; fb.textContent='Choose your case letter first.'; return; }
+          if(!confirm(`Lock in Patient ${v}? You can't change it after this.`)) return;
+          CS.c=v; save(); cloudSave(true); build(); });
+      }
+    },
+    observe(s2){
+      topEl=h('div',{class:'obsTop'}); s2.appendChild(topEl);
+      if(!I){ topEl.innerHTML='<p class="muted">Choose your case on page 1 first.</p>'; return topEl; }
+      topEl.innerHTML=`<h3 style="margin:0 0 4px">Patient ${I.c}: chromosome photo</h3>
+        <p>This microscope photo shows all of the chromosomes from one of your patient's white blood cells, stopped in metaphase and stained. This is your raw data: nothing is sorted or labeled yet.</p>
+        <div class="btnrow" style="margin:0 0 10px"><button class="btn primary printme" type="button">Print my patient's chromosomes</button><span class="small muted">2 pages: the photo to cut out, and a blank karyotype form.</span></div>
+        <div class="figwrap spreadwrap">${spreadSVG(I.c)}</div>
+        <details class="refbox"><summary>Reference karyotype from a typical person (to compare shapes and bands)</summary><p class="small muted" style="margin:6px 0">Your patient may be different from this reference.</p><div class="figwrap">${REF_K()}</div></details>`;
+      $('.printme',topEl).addEventListener('click',()=>printCase(I.c));
+      return topEl;
+    },
+    ran:()=>true,
+    gate(ok){ topEl.hidden=!ok; }   // the photo is data: hidden (not just faded) until predictions are locked
+  });
+  $$('.tprint',sec[0]).forEach(b=>b.addEventListener('click',()=>printCase(b.dataset.c)));
+}
+
+/* ============================== BUILD / SCORE ============================== */
+function scoreAll(){ const parts=PARTS.slice(0,-1).map(p=>({k:p.k,label:p.label,got:0,max:0})); PROBS.forEach(pr=>{ const pt=parts.find(x=>x.k===pr.part); pt.got+=pr.score(); pt.max+=pr.max; });
+  return {parts, total:parts.reduce((a,b)=>a+b.got,0), max:parts.reduce((a,b)=>a+b.max,0)}; }
+function build(){
+  PROBS.length=0; const ws=$('#ws'); ws.innerHTML='';
+  $('#nav').innerHTML=PARTS.map((pt,i)=>`<button class="ntile" type="button" data-i="${i}" aria-label="${pt.title}"><span class="ic">${ico(i,22)}</span><span class="nm">${pt.label}</span></button>`).join('');
+  $$('#nav .ntile').forEach(b=>b.addEventListener('click',()=>showPart(+b.dataset.i)));
+  const secs=PARTS.map((pt,i)=>{ const el=h('section',{class:'sec',id:'part'+i}); const last=i===PARTS.length-1;
+    el.innerHTML=`<div class="sechead"><div class="badge"><span class="z">${i+1}</span>${ico(i,34)}</div><div><div class="meta">${last?'Grade':`Section ${i+1} of ${PARTS.length-1} · about ${pt.min} min`}</div><h2>${pt.title}</h2></div></div>`;
+    const c=h('div',{class:'card'}); el.appendChild(c);
+    const nav=h('div',{class:'secnav'});
+    const back=h('button',{class:'btn ghost',type:'button'},i===0?'':'← Back'); if(i===0) back.style.visibility='hidden'; back.addEventListener('click',()=>showPart(i-1));
+    nav.appendChild(back);
+    if(!last){ const nx=h('button',{class:'btn primary',type:'button'},i===PARTS.length-2?'See my grade →':`Next: ${PARTS[i+1].title} →`); nx.addEventListener('click',()=>showPart(i+1)); nav.appendChild(nx); }
+    el.appendChild(nav); ws.appendChild(el); return c; });
+  buildContent(secs);
+  secs[PARTS.length-1].id='turnin';
+  showPart(Math.min(S.cur||0,PARTS.length-1),true);
+  $('#whoami').textContent=S.student?`${S.student.first} ${S.student.last}`:''; refresh();
+}
+function showPart(i,noScroll){
+  S.cur=i; $$('#ws .sec').forEach((el,j)=>el.hidden=j!==i);
+  $$('#nav .ntile').forEach((t,j)=>t.classList.toggle('cur',j===i));
+  if(!noScroll){ save(); window.scrollTo(0,0); }
+}
+function refresh(){
+  const sc=scoreAll(), done=PROBS.filter(p=>p.checked()).length;
+  $('#scorePill').textContent=`${done}/${PROBS.length} checked · ${sc.total}/${sc.max} pts`;
+  PARTS.slice(0,-1).forEach((pt,i)=>{ const t=$(`#nav .ntile[data-i="${i}"]`); if(t) t.classList.toggle('done',PROBS.filter(p=>p.part===pt.k).every(p=>p.checked())); });
+  const t7=$(`#nav .ntile[data-i="${PARTS.length-1}"]`); if(t7) t7.classList.toggle('done',!!S.submittedAt);
+  const c=$('#turnin'); if(!c) return;
+  const rows=sc.parts.map(p=>`<tr><th>${p.label}</th><td>${p.got} / ${p.max}</td></tr>`).join('');
+  c.innerHTML=`<div style="display:flex;gap:22px;align-items:center;flex-wrap:wrap"><div class="big">${sc.total}/${sc.max}</div><div><h3 style="margin:0">${esc(S.student?S.student.first+' '+S.student.last:'')}</h3><p class="muted" style="margin:0">${done} of ${PROBS.length} problems checked</p></div></div>
+    <table class="res" style="margin-top:12px">${rows}</table>
+    <p class="small muted" style="margin-top:10px">Problems you haven't checked count as 0. You can turn in again later; your teacher sees the newest one.</p>
+    <div class="btnrow"><button class="btn primary" id="subBtn" type="button">${S.submittedAt?'Turn in again':'Turn in my lab'}</button><button class="btn ghost" id="csvBtn" type="button">Download CSV</button></div>
+    <p class="fb info sheetStatus" aria-live="polite">${S.sentAt?`Sent to your teacher ${new Date(S.sentAt).toLocaleString()}.`:'Not turned in yet.'}</p>`;
+  $('#subBtn').addEventListener('click',turnIn);
+  $('#csvBtn').addEventListener('click',()=>downloadCSV([recordRow()],`KaryotypeLab_${(S.student&&S.student.last||'student').replace(/\W+/g,'')}.csv`));
+}
+const CSV_HEAD=['Student ID','Last Name','First Name','Period','Teacher','Activity','Score','Total','Percent',...PARTS.slice(0,-1).map(p=>p.label),'Date'];
+function recordRow(){ const st=S.student||{}, sc=scoreAll(); return [st.id||'',st.last||'',st.first||'',st.period||'',st.teacher||'',ACTIVITY,sc.total,sc.max,Math.round(100*sc.total/sc.max)+'%',...sc.parts.map(p=>p.got),new Date(S.submittedAt||Date.now()).toLocaleString()]; }
+function csvText(rows){ const q=v=>{ v=String(v==null?'':v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }; return [CSV_HEAD,...rows].map(r=>r.map(q).join(',')).join('\r\n')+'\r\n'; }
+function downloadCSV(rows,name){ const b=new Blob([csvText(rows)],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500); }
+const loadRecs=()=>{ try{ return (JSON.parse(localStorage.getItem(RECS))||[]).filter(r=>r.length===CSV_HEAD.length); }catch(e){ return []; } };
+function saveRecord(){ if(S.preview) return; const recs=loadRecs(), row=recordRow(); const i=recs.findIndex(r=>r[0]===row[0]&&r[1]===row[1]); if(i>=0) recs[i]=row; else recs.push(row); try{ localStorage.setItem(RECS,JSON.stringify(recs)); }catch(e){} }
+function turnIn(){
+  const left=PROBS.filter(p=>!p.checked()).length;
+  if(left&&!confirm(`${left} problem${left>1?'s':''} not checked yet (they count as 0). Turn in anyway?`)) return;
+  S.submittedAt=Date.now(); save(); saveRecord(); cloudSave(true); disarm(); refresh();
+  const msg=t=>$$('.sheetStatus').forEach(e=>e.textContent=t);
+  if(S.preview){ msg('Preview mode: nothing is sent.'); return; }
+  const st=S.student, sc=scoreAll();
+  const body={studentId:st.id||'',firstName:st.first||'',lastName:st.last||'',period:st.period||'',teacher:st.teacher||'',locks:'0',when:new Date().toString(),activity:ACTIVITY,score:String(sc.total),total:String(sc.max),
+    qlabels:sc.parts.map((p,i)=>'P'+(i+1)+' '+PARTS[i].label).join('|'),qpoints:sc.parts.map(p=>p.got).join('|'),qmax:sc.parts.map(p=>p.max).join('|')};
+  msg('Sending...');
+  fetch(sheetURL(),{method:'POST',mode:'no-cors',body:new URLSearchParams(body)}).then(()=>{ S.sentAt=new Date().toISOString(); save(); msg('Sent! Your teacher will see your score.'); }).catch(()=>msg("Couldn't send. Check the Wi-Fi and try again, or download the CSV."));
+}
+
+/* ============================== NO LOCKDOWN ON WORKSHEETS ============================== */
+let teacherOpen=false;
+function arm(){} function disarm(){} function showLock(){} function enterFS(){}
+['copy','cut','paste','contextmenu'].forEach(ev=>document.addEventListener(ev,e=>{ if(teacherOpen||S.preview) return; e.preventDefault(); }));
+
+/* ============================== SIGN IN ============================== */
+function showWS(){ $('#start').hidden=true; $('#top').hidden=false; $('#ws').hidden=false; build(); window.scrollTo(0,0); if(S.locked&&LOCKDOWN&&!S.lockOff) showLock(); else arm(); }
+function renderStart(){ const has=!!S.student; $('#resumeBox').hidden=!has; $('#startForm').hidden=has; $('#signinTitle').textContent=has?'Welcome back':'Sign in to start';
+  if(has) $('#resumeText').innerHTML=`Signed in as <b>${esc(S.student.first)} ${esc(S.student.last)}</b>, period ${esc(S.student.period)}.`; }
+$('#fPeriod').innerHTML='<option value="">Choose your period</option>'+periodList().map(p=>`<option>${esc(p)}</option>`).join('');
+$('#fTeacher').innerHTML='<option value="">Choose your teacher</option>'+teacherList().map(t=>`<option>${esc(t)}</option>`).join('');
+let starting=false;
+async function start(){
+  if(starting) return; starting=true;
+  try{
+    const v={first:$('#fFirst').value.trim(),last:$('#fLast').value.trim(),id:$('#fId').value.trim(),period:$('#fPeriod').value,teacher:$('#fTeacher').value};
+    const miss=[]; if(!v.first) miss.push('first name'); if(!v.last) miss.push('last name'); if(!v.id) miss.push('student ID'); if(!v.period) miss.push('period'); if(!v.teacher) miss.push('teacher');
+    const err=$('#formErr'); if(miss.length){ err.className='fb no'; err.textContent='Fill in your '+miss.join(', ')+'.'; err.hidden=false; return; }
+    if(LOCKDOWN) enterFS();
+    err.className='fb info'; err.textContent='Checking for your saved work...'; err.hidden=false;
+    const res=await cloudLoad(v); err.hidden=true;
+    if(res.status==='found'){ const d=res.data; d.student=Object.assign({},d.student||{},{first:v.first,period:v.period,teacher:v.teacher}); adopt(d); showWS(); note('✓ Your saved work was loaded'); return; }
+    const ns=fresh(); ns.student=v; adopt(ns); showWS(); cloudSave(true);
+  } catch(ex){ const er=$('#formErr'); er.className='fb no'; er.textContent='Something went wrong starting ('+(ex&&ex.message||ex)+'). Reload and try again.'; er.hidden=false; }
+  finally{ starting=false; }
+}
+$('#startBtn').addEventListener('click',start);
+$('#startForm').addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.tagName==='INPUT'){ e.preventDefault(); start(); } });
+$('#resumeBtn').addEventListener('click',async()=>{ const b=$('#resumeBtn'); b.disabled=true; b.textContent='Loading your work...'; if(LOCKDOWN&&!S.locked) enterFS();
+  const res=await cloudLoad(S.student); b.disabled=false; b.textContent='Continue my lab';
+  if(res.status==='found'&&(res.data.updatedAt||0)>(S.updatedAt||0)&&checkedCount(res.data)>=checkedCount(S)){ const d=res.data; d.student=S.student; adopt(d); note('✓ Your newest saved work was loaded'); } showWS(); });
+$('#notMeBtn').addEventListener('click',async()=>{ const b=$('#notMeBtn'); b.disabled=true;
+  try{ if(cloudOK()) await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); }catch(e){ b.disabled=false; $('#resumeErr').textContent="Can't back up the last student's work right now. Check the Wi-Fi, or ask your teacher."; $('#resumeErr').hidden=false; return; }
+  b.disabled=false; adopt(fresh()); ['#fFirst','#fLast','#fId','#fPeriod','#fTeacher'].forEach(s=>$(s).value=''); renderStart(); });
+
+/* ============================== TEACHER ============================== */
+function openTeacher(){ teacherOpen=true; $('#teachLogin').hidden=false; $('#teachPanel').hidden=true; $('#teachErr').hidden=true; $('#teachCode').value=''; $('#teachOv').classList.add('show'); setTimeout(()=>$('#teachCode').focus(),50); }
+function closeTeacher(){ $('#teachOv').classList.remove('show'); teacherOpen=false; }
+$('#teacherLink').addEventListener('click',openTeacher); $('#teachBtn').addEventListener('click',openTeacher);
+$('#teachCancel').addEventListener('click',closeTeacher);
+$('#teachCode').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#teachGo').click(); });
+$('#teachGo').addEventListener('click',()=>{ if(!codeIs($('#teachCode').value,TEACHER_CODE)){ $('#teachErr').hidden=false; return; } $('#teachLogin').hidden=true; $('#teachPanel').hidden=false; renderTeacher(); });
+function renderTeacher(){
+  const recs=loadRecs(), p=$('#teachPanel'), keyOn=document.body.classList.contains('keyon');
+  p.innerHTML=`<h2>Teacher tools</h2>
+    <div class="btnrow"><button class="btn ghost" id="tKey" type="button">${keyOn?'Hide answer key':'Answer key'}</button>
+      <button class="btn ghost" id="tPrev" type="button">${S.preview?'End preview':'Preview (saves nothing)'}</button>
+      <button class="btn ghost" id="tResetWrong" type="button">Reset all wrong answers</button>
+      <button class="btn ghost" id="tReset" type="button">Reset this Chromebook</button><button class="btn ghost" id="tClose" type="button">Close</button></div>
+    <h3 style="margin-top:16px">Scores saved on this Chromebook (${recs.length})</h3>
+    <div class="wide">${recs.length?`<table class="nb"><tr><th>Student</th><th>ID</th><th>Period</th><th>Score</th><th>Date</th></tr>${recs.map(r=>`<tr><td>${esc(r[1])}, ${esc(r[2])}</td><td>${esc(r[0])}</td><td>${esc(r[3])}</td><td>${r[6]}/${r[7]}</td><td>${esc(r[r.length-1])}</td></tr>`).join('')}</table>`:'<p class="muted">None yet.</p>'}</div>
+    <div class="btnrow"><button class="btn primary" id="tCsv" type="button" ${recs.length?'':'disabled'}>Download scores (CSV)</button></div>
+    <h3 style="margin-top:16px">Load a student's saved work</h3>
+    <div class="btnrow"><input class="code" id="tId" placeholder="Student ID" style="width:150px"><input class="code" id="tLast" placeholder="Last name" style="width:170px"><button class="btn ghost" id="tLoad" type="button">Load work</button></div>
+    <p class="fb info" id="tMsg" style="min-height:1em"></p>`;
+  const msg=t=>$('#tMsg').textContent=t;
+  $('#tKey').addEventListener('click',()=>{ document.body.classList.toggle('keyon'); renderTeacher(); msg(document.body.classList.contains('keyon')?'Answer key on: each box shows its answer, sort chips show their box, and correct choices have a dashed gold outline.':'Answer key off.'); });
+  $('#tPrev').addEventListener('click',()=>{ if(S.preview){ location.reload(); return; } const ns=fresh(); ns.preview=true; ns.student={first:'Teacher',last:'Preview',id:'0',period:'-',teacher:teacherList()[0]}; S=ns; closeTeacher(); showWS(); note('Preview: nothing is saved'); });
+  $('#tReset').addEventListener('click',()=>{ if(confirm('Erase this lab on this Chromebook? Work backed up to the Saved Student Work sheet is not deleted.')){ try{ localStorage.removeItem(STORE); }catch(e){} location.reload(); } });
+  $('#tResetWrong').addEventListener('click',()=>{
+    const wrong=PROBS.filter(pr=>{ const P=S.p[pr.id]||{}; return (P.tries||0)>0 && !P.right; });
+    if(!wrong.length){ msg('Nothing to reset: this student has no wrong answers.'); return; }
+    if(!confirm(`Reset ${wrong.length} problem${wrong.length>1?'s':''} that ${wrong.length>1?'are':'is'} wrong or on a second try for ${(S.student&&S.student.first)||'this student'}? Correct answers stay.`)) return;
+    wrong.forEach(pr=>{ delete S.p[pr.id]; });
+    save(); cloudSave(true); msg(`Reset ${wrong.length} problem${wrong.length>1?'s':''}. Reloading…`); setTimeout(()=>location.reload(),700); });
+  $('#tClose').addEventListener('click',closeTeacher);
+  $('#tCsv').addEventListener('click',()=>downloadCSV(recs,`KaryotypeLab_scores_${new Date().toISOString().slice(0,10)}.csv`));
+  $('#tLoad').addEventListener('click',async()=>{ const s={id:$('#tId').value.trim(),last:$('#tLast').value.trim()}; if(!s.id||!s.last){ msg('Type the student ID and last name.'); return; } msg('Looking up saved work...');
+    const r=await cloudLoad(s); if(r.status==='found'){ adopt(r.data); closeTeacher(); renderStart(); $('#start').hidden=false; $('#ws').hidden=true; $('#top').hidden=true; } else msg(r.status==='none'?'No saved work found for that student.':"Couldn't reach the saved-work sheet."); });
+}
+
+if(!STORAGE_OK) $('#noStore').hidden=false;
+renderStart();
+})();
+</script>
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bird Beak Lab: Natural Selection | Biology Unit 5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1626; --panel:#142136; --panel2:#1a2a44; --line:#2a3d5f; --line2:#3a5580;
+  --text:#e8eef8; --muted:#a3b4cf; --dim:#7488a9;
+  --leaf:#5fe3a9; --sun:#ffd35c; --r:#ffd35c; --sky:#45c8f0; --ok:#4ade80; --bad:#fb7185; --pink:#f472b6;
+  --font:'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+*{box-sizing:border-box} [hidden]{display:none !important}
+html,body{margin:0}
+body{background-color:var(--bg); background-image:linear-gradient(rgba(110,150,210,.065) 1px,transparent 1px),linear-gradient(90deg,rgba(110,150,210,.065) 1px,transparent 1px); background-size:32px 32px;
+  color:var(--text); font-family:var(--font); font-size:17px; line-height:1.55; -webkit-user-select:none; user-select:none}
+input,textarea{-webkit-user-select:text; user-select:text}
+h1,h2,h3,h4{margin:0 0 .45em; line-height:1.2; font-weight:600}
+h1{font-size:clamp(28px,4.4vw,40px); font-weight:700} h2{font-size:24px} h3{font-size:19px}
+p{margin:0 0 .75em} .muted{color:var(--muted)} .small{font-size:14px}
+sub,sup{font-size:.72em}
+:focus-visible{outline:3px solid var(--r); outline-offset:2px}
+.top{position:sticky; top:0; z-index:20; background:rgba(13,22,38,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+.top-in{max-width:1100px; margin:0 auto; padding:8px 16px; display:flex; gap:12px; align-items:center}
+.brand{font-weight:600; font-size:15px; white-space:nowrap} .brand span{display:block; font-weight:400; font-size:12px; color:var(--muted)}
+.nav{display:flex; gap:6px; flex:1; overflow-x:auto; padding:3px 2px}
+.ntile{flex:0 0 auto; width:54px; height:54px; border-radius:7px; border:1.5px solid var(--line2); background:var(--panel); color:var(--text); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer; position:relative; font:inherit; padding:0}
+.ntile .ic{color:var(--leaf); line-height:0} .ntile .nm{font-size:8.5px; color:var(--muted)}
+.ntile.cur{border-color:var(--r); background:rgba(255,211,92,.14)}
+.ntile.cur .nm{color:var(--r)}
+.secnav{display:flex; justify-content:space-between; gap:10px; margin-top:4px}
+.ntile.done::after{content:'✓'; position:absolute; top:1px; right:4px; font-size:10px; font-weight:700; color:var(--ok)}
+.scorepill{font-size:13px; padding:4px 10px; border-radius:999px; background:var(--panel2); white-space:nowrap}
+.savenote{font-size:12.5px; color:var(--ok); white-space:nowrap} @media (max-width:1300px){ .savenote{display:none} } @media (max-width:900px){ .scorepill{display:none} }
+main{max-width:1000px; margin:0 auto; padding:20px 16px 80px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin:0 0 18px}
+.sec{scroll-margin-top:80px}
+.sechead{display:flex; gap:14px; align-items:center; margin:28px 0 10px}
+.badge{width:66px; height:66px; border-radius:10px; border:2px solid var(--leaf); background:var(--panel); display:flex; align-items:center; justify-content:center; position:relative; flex:0 0 auto; color:var(--leaf)}
+.badge .z{position:absolute; top:3px; left:6px; font-size:11px; color:var(--muted)}
+.meta{color:var(--muted); font-size:14px}
+.btn{font:inherit; font-weight:600; font-size:15px; border-radius:10px; padding:10px 18px; cursor:pointer; border:1.5px solid transparent}
+.btn.primary{background:var(--r); color:#231a00} .btn.ghost{background:transparent; border-color:var(--line2); color:var(--text)}
+.btn.small{padding:6px 12px; font-size:14px} .btn:disabled{opacity:.45; cursor:not-allowed}
+.btnrow{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:12px}
+.field{display:flex; flex-direction:column; gap:4px; font-size:14px; color:var(--muted)}
+.field input,.field select{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px}
+.formgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin:10px 0}
+.fb{margin-top:10px; padding:10px 14px; border-radius:10px; font-size:15px}
+.fb.ok{background:rgba(74,222,128,.12); color:#c9f7d8} .fb.no{background:rgba(251,113,133,.12); color:#ffd3db} .fb.info{background:var(--panel2)}
+.prob{border-top:1px solid var(--line); padding-top:16px; margin-top:16px}
+.prob:first-of-type{border-top:none; padding-top:0; margin-top:0}
+.pq{font-weight:500; margin-bottom:8px}
+.pnum{display:inline-block; min-width:30px; font-weight:700; color:var(--leaf)}
+.pts{font-size:13px; color:var(--muted); font-weight:400}
+.hintbox{background:rgba(255,211,92,.08); border-left:3px solid var(--r); border-radius:8px; padding:8px 12px; margin-top:8px; font-size:15px}
+/* drag and drop */
+.figwrap{position:relative; width:100%}
+.figwrap svg{width:100%; height:auto; display:block; background:#0a1322; border:1px solid var(--line); border-radius:12px}
+.figwrap svg text{font-family:var(--font)}
+.zone{position:absolute; transform:translate(-50%,-50%); min-height:32px; border:2px dashed #8fb3e6; border-radius:9px; background:rgba(13,22,38,.92); color:var(--text); font:inherit; font-size:14px; font-weight:600; display:flex; align-items:center; justify-content:center; padding:2px 6px; cursor:pointer; text-align:center; line-height:1.15}
+.zone.empty{color:var(--dim); font-weight:400; font-size:12.5px}
+.zone.filled{border-style:solid; border-color:var(--r); background:#2b2410}
+.zone.hot{box-shadow:0 0 0 3px rgba(255,211,92,.5)}
+.zone.locked{opacity:.9}
+.zone.ok{border-color:var(--ok); background:#0f2e1d} .zone.no{border-color:var(--bad); background:#3a0f1a}
+.pool{display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 4px; padding:10px; border:1px dashed var(--line2); border-radius:10px; min-height:52px}
+.pool .lbl{width:100%; font-size:12.5px; color:var(--muted)}
+.chip{font:inherit; font-size:15px; font-weight:600; padding:6px 14px; border-radius:999px; border:1.5px solid var(--line2); background:var(--panel2); color:var(--text); cursor:grab; touch-action:none}
+.chip.sel{border-color:var(--r); background:rgba(255,211,92,.16); box-shadow:0 0 0 3px rgba(255,211,92,.35)}
+.bins{display:grid; gap:10px; margin-top:6px}
+.bin{border:2px dashed var(--line2); border-radius:12px; padding:10px; min-height:96px; cursor:pointer; background:rgba(13,22,38,.5)}
+.bin h4{margin:0 0 8px; font-size:15px; color:var(--leaf)} .bin.hot{border-color:var(--r)}
+.bin .chip{cursor:pointer; margin:3px} .bin .chip.ok{border-color:var(--ok); background:#0f2e1d} .bin .chip.no{border-color:var(--bad); background:#3a0f1a}
+.phenbox{background:rgba(244,114,182,.1); border-left:4px solid #f472b6; border-radius:8px; padding:10px 14px; margin-bottom:14px}
+.fixnote{font-size:12px; color:#ffd3db; font-weight:400}
+/* equation */
+.eq{display:flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:20px; font-weight:600; margin:10px 0}
+.eq .zone{position:static; transform:none; min-width:120px; min-height:40px}
+/* choices */
+.opts{display:grid; gap:8px; margin:6px 0}
+.opt{display:flex; gap:12px; align-items:center; text-align:left; background:var(--panel2); border:1.5px solid var(--line); color:var(--text); border-radius:10px; padding:9px 14px; font:inherit; font-size:16px; cursor:pointer}
+.opt .L{flex:0 0 26px; height:26px; border-radius:50%; display:grid; place-items:center; background:var(--bg); font-weight:600; font-size:13px}
+.opt.multi .L{border-radius:6px}
+.opt.sel{border-color:var(--r); background:rgba(255,211,92,.08)} .opt.sel .L{background:var(--r); color:#231a00}
+.opt.ok{border-color:var(--ok); background:rgba(74,222,128,.1)} .opt.no{border-color:var(--bad); background:rgba(251,113,133,.1)}
+.opt:disabled{cursor:default}
+input.blank{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:7px 10px; font:inherit; font-size:16px; width:170px}
+input.blank.ok{border-color:var(--ok)} input.blank.no{border-color:var(--bad)}
+.brow{margin:8px 0}
+/* answer key (teacher) */
+body.keyon .zone[data-key]::after{content:'key: ' attr(data-key); position:absolute; top:100%; left:50%; transform:translateX(-50%); font-size:11px; color:var(--r); white-space:nowrap; margin-top:2px}
+body.keyon .chip[data-key]::after{content:' → ' attr(data-key); font-size:11px; color:var(--r)}
+body.keyon .opt[data-key]{outline:2px dashed var(--r); outline-offset:2px}
+body.keyon input.blank[data-key]+.keytxt{display:inline}
+.datatab select.ocell{font:inherit; padding:4px 6px; border-radius:8px; max-width:100%}
+.datatab input.dcell{width:72px; font:inherit; padding:4px 6px; border-radius:8px; text-align:center}
+.datachart svg{width:100%; height:auto; display:block; margin-top:10px}
+ol.proc li{margin:4px 0}
+.off{opacity:.35; pointer-events:none}
+.btbkey{display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; margin:6px 0 10px}.btbkey span{display:inline-block; width:16px; height:16px; border-radius:50%; vertical-align:middle; border:1px solid rgba(255,255,255,.4)}
+.simwrap{display:grid; grid-template-columns:minmax(150px,220px) 1fr; gap:18px; align-items:start; background:rgba(255,255,255,.04); border:1px solid var(--line,#2a3d5f); border-radius:14px; padding:14px}
+.simwrap.off{opacity:.35; pointer-events:none}
+.bigtube svg{width:100%; height:auto; display:block}.clock{text-align:center; font-weight:700; font-size:20px; margin-top:6px}
+.tg{display:block; margin:4px 0; font-size:17px}.tg input{transform:scale(1.3); margin-right:8px}
+.sensor{margin:10px 0; font-size:18px}.sensor b{font-size:24px; color:#ffd35c}
+.btn.on{outline:2px solid #ffd35c}
+.dot{display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:6px; vertical-align:middle}
+.predtab select{font:inherit; padding:4px 6px; border-radius:8px}
+#sChart svg{width:100%; height:auto; display:block}
+@media (max-width:700px){ .simwrap{grid-template-columns:1fr} .bigtube{max-width:180px; margin:0 auto} }
+.wbank2{margin-top:8px; padding:8px 10px; border:1px dashed rgba(163,180,207,.5); border-radius:10px; font-size:14px; line-height:2}
+.wchip{font:inherit; font-size:14px; margin:2px 4px 2px 0; padding:2px 10px; border-radius:999px; border:1px solid rgba(163,180,207,.6); background:rgba(255,255,255,.06); color:inherit; cursor:pointer}
+.wchip:hover{border-color:#ffd35c}
+.wtext{width:100%; min-height:110px; font:inherit; padding:10px; border-radius:10px; border:1.5px solid var(--line,#2a3d5f); background:rgba(255,255,255,.04); color:inherit; resize:vertical}
+.wkey{display:none; margin-top:6px; font-size:14px; color:var(--r,#ffd35c)}
+body.keyon .wkey{display:block}
+.keytxt{display:none; font-size:12px; color:var(--r); margin-left:6px}
+.big{font-size:52px; font-weight:700; color:var(--r); line-height:1}
+table.res{border-collapse:collapse; width:100%} table.res th,table.res td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line)} table.res th{color:var(--muted); font-weight:400}
+.card.nostore{border:2px solid var(--bad); background:rgba(251,113,133,.08)}
+.overlay{position:fixed; inset:0; background:rgba(4,9,18,.94); z-index:100; display:none; align-items:center; justify-content:center; padding:20px}
+.overlay.show{display:flex}
+.modal{background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:24px; max-width:900px; width:100%; max-height:92vh; overflow:auto}
+input.code{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px; width:200px}
+table.nb{border-collapse:collapse; width:100%; font-size:14px} table.nb th,table.nb td{border:1px solid var(--line2); padding:6px 8px} table.nb th{background:var(--panel2)}
+.wide{overflow-x:auto}
+@media (max-width:700px){ .zone{font-size:11px; min-height:26px} .chip{font-size:13px; padding:5px 10px} }
+@media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important} }
+.prob + p,.prob + .phenbox,.prob + .figwrap{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+
+.bbfig svg{background:#f8fafc}
+.bbkey td{vertical-align:top} .bbkey td:first-child{width:46%}
+.datatab input.dcell{background:var(--bg); color:var(--text); border:1.5px solid var(--line2)}
+.datatab input.dcell:disabled{opacity:1; color:var(--text); border-color:var(--line); background:var(--panel2)}
+.bbchart svg{width:100%; height:auto; display:block; margin-top:10px}
+.isstat{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; font-weight:600; margin-bottom:6px}
+.isclock{font-variant-numeric:tabular-nums; font-size:22px; color:var(--r); background:var(--bg); border:1px solid var(--line2); border-radius:8px; padding:2px 12px}
+.ispic svg{width:100%; height:auto; display:block; border-radius:12px; max-width:760px; margin:0 auto}
+.ispic.feeding .peck{animation:peck .62s ease-in-out infinite}
+@keyframes peck{0%,100%{transform:translateY(0)}50%{transform:translateY(-40px)}}
+.rost{display:grid; gap:6px; margin-top:8px}
+.rrow{display:grid; grid-template-columns:120px minmax(0,1fr); gap:8px; align-items:center; border-top:1px solid var(--line); padding-top:6px}
+.rlab{display:flex; align-items:center; gap:6px; font-weight:600; font-size:15px} .rlab svg{flex:0 0 auto; background:#e7e3d8; border-radius:6px; padding:2px}
+.rcards{display:flex; flex-wrap:wrap; gap:5px}
+.bcard{width:62px; border:1.5px solid var(--line2); border-radius:8px; padding:3px 2px; text-align:center; background:rgba(255,255,255,.04); font-size:11.5px; line-height:1.25}
+.bcard .bid{color:var(--muted)} .bcard .bf{font-size:17px; font-weight:700; color:var(--r); min-height:21px} .bcard .bst{font-size:10.5px; min-height:13px; color:var(--muted)}
+.bcard.dead{opacity:.55; border-color:var(--bad); border-style:dashed} .bcard.dead .bf{color:var(--bad); text-decoration:line-through} .bcard.dead .bst{color:var(--bad)}
+.bcard.baby{border-color:var(--ok)} .bcard.baby .bst{color:var(--ok)}
+.logr{margin-top:10px} .logtab td:first-child{white-space:nowrap; width:120px} .logtab td{font-size:15px}
+.dd{color:var(--bad); text-decoration:line-through}
+@media (max-width:520px){ .rrow{grid-template-columns:1fr} .bcard{width:56px} .predtab td,.predtab th{padding:5px} .predtab select{max-width:150px} }
+
+</style>
+</head>
+<body>
+<header class="top" id="top" hidden>
+  <div class="top-in">
+    <div class="brand">Bird beak lab<span id="whoami"></span></div>
+    <nav class="nav" id="nav" aria-label="Worksheet parts"></nav>
+    <span class="scorepill" id="scorePill"></span>
+    <span class="savenote" id="saveNote" aria-live="polite"></span>
+    <button class="btn ghost small" id="teachBtn" type="button">Teacher</button>
+  </div>
+</header>
+
+<main>
+  <section id="start">
+    <div class="muted" style="margin-top:8px">Biology · Unit 5: Evolution · Lab · about 50 minutes</div>
+    <h1>Bird Beak Lab: Natural Selection</h1>
+    <p class="muted" style="font-size:18px;max-width:42em">Be a bird with one beak tool, compete for food on an island, and see what happens to the beaks in the population when the environment changes.</p>
+    <div class="card"><h3>How it works</h3>
+      <p style="margin:0">Each problem gets <b>two tries</b>. Right on either try earns full credit. If your first try is wrong, you'll be told it isn't right yet (but not the answer), so look again and try once more. Wrong twice and the problem is marked wrong and locks. Stuck? Tap <b>Hint</b> before you check.</p></div>
+    <div class="card nostore" id="noStore" hidden><h3>This browser can't save your work</h3><p style="margin:0">You may be in guest or incognito mode. Sign in to your school account and open the worksheet again.</p></div>
+    <div class="card">
+      <h3 id="signinTitle">Sign in to start</h3>
+      <div id="resumeBox" hidden><p id="resumeText"></p>
+        <div class="btnrow"><button class="btn primary" id="resumeBtn" type="button">Continue my lab</button><button class="btn ghost small" id="notMeBtn" type="button">Not you? Sign in as a different student</button></div>
+        <div class="fb no" id="resumeErr" hidden></div></div>
+      <div id="startForm">
+        <div class="formgrid">
+          <label class="field">First name<input id="fFirst" autocomplete="off"></label><label class="field">Last name<input id="fLast" autocomplete="off"></label>
+          <label class="field">Student ID<input id="fId" inputmode="numeric" autocomplete="off"></label>
+          <label class="field">Period<select id="fPeriod"></select></label><label class="field">Teacher<select id="fTeacher"></select></label>
+        </div>
+        <p class="small muted">Your work saves as you go. On any Chromebook, sign in with the same student ID and last name to pick up where you left off.</p>
+        <div class="fb no" id="formErr" hidden></div>
+        <div class="btnrow"><button class="btn primary" type="button" id="startBtn">Start the lab</button></div>
+      </div>
+    </div>
+    <p style="text-align:center"><button class="btn ghost" id="teacherLink" type="button">Teacher: enter unlock code</button></p>
+  </section>
+  <div id="ws" hidden></div>
+</main>
+
+<div class="overlay" id="teachOv" role="dialog" aria-modal="true" aria-labelledby="tTitle">
+  <div class="modal"><div id="teachLogin"><h2 id="tTitle">Teacher</h2>
+    <div class="btnrow"><input class="code" id="teachCode" type="password" placeholder="Teacher code" autocomplete="off"><button class="btn primary" id="teachGo" type="button">Open</button><button class="btn ghost" id="teachCancel" type="button">Close</button></div>
+    <div class="fb no" id="teachErr" hidden>That code didn't work.</div></div><div id="teachPanel" hidden></div></div>
+</div>
+<div class="overlay" id="tabOv" role="dialog" aria-modal="true"><div class="modal" style="max-width:520px"><h2>This lab is open in another tab</h2><p>To keep your newest work safe, this copy stopped saving. Close the extra tab, then reload this one.</p><div class="btnrow"><button class="btn primary" type="button" onclick="location.reload()">Reload with my newest work</button></div></div></div>
+
+<script src="sheets-config.js"></script>
+<script>
+(function(){
+'use strict';
+/* ============================== SETTINGS ============================== */
+const LESSON_TITLE='Natural Selection';           // unlock code = last word of this title
+const UNLOCK_CODE=LESSON_TITLE.trim().split(/\s+/).pop();
+const TEACHER_CODE='Teacher007';   // universal teacher-tools code
+const codeIs=(v,c)=>String(v||'').trim().toLowerCase()===String(c).toLowerCase();
+const WS_ID='bio-u5-bird-beak-lab', ACTIVITY='Bird Beak Lab';
+const BACKUP_URL='https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const SAVE_URL_BUILTIN='https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';
+const BACKUP_TEACHERS=['Austin','Mueller','McCue','Arce','Trimm','Garcia','Trimm/Callanan','Callanan'], BACKUP_PERIODS=['1','2','3','4','5','6','7','8'];
+const STORE='birdBeakLab_v1', RECS='birdBeakLab_records_v1';
+/* ===================================================================== */
+const teacherList=()=>{ try{ if(typeof TEACHERS!=='undefined'&&Array.isArray(TEACHERS)&&TEACHERS.length) return TEACHERS.map(String); }catch(e){} return BACKUP_TEACHERS; };
+const periodList=()=>{ try{ if(typeof PERIODS!=='undefined'&&Array.isArray(PERIODS)&&PERIODS.length) return PERIODS.map(String); }catch(e){} return BACKUP_PERIODS; };
+const sheetURL=()=>{ try{ if(typeof SHEETS_WEBHOOK_URL!=='undefined'&&SHEETS_WEBHOOK_URL&&String(SHEETS_WEBHOOK_URL).indexOf('PASTE')<0) return String(SHEETS_WEBHOOK_URL); }catch(e){} return BACKUP_URL; };
+const saveURL=()=>{ try{ if(typeof SAVE_WEBHOOK_URL!=='undefined'&&SAVE_WEBHOOK_URL&&String(SAVE_WEBHOOK_URL).indexOf('PASTE')<0) return String(SAVE_WEBHOOK_URL); }catch(e){} return SAVE_URL_BUILTIN; };
+const LOCKDOWN=false;   // worksheets never lock down
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const strip=s=>String(s).replace(/<[^>]+>/g,'');
+function h(tag,attrs,html){ const e=document.createElement(tag); if(attrs) for(const k in attrs){ if(attrs[k]===false||attrs[k]==null) continue; if(k==='class') e.className=attrs[k]; else if(k==='hidden') e.hidden=!!attrs[k]; else e.setAttribute(k,attrs[k]); } if(html!=null) e.innerHTML=html; return e; }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* ---------- state + saving ---------- */
+function fresh(){ return {ws:WS_ID, student:null, p:{}, ord:{}, locks:0, locked:false, lockOff:false, submittedAt:null, sentAt:null}; }
+let S; try{ S=JSON.parse(localStorage.getItem(STORE)); }catch(e){} if(!S||S.ws!==WS_ID) S=fresh();
+let STORAGE_OK=true, saveBlocked=false;
+try{ localStorage.setItem('__ps_t','1'); STORAGE_OK=localStorage.getItem('__ps_t')==='1'; localStorage.removeItem('__ps_t'); }catch(e){ STORAGE_OK=false; }
+function save(){
+  if(saveBlocked) return;
+  if(S.preview){ note('Preview: nothing is saved'); return; }
+  try{ const raw=localStorage.getItem(STORE); if(raw){ const st=JSON.parse(raw); if(st&&st.ws===WS_ID&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); return; } }
+    S.rev=(S.rev||0)+1; S.updatedAt=Date.now(); localStorage.setItem(STORE,JSON.stringify(S)); note(); cloudSave(false); }catch(e){}
+}
+window.addEventListener('storage',e=>{ if(e.key!==STORE||!e.newValue) return; try{ const st=JSON.parse(e.newValue); if(st&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); } }catch(_){} });
+const saveKey=st=>(String(st.id||'').replace(/\s+/g,'')+'-'+String(st.last||'').toLowerCase().replace(/[^a-z]/g,'')).toLowerCase();
+const checkedCount=st=>Object.values((st||S).p).filter(x=>x&&x.checked).length;
+let cloudTimer=null, cloudDirty=false, cloudBusy=false, cloudAt=null, cloudErr=false;
+const cloudOK=()=>!!saveURL()&&S.student&&!saveBlocked&&!S.preview;
+function cloudBody(){ const st=S.student||{}, sc=scoreAll();
+  return new URLSearchParams({code:saveKey(st), lesson:WS_ID, ver:String(S.updatedAt||Date.now()), prog:String((S.submittedAt?100000:0)+checkedCount(S)), studentId:st.id||'', lastName:st.last||'', firstName:st.first||'', period:st.period||'', teacher:st.teacher||'',
+    summary:S.submittedAt?`Turned in · ${sc.total}/${sc.max}`:`${checkedCount(S)} of ${PROBS.length} problems checked`, data:JSON.stringify(S)}); }
+function cloudSave(soon){ if(!cloudOK()) return; cloudDirty=true; if(soon){ clearTimeout(cloudTimer); cloudTimer=setTimeout(cloudFlush,1200); } else if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); }
+async function cloudFlush(){ cloudTimer=null; if(!cloudOK()||!cloudDirty) return; if(cloudBusy){ cloudTimer=setTimeout(cloudFlush,4000); return; } cloudBusy=true; cloudDirty=false;
+  try{ await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); cloudAt=new Date(); cloudErr=false; }catch(e){ cloudDirty=true; cloudErr=true; if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); } finally{ cloudBusy=false; note(); } }
+function cloudBeacon(){ if(!cloudOK()||!cloudDirty) return; try{ if(navigator.sendBeacon&&navigator.sendBeacon(saveURL(),cloudBody())) cloudDirty=false; }catch(e){} }
+async function cloudLoad(st){ const ctrl=new AbortController(), t=setTimeout(()=>ctrl.abort(),5000);
+  try{ const r=await fetch(saveURL()+'?'+new URLSearchParams({code:saveKey(st),lesson:WS_ID}),{signal:ctrl.signal}); const j=await r.json(); if(j&&j.found&&j.data){ const d=JSON.parse(j.data); if(d&&d.ws===WS_ID) return {status:'found',data:d}; } return {status:'none'}; }
+  catch(e){ return {status:'error'}; } finally{ clearTimeout(t); } }
+function adopt(ns){ let sr=0; try{ const raw=localStorage.getItem(STORE); if(raw) sr=JSON.parse(raw).rev||0; }catch(e){} ns.rev=Math.max(ns.rev||0,sr); S=ns; saveBlocked=false; save(); }
+function note(msg){ const n=$('#saveNote'); if(!n) return; const tm=d=>d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}); n.textContent=msg||(cloudErr?'✓ Saved on this Chromebook':'✓ Saved '+tm(new Date())+(cloudAt?' · backed up '+tm(cloudAt):'')); }
+document.addEventListener('visibilitychange',()=>{ if(document.hidden){ save(); cloudBeacon(); } });
+window.addEventListener('pagehide',()=>{ save(); cloudBeacon(); });
+
+/* ============================== DIAGRAMS ============================== */
+/* ============================== PROBLEMS ============================== */
+const PARTS=[
+ {k:'P1', label:'Setup', title:'Purpose and setup', min:10, icon:'<path d="M3 20h18"/><path d="M5 20c0-4 3-6 7-6s7 2 7 6"/><path d="M14 9.5l5-1.5-4.5-1"/><circle cx="12" cy="9" r="3"/>'},
+ {k:'P2', label:'Predict', title:'Predict', min:5, icon:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z"/>'},
+ {k:'P3', label:'Data', title:'Data', min:20, icon:'<rect x="3.5" y="4" width="17" height="16" rx="2"/><path d="M3.5 9h17M3.5 14.5h17M10 4v16"/>'},
+ {k:'P4', label:'Analysis', title:'Analysis', min:12, icon:'<path d="M3 21h18"/><path d="M5 17l5-5 4 3 6-7"/>'},
+ {k:'P5', label:'Conclusion', title:'Conclusion (CER)', min:8, icon:'<path d="M4 4h12l4 4v12H4z"/><path d="M8 11h8M8 15h6"/>'},
+ {k:'P6', label:'Grade', title:'Your grade', min:1, icon:'<rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4V2.5h6V4"/><path d="M8.5 13l2.5 2.5 4.5-5"/>'}
+];
+const ico=(i,s)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PARTS[i].icon}</svg>`;
+const PROBS=[];   // every problem: {id, part, max, score(), key()}
+
+function probShell(parent, part, num, q, pts){
+  const box=h('div',{class:'prob'}); parent.appendChild(box);
+  box.innerHTML=`<div class="pq"><span class="pnum">${num}.</span> ${q} <span class="pts">(${pts} pt${pts>1?'s':''})</span></div>`;
+  return box;
+}
+function actions(box, o){ // Hint + Check buttons + feedback
+  const row=h('div',{class:'btnrow'}); const hb=h('button',{class:'btn ghost small',type:'button'},'Hint'); const cb=h('button',{class:'btn primary small',type:'button'},'Check');
+  row.append(hb,cb); box.appendChild(row);
+  const hint=h('div',{class:'hintbox',hidden:true},'💡 '+o.hint); box.appendChild(hint);
+  const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'}); box.appendChild(fb);
+  hb.addEventListener('click',()=>{ hint.hidden=!hint.hidden; });
+  return {row,hb,cb,hint,fb};
+}
+const st=id=>S.p[id]||(S.p[id]={});
+/* Two tries per problem. Right on try 1 or 2 = full credit. Wrong twice = marked wrong (credit for parts right on try 2).
+   The correct answer is never shown. */
+function gradeTry(P,res,max){ const n=res.filter(Boolean).length; P.tries=(P.tries||0)+1;
+  if(n===max){ P.first=max; P.checked=true; P.right=true; }
+  else if(P.tries>=2){ P.first=n; P.checked=true; P.right=false; }
+  return n===max; }
+function showTry(ui,P,max,doneText){
+  if(P.checked&&P.right){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML=`<b>Correct!</b> ${doneText||''}`; }
+  else if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`<b>Marked wrong.</b> You earned ${P.first} of ${max} point${max>1?'s':''}. Ask your teacher if you'd like to try it again.`; }
+  else if(P.tries===1){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=max>1?'<b>Not quite.</b> Something isn\'t right yet. You have <b>one more try</b>.':'<b>Not quite.</b> You have <b>one more try</b>.'; }
+  else ui.fb.hidden=true;
+  if(ui.cb) ui.cb.textContent=P.checked?'Checked':(P.tries===1?'Check (last try)':'Check'); }
+
+/* ---------- drag onto a diagram (or into equation slots) ---------- */
+function dragProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.zones.length);
+  let fig;
+  if(o.equation){ fig=h('div',{class:'eq'}); box.appendChild(fig); }
+  else { fig=h('div',{class:'figwrap'}); fig.innerHTML=o.svg; box.appendChild(fig); }
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.chips.map((_,i)=>i)));
+  const zoneEls={};
+  const groupAns=g=>o.zones.filter(z=>z.group===g).map(z=>z.ans);
+  if(o.equation){ o.layout.forEach(item=>{ if(typeof item==='string'){ fig.appendChild(h('span',null,item)); } else { const z=o.zones[item]; const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans}); fig.appendChild(b); zoneEls[z.id]=b; } }); }
+  else o.zones.forEach(z=>{ const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans});
+    b.style.left=(z.x/o.vb[0]*100)+'%'; b.style.top=(z.y/o.vb[1]*100)+'%'; b.style.width=((z.w||130)/o.vb[0]*100)+'%'; fig.appendChild(b); zoneEls[z.id]=b; });
+  function placedChips(){ return new Set(Object.values(P.place)); }
+  function render(){
+    const used=placedChips();
+    pool.innerHTML='<div class="lbl">Tap a label, then tap a box (or drag it). Tap a filled box to take its label back.</div>';
+    order.forEach(ci=>{ if(used.has(ci)) return; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true'},o.chips[ci]); c.disabled=!!P.checked;
+      c.addEventListener('click',()=>{ sel=sel===ci?null:ci; render(); });
+      c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+      pool.appendChild(c); });
+    if(P.checked&&!pool.querySelector('.chip')) pool.hidden=true;
+    o.zones.forEach(z=>{ const b=zoneEls[z.id]; const ci=P.place[z.id];
+      b.className='zone'+(ci==null?' empty':' filled')+(P.checked?' locked':'');
+      if(ci==null) b.innerHTML=z.ph||'drop here';
+      else b.innerHTML=o.chips[ci];
+      b.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; ui.hb.disabled=!!P.checked&&false;
+    showTry(ui,P,o.zones.length,o.done);
+  }
+  o.zones.forEach(z=>{ const b=zoneEls[z.id];
+    const drop=ci=>{ if(P.checked) return; if(ci==null){ if(P.place[z.id]!=null){ delete P.place[z.id]; save(); render(); } return; }
+      for(const k in P.place) if(P.place[k]===ci) delete P.place[k];
+      P.place[z.id]=ci; sel=null; save(); render(); };
+    b.addEventListener('click',()=>drop(sel));
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  ui.cb.addEventListener('click',()=>{
+    if(P.checked) return;
+    const empty=o.zones.filter(z=>P.place[z.id]==null).length;
+    if(empty){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill every box before you check. ${empty} still empty.`; return; }
+    const res={}; const usedInGroup={};
+    o.zones.forEach(z=>{ const t=o.chips[P.place[z.id]];
+      if(z.group){ const ans=groupAns(z.group); usedInGroup[z.group]=usedInGroup[z.group]||[]; const ok=ans.includes(t)&&!usedInGroup[z.group].includes(t); if(ok) usedInGroup[z.group].push(t); res[z.id]=ok; }
+      else res[z.id]=t===z.ans; });
+    gradeTry(P,Object.values(res),o.zones.length); save(); cloudSave(true); render(); refresh();
+  });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.zones.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- sort into bins ---------- */
+function binProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.items.length);
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const bins=h('div',{class:'bins',style:`grid-template-columns:repeat(${o.bins.length},minmax(0,1fr))`}); box.appendChild(bins);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.items.map((_,i)=>i)));
+  const binEls={};
+  o.bins.forEach(bn=>{ const b=h('div',{class:'bin',role:'button',tabindex:'0'},`<h4>${bn.label}</h4><div class="bchips"></div>`); bins.appendChild(b); binEls[bn.k]=b;
+    const drop=ci=>{ if(P.checked||ci==null) return; P.place[ci]=bn.k; sel=null; save(); render(); };
+    b.addEventListener('click',e=>{ if(e.target.closest('.chip')) return; drop(sel); });
+    b.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); drop(sel); } });
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  const binLabel=k=>(o.bins.find(b=>b.k===k)||{}).label;
+  function chipEl(ci,inBin){ const it=o.items[ci]; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true','data-key':binLabel(it.k)},it.t);
+    
+    c.disabled=!!P.checked;
+    c.addEventListener('click',e=>{ if(P.checked) return; if(inBin){ e.stopPropagation(); if(sel!=null&&sel!==ci){ P.place[sel]=P.place[ci]; sel=null; save(); render(); return; } delete P.place[ci]; save(); render(); return; } sel=sel===ci?null:ci; render(); });
+    c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+    return c; }
+  function render(){
+    pool.innerHTML='<div class="lbl">Tap an item, then tap the box it belongs in (or drag it). Tap a sorted item to take it back.</div>';
+    order.forEach(ci=>{ if(P.place[ci]==null) pool.appendChild(chipEl(ci,false)); });
+    pool.hidden=!!P.checked;
+    o.bins.forEach(bn=>{ const holder=$('.bchips',binEls[bn.k]); holder.innerHTML=''; order.forEach(ci=>{ if(P.place[ci]===bn.k) holder.appendChild(chipEl(ci,true)); }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,o.items.length,o.done);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const left=o.items.filter((_,i)=>P.place[i]==null).length;
+    if(left){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Sort every item before you check. ${left} still left.`; return; }
+    const res=o.items.map((it,i)=>P.place[i]===it.k); gradeTry(P,res,o.items.length); save(); cloudSave(true); render(); refresh(); });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.items.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- choice problems: one, two-part, or select-all ---------- */
+function choiceProblem(parent, o){   // o.parts: [{q, opts, ans (index or array for select-all)}]
+  const P=st(o.id); P.pick=P.pick||{};
+  const max=o.parts.length;
+  const box=probShell(parent,o.part,o.num,o.q,max);
+  const groups=[];
+  o.parts.forEach((pt,pi)=>{
+    const multi=Array.isArray(pt.ans);
+    if(pt.q) box.insertAdjacentHTML('beforeend',`<div style="margin:10px 0 4px">${pt.q}${multi?' <span class="small muted">(Select all that apply.)</span>':''}</div>`);
+    const ordKey=o.id+'_'+pi; const order=S.ord[ordKey]||(S.ord[ordKey]=shuffle(pt.opts.map((_,i)=>i)));
+    const wrap=h('div',{class:'opts'}); box.appendChild(wrap);
+    const btns={};
+    order.forEach((oi,pos)=>{ const correct=multi?pt.ans.includes(oi):oi===pt.ans;
+      const b=h('button',{class:'opt'+(multi?' multi':''),type:'button'},`<span class="L">${'ABCDEF'[pos]}</span><span>${pt.opts[oi]}</span>`); if(correct) b.dataset.key='1';
+      b.addEventListener('click',()=>{ if(P.checked) return; if(multi){ const s=new Set(P.pick[pi]||[]); s.has(oi)?s.delete(oi):s.add(oi); P.pick[pi]=[...s]; } else P.pick[pi]=oi; save(); paint(); });
+      wrap.appendChild(b); btns[oi]=b; });
+    groups.push({pt,multi,btns});
+  });
+  const ui=actions(box,o);
+  function gradePart(g,pi){ const pk=P.pick[pi]; if(g.multi){ const s=new Set(pk||[]); return g.pt.ans.length===s.size&&g.pt.ans.every(a=>s.has(a)); } const ans=g.pt.ansFn?g.pt.ansFn():g.pt.ans; return pk===ans; }
+  function paint(){
+    groups.forEach((g,pi)=>{ const pk=P.pick[pi];
+      Object.entries(g.btns).forEach(([oi,b])=>{ oi=+oi; const picked=g.multi?(pk||[]).includes(oi):pk===oi; const correct=g.multi?g.pt.ans.includes(oi):oi===g.pt.ans;
+        b.className='opt'+(g.multi?' multi':'')+(picked?' sel':'')+(P.checked&&P.right&&picked?' ok':''); b.disabled=!!P.checked; }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,max,o.why);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const blank=groups.some((g,pi)=>g.multi?!(P.pick[pi]||[]).length:P.pick[pi]==null);
+    if(blank){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Answer every part before you check.'; return; }
+    gradeTry(P,groups.map((g,pi)=>gradePart(g,pi)),max); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- typed blanks (two tries, like every problem) ---------- */
+function typedProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.blanks.length);
+  const inputs=o.blanks.map((bl,i)=>{ const row=h('div',{class:'brow'}); row.innerHTML=`${bl.before} <input class="blank" type="text" aria-label="${esc(strip(bl.before))}" data-key="${esc(bl.show)}"><span class="keytxt">${bl.show}</span> ${bl.after||''}`; box.appendChild(row);
+    const inp=$('input',row); inp.value=P.val[i]||''; inp.addEventListener('input',()=>{ P.val[i]=inp.value; save(); }); return inp; });
+  const ui=actions(box,o);
+  const ok=(bl,v)=>{ v=String(v||'').trim().toLowerCase(); if(bl.calc){ const n=parseFloat(v.replace(/[\u2212\u2013\u2014]/g,'-').replace(/[^0-9.\-]/g,'')); const t=bl.calc(); return !isNaN(n)&&t!=null&&!isNaN(t)&&Math.abs(n-t)<=(bl.tol==null?0.15:bl.tol); } if(bl.num){ const n=parseFloat(v.replace(/[\u2212\u2013\u2014]/g,'-').replace(/[^0-9.\-]/g,'')); return !isNaN(n)&&n>=bl.num[0]&&n<=bl.num[1]; } return bl.accept.some(a=>v.replace(/\s+/g,' ')===a); };
+  function paint(){ inputs.forEach(inp=>{ inp.classList.remove('ok','no'); if(P.checked&&P.right) inp.classList.add('ok'); inp.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; showTry(ui,P,o.blanks.length,''); }
+  ui.cb.addEventListener('click',()=>{
+    if(inputs.some(inp=>!inp.value.trim())){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Fill in every blank before you check.'; return; }
+    if(P.checked) return;
+    const res=o.blanks.map((bl,i)=>ok(bl,inputs[i].value));
+    gradeTry(P,res,o.blanks.length); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.blanks.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- written answer, scored by key ideas (two tries, like every problem) ---------- */
+function writtenProblem(parent, o){
+  const P=st(o.id); if(P.val==null) P.val='';
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const ta=h('textarea',{class:'wtext',rows:'5','aria-label':'Your answer','data-key':o.model}); ta.value=P.val; box.appendChild(ta);
+  box.appendChild(h('div',{class:'wkey'},'<b>Key:</b> '+o.model));
+  if(o.bank){ const wb=h('div',{class:'wbank2'}); wb.innerHTML='<b>Word bank</b> <span class="small muted">(tap a word to add it)</span><br>'+o.bank.map(w=>`<button type="button" class="wchip">${w}</button>`).join('');
+    box.appendChild(wb);
+    wb.querySelectorAll('.wchip').forEach(c=>c.addEventListener('click',()=>{ if(ta.disabled) return; const w=c.textContent; const a=ta.selectionStart??ta.value.length, b=ta.selectionEnd??ta.value.length;
+      const before=ta.value.slice(0,a), after=ta.value.slice(b); const pre=(before&&!/\s$/.test(before))?' ':''; const ins=pre+w+' ';
+      ta.value=before+ins+after; ta.focus(); const p=a+ins.length; ta.setSelectionRange(p,p); ta.dispatchEvent(new Event('input',{bubbles:true})); })); }
+  ta.addEventListener('input',()=>{ P.val=ta.value; save(); });
+  const ui=actions(box,o);
+  const grade=()=>{ const t=ta.value.toLowerCase(); const hits=o.groups.filter(g=>g[1].test(t)).length; const n=Math.min(o.pts,hits); return Array.from({length:o.pts},(_,i)=>i<n); };
+  function paint(){ ta.disabled=!!P.checked; ui.cb.disabled=!!P.checked; showTry(ui,P,o.pts,o.why); }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(ta.value.trim().split(/\s+/).length<5){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Write a full answer (at least one complete sentence) before you check.'; return; }
+    gradeTry(P,grade(),o.pts); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- predictions: saved once, completion credit, never marked wrong ---------- */
+function predictProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.rows.length);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb predtab"><tr><th>${o.rowsLabel||'Tube'}</th><th>Setup</th><th>My prediction</th></tr>${o.rows.map((r,i)=>`<tr><td><b>${r.id}</b></td><td>${r.desc}</td><td><select data-i="${i}" aria-label="Prediction for ${r.id}"><option value="">choose…</option>${o.choices.map(c=>`<option>${c}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select')];
+  sels.forEach((sl,i)=>{ sl.value=P.val[i]||''; sl.addEventListener('change',()=>{ P.val[i]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Lock in my predictions';
+  function paint(){ sels.forEach(sl=>sl.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Predictions saved.</b> You\'ll compare them with your results later. Your observation table on page 3 is now unlocked.'; ui.cb.textContent='Predictions locked'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(sels.some(sl=>!sl.value)){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Choose a prediction for every tube first.'; return; }
+    if(!confirm('Lock in your predictions? You can\'t change them after this.')) return;
+    P.first=o.rows.length; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.rows.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- lab data table: groups type their own measurements; graph builds from them ---------- */
+function dataTableProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const cells=o.rows.length*o.cols.length;
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb datatab"><tr><th>${o.corner}</th>${o.cols.map(c=>`<th>${c}</th>`).join('')}</tr>${o.rows.map((r,i)=>`<tr><td><b>${r}</b></td>${o.cols.map((c,j)=>`<td><input class="dcell" inputmode="decimal" data-r="${i}" data-c="${j}" aria-label="${r}, ${c}"></td>`).join('')}</tr>`).join('')}</table>`;
+  const ins=[...wrap.querySelectorAll('input.dcell')];
+  const chart=h('div',{class:'datachart'}); box.appendChild(chart);
+  ins.forEach(inp=>{ const k=inp.dataset.r+'_'+inp.dataset.c; inp.value=P.val[k]??''; inp.addEventListener('input',()=>{ P.val[k]=inp.value; save(); draw(); }); });
+  function draw(){ chart.innerHTML=o.chart(P.val); }
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Save my data';
+  function paint(){ ins.forEach(i=>i.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Data saved.</b> Your analysis questions use these numbers.'; ui.cb.textContent='Data saved'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const bad=ins.filter(i=>i.value.trim()===''||isNaN(parseFloat(i.value)));
+    if(bad.length){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill in every box with a number first (${bad.length} still empty).`; bad[0].focus(); return; }
+    if(!confirm('Save your data? You can\'t change it after this, and your analysis will use these numbers.')) return;
+    P.first=o.pts; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  draw(); paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- observation table: each row has its own menu; completion credit when saved ---------- */
+function obsTableProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb datatab"><tr><th>Observation</th><th>What you saw</th></tr>${o.rows.map((r,i)=>`<tr><td>${r.q}</td><td><select class="ocell" data-r="${i}" aria-label="${r.q.replace(/<[^>]+>/g,'')}"><option value="">choose…</option>${r.opts.map(x=>`<option>${x}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select.ocell')];
+  sels.forEach(sl=>{ const k=sl.dataset.r; sl.value=P.val[k]||''; sl.addEventListener('change',()=>{ P.val[k]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Save my observations';
+  function paint(){ sels.forEach(s=>s.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Observations saved.</b> Your analysis questions use them.'; ui.cb.textContent='Observations saved'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const bad=sels.filter(s=>!s.value); if(bad.length){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Choose an answer in every row first (${bad.length} still empty).`; return; }
+    if(!confirm('Save your observations? You can\'t change them after this, and your analysis will use them.')) return;
+    P.first=o.pts; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ============================== WORKSHEET CONTENT ============================== */
+/* ===== Bird Beak Lab: Natural Selection (shared content: beaks, food, drawings, charts, sections 1, 2, 4, 5) ===== */
+const BEAKS=[{name:'Spoon',col:'#45c8f0',mk:'circle'},{name:'Tweezers',col:'#f472b6',mk:'square'},{name:'Binder clip',col:'#ffd35c',mk:'triangle'},{name:'Chopsticks',col:'#5fe3a9',mk:'diamond'}];
+const BEAK_ROWS=BEAKS.map(b=>b.name);
+const POP_COLS=['Generation 1 (start)','Generation 2','Generation 3','Generation 4 (end)'];
+const ENVS={
+  normal:{name:'Normal year', short:'normal year', txt:'mixed food: beans, rice, pom-poms, and rubber bands', items:{bean:26,rice:52,pom:12,band:14}},
+  drought:{name:'Drought', short:'drought', label:'Drought: only large, hard seeds (beans) are left', txt:'only large, hard seeds (beans) are left', food:'bean', items:{bean:62}},
+  wet:{name:'Very wet year', short:'very wet year', label:'Very wet year: mostly small, soft seeds (rice)', txt:'mostly small, soft seeds (rice)', food:'rice', items:{rice:130}},
+  insect:{name:'Insect boom', short:'insect boom', label:'Insect boom: mostly worms (rubber bands)', txt:'mostly worms and caterpillars (rubber bands)', food:'band', items:{band:44}}};
+const SURVIVE=5;
+
+/* ---------- small helpers ---------- */
+let UIDN=0; const uid=p=>p+'_'+(++UIDN);
+const f1=v=>(+v).toFixed(1);
+function rng(seed){ let s=seed%233280; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
+const stx=(x,y,t,fs,col,anchor,bold)=>`<text x="${x}" y="${y}" text-anchor="${anchor||'middle'}" font-size="${fs||14}" fill="${col||'#e8eef8'}"${bold?' font-weight="700"':''}>${t}</text>`;
+function hashStr(s){ let x=2166136261; for(const ch of String(s)){ x^=ch.charCodeAt(0); x=Math.imul(x,16777619); } return x>>>0; }
+function mulberry(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+
+/* ---------- Galapagos finch (style from the Natural Selection lesson) ---------- */
+function finch(x,y,s,o){ o=o||{}; const bd=o.bd==null?1:o.bd, id=uid('fg'), col=o.col||'#2b2724', col2=o.col2||'#5a524b', fl=o.flip?-1:1;
+  const D=15*bd, L=15+6*bd, by=-14, bk=o.beak||'#26221f', bk2=o.beak2||'#4a443e';
+  let g=`<g transform="translate(${f1(x)} ${f1(y)}) scale(${f1(s*fl*100)/100} ${s})"><defs><radialGradient id="${id}" cx="42%" cy="28%" r="80%"><stop offset="0" stop-color="${col2}"/><stop offset="1" stop-color="${col}"/></radialGradient></defs>`;
+  g+=`<path d="M-4,25 L-8,45 M-8,45 l-8,2 M-8,45 l7,2 M8,25 L10,45 M10,45 l-7,2 M10,45 l8,1" stroke="#3b2f28" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
+  g+=`<path d="M-38,-2 L-80,7 L-77,17 L-36,13 Z" fill="${col}" stroke="#141110" stroke-width="1"/><path d="M-45,4 L-76,11" stroke="#141110" stroke-width=".8" opacity=".6"/>`;
+  g+=`<path d="M-44,6 C-40,-18 -6,-26 22,-22 C42,-18 44,6 30,20 C14,34 -24,34 -44,6 Z" fill="url(#${id})" stroke="#141110" stroke-width="1.2"/>`;
+  g+=`<path d="M-36,0 C-22,-14 4,-15 14,-5 C6,10 -16,16 -42,10 Z" fill="${col}" stroke="#100d0c" stroke-width="1"/>`;
+  for(let i=0;i<4;i++) g+=`<path d="M${-30+i*9},${9-i} C${-22+i*9},${2-i} ${-14+i*9},${0-i} ${-8+i*9},${-3-i}" stroke="${col2}" stroke-width="1" fill="none" opacity=".7"/>`;
+  g+=`<path d="M40,${by-D/2} Q${42+L*0.55},${by-D/2+1.5} ${42+L},${by+1} L40,${by+1} Z" fill="${bk}" stroke="#0c0a09" stroke-width=".8"/>`;
+  g+=`<path d="M40,${by+1} L${42+L*0.92},${by+1.6} Q${42+L*0.45},${by+D/2+1} 40,${by+D/2} Z" fill="${bk2}" stroke="#0c0a09" stroke-width=".8"/>`;
+  g+=`<path d="M12,-20 C14,-32 34,-36 42,-26 C47,-19 46,-8 40,-2 C32,6 18,8 10,2 Z" fill="url(#${id})" stroke="#141110" stroke-width="1.2"/>`;
+  g+=`<circle cx="34" cy="-20" r="3.2" fill="#0a0a0a"/><circle cx="35.1" cy="-21.1" r="1" fill="#fff"/>`;
+  return g+'</g>'; }
+function tribulus(x,y,s,rot){ return `<g transform="translate(${f1(x)} ${f1(y)}) rotate(${f1(rot||0)}) scale(${s||1})"><path d="M-11,5 Q-12,-5 -4,-8 L4,-8 Q12,-5 11,5 Q0,10 -11,5 Z" fill="#a8844f" stroke="#4e391f" stroke-width="1.3"/><path d="M-7,2 Q0,-2 7,2 M-4,-4 L-3,4 M4,-4 L3,4" stroke="#6e5230" stroke-width="1.1" fill="none"/><path d="M-6,-7 L-12,-19 M6,-7 L12,-19 M-10,1 L-19,-3 M10,1 L19,-3" stroke="#d8c08f" stroke-width="2.2" stroke-linecap="round"/></g>`; }
+function shrub(x,y,s){ const r=rng(Math.round(x*7+y)); let d=''; const br=(x0,y0,a,l,dep)=>{ const x1=x0+Math.cos(a)*l, y1=y0+Math.sin(a)*l; d+=`M${f1(x0)},${f1(y0)} L${f1(x1)},${f1(y1)} `; if(dep>0){ br(x1,y1,a-0.35-r()*0.3,l*0.7,dep-1); br(x1,y1,a+0.3+r()*0.3,l*0.68,dep-1); } };
+  for(let i=0;i<4;i++) br(x+(i-1.5)*4*s,y,-Math.PI/2+(i-1.5)*0.35,22*s,3);
+  return `<path d="${d}" stroke="#8a8580" stroke-width="${1.4*s}" fill="none" stroke-linecap="round"/>`; }
+function cactus(x,y,s){ let g=`<g transform="translate(${x} ${y}) scale(${s})"><rect x="-5" y="-40" width="10" height="40" fill="#6d6a55"/>`;
+  [[0,-48,14,10,0],[-14,-62,11,9,-25],[13,-64,12,9,22],[0,-76,10,8,5],[-22,-44,10,8,-40]].forEach(([a,b,rx,ry,r])=>{ g+=`<ellipse cx="${a}" cy="${b}" rx="${rx}" ry="${ry}" transform="rotate(${r} ${a} ${b})" fill="#7f9a5c" stroke="#4d6338" stroke-width="1.2"/>`; });
+  return g+'</g>'; }
+function islandScene(){ const W=520,H=300, g1=uid('sky'), g2=uid('sea'), g3=uid('gr'); const r=rng(17);
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Daphne Major, a dry, rocky Galapagos island, during the 1977 drought. Bare shrubs and cactus, and large spiky seeds on the ground. A medium ground finch stands on a rock."><defs><linearGradient id="${g1}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fb3dc"/><stop offset="1" stop-color="#e3eef2"/></linearGradient><linearGradient id="${g2}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f86ad"/><stop offset="1" stop-color="#2a5f80"/></linearGradient><linearGradient id="${g3}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a88a62"/><stop offset="1" stop-color="#6e5539"/></linearGradient></defs>`;
+  s+=`<rect width="${W}" height="${H}" rx="14" fill="url(#${g1})"/><circle cx="440" cy="48" r="20" fill="#fff6c9" opacity=".9"/><rect y="104" width="${W}" height="80" fill="url(#${g2})"/>`;
+  s+=`<path d="M0,170 C60,120 110,92 170,86 C220,82 250,104 290,96 C340,86 380,70 430,92 C470,108 500,130 ${W},150 L${W},${H} L0,${H} Z" fill="url(#${g3})"/>`;
+  [[60,170,1.1],[120,150,.9],[210,140,1],[400,128,1.1],[470,150,.9],[300,135,.8]].forEach(([a,b,c])=>s+=shrub(a,b,c));
+  s+=cactus(350,150,.9)+cactus(30,205,1.05);
+  s+=`<path d="M0,240 C120,220 260,226 ${W},212 L${W},${H} L0,${H} Z" fill="#5b4530"/>`;
+  for(let i=0;i<26;i++){ const x=r()*W, y=226+r()*70, rx=6+r()*16; s+=`<ellipse cx="${f1(x)}" cy="${f1(y)}" rx="${f1(rx)}" ry="${f1(rx*0.45)}" fill="${['#4a382a','#6b5640','#3d2f24'][i%3]}" opacity=".9"/>`; }
+  s+=`<path d="M290,246 C300,226 360,222 380,244 Z" fill="#44352a" stroke="#2b2119" stroke-width="1.2"/>`;
+  for(let i=0;i<16;i++) s+=tribulus(30+r()*460,250+r()*42,0.55+r()*0.2,r()*360);
+  s+=finch(334,206,0.62,{bd:1.05});
+  s+=stx(16,292,'Daphne Major, Galápagos Islands',11,'#f4ead8','start');
+  return s+'</svg>'; }
+
+/* ---------- beak tools (tip at 0,0 pointing up, handle down to about y=74) ---------- */
+function toolG(t){ const id=uid('tl');
+  if(t===0) return `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#dfe5ec"/><stop offset=".45" stop-color="#ffffff"/><stop offset="1" stop-color="#cdd5df"/></linearGradient></defs>
+    <path d="M-2.4,21 C-2.6,40 -4,60 -3.6,71 Q0,75.5 3.6,71 C4,60 2.6,40 2.4,21 Z" fill="url(#${id})" stroke="#8b98a8" stroke-width="1"/>
+    <ellipse cx="0" cy="11" rx="9.2" ry="12.6" fill="url(#${id})" stroke="#8b98a8" stroke-width="1.1"/><ellipse cx="0" cy="11.6" rx="6.6" ry="9.6" fill="#e3e8ee"/><ellipse cx="-2.6" cy="7.4" rx="1.8" ry="4" fill="#ffffff"/>`;
+  if(t===1){ const arm=sd=>`<path d="M${sd*1.2},1 L${sd*6.8},50 Q${sd*6.6},64 ${sd*2.2},72.5" stroke="#5f6b7a" stroke-width="3.8" fill="none" stroke-linecap="round"/><path d="M${sd*1.2},2 L${sd*6.6},50 Q${sd*6.3},63 ${sd*2.1},71.5" stroke="#e5e9ef" stroke-width="1.3" fill="none" stroke-linecap="round"/>`;
+    return arm(-1)+arm(1)+`<rect x="-3.2" y="68" width="6.4" height="7" rx="2" fill="#7b8696" stroke="#4b5563" stroke-width=".7"/>${[0,1,2,3].map(i=>`<line x1="${-6.2+i*.2}" y1="${40+i*3}" x2="${-5.2+i*.2}" y2="${40+i*3}" stroke="#3f4753" stroke-width=".8"/>`).join('')}`; }
+  if(t===2) return `<path d="M-6,17 C-9,32 -10.5,50 -9.5,58 Q-9,65 -3,65 L3,65 Q9,65 9.5,58 C10.5,50 9,32 6,17" fill="none" stroke="#6b7280" stroke-width="3.2" stroke-linecap="round"/><path d="M-6,17 C-9,32 -10.5,50 -9.5,58 Q-9,65 -3,65 L3,65 Q9,65 9.5,58 C10.5,50 9,32 6,17" fill="none" stroke="#e5e7eb" stroke-width="1.2" stroke-linecap="round"/>
+    <path d="M-10.5,1.5 L10.5,1.5 L7.2,21 L-7.2,21 Z" fill="#1f2937" stroke="#05070b" stroke-width="1"/><rect x="-10.8" y="0" width="21.6" height="3.4" rx="1.2" fill="#0b0f17"/><path d="M-6.4,5 L-4.6,18" stroke="#4b5563" stroke-width="1.6" stroke-linecap="round"/><ellipse cx="0" cy="20.5" rx="7.6" ry="1.6" fill="#374151"/>`;
+  const stick=sd=>`<path d="M${sd*0.8},0 L${sd*2.4},0 L${sd*6.6},74 L${sd*2.2},74 Z" fill="#d7ae6e" stroke="#87602f" stroke-width=".8"/><path d="M${sd*1.6},4 L${sd*4.2},70" stroke="#efd2a0" stroke-width=".9"/><path d="M${sd*0.8},0 L${sd*2.4},0 L${sd*2.9},9 L${sd*1.1},9 Z" fill="#b98a4a"/>`;
+  return stick(-1)+stick(1); }
+const toolIcon=(t,h)=>`<svg viewBox="-13 -3 26 80" height="${h||44}" aria-hidden="true">${toolG(t)}</svg>`;
+
+/* ---------- food, seen from above ---------- */
+const BEANC=[['#8f2d24','#5b1812'],['#a23a2c','#661e14'],['#efe6d2','#b8a888']], POMC=['#ef4444','#3b82f6','#facc15','#a855f7','#22c55e'], BANDC=['#c2410c','#2563eb','#b45309','#dc2626','#16a34a'];
+function foodItem(k,x,y,a,r){ const T=`transform="translate(${f1(x)} ${f1(y)}) rotate(${f1(a)})"`;
+  if(k==='bean'){ const c=BEANC[Math.floor(r*3)]; return `<g ${T}><path d="M-7,-2.5 C-7,-7 6,-7.5 7,-2 C7.6,2.6 4,4.6 1.6,3.6 C-0.4,2.8 -1.6,4.8 -4.2,4.6 C-7.4,4.3 -7.2,0.5 -7,-2.5 Z" fill="${c[0]}" stroke="${c[1]}" stroke-width=".8"/><ellipse cx="-1.5" cy="-3" rx="3.2" ry="1.1" fill="#ffffff" opacity=".35"/></g>`; }
+  if(k==='rice') return `<ellipse ${T} rx="2.9" ry="1.15" fill="#f4eedb" stroke="#a49a7a" stroke-width=".7"/>`;
+  if(k==='pom'){ const c=POMC[Math.floor(r*5)]; return `<g ${T}><circle r="7.5" fill="${c}" stroke="${c}" stroke-width="2.4" stroke-dasharray="1 1.3" opacity=".95"/><circle cx="-2.4" cy="-2.4" r="2.6" fill="#ffffff" opacity=".28"/></g>`; }
+  const c=BANDC[Math.floor(r*5)]; return `<path ${T} d="M-9,0 C-9,-4.5 -2,-5 1,-3.6 C5,-2 9.5,-3 9.5,0.4 C9.5,4 3,4.6 0,3.4 C-3.2,2.2 -9,4.2 -9,0 Z" fill="none" stroke="${c}" stroke-width="1.7"/>`; }
+/* items scattered on a plate: returns [{k,x,y,a,r}] */
+function plateItems(env,seed,cx,cy,R){ const rnd=mulberry(seed), out=[]; const it=ENVS[env].items;
+  Object.keys(it).forEach(k=>{ for(let i=0;i<it[k];i++){ const rr=R*Math.sqrt(rnd()), th=rnd()*Math.PI*2; out.push({k,x:cx+rr*Math.cos(th),y:cy+rr*Math.sin(th),a:rnd()*360,r:rnd()}); } });
+  for(let i=out.length-1;i>0;i--){ const j=Math.floor(rnd()*(i+1)); [out[i],out[j]]=[out[j],out[i]]; } return out; }
+function plateG(cx,cy,R){ let s=`<circle cx="${cx}" cy="${cy+4}" r="${R+2}" fill="#000" opacity=".12"/><circle cx="${cx}" cy="${cy}" r="${R}" fill="#fbfaf5" stroke="#cfcab8" stroke-width="1.4"/>`;
+  for(let i=0;i<72;i++){ const a=i/72*Math.PI*2; s+=`<line x1="${f1(cx+Math.cos(a)*R*0.83)}" y1="${f1(cy+Math.sin(a)*R*0.83)}" x2="${f1(cx+Math.cos(a)*R*0.98)}" y2="${f1(cy+Math.sin(a)*R*0.98)}" stroke="#e4dfcf" stroke-width="1"/>`; }
+  return s+`<circle cx="${cx}" cy="${cy}" r="${R*0.8}" fill="#f6f4ec" stroke="#e2ddcb" stroke-width="1.2"/>`; }
+function cupG(x,y,s){ return `<g transform="translate(${x} ${y}) scale(${s||1})"><path d="M-16,-22 L16,-22 L12,22 L-12,22 Z" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.2"/><path d="M-15,-12 L15,-12 L14.2,-4 L-14.2,-4 Z" fill="#60a5fa" opacity=".75"/><ellipse cx="0" cy="-22" rx="16" ry="4.5" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.2"/><ellipse cx="0" cy="-22" rx="12.5" ry="2.8" fill="#cbd5e1"/></g>`; }
+function timerG(x,y,s){ return `<g transform="translate(${x} ${y}) scale(${s||1})"><rect x="-4" y="-30" width="8" height="7" rx="2" fill="#475569"/><circle r="23" fill="#e2e8f0" stroke="#334155" stroke-width="3"/><circle r="18" fill="#ffffff" stroke="#94a3b8"/>${[0,1,2,3,4,5,6,7,8,9,10,11].map(i=>{ const a=i*Math.PI/6; return `<line x1="${f1(Math.sin(a)*15)}" y1="${f1(-Math.cos(a)*15)}" x2="${f1(Math.sin(a)*17.5)}" y2="${f1(-Math.cos(a)*17.5)}" stroke="#475569" stroke-width="1.2"/>`; }).join('')}<line x1="0" y1="0" x2="0" y2="-13" stroke="#dc2626" stroke-width="1.8" stroke-linecap="round"/><circle r="2" fill="#0f172a"/></g>`; }
+
+/* ---------- materials picture ---------- */
+const MAT_PIC=(()=>{ const its=plateItems('normal',77,135,118,74).map(o=>foodItem(o.k,o.x,o.y,o.a,o.r)).join('');
+  const lab=(x,y,t)=>stx(x,y,t,13.5,'#475569');
+  return `<svg viewBox="0 0 810 270" role="img" aria-label="Materials: a paper plate island with dried beans, rice, pom-poms, and rubber bands; four beak tools (a plastic spoon, tweezers, a binder clip, and chopsticks); a cup; and a timer.">
+  <rect width="810" height="270" rx="14" fill="#f8fafc"/>${plateG(135,118,96)}${its}
+  ${lab(135,236,'paper plate island')}
+  ${[['bean',300,60,'beans'],['rice',300,100,'rice'],['pom',300,140,'pom-poms'],['band',300,180,'rubber bands']].map(([k,x,y,t])=>foodItem(k,x-22,y,20,.2)+foodItem(k,x-8,y+4,-30,.6)+(k==='rice'?foodItem(k,x-15,y-4,70,.5)+foodItem(k,x-2,y-3,10,.5):'')+stx(x+8,y+5,t,13,'#334155','start')).join('')}
+  ${[0,1,2,3].map(t=>`<g transform="translate(${448+t*80} 46) scale(1.45)">${toolG(t)}</g>`).join('')}
+  ${['spoon','tweezers','binder clip','chopsticks'].map((t,i)=>lab(448+i*80,186,t)).join('')}
+  <text x="568" y="208" text-anchor="middle" font-size="12.5" fill="#64748b">beak tools (one per bird)</text>
+  ${cupG(752,92,1.25)}${lab(752,140,'cup')}${timerG(752,196,1)}${lab(752,240,'timer')}</svg>`; })();
+
+/* ---------- predictions with a menu per row (same lock pattern as predictProblem) ---------- */
+function predictRows(parent,o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.rows.length);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb predtab"><tr><th>Round</th><th>What to predict</th><th>My prediction</th></tr>${o.rows.map((r,i)=>`<tr><td><b>${r.id}</b></td><td>${r.desc}</td><td><select data-i="${i}" aria-label="Prediction for ${esc(strip(r.id))}"><option value="">choose…</option>${r.choices.map(c=>`<option>${c}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select')];
+  sels.forEach((sl,i)=>{ sl.value=P.val[i]||''; sl.addEventListener('change',()=>{ P.val[i]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Lock in my predictions';
+  function paint(){ sels.forEach(sl=>sl.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Predictions saved.</b> You\'ll compare them with your results later. Page 3 is now unlocked.'; ui.cb.textContent='Predictions locked'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(sels.some(sl=>!sl.value)){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Choose a prediction in every row first.'; return; }
+    if(!confirm('Lock in your predictions? You can\'t change them after this.')) return;
+    P.first=o.rows.length; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.rows.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- reading the student's own tables ---------- */
+const cellv=(v,r,c)=>{ const x=parseFloat((v||{})[r+'_'+c]); return isNaN(x)?null:x; };
+function bbData(){ const pv=st('pop').val||{}, fv=st('food').val||{}; const n=(v,r,c)=>cellv(v,r,c)||0;
+  const pop=BEAKS.map((_,t)=>[0,1,2,3].map(g=>n(pv,t,g))), food=BEAKS.map((_,t)=>[0,1,2].map(r=>n(fv,t,r)));
+  const tot=[0,1,2,3].map(g=>pop.reduce((a,row)=>a+row[g],0));
+  const avg=(t,r)=>pop[t][r]>0?food[t][r]/pop[t][r]:0;
+  const pc=(t,g)=>tot[g]>0?100*pop[t][g]/tot[g]:0;
+  const best=r=>{ const live=BEAKS.map((_,t)=>t).filter(t=>pop[t][r]>0); if(!live.length) return []; const mx=Math.max(...live.map(t=>avg(t,r))); return live.filter(t=>Math.abs(avg(t,r)-mx)<1e-9); };
+  return {pop,food,tot,avg,pc,best}; }
+
+/* ---------- charts (drawn only from numbers the student typed) ---------- */
+function mark(shape,x,y,col){ if(shape==='circle') return `<circle cx="${x}" cy="${y}" r="5.5" fill="${col}" stroke="#0f1b2e" stroke-width="1.5"/>`;
+  if(shape==='square') return `<rect x="${x-5}" y="${y-5}" width="10" height="10" fill="${col}" stroke="#0f1b2e" stroke-width="1.5"/>`;
+  if(shape==='triangle') return `<path d="M${x} ${y-6.5} L${x+6.5} ${y+5} L${x-6.5} ${y+5} Z" fill="${col}" stroke="#0f1b2e" stroke-width="1.5"/>`;
+  return `<path d="M${x} ${y-7} L${x+7} ${y} L${x} ${y+7} L${x-7} ${y} Z" fill="${col}" stroke="#0f1b2e" stroke-width="1.5"/>`; }
+const niceTop=mx=>{ const step=mx<=10?2:mx<=25?5:mx<=60?10:mx<=150?25:50; return [Math.max(step,Math.ceil(mx/step)*step),step]; };
+function legend(y){ return BEAKS.map((b,i)=>`${mark(b.mk,78+i*150,y-4,b.col)}<text x="${90+i*150}" y="${y+1}" font-size="13" fill="#e8eef8">${b.name}</text>`).join(''); }
+function popSVG(v){ const W=680,H=330,X0=80,X1=640,Y0=270,Y1=60; let mx=1;
+  BEAKS.forEach((_,t)=>[0,1,2,3].forEach(g=>{ const x=cellv(v,t,g); if(x!=null) mx=Math.max(mx,x); }));
+  const [top,step]=niceTop(mx), y=val=>Y0-(Y0-Y1)*val/top, gx=g=>X0+30+(X1-X0-60)*g/3;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Line graph of the number of birds with each beak in each generation, from your data table."><rect width="${W}" height="${H}" rx="12" fill="#0f1b2e"/>`;
+  for(let k=0;k<=top;k+=step) s+=`<line x1="${X0}" y1="${y(k)}" x2="${X1}" y2="${y(k)}" stroke="#2a3d5f"/><text x="${X0-8}" y="${y(k)+4}" text-anchor="end" font-size="12" fill="#a3b4cf">${k}</text>`;
+  s+=`<text x="20" y="${(Y0+Y1)/2}" font-size="13" fill="#a3b4cf" transform="rotate(-90 20 ${(Y0+Y1)/2})" text-anchor="middle">Number of birds</text>`;
+  [0,1,2,3].forEach(g=>s+=`<text x="${gx(g)}" y="${Y0+20}" text-anchor="middle" font-size="13" fill="#a3b4cf">Gen ${g+1}</text>`);
+  s+=`<text x="${(X0+X1)/2}" y="${Y0+42}" text-anchor="middle" font-size="13" fill="#a3b4cf">Generation</text>`+legend(30);
+  BEAKS.forEach((b,t)=>{ const pts=[0,1,2,3].map(g=>{ const x=cellv(v,t,g); return x==null?null:[gx(g),y(x)]; });
+    for(let g=0;g<3;g++) if(pts[g]&&pts[g+1]) s+=`<line x1="${pts[g][0]}" y1="${pts[g][1]}" x2="${pts[g+1][0]}" y2="${pts[g+1][1]}" stroke="${b.col}" stroke-width="3" stroke-dasharray="${['','7 4','2 4','10 3 2 3'][t]}"/>`;
+    pts.forEach(p=>{ if(p) s+=mark(b.mk,p[0],p[1],b.col); }); });
+  s+=`<line x1="${X0}" y1="${Y0}" x2="${X1}" y2="${Y0}" stroke="#a3b4cf" stroke-width="1.5"/></svg>`;
+  const tots=[0,1,2,3].map(g=>BEAKS.every((_,t)=>cellv(v,t,g)!=null)?BEAKS.reduce((a,_,t)=>a+cellv(v,t,g),0):null).filter(x=>x!=null);
+  if(tots.length>1&&tots.some(x=>x!==tots[0])) s+=`<div class="fb no small">Check your numbers: the generations add up to ${tots.join(', ')} birds. The island always holds the same number of birds, so every generation should have the same total.</div>`;
+  return s; }
+function foodSVG(v){ const W=680,H=330,X0=70,X1=660,Y0=270,Y1=60; let mx=1;
+  BEAKS.forEach((_,t)=>[0,1,2].forEach(r=>{ const x=cellv(v,t,r); if(x!=null) mx=Math.max(mx,x); }));
+  const [top,step]=niceTop(mx), y=val=>Y0-(Y0-Y1)*val/top, gw=(X1-X0)/3, bw=30;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Bar graph of the total food collected by each beak type in each round, from your data table."><rect width="${W}" height="${H}" rx="12" fill="#0f1b2e"/>`;
+  for(let k=0;k<=top;k+=step) s+=`<line x1="${X0}" y1="${y(k)}" x2="${X1}" y2="${y(k)}" stroke="#2a3d5f"/><text x="${X0-8}" y="${y(k)+4}" text-anchor="end" font-size="12" fill="#a3b4cf">${k}</text>`;
+  s+=`<text x="18" y="${(Y0+Y1)/2}" font-size="13" fill="#a3b4cf" transform="rotate(-90 18 ${(Y0+Y1)/2})" text-anchor="middle">Total food collected</text>`+legend(30);
+  [0,1,2].forEach(r=>{ const cx=X0+gw*r+gw/2; s+=`<text x="${cx}" y="${Y0+20}" text-anchor="middle" font-size="13" fill="#a3b4cf">Round ${r+1}</text>`;
+    BEAKS.forEach((b,t)=>{ const x=cellv(v,t,r); if(x==null) return; const bx=cx-2*bw-3+t*(bw+2);
+      s+=`<rect x="${bx}" y="${y(x)}" width="${bw}" height="${Y0-y(x)}" rx="3" fill="${b.col}"/><text x="${bx+bw/2}" y="${y(x)-5}" text-anchor="middle" font-size="11.5" fill="#e8eef8">${x}</text>`; }); });
+  return s+`<line x1="${X0}" y1="${Y0}" x2="${X1}" y2="${Y0}" stroke="#a3b4cf" stroke-width="1.5"/></svg>`; }
+const popChart=v=>`<div class="bbchart" data-c="pop">${popSVG(v)}</div>`;
+const foodChart=v=>`<div class="bbchart" data-c="food">${foodSVG(v)}</div>`;
+
+function buildContent(sec){
+  let n=0; const num=()=>++n;
+  const say=(s,html)=>s.insertAdjacentHTML('beforeend',html);
+  /* ---------- 1. Setup ---------- */
+  say(sec[0],`<div class="phenbox"><b>Phenomenon:</b> In 1977, a drought hit Daphne Major in the Galápagos Islands. The small, soft seeds ran out, and mostly large, hard seeds were left. Most of the medium ground finches died. The young finches born after the drought had deeper beaks, on average, than the finches before it. How can a change in food change the beaks of a whole population?</div>
+   <div class="figwrap bbfig" style="max-width:560px;margin:4px auto 12px">${islandScene()}</div>
+   <p><b>Lab question:</b> How does a change in the environment change the beak types in a bird population over generations?</p>
+   <p><b>Background.</b> In this model, every bird has one beak tool for its whole life. The food on the island is the only food. Birds that collect too little food die. Birds that survive have babies, and each baby gets the <b>same beak as its parent</b>, because beak shape is inherited.</p>
+   <div class="wide"><table class="nb bbkey"><tr><th>In the model</th><th>In real life</th></tr>
+    <tr><td>Beak tool (spoon, tweezers, binder clip, chopsticks)</td><td>Inherited variation in beak shape</td></tr>
+    <tr><td>Paper plate</td><td>The island</td></tr>
+    <tr><td>Beans, rice, pom-poms, rubber bands</td><td>Large seeds, small seeds, fruits, worms and insects</td></tr>
+    <tr><td>Cup</td><td>The bird's stomach</td></tr>
+    <tr><td>Survival number (${SURV_TXT})</td><td>The food a bird needs to live through the year</td></tr>
+    <tr><td>A baby with the same beak tool as its parent</td><td>Offspring inherit beak shape from their parents</td></tr></table></div>
+   ${SETUP_HTML}`);
+  choiceProblem(sec[0],{id:'q1', part:'P1', num:num(), q:'Check your understanding. Use the background and the procedure.',
+    parts:[{q:'<b>Part A:</b> What does your cup stand for?',opts:['The bird\'s stomach','The bird\'s beak','The island','A nest for eggs'],ans:0},
+           {q:'<b>Part B:</b> A bird collects less food than the survival number. What happens to it?',opts:['It dies and does not have babies','It survives and has two babies','It gets a new beak tool','It keeps feeding until it has enough'],ans:0},
+           {q:'<b>Part C:</b> A bird dies after Round 1. What fills its spot on the island in the next generation?',opts:['A baby of a surviving bird, with the same beak as that parent','The same bird with a better beak','A bird with any beak it wants','Nothing, the spot stays empty'],ans:0},
+           {q:'<b>Part D:</b> Can a bird use its cup to scoop up food?',opts:['No, only the beak tool can pick up food','Yes, if it is quick','Yes, but only in Round 1','Only for rice'],ans:0}],
+    hint:'Re-read the model table and the feeding rules.', why:'The cup is the stomach, birds below the survival number die, babies copy their parent\'s beak, and only the beak picks up food.'});
+  /* ---------- 2. Predict ---------- */
+  say(sec[1],`<p>Before you start feeding, predict. There are no wrong predictions: you get full credit for making them, but you <b>can't change them</b> after you lock them in.</p>`);
+  predictRows(sec[1],{id:'pred', part:'P2', num:num(), q:'Make your predictions.', rows:PRED_ROWS});
+  writtenProblem(sec[1],{id:'hyp', part:'P2', num:num(), q:'Write a hypothesis about what will happen to the beak types in the population, in the form <b>"If… then… because…"</b>.', pts:3, bank:['If','then','because','the food changes','beak','more common','survive','babies','collect','population'],
+    groups:[['If… then… form',/\bif\b[\s\S]*\bthen\b/],['names a beak or the population change',/beak|spoon|tweezer|clip|chopstick|population|common|increase|decrease/],['a reason',/because|surviv|food|collect|eat|babies|reproduc/]],
+    model:'If the food on the island changes, then the beak type that collects that food best will become more common, because those birds survive and have more babies.',
+    hint:'Say what will change, what you think will happen to the beak types, and why.', why:'A testable hypothesis names the change, the predicted result, and the reason.'});
+  /* ---------- 3. Data / Experiment (lab and simulation differ) ---------- */
+  buildData(sec[2],num);
+  /* ---------- 4. Analysis ---------- */
+  const alock=h('div',{class:'fb info'}); alock.innerHTML='<b>Locked.</b> Save both data tables on page 3 first.'; sec[3].appendChild(alock);
+  const awrap=h('div',{}); sec[3].appendChild(awrap);
+  const D=bbData;
+  window.anaRefresh=()=>{ const ok=!!st('pop').checked&&!!st('food').checked; alock.hidden=ok; awrap.hidden=!ok;
+    $$('.anachart',awrap).forEach(e=>{ e.innerHTML=e.dataset.c==='pop'?popSVG(st('pop').val):foodSVG(st('food').val); }); };
+  say(awrap,`<p>Use <b>your data</b> from page 3. Round averages to one decimal place (tenths) and percents to the nearest whole number.</p>
+    <div class="prob"><div class="pq">Your data</div><div class="anachart bbchart" data-c="pop"></div><div class="anachart bbchart" data-c="food" style="margin-top:10px"></div></div>`);
+  const avgBl=r=>BEAKS.map((b,t)=>({before:`<b>Part ${'ABCD'[t]}:</b> ${b.name} birds: average food per bird =`,calc:()=>D().avg(t,r),tol:0.1,show:'total food ÷ number of birds'}));
+  typedProblem(awrap,{id:'a1', part:'P4', num:num(), q:'<b>Round 1 (normal year).</b> Average food per bird = total food in Round 1 ÷ number of birds in Generation 1. If a beak has no birds, type 0.', blanks:avgBl(0),
+    hint:'Divide each beak\'s Round 1 food total by its number of birds in Generation 1.'});
+  typedProblem(awrap,{id:'a2', part:'P4', num:num(), q:`<b>Round 2 (${R2_NAME}).</b> Average food per bird = total food in Round 2 ÷ number of birds in Generation 2. If a beak has no birds, type 0.`, blanks:avgBl(1),
+    hint:'Divide each beak\'s Round 2 food total by its number of birds in Generation 2, not Generation 1.'});
+  const bestOpts=[...BEAK_ROWS,'Two or more beaks tied for the most'], bestFn=r=>()=>{ const b=D().best(r); return b.length===1?b[0]:4; };
+  choiceProblem(awrap,{id:'a3', part:'P4', num:num(), q:'Use your averages to compare the beaks.',
+    parts:[{q:'<b>Part A:</b> Which beak collected the most food per bird in Round 1 (normal year)?',opts:bestOpts,ans:-1,ansFn:bestFn(0)},
+           {q:`<b>Part B:</b> Which beak collected the most food per bird in Round 2 (${R2_NAME})?`,opts:bestOpts,ans:-1,ansFn:bestFn(1)},
+           {q:'<b>Part C:</b> Did the same beak do best in both rounds?',opts:['Yes, the same beak did best','No, a different beak did best'],ans:-1,ansFn:()=>{ const a=D().best(0), b=D().best(1); return a.some(x=>b.includes(x))?0:1; }}],
+    hint:'Look at your answers to the two average questions above.', why:'Your answers match your own data.'});
+  const pcBl=g=>BEAKS.map((b,t)=>({before:`<b>Part ${'ABCD'[t]}:</b> Percent of birds with ${b.name.toLowerCase()} beaks =`,calc:()=>D().pc(t,g),tol:1,after:'%',show:`${b.name} birds ÷ all birds × 100`}));
+  typedProblem(awrap,{id:'a4', part:'P4', num:num(), q:'<b>At the start (Generation 1).</b> Percent = birds with that beak ÷ all the birds in Generation 1 × 100.', blanks:pcBl(0),
+    hint:'Add up all four beaks in Generation 1 to get the total. Then divide each beak by the total and multiply by 100.'});
+  typedProblem(awrap,{id:'a5', part:'P4', num:num(), q:'<b>At the end (Generation 4).</b> Percent = birds with that beak ÷ all the birds in Generation 4 × 100.', blanks:pcBl(3),
+    hint:'Use the Generation 4 column. Add up all four beaks to get the total first.'});
+  const incFn=()=>{ const d=D(), ch=BEAKS.map((_,t)=>d.pc(t,3)-d.pc(t,0)), mx=Math.max(...ch), w=BEAKS.map((_,t)=>t).filter(t=>Math.abs(ch[t]-mx)<1e-9); return w.length===1?w[0]:4; };
+  const selFn=()=>{ const d=D(), up=BEAKS.filter((_,t)=>d.pc(t,3)>d.pc(t,0)+1e-9).length; return up===0?3:0; };
+  choiceProblem(awrap,{id:'a6', part:'P4', num:num(), q:'How did the population change from Generation 1 to Generation 4?',
+    parts:[{q:'<b>Part A:</b> Which beak\'s percent went up the most?',opts:bestOpts.slice(0,4).concat(['Two or more beaks tied']),ans:-1,ansFn:incFn},
+           {q:'<b>Part B:</b> Look at which beaks went up and which went down. Which type of selection does your data show?',
+            opts:['Directional: the population shifted toward the beak (or beaks) that did best, and the other beaks became rarer','Disruptive: both extreme beak shapes were favored, and the middle shape was selected against','Stabilizing: the average, middle beak was favored, and both extremes were selected against','No selection: the percent of each beak stayed the same'],ans:-1,ansFn:selFn}],
+    hint:'Compare each beak\'s percent in Generation 1 with Generation 4. Did any beak go up? Did the population move toward the beaks that did best?', why:'Your answers match the percents from your own data.'});
+  choiceProblem(awrap,{id:'a7', part:'P4', num:num(), q:'Think about how the population changed.',
+    parts:[{q:'<b>Part A:</b> Why was <b>variation</b> (different beak types) needed for the population to change?',opts:['If every bird had the same beak, they would all do about the same, so there would be nothing for selection to act on','Variation makes every bird collect the same amount of food','Variation lets a bird pick a new beak when the food changes','Variation is not needed for natural selection'],ans:0},
+           {q:'<b>Part B:</b> Did any one bird\'s beak change during the lab?',opts:['No. Each bird kept its beak its whole life. Only the number of birds with each beak changed.','Yes. Birds that died switched to a better beak.','Yes. Birds changed their beaks when the food changed.','Yes. Hungry birds grew bigger beaks.'],ans:0},
+           {q:'<b>Part C:</b> In this model, which bird had the highest <b>fitness</b>?',opts:['A bird that survived and got the most babies','The bird with the biggest beak tool','A bird that died with a lot of food in its cup','The bird that fed the fastest in Round 1 only'],ans:0}],
+    hint:'Natural selection acts on individuals, but populations evolve. Fitness = survival + reproduction.', why:'Selection needs inherited variation. Individuals do not change their traits; the population changes because some birds survive and reproduce more.'});
+  choiceProblem(awrap,{id:'a8', part:'P4', num:num(), q:'How does this lab model the Galápagos finch study?',
+    parts:[{q:`<b>Part A:</b> The ${R2_NAME} in this model is like the 1977 drought on Daphne Major because…`,opts:['the food changed, so only birds with some beaks could get enough to eat','it made the birds grow new beaks','it gave every bird more food','it killed the birds at random, no matter their beak'],ans:0},
+           {q:'<b>Part B:</b> Each baby got the same beak tool as its parent. In real finches, this stands for…',opts:['inheritance: beak shape is passed from parents to offspring in genes','learning: chicks practice with their parents\' beaks','acquired traits: parents change their beaks and pass the change on','mutation: every chick gets a brand-new beak'],ans:0},
+           {q:'<b>Part C:</b> On Daphne Major, which finches were like the birds with the "best tool" for the drought?',opts:['Finches with deep, strong beaks that could crack the large, hard seeds','Finches with small, thin beaks','Finches that flew away to other islands','All the finches did equally well'],ans:0}],
+    hint:'Match each part of the model to the real island: the food, the beaks, and the babies.', why:'In both cases, a change in food favored certain inherited beak shapes, and those birds passed their beaks to their offspring.'});
+  choiceProblem(awrap,{id:'a9', part:'P4', num:num(), q:'Every model has <b>limitations</b> (ways it is not like real life). Which are limitations of this beak model?',
+    parts:[{q:'Select all that apply.',opts:['Babies are exact copies of their parent, but real offspring vary, and mutations can make new beak shapes','People get better with practice, but a skill learned during life is not passed on in genes','The population was small and lasted only a few generations','Real birds can also eat other foods, move to other islands, or be eaten by predators','The model shows that food can affect which birds survive','Real birds do not inherit their beak shape'],ans:[0,1,2,3]}],
+    hint:'A limitation is a way the model is different from real birds. Something the model shows well is not a limitation, and a false statement is not one either.', why:'Real offspring vary, learning is not inherited, real populations are larger and last longer, and real birds face many other pressures.'});
+  writtenProblem(awrap,{id:'a10', part:'P4', num:num(), q:'Did your results match your predictions from page 2? Explain, using at least one number from your data.', pts:2, bank:['I predicted','but','the','beak','collected','average','percent','Generation 4','matched','did not match'],
+    groups:[['refers to the prediction',/predict|thought|expected|guess|hypothes/],['uses a number from the data',/\d/]],
+    model:'I predicted the spoon would do best after the change, but the binder clip birds collected 9.5 pieces each in Round 2, and they grew to 50 percent of the birds by Generation 4, so my prediction did not match.',
+    hint:'Say what you predicted, then give a number from your data.', why:'Comparing predictions with data is how scientists test their ideas.'});
+  /* ---------- 5. Conclusion ---------- */
+  say(sec[4],`<p>Write a <b>claim, evidence, and reasoning</b> conclusion that answers: <i>How did the environment change the beak types in the bird population over generations?</i> Use your data.</p>`);
+  writtenProblem(sec[4],{id:'k1', part:'P5', num:num(), q:'<b>Claim:</b> answer the question in one sentence.', pts:1, bank:['After the','the beak','became','more common','less common','population','environment','food'],
+    groups:[['says how the beak types in the population changed',/(common|increas|decreas|more|fewer|less|shift|changed|went up|went down|majority|most)[\s\S]{0,80}(beak|bird|population|spoon|tweezer|clip|chopstick)|(beak|bird|population|spoon|tweezer|clip|chopstick)[\s\S]{0,80}(common|increas|decreas|more|fewer|less|shift|changed|went up|went down|majority|most)/]],
+    model:'After the environment changed, the beak that collected that food best became more common in the population, and the other beaks became less common.', hint:'Name the beak that became more common (or less common).', why:'The claim answers the question.'});
+  writtenProblem(sec[4],{id:'k2', part:'P5', num:num(), q:'<b>Evidence:</b> give numbers from your data: the food each beak collected after the change, and the percent of a beak at the start and the end.', pts:3, bank:['Generation 1','Generation 4','percent','%','average','per bird','Round 2','collected','went from','to'],
+    groups:[['names a beak',/spoon|tweezer|clip|chopstick/],['food or average data',/food|collect|average|per bird|round|pieces|beans|rice|worm|seeds/],['uses numbers or percents',/\d/]],
+    model:'In Round 2, the binder clip birds collected 9.5 pieces of food per bird, more than any other beak. Binder clip birds went from 25% of the population in Generation 1 to 50% in Generation 4.',
+    hint:'Use your average and percent answers from Analysis.', why:'Good evidence uses specific numbers.'});
+  writtenProblem(sec[4],{id:'k3', part:'P5', num:num(), q:'<b>Reasoning:</b> explain <i>why</i> the beak types changed. Use the ideas of natural selection.', pts:4, bank:['variation','different beaks','survive','reproduce','babies','inherit','same beak','fitness','population','generations','food'],
+    groups:[['there was variation in beaks',/variation|different (beak|kind|type)|varied|differ/],['some birds survived and reproduced more',/surviv|reproduc|babies|offspring|fitness/],['beaks are inherited',/inherit|same beak|passed|parent|gene/],['the population changed, not single birds',/population|generation|more common|over time|individual/]],
+    model:'There was variation in beaks. When the food changed, birds whose beaks collected that food best survived and had more babies, so they had higher fitness. The babies inherited the same beak as their parents, so over generations that beak became more common in the population. No single bird changed its beak.',
+    hint:'Cover four ideas: variation, survival and reproduction, inheritance, and the population changing over generations.', why:'Inherited variation plus unequal survival and reproduction changes the population over generations.'});
+  dataRefresh();
+}
+
+/* ===== Bird Beak Lab: hands-on version (class island, beak tools, timed rounds) ===== */
+const SURV_TXT='set by your teacher';
+const R2_NAME='drought';
+const FOOD_COLS=['Round 1: normal year','Round 2: drought','Round 3: drought'];
+const PRED_ROWS=[
+  {id:'Round 1: normal year',desc:'Mixed food. Which beak will collect the most food per bird?',choices:[...BEAK_ROWS,'All about the same']},
+  {id:'Rounds 2 and 3: drought',desc:'Only large, hard seeds (beans). Which beak will collect the most food per bird?',choices:[...BEAK_ROWS,'All about the same']},
+  {id:'The population',desc:'After 3 rounds, what will happen to the beak types in the population?',choices:['They will stay about the same','The beak that collects the most food will become more common','Each bird will change its own beak to a better one','Every beak type will die out']}];
+const SETUP_HTML=`<div class="figwrap bbfig" style="margin:12px 0 8px">${MAT_PIC}</div>
+   <p><b>Materials (per island, about 4 to 6 birds):</b> a paper plate or tray (the island); dried beans (large, hard seeds), uncooked rice (small seeds), large pom-poms or marbles (fruits), and rubber bands (worms). <b>Each bird:</b> one beak tool (a plastic spoon, tweezers, a binder clip or clothespin, or chopsticks or two craft sticks) and one cup. <b>Class:</b> a timer.</p>
+   <p><b>Safety:</b> do not put any food or tools in your mouth. Pick up dropped beans and marbles so no one slips. Do not point tweezers or chopsticks at anyone.</p>
+   <p><b>Feeding rules:</b> hold your cup in your other hand, upright. Only your beak tool can touch the food. Food counts only if it lands in your cup. Do not scoop with the cup, tilt the plate, or push other birds.</p>
+   <p><b>Procedure:</b></p><ol class="proc">
+    <li>On page 2, make your predictions and lock them in.</li>
+    <li><b>Generation 1.</b> Your teacher hands out beak tools so the class has about the same number of each beak. Record the number of birds with each beak.</li>
+    <li><b>Round 1: normal year.</b> Your teacher spreads mixed food on every island. When the timer starts, feed for <b>30 seconds</b>. Stop when time is up.</li>
+    <li>Count the food in your cup and report it. Your teacher adds up the total food for each beak type. Record the totals.</li>
+    <li><b>Survival:</b> birds with less food than the survival number die. <b>Babies:</b> each student whose bird died comes back as a baby of a surviving bird and takes the <b>same kind of beak</b> as that parent. The survivor with the most food gets the first baby, the next survivor gets the next baby, and so on. Count the birds with each beak: this is Generation 2.</li>
+    <li><b>Round 2: drought.</b> Your teacher clears the islands and puts out only dried beans, the <b>same amount</b> on every island in every drought round. Feed for 30 seconds, count, and record. Then do survival and babies again to make Generation 3.</li>
+    <li><b>Round 3: the drought continues.</b> Repeat step 6 to make Generation 4.</li>
+    <li>Record every class number in the two data tables on page 3.</li></ol>`;
+function buildData(s,num){
+  const lock=h('div',{class:'fb info'}); lock.innerHTML='<b>Locked.</b> Lock in your predictions on page 2 first.'; s.appendChild(lock);
+  const dwrap=h('div',{}); s.appendChild(dwrap);
+  dwrap.insertAdjacentHTML('beforeend',`<p>Your teacher keeps the class numbers on the board. Copy the <b>whole class</b> numbers here after each round. The graphs draw as you type.</p>`);
+  dataTableProblem(dwrap,{id:'pop', part:'P3', num:num(), q:'Number of birds with each beak in each generation (whole class).', pts:4, corner:'Beak type', cols:POP_COLS, rows:BEAK_ROWS, chart:popChart});
+  dataTableProblem(dwrap,{id:'food', part:'P3', num:num(), q:'Total food collected by all the birds with each beak in each round (whole class).', pts:4, corner:'Beak type', cols:FOOD_COLS, rows:BEAK_ROWS, chart:foodChart});
+  window.dataRefresh=()=>{ const ok=!!st('pred').checked; lock.hidden=ok; dwrap.classList.toggle('off',!ok); if(window.anaRefresh) anaRefresh(); };
+}
+
+/* ============================== BUILD / SCORE ============================== */
+function scoreAll(){ const parts=PARTS.slice(0,-1).map(p=>({k:p.k,label:p.label,got:0,max:0})); PROBS.forEach(pr=>{ const pt=parts.find(x=>x.k===pr.part); pt.got+=pr.score(); pt.max+=pr.max; });
+  return {parts, total:parts.reduce((a,b)=>a+b.got,0), max:parts.reduce((a,b)=>a+b.max,0)}; }
+function build(){
+  PROBS.length=0; const ws=$('#ws'); ws.innerHTML='';
+  $('#nav').innerHTML=PARTS.map((pt,i)=>`<button class="ntile" type="button" data-i="${i}" aria-label="${pt.title}"><span class="ic">${ico(i,22)}</span><span class="nm">${pt.label}</span></button>`).join('');
+  $$('#nav .ntile').forEach(b=>b.addEventListener('click',()=>showPart(+b.dataset.i)));
+  const secs=PARTS.map((pt,i)=>{ const el=h('section',{class:'sec',id:'part'+i}); const last=i===PARTS.length-1;
+    el.innerHTML=`<div class="sechead"><div class="badge"><span class="z">${i+1}</span>${ico(i,34)}</div><div><div class="meta">${last?'Grade':`Section ${i+1} of ${PARTS.length-1} · about ${pt.min} min`}</div><h2>${pt.title}</h2></div></div>`;
+    const c=h('div',{class:'card'}); el.appendChild(c);
+    const nav=h('div',{class:'secnav'});
+    const back=h('button',{class:'btn ghost',type:'button'},i===0?'':'← Back'); if(i===0) back.style.visibility='hidden'; back.addEventListener('click',()=>showPart(i-1));
+    nav.appendChild(back);
+    if(!last){ const nx=h('button',{class:'btn primary',type:'button'},i===PARTS.length-2?'See my grade →':`Next: ${PARTS[i+1].title} →`); nx.addEventListener('click',()=>showPart(i+1)); nav.appendChild(nx); }
+    el.appendChild(nav); ws.appendChild(el); return c; });
+  buildContent(secs);
+  secs[PARTS.length-1].id='turnin';
+  showPart(Math.min(S.cur||0,PARTS.length-1),true);
+  $('#whoami').textContent=S.student?`${S.student.first} ${S.student.last}`:''; refresh();
+}
+function showPart(i,noScroll){
+  S.cur=i; $$('#ws .sec').forEach((el,j)=>el.hidden=j!==i);
+  $$('#nav .ntile').forEach((t,j)=>t.classList.toggle('cur',j===i));
+  if(!noScroll){ save(); window.scrollTo(0,0); }
+}
+function refresh(){
+  const sc=scoreAll(), done=PROBS.filter(p=>p.checked()).length;
+  $('#scorePill').textContent=`${done}/${PROBS.length} checked · ${sc.total}/${sc.max} pts`;
+  PARTS.slice(0,-1).forEach((pt,i)=>{ const t=$(`#nav .ntile[data-i="${i}"]`); if(t) t.classList.toggle('done',PROBS.filter(p=>p.part===pt.k).every(p=>p.checked())); });
+  const t7=$(`#nav .ntile[data-i="${PARTS.length-1}"]`); if(t7) t7.classList.toggle('done',!!S.submittedAt);
+  const c=$('#turnin'); if(!c) return;
+  const rows=sc.parts.map(p=>`<tr><th>${p.label}</th><td>${p.got} / ${p.max}</td></tr>`).join('');
+  c.innerHTML=`<div style="display:flex;gap:22px;align-items:center;flex-wrap:wrap"><div class="big">${sc.total}/${sc.max}</div><div><h3 style="margin:0">${esc(S.student?S.student.first+' '+S.student.last:'')}</h3><p class="muted" style="margin:0">${done} of ${PROBS.length} problems checked</p></div></div>
+    <table class="res" style="margin-top:12px">${rows}</table>
+    <p class="small muted" style="margin-top:10px">Problems you haven't checked count as 0. You can turn in again later; your teacher sees the newest one.</p>
+    <div class="btnrow"><button class="btn primary" id="subBtn" type="button">${S.submittedAt?'Turn in again':'Turn in my lab'}</button><button class="btn ghost" id="csvBtn" type="button">Download CSV</button></div>
+    <p class="fb info sheetStatus" aria-live="polite">${S.sentAt?`Sent to your teacher ${new Date(S.sentAt).toLocaleString()}.`:'Not turned in yet.'}</p>`;
+  $('#subBtn').addEventListener('click',turnIn);
+  $('#csvBtn').addEventListener('click',()=>downloadCSV([recordRow()],`BirdBeakLab_${(S.student&&S.student.last||'student').replace(/\W+/g,'')}.csv`));
+}
+const CSV_HEAD=['Student ID','Last Name','First Name','Period','Teacher','Activity','Score','Total','Percent',...PARTS.slice(0,-1).map(p=>p.label),'Date'];
+function recordRow(){ const st=S.student||{}, sc=scoreAll(); return [st.id||'',st.last||'',st.first||'',st.period||'',st.teacher||'',ACTIVITY,sc.total,sc.max,Math.round(100*sc.total/sc.max)+'%',...sc.parts.map(p=>p.got),new Date(S.submittedAt||Date.now()).toLocaleString()]; }
+function csvText(rows){ const q=v=>{ v=String(v==null?'':v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }; return [CSV_HEAD,...rows].map(r=>r.map(q).join(',')).join('\r\n')+'\r\n'; }
+function downloadCSV(rows,name){ const b=new Blob([csvText(rows)],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500); }
+const loadRecs=()=>{ try{ return (JSON.parse(localStorage.getItem(RECS))||[]).filter(r=>r.length===CSV_HEAD.length); }catch(e){ return []; } };
+function saveRecord(){ if(S.preview) return; const recs=loadRecs(), row=recordRow(); const i=recs.findIndex(r=>r[0]===row[0]&&r[1]===row[1]); if(i>=0) recs[i]=row; else recs.push(row); try{ localStorage.setItem(RECS,JSON.stringify(recs)); }catch(e){} }
+function turnIn(){
+  const left=PROBS.filter(p=>!p.checked()).length;
+  if(left&&!confirm(`${left} problem${left>1?'s':''} not checked yet (they count as 0). Turn in anyway?`)) return;
+  S.submittedAt=Date.now(); save(); saveRecord(); cloudSave(true); disarm(); refresh();
+  const msg=t=>$$('.sheetStatus').forEach(e=>e.textContent=t);
+  if(S.preview){ msg('Preview mode: nothing is sent.'); return; }
+  const st=S.student, sc=scoreAll();
+  const body={studentId:st.id||'',firstName:st.first||'',lastName:st.last||'',period:st.period||'',teacher:st.teacher||'',locks:'0',when:new Date().toString(),activity:ACTIVITY,score:String(sc.total),total:String(sc.max),
+    qlabels:sc.parts.map((p,i)=>'P'+(i+1)+' '+PARTS[i].label).join('|'),qpoints:sc.parts.map(p=>p.got).join('|'),qmax:sc.parts.map(p=>p.max).join('|')};
+  msg('Sending...');
+  fetch(sheetURL(),{method:'POST',mode:'no-cors',body:new URLSearchParams(body)}).then(()=>{ S.sentAt=new Date().toISOString(); save(); msg('Sent! Your teacher will see your score.'); }).catch(()=>msg("Couldn't send. Check the Wi-Fi and try again, or download the CSV."));
+}
+
+/* ============================== NO LOCKDOWN ON WORKSHEETS ============================== */
+let teacherOpen=false;
+function arm(){} function disarm(){} function showLock(){} function enterFS(){}
+['copy','cut','paste','contextmenu'].forEach(ev=>document.addEventListener(ev,e=>{ if(teacherOpen||S.preview) return; e.preventDefault(); }));
+
+/* ============================== SIGN IN ============================== */
+function showWS(){ $('#start').hidden=true; $('#top').hidden=false; $('#ws').hidden=false; build(); window.scrollTo(0,0); if(S.locked&&LOCKDOWN&&!S.lockOff) showLock(); else arm(); }
+function renderStart(){ const has=!!S.student; $('#resumeBox').hidden=!has; $('#startForm').hidden=has; $('#signinTitle').textContent=has?'Welcome back':'Sign in to start';
+  if(has) $('#resumeText').innerHTML=`Signed in as <b>${esc(S.student.first)} ${esc(S.student.last)}</b>, period ${esc(S.student.period)}.`; }
+$('#fPeriod').innerHTML='<option value="">Choose your period</option>'+periodList().map(p=>`<option>${esc(p)}</option>`).join('');
+$('#fTeacher').innerHTML='<option value="">Choose your teacher</option>'+teacherList().map(t=>`<option>${esc(t)}</option>`).join('');
+let starting=false;
+async function start(){
+  if(starting) return; starting=true;
+  try{
+    const v={first:$('#fFirst').value.trim(),last:$('#fLast').value.trim(),id:$('#fId').value.trim(),period:$('#fPeriod').value,teacher:$('#fTeacher').value};
+    const miss=[]; if(!v.first) miss.push('first name'); if(!v.last) miss.push('last name'); if(!v.id) miss.push('student ID'); if(!v.period) miss.push('period'); if(!v.teacher) miss.push('teacher');
+    const err=$('#formErr'); if(miss.length){ err.className='fb no'; err.textContent='Fill in your '+miss.join(', ')+'.'; err.hidden=false; return; }
+    if(LOCKDOWN) enterFS();
+    err.className='fb info'; err.textContent='Checking for your saved work...'; err.hidden=false;
+    const res=await cloudLoad(v); err.hidden=true;
+    if(res.status==='found'){ const d=res.data; d.student=Object.assign({},d.student||{},{first:v.first,period:v.period,teacher:v.teacher}); adopt(d); showWS(); note('✓ Your saved work was loaded'); return; }
+    const ns=fresh(); ns.student=v; adopt(ns); showWS(); cloudSave(true);
+  } catch(ex){ const er=$('#formErr'); er.className='fb no'; er.textContent='Something went wrong starting ('+(ex&&ex.message||ex)+'). Reload and try again.'; er.hidden=false; }
+  finally{ starting=false; }
+}
+$('#startBtn').addEventListener('click',start);
+$('#startForm').addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.tagName==='INPUT'){ e.preventDefault(); start(); } });
+$('#resumeBtn').addEventListener('click',async()=>{ const b=$('#resumeBtn'); b.disabled=true; b.textContent='Loading your work...'; if(LOCKDOWN&&!S.locked) enterFS();
+  const res=await cloudLoad(S.student); b.disabled=false; b.textContent='Continue my lab';
+  if(res.status==='found'&&(res.data.updatedAt||0)>(S.updatedAt||0)&&checkedCount(res.data)>=checkedCount(S)){ const d=res.data; d.student=S.student; adopt(d); note('✓ Your newest saved work was loaded'); } showWS(); });
+$('#notMeBtn').addEventListener('click',async()=>{ const b=$('#notMeBtn'); b.disabled=true;
+  try{ if(cloudOK()) await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); }catch(e){ b.disabled=false; $('#resumeErr').textContent="Can't back up the last student's work right now. Check the Wi-Fi, or ask your teacher."; $('#resumeErr').hidden=false; return; }
+  b.disabled=false; adopt(fresh()); ['#fFirst','#fLast','#fId','#fPeriod','#fTeacher'].forEach(s=>$(s).value=''); renderStart(); });
+
+/* ============================== TEACHER ============================== */
+function openTeacher(){ teacherOpen=true; $('#teachLogin').hidden=false; $('#teachPanel').hidden=true; $('#teachErr').hidden=true; $('#teachCode').value=''; $('#teachOv').classList.add('show'); setTimeout(()=>$('#teachCode').focus(),50); }
+function closeTeacher(){ $('#teachOv').classList.remove('show'); teacherOpen=false; }
+$('#teacherLink').addEventListener('click',openTeacher); $('#teachBtn').addEventListener('click',openTeacher);
+$('#teachCancel').addEventListener('click',closeTeacher);
+$('#teachCode').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#teachGo').click(); });
+$('#teachGo').addEventListener('click',()=>{ if(!codeIs($('#teachCode').value,TEACHER_CODE)){ $('#teachErr').hidden=false; return; } $('#teachLogin').hidden=true; $('#teachPanel').hidden=false; renderTeacher(); });
+function renderTeacher(){
+  const recs=loadRecs(), p=$('#teachPanel'), keyOn=document.body.classList.contains('keyon');
+  p.innerHTML=`<h2>Teacher tools</h2>
+    <div class="btnrow"><button class="btn ghost" id="tKey" type="button">${keyOn?'Hide answer key':'Answer key'}</button>
+      <button class="btn ghost" id="tPrev" type="button">${S.preview?'End preview':'Preview (saves nothing)'}</button>
+      <button class="btn ghost" id="tResetWrong" type="button">Reset all wrong answers</button>
+      <button class="btn ghost" id="tReset" type="button">Reset this Chromebook</button><button class="btn ghost" id="tClose" type="button">Close</button></div>
+    <h3 style="margin-top:16px">Scores saved on this Chromebook (${recs.length})</h3>
+    <div class="wide">${recs.length?`<table class="nb"><tr><th>Student</th><th>ID</th><th>Period</th><th>Score</th><th>Date</th></tr>${recs.map(r=>`<tr><td>${esc(r[1])}, ${esc(r[2])}</td><td>${esc(r[0])}</td><td>${esc(r[3])}</td><td>${r[6]}/${r[7]}</td><td>${esc(r[r.length-1])}</td></tr>`).join('')}</table>`:'<p class="muted">None yet.</p>'}</div>
+    <div class="btnrow"><button class="btn primary" id="tCsv" type="button" ${recs.length?'':'disabled'}>Download scores (CSV)</button></div>
+    <h3 style="margin-top:16px">Load a student's saved work</h3>
+    <div class="btnrow"><input class="code" id="tId" placeholder="Student ID" style="width:150px"><input class="code" id="tLast" placeholder="Last name" style="width:170px"><button class="btn ghost" id="tLoad" type="button">Load work</button></div>
+    <p class="fb info" id="tMsg" style="min-height:1em"></p>`;
+  const msg=t=>$('#tMsg').textContent=t;
+  $('#tKey').addEventListener('click',()=>{ document.body.classList.toggle('keyon'); renderTeacher(); msg(document.body.classList.contains('keyon')?'Answer key on: each box shows its answer, sort chips show their box, and correct choices have a dashed gold outline.':'Answer key off.'); });
+  $('#tPrev').addEventListener('click',()=>{ if(S.preview){ location.reload(); return; } const ns=fresh(); ns.preview=true; ns.student={first:'Teacher',last:'Preview',id:'0',period:'-',teacher:teacherList()[0]}; S=ns; closeTeacher(); showWS(); note('Preview: nothing is saved'); });
+  $('#tReset').addEventListener('click',()=>{ if(confirm('Erase this lab on this Chromebook? Work backed up to the Saved Student Work sheet is not deleted.')){ try{ localStorage.removeItem(STORE); }catch(e){} location.reload(); } });
+  $('#tResetWrong').addEventListener('click',()=>{
+    const wrong=PROBS.filter(pr=>{ const P=S.p[pr.id]||{}; return (P.tries||0)>0 && !P.right; });
+    if(!wrong.length){ msg('Nothing to reset: this student has no wrong answers.'); return; }
+    if(!confirm(`Reset ${wrong.length} problem${wrong.length>1?'s':''} that ${wrong.length>1?'are':'is'} wrong or on a second try for ${(S.student&&S.student.first)||'this student'}? Correct answers stay.`)) return;
+    wrong.forEach(pr=>{ delete S.p[pr.id]; });
+    save(); cloudSave(true); msg(`Reset ${wrong.length} problem${wrong.length>1?'s':''}. Reloading…`); setTimeout(()=>location.reload(),700); });
+  $('#tClose').addEventListener('click',closeTeacher);
+  $('#tCsv').addEventListener('click',()=>downloadCSV(recs,`BirdBeakLab_scores_${new Date().toISOString().slice(0,10)}.csv`));
+  $('#tLoad').addEventListener('click',async()=>{ const s={id:$('#tId').value.trim(),last:$('#tLast').value.trim()}; if(!s.id||!s.last){ msg('Type the student ID and last name.'); return; } msg('Looking up saved work...');
+    const r=await cloudLoad(s); if(r.status==='found'){ adopt(r.data); closeTeacher(); renderStart(); $('#start').hidden=false; $('#ws').hidden=true; $('#top').hidden=true; } else msg(r.status==='none'?'No saved work found for that student.':"Couldn't reach the saved-work sheet."); });
+}
+
+if(!STORAGE_OK) $('#noStore').hidden=false;
+renderStart();
+})();
+</script>
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

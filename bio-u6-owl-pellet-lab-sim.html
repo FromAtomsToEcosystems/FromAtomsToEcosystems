@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Owl Pellet Lab: Build a Food Web (simulation) | Biology Unit 6</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1626; --panel:#142136; --panel2:#1a2a44; --line:#2a3d5f; --line2:#3a5580;
+  --text:#e8eef8; --muted:#a3b4cf; --dim:#7488a9;
+  --leaf:#5fe3a9; --sun:#ffd35c; --r:#ffd35c; --sky:#45c8f0; --ok:#4ade80; --bad:#fb7185; --pink:#f472b6;
+  --font:'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+*{box-sizing:border-box} [hidden]{display:none !important}
+html,body{margin:0}
+body{background-color:var(--bg); background-image:linear-gradient(rgba(110,150,210,.065) 1px,transparent 1px),linear-gradient(90deg,rgba(110,150,210,.065) 1px,transparent 1px); background-size:32px 32px;
+  color:var(--text); font-family:var(--font); font-size:17px; line-height:1.55; -webkit-user-select:none; user-select:none}
+input,textarea{-webkit-user-select:text; user-select:text}
+h1,h2,h3,h4{margin:0 0 .45em; line-height:1.2; font-weight:600}
+h1{font-size:clamp(28px,4.4vw,40px); font-weight:700} h2{font-size:24px} h3{font-size:19px}
+p{margin:0 0 .75em} .muted{color:var(--muted)} .small{font-size:14px}
+sub,sup{font-size:.72em}
+:focus-visible{outline:3px solid var(--r); outline-offset:2px}
+.top{position:sticky; top:0; z-index:20; background:rgba(13,22,38,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+.top-in{max-width:1100px; margin:0 auto; padding:8px 16px; display:flex; gap:12px; align-items:center}
+.brand{font-weight:600; font-size:15px; white-space:nowrap} .brand span{display:block; font-weight:400; font-size:12px; color:var(--muted)}
+.nav{display:flex; gap:6px; flex:1; overflow-x:auto; padding:3px 2px}
+.ntile{flex:0 0 auto; width:54px; height:54px; border-radius:7px; border:1.5px solid var(--line2); background:var(--panel); color:var(--text); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer; position:relative; font:inherit; padding:0}
+.ntile .ic{color:var(--leaf); line-height:0} .ntile .nm{font-size:8.5px; color:var(--muted)}
+.ntile.cur{border-color:var(--r); background:rgba(255,211,92,.14)}
+.ntile.cur .nm{color:var(--r)}
+.secnav{display:flex; justify-content:space-between; gap:10px; margin-top:4px}
+.ntile.done::after{content:'✓'; position:absolute; top:1px; right:4px; font-size:10px; font-weight:700; color:var(--ok)}
+.scorepill{font-size:13px; padding:4px 10px; border-radius:999px; background:var(--panel2); white-space:nowrap}
+.savenote{font-size:12.5px; color:var(--ok); white-space:nowrap} @media (max-width:1300px){ .savenote{display:none} } @media (max-width:900px){ .scorepill{display:none} }
+main{max-width:1000px; margin:0 auto; padding:20px 16px 80px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin:0 0 18px}
+.sec{scroll-margin-top:80px}
+.sechead{display:flex; gap:14px; align-items:center; margin:28px 0 10px}
+.badge{width:66px; height:66px; border-radius:10px; border:2px solid var(--leaf); background:var(--panel); display:flex; align-items:center; justify-content:center; position:relative; flex:0 0 auto; color:var(--leaf)}
+.badge .z{position:absolute; top:3px; left:6px; font-size:11px; color:var(--muted)}
+.meta{color:var(--muted); font-size:14px}
+.btn{font:inherit; font-weight:600; font-size:15px; border-radius:10px; padding:10px 18px; cursor:pointer; border:1.5px solid transparent}
+.btn.primary{background:var(--r); color:#231a00} .btn.ghost{background:transparent; border-color:var(--line2); color:var(--text)}
+.btn.small{padding:6px 12px; font-size:14px} .btn:disabled{opacity:.45; cursor:not-allowed}
+.btnrow{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:12px}
+.field{display:flex; flex-direction:column; gap:4px; font-size:14px; color:var(--muted)}
+.field input,.field select{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px}
+.formgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin:10px 0}
+.fb{margin-top:10px; padding:10px 14px; border-radius:10px; font-size:15px}
+.fb.ok{background:rgba(74,222,128,.12); color:#c9f7d8} .fb.no{background:rgba(251,113,133,.12); color:#ffd3db} .fb.info{background:var(--panel2)}
+.prob{border-top:1px solid var(--line); padding-top:16px; margin-top:16px}
+.prob:first-of-type{border-top:none; padding-top:0; margin-top:0}
+.pq{font-weight:500; margin-bottom:8px}
+.pnum{display:inline-block; min-width:30px; font-weight:700; color:var(--leaf)}
+.pts{font-size:13px; color:var(--muted); font-weight:400}
+.hintbox{background:rgba(255,211,92,.08); border-left:3px solid var(--r); border-radius:8px; padding:8px 12px; margin-top:8px; font-size:15px}
+/* drag and drop */
+.figwrap{position:relative; width:100%}
+.figwrap svg{width:100%; height:auto; display:block; background:#0a1322; border:1px solid var(--line); border-radius:12px}
+.figwrap svg text{font-family:var(--font)}
+.zone{position:absolute; transform:translate(-50%,-50%); min-height:32px; border:2px dashed #8fb3e6; border-radius:9px; background:rgba(13,22,38,.92); color:var(--text); font:inherit; font-size:14px; font-weight:600; display:flex; align-items:center; justify-content:center; padding:2px 6px; cursor:pointer; text-align:center; line-height:1.15}
+.zone.empty{color:var(--dim); font-weight:400; font-size:12.5px}
+.zone.filled{border-style:solid; border-color:var(--r); background:#2b2410}
+.zone.hot{box-shadow:0 0 0 3px rgba(255,211,92,.5)}
+.zone.locked{opacity:.9}
+.zone.ok{border-color:var(--ok); background:#0f2e1d} .zone.no{border-color:var(--bad); background:#3a0f1a}
+.pool{display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 4px; padding:10px; border:1px dashed var(--line2); border-radius:10px; min-height:52px}
+.pool .lbl{width:100%; font-size:12.5px; color:var(--muted)}
+.chip{font:inherit; font-size:15px; font-weight:600; padding:6px 14px; border-radius:999px; border:1.5px solid var(--line2); background:var(--panel2); color:var(--text); cursor:grab; touch-action:none}
+.chip.sel{border-color:var(--r); background:rgba(255,211,92,.16); box-shadow:0 0 0 3px rgba(255,211,92,.35)}
+.bins{display:grid; gap:10px; margin-top:6px}
+.bin{border:2px dashed var(--line2); border-radius:12px; padding:10px; min-height:96px; cursor:pointer; background:rgba(13,22,38,.5)}
+.bin h4{margin:0 0 8px; font-size:15px; color:var(--leaf)} .bin.hot{border-color:var(--r)}
+.bin .chip{cursor:pointer; margin:3px} .bin .chip.ok{border-color:var(--ok); background:#0f2e1d} .bin .chip.no{border-color:var(--bad); background:#3a0f1a}
+.phenbox{background:rgba(244,114,182,.1); border-left:4px solid #f472b6; border-radius:8px; padding:10px 14px; margin-bottom:14px}
+.fixnote{font-size:12px; color:#ffd3db; font-weight:400}
+/* equation */
+.eq{display:flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:20px; font-weight:600; margin:10px 0}
+.eq .zone{position:static; transform:none; min-width:120px; min-height:40px}
+/* choices */
+.opts{display:grid; gap:8px; margin:6px 0}
+.opt{display:flex; gap:12px; align-items:center; text-align:left; background:var(--panel2); border:1.5px solid var(--line); color:var(--text); border-radius:10px; padding:9px 14px; font:inherit; font-size:16px; cursor:pointer}
+.opt .L{flex:0 0 26px; height:26px; border-radius:50%; display:grid; place-items:center; background:var(--bg); font-weight:600; font-size:13px}
+.opt.multi .L{border-radius:6px}
+.opt.sel{border-color:var(--r); background:rgba(255,211,92,.08)} .opt.sel .L{background:var(--r); color:#231a00}
+.opt.ok{border-color:var(--ok); background:rgba(74,222,128,.1)} .opt.no{border-color:var(--bad); background:rgba(251,113,133,.1)}
+.opt:disabled{cursor:default}
+input.blank{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:7px 10px; font:inherit; font-size:16px; width:170px}
+input.blank.ok{border-color:var(--ok)} input.blank.no{border-color:var(--bad)}
+.brow{margin:8px 0}
+/* answer key (teacher) */
+body.keyon .zone[data-key]::after{content:'key: ' attr(data-key); position:absolute; top:100%; left:50%; transform:translateX(-50%); font-size:11px; color:var(--r); white-space:nowrap; margin-top:2px}
+body.keyon .chip[data-key]::after{content:' → ' attr(data-key); font-size:11px; color:var(--r)}
+body.keyon .opt[data-key]{outline:2px dashed var(--r); outline-offset:2px}
+body.keyon input.blank[data-key]+.keytxt{display:inline}
+.vbench{background:rgba(255,255,255,.04); border:1px solid #2a3d5f; border-radius:14px; padding:12px; margin-bottom:12px}
+#benchPic svg{width:100%; height:auto; display:block}
+.datatab select.ocell{font:inherit; padding:4px 6px; border-radius:8px; max-width:100%}
+.datatab input.dcell{width:72px; font:inherit; padding:4px 6px; border-radius:8px; text-align:center}
+.datachart svg{width:100%; height:auto; display:block; margin-top:10px}
+ol.proc li{margin:4px 0}
+.off{opacity:.35; pointer-events:none}
+.btbkey{display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; margin:6px 0 10px}.btbkey span{display:inline-block; width:16px; height:16px; border-radius:50%; vertical-align:middle; border:1px solid rgba(255,255,255,.4)}
+.simwrap{display:grid; grid-template-columns:minmax(150px,220px) 1fr; gap:18px; align-items:start; background:rgba(255,255,255,.04); border:1px solid var(--line,#2a3d5f); border-radius:14px; padding:14px}
+.simwrap.off{opacity:.35; pointer-events:none}
+.bigtube svg{width:100%; height:auto; display:block}.clock{text-align:center; font-weight:700; font-size:20px; margin-top:6px}
+.tg{display:block; margin:4px 0; font-size:17px}.tg input{transform:scale(1.3); margin-right:8px}
+.sensor{margin:10px 0; font-size:18px}.sensor b{font-size:24px; color:#ffd35c}
+.btn.on{outline:2px solid #ffd35c}
+.dot{display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:6px; vertical-align:middle}
+.predtab select{font:inherit; padding:4px 6px; border-radius:8px}
+#sChart svg{width:100%; height:auto; display:block}
+@media (max-width:700px){ .simwrap{grid-template-columns:1fr} .bigtube{max-width:180px; margin:0 auto} }
+.wbank2{margin-top:8px; padding:8px 10px; border:1px dashed rgba(163,180,207,.5); border-radius:10px; font-size:14px; line-height:2}
+.wchip{font:inherit; font-size:14px; margin:2px 4px 2px 0; padding:2px 10px; border-radius:999px; border:1px solid rgba(163,180,207,.6); background:rgba(255,255,255,.06); color:inherit; cursor:pointer}
+.wchip:hover{border-color:#ffd35c}
+.wtext{width:100%; min-height:110px; font:inherit; padding:10px; border-radius:10px; border:1.5px solid var(--line,#2a3d5f); background:rgba(255,255,255,.04); color:inherit; resize:vertical}
+.wkey{display:none; margin-top:6px; font-size:14px; color:var(--r,#ffd35c)}
+body.keyon .wkey{display:block}
+.keytxt{display:none; font-size:12px; color:var(--r); margin-left:6px}
+.big{font-size:52px; font-weight:700; color:var(--r); line-height:1}
+table.res{border-collapse:collapse; width:100%} table.res th,table.res td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line)} table.res th{color:var(--muted); font-weight:400}
+.card.nostore{border:2px solid var(--bad); background:rgba(251,113,133,.08)}
+.overlay{position:fixed; inset:0; background:rgba(4,9,18,.94); z-index:100; display:none; align-items:center; justify-content:center; padding:20px}
+.overlay.show{display:flex}
+.modal{background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:24px; max-width:900px; width:100%; max-height:92vh; overflow:auto}
+input.code{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px; width:200px}
+table.nb{border-collapse:collapse; width:100%; font-size:14px} table.nb th,table.nb td{border:1px solid var(--line2); padding:6px 8px} table.nb th{background:var(--panel2)}
+.wide{overflow-x:auto}
+@media (max-width:700px){ .zone{font-size:11px; min-height:26px} .chip{font-size:13px; padding:5px 10px} }
+@media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important} }
+.prob + p,.prob + .phenbox,.prob + .figwrap{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+
+.datatab input.dcell{background:var(--bg); color:var(--text); border:1.5px solid var(--line2)}
+.datatab input.dcell:disabled{opacity:1; color:var(--text); border-color:var(--line); background:var(--panel2)}
+.opchart svg{width:100%; height:auto; display:block; margin-top:10px}
+.opkey td:first-child{white-space:nowrap; width:120px}
+.ordq .eq{display:grid; grid-template-columns:auto minmax(0,1fr); gap:8px 12px; font-size:16px}
+.ordq .eq .zone{min-width:0; width:100%; text-align:left; justify-content:flex-start; padding:4px 10px}
+.vbench{background:rgba(255,255,255,.04); border:1px solid #2a3d5f; border-radius:14px; padding:12px; margin-bottom:12px}
+.ptray{position:relative; width:100%; aspect-ratio:760/440; overflow:hidden; border-radius:14px; margin-top:8px}
+.ptnote{display:none; margin-top:4px}
+.ptray .trbg{position:absolute; inset:0; width:100%; height:100%}
+.pwhole{position:absolute; left:28%; top:18%; width:44%} .pwhole svg{width:100%; height:auto; display:block}
+.bbone{pointer-events:none}
+.btok,.bbone{position:absolute; padding:0; margin:0; border:none; background:none; line-height:0}
+.btok svg,.bbone svg{width:100%; height:auto; display:block; overflow:visible}
+.btok{cursor:pointer; filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.35))}
+.btok.sel{outline:3px solid #f59e0b; outline-offset:3px; border-radius:6px; background:rgba(255,211,92,.25)}
+.fur{position:absolute; width:25%; transform:translate(-50%,-50%); padding:0; border:none; background:none; cursor:pointer; line-height:0; transition:opacity .18s, transform .18s}
+.fur svg{width:100%; height:auto; display:block}
+.fur.away{opacity:0; transform:translate(-50%,-80%) scale(.8)}
+.plen{max-width:360px; margin:4px 0} .plen svg{width:100%; height:auto; display:block; border-radius:10px}
+.idgrid{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px; margin-top:6px}
+.idcol{display:flex; flex-direction:column; align-items:center; gap:4px; background:#fbf8ef; color:#1f2937; border:2px dashed #94a3b8; border-radius:12px; padding:8px 4px; font:inherit; cursor:pointer; min-height:160px}
+.idcol:disabled{cursor:default; opacity:1} .idcol.hot{border-color:#f59e0b; border-style:solid}
+.idn{font-weight:700; font-size:15px} .idref{width:100%} .idref svg{width:100%; height:auto; display:block}
+.idgot{display:flex; flex-wrap:wrap; gap:3px; justify-content:center; border-top:1px solid #ddd3bd; padding-top:4px; width:100%} .idgot svg{height:26px; width:auto}
+.piles{display:grid; gap:6px; margin-top:6px}
+.pile{display:grid; grid-template-columns:190px minmax(0,1fr); gap:8px; align-items:center; border-top:1px solid var(--line); padding-top:6px}
+.plab{font-weight:600; font-size:15px} .pbones{display:flex; flex-wrap:wrap; gap:6px 10px; align-items:center; background:#fbf8ef; border-radius:10px; padding:6px 8px; min-height:40px}
+.pb svg{display:block; width:auto}
+.ctab th,.ctab td{text-align:center} .ctab td:first-child{text-align:left; white-space:nowrap}
+@media (max-width:640px){ .ptwrap{overflow-x:auto; -webkit-overflow-scrolling:touch} .ptray{width:660px} .ptnote{display:block} .idgrid{grid-template-columns:repeat(3,minmax(0,1fr))} .pile{grid-template-columns:1fr} .opkey td:first-child{width:auto} }
+
+</style>
+</head>
+<body>
+<header class="top" id="top" hidden>
+  <div class="top-in">
+    <div class="brand">Owl pellet lab (simulation)<span id="whoami"></span></div>
+    <nav class="nav" id="nav" aria-label="Worksheet parts"></nav>
+    <span class="scorepill" id="scorePill"></span>
+    <span class="savenote" id="saveNote" aria-live="polite"></span>
+    <button class="btn ghost small" id="teachBtn" type="button">Teacher</button>
+  </div>
+</header>
+
+<main>
+  <section id="start">
+    <div class="muted" style="margin-top:8px">Biology · Unit 6: Ecology · Lab simulation for students who missed the lab · about 35 minutes</div>
+    <h1>Owl Pellet Lab: Build a Food Web (simulation)</h1>
+    <p class="muted" style="font-size:18px;max-width:42em">Take apart a virtual barn owl pellet, identify the prey from their skulls and jaws, and build a food web from what you find.</p>
+    <div class="card"><h3>How it works</h3>
+      <p style="margin:0">Each problem gets <b>two tries</b>. Right on either try earns full credit. If your first try is wrong, you'll be told it isn't right yet (but not the answer), so look again and try once more. Wrong twice and the problem is marked wrong and locks. Stuck? Tap <b>Hint</b> before you check.</p></div>
+    <div class="card nostore" id="noStore" hidden><h3>This browser can't save your work</h3><p style="margin:0">You may be in guest or incognito mode. Sign in to your school account and open the worksheet again.</p></div>
+    <div class="card">
+      <h3 id="signinTitle">Sign in to start</h3>
+      <div id="resumeBox" hidden><p id="resumeText"></p>
+        <div class="btnrow"><button class="btn primary" id="resumeBtn" type="button">Continue my lab</button><button class="btn ghost small" id="notMeBtn" type="button">Not you? Sign in as a different student</button></div>
+        <div class="fb no" id="resumeErr" hidden></div></div>
+      <div id="startForm">
+        <div class="formgrid">
+          <label class="field">First name<input id="fFirst" autocomplete="off"></label><label class="field">Last name<input id="fLast" autocomplete="off"></label>
+          <label class="field">Student ID<input id="fId" inputmode="numeric" autocomplete="off"></label>
+          <label class="field">Period<select id="fPeriod"></select></label><label class="field">Teacher<select id="fTeacher"></select></label>
+        </div>
+        <p class="small muted">Your work saves as you go. On any Chromebook, sign in with the same student ID and last name to pick up where you left off.</p>
+        <div class="fb no" id="formErr" hidden></div>
+        <div class="btnrow"><button class="btn primary" type="button" id="startBtn">Start the lab</button></div>
+      </div>
+    </div>
+    <p style="text-align:center"><button class="btn ghost" id="teacherLink" type="button">Teacher: enter unlock code</button></p>
+  </section>
+  <div id="ws" hidden></div>
+</main>
+
+<div class="overlay" id="teachOv" role="dialog" aria-modal="true" aria-labelledby="tTitle">
+  <div class="modal"><div id="teachLogin"><h2 id="tTitle">Teacher</h2>
+    <div class="btnrow"><input class="code" id="teachCode" type="password" placeholder="Teacher code" autocomplete="off"><button class="btn primary" id="teachGo" type="button">Open</button><button class="btn ghost" id="teachCancel" type="button">Close</button></div>
+    <div class="fb no" id="teachErr" hidden>That code didn't work.</div></div><div id="teachPanel" hidden></div></div>
+</div>
+<div class="overlay" id="tabOv" role="dialog" aria-modal="true"><div class="modal" style="max-width:520px"><h2>This lab is open in another tab</h2><p>To keep your newest work safe, this copy stopped saving. Close the extra tab, then reload this one.</p><div class="btnrow"><button class="btn primary" type="button" onclick="location.reload()">Reload with my newest work</button></div></div></div>
+
+<script src="sheets-config.js"></script>
+<script>
+(function(){
+'use strict';
+/* ============================== SETTINGS ============================== */
+const LESSON_TITLE='Food Webs and Energy Pyramids';           // unlock code = last word of this title
+const UNLOCK_CODE=LESSON_TITLE.trim().split(/\s+/).pop();
+const TEACHER_CODE='Teacher007';   // universal teacher-tools code
+const codeIs=(v,c)=>String(v||'').trim().toLowerCase()===String(c).toLowerCase();
+const WS_ID='bio-u6-owl-pellet-lab-sim', ACTIVITY='Owl Pellet Lab (simulation)';
+const BACKUP_URL='https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const SAVE_URL_BUILTIN='https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';
+const BACKUP_TEACHERS=['Austin','Mueller','McCue','Arce','Trimm','Garcia','Trimm/Callanan','Callanan'], BACKUP_PERIODS=['1','2','3','4','5','6','7','8'];
+const STORE='owlPelletLabSim_v1', RECS='owlPelletLabSim_records_v1';
+/* ===================================================================== */
+const teacherList=()=>{ try{ if(typeof TEACHERS!=='undefined'&&Array.isArray(TEACHERS)&&TEACHERS.length) return TEACHERS.map(String); }catch(e){} return BACKUP_TEACHERS; };
+const periodList=()=>{ try{ if(typeof PERIODS!=='undefined'&&Array.isArray(PERIODS)&&PERIODS.length) return PERIODS.map(String); }catch(e){} return BACKUP_PERIODS; };
+const sheetURL=()=>{ try{ if(typeof SHEETS_WEBHOOK_URL!=='undefined'&&SHEETS_WEBHOOK_URL&&String(SHEETS_WEBHOOK_URL).indexOf('PASTE')<0) return String(SHEETS_WEBHOOK_URL); }catch(e){} return BACKUP_URL; };
+const saveURL=()=>{ try{ if(typeof SAVE_WEBHOOK_URL!=='undefined'&&SAVE_WEBHOOK_URL&&String(SAVE_WEBHOOK_URL).indexOf('PASTE')<0) return String(SAVE_WEBHOOK_URL); }catch(e){} return SAVE_URL_BUILTIN; };
+const LOCKDOWN=false;   // worksheets never lock down
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const strip=s=>String(s).replace(/<[^>]+>/g,'');
+function h(tag,attrs,html){ const e=document.createElement(tag); if(attrs) for(const k in attrs){ if(attrs[k]===false||attrs[k]==null) continue; if(k==='class') e.className=attrs[k]; else if(k==='hidden') e.hidden=!!attrs[k]; else e.setAttribute(k,attrs[k]); } if(html!=null) e.innerHTML=html; return e; }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* ---------- state + saving ---------- */
+function fresh(){ return {ws:WS_ID, student:null, p:{}, ord:{}, locks:0, locked:false, lockOff:false, submittedAt:null, sentAt:null}; }
+let S; try{ S=JSON.parse(localStorage.getItem(STORE)); }catch(e){} if(!S||S.ws!==WS_ID) S=fresh();
+let STORAGE_OK=true, saveBlocked=false;
+try{ localStorage.setItem('__ps_t','1'); STORAGE_OK=localStorage.getItem('__ps_t')==='1'; localStorage.removeItem('__ps_t'); }catch(e){ STORAGE_OK=false; }
+function save(){
+  if(saveBlocked) return;
+  if(S.preview){ note('Preview: nothing is saved'); return; }
+  try{ const raw=localStorage.getItem(STORE); if(raw){ const st=JSON.parse(raw); if(st&&st.ws===WS_ID&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); return; } }
+    S.rev=(S.rev||0)+1; S.updatedAt=Date.now(); localStorage.setItem(STORE,JSON.stringify(S)); note(); cloudSave(false); }catch(e){}
+}
+window.addEventListener('storage',e=>{ if(e.key!==STORE||!e.newValue) return; try{ const st=JSON.parse(e.newValue); if(st&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); } }catch(_){} });
+const saveKey=st=>(String(st.id||'').replace(/\s+/g,'')+'-'+String(st.last||'').toLowerCase().replace(/[^a-z]/g,'')).toLowerCase();
+const checkedCount=st=>Object.values((st||S).p).filter(x=>x&&x.checked).length;
+let cloudTimer=null, cloudDirty=false, cloudBusy=false, cloudAt=null, cloudErr=false;
+const cloudOK=()=>!!saveURL()&&S.student&&!saveBlocked&&!S.preview;
+function cloudBody(){ const st=S.student||{}, sc=scoreAll();
+  return new URLSearchParams({code:saveKey(st), lesson:WS_ID, ver:String(S.updatedAt||Date.now()), prog:String((S.submittedAt?100000:0)+checkedCount(S)), studentId:st.id||'', lastName:st.last||'', firstName:st.first||'', period:st.period||'', teacher:st.teacher||'',
+    summary:S.submittedAt?`Turned in · ${sc.total}/${sc.max}`:`${checkedCount(S)} of ${PROBS.length} problems checked`, data:JSON.stringify(S)}); }
+function cloudSave(soon){ if(!cloudOK()) return; cloudDirty=true; if(soon){ clearTimeout(cloudTimer); cloudTimer=setTimeout(cloudFlush,1200); } else if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); }
+async function cloudFlush(){ cloudTimer=null; if(!cloudOK()||!cloudDirty) return; if(cloudBusy){ cloudTimer=setTimeout(cloudFlush,4000); return; } cloudBusy=true; cloudDirty=false;
+  try{ await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); cloudAt=new Date(); cloudErr=false; }catch(e){ cloudDirty=true; cloudErr=true; if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); } finally{ cloudBusy=false; note(); } }
+function cloudBeacon(){ if(!cloudOK()||!cloudDirty) return; try{ if(navigator.sendBeacon&&navigator.sendBeacon(saveURL(),cloudBody())) cloudDirty=false; }catch(e){} }
+async function cloudLoad(st){ const ctrl=new AbortController(), t=setTimeout(()=>ctrl.abort(),5000);
+  try{ const r=await fetch(saveURL()+'?'+new URLSearchParams({code:saveKey(st),lesson:WS_ID}),{signal:ctrl.signal}); const j=await r.json(); if(j&&j.found&&j.data){ const d=JSON.parse(j.data); if(d&&d.ws===WS_ID) return {status:'found',data:d}; } return {status:'none'}; }
+  catch(e){ return {status:'error'}; } finally{ clearTimeout(t); } }
+function adopt(ns){ let sr=0; try{ const raw=localStorage.getItem(STORE); if(raw) sr=JSON.parse(raw).rev||0; }catch(e){} ns.rev=Math.max(ns.rev||0,sr); S=ns; saveBlocked=false; save(); }
+function note(msg){ const n=$('#saveNote'); if(!n) return; const tm=d=>d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}); n.textContent=msg||(cloudErr?'✓ Saved on this Chromebook':'✓ Saved '+tm(new Date())+(cloudAt?' · backed up '+tm(cloudAt):'')); }
+document.addEventListener('visibilitychange',()=>{ if(document.hidden){ save(); cloudBeacon(); } });
+window.addEventListener('pagehide',()=>{ save(); cloudBeacon(); });
+
+/* ============================== DIAGRAMS ============================== */
+/* ============================== PROBLEMS ============================== */
+const PARTS=[
+ {k:'P1', label:'Setup', title:'Purpose and setup', min:12, icon:'<path d="M12 4c-4 0-7 3-7 7 0 5 3 9 7 9s7-4 7-9c0-4-3-7-7-7z"/><path d="M8.5 11a1.5 1.5 0 1 0 3 0M12.5 11a1.5 1.5 0 1 0 3 0"/><path d="M12 13v2"/><path d="M7 4l1.5 2.5M17 4l-1.5 2.5"/>'},
+ {k:'P2', label:'Predict', title:'Predict', min:5, icon:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z"/>'},
+ {k:'P3', label:'Experiment', title:'Experiment and data', min:18, icon:'<rect x="3.5" y="4" width="17" height="16" rx="2"/><path d="M3.5 9h17M3.5 14.5h17M10 4v16"/>'},
+ {k:'P4', label:'Analysis', title:'Analysis', min:15, icon:'<path d="M3 21h18"/><path d="M5 17l5-5 4 3 6-7"/>'},
+ {k:'P5', label:'Conclusion', title:'Conclusion (CER)', min:8, icon:'<path d="M4 4h12l4 4v12H4z"/><path d="M8 11h8M8 15h6"/>'},
+ {k:'P6', label:'Grade', title:'Your grade', min:1, icon:'<rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4V2.5h6V4"/><path d="M8.5 13l2.5 2.5 4.5-5"/>'}
+];
+const ico=(i,s)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PARTS[i].icon}</svg>`;
+const PROBS=[];   // every problem: {id, part, max, score(), key()}
+
+function probShell(parent, part, num, q, pts){
+  const box=h('div',{class:'prob'}); parent.appendChild(box);
+  box.innerHTML=`<div class="pq"><span class="pnum">${num}.</span> ${q} <span class="pts">(${pts} pt${pts>1?'s':''})</span></div>`;
+  return box;
+}
+function actions(box, o){ // Hint + Check buttons + feedback
+  const row=h('div',{class:'btnrow'}); const hb=h('button',{class:'btn ghost small',type:'button'},'Hint'); const cb=h('button',{class:'btn primary small',type:'button'},'Check');
+  row.append(hb,cb); box.appendChild(row);
+  const hint=h('div',{class:'hintbox',hidden:true},'💡 '+o.hint); box.appendChild(hint);
+  const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'}); box.appendChild(fb);
+  hb.addEventListener('click',()=>{ hint.hidden=!hint.hidden; });
+  return {row,hb,cb,hint,fb};
+}
+const st=id=>S.p[id]||(S.p[id]={});
+/* Two tries per problem. Right on try 1 or 2 = full credit. Wrong twice = marked wrong (credit for parts right on try 2).
+   The correct answer is never shown. */
+function gradeTry(P,res,max){ const n=res.filter(Boolean).length; P.tries=(P.tries||0)+1;
+  if(n===max){ P.first=max; P.checked=true; P.right=true; }
+  else if(P.tries>=2){ P.first=n; P.checked=true; P.right=false; }
+  return n===max; }
+function showTry(ui,P,max,doneText){
+  if(P.checked&&P.right){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML=`<b>Correct!</b> ${doneText||''}`; }
+  else if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`<b>Marked wrong.</b> You earned ${P.first} of ${max} point${max>1?'s':''}. Ask your teacher if you'd like to try it again.`; }
+  else if(P.tries===1){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=max>1?'<b>Not quite.</b> Something isn\'t right yet. You have <b>one more try</b>.':'<b>Not quite.</b> You have <b>one more try</b>.'; }
+  else ui.fb.hidden=true;
+  if(ui.cb) ui.cb.textContent=P.checked?'Checked':(P.tries===1?'Check (last try)':'Check'); }
+
+/* ---------- drag onto a diagram (or into equation slots) ---------- */
+function dragProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.zones.length);
+  let fig;
+  if(o.equation){ fig=h('div',{class:'eq'}); box.appendChild(fig); }
+  else { fig=h('div',{class:'figwrap'}); fig.innerHTML=o.svg; box.appendChild(fig); }
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.chips.map((_,i)=>i)));
+  const zoneEls={};
+  const groupAns=g=>o.zones.filter(z=>z.group===g).map(z=>z.ans);
+  if(o.equation){ o.layout.forEach(item=>{ if(typeof item==='string'){ fig.appendChild(h('span',null,item)); } else { const z=o.zones[item]; const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans}); fig.appendChild(b); zoneEls[z.id]=b; } }); }
+  else o.zones.forEach(z=>{ const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans});
+    b.style.left=(z.x/o.vb[0]*100)+'%'; b.style.top=(z.y/o.vb[1]*100)+'%'; b.style.width=((z.w||130)/o.vb[0]*100)+'%'; fig.appendChild(b); zoneEls[z.id]=b; });
+  function placedChips(){ return new Set(Object.values(P.place)); }
+  function render(){
+    const used=placedChips();
+    pool.innerHTML='<div class="lbl">Tap a label, then tap a box (or drag it). Tap a filled box to take its label back.</div>';
+    order.forEach(ci=>{ if(used.has(ci)) return; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true'},o.chips[ci]); c.disabled=!!P.checked;
+      c.addEventListener('click',()=>{ sel=sel===ci?null:ci; render(); });
+      c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+      pool.appendChild(c); });
+    if(P.checked&&!pool.querySelector('.chip')) pool.hidden=true;
+    o.zones.forEach(z=>{ const b=zoneEls[z.id]; const ci=P.place[z.id];
+      b.className='zone'+(ci==null?' empty':' filled')+(P.checked?' locked':'');
+      if(ci==null) b.innerHTML=z.ph||'drop here';
+      else b.innerHTML=o.chips[ci];
+      b.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; ui.hb.disabled=!!P.checked&&false;
+    showTry(ui,P,o.zones.length,o.done);
+  }
+  o.zones.forEach(z=>{ const b=zoneEls[z.id];
+    const drop=ci=>{ if(P.checked) return; if(ci==null){ if(P.place[z.id]!=null){ delete P.place[z.id]; save(); render(); } return; }
+      for(const k in P.place) if(P.place[k]===ci) delete P.place[k];
+      P.place[z.id]=ci; sel=null; save(); render(); };
+    b.addEventListener('click',()=>drop(sel));
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  ui.cb.addEventListener('click',()=>{
+    if(P.checked) return;
+    const empty=o.zones.filter(z=>P.place[z.id]==null).length;
+    if(empty){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill every box before you check. ${empty} still empty.`; return; }
+    const res={}; const usedInGroup={};
+    o.zones.forEach(z=>{ const t=o.chips[P.place[z.id]];
+      if(z.group){ const ans=groupAns(z.group); usedInGroup[z.group]=usedInGroup[z.group]||[]; const ok=ans.includes(t)&&!usedInGroup[z.group].includes(t); if(ok) usedInGroup[z.group].push(t); res[z.id]=ok; }
+      else res[z.id]=t===z.ans; });
+    gradeTry(P,Object.values(res),o.zones.length); save(); cloudSave(true); render(); refresh();
+  });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.zones.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- sort into bins ---------- */
+function binProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.items.length);
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const bins=h('div',{class:'bins',style:`grid-template-columns:repeat(${o.bins.length},minmax(0,1fr))`}); box.appendChild(bins);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.items.map((_,i)=>i)));
+  const binEls={};
+  o.bins.forEach(bn=>{ const b=h('div',{class:'bin',role:'button',tabindex:'0'},`<h4>${bn.label}</h4><div class="bchips"></div>`); bins.appendChild(b); binEls[bn.k]=b;
+    const drop=ci=>{ if(P.checked||ci==null) return; P.place[ci]=bn.k; sel=null; save(); render(); };
+    b.addEventListener('click',e=>{ if(e.target.closest('.chip')) return; drop(sel); });
+    b.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); drop(sel); } });
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  const binLabel=k=>(o.bins.find(b=>b.k===k)||{}).label;
+  function chipEl(ci,inBin){ const it=o.items[ci]; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true','data-key':binLabel(it.k)},it.t);
+    
+    c.disabled=!!P.checked;
+    c.addEventListener('click',e=>{ if(P.checked) return; if(inBin){ e.stopPropagation(); if(sel!=null&&sel!==ci){ P.place[sel]=P.place[ci]; sel=null; save(); render(); return; } delete P.place[ci]; save(); render(); return; } sel=sel===ci?null:ci; render(); });
+    c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+    return c; }
+  function render(){
+    pool.innerHTML='<div class="lbl">Tap an item, then tap the box it belongs in (or drag it). Tap a sorted item to take it back.</div>';
+    order.forEach(ci=>{ if(P.place[ci]==null) pool.appendChild(chipEl(ci,false)); });
+    pool.hidden=!!P.checked;
+    o.bins.forEach(bn=>{ const holder=$('.bchips',binEls[bn.k]); holder.innerHTML=''; order.forEach(ci=>{ if(P.place[ci]===bn.k) holder.appendChild(chipEl(ci,true)); }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,o.items.length,o.done);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const left=o.items.filter((_,i)=>P.place[i]==null).length;
+    if(left){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Sort every item before you check. ${left} still left.`; return; }
+    const res=o.items.map((it,i)=>P.place[i]===it.k); gradeTry(P,res,o.items.length); save(); cloudSave(true); render(); refresh(); });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.items.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- choice problems: one, two-part, or select-all ---------- */
+function choiceProblem(parent, o){   // o.parts: [{q, opts, ans (index or array for select-all)}]
+  const P=st(o.id); P.pick=P.pick||{};
+  const max=o.parts.length;
+  const box=probShell(parent,o.part,o.num,o.q,max);
+  const groups=[];
+  o.parts.forEach((pt,pi)=>{
+    const multi=Array.isArray(pt.ans);
+    if(pt.q) box.insertAdjacentHTML('beforeend',`<div style="margin:10px 0 4px">${pt.q}${multi?' <span class="small muted">(Select all that apply.)</span>':''}</div>`);
+    const ordKey=o.id+'_'+pi; const order=S.ord[ordKey]||(S.ord[ordKey]=shuffle(pt.opts.map((_,i)=>i)));
+    const wrap=h('div',{class:'opts'}); box.appendChild(wrap);
+    const btns={};
+    order.forEach((oi,pos)=>{ const correct=multi?pt.ans.includes(oi):oi===pt.ans;
+      const b=h('button',{class:'opt'+(multi?' multi':''),type:'button'},`<span class="L">${'ABCDEF'[pos]}</span><span>${pt.opts[oi]}</span>`); if(correct) b.dataset.key='1';
+      b.addEventListener('click',()=>{ if(P.checked) return; if(multi){ const s=new Set(P.pick[pi]||[]); s.has(oi)?s.delete(oi):s.add(oi); P.pick[pi]=[...s]; } else P.pick[pi]=oi; save(); paint(); });
+      wrap.appendChild(b); btns[oi]=b; });
+    groups.push({pt,multi,btns});
+  });
+  const ui=actions(box,o);
+  function gradePart(g,pi){ const pk=P.pick[pi]; if(g.multi){ const s=new Set(pk||[]); return g.pt.ans.length===s.size&&g.pt.ans.every(a=>s.has(a)); } const ans=g.pt.ansFn?g.pt.ansFn():g.pt.ans; return pk===ans; }
+  function paint(){
+    groups.forEach((g,pi)=>{ const pk=P.pick[pi];
+      Object.entries(g.btns).forEach(([oi,b])=>{ oi=+oi; const picked=g.multi?(pk||[]).includes(oi):pk===oi; const correct=g.multi?g.pt.ans.includes(oi):oi===g.pt.ans;
+        b.className='opt'+(g.multi?' multi':'')+(picked?' sel':'')+(P.checked&&P.right&&picked?' ok':''); b.disabled=!!P.checked; }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,max,o.why);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const blank=groups.some((g,pi)=>g.multi?!(P.pick[pi]||[]).length:P.pick[pi]==null);
+    if(blank){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Answer every part before you check.'; return; }
+    gradeTry(P,groups.map((g,pi)=>gradePart(g,pi)),max); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- typed blanks (two tries, like every problem) ---------- */
+function typedProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.blanks.length);
+  const inputs=o.blanks.map((bl,i)=>{ const row=h('div',{class:'brow'}); row.innerHTML=`${bl.before} <input class="blank" type="text" aria-label="${esc(strip(bl.before))}" data-key="${esc(bl.show)}"><span class="keytxt">${bl.show}</span> ${bl.after||''}`; box.appendChild(row);
+    const inp=$('input',row); inp.value=P.val[i]||''; inp.addEventListener('input',()=>{ P.val[i]=inp.value; save(); }); return inp; });
+  const ui=actions(box,o);
+  const ok=(bl,v)=>{ v=String(v||'').trim().toLowerCase(); if(bl.calc){ const n=parseFloat(v.replace(/[\u2212\u2013\u2014]/g,'-').replace(/[^0-9.\-]/g,'')); const t=bl.calc(); return !isNaN(n)&&t!=null&&!isNaN(t)&&Math.abs(n-t)<=(bl.tol==null?0.15:bl.tol); } if(bl.num){ const n=parseFloat(v.replace(/[\u2212\u2013\u2014]/g,'-').replace(/[^0-9.\-]/g,'')); return !isNaN(n)&&n>=bl.num[0]&&n<=bl.num[1]; } return bl.accept.some(a=>v.replace(/\s+/g,' ')===a); };
+  function paint(){ inputs.forEach(inp=>{ inp.classList.remove('ok','no'); if(P.checked&&P.right) inp.classList.add('ok'); inp.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; showTry(ui,P,o.blanks.length,''); }
+  ui.cb.addEventListener('click',()=>{
+    if(inputs.some(inp=>!inp.value.trim())){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Fill in every blank before you check.'; return; }
+    if(P.checked) return;
+    const res=o.blanks.map((bl,i)=>ok(bl,inputs[i].value));
+    gradeTry(P,res,o.blanks.length); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.blanks.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- written answer, scored by key ideas (two tries, like every problem) ---------- */
+function writtenProblem(parent, o){
+  const P=st(o.id); if(P.val==null) P.val='';
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const ta=h('textarea',{class:'wtext',rows:'5','aria-label':'Your answer','data-key':o.model}); ta.value=P.val; box.appendChild(ta);
+  box.appendChild(h('div',{class:'wkey'},'<b>Key:</b> '+o.model));
+  if(o.bank){ const wb=h('div',{class:'wbank2'}); wb.innerHTML='<b>Word bank</b> <span class="small muted">(tap a word to add it)</span><br>'+o.bank.map(w=>`<button type="button" class="wchip">${w}</button>`).join('');
+    box.appendChild(wb);
+    wb.querySelectorAll('.wchip').forEach(c=>c.addEventListener('click',()=>{ if(ta.disabled) return; const w=c.textContent; const a=ta.selectionStart??ta.value.length, b=ta.selectionEnd??ta.value.length;
+      const before=ta.value.slice(0,a), after=ta.value.slice(b); const pre=(before&&!/\s$/.test(before))?' ':''; const ins=pre+w+' ';
+      ta.value=before+ins+after; ta.focus(); const p=a+ins.length; ta.setSelectionRange(p,p); ta.dispatchEvent(new Event('input',{bubbles:true})); })); }
+  ta.addEventListener('input',()=>{ P.val=ta.value; save(); });
+  const ui=actions(box,o);
+  const grade=()=>{ const t=ta.value.toLowerCase(); const hits=o.groups.filter(g=>g[1].test(t)).length; const n=Math.min(o.pts,hits); return Array.from({length:o.pts},(_,i)=>i<n); };
+  function paint(){ ta.disabled=!!P.checked; ui.cb.disabled=!!P.checked; showTry(ui,P,o.pts,o.why); }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(ta.value.trim().split(/\s+/).length<5){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Write a full answer (at least one complete sentence) before you check.'; return; }
+    gradeTry(P,grade(),o.pts); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- predictions: saved once, completion credit, never marked wrong ---------- */
+function predictProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.rows.length);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb predtab"><tr><th>${o.rowsLabel||'Tube'}</th><th>Setup</th><th>My prediction</th></tr>${o.rows.map((r,i)=>`<tr><td><b>${r.id}</b></td><td>${r.desc}</td><td><select data-i="${i}" aria-label="Prediction for ${r.id}"><option value="">choose…</option>${o.choices.map(c=>`<option>${c}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select')];
+  sels.forEach((sl,i)=>{ sl.value=P.val[i]||''; sl.addEventListener('change',()=>{ P.val[i]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Lock in my predictions';
+  function paint(){ sels.forEach(sl=>sl.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Predictions saved.</b> You\'ll compare them with your results later. Your observation table on page 3 is now unlocked.'; ui.cb.textContent='Predictions locked'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(sels.some(sl=>!sl.value)){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Choose a prediction for every tube first.'; return; }
+    if(!confirm('Lock in your predictions? You can\'t change them after this.')) return;
+    P.first=o.rows.length; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.rows.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- lab data table: groups type their own measurements; graph builds from them ---------- */
+function dataTableProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const cells=o.rows.length*o.cols.length;
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb datatab"><tr><th>${o.corner}</th>${o.cols.map(c=>`<th>${c}</th>`).join('')}</tr>${o.rows.map((r,i)=>`<tr><td><b>${r}</b></td>${o.cols.map((c,j)=>`<td><input class="dcell" inputmode="decimal" data-r="${i}" data-c="${j}" aria-label="${r}, ${c}"></td>`).join('')}</tr>`).join('')}</table>`;
+  const ins=[...wrap.querySelectorAll('input.dcell')];
+  const chart=h('div',{class:'datachart'}); box.appendChild(chart);
+  ins.forEach(inp=>{ const k=inp.dataset.r+'_'+inp.dataset.c; inp.value=P.val[k]??''; inp.addEventListener('input',()=>{ P.val[k]=inp.value; save(); draw(); }); });
+  function draw(){ chart.innerHTML=o.chart(P.val); }
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Save my data';
+  function paint(){ ins.forEach(i=>i.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Data saved.</b> Your analysis questions use these numbers.'; ui.cb.textContent='Data saved'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const bad=ins.filter(i=>i.value.trim()===''||isNaN(parseFloat(i.value)));
+    if(bad.length){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill in every box with a number first (${bad.length} still empty).`; bad[0].focus(); return; }
+    if(!confirm('Save your data? You can\'t change it after this, and your analysis will use these numbers.')) return;
+    P.first=o.pts; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  draw(); paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- observation table: each row has its own menu; completion credit when saved ---------- */
+function obsTableProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb datatab"><tr><th>Observation</th><th>What you saw</th></tr>${o.rows.map((r,i)=>`<tr><td>${r.q}</td><td><select class="ocell" data-r="${i}" aria-label="${r.q.replace(/<[^>]+>/g,'')}"><option value="">choose…</option>${r.opts.map(x=>`<option>${x}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select.ocell')];
+  sels.forEach(sl=>{ const k=sl.dataset.r; sl.value=P.val[k]||''; sl.addEventListener('change',()=>{ P.val[k]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Save my observations';
+  function paint(){ sels.forEach(s=>s.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Observations saved.</b> Your analysis questions use them.'; ui.cb.textContent='Observations saved'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const bad=sels.filter(s=>!s.value); if(bad.length){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Choose an answer in every row first (${bad.length} still empty).`; return; }
+    if(!confirm('Save your observations? You can\'t change them after this, and your analysis will use them.')) return;
+    P.first=o.pts; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ============================== WORKSHEET CONTENT ============================== */
+/* ===== Owl Pellet Lab: drawings (skulls, jaws, bones, barn owl, pellet, skeleton) ===== */
+let UIDN=0; const uid=p=>p+'_'+(++UIDN);
+const f1=v=>(+v).toFixed(1);
+function rng(seed){ let s=seed%233280; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
+function hashStr(s){ let x=2166136261; for(const ch of String(s)){ x^=ch.charCodeAt(0); x=Math.imul(x,16777619); } return x>>>0; }
+function mulberry(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+const stx=(x,y,t,fs,col,anchor,bold)=>`<text x="${x}" y="${y}" text-anchor="${anchor||'middle'}" font-size="${fs||14}" fill="${col||'#e8eef8'}"${bold?' font-weight="700"':''}>${t}</text>`;
+
+const U=40;   // drawing units per centimeter for skulls, jaws, and bones
+const PREY=[
+  {k:'vole', name:'Vole', col:'#f5a524', cm:2.6, jcm:1.8},
+  {k:'mouse', name:'Mouse', col:'#45c8f0', cm:2.2, jcm:1.45},
+  {k:'shrew', name:'Shrew', col:'#f472b6', cm:1.9, jcm:1.2},
+  {k:'rat', name:'Rat or gopher', col:'#5fe3a9', cm:4.0, jcm:2.8},
+  {k:'bird', name:'Bird', col:'#a78bfa', cm:3.0, jcm:0}];
+const PREY_ROWS=PREY.map(p=>p.name);
+const BONE='#efe6d0', BONE2='#e2d5b8', BEDGE='#76654b', DARK='#4a3d2e';
+function boneGrad(id){ return `<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f8f2e3"/><stop offset=".6" stop-color="${BONE}"/><stop offset="1" stop-color="#d7c8a6"/></linearGradient>`; }
+
+/* ---------- teeth ---------- */
+function molars(x0,x1,yr,ye,style,n){ // root edge yr, chewing edge ye (works up or down)
+  const w=(x1-x0)/n, d=ye-yr; let g='';
+  for(let i=0;i<n;i++){ const a=x0+i*w+w*0.04, b=x0+(i+1)*w-w*0.04, sc=i===n-1?0.85:1, e=yr+d*sc;
+    if(style==='zig'){ const k=4, pts=[[a,yr]]; for(let j=1;j<=k;j++) pts.push([a+(j%2?w*0.12:0),yr+(e-yr)*j/k]); for(let j=k;j>=0;j--) pts.push([b-(j%2?w*0.12:0),yr+(e-yr)*j/k]);
+      g+=`<path d="M${pts.map(p=>f1(p[0])+','+f1(p[1])).join(' L')} Z" fill="#f4ecd8" stroke="#5f4f38" stroke-width="1"/>`;
+      g+=`<path d="M${f1(a+w*0.32)},${f1(yr+d*0.08)} L${f1(a+w*0.32)},${f1(e-d*0.05)} M${f1(a+w*0.62)},${f1(yr+d*0.08)} L${f1(a+w*0.62)},${f1(e-d*0.05)}" stroke="#a08c66" stroke-width=".9"/>`; }
+    else { const m=(a+b)/2, bump=d*0.28;
+      g+=`<path d="M${f1(a)},${f1(yr)} L${f1(a)},${f1(e-bump)} Q${f1(a+(m-a)/2)},${f1(e+bump*0.5)} ${f1(m)},${f1(e-bump)} Q${f1(m+(b-m)/2)},${f1(e+bump*0.5)} ${f1(b)},${f1(e-bump)} L${f1(b)},${f1(yr)} Z" fill="#f4ecd8" stroke="#5f4f38" stroke-width="1"/>`; } }
+  return g; }
+function shrewTeeth(x0,x1,yr,ye,n,big){ const w=(x1-x0)/n, d=ye-yr; let g='';
+  for(let i=0;i<n;i++){ const a=x0+i*w, b=a+w*0.92, m=(a+b)/2, hh=d*(big&&i>n-4?1:0.7);
+    g+=`<path d="M${f1(a)},${f1(yr)} L${f1(m)},${f1(yr+hh)} L${f1(b)},${f1(yr)} Z" fill="#f2eadb" stroke="#5f4f38" stroke-width=".8"/>`;
+    g+=`<path d="M${f1(a+(m-a)*0.55)},${f1(yr+hh*0.55)} L${f1(m)},${f1(yr+hh)} L${f1(b-(b-m)*0.55)},${f1(yr+hh*0.55)} Z" fill="#8a2a17"/>`; }
+  return g; }
+
+/* ---------- skulls: side view, snout to the LEFT, teeth edge at y=0 ---------- */
+const RODENT={vole:{hr:.54,inc:'#d97a1e',mol:'zig',nm:3}, mouse:{hr:.45,inc:'#e0a23a',mol:'cusp',nm:3}, rat:{hr:.42,inc:'#c8621a',mol:'cusp',nm:3}};
+function rodentSkull(t){ const p=PREY.find(q=>q.k===t), R=RODENT[t], L=p.cm*U, H=L*R.hr, id=uid('sk');
+  const P=(x,y)=>f1(x*L)+','+f1(y*H);
+  const snout=t==='mouse'?1.08:t==='vole'?0.94:1;   // mouse: long thin snout; vole: short, blunt
+  const X=x=>x<0.5?x*snout-(snout-1)*0.5*0:x;
+  let g=`<defs>${boneGrad(id)}</defs>`;
+  g+=`<path d="M${P(X(0),-.44)} C${P(X(.15),-.64)} ${P(.33,-.82)} ${P(.52,-.92)} C${P(.70,-1.02)} ${P(.92,-.97)} ${P(1.0,-.64)} C${P(1.02,-.44)} ${P(.98,-.30)} ${P(.93,-.23)} C${P(.88,-.08)} ${P(.79,-.07)} ${P(.74,-.19)} L${P(.62,-.27)} L${P(.30,-.29)} C${P(.22,-.31)} ${P(.17,-.25)} ${P(X(.11),-.31)} L${P(X(.04),-.31)} C${P(X(0),-.34)} ${P(X(-.01),-.39)} ${P(X(0),-.44)} Z" fill="url(#${id})" stroke="${BEDGE}" stroke-width="1.4"/>`;
+  g+=`<ellipse cx="${f1(.45*L)}" cy="${f1(-.6*H)}" rx="${f1(.1*L)}" ry="${f1(.17*H)}" fill="${DARK}" opacity=".75"/>`;
+  g+=`<path d="M${P(.29,-.42)} C${P(.36,-.33)} ${P(.50,-.33)} ${P(.63,-.48)}" stroke="${BEDGE}" stroke-width="${f1(.075*H+1.5)}" fill="none" stroke-linecap="round"/><path d="M${P(.29,-.42)} C${P(.36,-.33)} ${P(.50,-.33)} ${P(.63,-.48)}" stroke="${BONE}" stroke-width="${f1(.075*H)}" fill="none" stroke-linecap="round"/>`;
+  g+=`<ellipse cx="${f1(.84*L)}" cy="${f1(-.2*H)}" rx="${f1(.07*L)}" ry="${f1(.09*H)}" fill="${BONE2}" stroke="${BEDGE}" stroke-width="1"/>`;
+  g+=`<path d="M${P(X(.03),-.42)} C${P(X(.12),-.52)} ${P(.25,-.62)} ${P(.35,-.70)} M${P(.6,-.95)} C${P(.66,-.82)} ${P(.72,-.75)} ${P(.84,-.74)} M${P(.12,-.36)} L${P(.24,-.46)}" stroke="#a8946d" stroke-width="1" fill="none"/>`;
+  g+=`<ellipse cx="${f1(X(.04)*L)}" cy="${f1(-.38*H)}" rx="${f1(.025*L)}" ry="${f1(.04*H)}" fill="${DARK}" opacity=".6"/>`;
+  const iw=t==='rat'?1.35:1;
+  g+=`<path d="M${P(X(.07),-.31)} C${P(X(.04)-.01*iw,-.22)} ${P(X(.05),-.10)} ${P(X(.11),-.01)} L${P(X(.11)+.035*iw,-.04)} C${P(X(.10)+.01*iw,-.13)} ${P(X(.10)+.01*iw,-.23)} ${P(X(.13)+.01*iw,-.30)} Z" fill="${R.inc}" stroke="#6b3a12" stroke-width="1"/>`;
+  g+=molars(.31*L,.60*L,-.285*H,-.12*H,R.mol,R.nm);
+  return {g, bb:[-0.03*L,-1.06*H,1.09*L,1.1*H]}; }
+function shrewSkull(){ const p=PREY.find(q=>q.k==='shrew'), L=p.cm*U, H=L*0.47, id=uid('sk'); const P=(x,y)=>f1(x*L)+','+f1(y*H);
+  let g=`<defs>${boneGrad(id)}</defs>`;
+  g+=`<path d="M${P(.02,-.34)} C${P(.18,-.44)} ${P(.38,-.56)} ${P(.55,-.80)} C${P(.66,-1.0)} ${P(.9,-1.02)} ${P(1.0,-.72)} C${P(1.03,-.48)} ${P(.96,-.30)} ${P(.86,-.26)} L${P(.58,-.24)} L${P(.06,-.22)} C${P(.02,-.24)} ${P(.0,-.29)} ${P(.02,-.34)} Z" fill="url(#${id})" stroke="${BEDGE}" stroke-width="1.3"/>`;
+  g+=`<path d="M${P(.06,-.32)} C${P(.2,-.4)} ${P(.36,-.48)} ${P(.5,-.62)} M${P(.62,-.9)} C${P(.7,-.78)} ${P(.8,-.74)} ${P(.92,-.74)}" stroke="#a8946d" stroke-width="1" fill="none"/>`;
+  g+=`<ellipse cx="${f1(.48*L)}" cy="${f1(-.44*H)}" rx="${f1(.03*L)}" ry="${f1(.06*H)}" fill="${DARK}" opacity=".55"/>`;
+  g+=`<path d="M${P(.03,-.26)} C${P(-.03,-.2)} ${P(-.06,-.08)} ${P(-.05,.02)} L${P(.0,-.05)} C${P(.01,-.13)} ${P(.04,-.19)} ${P(.08,-.23)} Z" fill="#f2eadb" stroke="#5f4f38" stroke-width=".9"/><path d="M${P(-.055,-.06)} L${P(-.05,.02)} L${P(-.012,-.03)} Z" fill="#8a2a17"/>`;
+  g+=shrewTeeth(.09*L,.6*L,-.225*H,-.02*H,9,true);
+  return {g, bb:[-0.09*L,-1.08*H,1.15*L,1.14*H]}; }
+function birdSkull(){ const p=PREY.find(q=>q.k==='bird'), L=p.cm*U, H=L*0.46, id=uid('sk'); const P=(x,y)=>f1(x*L)+','+f1(y*H);
+  let g=`<defs>${boneGrad(id)}</defs>`;
+  g+=`<path d="M${P(.46,-.30)} C${P(.30,-.30)} ${P(.12,-.33)} ${P(.03,-.36)} C${P(.14,-.24)} ${P(.32,-.14)} ${P(.52,-.12)} Z" fill="#ddcfae" stroke="${BEDGE}" stroke-width="1.1"/>`;
+  g+=`<path d="M${P(.42,-.74)} C${P(.30,-.70)} ${P(.12,-.52)} ${P(.0,-.37)} C${P(.14,-.35)} ${P(.30,-.33)} ${P(.46,-.31)} Z" fill="#e6d9bb" stroke="${BEDGE}" stroke-width="1.2"/>`;
+  g+=`<ellipse cx="${f1(.25*L)}" cy="${f1(-.5*H)}" rx="${f1(.035*L)}" ry="${f1(.045*H)}" fill="${DARK}" opacity=".6"/>`;
+  g+=`<circle cx="${f1(.72*L)}" cy="${f1(-.52*H)}" r="${f1(.28*L)}" fill="url(#${id})" stroke="${BEDGE}" stroke-width="1.2"/>`;
+  g+=`<circle cx="${f1(.62*L)}" cy="${f1(-.5*H)}" r="${f1(.15*L)}" fill="${DARK}" opacity=".72" stroke="${BEDGE}" stroke-width="1.5"/>`;
+  g+=`<circle cx="${f1(.62*L)}" cy="${f1(-.5*H)}" r="${f1(.10*L)}" fill="none" stroke="#cdbf9e" stroke-width="1" stroke-dasharray="2 2"/>`;
+  g+=`<path d="M${P(.52,-.18)} C${P(.62,-.10)} ${P(.78,-.12)} ${P(.92,-.22)}" stroke="${BEDGE}" stroke-width="1" fill="none"/>`;
+  return {g, bb:[-0.02*L,-1.12*H,1.04*L,1.1*H]}; }
+function skullArt(t){ return t==='shrew'?shrewSkull():t==='bird'?birdSkull():rodentSkull(t); }
+
+/* ---------- lower jaw halves: side view, front to the LEFT ---------- */
+function rodentJaw(t){ const p=PREY.find(q=>q.k===t), R=RODENT[t], J=p.jcm*U, H=J*0.48, id=uid('jw'); const P=(x,y)=>f1(x*J)+','+f1(y*H);
+  let g=`<defs>${boneGrad(id)}</defs>`;
+  g+=`<path d="M${P(.07,-.30)} C${P(.10,-.02)} ${P(.40,.06)} ${P(.62,.0)} C${P(.78,-.03)} ${P(.90,.04)} ${P(1.0,.10)} C${P(.93,-.08)} ${P(.90,-.22)} ${P(.95,-.44)} L${P(.99,-.54)} C${P(.94,-.60)} ${P(.88,-.52)} ${P(.86,-.44)} C${P(.83,-.58)} ${P(.79,-.80)} ${P(.75,-.94)} C${P(.70,-.76)} ${P(.66,-.52)} ${P(.60,-.36)} L${P(.30,-.36)} C${P(.22,-.33)} ${P(.14,-.31)} ${P(.07,-.30)} Z" fill="url(#${id})" stroke="${BEDGE}" stroke-width="1.3"/>`;
+  g+=`<path d="M${P(.2,-.12)} C${P(.4,-.05)} ${P(.6,-.1)} ${P(.8,-.2)}" stroke="#b9a57e" stroke-width="1" fill="none"/><circle cx="${f1(.72*J)}" cy="${f1(-.3*H)}" r="${f1(.025*J)}" fill="${DARK}" opacity=".6"/>`;
+  const iw=t==='rat'?1.3:1;
+  g+=`<path d="M${P(.15,-.31)} C${P(.07,-.38)} ${P(.0,-.48)} ${P(-.09,-.64)} L${P(-.09+.045*iw,-.67)} C${P(.04,-.52)} ${P(.11,-.44)} ${P(.2,-.37)} Z" fill="${R.inc}" stroke="#6b3a12" stroke-width="1"/>`;
+  g+=molars(.31*J,.58*J,-.36*H,-.52*H,R.mol,R.nm);
+  return {g, bb:[-0.11*J,-1.0*H,1.14*J,1.16*H]}; }
+function shrewJaw(){ const p=PREY.find(q=>q.k==='shrew'), J=p.jcm*U, H=J*0.42, id=uid('jw'); const P=(x,y)=>f1(x*J)+','+f1(y*H);
+  let g=`<defs>${boneGrad(id)}</defs>`;
+  g+=`<path d="M${P(.08,-.26)} C${P(.12,-.04)} ${P(.44,.02)} ${P(.7,-.02)} C${P(.84,-.04)} ${P(.95,.0)} ${P(1.0,.04)} C${P(.94,-.12)} ${P(.92,-.3)} ${P(.96,-.48)} L${P(.99,-.56)} C${P(.94,-.62)} ${P(.9,-.56)} ${P(.88,-.48)} C${P(.86,-.66)} ${P(.84,-.86)} ${P(.82,-1.0)} C${P(.76,-.8)} ${P(.72,-.56)} ${P(.66,-.32)} L${P(.12,-.30)} Z" fill="url(#${id})" stroke="${BEDGE}" stroke-width="1.2"/>`;
+  g+=`<path d="M${P(.12,-.28)} C${P(.0,-.33)} ${P(-.12,-.40)} ${P(-.22,-.44)} L${P(-.2,-.5)} C${P(-.1,-.47)} ${P(.04,-.42)} ${P(.16,-.34)} Z" fill="#f2eadb" stroke="#5f4f38" stroke-width=".9"/><path d="M${P(-.22,-.44)} L${P(-.2,-.5)} L${P(-.15,-.47)} Z" fill="#8a2a17"/>`;
+  g+=shrewTeeth(.16*J,.66*J,-.3*H,-.58*H,7,true);
+  return {g, bb:[-0.25*J,-1.06*H,1.29*J,1.14*H]}; }
+function jawArt(t){ return t==='shrew'?shrewJaw():rodentJaw(t); }
+
+/* ---------- other bones (length in cm) ---------- */
+function longBone(cm){ const L=cm*U, id=uid('lb'); const r=L*0.07;
+  const g=`<defs>${boneGrad(id)}</defs><path d="M${f1(r*1.6)},${f1(-r*0.5)} L${f1(L-r*1.8)},${f1(-r*0.45)} C${f1(L-r*1.2)},${f1(-r*1.5)} ${f1(L)},${f1(-r*1.6)} ${f1(L)},${f1(-r*0.3)} C${f1(L+r*0.2)},${f1(r*0.8)} ${f1(L-r*0.8)},${f1(r*1.6)} ${f1(L-r*1.8)},${f1(r*0.5)} L${f1(r*1.6)},${f1(r*0.55)} C${f1(r*0.9)},${f1(r*1.6)} ${f1(-r*0.6)},${f1(r*1.2)} ${f1(-r*0.5)},${f1(0)} C${f1(-r*0.6)},${f1(-r*1.4)} ${f1(r*0.9)},${f1(-r*1.7)} ${f1(r*1.6)},${f1(-r*0.5)} Z" fill="url(#${id})" stroke="${BEDGE}" stroke-width="1.1"/><circle cx="${f1(r*0.2)}" cy="${f1(-r*0.3)}" r="${f1(r*0.75)}" fill="${BONE}" stroke="${BEDGE}" stroke-width=".9"/>`;
+  return {g, bb:[-r*1.2,-r*2,L+r*1.6,r*4]}; }
+function rib(cm){ const L=cm*U; const g=`<path d="M0,0 C${f1(L*.25)},${f1(-L*.32)} ${f1(L*.7)},${f1(-L*.3)} ${f1(L)},${f1(-L*.06)}" stroke="${BEDGE}" stroke-width="${f1(L*.075+1.6)}" fill="none" stroke-linecap="round"/><path d="M0,0 C${f1(L*.25)},${f1(-L*.32)} ${f1(L*.7)},${f1(-L*.3)} ${f1(L)},${f1(-L*.06)}" stroke="${BONE}" stroke-width="${f1(L*.075)}" fill="none" stroke-linecap="round"/><circle cx="0" cy="0" r="${f1(L*.06)}" fill="${BONE}" stroke="${BEDGE}" stroke-width=".9"/>`;
+  return {g, bb:[-L*.1,-L*.32,L*1.15,L*.42]}; }
+function vertebra(cm){ const L=cm*U, id=uid('vt');
+  const g=`<defs>${boneGrad(id)}</defs><path d="M${f1(-L*.5)},${f1(-L*.08)} L${f1(-L*.2)},${f1(-L*.22)} L${f1(-L*.14)},${f1(-L*.55)} L${f1(L*.14)},${f1(-L*.55)} L${f1(L*.2)},${f1(-L*.22)} L${f1(L*.5)},${f1(-L*.08)} L${f1(L*.48)},${f1(L*.1)} L${f1(L*.2)},${f1(L*.14)} L${f1(L*.16)},${f1(L*.4)} L${f1(-L*.16)},${f1(L*.4)} L${f1(-L*.2)},${f1(L*.14)} L${f1(-L*.48)},${f1(L*.1)} Z" fill="url(#${id})" stroke="${BEDGE}" stroke-width="1" stroke-linejoin="round"/><circle cx="0" cy="${f1(-L*.05)}" r="${f1(L*.11)}" fill="${DARK}" opacity=".7"/>`;
+  return {g, bb:[-L*.58,-L*.62,L*1.16,L*1.1]}; }
+function pelvis(cm){ const L=cm*U, H=L*0.34, id=uid('pv');
+  const g=`<defs>${boneGrad(id)}</defs><path d="M0,${f1(-H*.2)} C${f1(L*.2)},${f1(-H*.55)} ${f1(L*.45)},${f1(-H*.5)} ${f1(L*.55)},${f1(-H*.4)} C${f1(L*.7)},${f1(-H*.6)} ${f1(L*.92)},${f1(-H*.45)} ${f1(L)},${f1(-H*.1)} C${f1(L*.98)},${f1(H*.4)} ${f1(L*.75)},${f1(H*.55)} ${f1(L*.6)},${f1(H*.3)} C${f1(L*.45)},${f1(H*.2)} ${f1(L*.2)},${f1(H*.15)} 0,${f1(H*.1)} Z" fill="url(#${id})" stroke="${BEDGE}" stroke-width="1.1"/><ellipse cx="${f1(L*.76)}" cy="${f1(H*.02)}" rx="${f1(L*.11)}" ry="${f1(H*.22)}" fill="${DARK}" opacity=".75"/><circle cx="${f1(L*.55)}" cy="${f1(-H*.12)}" r="${f1(H*.17)}" fill="${BONE2}" stroke="${BEDGE}" stroke-width=".9"/>`;
+  return {g, bb:[-L*.05,-H*.7,L*1.1,H*1.35]}; }
+function scapula(cm){ const L=cm*U, id=uid('sc');
+  const g=`<defs>${boneGrad(id)}</defs><path d="M0,0 L${f1(L)},${f1(-L*.42)} C${f1(L*1.04)},${f1(-L*.15)} ${f1(L*1.02)},${f1(L*.18)} ${f1(L*.98)},${f1(L*.36)} Z" fill="url(#${id})" stroke="${BEDGE}" stroke-width="1.1" stroke-linejoin="round"/><path d="M${f1(L*.08)},${f1(-L*.01)} L${f1(L*.97)},${f1(-L*.04)}" stroke="${BEDGE}" stroke-width="${f1(L*.06)}" stroke-linecap="round"/><circle cx="0" cy="0" r="${f1(L*.07)}" fill="${BONE2}" stroke="${BEDGE}" stroke-width=".9"/>`;
+  return {g, bb:[-L*.1,-L*.5,L*1.15,L*.95]}; }
+function crushed(seed){ const r=mulberry(seed), id=uid('cr'); let g=`<defs>${boneGrad(id)}</defs>`;
+  for(let i=0;i<4;i++){ const cx=r()*26, cy=r()*16, n=5+Math.floor(r()*3); let d='';
+    for(let j=0;j<n;j++){ const a=j/n*Math.PI*2, rr=5+r()*7; d+=(j?'L':'M')+f1(cx+Math.cos(a)*rr)+','+f1(cy+Math.sin(a)*rr*0.8); }
+    g+=`<path d="${d}Z" fill="url(#${id})" stroke="${BEDGE}" stroke-width="1"/>`; if(i===1) g+=`<circle cx="${f1(cx)}" cy="${f1(cy)}" r="3" fill="${DARK}" opacity=".5"/>`; }
+  return {g, bb:[-12,-12,50,40]}; }
+/* one bone, as a standalone svg string */
+function boneSVG(b,h,extra){ const a=b.k==='skull'?skullArt(b.t):b.k==='jaw'?jawArt(b.t):b.k==='long'?longBone(b.cm):b.k==='rib'?rib(b.cm):b.k==='vert'?vertebra(b.cm):b.k==='pelvis'?pelvis(b.cm):b.k==='scap'?scapula(b.cm):crushed(b.s||1);
+  const [x,y,w,hh]=a.bb; return `<svg viewBox="${f1(x)} ${f1(y)} ${f1(w)} ${f1(hh)}"${h?` height="${h}"`:''} aria-hidden="true"${extra||''}>${a.g}</svg>`; }
+const boneW=b=>{ const a=b.k==='skull'?skullArt(b.t):b.k==='jaw'?jawArt(b.t):b.k==='long'?longBone(b.cm):b.k==='rib'?rib(b.cm):b.k==='vert'?vertebra(b.cm):b.k==='pelvis'?pelvis(b.cm):b.k==='scap'?scapula(b.cm):crushed(1); return a.bb; };
+/* place a drawing inside a box (x,y = top-left, w,h) keeping its shape */
+function fitG(a,x,y,w,h){ const [bx,by,bw,bh]=a.bb, s=Math.min(w/bw,h/bh); return `<g transform="translate(${f1(x+(w-bw*s)/2-bx*s)} ${f1(y+(h-bh*s)/2-by*s)}) scale(${(s).toFixed(3)})">${a.g}</g>`; }
+function scaleAt(a,x,y,s){ const [bx,by,bw,bh]=a.bb; return `<g transform="translate(${f1(x-bx*s)} ${f1(y-by*s)}) scale(${s.toFixed(3)})">${a.g}</g>`; }
+function scaleBar(x,y,px,col){ return `<g><line x1="${x}" y1="${y}" x2="${x+px}" y2="${y}" stroke="${col||'#334155'}" stroke-width="2.5"/><line x1="${x}" y1="${y-5}" x2="${x}" y2="${y+5}" stroke="${col||'#334155'}" stroke-width="2"/><line x1="${x+px}" y1="${y-5}" x2="${x+px}" y2="${y+5}" stroke="${col||'#334155'}" stroke-width="2"/>${stx(x+px/2,y-8,'1 cm',12,col||'#334155')}</g>`; }
+
+/* ---------- bone identification chart (reference: the student uses it to identify skulls and jaws) ---------- */
+function idChartSVG(){ const W=860,H=350, s=1.05, colW=W/5; // all drawn to the same scale
+  let sv=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Bone identification chart: side views of the skull and one lower jaw half of a vole, a mouse, a shrew, a rat or gopher, and a small bird, all drawn to the same scale."><rect width="${W}" height="${H}" rx="14" fill="#fbf8ef"/>`;
+  PREY.forEach((p,i)=>{ const cx=colW*i+colW/2; if(i) sv+=`<line x1="${colW*i}" y1="14" x2="${colW*i}" y2="${H-14}" stroke="#ddd3bd"/>`;
+    sv+=stx(cx,30,p.name,17,'#1f2937','middle',true);
+    const sk=skullArt(p.k), [bx,by,bw,bh]=sk.bb; sv+=scaleAt(sk,cx-bw*s/2,128-bh*s,s);
+    sv+=stx(cx,148,'skull',12,'#64748b');
+    if(p.jcm){ const jw=jawArt(p.k), [jx,jy,jww,jh]=jw.bb; sv+=scaleAt(jw,cx-jww*s/2,245-jh*s,s); sv+=stx(cx,266,'lower jaw (one half)',12,'#64748b'); }
+    else sv+=`<text x="${cx}" y="215" text-anchor="middle" font-size="12.5" fill="#64748b">no teeth: the lower</text><text x="${cx}" y="231" text-anchor="middle" font-size="12.5" fill="#64748b">beak is a thin "V"</text>`;
+    sv+=stx(cx,300,'skull about '+String(p.cm).replace('.0','')+' cm',12.5,'#334155'); });
+  sv+=scaleBar(W/2-U*s/2,H-14,U*s,'#334155');
+  return sv+'</svg>'; }
+const ID_CLUES=[
+  ['Vole','Orange front teeth, then a gap. Flat molars with <b>zigzag</b> edges. Short, blunt snout. Skull about 2.5 cm.'],
+  ['Mouse','Yellow-orange front teeth, then a gap. Molars with <b>round bumps</b>. Long, thin snout. Skull about 2 cm.'],
+  ['Shrew','<b>No gap.</b> A row of many small, pointed teeth with <b>dark red tips</b>. Long, narrow skull, about 2 cm.'],
+  ['Rat or gopher','Like a mouse but much <b>bigger</b>: skull 3.5 cm or more. Big orange front teeth.'],
+  ['Bird','A <b>beak</b> and no teeth. Very large eye holes. Thin, light bones.']];
+const ID_TABLE=`<div class="wide"><table class="nb opkey"><tr><th>Prey</th><th>Clues on the skull and jaw</th></tr>${ID_CLUES.map(([a,b])=>`<tr><td><b>${a}</b></td><td>${b}</td></tr>`).join('')}</table></div>`;
+
+/* ---------- barn owl (perched, facing the viewer; feet at y=+64) ---------- */
+function barnOwl(x,y,s){ const g1=uid('ow'), g2=uid('of'); const r=rng(41);
+  let g=`<defs><linearGradient id="${g1}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ddb06e"/><stop offset="1" stop-color="#a77a43"/></linearGradient><radialGradient id="${g2}" cx="50%" cy="40%" r="65%"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#eee2cf"/></radialGradient></defs>`;
+  g+=`<path d="M-20,58 L-6,74 L6,74 L20,58 Z" fill="#c69a5c" stroke="#7a5630" stroke-width="1"/>`;
+  g+=`<path d="M-26,-14 C-34,8 -30,42 -12,60 L12,60 C30,42 34,8 26,-14 C16,-26 -16,-26 -26,-14Z" fill="#f7f0e3" stroke="#b79a76" stroke-width="1"/>`;
+  for(let i=0;i<16;i++) g+=`<circle cx="${f1((r()-0.5)*36)}" cy="${f1(-4+r()*52)}" r="1" fill="#6b4a2e" opacity=".7"/>`;
+  const wing=sd=>`<path d="M${sd*24},-22 C${sd*40},-4 ${sd*40},34 ${sd*24},66 C${sd*16},50 ${sd*13},18 ${sd*15},-10Z" fill="url(#${g1})" stroke="#6e4c27" stroke-width="1"/>`+[0,1,2,3,4].map(i=>`<path d="M${sd*(20+i*1.5)},${8+i*11} C${sd*(28+i)},${6+i*11} ${sd*(30)},${10+i*11} ${sd*31},${13+i*11}" stroke="#8d8f93" stroke-width="2.4" fill="none" opacity=".75"/>`).join('')+[0,1,2,3,4,5].map(i=>`<circle cx="${sd*(22+(i%3)*5)}" cy="${-6+i*9}" r="1.1" fill="#fff"/>`).join('');
+  g+=wing(-1)+wing(1);
+  g+=`<ellipse cx="0" cy="-40" rx="31" ry="28" fill="url(#${g1})" stroke="#6e4c27" stroke-width="1"/>`;
+  for(let i=0;i<10;i++) g+=`<circle cx="${f1((r()-0.5)*44)}" cy="${f1(-62+r()*8)}" r="1.1" fill="#f8f3ea" opacity=".9"/>`;
+  g+=`<path d="M0,-58 C-11,-71 -34,-67 -32,-44 C-31,-24 -12,-11 0,-5 C12,-11 31,-24 32,-44 C34,-67 11,-71 0,-58Z" fill="url(#${g2})" stroke="#b5864e" stroke-width="2.6"/>`;
+  for(let i=0;i<9;i++){ const a=-2.6+i*0.32; g+=`<path d="M${f1(-12+Math.cos(a)*6)},${f1(-42+Math.sin(a)*6)} L${f1(-12+Math.cos(a)*17)},${f1(-42+Math.sin(a)*17)} M${f1(12-Math.cos(a)*6)},${f1(-42+Math.sin(a)*6)} L${f1(12-Math.cos(a)*17)},${f1(-42+Math.sin(a)*17)}" stroke="#e3d5bf" stroke-width=".8"/>`; }
+  g+=`<path d="M0,-57 C-2,-50 -2,-46 0,-40 C2,-46 2,-50 0,-57Z" fill="#d4b48c"/>`;
+  g+=`<ellipse cx="-12" cy="-42" rx="5" ry="5.6" fill="#1a120d"/><ellipse cx="12" cy="-42" rx="5" ry="5.6" fill="#1a120d"/><circle cx="-10.6" cy="-43.8" r="1.3" fill="#fff"/><circle cx="13.4" cy="-43.8" r="1.3" fill="#fff"/>`;
+  g+=`<path d="M0,-40 C-3.4,-34 -2.4,-28 0,-24 C2.4,-28 3.4,-34 0,-40Z" fill="#ead8bd" stroke="#a6875f" stroke-width=".9"/>`;
+  g+=`<path d="M-9,58 L-10,70 M9,58 L10,70" stroke="#f1e8da" stroke-width="7" stroke-linecap="round"/>`;
+  g+=`<path d="M-15,72 L-10,69 L-6,72 M-10,69 L-11,74 M6,72 L10,69 L15,72 M10,69 L11,74" stroke="#5a554f" stroke-width="2.2" fill="none" stroke-linecap="round"/>`;
+  return `<g transform="translate(${f1(x)} ${f1(y)}) scale(${s})">${g}</g>`; }
+/* ---------- owl pellet (side view) ---------- */
+function pelletG(x,y,s,rot,seed,o){ o=o||{}; const r=mulberry(seed||7), id=uid('pl');
+  let g=`<defs><radialGradient id="${id}" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#8a8178"/><stop offset="1" stop-color="#4b443e"/></radialGradient></defs>`;
+  g+=`<ellipse cx="2" cy="16" rx="34" ry="5" fill="#000" opacity=".18"/>`;
+  g+=`<path d="M-36,0 C-37,-13 -20,-18 -2,-17 C18,-19 37,-12 37,0 C38,12 20,17 0,16 C-20,17 -35,12 -36,0Z" fill="url(#${id})" stroke="#3a342f" stroke-width="1"/>`;
+  for(let i=0;i<46;i++){ const a=r()*Math.PI*2, rr=Math.sqrt(r()), px=Math.cos(a)*rr*32, py=Math.sin(a)*rr*13, an=r()*Math.PI*2, l=3+r()*5;
+    g+=`<path d="M${f1(px)},${f1(py)} q${f1(Math.cos(an)*l*0.6)},${f1(Math.sin(an)*l*0.6-1.5)} ${f1(Math.cos(an)*l)},${f1(Math.sin(an)*l)}" stroke="${['#9c948b','#3f3934','#b2a99f','#6d655d'][i%4]}" stroke-width=".9" fill="none"/>`; }
+  if(!o.noBone) g+=`<path d="M16,-8 L30,-14 C33,-15 35,-12 33,-10 L18,-4Z" fill="${BONE}" stroke="${BEDGE}" stroke-width=".8"/><path d="M-22,6 l-10,5" stroke="${BONE}" stroke-width="2.6" stroke-linecap="round"/>`;
+  return `<g transform="translate(${f1(x)} ${f1(y)}) rotate(${rot||0}) scale(${s})">${g}</g>`; }
+
+/* ---------- phenomenon scene: a Central Valley farm at dusk ---------- */
+function farmScene(){ const W=560,H=300, sk=uid('sky'), fd=uid('fd'), r=rng(23);
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="A barn owl perched on a fence post at the edge of a Central Valley farm field at dusk. A wooden owl nest box stands on a pole. A gray owl pellet lies on the ground below the post."><defs><linearGradient id="${sk}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#27335a"/><stop offset=".55" stop-color="#b9708a"/><stop offset="1" stop-color="#f0b37e"/></linearGradient><linearGradient id="${fd}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5d6b3a"/><stop offset="1" stop-color="#36401f"/></linearGradient></defs>`;
+  s+=`<rect width="${W}" height="${H}" rx="14" fill="url(#${sk})"/><circle cx="470" cy="56" r="16" fill="#fdf3d6" opacity=".95"/>`;
+  s+=`<path d="M0,160 C80,140 150,150 230,138 C320,126 400,146 ${W},134 L${W},176 L0,176Z" fill="#6c5f7c" opacity=".8"/>`;
+  s+=`<rect y="170" width="${W}" height="${H-170}" fill="url(#${fd})"/>`;
+  for(let i=0;i<14;i++){ const y0=176+i*i*0.7+i*4; s+=`<path d="M0,${f1(y0)} L${W},${f1(y0+2)}" stroke="#7c8a4c" stroke-width="${f1(1+i*0.25)}" opacity=".6"/>`; }
+  for(let i=0;i<70;i++){ const x=r()*W, y=180+r()*110; s+=`<path d="M${f1(x)},${f1(y)} l-2,-${f1(4+r()*6)} M${f1(x)},${f1(y)} l2,-${f1(4+r()*6)}" stroke="#93a35a" stroke-width="1" opacity=".7"/>`; }
+  s+=`<rect x="447" y="110" width="7" height="120" fill="#5b4632"/><path d="M425,78 L476,78 L482,90 L419,90Z" fill="#6e5236"/><rect x="424" y="90" width="53" height="44" fill="#8b6a46" stroke="#5b4632"/><circle cx="450" cy="110" r="7" fill="#1b140e"/><path d="M424,100 L477,100" stroke="#6e5236"/>`;
+  s+=`<path d="M0,214 L560,206" stroke="#6b5a45" stroke-width="2"/><path d="M0,228 L560,220" stroke="#6b5a45" stroke-width="2"/>`;
+  [40,330,520].forEach(x=>{ s+=`<rect x="${x}" y="196" width="9" height="62" fill="#6e5639" stroke="#3e2f20"/>`; });
+  s+=`<rect x="168" y="168" width="22" height="100" fill="#7a5f40" stroke="#3e2f20"/><path d="M172,176 l0,80 M184,172 l0,90" stroke="#5e4830" stroke-width="1"/>`;
+  s+=barnOwl(179,98,0.95);
+  s+=pelletG(222,272,0.62,-8,5);
+  s+=stx(16,290,'Central Valley farm at dusk',11,'#f4ead8','start');
+  return s+'</svg>'; }
+
+/* ---------- materials ---------- */
+const MAT_PIC=(()=>{ const lab=(x,y,t)=>stx(x,y,t,13.5,'#475569');
+  let s=`<svg viewBox="0 0 820 250" role="img" aria-label="Materials: an owl pellet wrapped in foil and one unwrapped on a tray, a wooden probe, forceps, a hand lens, gloves, a ruler, and a bone identification chart."><rect width="820" height="250" rx="14" fill="#f8fafc"/>`;
+  s+=`<rect x="22" y="40" width="200" height="140" rx="12" fill="#e9edf2" stroke="#94a3b8" stroke-width="1.5"/><rect x="30" y="48" width="184" height="124" rx="9" fill="#ffffff" stroke="#cbd5e1"/>`+pelletG(122,108,1.6,-6,9)+lab(122,206,'pellet on a tray');
+  s+=`<path d="M262,96 C252,70 276,58 300,66 C318,60 334,76 326,96 C334,116 312,130 294,122 C276,130 254,118 262,96Z" fill="#cbd2da" stroke="#8b96a3"/><path d="M270,84 L318,108 M276,112 L314,78" stroke="#e5e9ee" stroke-width="2"/>`+lab(294,150,'foil-wrapped pellet');
+  s+=`<g transform="translate(370 40)"><rect x="-4" y="0" width="8" height="120" rx="3" fill="#d6a86a" stroke="#8a5f2c"/><path d="M-1.5,120 L0,160 L1.5,120Z" fill="#9aa3ad" stroke="#5b636c" stroke-width=".8"/></g>`+lab(370,222,'probe');
+  s+=`<g transform="translate(430 40)"><path d="M-6,0 L-2,150 M6,0 L2,150" stroke="#7b8592" stroke-width="5" stroke-linecap="round"/><path d="M-6,0 L-2,150 M6,0 L2,150" stroke="#dfe4ea" stroke-width="1.6" stroke-linecap="round"/><rect x="-8" y="0" width="16" height="10" rx="3" fill="#5b636c"/></g>`+lab(430,222,'forceps');
+  s+=`<g transform="translate(510 90)"><circle r="34" fill="#dbeafe" opacity=".6" stroke="#1f2937" stroke-width="5"/><circle cx="-10" cy="-12" r="8" fill="#fff" opacity=".7"/><rect x="22" y="22" width="12" height="54" rx="5" transform="rotate(-45 28 28)" fill="#1f2937"/></g>`+lab(520,180,'hand lens');
+  s+=`<g transform="translate(606 70)"><path d="M-22,70 L-24,10 C-24,2 -16,2 -16,10 L-16,-10 C-16,-20 -6,-20 -6,-10 L-6,-16 C-6,-26 4,-26 4,-16 L4,-10 C4,-20 14,-20 14,-10 L14,4 C16,-6 26,-4 24,6 L20,40 C18,60 10,70 6,70Z" fill="#60a5fa" stroke="#1e40af" stroke-width="1.5"/></g>`+lab(604,170,'gloves');
+  s+=`<rect x="560" y="196" width="140" height="18" fill="#fde68a" stroke="#a16207"/>${Array.from({length:15},(_,i)=>`<line x1="${566+i*9}" y1="196" x2="${566+i*9}" y2="${i%5===0?208:203}" stroke="#7c5410"/>`).join('')}`+lab(630,234,'ruler');
+  s+=`<g transform="translate(730 30)"><rect width="74" height="96" rx="4" fill="#fffdf6" stroke="#94a3b8"/>`+[0,1,2].map(i=>fitG(skullArt(['vole','shrew','bird'][i]),6,8+i*28,62,22)).join('')+`</g>`+lab(767,150,'bone chart');
+  return s+'</svg>'; })();
+
+/* ---------- rodent skeleton for labeling (facing left) ---------- */
+function skeletonSVG(){ const W=680,H=360, id=uid('sk'); const L=(x1,y1,x2,y2,w)=>`<path d="M${x1},${y1} L${x2},${y2}" stroke="${BEDGE}" stroke-width="${w+2}" stroke-linecap="round"/><path d="M${x1},${y1} L${x2},${y2}" stroke="${BONE}" stroke-width="${w}" stroke-linecap="round"/>`;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Side view of a rodent skeleton with 7 empty label boxes connected to different bones."><defs>${boneGrad(id)}</defs><rect width="${W}" height="${H}" rx="14" fill="#fbf8ef"/>`;
+  // spine: neck, back, tail
+  const sp=t=>{ const x=(1-t)*(1-t)*196+2*(1-t)*t*330+t*t*470, y=(1-t)*(1-t)*150+2*(1-t)*t*104+t*t*146; return [x,y]; };
+  // tail
+  for(let i=0;i<14;i++){ const x=478+i*12.5, y=150+i*i*0.42+i*2.2, w=9-i*0.45; s+=`<rect x="${f1(x-w*0.6)}" y="${f1(y-w*0.45)}" width="${f1(w*1.2)}" height="${f1(w*0.9)}" rx="2" fill="${BONE}" stroke="${BEDGE}" stroke-width="1" transform="rotate(${f1(18+i*1.6)} ${f1(x)} ${f1(y)})"/>`; }
+  // ribs
+  for(let i=0;i<11;i++){ const [x,y]=sp(0.2+i*0.052), dx=-6-i*0.6, dep=70-Math.abs(i-4)*5;
+    s+=`<path d="M${f1(x)},${f1(y+6)} C${f1(x+dx-8)},${f1(y+dep*0.5)} ${f1(x+dx-4)},${f1(y+dep*0.9)} ${f1(x+dx+6)},${f1(y+dep)}" stroke="${BEDGE}" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M${f1(x)},${f1(y+6)} C${f1(x+dx-8)},${f1(y+dep*0.5)} ${f1(x+dx-4)},${f1(y+dep*0.9)} ${f1(x+dx+6)},${f1(y+dep)}" stroke="${BONE}" stroke-width="3" fill="none" stroke-linecap="round"/>`; }
+  // hind leg (far side) and front leg (far side), faded
+  s+=`<g opacity=".45">${L(458,150,420,214,7)}${L(420,214,468,262,5)}${L(250,176,236,222,6)}${L(236,222,252,266,4.5)}</g>`;
+  // vertebrae along the back
+  for(let i=0;i<=20;i++){ const t=i/20, [x,y]=sp(t), [x2,y2]=sp(Math.min(1,t+0.02)), a=Math.atan2(y2-y,x2-x)*180/Math.PI;
+    s+=`<g transform="translate(${f1(x)} ${f1(y)}) rotate(${f1(a)})"><rect x="-6" y="-5" width="12" height="11" rx="2.5" fill="url(#${id})" stroke="${BEDGE}" stroke-width="1"/><path d="M-2,-5 L1,-${i>5&&i<16?13:9} L4,-5" fill="${BONE}" stroke="${BEDGE}" stroke-width="1"/></g>`; }
+  // scapula
+  s+=`<path d="M218,112 L276,100 C284,120 270,150 248,170 Z" fill="url(#${id})" stroke="${BEDGE}" stroke-width="1.4" stroke-linejoin="round"/><path d="M226,116 L262,150" stroke="${BEDGE}" stroke-width="3" stroke-linecap="round"/>`;
+  // front leg: humerus, radius/ulna, paw
+  s+=L(248,170,232,216,7)+L(232,216,246,262,5)+L(236,216,250,262,3)+`<path d="M246,264 l-14,8 M247,265 l-10,10 M249,265 l-4,12" stroke="${BEDGE}" stroke-width="2.4" stroke-linecap="round"/>`;
+  // pelvis
+  s+=`<path d="M432,118 C452,112 486,118 500,130 C506,142 494,156 478,156 C462,154 446,140 432,128 Z" fill="url(#${id})" stroke="${BEDGE}" stroke-width="1.4"/><ellipse cx="482" cy="140" rx="9" ry="6" fill="${DARK}" opacity=".7"/>`;
+  // femur (thigh), tibia, foot
+  s+=L(462,146,420,210,8)+`<circle cx="462" cy="146" r="7" fill="${BONE}" stroke="${BEDGE}" stroke-width="1.2"/>`+L(420,210,470,262,6)+L(470,262,430,276,4)+`<path d="M432,276 l-14,2 M434,278 l-12,6" stroke="${BEDGE}" stroke-width="2.2" stroke-linecap="round"/>`;
+  // skull and lower jaw
+  const sk=rodentSkull('rat'), jw=rodentJaw('rat'); s+=scaleAt(sk,48,92,0.9)+scaleAt(jw,66,170,0.9);
+  // leader lines + dots (zones sit at the open ends)
+  [[118,108,90,52],[96,206,90,300],[330,124,380,52],[330,196,300,300],[250,128,232,52],[440,184,470,300],[478,130,560,72]].forEach(([a,b,c,d])=>{ s+=`<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="#334155" stroke-width="1.6"/><circle cx="${a}" cy="${b}" r="4" fill="#dc2626" stroke="#fff" stroke-width="1"/>`; });
+  return s+'</svg>'; }
+const SKEL_ZONES=[{id:'s1',x:90,y:36,w:128,ans:'Skull'},{id:'s2',x:90,y:318,w:128,ans:'Lower jaw'},{id:'s3',x:380,y:36,w:128,ans:'Vertebrae'},{id:'s4',x:300,y:318,w:128,ans:'Ribs'},{id:'s5',x:232,y:36,w:128,ans:'Shoulder blade (scapula)'},{id:'s6',x:470,y:318,w:128,ans:'Thigh bone (femur)'},{id:'s7',x:560,y:56,w:128,ans:'Hip bone (pelvis)'}];
+
+/* ---------- mystery skulls and jaws for practice ---------- */
+const MYSTERY=[{k:'jaw',t:'vole'},{k:'skull',t:'shrew'},{k:'skull',t:'bird'},{k:'skull',t:'rat'},{k:'skull',t:'mouse'}];
+function mysterySVG(){ const W=860,H=260, s=1.2; let sv=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Five unknown bones from owl pellets, numbered 1 to 5, all drawn to the same scale, with an empty label box under each."><rect width="${W}" height="${H}" rx="14" fill="#fbf8ef"/>`;
+  MYSTERY.forEach((m,i)=>{ const cx=86+i*172, a=m.k==='jaw'?jawArt(m.t):skullArt(m.t), [bx,by,bw,bh]=a.bb; sv+=`<circle cx="${cx-70}" cy="30" r="13" fill="#334155"/>`+stx(cx-70,35,String(i+1),14,'#fff','middle',true)+scaleAt(a,cx-bw*s/2,180-bh*s,s); });
+  sv+=scaleBar(W-74,30,U*s,'#334155');
+  return sv+'</svg>'; }
+
+/* ===== Owl Pellet Lab: Build a Food Web (shared content: tables, charts, food web, sections 1, 2, 4, 5) ===== */
+const BONE_ROWS=['Whole skulls','Lower jaw halves','Long bones (legs and arms)','Hip bones','Shoulder blades','Ribs','Vertebrae'];
+const PREY_COLS=['Skulls','Lower jaw halves','Prey animals'];
+const CLS_COLS=['Whole class total (prey animals)'];
+const KCAL=30, PPD=1.5;   // modeled energy per prey animal; pellets per day used in the estimate
+
+/* ---------- predictions with a menu per row (same lock pattern as predictProblem) ---------- */
+function predictRows(parent,o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.rows.length);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb predtab"><tr><th>Question</th><th>What to predict</th><th>My prediction</th></tr>${o.rows.map((r,i)=>`<tr><td><b>${r.id}</b></td><td>${r.desc}</td><td><select data-i="${i}" aria-label="Prediction for ${esc(strip(r.id))}"><option value="">choose…</option>${r.choices.map(c=>`<option>${c}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select')];
+  sels.forEach((sl,i)=>{ sl.value=P.val[i]||''; sl.addEventListener('change',()=>{ P.val[i]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Lock in my predictions';
+  function paint(){ sels.forEach(sl=>sl.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Predictions saved.</b> You\'ll compare them with your results later. Page 3 is now unlocked.'; ui.cb.textContent='Predictions locked'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(sels.some(sl=>!sl.value)){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Choose a prediction in every row first.'; return; }
+    if(!confirm('Lock in your predictions? You can\'t change them after this.')) return;
+    P.first=o.rows.length; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.rows.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- reading the student's own tables ---------- */
+const cellv=(v,r,c)=>{ const x=parseFloat((v||{})[r+'_'+c]); return isNaN(x)?null:x; };
+function maxIdx(arr){ const mx=Math.max(...arr); if(!(mx>0)) return []; return arr.map((x,i)=>i).filter(i=>Math.abs(arr[i]-mx)<1e-9); }
+function opData(){ const pv=st('prey').val||{}, bv=st('bones').val||{}, cv=st('cls').val||{}; const n=(v,r,c)=>cellv(v,r,c)||0;
+  const ind=PREY.map((_,t)=>n(pv,t,2)), tot=ind.reduce((a,b)=>a+b,0);
+  const bones=BONE_ROWS.map((_,i)=>n(bv,i,0)), btot=bones.reduce((a,b)=>a+b,0);
+  const cls=PREY.map((_,t)=>n(cv,t,0)), ctot=cls.reduce((a,b)=>a+b,0);
+  return {ind,tot,pc:t=>tot>0?100*ind[t]/tot:0,bones,btot,cls,ctot,cpc:t=>ctot>0?100*cls[t]/ctot:0,
+    types:ind.filter(x=>x>0).length}; }
+
+/* ---------- charts (drawn only from numbers the student typed) ---------- */
+const niceTop=mx=>{ const step=mx<=5?1:mx<=10?2:mx<=25?5:mx<=60?10:mx<=150?25:mx<=400?50:100; return [Math.max(step,Math.ceil(mx/step)*step),step]; };
+function hbarSVG(labels,vals,cols,axis,aria,pcts){ const W=680, rowH=36, X0=210, X1=620, top=24, H=top+labels.length*rowH+46;
+  const mx=Math.max(1,...vals.filter(v=>v!=null)); const [tp,step]=niceTop(mx), x=v=>X0+(X1-X0)*v/tp;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${aria}"><rect width="${W}" height="${H}" rx="12" fill="#0f1b2e"/>`;
+  for(let k=0;k<=tp;k+=step) s+=`<line x1="${f1(x(k))}" y1="${top-6}" x2="${f1(x(k))}" y2="${top+labels.length*rowH}" stroke="#2a3d5f"/><text x="${f1(x(k))}" y="${top+labels.length*rowH+18}" text-anchor="middle" font-size="12" fill="#a3b4cf">${k}</text>`;
+  labels.forEach((l,i)=>{ const y=top+i*rowH, v=vals[i]; s+=`<text x="${X0-10}" y="${y+rowH/2+4}" text-anchor="end" font-size="13.5" fill="#e8eef8">${l}</text>`;
+    if(v!=null){ s+=`<rect x="${X0}" y="${y+6}" width="${f1(Math.max(0,x(v)-X0))}" height="${rowH-12}" rx="3" fill="${cols[i%cols.length]}"/><text x="${f1(x(v)+6)}" y="${y+rowH/2+4}" font-size="12.5" fill="#e8eef8">${v}${pcts&&pcts[i]!=null?` (${pcts[i]}%)`:''}</text>`; } });
+  s+=`<line x1="${X0}" y1="${top-6}" x2="${X0}" y2="${top+labels.length*rowH}" stroke="#a3b4cf" stroke-width="1.5"/>`;
+  s+=`<text x="${(X0+X1)/2}" y="${H-8}" text-anchor="middle" font-size="13" fill="#a3b4cf">${axis}</text>`;
+  return s+'</svg>'; }
+const BONE_COLS=['#e9dcc0'];
+function boneChart(v){ return `<div class="opchart">${hbarSVG(BONE_ROWS,BONE_ROWS.map((_,i)=>cellv(v,i,0)),BONE_COLS,'Number of bones found','Bar graph of the number of each kind of bone you found, from your data table.')}</div>`; }
+function preyChart(v){ const vals=PREY.map((_,t)=>cellv(v,t,2));
+  let s=`<div class="opchart">${hbarSVG(PREY_ROWS,vals,PREY.map(p=>p.col),'Number of prey animals','Bar graph of the number of each kind of prey animal in your pellet, from your data table.')}</div>`;
+  const bad=PREY.filter((p,t)=>{ const sk=cellv(v,t,0), jw=cellv(v,t,1), n=cellv(v,t,2); return n!=null&&((sk!=null&&n<sk)||(jw!=null&&n<Math.ceil(jw/2))); }).map(p=>p.name);
+  if(bad.length) s+=`<div class="fb no small">Check your numbers for: ${bad.join(', ')}. Each skull is one animal, and every 2 lower jaw halves are one animal, so you need at least that many prey animals.</div>`;
+  return s; }
+function clsChart(v){ const vals=PREY.map((_,t)=>cellv(v,t,0)), tot=vals.reduce((a,b)=>a+(b||0),0);
+  return `<div class="opchart">${hbarSVG(PREY_ROWS,vals,PREY.map(p=>p.col),'Prey animals (whole class)','Bar graph of the whole class prey totals, from your data table.',vals.map(x=>x!=null&&tot>0?Math.round(100*x/tot):null))}</div>`; }
+
+/* ---------- the owl food web (blank boxes to label) ---------- */
+const WEBN={owl:[320,52],vole:[72,206],gopher:[196,206],mouse:[320,206],bird:[444,206],shrew:[568,206],insects:[500,312],plants:[250,398]};
+const WEBE=[['plants','vole'],['plants','gopher'],['plants','mouse'],['plants','bird'],['plants','insects'],['insects','mouse'],['insects','bird'],['insects','shrew'],['vole','owl'],['gopher','owl'],['mouse','owl'],['bird','owl'],['shrew','owl']];
+function arrowG(x1,y1,x2,y2,col){ const a=Math.atan2(y2-y1,x2-x1), hl=11, bx=x2-Math.cos(a)*hl, by=y2-Math.sin(a)*hl, px=Math.cos(a+Math.PI/2)*5.5, py=Math.sin(a+Math.PI/2)*5.5;
+  return `<line x1="${f1(x1)}" y1="${f1(y1)}" x2="${f1(bx)}" y2="${f1(by)}" stroke="${col}" stroke-width="2.6"/><path d="M${f1(x2)},${f1(y2)} L${f1(bx+px)},${f1(by+py)} L${f1(bx-px)},${f1(by-py)}Z" fill="${col}"/>`; }
+function webSVG(){ const W=640,H=440, BW=118, BH=36; let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="A food web with 8 empty boxes. Arrows point from each food to the animal that eats it. One box is at the top, five are in a middle row, one is lower right, and one is at the bottom. A sun at the bottom left points to the bottom box."><rect width="${W}" height="${H}" rx="14" fill="#0f1a2e"/>`;
+  WEBE.forEach(([a,b])=>{ const A=WEBN[a], B=WEBN[b]; const up=B[1]<A[1]; s+=arrowG(A[0],A[1]+(up?-BH/2:BH/2),B[0]+(b==='owl'?(A[0]-B[0])*0.18:0),B[1]+(up?BH/2+2:-BH/2-2),'#ffd35c'); });
+  Object.keys(WEBN).forEach(k=>{ const [x,y]=WEBN[k]; s+=`<rect x="${x-BW/2}" y="${y-BH/2}" width="${BW}" height="${BH}" rx="9" fill="#1a2a44" stroke="#3a5580" stroke-width="1.5"/>`; });
+  s+=`<circle cx="62" cy="398" r="17" fill="#ffd35c"/>${[0,1,2,3,4,5,6,7].map(i=>{ const a=i*Math.PI/4; return `<line x1="${f1(62+Math.cos(a)*22)}" y1="${f1(398+Math.sin(a)*22)}" x2="${f1(62+Math.cos(a)*29)}" y2="${f1(398+Math.sin(a)*29)}" stroke="#ffd35c" stroke-width="3" stroke-linecap="round"/>`; }).join('')}`+arrowG(94,398,250-BW/2-4,398,'#ffd35c')+stx(62,362,'Sun',12,'#a3b4cf');
+  return s+'</svg>'; }
+const WEB_ZONES=[{id:'w1',k:'owl',ans:'Barn owl'},{id:'w2',k:'vole',ans:'Vole',group:'g1'},{id:'w3',k:'gopher',ans:'Pocket gopher',group:'g1'},{id:'w4',k:'mouse',ans:'Mouse',group:'g2'},{id:'w5',k:'bird',ans:'Small bird',group:'g2'},{id:'w6',k:'shrew',ans:'Shrew'},{id:'w7',k:'insects',ans:'Insects'},{id:'w8',k:'plants',ans:'Grasses and seeds'}]
+  .map(z=>Object.assign(z,{x:WEBN[z.k][0],y:WEBN[z.k][1],w:114}));
+
+function buildContent(sec){
+  let n=0; const num=()=>++n;
+  const say=(s,html)=>s.insertAdjacentHTML('beforeend',html);
+  /* ---------- 1. Setup ---------- */
+  say(sec[0],`<div class="phenbox"><b>Phenomenon:</b> Barn owls are common in California. Many Central Valley farmers put up nest boxes for them, because a family of barn owls can eat a few thousand gophers, voles, and mice in one year (about). A barn owl swallows small prey <b>whole</b>. It can't digest the fur and bones, so a few hours later it coughs up a tight ball of them: an <b>owl pellet</b>. What can a pellet tell us about how energy flows to the owl?</div>
+   <div class="figwrap opfig" style="max-width:560px;margin:4px auto 12px">${farmScene()}</div>
+   <p><b>Lab question:</b> What does a barn owl eat, and how does energy flow from plants to the owl?</p>
+   <p><b>Background.</b> Each pellet holds the bones of the animals the owl ate in about one meal. A barn owl makes about 1 to 2 pellets a day. The pellets you use come from a supplier. They were <b>heated to kill germs</b> (sterilized).</p>
+   <p><b>How to count prey animals.</b> Every animal has <b>one skull</b> and <b>two lower jaw halves</b> (a left and a right). So count the skulls. If a skull is broken, use the jaws: <b>2 lower jaw halves = 1 animal</b>. For each kind of prey, the number of animals is the bigger of these two numbers: the skulls, or the jaw halves ÷ 2 (round up).</p>
+   <p><b>Bone identification chart.</b> Use the teeth and the size to tell which animal a skull or jaw came from. All drawings are to the same scale.</p>
+   <div class="figwrap opfig" style="margin:6px 0 8px">${idChartSVG()}</div>${ID_TABLE}
+   ${SETUP_HTML}`);
+  choiceProblem(sec[0],{id:'q1', part:'P1', num:num(), q:'Check your understanding. Use the background and the chart.',
+    parts:[{q:'<b>Part A:</b> What is an owl pellet?',opts:['Fur and bones the owl could not digest, coughed up as a ball','The owl\'s droppings (poop)','An owl egg that did not hatch','A ball of plant seeds the owl collects'],ans:0},
+           {q:'<b>Part B:</b> Why are owl pellets a good way to learn what an owl eats?',opts:['The owl swallows prey whole, so the bones in a pellet show which animals it ate','Owls only eat one kind of animal','Pellets show what the owl will eat tomorrow','Pellets are made of the owl\'s own bones'],ans:0},
+           {q:'<b>Part C:</b> A skull has no gap between its front teeth and the back teeth, and the teeth have dark red tips. What animal is it?',opts:['Shrew','Vole','Rat or gopher','Bird'],ans:0},
+           {q:'<b>Part D:</b> A skull has a beak and no teeth. What animal is it?',opts:['Bird','Mouse','Shrew','Vole'],ans:0}],
+    hint:'Re-read the phenomenon, the background, and the clue table under the chart.', why:'Pellets are the undigested fur and bones of whole prey, so they record the owl\'s diet. Shrews have pointed red-tipped teeth with no gap; birds have beaks.'});
+  typedProblem(sec[0],{id:'q2', part:'P1', num:num(), q:'Practice counting prey animals. Use the counting rule above.',
+    blanks:[{before:'<b>Part A:</b> 2 vole skulls and 5 vole lower jaw halves. Number of voles =',num:[3,3],show:'3'},
+            {before:'<b>Part B:</b> 0 shrew skulls (both crushed) and 2 shrew lower jaw halves. Number of shrews =',num:[1,1],show:'1'},
+            {before:'<b>Part C:</b> 3 mouse skulls and 4 mouse lower jaw halves. Number of mice =',num:[3,3],show:'3'}],
+    hint:'Find jaw halves ÷ 2 (round up). Then compare it with the number of skulls and use the bigger number.'});
+  choiceProblem(sec[0],{id:'q3', part:'P1', num:num(), q:'<b>Safety and hygiene.</b> Which rules keep you safe during this lab?',
+    parts:[{q:'Select all that apply.',opts:['Wear gloves while you handle the pellet and bones','Wash your hands with soap and water when you finish','Keep your hands away from your eyes, nose, and mouth','Use the probe and forceps gently, and point them away from people','The pellets are sterilized, so it is fine to eat or drink while you work','Blow on the pellet to clear away loose fur'],ans:[0,1,2,3]}],
+    hint:'Sterilized means the germs were killed by heat. It does not make the pellet food, and fur dust can still bother your nose and eyes.', why:'Gloves, handwashing, hands away from your face, and careful tool use. Never eat or drink in the lab, and do not blow fur into the air.'});
+  dragProblem(sec[0],{id:'q4', part:'P1', num:num(), q:'Put the dissection steps in order. Drag each step into the right box.', equation:true,
+    layout:['Step 1',0,'Step 2',1,'Step 3',2,'Step 4',3,'Step 5',4,'Step 6',5],
+    zones:[{id:'o1',ans:'Put on gloves and get your tools'},{id:'o2',ans:'Measure and describe the whole pellet'},{id:'o3',ans:'Gently pull the pellet apart with a probe'},{id:'o4',ans:'Separate all the bones from the fur'},{id:'o5',ans:'Sort the bones and identify skulls and jaws'},{id:'o6',ans:'Record your counts, clean up, and wash hands'}],
+    chips:['Put on gloves and get your tools','Measure and describe the whole pellet','Gently pull the pellet apart with a probe','Separate all the bones from the fur','Sort the bones and identify skulls and jaws','Record your counts, clean up, and wash hands'],
+    hint:'You must see the bones before you can sort them, and you can only identify bones after you sort them.', done:'Safety first, observe the whole pellet, take it apart, then sort, identify, and record.'});
+  sec[0].lastElementChild.classList.add('ordq');
+  dragProblem(sec[0],{id:'q5', part:'P1', num:num(), q:'Pellets hold the bones of a whole skeleton. Label the bones on this rodent skeleton.', svg:skeletonSVG(), vb:[680,360], zones:SKEL_ZONES,
+    chips:SKEL_ZONES.map(z=>z.ans), hint:'The shoulder blade is a flat triangle near the front legs. The hip bone connects the back legs to the spine. The femur is the top bone of the back leg.', done:'You know the main bones you will find in a pellet.'});
+  dragProblem(sec[0],{id:'q6', part:'P1', num:num(), q:'Practice with the chart: these bones came from other owl pellets. Identify each one.', svg:mysterySVG(), vb:[860,260],
+    zones:MYSTERY.map((m,i)=>({id:'m'+i,x:86+i*172,y:226,w:150,ans:PREY.find(p=>p.k===m.t).name})), chips:PREY_ROWS,
+    hint:'Look at the teeth first: a beak, pointed red-tipped teeth with no gap, or chisel front teeth with a gap. Then use the size (the 1 cm bar) and the shape of the molars.', done:'Teeth and size tell you which animal a skull or jaw came from.'});
+  /* ---------- 2. Predict ---------- */
+  say(sec[1],`<p>Before you open the pellet, predict. There are no wrong predictions: you get full credit for making them, but you <b>can't change them</b> after you lock them in.</p>`);
+  predictRows(sec[1],{id:'pred', part:'P2', num:num(), q:'Make your predictions.', rows:[
+    {id:'Prey in my pellet',desc:'How many prey animals are in your pellet?',choices:['1','2 or 3','4 or 5','6 or more']},
+    {id:'Most common (my pellet)',desc:'Which prey will be most common in your pellet?',choices:[...PREY_ROWS,'Two or more tied']},
+    {id:'Most common (class)',desc:'Which prey will be most common for the whole class?',choices:PREY_ROWS},
+    {id:'Bird bones',desc:'Will your pellet have any bird bones?',choices:['Yes','No']}]});
+  writtenProblem(sec[1],{id:'hyp', part:'P2', num:num(), q:'Write a hypothesis about what barn owls eat, in the form <b>"If… then… because…"</b>.', pts:3, bank:['If','then','because','barn owls','pellets','voles','mice','gophers','rodents','most common','farm fields'],
+    groups:[['If… then… form',/\bif\b[\s\S]*\bthen\b/],['names a prey animal',/vole|mouse|mice|shrew|rat|gopher|bird|rodent/],['a reason',/because|since|so |common|live|field|farm|hunt|night|many/]],
+    model:'If we take apart barn owl pellets, then we will find mostly vole and mouse skulls, because rodents are the most common small animals in farm fields where barn owls hunt.',
+    hint:'Say what you will do, what you think you will find, and why.', why:'A testable hypothesis names the action, the predicted result, and the reason.'});
+  /* ---------- 3. Data / Experiment (lab and simulation differ) ---------- */
+  buildData(sec[2],num);
+  /* ---------- 4. Analysis ---------- */
+  const alock=h('div',{class:'fb info'}); alock.innerHTML='<b>Locked.</b> Save all three data tables on page 3 first.'; sec[3].appendChild(alock);
+  const awrap=h('div',{}); sec[3].appendChild(awrap);
+  const D=opData;
+  window.anaRefresh=()=>{ const ok=['bones','prey','cls'].every(k=>!!st(k).checked); alock.hidden=ok; awrap.hidden=!ok;
+    $$('.anachart',awrap).forEach(e=>{ e.innerHTML=e.dataset.c==='prey'?preyChart(st('prey').val):clsChart(st('cls').val); }); };
+  say(awrap,`<p>Use <b>your data</b> from page 3. Round percents to the nearest whole number. Do not round in the middle of a calculation.</p>
+    <div class="prob"><div class="pq">Your data</div><div class="anachart" data-c="prey"></div><div class="anachart" data-c="cls" style="margin-top:10px"></div></div>`);
+  say(awrap,`<h3 style="margin-top:22px">Part A: Your pellet</h3>`);
+  typedProblem(awrap,{id:'a1', part:'P4', num:num(), q:'Add up your data tables.', blanks:[
+    {before:'<b>Part A:</b> Total prey animals in your pellet =',calc:()=>D().tot,tol:0,show:'sum of the Prey animals column'},
+    {before:'<b>Part B:</b> Total bones you counted (all kinds) =',calc:()=>D().btot,tol:0,show:'sum of the bone table'}],
+    hint:'Add every number in the "Prey animals" column. Then add every number in the bone table.'});
+  const preyOpts=[...PREY_ROWS,'Two or more prey tied'];
+  const pickFn=(arr,nn)=>()=>{ const b=maxIdx(arr()); return b.length===1?b[0]:nn; };
+  choiceProblem(awrap,{id:'a2', part:'P4', num:num(), q:'Look at your data tables.',
+    parts:[{q:'<b>Part A:</b> Which prey was most common in your pellet?',opts:preyOpts,ans:-1,ansFn:pickFn(()=>D().ind,5)},
+           {q:'<b>Part B:</b> Did you find more ribs or more vertebrae?',opts:['More ribs','More vertebrae','The same number of each'],ans:-1,ansFn:()=>{ const x=D().bones; return x[5]>x[6]?0:x[6]>x[5]?1:2; }}],
+    hint:'Find the biggest number in the "Prey animals" column. Then compare the Ribs and Vertebrae rows of the bone table.', why:'Your answers match your own data.'});
+  typedProblem(awrap,{id:'a3', part:'P4', num:num(), q:'<b>Percent of the diet.</b> Percent = that prey ÷ total prey animals × 100. If you found none, type 0.',
+    blanks:PREY.map((p,t)=>({before:`<b>Part ${'ABCDE'[t]}:</b> ${p.name} =`,calc:()=>D().pc(t),tol:1,after:'%',show:`${p.name} ÷ total × 100`})),
+    hint:'Use your total from problem '+(n-2)+'. Divide each prey by the total, then multiply by 100. The five percents should add up to about 100%.'});
+  typedProblem(awrap,{id:'a4', part:'P4', num:num(), q:`<b>Estimate a year.</b> Pretend every pellet is like yours. A barn owl makes about 1 to 2 pellets a day, so use <b>${PPD} pellets a day</b>.`, blanks:[
+    {before:'<b>Part A:</b> Prey animals eaten per day = your total prey × 1.5 =',calc:()=>D().tot*PPD,tol:0.05,show:'total × 1.5'},
+    {before:'<b>Part B:</b> Prey animals eaten per year = Part A × 365 =',calc:()=>D().tot*PPD*365,tol:2,show:'per day × 365'}],
+    hint:'Multiply your total prey by 1.5. Then multiply that answer by 365 days. Do not round Part A.'});
+  say(awrap,`<h3 style="margin-top:22px">Part B: The whole class</h3>`);
+  typedProblem(awrap,{id:'a5', part:'P4', num:num(), q:'Use the <b>whole class</b> table.', blanks:[
+    {before:'<b>Part A:</b> Total prey animals found by the whole class =',calc:()=>D().ctot,tol:0,show:'sum of the class table'},
+    {before:'<b>Part B:</b> Percent of the class prey that were <b>rodents</b> (voles + mice + rats or gophers) =',calc:()=>D().ctot>0?100*(D().cls[0]+D().cls[1]+D().cls[3])/D().ctot:0,tol:1,after:'%',show:'rodents ÷ total × 100'},
+    {before:'<b>Part C:</b> Percent of the class prey that were <b>birds</b> =',calc:()=>D().cpc(4),tol:1,after:'%',show:'birds ÷ total × 100'}],
+    hint:'Shrews are not rodents. Add voles, mice, and rats or gophers, divide by the class total, and multiply by 100.'});
+  choiceProblem(awrap,{id:'a6', part:'P4', num:num(), q:'Compare your pellet with the whole class.',
+    parts:[{q:'<b>Part A:</b> Which prey was most common for the whole class?',opts:preyOpts,ans:-1,ansFn:pickFn(()=>D().cls,5)},
+           {q:'<b>Part B:</b> Was the most common prey in <b>your pellet</b> also the most common for the class?',opts:['Yes (or one of the tied prey matches)','No'],ans:-1,ansFn:()=>{ const a=maxIdx(D().ind), b=maxIdx(D().cls); return a.some(x=>b.includes(x))?0:1; }},
+           {q:'<b>Part C:</b> Why is the class data a better picture of what barn owls eat than one pellet?',opts:['It is a bigger sample: many pellets show more meals, so one unusual pellet matters less','The class used better pellets','One pellet always shows every kind of prey','The class data is smaller, so it is easier to read'],ans:0}],
+    hint:'Find the biggest number in the class table. Then compare it with your answer to problem '+(n-4)+'.', why:'Your answers match your data. More pellets = a bigger sample = a more reliable picture.'});
+  say(awrap,`<h3 style="margin-top:22px">Part C: Build the food web</h3>`);
+  dragProblem(awrap,{id:'a7', part:'P4', num:num(), q:'Build the barn owl food web. Arrows point from the food to the eater. Use these clues: voles and pocket gophers eat only plants. Mice and small birds eat seeds and insects. Shrews eat insects. Insects eat plants. Barn owls eat all five kinds of small animals.', svg:webSVG(), vb:[640,440], zones:WEB_ZONES,
+    chips:['Barn owl','Vole','Pocket gopher','Mouse','Small bird','Shrew','Insects','Grasses and seeds'],
+    hint:'Start at the bottom: the sun\'s arrow goes to the producer. The box with the most arrows coming in is the top predator. Then count the arrows into each middle box.', done:'Energy flows from the sun to plants, to plant eaters and insect eaters, and then to the owl.'});
+  typedProblem(awrap,{id:'a8', part:'P4', num:num(), q:'Now make the web match <b>your pellet</b>. Draw an arrow into the owl only from prey you found.', blanks:[
+    {before:'<b>Part A:</b> How many arrows would point into the barn owl from the prey in your pellet?',calc:()=>D().types,tol:0,show:'number of prey kinds with more than 0'},
+    {before:'<b>Part B:</b> How many different food chains in the web above end at the owl? (Count each path from the grasses and seeds to the owl.)',num:[7,7],show:'7'}],
+    hint:'Part A: count the kinds of prey with at least 1 animal in your table. Part B: follow every path from the bottom box to the owl. Some animals have two paths in.'});
+  binProblem(awrap,{id:'a9', part:'P4', num:num(), q:'Sort each organism from this ecosystem.', bins:[{k:'p',label:'Producer'},{k:'h',label:'Herbivore (eats only plants)'},{k:'c',label:'Carnivore (eats only animals)'}],
+    items:[{t:'Grasses and seeds',k:'p'},{t:'Wild oats',k:'p'},{t:'Vole',k:'h'},{t:'Pocket gopher',k:'h'},{t:'Grasshopper',k:'h'},{t:'Shrew',k:'c'},{t:'Barn owl',k:'c'},{t:'Gopher snake',k:'c'}],
+    hint:'Producers make their own food with sunlight. Shrews eat insects, so they eat animals.', done:'Producers make food; herbivores eat plants; carnivores eat other animals.'});
+  choiceProblem(awrap,{id:'a10', part:'P4', num:num(), q:'Trophic levels in the owl\'s food web.',
+    parts:[{q:'<b>Part A:</b> Food chain: grass → vole → barn owl. What trophic level is the owl in this chain?',opts:['Level 3: secondary consumer','Level 2: primary consumer','Level 4: tertiary consumer','Level 1: producer'],ans:0},
+           {q:'<b>Part B:</b> Food chain: grass → grasshopper → shrew → barn owl. What trophic level is the owl now?',opts:['Level 4: tertiary consumer','Level 3: secondary consumer','Level 2: primary consumer','Level 5'],ans:0},
+           {q:'<b>Part C:</b> What do the arrows in a food web show?',opts:['The way energy flows: from the food to the eater','Which animal is bigger','From the eater to its food','Where each animal lives'],ans:0},
+           {q:'<b>Part D:</b> Some farmers use poison to kill gophers. Why can this hurt barn owls?',opts:['Owls eat the poisoned rodents, and the poison can harm or kill the owls','Poison makes the rodents taste bad to owls','Poison makes more rodents','It cannot hurt owls, because owls eat only insects'],ans:0}],
+    hint:'Count the steps: producers are level 1. Each arrow is one step up.', why:'The same owl can be at level 3 or level 4, depending on the chain. Arrows show energy flow, and poison in prey moves up the food chain to the owl.'});
+  say(awrap,`<h3 style="margin-top:22px">Part D: The 10% rule</h3><p>Only about <b>10%</b> of the energy at one trophic level is stored in the next level. The rest is used for life processes (moving, staying warm) or lost as heat. Assume each prey animal holds about <b>${KCAL} kcal</b> of energy (a modeled number).</p>`);
+  typedProblem(awrap,{id:'a11', part:'P4', num:num(), q:'Follow the energy in <b>your pellet</b>.', blanks:[
+    {before:`<b>Part A:</b> Energy in the prey the owl ate = your total prey × ${KCAL} kcal =`,calc:()=>D().tot*KCAL,tol:0.5,after:'kcal',show:`total × ${KCAL}`},
+    {before:'<b>Part B:</b> Energy stored in the owl\'s body (10% of Part A) =',calc:()=>D().tot*KCAL*0.1,tol:0.5,after:'kcal',show:'Part A × 0.10'},
+    {before:'<b>Part C:</b> Energy in the plants the prey needed to eat (the prey stored only 10% of it) = Part A × 10 =',calc:()=>D().tot*KCAL*10,tol:0.5,after:'kcal',show:'Part A × 10'}],
+    hint:'Part B: multiply Part A by 0.10. Part C: the prey kept only 10% of the plant energy, so the plants had 10 times more than the prey.'});
+  choiceProblem(awrap,{id:'a12', part:'P4', num:num(), q:'Think about the energy pyramid.',
+    parts:[{q:'<b>Part A:</b> Why does one barn owl need to eat so many prey animals in a year?',opts:['Only about 10% of the energy in its prey is stored in the owl; most is used for life processes or lost as heat','The owl stores 100% of the energy it eats','Prey animals have no energy','Owls do not use energy to fly or stay warm'],ans:0},
+           {q:'<b>Part B:</b> Why are there far fewer barn owls than voles in a field?',opts:['There is less energy at each higher trophic level, so the top can feed only a few animals','Owls have more babies than voles','Voles eat owls','Owls are producers'],ans:0}],
+    hint:'Look at your answers to Parts A, B, and C above. How much energy is left at each step?', why:'Energy decreases at each trophic level, so top predators need many prey and are few in number.'});
+  writtenProblem(awrap,{id:'a13', part:'P4', num:num(), q:'Did your results match your predictions from page 2? Explain, using at least one number from your data.', pts:2, bank:['I predicted','but','my pellet had','voles','mice','shrews','percent','the class','matched','did not match'],
+    groups:[['refers to the prediction',/predict|thought|expected|guess|hypothes/],['uses a number from the data',/\d/]],
+    model:'I predicted mice would be most common, but my pellet had 3 voles and only 1 mouse, so voles were 75% of the prey. My prediction did not match.',
+    hint:'Say what you predicted, then give a number from your data.', why:'Comparing predictions with data is how scientists test their ideas.'});
+  /* ---------- 5. Conclusion ---------- */
+  say(sec[4],`<p>Write a <b>claim, evidence, and reasoning</b> conclusion that answers: <i>What does a barn owl eat, and how does energy flow from plants to the owl?</i> Use your data.</p>`);
+  writtenProblem(sec[4],{id:'k1', part:'P5', num:num(), q:'<b>Claim:</b> answer the question in one sentence.', pts:1, bank:['Barn owls eat','mostly','voles','mice','rodents','shrews','energy','plants','food chain'],
+    groups:[['names what the owl eats',/vole|mouse|mice|rodent|shrew|gopher|rat|bird|small (animal|mammal)/]],
+    model:'Barn owls eat mostly small rodents like voles and mice, and they get energy that started in plants, passed through the rodents, and then to the owl.', hint:'Name the prey the owl ate most.', why:'The claim answers the question.'});
+  writtenProblem(sec[4],{id:'k2', part:'P5', num:num(), q:'<b>Evidence:</b> give numbers from your pellet and from the class data.', pts:3, bank:['my pellet had','skulls','jaws','percent','%','the class found','prey animals','per year'],
+    groups:[['names a prey animal',/vole|mouse|mice|rodent|shrew|gopher|rat|bird/],['uses the pellet or class data',/pellet|class|skull|jaw|found|total/],['uses numbers or percents',/\d/]],
+    model:'My pellet had 4 prey animals: 3 voles and 1 shrew, so voles were 75% of my owl\'s diet. The whole class found 96 prey animals, and 82% were rodents.',
+    hint:'Use your totals and percents from Analysis.', why:'Good evidence uses specific numbers.'});
+  writtenProblem(sec[4],{id:'k3', part:'P5', num:num(), q:'<b>Reasoning:</b> explain how energy flows from plants to the owl, and why the owl needs so many prey.', pts:4, bank:['producers','plants','sun','primary consumer','secondary consumer','trophic level','10%','energy','heat','life processes','food web'],
+    groups:[['energy starts with producers or the sun',/plant|producer|sun|seed|grass/],['energy moves through the prey to the owl',/(vole|mouse|mice|rodent|prey|consumer)[\s\S]{0,120}(owl)|owl[\s\S]{0,120}(eat|consum)/],['names trophic levels or consumers',/trophic|level|primary|secondary|tertiary|consumer|herbivore|carnivore/],['the 10% rule or energy lost as heat',/10|ten percent|heat|lost|life process|used up/]],
+    model:'Energy starts with the sun and is stored in plants (producers). Voles and mice (primary consumers) eat the plants, and the owl (a secondary or tertiary consumer) eats them. Only about 10% of the energy at each trophic level is stored in the next level; the rest is used for life processes or lost as heat. So the owl must eat thousands of prey a year.',
+    hint:'Cover four ideas: producers, the path through the prey to the owl, trophic levels, and the 10% rule.', why:'Energy flows from producers up the food chain, and about 90% is lost at each step.'});
+  writtenProblem(sec[4],{id:'k4', part:'P5', num:num(), q:'<b>Apply it:</b> A Central Valley farmer has a gopher problem. Should the farmer put up barn owl boxes or use poison? Use your estimate of prey per year.', pts:2, bank:['owl boxes','poison','prey per year','gophers','eat','food chain','harm','owls','safer'],
+    groups:[['makes a choice',/owl box|nest box|poison|owls|box/],['uses the estimate or the food chain',/\d|year|food chain|poison[\s\S]{0,60}(owl|chain|eat)|eat/]],
+    model:'The farmer should put up owl boxes. My data shows one owl could eat about 2,000 prey animals a year, and poison could move up the food chain and kill the owls that help the farmer.',
+    hint:'Choose one, then give a reason with a number or with the food chain.', why:'Owls eat thousands of rodents a year, and poison can harm owls that eat poisoned prey.'});
+  dataRefresh();
+}
+
+/* ===== Owl Pellet Lab: simulation version (virtual pellet, seeded per student) ===== */
+const SETUP_HTML=`<div class="phenbox" style="border-left-color:#7c3aed;background:rgba(124,58,237,.12)"><b>Missed the lab?</b> In class, each pair took apart a real barn owl pellet. You'll take apart a virtual pellet. Every student gets a different pellet, just like in class.</div>
+   <div class="figwrap opfig" style="margin:12px 0 8px">${MAT_PIC}</div>
+   <p><b>The class rules (they apply to real pellets):</b> wear gloves, keep your hands away from your face, never eat or drink in the lab, point probes away from people, do not blow on the pellet, and wash your hands with soap when you finish.</p>
+   <p><b>Procedure (virtual):</b></p><ol class="proc">
+    <li>On page 2, make your predictions and lock them in.</li>
+    <li>On page 3, unwrap your pellet and describe it.</li>
+    <li>Tease the pellet apart: tap each clump of fur to pull it away and uncover the bones.</li>
+    <li>Identify every skull and lower jaw half: drag it (or tap it, then tap a column) to the matching column of the bone chart.</li>
+    <li>Sort the other bones into piles. Count every pile and every column, and fill in the data tables.</li>
+    <li>Add up the class data board to get the class totals.</li></ol>`;
+const WEIGHTS=[0.40,0.24,0.14,0.16,0.06];   // modeled diet of a Central Valley barn owl (vole, mouse, shrew, rat or gopher, bird)
+const TW=760, TH=440;   // tray drawing size
+const TCM=26;           // tray units per cm
+function pickPrey(r,noBird){ let x=r()*(noBird?1-WEIGHTS[4]:1); for(let t=0;t<5;t++){ if(x<WEIGHTS[t]) return t; x-=WEIGHTS[t]; } return 0; }
+function makePellet(seed){ const r=mulberry(seed); const nP=[2,3,3,4,4,5][Math.floor(r()*6)], prey=[]; let bird=false;
+  for(let i=0;i<nP;i++){ const t=pickPrey(r,bird); if(t===4) bird=true; prey.push({t}); }
+  const mam=prey.map((p,i)=>i).filter(i=>prey[i].t!==4); let cr=-1; if(mam.length&&r()<0.4) cr=mam[Math.floor(r()*mam.length)];
+  prey.forEach((p,i)=>{ p.crushed=i===cr; p.jaws=p.t===4?0:p.crushed?2:(r()<0.7?2:1); });
+  if(cr>=0) prey.forEach(p=>{ if(p.t===prey[cr].t) p.jaws=2; });
+  const bones=[], add=(k,t,cm,id)=>bones.push({k,t,cm,id:!!id,s:Math.floor(r()*1000)});
+  prey.forEach(p=>{ const T=PREY[p.t].k, sz={vole:1,mouse:.82,shrew:.62,rat:1.7,bird:1}[T], ri=(a,b)=>a+Math.floor(r()*(b-a+1));
+    if(p.crushed) add('crush',T,1); else add('skull',T,PREY[p.t].cm,true);
+    for(let j=0;j<p.jaws;j++) add('jaw',T,PREY[p.t].jcm,true);
+    const nb=p.t===4?{long:ri(2,3),pelvis:1,scap:ri(0,1),rib:ri(2,3),vert:ri(3,4)}:{long:ri(3,6),pelvis:ri(1,2),scap:ri(1,2),rib:ri(3,6),vert:ri(4,7)};
+    for(let j=0;j<nb.long;j++) add('long',T,(1.3+r()*0.6)*sz); for(let j=0;j<nb.pelvis;j++) add('pelvis',T,1.5*sz);
+    for(let j=0;j<nb.scap;j++) add('scap',T,0.95*sz); for(let j=0;j<nb.rib;j++) add('rib',T,(1.0+r()*0.4)*sz); for(let j=0;j<nb.vert;j++) add('vert',T,0.5*sz); });
+  // positions: identifiable bones spread out first, then the rest
+  const placed=[]; const order=bones.map((b,i)=>i).sort((a,b)=>(bones[b].id?1:0)-(bones[a].id?1:0));
+  order.forEach(i=>{ const b=bones[i]; let best=null, bd=-1;
+    for(let k=0;k<(b.id?60:8);k++){ const a=r()*Math.PI*2, rr=Math.sqrt(r()), x=TW/2+Math.cos(a)*rr*275, y=TH/2+Math.sin(a)*rr*150;
+      const d=Math.min(999,...placed.filter(p=>b.id?p.id:true).map(p=>Math.hypot(p.x-x,(p.y-y)*1.3))); if(d>bd){ bd=d; best=[x,y]; } }
+    b.x=best[0]; b.y=best[1]; b.a=b.id?Math.round((r()-0.5)*50):Math.round(r()*360); if(b.id&&r()<0.5) b.fl=1; placed.push({x:b.x,y:b.y,id:b.id}); });
+  const fur=[]; for(let rI=0;rI<4;rI++) for(let c=0;c<5;c++){ fur.push({x:Math.round(118+c*131+(r()-0.5)*24), y:Math.round(84+rI*92+(r()-0.5)*18), s:Math.floor(r()*1e6)}); }
+  const cls=[]; for(let g=0;g<11;g++){ const row=[0,0,0,0,0]; const k=[2,3,3,4,4,5][Math.floor(r()*6)]; for(let j=0;j<k;j++) row[pickPrey(r,false)]++; cls.push(row); }
+  return {prey,bones,fur,cls}; }
+function furSVG(seed){ const r=mulberry(seed), id=uid('fu'); const c0=['#6f675f','#5d564f','#7a7168'][Math.floor(r()*3)];
+  let s=`<svg viewBox="-100 -80 200 160" aria-hidden="true"><defs><radialGradient id="${id}" cx="45%" cy="40%" r="60%"><stop offset="0" stop-color="#8d847a"/><stop offset="1" stop-color="${c0}"/></radialGradient></defs>`;
+  const n=14, pts=[]; for(let i=0;i<n;i++){ const a=i/n*Math.PI*2, k=0.86+r()*0.2; pts.push([Math.cos(a)*84*k,Math.sin(a)*62*k]); } let d=`M${f1((pts[0][0]+pts[n-1][0])/2)},${f1((pts[0][1]+pts[n-1][1])/2)}`; for(let i=0;i<n;i++){ const q=pts[i], nx=pts[(i+1)%n]; d+=` Q${f1(q[0])},${f1(q[1])} ${f1((q[0]+nx[0])/2)},${f1((q[1]+nx[1])/2)}`; }
+  s+=`<path d="${d}Z" fill="url(#${id})" stroke="#4a443e" stroke-width="2" stroke-linejoin="round"/>`;
+  for(let i=0;i<70;i++){ const a=r()*Math.PI*2, rr=Math.sqrt(r()), x=Math.cos(a)*rr*80, y=Math.sin(a)*rr*58, an=r()*Math.PI*2, l=5+r()*9;
+    s+=`<path d="M${f1(x)},${f1(y)} q${f1(Math.cos(an)*l*0.5)},${f1(Math.sin(an)*l*0.5-2)} ${f1(Math.cos(an)*l)},${f1(Math.sin(an)*l)}" stroke="${['#a39a90','#3f3934','#b9b0a5','#5e564f'][i%4]}" stroke-width="1.3" fill="none"/>`; }
+  return s+'</svg>'; }
+const trayBG=`<svg viewBox="0 0 ${TW} ${TH}" aria-hidden="true" class="trbg"><rect width="${TW}" height="${TH}" rx="16" fill="#dfe4ea"/><rect x="10" y="10" width="${TW-20}" height="${TH-20}" rx="12" fill="#f9fafb" stroke="#cbd5e1" stroke-width="2"/></svg>`;
+const PILES=[['skull','Whole skulls'],['jaw','Lower jaw halves'],['long','Long bones (legs and arms)'],['pelvis','Hip bones'],['scap','Shoulder blades'],['rib','Ribs'],['vert','Vertebrae'],['crush','Broken skull pieces (not counted as skulls)']];
+function buildData(s,num){
+  const lock=h('div',{class:'fb info'}); lock.innerHTML='<b>Locked.</b> Lock in your predictions on page 2 first.'; s.appendChild(lock);
+  const SIMS=st('vsim'); const K=()=>SIMS.k||0;
+  const bench=h('div',{class:'vbench'}); s.appendChild(bench);
+  bench.innerHTML=`<h3 style="margin:0 0 6px">Virtual lab bench</h3><div class="small muted" id="pkStep"></div><p id="pkTxt" style="margin:6px 0 10px"></p>
+    <div id="pkWrap"></div><div class="btnrow"><button class="btn primary" id="pkUnwrap" type="button">Unwrap the pellet</button><button class="btn primary" id="pkSort" type="button">Sort the other bones into piles</button></div>
+    <div class="fb" id="pkMsg" hidden aria-live="polite"></div>
+    <div id="pkChart"></div><div id="pkPiles"></div><div id="pkClass"></div>`;
+  const bq=q=>bench.querySelector(q); let sel=null;
+  function init(){ if(SIMS.bones) return; const stu=S.student||{}; SIMS.seed=hashStr((stu.id||'')+'|'+(stu.last||'').toLowerCase()+'|'+WS_ID);
+    const P=makePellet(SIMS.seed); SIMS.prey=P.prey; SIMS.bones=P.bones; SIMS.fur=P.fur; SIMS.cls=P.cls; SIMS.gone=[]; SIMS.place={}; SIMS.miss=0; SIMS.len=3.5+Math.floor(mulberry(SIMS.seed+9)()*16)/10; }
+  const idList=()=>(SIMS.bones||[]).map((b,i)=>i).filter(i=>SIMS.bones[i].id);
+  const allPlaced=()=>idList().every(i=>SIMS.place[i]!=null);
+  function msg(t,cls){ const m=bq('#pkMsg'); if(!t){ m.hidden=true; return; } m.hidden=false; m.className='fb '+(cls||'info'); m.innerHTML=t; }
+  function boneEl(b,i){ const w=(boneW(b)[2]/U)*TCM, tag=b.id?'button':'span';
+    const st_=`left:${f1(b.x/TW*100)}%;top:${f1(b.y/TH*100)}%;width:${f1(w/TW*100)}%;transform:translate(-50%,-50%) rotate(${b.a}deg)${b.fl?' scaleX(-1)':''}`;
+    return `<${tag} class="${b.id?'btok':'bbone'}${sel===i?' sel':''}" ${b.id?`type="button" draggable="true" data-i="${i}" aria-label="Unknown ${b.k==='skull'?'skull':'lower jaw half'}"`:''} style="${st_}">${boneSVG(b)}</${tag}>`; }
+  function trayHTML(){ let o=`<div class="ptwrap"><div class="ptray">${trayBG}`;
+    if(K()===0){ o+=`<div class="pwhole"><svg viewBox="-80 -50 160 100" aria-hidden="true"><path d="M-62,0 C-70,-30 -30,-44 0,-36 C30,-46 70,-28 62,0 C70,30 30,44 0,36 C-30,46 -70,28 -62,0Z" fill="#cbd2da" stroke="#8b96a3" stroke-width="1.5"/><path d="M-44,-14 L40,18 M-36,22 L30,-24 M-10,-34 L6,32" stroke="#eef1f4" stroke-width="2.4"/><path d="M-50,8 L-20,-6 M18,10 L48,-4" stroke="#9aa5b1" stroke-width="1.2"/></svg></div>`; }
+    else { [false,true].forEach(want=>(SIMS.bones||[]).forEach((b,i)=>{ if(!!b.id===want&&SIMS.place[i]==null) o+=boneEl(b,i); }));
+      (SIMS.fur||[]).forEach((f,j)=>{ if(!SIMS.gone.includes(j)) o+=`<button class="fur" type="button" data-f="${j}" aria-label="Clump of fur ${j+1}" style="left:${f1(f.x/TW*100)}%;top:${f1(f.y/TH*100)}%">${furSVG(f.s)}</button>`; }); }
+    return o+'</div></div>'+(K()>=1?'<div class="small muted ptnote">Scroll the tray sideways to see every bone.</div>':''); }
+  function lenHTML(){ const L=SIMS.len||4, cm=48, X0=24, w=L*cm, sc=w/73, hh=17*sc, cy=8+hh, ry=cy+hh+8, H=ry+34;
+    return `<div class="plen"><div class="small muted">Your pellet before you took it apart:</div><svg viewBox="0 0 330 ${f1(H)}" role="img" aria-label="Your whole pellet lying above a centimeter ruler."><rect width="330" height="${f1(H)}" rx="10" fill="#f9fafb"/><g transform="translate(${f1(X0+w/2)} ${f1(cy)})">${pelletG(0,0,sc,0,SIMS.seed||7,{noBone:false})}</g>
+      <rect x="${X0-4}" y="${f1(ry)}" width="${6*cm+8}" height="26" fill="#fde68a" stroke="#a16207"/>${Array.from({length:61},(_,i)=>`<line x1="${f1(X0+i*cm/10)}" y1="${f1(ry)}" x2="${f1(X0+i*cm/10)}" y2="${f1(ry+(i%10===0?14:i%5===0?10:6))}" stroke="#7c5410" stroke-width="${i%10===0?1.4:.8}"/>`).join('')}${[0,1,2,3,4,5,6].map(i=>stx(X0+i*cm,f1(ry+24),String(i),10,'#7c5410')).join('')}<line x1="${X0}" y1="4" x2="${X0}" y2="${f1(ry)}" stroke="#94a3b8" stroke-dasharray="3 3"/><line x1="${f1(X0+w)}" y1="4" x2="${f1(X0+w)}" y2="${f1(ry)}" stroke="#94a3b8" stroke-dasharray="3 3"/></svg></div>`; }
+  function chartHTML(){ const on=K()===2;
+    return `<h4 style="margin:16px 0 4px">Bone identification chart</h4><div class="small muted">${on?'Drag each skull and lower jaw half here (or tap it, then tap a column). Use the teeth and the size.':K()>=3?'Every skull and lower jaw half you identified.':'You will use this chart after you uncover the bones.'}</div>
+      <div class="idgrid">${PREY.map((p,t)=>{ const got=Object.keys(SIMS.place||{}).filter(i=>SIMS.place[i]===t).map(i=>SIMS.bones[i]);
+        return `<button class="idcol" type="button" data-t="${t}" ${on?'':'disabled'}><span class="idn">${p.name}</span><span class="idref"><svg viewBox="0 0 170 120" aria-hidden="true">${fitG(skullArt(p.k),5,4,160,60)}${p.jcm?fitG(jawArt(p.k),20,70,130,46):`<text x="85" y="100" text-anchor="middle" font-size="13" fill="#64748b">beak, no teeth</text>`}</svg></span>
+          <span class="idgot">${got.map(b=>boneSVG(b,26)).join('')||'<span class="small muted">none yet</span>'}</span></button>`; }).join('')}</div>`; }
+  function pilesHTML(){ const bs=SIMS.bones||[];
+    return `<h4 style="margin:16px 0 4px">Bone piles</h4><div class="small muted">All the bones from your pellet, sorted by kind. Count each pile.</div><div class="piles">${PILES.map(([k,l])=>{ const xs=bs.filter(b=>b.k===k); if(!xs.length&&k==='crush') return '';
+      return `<div class="pile"><div class="plab">${l}</div><div class="pbones">${xs.length?xs.map(b=>`<span class="pb">${boneSVG(b,k==='vert'?22:k==='skull'||k==='crush'?40:30)}</span>`).join(''):'<span class="small muted">none</span>'}</div></div>`; }).join('')}</div>`; }
+  function classHTML(){ const mine=PREY.map((_,t)=>(SIMS.prey||[]).filter(p=>p.t===t).length);
+    return `<h4 style="margin:16px 0 4px">Class data board</h4><div class="small muted">Prey animals found by each lab group. Your pellet is the last row.</div><div class="wide"><table class="nb ctab"><tr><th>Group</th>${PREY.map(p=>`<th>${p.name}</th>`).join('')}</tr>${SIMS.cls.map((r,g)=>`<tr><td>Group ${g+1}</td>${r.map(x=>`<td>${x}</td>`).join('')}</tr>`).join('')}<tr><td><b>Your pellet</b></td>${mine.map(x=>`<td><b>${x}</b></td>`).join('')}</tr></table></div>`; }
+  function drawB(){ const k=K(), nf=(SIMS.fur||[]).length, left=nf-(SIMS.gone||[]).length, ids=idList(), np=ids.filter(i=>SIMS.place[i]!=null).length;
+    bq('#pkStep').textContent=k===0?'Step 1 of 4 · unwrap':k===1?'Step 2 of 4 · tease the pellet apart':k===2?'Step 3 of 4 · identify skulls and jaws':'Step 4 of 4 · done';
+    bq('#pkTxt').innerHTML=k===0?'Your pellet is still wrapped in foil. Unwrap it to start.':k===1?`Tap each clump of fur to pull it away. <b>Fur left: ${left} of ${nf}</b>.`:k===2?`All the fur is gone. Now identify every skull and lower jaw half. <b>Identified: ${np} of ${ids.length}</b>. Broken skull pieces can't be identified, so leave them: use the jaws instead.`:'All bones are sorted. Count the piles and the chart columns, and fill in the data tables below.';
+    bq('#pkWrap').innerHTML=(k>=1?lenHTML():'')+(k>=3?'':trayHTML());
+    bq('#pkChart').innerHTML=k>=1?chartHTML():'';
+    bq('#pkPiles').innerHTML=k>=3?pilesHTML():''; bq('#pkClass').innerHTML=k>=3?classHTML():'';
+    bq('#pkUnwrap').hidden=k!==0; const sb=bq('#pkSort'); sb.hidden=k!==2; sb.disabled=!allPlaced();
+    wire(); }
+  function place(i,t){ if(K()!==2||i==null||SIMS.place[i]!=null) return; const b=SIMS.bones[i];
+    if(PREY[t].k!==b.t){ SIMS.miss=(SIMS.miss||0)+1; sel=null; save(); msg(`<b>Not a match.</b> That ${b.k==='skull'?'skull':'jaw'} does not look like a ${PREY[t].name.toLowerCase()}. Check the teeth (a gap? pointed red tips? zigzag or round molars?) and the size.`,'no'); drawB(); return; }
+    SIMS.place[i]=t; sel=null; save(); msg(`Identified: ${PREY[t].name.toLowerCase()} ${b.k==='skull'?'skull':'lower jaw half'}.`,'ok');
+    if(allPlaced()){ cloudSave(true); msg('<b>Every skull and jaw is identified.</b> Now sort the other bones into piles.','ok'); } drawB(); }
+  function wire(){
+    bench.querySelectorAll('.fur').forEach(f=>f.addEventListener('click',()=>{ if(K()!==1) return; const j=+f.dataset.f; if(SIMS.gone.includes(j)) return; SIMS.gone.push(j);
+      f.classList.add('away'); setTimeout(()=>{ if(SIMS.gone.length>=SIMS.fur.length){ SIMS.k=2; cloudSave(true); msg('All the fur is pulled away. Look at the bones you uncovered.','info'); } save(); drawB(); },180); }));
+    bench.querySelectorAll('.btok').forEach(b=>{ b.addEventListener('click',()=>{ if(K()!==2) return; const i=+b.dataset.i; sel=sel===i?null:i; msg(sel==null?'':'Selected. Now tap the matching column of the chart.','info'); drawB(); });
+      b.addEventListener('dragstart',e=>{ sel=+b.dataset.i; e.dataTransfer.setData('text/plain',b.dataset.i); }); });
+    bench.querySelectorAll('.idcol').forEach(c=>{ c.addEventListener('click',()=>{ if(sel==null){ if(K()===2) msg('First tap a skull or jaw in the tray.','info'); return; } place(sel,+c.dataset.t); });
+      c.addEventListener('dragover',e=>{ e.preventDefault(); c.classList.add('hot'); }); c.addEventListener('dragleave',()=>c.classList.remove('hot'));
+      c.addEventListener('drop',e=>{ e.preventDefault(); c.classList.remove('hot'); place(+e.dataTransfer.getData('text/plain'),+c.dataset.t); }); }); }
+  bq('#pkUnwrap').addEventListener('click',()=>{ if(K()!==0||!st('pred').checked) return; init(); SIMS.k=1; save(); cloudSave(true); msg(''); drawB(); dataRefresh(); });
+  bq('#pkSort').addEventListener('click',()=>{ if(K()!==2||!allPlaced()) return; SIMS.k=3; SIMS.done=true; save(); cloudSave(true); msg(''); drawB(); dataRefresh(); });
+  drawB();
+  /* --- the same data tables as the hands-on lab --- */
+  const owrap=h('div',{}); s.appendChild(owrap);
+  writtenProblem(owrap,{id:'obsw', part:'P3', num:num(), q:'<b>Before you take it apart:</b> describe your virtual pellet. Use the ruler in the picture to give its length in cm, then its color, and what you can see on the outside.', pts:2, bank:['cm','long','gray','black','brown','fur','bones sticking out','oval','soft','dry'],
+    groups:[['gives a size',/\d/],['describes color, fur, or bones',/gray|grey|black|brown|dark|fur|hair|bone|soft|dry|oval|fuzzy/]],
+    model:'My pellet is about 4 cm long and dark gray. It is an oval ball of fur, and I can see a few small bones sticking out.',
+    hint:'The picture above the tray shows your whole pellet on a ruler. Say how long it is, what color it is, and what you see on the outside.', why:'Careful observations come before you take something apart.'});
+  const dlock=h('div',{class:'fb info'}); dlock.innerHTML='<b>Data tables locked.</b> Finish the virtual dissection first: uncover, identify, and sort all the bones.'; s.appendChild(dlock);
+  const dwrap=h('div',{}); s.appendChild(dwrap);
+  dataTableProblem(dwrap,{id:'bones', part:'P3', num:num(), q:'<b>Bone count.</b> Count each pile of bones. Count only whole skulls (not broken pieces).', pts:3, corner:'Kind of bone', cols:['Number found'], rows:BONE_ROWS, chart:boneChart});
+  dataTableProblem(dwrap,{id:'prey', part:'P3', num:num(), q:'<b>Prey identification.</b> Use the chart columns. For each kind of prey, count its skulls and lower jaw halves. Then use the counting rule to find the number of prey animals. Type 0 for prey you did not find.', pts:3, corner:'Prey', cols:PREY_COLS, rows:PREY_ROWS, chart:preyChart});
+  dataTableProblem(dwrap,{id:'cls', part:'P3', num:num(), q:'<b>Class data.</b> Add up each column of the class data board (all 11 groups and your pellet) to get the <b>whole class totals</b>.', pts:2, corner:'Prey', cols:CLS_COLS, rows:PREY_ROWS, chart:clsChart});
+  window.dataRefresh=()=>{ const ok=!!st('pred').checked, opened=K()>=1, ran=!!SIMS.done;
+    lock.hidden=ok; bench.classList.toggle('off',!ok); owrap.classList.toggle('off',!(ok&&opened)); dlock.hidden=!ok||ran; dwrap.classList.toggle('off',!(ok&&ran)); if(window.anaRefresh) anaRefresh(); };
+}
+
+/* ============================== BUILD / SCORE ============================== */
+function scoreAll(){ const parts=PARTS.slice(0,-1).map(p=>({k:p.k,label:p.label,got:0,max:0})); PROBS.forEach(pr=>{ const pt=parts.find(x=>x.k===pr.part); pt.got+=pr.score(); pt.max+=pr.max; });
+  return {parts, total:parts.reduce((a,b)=>a+b.got,0), max:parts.reduce((a,b)=>a+b.max,0)}; }
+function build(){
+  PROBS.length=0; const ws=$('#ws'); ws.innerHTML='';
+  $('#nav').innerHTML=PARTS.map((pt,i)=>`<button class="ntile" type="button" data-i="${i}" aria-label="${pt.title}"><span class="ic">${ico(i,22)}</span><span class="nm">${pt.label}</span></button>`).join('');
+  $$('#nav .ntile').forEach(b=>b.addEventListener('click',()=>showPart(+b.dataset.i)));
+  const secs=PARTS.map((pt,i)=>{ const el=h('section',{class:'sec',id:'part'+i}); const last=i===PARTS.length-1;
+    el.innerHTML=`<div class="sechead"><div class="badge"><span class="z">${i+1}</span>${ico(i,34)}</div><div><div class="meta">${last?'Grade':`Section ${i+1} of ${PARTS.length-1} · about ${pt.min} min`}</div><h2>${pt.title}</h2></div></div>`;
+    const c=h('div',{class:'card'}); el.appendChild(c);
+    const nav=h('div',{class:'secnav'});
+    const back=h('button',{class:'btn ghost',type:'button'},i===0?'':'← Back'); if(i===0) back.style.visibility='hidden'; back.addEventListener('click',()=>showPart(i-1));
+    nav.appendChild(back);
+    if(!last){ const nx=h('button',{class:'btn primary',type:'button'},i===PARTS.length-2?'See my grade →':`Next: ${PARTS[i+1].title} →`); nx.addEventListener('click',()=>showPart(i+1)); nav.appendChild(nx); }
+    el.appendChild(nav); ws.appendChild(el); return c; });
+  buildContent(secs);
+  secs[PARTS.length-1].id='turnin';
+  showPart(Math.min(S.cur||0,PARTS.length-1),true);
+  $('#whoami').textContent=S.student?`${S.student.first} ${S.student.last}`:''; refresh();
+}
+function showPart(i,noScroll){
+  S.cur=i; $$('#ws .sec').forEach((el,j)=>el.hidden=j!==i);
+  $$('#nav .ntile').forEach((t,j)=>t.classList.toggle('cur',j===i));
+  if(!noScroll){ save(); window.scrollTo(0,0); }
+}
+function refresh(){
+  const sc=scoreAll(), done=PROBS.filter(p=>p.checked()).length;
+  $('#scorePill').textContent=`${done}/${PROBS.length} checked · ${sc.total}/${sc.max} pts`;
+  PARTS.slice(0,-1).forEach((pt,i)=>{ const t=$(`#nav .ntile[data-i="${i}"]`); if(t) t.classList.toggle('done',PROBS.filter(p=>p.part===pt.k).every(p=>p.checked())); });
+  const t7=$(`#nav .ntile[data-i="${PARTS.length-1}"]`); if(t7) t7.classList.toggle('done',!!S.submittedAt);
+  const c=$('#turnin'); if(!c) return;
+  const rows=sc.parts.map(p=>`<tr><th>${p.label}</th><td>${p.got} / ${p.max}</td></tr>`).join('');
+  c.innerHTML=`<div style="display:flex;gap:22px;align-items:center;flex-wrap:wrap"><div class="big">${sc.total}/${sc.max}</div><div><h3 style="margin:0">${esc(S.student?S.student.first+' '+S.student.last:'')}</h3><p class="muted" style="margin:0">${done} of ${PROBS.length} problems checked</p></div></div>
+    <table class="res" style="margin-top:12px">${rows}</table>
+    <p class="small muted" style="margin-top:10px">Problems you haven't checked count as 0. You can turn in again later; your teacher sees the newest one.</p>
+    <div class="btnrow"><button class="btn primary" id="subBtn" type="button">${S.submittedAt?'Turn in again':'Turn in my lab'}</button><button class="btn ghost" id="csvBtn" type="button">Download CSV</button></div>
+    <p class="fb info sheetStatus" aria-live="polite">${S.sentAt?`Sent to your teacher ${new Date(S.sentAt).toLocaleString()}.`:'Not turned in yet.'}</p>`;
+  $('#subBtn').addEventListener('click',turnIn);
+  $('#csvBtn').addEventListener('click',()=>downloadCSV([recordRow()],`OwlPelletLabSim_${(S.student&&S.student.last||'student').replace(/\W+/g,'')}.csv`));
+}
+const CSV_HEAD=['Student ID','Last Name','First Name','Period','Teacher','Activity','Score','Total','Percent',...PARTS.slice(0,-1).map(p=>p.label),'Date'];
+function recordRow(){ const st=S.student||{}, sc=scoreAll(); return [st.id||'',st.last||'',st.first||'',st.period||'',st.teacher||'',ACTIVITY,sc.total,sc.max,Math.round(100*sc.total/sc.max)+'%',...sc.parts.map(p=>p.got),new Date(S.submittedAt||Date.now()).toLocaleString()]; }
+function csvText(rows){ const q=v=>{ v=String(v==null?'':v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }; return [CSV_HEAD,...rows].map(r=>r.map(q).join(',')).join('\r\n')+'\r\n'; }
+function downloadCSV(rows,name){ const b=new Blob([csvText(rows)],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500); }
+const loadRecs=()=>{ try{ return (JSON.parse(localStorage.getItem(RECS))||[]).filter(r=>r.length===CSV_HEAD.length); }catch(e){ return []; } };
+function saveRecord(){ if(S.preview) return; const recs=loadRecs(), row=recordRow(); const i=recs.findIndex(r=>r[0]===row[0]&&r[1]===row[1]); if(i>=0) recs[i]=row; else recs.push(row); try{ localStorage.setItem(RECS,JSON.stringify(recs)); }catch(e){} }
+function turnIn(){
+  const left=PROBS.filter(p=>!p.checked()).length;
+  if(left&&!confirm(`${left} problem${left>1?'s':''} not checked yet (they count as 0). Turn in anyway?`)) return;
+  S.submittedAt=Date.now(); save(); saveRecord(); cloudSave(true); disarm(); refresh();
+  const msg=t=>$$('.sheetStatus').forEach(e=>e.textContent=t);
+  if(S.preview){ msg('Preview mode: nothing is sent.'); return; }
+  const st=S.student, sc=scoreAll();
+  const body={studentId:st.id||'',firstName:st.first||'',lastName:st.last||'',period:st.period||'',teacher:st.teacher||'',locks:'0',when:new Date().toString(),activity:ACTIVITY,score:String(sc.total),total:String(sc.max),
+    qlabels:sc.parts.map((p,i)=>'P'+(i+1)+' '+PARTS[i].label).join('|'),qpoints:sc.parts.map(p=>p.got).join('|'),qmax:sc.parts.map(p=>p.max).join('|')};
+  msg('Sending...');
+  fetch(sheetURL(),{method:'POST',mode:'no-cors',body:new URLSearchParams(body)}).then(()=>{ S.sentAt=new Date().toISOString(); save(); msg('Sent! Your teacher will see your score.'); }).catch(()=>msg("Couldn't send. Check the Wi-Fi and try again, or download the CSV."));
+}
+
+/* ============================== NO LOCKDOWN ON WORKSHEETS ============================== */
+let teacherOpen=false;
+function arm(){} function disarm(){} function showLock(){} function enterFS(){}
+['copy','cut','paste','contextmenu'].forEach(ev=>document.addEventListener(ev,e=>{ if(teacherOpen||S.preview) return; e.preventDefault(); }));
+
+/* ============================== SIGN IN ============================== */
+function showWS(){ $('#start').hidden=true; $('#top').hidden=false; $('#ws').hidden=false; build(); window.scrollTo(0,0); if(S.locked&&LOCKDOWN&&!S.lockOff) showLock(); else arm(); }
+function renderStart(){ const has=!!S.student; $('#resumeBox').hidden=!has; $('#startForm').hidden=has; $('#signinTitle').textContent=has?'Welcome back':'Sign in to start';
+  if(has) $('#resumeText').innerHTML=`Signed in as <b>${esc(S.student.first)} ${esc(S.student.last)}</b>, period ${esc(S.student.period)}.`; }
+$('#fPeriod').innerHTML='<option value="">Choose your period</option>'+periodList().map(p=>`<option>${esc(p)}</option>`).join('');
+$('#fTeacher').innerHTML='<option value="">Choose your teacher</option>'+teacherList().map(t=>`<option>${esc(t)}</option>`).join('');
+let starting=false;
+async function start(){
+  if(starting) return; starting=true;
+  try{
+    const v={first:$('#fFirst').value.trim(),last:$('#fLast').value.trim(),id:$('#fId').value.trim(),period:$('#fPeriod').value,teacher:$('#fTeacher').value};
+    const miss=[]; if(!v.first) miss.push('first name'); if(!v.last) miss.push('last name'); if(!v.id) miss.push('student ID'); if(!v.period) miss.push('period'); if(!v.teacher) miss.push('teacher');
+    const err=$('#formErr'); if(miss.length){ err.className='fb no'; err.textContent='Fill in your '+miss.join(', ')+'.'; err.hidden=false; return; }
+    if(LOCKDOWN) enterFS();
+    err.className='fb info'; err.textContent='Checking for your saved work...'; err.hidden=false;
+    const res=await cloudLoad(v); err.hidden=true;
+    if(res.status==='found'){ const d=res.data; d.student=Object.assign({},d.student||{},{first:v.first,period:v.period,teacher:v.teacher}); adopt(d); showWS(); note('✓ Your saved work was loaded'); return; }
+    const ns=fresh(); ns.student=v; adopt(ns); showWS(); cloudSave(true);
+  } catch(ex){ const er=$('#formErr'); er.className='fb no'; er.textContent='Something went wrong starting ('+(ex&&ex.message||ex)+'). Reload and try again.'; er.hidden=false; }
+  finally{ starting=false; }
+}
+$('#startBtn').addEventListener('click',start);
+$('#startForm').addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.tagName==='INPUT'){ e.preventDefault(); start(); } });
+$('#resumeBtn').addEventListener('click',async()=>{ const b=$('#resumeBtn'); b.disabled=true; b.textContent='Loading your work...'; if(LOCKDOWN&&!S.locked) enterFS();
+  const res=await cloudLoad(S.student); b.disabled=false; b.textContent='Continue my lab';
+  if(res.status==='found'&&(res.data.updatedAt||0)>(S.updatedAt||0)&&checkedCount(res.data)>=checkedCount(S)){ const d=res.data; d.student=S.student; adopt(d); note('✓ Your newest saved work was loaded'); } showWS(); });
+$('#notMeBtn').addEventListener('click',async()=>{ const b=$('#notMeBtn'); b.disabled=true;
+  try{ if(cloudOK()) await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); }catch(e){ b.disabled=false; $('#resumeErr').textContent="Can't back up the last student's work right now. Check the Wi-Fi, or ask your teacher."; $('#resumeErr').hidden=false; return; }
+  b.disabled=false; adopt(fresh()); ['#fFirst','#fLast','#fId','#fPeriod','#fTeacher'].forEach(s=>$(s).value=''); renderStart(); });
+
+/* ============================== TEACHER ============================== */
+function openTeacher(){ teacherOpen=true; $('#teachLogin').hidden=false; $('#teachPanel').hidden=true; $('#teachErr').hidden=true; $('#teachCode').value=''; $('#teachOv').classList.add('show'); setTimeout(()=>$('#teachCode').focus(),50); }
+function closeTeacher(){ $('#teachOv').classList.remove('show'); teacherOpen=false; }
+$('#teacherLink').addEventListener('click',openTeacher); $('#teachBtn').addEventListener('click',openTeacher);
+$('#teachCancel').addEventListener('click',closeTeacher);
+$('#teachCode').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#teachGo').click(); });
+$('#teachGo').addEventListener('click',()=>{ if(!codeIs($('#teachCode').value,TEACHER_CODE)){ $('#teachErr').hidden=false; return; } $('#teachLogin').hidden=true; $('#teachPanel').hidden=false; renderTeacher(); });
+function renderTeacher(){
+  const recs=loadRecs(), p=$('#teachPanel'), keyOn=document.body.classList.contains('keyon');
+  p.innerHTML=`<h2>Teacher tools</h2>
+    <div class="btnrow"><button class="btn ghost" id="tKey" type="button">${keyOn?'Hide answer key':'Answer key'}</button>
+      <button class="btn ghost" id="tPrev" type="button">${S.preview?'End preview':'Preview (saves nothing)'}</button>
+      <button class="btn ghost" id="tResetWrong" type="button">Reset all wrong answers</button>
+      <button class="btn ghost" id="tReset" type="button">Reset this Chromebook</button><button class="btn ghost" id="tClose" type="button">Close</button></div>
+    <h3 style="margin-top:16px">Scores saved on this Chromebook (${recs.length})</h3>
+    <div class="wide">${recs.length?`<table class="nb"><tr><th>Student</th><th>ID</th><th>Period</th><th>Score</th><th>Date</th></tr>${recs.map(r=>`<tr><td>${esc(r[1])}, ${esc(r[2])}</td><td>${esc(r[0])}</td><td>${esc(r[3])}</td><td>${r[6]}/${r[7]}</td><td>${esc(r[r.length-1])}</td></tr>`).join('')}</table>`:'<p class="muted">None yet.</p>'}</div>
+    <div class="btnrow"><button class="btn primary" id="tCsv" type="button" ${recs.length?'':'disabled'}>Download scores (CSV)</button></div>
+    <h3 style="margin-top:16px">Load a student's saved work</h3>
+    <div class="btnrow"><input class="code" id="tId" placeholder="Student ID" style="width:150px"><input class="code" id="tLast" placeholder="Last name" style="width:170px"><button class="btn ghost" id="tLoad" type="button">Load work</button></div>
+    <p class="fb info" id="tMsg" style="min-height:1em"></p>`;
+  const msg=t=>$('#tMsg').textContent=t;
+  $('#tKey').addEventListener('click',()=>{ document.body.classList.toggle('keyon'); renderTeacher(); msg(document.body.classList.contains('keyon')?'Answer key on: each box shows its answer, sort chips show their box, and correct choices have a dashed gold outline.':'Answer key off.'); });
+  $('#tPrev').addEventListener('click',()=>{ if(S.preview){ location.reload(); return; } const ns=fresh(); ns.preview=true; ns.student={first:'Teacher',last:'Preview',id:'0',period:'-',teacher:teacherList()[0]}; S=ns; closeTeacher(); showWS(); note('Preview: nothing is saved'); });
+  $('#tReset').addEventListener('click',()=>{ if(confirm('Erase this lab on this Chromebook? Work backed up to the Saved Student Work sheet is not deleted.')){ try{ localStorage.removeItem(STORE); }catch(e){} location.reload(); } });
+  $('#tResetWrong').addEventListener('click',()=>{
+    const wrong=PROBS.filter(pr=>{ const P=S.p[pr.id]||{}; return (P.tries||0)>0 && !P.right; });
+    if(!wrong.length){ msg('Nothing to reset: this student has no wrong answers.'); return; }
+    if(!confirm(`Reset ${wrong.length} problem${wrong.length>1?'s':''} that ${wrong.length>1?'are':'is'} wrong or on a second try for ${(S.student&&S.student.first)||'this student'}? Correct answers stay.`)) return;
+    wrong.forEach(pr=>{ delete S.p[pr.id]; });
+    save(); cloudSave(true); msg(`Reset ${wrong.length} problem${wrong.length>1?'s':''}. Reloading…`); setTimeout(()=>location.reload(),700); });
+  $('#tClose').addEventListener('click',closeTeacher);
+  $('#tCsv').addEventListener('click',()=>downloadCSV(recs,`OwlPelletLabSim_scores_${new Date().toISOString().slice(0,10)}.csv`));
+  $('#tLoad').addEventListener('click',async()=>{ const s={id:$('#tId').value.trim(),last:$('#tLast').value.trim()}; if(!s.id||!s.last){ msg('Type the student ID and last name.'); return; } msg('Looking up saved work...');
+    const r=await cloudLoad(s); if(r.status==='found'){ adopt(r.data); closeTeacher(); renderStart(); $('#start').hidden=false; $('#ws').hidden=true; $('#top').hidden=true; } else msg(r.status==='none'?'No saved work found for that student.':"Couldn't reach the saved-work sheet."); });
+}
+
+if(!STORAGE_OK) $('#noStore').hidden=false;
+renderStart();
+})();
+</script>
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>
