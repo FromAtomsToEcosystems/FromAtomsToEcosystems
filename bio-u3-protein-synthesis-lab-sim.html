@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Protein Synthesis Model Lab: Build a Protein (simulation) | Biology Unit 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1626; --panel:#142136; --panel2:#1a2a44; --line:#2a3d5f; --line2:#3a5580;
+  --text:#e8eef8; --muted:#a3b4cf; --dim:#7488a9;
+  --leaf:#5fe3a9; --sun:#ffd35c; --r:#ffd35c; --sky:#45c8f0; --ok:#4ade80; --bad:#fb7185; --pink:#f472b6;
+  --font:'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+*{box-sizing:border-box} [hidden]{display:none !important}
+html,body{margin:0}
+body{background-color:var(--bg); background-image:linear-gradient(rgba(110,150,210,.065) 1px,transparent 1px),linear-gradient(90deg,rgba(110,150,210,.065) 1px,transparent 1px); background-size:32px 32px;
+  color:var(--text); font-family:var(--font); font-size:17px; line-height:1.55; -webkit-user-select:none; user-select:none}
+input,textarea{-webkit-user-select:text; user-select:text}
+h1,h2,h3,h4{margin:0 0 .45em; line-height:1.2; font-weight:600}
+h1{font-size:clamp(28px,4.4vw,40px); font-weight:700} h2{font-size:24px} h3{font-size:19px}
+p{margin:0 0 .75em} .muted{color:var(--muted)} .small{font-size:14px}
+sub,sup{font-size:.72em}
+:focus-visible{outline:3px solid var(--r); outline-offset:2px}
+.top{position:sticky; top:0; z-index:20; background:rgba(13,22,38,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+.top-in{max-width:1100px; margin:0 auto; padding:8px 16px; display:flex; gap:12px; align-items:center}
+.brand{font-weight:600; font-size:15px; white-space:nowrap} .brand span{display:block; font-weight:400; font-size:12px; color:var(--muted)}
+.nav{display:flex; gap:6px; flex:1; overflow-x:auto; padding:3px 2px}
+.ntile{flex:0 0 auto; width:54px; height:54px; border-radius:7px; border:1.5px solid var(--line2); background:var(--panel); color:var(--text); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer; position:relative; font:inherit; padding:0}
+.ntile .ic{color:var(--leaf); line-height:0} .ntile .nm{font-size:8.5px; color:var(--muted)}
+.ntile.cur{border-color:var(--r); background:rgba(255,211,92,.14)}
+.ntile.cur .nm{color:var(--r)}
+.secnav{display:flex; justify-content:space-between; gap:10px; margin-top:4px}
+.ntile.done::after{content:'✓'; position:absolute; top:1px; right:4px; font-size:10px; font-weight:700; color:var(--ok)}
+.scorepill{font-size:13px; padding:4px 10px; border-radius:999px; background:var(--panel2); white-space:nowrap}
+.savenote{font-size:12.5px; color:var(--ok); white-space:nowrap} @media (max-width:1300px){ .savenote{display:none} } @media (max-width:900px){ .scorepill{display:none} }
+main{max-width:1000px; margin:0 auto; padding:20px 16px 80px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin:0 0 18px}
+.sec{scroll-margin-top:80px}
+.sechead{display:flex; gap:14px; align-items:center; margin:28px 0 10px}
+.badge{width:66px; height:66px; border-radius:10px; border:2px solid var(--leaf); background:var(--panel); display:flex; align-items:center; justify-content:center; position:relative; flex:0 0 auto; color:var(--leaf)}
+.badge .z{position:absolute; top:3px; left:6px; font-size:11px; color:var(--muted)}
+.meta{color:var(--muted); font-size:14px}
+.btn{font:inherit; font-weight:600; font-size:15px; border-radius:10px; padding:10px 18px; cursor:pointer; border:1.5px solid transparent}
+.btn.primary{background:var(--r); color:#231a00} .btn.ghost{background:transparent; border-color:var(--line2); color:var(--text)}
+.btn.small{padding:6px 12px; font-size:14px} .btn:disabled{opacity:.45; cursor:not-allowed}
+.btnrow{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:12px}
+.field{display:flex; flex-direction:column; gap:4px; font-size:14px; color:var(--muted)}
+.field input,.field select{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px}
+.formgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin:10px 0}
+.fb{margin-top:10px; padding:10px 14px; border-radius:10px; font-size:15px}
+.fb.ok{background:rgba(74,222,128,.12); color:#c9f7d8} .fb.no{background:rgba(251,113,133,.12); color:#ffd3db} .fb.info{background:var(--panel2)}
+.prob{border-top:1px solid var(--line); padding-top:16px; margin-top:16px}
+.prob:first-of-type{border-top:none; padding-top:0; margin-top:0}
+.pq{font-weight:500; margin-bottom:8px}
+.pnum{display:inline-block; min-width:30px; font-weight:700; color:var(--leaf)}
+.pts{font-size:13px; color:var(--muted); font-weight:400}
+.hintbox{background:rgba(255,211,92,.08); border-left:3px solid var(--r); border-radius:8px; padding:8px 12px; margin-top:8px; font-size:15px}
+/* drag and drop */
+.figwrap{position:relative; width:100%}
+.figwrap svg{width:100%; height:auto; display:block; background:#0a1322; border:1px solid var(--line); border-radius:12px}
+.figwrap svg text{font-family:var(--font)}
+.zone{position:absolute; transform:translate(-50%,-50%); min-height:32px; border:2px dashed #8fb3e6; border-radius:9px; background:rgba(13,22,38,.92); color:var(--text); font:inherit; font-size:14px; font-weight:600; display:flex; align-items:center; justify-content:center; padding:2px 6px; cursor:pointer; text-align:center; line-height:1.15}
+.zone.empty{color:var(--dim); font-weight:400; font-size:12.5px}
+.zone.filled{border-style:solid; border-color:var(--r); background:#2b2410}
+.zone.hot{box-shadow:0 0 0 3px rgba(255,211,92,.5)}
+.zone.locked{opacity:.9}
+.zone.ok{border-color:var(--ok); background:#0f2e1d} .zone.no{border-color:var(--bad); background:#3a0f1a}
+.pool{display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 4px; padding:10px; border:1px dashed var(--line2); border-radius:10px; min-height:52px}
+.pool .lbl{width:100%; font-size:12.5px; color:var(--muted)}
+.chip{font:inherit; font-size:15px; font-weight:600; padding:6px 14px; border-radius:999px; border:1.5px solid var(--line2); background:var(--panel2); color:var(--text); cursor:grab; touch-action:none}
+.chip.sel{border-color:var(--r); background:rgba(255,211,92,.16); box-shadow:0 0 0 3px rgba(255,211,92,.35)}
+.bins{display:grid; gap:10px; margin-top:6px}
+.bin{border:2px dashed var(--line2); border-radius:12px; padding:10px; min-height:96px; cursor:pointer; background:rgba(13,22,38,.5)}
+.bin h4{margin:0 0 8px; font-size:15px; color:var(--leaf)} .bin.hot{border-color:var(--r)}
+.bin .chip{cursor:pointer; margin:3px} .bin .chip.ok{border-color:var(--ok); background:#0f2e1d} .bin .chip.no{border-color:var(--bad); background:#3a0f1a}
+.phenbox{background:rgba(244,114,182,.1); border-left:4px solid #f472b6; border-radius:8px; padding:10px 14px; margin-bottom:14px}
+.fixnote{font-size:12px; color:#ffd3db; font-weight:400}
+/* equation */
+.eq{display:flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:20px; font-weight:600; margin:10px 0}
+.eq .zone{position:static; transform:none; min-width:120px; min-height:40px}
+/* choices */
+.opts{display:grid; gap:8px; margin:6px 0}
+.opt{display:flex; gap:12px; align-items:center; text-align:left; background:var(--panel2); border:1.5px solid var(--line); color:var(--text); border-radius:10px; padding:9px 14px; font:inherit; font-size:16px; cursor:pointer}
+.opt .L{flex:0 0 26px; height:26px; border-radius:50%; display:grid; place-items:center; background:var(--bg); font-weight:600; font-size:13px}
+.opt.multi .L{border-radius:6px}
+.opt.sel{border-color:var(--r); background:rgba(255,211,92,.08)} .opt.sel .L{background:var(--r); color:#231a00}
+.opt.ok{border-color:var(--ok); background:rgba(74,222,128,.1)} .opt.no{border-color:var(--bad); background:rgba(251,113,133,.1)}
+.opt:disabled{cursor:default}
+input.blank{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:7px 10px; font:inherit; font-size:16px; width:170px}
+input.blank.ok{border-color:var(--ok)} input.blank.no{border-color:var(--bad)}
+.brow{margin:8px 0}
+/* answer key (teacher) */
+body.keyon .zone[data-key]::after{content:'key: ' attr(data-key); position:absolute; top:100%; left:50%; transform:translateX(-50%); font-size:11px; color:var(--r); white-space:nowrap; margin-top:2px}
+body.keyon .chip[data-key]::after{content:' → ' attr(data-key); font-size:11px; color:var(--r)}
+body.keyon .opt[data-key]{outline:2px dashed var(--r); outline-offset:2px}
+body.keyon input.blank[data-key]+.keytxt{display:inline}
+.vbench{background:rgba(255,255,255,.04); border:1px solid #2a3d5f; border-radius:14px; padding:12px; margin-bottom:12px}
+#benchPic svg{width:100%; height:auto; display:block}
+.datatab select.ocell{font:inherit; padding:4px 6px; border-radius:8px; max-width:100%}
+.datatab input.dcell{width:72px; font:inherit; padding:4px 6px; border-radius:8px; text-align:center}
+.datachart svg{width:100%; height:auto; display:block; margin-top:10px}
+ol.proc li{margin:4px 0}
+.off{opacity:.35; pointer-events:none}
+.btbkey{display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; margin:6px 0 10px}.btbkey span{display:inline-block; width:16px; height:16px; border-radius:50%; vertical-align:middle; border:1px solid rgba(255,255,255,.4)}
+.simwrap{display:grid; grid-template-columns:minmax(150px,220px) 1fr; gap:18px; align-items:start; background:rgba(255,255,255,.04); border:1px solid var(--line,#2a3d5f); border-radius:14px; padding:14px}
+.simwrap.off{opacity:.35; pointer-events:none}
+.bigtube svg{width:100%; height:auto; display:block}.clock{text-align:center; font-weight:700; font-size:20px; margin-top:6px}
+.tg{display:block; margin:4px 0; font-size:17px}.tg input{transform:scale(1.3); margin-right:8px}
+.sensor{margin:10px 0; font-size:18px}.sensor b{font-size:24px; color:#ffd35c}
+.btn.on{outline:2px solid #ffd35c}
+.dot{display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:6px; vertical-align:middle}
+.predtab select{font:inherit; padding:4px 6px; border-radius:8px}
+#sChart svg{width:100%; height:auto; display:block}
+@media (max-width:700px){ .simwrap{grid-template-columns:1fr} .bigtube{max-width:180px; margin:0 auto} }
+.wbank2{margin-top:8px; padding:8px 10px; border:1px dashed rgba(163,180,207,.5); border-radius:10px; font-size:14px; line-height:2}
+.wchip{font:inherit; font-size:14px; margin:2px 4px 2px 0; padding:2px 10px; border-radius:999px; border:1px solid rgba(163,180,207,.6); background:rgba(255,255,255,.06); color:inherit; cursor:pointer}
+.wchip:hover{border-color:#ffd35c}
+.wtext{width:100%; min-height:110px; font:inherit; padding:10px; border-radius:10px; border:1.5px solid var(--line,#2a3d5f); background:rgba(255,255,255,.04); color:inherit; resize:vertical}
+.wkey{display:none; margin-top:6px; font-size:14px; color:var(--r,#ffd35c)}
+body.keyon .wkey{display:block}
+.keytxt{display:none; font-size:12px; color:var(--r); margin-left:6px}
+.big{font-size:52px; font-weight:700; color:var(--r); line-height:1}
+table.res{border-collapse:collapse; width:100%} table.res th,table.res td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line)} table.res th{color:var(--muted); font-weight:400}
+.card.nostore{border:2px solid var(--bad); background:rgba(251,113,133,.08)}
+.overlay{position:fixed; inset:0; background:rgba(4,9,18,.94); z-index:100; display:none; align-items:center; justify-content:center; padding:20px}
+.overlay.show{display:flex}
+.modal{background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:24px; max-width:900px; width:100%; max-height:92vh; overflow:auto}
+input.code{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px; width:200px}
+table.nb{border-collapse:collapse; width:100%; font-size:14px} table.nb th,table.nb td{border:1px solid var(--line2); padding:6px 8px} table.nb th{background:var(--panel2)}
+.wide{overflow-x:auto}
+@media (max-width:700px){ .zone{font-size:11px; min-height:26px} .chip{font-size:13px; padding:5px 10px} }
+@media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important} }
+.prob + p,.prob + .phenbox,.prob + .figwrap{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace; font-weight:700; letter-spacing:.06em}
+.stephead{margin:22px 0 6px; padding-top:14px; border-top:1px solid var(--line); color:var(--leaf)}
+.gcard,.mcard{background:#fffdf7; color:#16213a; border:1px solid #d6cdb8; border-radius:12px; padding:12px 14px; margin:8px 0; box-shadow:0 2px 0 rgba(0,0,0,.25); max-width:760px}
+.mcard{background:#fff7ed; border-color:#fdba74}
+.gchead{display:flex; gap:10px; align-items:baseline; flex-wrap:wrap} .gl{font-weight:800; font-size:18px} .gn{font-weight:600; color:#7c3aed}
+.gcfn{font-size:14px; color:#475569; margin:2px 0 8px} .gcfoot{font-size:12.5px; color:#64748b; margin-top:6px}
+.gcseq{display:flex; flex-wrap:wrap; gap:10px 12px}
+.gtrip{display:inline-flex; gap:3px}
+.gb{display:inline-flex; flex-direction:column; align-items:center; justify-content:center; width:30px; height:42px; border-radius:6px; color:#fff; font-weight:800; font-size:18px; line-height:1; padding-top:4px; box-shadow:inset 0 -14px 0 rgba(255,255,255,.88)}
+.gb i{font-style:normal; font-size:10.5px; font-weight:600; color:#334155; margin-top:7px}
+.gcard.small{padding:8px 10px} .gcard.small .gb{width:24px; height:36px; font-size:15px} .gcard.small .gcseq{gap:6px 8px} .gcard.small .gl{font-size:15px} .gcard.small .gcfn{font-size:12.5px; margin-bottom:5px}
+.gpick{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:10px; margin:8px 0}
+.gpbtn{font:inherit; text-align:left; background:transparent; border:3px solid transparent; border-radius:15px; padding:0; cursor:pointer} .gpbtn .gcard{margin:0; max-width:none}
+.gpbtn.sel{border-color:var(--r); box-shadow:0 0 0 3px rgba(255,211,92,.35)}
+.seqtab th,.seqtab td{text-align:center; vertical-align:middle} .seqtab td.giv{font-size:17px}
+.seqtab input.blank{width:110px; text-align:center; text-transform:uppercase; padding:5px 6px}
+.seqtab input.blank.aa{text-transform:none} input.blank::placeholder{text-transform:none}
+.datatab select.ocell{background:var(--bg); color:var(--text); border:1.5px solid var(--line2)}
+.datatab select.ocell:disabled,.seqtab input.blank:disabled,.frow input.blank:disabled{opacity:1; color:var(--text); border-color:var(--line); background:var(--panel2)}
+.frow{display:flex; flex-wrap:wrap; gap:6px 10px; align-items:center} .frow label{min-width:250px}
+input.blank.wide2{width:min(420px,100%)} input.blank.seq{text-transform:uppercase}
+.cchart{margin:10px 0} .cchart summary{cursor:pointer; font-weight:600; color:var(--sky); padding:4px 0}
+.ordprob .eq{display:grid; grid-template-columns:28px minmax(0,1fr); gap:8px 10px; font-size:17px; max-width:560px}
+.ordprob .eq .zone{min-height:42px; width:100%; justify-content:flex-start; text-align:left; padding:4px 12px}
+.datachart svg{max-width:560px}
+@media (max-width:520px){ .frow label{min-width:0} .gpick{grid-template-columns:1fr} .seqtab input.blank{width:76px} .gb{width:26px} }
+
+.vbench{background:rgba(255,255,255,.04); border:1px solid #2a3d5f; border-radius:14px; padding:12px; margin-bottom:12px}
+.bsteps{display:flex; flex-wrap:wrap; gap:6px; margin:0 0 10px} .bstep{font-size:13px; padding:3px 10px; border-radius:999px; background:var(--panel2); color:var(--muted)}
+.bstep.cur{background:var(--r); color:#231a00; font-weight:700} .bstep.done{color:var(--ok)}
+.bhelp{margin:0 0 8px}
+.nucpanel{position:relative; background:radial-gradient(ellipse at 40% 40%,#faf5ff,#ede4ff 70%,#e2d4fd); border:5px double #7c3aed; border-radius:28px; padding:28px 14px 12px; color:#16213a}
+.nuctag{position:absolute; top:6px; left:16px; font-size:13px; font-weight:700; color:#6d28d9}
+.strandwrap{display:flex; flex-wrap:wrap; gap:16px 14px}
+.btrip{position:relative; display:flex; flex-direction:column; gap:3px; padding:4px; border-radius:10px}
+.btrip.cur{background:rgba(74,222,128,.22); box-shadow:0 0 0 2px #16a34a}
+.rnap{position:absolute; top:-19px; left:50%; transform:translateX(-50%); white-space:nowrap; font-size:11px; font-weight:700; color:#fff; background:#16a34a; border-radius:999px; padding:1px 8px}
+.brow2{display:flex; gap:3px}
+.bt{display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:6px; color:#fff; font-weight:800; font-size:17px}
+.bt.dna{border-top:4px solid #1d4ed8} .bt.sm{width:22px; height:22px; font-size:12.5px; border-radius:4px}
+.bt.slot{background:rgba(255,255,255,.6); border:2px dashed #94a3b8} .bt.slot.next{border-color:#16a34a; background:#dcfce7; box-shadow:0 0 0 3px rgba(22,163,74,.35); animation:pulse 1.4s infinite}
+.bt.slot.hot,.pz.hot,.az.hot{box-shadow:0 0 0 4px rgba(255,211,92,.8)}
+@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(22,163,74,.15)}}
+.bnum{font-size:11px; color:#6b21a8; text-align:center}
+.tray{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:10px 0 4px; padding:10px; border:1px dashed var(--line2); border-radius:12px}
+.tlab{width:100%; font-size:12.5px; color:var(--muted)}
+.nucl,.dchip,.trcard{font:inherit; cursor:grab; touch-action:none; background:#f8fafc; border:2px solid #cbd5e1; border-radius:12px; padding:2px; color:#16213a}
+.nucl{width:62px; height:62px} .nucl svg{width:100%; height:100%; display:block; pointer-events:none}
+.dchip{display:inline-flex; align-items:center; gap:6px; padding:6px 12px; font-weight:700} .dchip svg{pointer-events:none}
+.trcard{width:74px} .trcard svg{width:100%; height:auto; display:block; pointer-events:none}
+.nucl.sel,.dchip.sel,.trcard.sel{border-color:var(--r); box-shadow:0 0 0 3px rgba(255,211,92,.55)}
+.dragghost{position:fixed; z-index:300; pointer-events:none; transform:translate(-50%,-50%) scale(1.05); opacity:.92; box-shadow:0 8px 20px rgba(0,0,0,.4)}
+.exitfig,.ribofig{position:relative} .ribofig{max-width:680px; margin:0 auto}
+.pz{position:absolute; border-radius:50%; border:2px dashed rgba(124,58,237,.5); cursor:pointer}
+.pz:hover{border-color:rgba(124,58,237,.8)}
+.az{position:absolute; border:3px dashed #ca8a04; border-radius:14px; background:rgba(255,251,235,.55); display:flex; align-items:center; justify-content:center; text-align:center; font-size:12px; font-weight:700; color:#92400e; line-height:1.2; cursor:pointer}
+.gtiles{display:flex; flex-wrap:wrap; gap:4px 3px; background:#fffdf7; border-radius:12px; padding:10px; margin:6px 0}
+.gbt{font:inherit; padding:0; border:none; background:none; cursor:pointer} .gbt:disabled{cursor:default}
+.gbt .gb{width:28px; height:40px; font-size:16px}
+.gbt.mut .gb{outline:3px solid #ca8a04; outline-offset:1px} .gbt.gone .gb{opacity:.18; outline:2px dashed #b91c1c}
+.gsp{display:inline-block; width:8px}
+.mout{display:grid; gap:8px; margin:10px 0; padding:10px; border-radius:12px; background:rgba(255,255,255,.06)}
+.rtiles{display:inline-flex; flex-wrap:wrap; gap:6px; vertical-align:middle} .rgrp{display:inline-flex; gap:2px}
+.hchain{display:inline-flex; flex-wrap:wrap; align-items:center; vertical-align:middle; gap:0}
+.hchain i{display:inline-block; width:8px; height:4px; background:#94a3b8}
+.hb{display:inline-flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:50%; color:#0d1626; font-weight:700; font-size:13px; border:1.5px solid rgba(15,23,42,.5)}
+.hstop{margin-left:8px; font-size:12px; font-weight:800; color:#fb7185; border:1.5px solid #fb7185; border-radius:6px; padding:1px 6px}
+.bres .rrow{display:flex; flex-wrap:wrap; gap:6px 10px; align-items:center; margin:6px 0}
+.usedtr{display:inline-flex; flex-wrap:wrap; gap:8px} .ut{display:inline-flex; align-items:center; gap:4px; background:rgba(255,255,255,.06); border-radius:999px; padding:2px 4px 2px 10px}
+.ut .hb{width:32px; height:32px; font-size:11.5px}
+.bmsg{margin:8px 0 0}
+@media (max-width:520px){ #part2 .card{padding:14px 10px} .vbench{padding:8px} .bt{width:26px; height:26px; font-size:14px} .strandwrap{gap:14px 8px} .nucpanel{padding:26px 8px 10px} .nucl{width:54px; height:54px} .trcard{width:62px} .gbt .gb{width:22px; height:36px; font-size:14px} .hb{width:34px; height:34px; font-size:11.5px} }
+
+</style>
+</head>
+<body>
+<header class="top" id="top" hidden>
+  <div class="top-in">
+    <div class="brand">Build a protein (simulation)<span id="whoami"></span></div>
+    <nav class="nav" id="nav" aria-label="Worksheet parts"></nav>
+    <span class="scorepill" id="scorePill"></span>
+    <span class="savenote" id="saveNote" aria-live="polite"></span>
+    <button class="btn ghost small" id="teachBtn" type="button">Teacher</button>
+  </div>
+</header>
+
+<main>
+  <section id="start">
+    <div class="muted" style="margin-top:8px">Biology · Unit 3: DNA and Protein Synthesis · Lab simulation for students who missed the lab · about 35 minutes</div>
+    <h1>Protein Synthesis Model Lab: Build a Protein (simulation)</h1>
+    <p class="muted" style="font-size:18px;max-width:42em">Missed the lab? Build a protein from a real gene on a virtual bench, then see what one mutation does to it.</p>
+    <div class="card"><h3>How it works</h3>
+      <p style="margin:0">Each problem gets <b>two tries</b>. Right on either try earns full credit. If your first try is wrong, you'll be told it isn't right yet (but not the answer), so look again and try once more. Wrong twice and the problem is marked wrong and locks. Stuck? Tap <b>Hint</b> before you check.</p></div>
+    <div class="card nostore" id="noStore" hidden><h3>This browser can't save your work</h3><p style="margin:0">You may be in guest or incognito mode. Sign in to your school account and open the worksheet again.</p></div>
+    <div class="card">
+      <h3 id="signinTitle">Sign in to start</h3>
+      <div id="resumeBox" hidden><p id="resumeText"></p>
+        <div class="btnrow"><button class="btn primary" id="resumeBtn" type="button">Continue my lab</button><button class="btn ghost small" id="notMeBtn" type="button">Not you? Sign in as a different student</button></div>
+        <div class="fb no" id="resumeErr" hidden></div></div>
+      <div id="startForm">
+        <div class="formgrid">
+          <label class="field">First name<input id="fFirst" autocomplete="off"></label><label class="field">Last name<input id="fLast" autocomplete="off"></label>
+          <label class="field">Student ID<input id="fId" inputmode="numeric" autocomplete="off"></label>
+          <label class="field">Period<select id="fPeriod"></select></label><label class="field">Teacher<select id="fTeacher"></select></label>
+        </div>
+        <p class="small muted">Your work saves as you go. On any Chromebook, sign in with the same student ID and last name to pick up where you left off.</p>
+        <div class="fb no" id="formErr" hidden></div>
+        <div class="btnrow"><button class="btn primary" type="button" id="startBtn">Start the lab</button></div>
+      </div>
+    </div>
+    <p style="text-align:center"><button class="btn ghost" id="teacherLink" type="button">Teacher: enter unlock code</button></p>
+  </section>
+  <div id="ws" hidden></div>
+</main>
+
+<div class="overlay" id="teachOv" role="dialog" aria-modal="true" aria-labelledby="tTitle">
+  <div class="modal"><div id="teachLogin"><h2 id="tTitle">Teacher</h2>
+    <div class="btnrow"><input class="code" id="teachCode" type="password" placeholder="Teacher code" autocomplete="off"><button class="btn primary" id="teachGo" type="button">Open</button><button class="btn ghost" id="teachCancel" type="button">Close</button></div>
+    <div class="fb no" id="teachErr" hidden>That code didn't work.</div></div><div id="teachPanel" hidden></div></div>
+</div>
+<div class="overlay" id="tabOv" role="dialog" aria-modal="true"><div class="modal" style="max-width:520px"><h2>This lab is open in another tab</h2><p>To keep your newest work safe, this copy stopped saving. Close the extra tab, then reload this one.</p><div class="btnrow"><button class="btn primary" type="button" onclick="location.reload()">Reload with my newest work</button></div></div></div>
+
+<script src="sheets-config.js"></script>
+<script>
+(function(){
+'use strict';
+/* ============================== SETTINGS ============================== */
+const LESSON_TITLE='Protein Synthesis';           // unlock code = last word of this title
+const UNLOCK_CODE=LESSON_TITLE.trim().split(/\s+/).pop();
+const TEACHER_CODE='Teacher007';   // universal teacher-tools code
+const codeIs=(v,c)=>String(v||'').trim().toLowerCase()===String(c).toLowerCase();
+const WS_ID='bio-u3-protein-synthesis-lab-sim', ACTIVITY='Protein Synthesis Lab (simulation)';
+const BACKUP_URL='https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const SAVE_URL_BUILTIN='https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';
+const BACKUP_TEACHERS=['Austin','Mueller','McCue','Arce','Trimm','Garcia','Trimm/Callanan','Callanan'], BACKUP_PERIODS=['1','2','3','4','5','6','7','8'];
+const STORE='proteinSynthLabSim_v1', RECS='proteinSynthLabSim_records_v1';
+/* ===================================================================== */
+const teacherList=()=>{ try{ if(typeof TEACHERS!=='undefined'&&Array.isArray(TEACHERS)&&TEACHERS.length) return TEACHERS.map(String); }catch(e){} return BACKUP_TEACHERS; };
+const periodList=()=>{ try{ if(typeof PERIODS!=='undefined'&&Array.isArray(PERIODS)&&PERIODS.length) return PERIODS.map(String); }catch(e){} return BACKUP_PERIODS; };
+const sheetURL=()=>{ try{ if(typeof SHEETS_WEBHOOK_URL!=='undefined'&&SHEETS_WEBHOOK_URL&&String(SHEETS_WEBHOOK_URL).indexOf('PASTE')<0) return String(SHEETS_WEBHOOK_URL); }catch(e){} return BACKUP_URL; };
+const saveURL=()=>{ try{ if(typeof SAVE_WEBHOOK_URL!=='undefined'&&SAVE_WEBHOOK_URL&&String(SAVE_WEBHOOK_URL).indexOf('PASTE')<0) return String(SAVE_WEBHOOK_URL); }catch(e){} return SAVE_URL_BUILTIN; };
+const LOCKDOWN=false;   // worksheets never lock down
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const strip=s=>String(s).replace(/<[^>]+>/g,'');
+function h(tag,attrs,html){ const e=document.createElement(tag); if(attrs) for(const k in attrs){ if(attrs[k]===false||attrs[k]==null) continue; if(k==='class') e.className=attrs[k]; else if(k==='hidden') e.hidden=!!attrs[k]; else e.setAttribute(k,attrs[k]); } if(html!=null) e.innerHTML=html; return e; }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* ---------- state + saving ---------- */
+function fresh(){ return {ws:WS_ID, student:null, p:{}, ord:{}, locks:0, locked:false, lockOff:false, submittedAt:null, sentAt:null}; }
+let S; try{ S=JSON.parse(localStorage.getItem(STORE)); }catch(e){} if(!S||S.ws!==WS_ID) S=fresh();
+let STORAGE_OK=true, saveBlocked=false;
+try{ localStorage.setItem('__ps_t','1'); STORAGE_OK=localStorage.getItem('__ps_t')==='1'; localStorage.removeItem('__ps_t'); }catch(e){ STORAGE_OK=false; }
+function save(){
+  if(saveBlocked) return;
+  if(S.preview){ note('Preview: nothing is saved'); return; }
+  try{ const raw=localStorage.getItem(STORE); if(raw){ const st=JSON.parse(raw); if(st&&st.ws===WS_ID&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); return; } }
+    S.rev=(S.rev||0)+1; S.updatedAt=Date.now(); localStorage.setItem(STORE,JSON.stringify(S)); note(); cloudSave(false); }catch(e){}
+}
+window.addEventListener('storage',e=>{ if(e.key!==STORE||!e.newValue) return; try{ const st=JSON.parse(e.newValue); if(st&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); } }catch(_){} });
+const saveKey=st=>(String(st.id||'').replace(/\s+/g,'')+'-'+String(st.last||'').toLowerCase().replace(/[^a-z]/g,'')).toLowerCase();
+const checkedCount=st=>Object.values((st||S).p).filter(x=>x&&x.checked).length;
+let cloudTimer=null, cloudDirty=false, cloudBusy=false, cloudAt=null, cloudErr=false;
+const cloudOK=()=>!!saveURL()&&S.student&&!saveBlocked&&!S.preview;
+function cloudBody(){ const st=S.student||{}, sc=scoreAll();
+  return new URLSearchParams({code:saveKey(st), lesson:WS_ID, ver:String(S.updatedAt||Date.now()), prog:String((S.submittedAt?100000:0)+checkedCount(S)), studentId:st.id||'', lastName:st.last||'', firstName:st.first||'', period:st.period||'', teacher:st.teacher||'',
+    summary:S.submittedAt?`Turned in · ${sc.total}/${sc.max}`:`${checkedCount(S)} of ${PROBS.length} problems checked`, data:JSON.stringify(S)}); }
+function cloudSave(soon){ if(!cloudOK()) return; cloudDirty=true; if(soon){ clearTimeout(cloudTimer); cloudTimer=setTimeout(cloudFlush,1200); } else if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); }
+async function cloudFlush(){ cloudTimer=null; if(!cloudOK()||!cloudDirty) return; if(cloudBusy){ cloudTimer=setTimeout(cloudFlush,4000); return; } cloudBusy=true; cloudDirty=false;
+  try{ await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); cloudAt=new Date(); cloudErr=false; }catch(e){ cloudDirty=true; cloudErr=true; if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); } finally{ cloudBusy=false; note(); } }
+function cloudBeacon(){ if(!cloudOK()||!cloudDirty) return; try{ if(navigator.sendBeacon&&navigator.sendBeacon(saveURL(),cloudBody())) cloudDirty=false; }catch(e){} }
+async function cloudLoad(st){ const ctrl=new AbortController(), t=setTimeout(()=>ctrl.abort(),5000);
+  try{ const r=await fetch(saveURL()+'?'+new URLSearchParams({code:saveKey(st),lesson:WS_ID}),{signal:ctrl.signal}); const j=await r.json(); if(j&&j.found&&j.data){ const d=JSON.parse(j.data); if(d&&d.ws===WS_ID) return {status:'found',data:d}; } return {status:'none'}; }
+  catch(e){ return {status:'error'}; } finally{ clearTimeout(t); } }
+function adopt(ns){ let sr=0; try{ const raw=localStorage.getItem(STORE); if(raw) sr=JSON.parse(raw).rev||0; }catch(e){} ns.rev=Math.max(ns.rev||0,sr); S=ns; saveBlocked=false; save(); }
+function note(msg){ const n=$('#saveNote'); if(!n) return; const tm=d=>d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}); n.textContent=msg||(cloudErr?'✓ Saved on this Chromebook':'✓ Saved '+tm(new Date())+(cloudAt?' · backed up '+tm(cloudAt):'')); }
+document.addEventListener('visibilitychange',()=>{ if(document.hidden){ save(); cloudBeacon(); } });
+window.addEventListener('pagehide',()=>{ save(); cloudBeacon(); });
+
+/* ============================== DIAGRAMS ============================== */
+/* ============================== PROBLEMS ============================== */
+const PARTS=[
+ {k:'P1', label:'Setup', title:'Purpose and setup', min:10, icon:'<circle cx="6" cy="17" r="2.6"/><circle cx="12" cy="13" r="2.6"/><circle cx="18" cy="17" r="2.6"/><path d="M8.2 15.6l1.6-1.2M14.2 14.4l1.6 1.2"/><path d="M4 6.5c2-2 4 2 6 0s4 2 6 0 4 2 4 0"/>'},
+ {k:'P2', label:'Predict', title:'Predict', min:5, icon:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z"/>'},
+ {k:'P3', label:'Experiment', title:'Experiment and data', min:22, icon:'<rect x="3.5" y="4" width="17" height="16" rx="2"/><path d="M3.5 9h17M3.5 14.5h17M10 4v16"/>'},
+ {k:'P4', label:'Analysis', title:'Analysis', min:12, icon:'<path d="M3 21h18"/><path d="M5 17l5-5 4 3 6-7"/>'},
+ {k:'P5', label:'Conclusion', title:'Conclusion (CER)', min:8, icon:'<path d="M4 4h12l4 4v12H4z"/><path d="M8 11h8M8 15h6"/>'},
+ {k:'P6', label:'Grade', title:'Your grade', min:1, icon:'<rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4V2.5h6V4"/><path d="M8.5 13l2.5 2.5 4.5-5"/>'}
+];
+const ico=(i,s)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PARTS[i].icon}</svg>`;
+const PROBS=[];   // every problem: {id, part, max, score(), key()}
+
+function probShell(parent, part, num, q, pts){
+  const box=h('div',{class:'prob'}); parent.appendChild(box);
+  box.innerHTML=`<div class="pq"><span class="pnum">${num}.</span> ${q} <span class="pts">(${pts} pt${pts>1?'s':''})</span></div>`;
+  return box;
+}
+function actions(box, o){ // Hint + Check buttons + feedback
+  const row=h('div',{class:'btnrow'}); const hb=h('button',{class:'btn ghost small',type:'button'},'Hint'); const cb=h('button',{class:'btn primary small',type:'button'},'Check');
+  row.append(hb,cb); box.appendChild(row);
+  const hint=h('div',{class:'hintbox',hidden:true},'💡 '+o.hint); box.appendChild(hint);
+  const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'}); box.appendChild(fb);
+  hb.addEventListener('click',()=>{ hint.hidden=!hint.hidden; });
+  return {row,hb,cb,hint,fb};
+}
+const st=id=>S.p[id]||(S.p[id]={});
+/* Two tries per problem. Right on try 1 or 2 = full credit. Wrong twice = marked wrong (credit for parts right on try 2).
+   The correct answer is never shown. */
+function gradeTry(P,res,max){ const n=res.filter(Boolean).length; P.tries=(P.tries||0)+1;
+  if(n===max){ P.first=max; P.checked=true; P.right=true; }
+  else if(P.tries>=2){ P.first=n; P.checked=true; P.right=false; }
+  return n===max; }
+function showTry(ui,P,max,doneText){
+  if(P.checked&&P.right){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML=`<b>Correct!</b> ${doneText||''}`; }
+  else if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`<b>Marked wrong.</b> You earned ${P.first} of ${max} point${max>1?'s':''}. Ask your teacher if you'd like to try it again.`; }
+  else if(P.tries===1){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=max>1?'<b>Not quite.</b> Something isn\'t right yet. You have <b>one more try</b>.':'<b>Not quite.</b> You have <b>one more try</b>.'; }
+  else ui.fb.hidden=true;
+  if(ui.cb) ui.cb.textContent=P.checked?'Checked':(P.tries===1?'Check (last try)':'Check'); }
+
+/* ---------- drag onto a diagram (or into equation slots) ---------- */
+function dragProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.zones.length);
+  let fig;
+  if(o.equation){ fig=h('div',{class:'eq'}); box.appendChild(fig); }
+  else { fig=h('div',{class:'figwrap'}); fig.innerHTML=o.svg; box.appendChild(fig); }
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.chips.map((_,i)=>i)));
+  const zoneEls={};
+  const groupAns=g=>o.zones.filter(z=>z.group===g).map(z=>z.ans);
+  if(o.equation){ o.layout.forEach(item=>{ if(typeof item==='string'){ fig.appendChild(h('span',null,item)); } else { const z=o.zones[item]; const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans}); fig.appendChild(b); zoneEls[z.id]=b; } }); }
+  else o.zones.forEach(z=>{ const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans});
+    b.style.left=(z.x/o.vb[0]*100)+'%'; b.style.top=(z.y/o.vb[1]*100)+'%'; b.style.width=((z.w||130)/o.vb[0]*100)+'%'; fig.appendChild(b); zoneEls[z.id]=b; });
+  function placedChips(){ return new Set(Object.values(P.place)); }
+  function render(){
+    const used=placedChips();
+    pool.innerHTML='<div class="lbl">Tap a label, then tap a box (or drag it). Tap a filled box to take its label back.</div>';
+    order.forEach(ci=>{ if(used.has(ci)) return; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true'},o.chips[ci]); c.disabled=!!P.checked;
+      c.addEventListener('click',()=>{ sel=sel===ci?null:ci; render(); });
+      c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+      pool.appendChild(c); });
+    if(P.checked&&!pool.querySelector('.chip')) pool.hidden=true;
+    o.zones.forEach(z=>{ const b=zoneEls[z.id]; const ci=P.place[z.id];
+      b.className='zone'+(ci==null?' empty':' filled')+(P.checked?' locked':'');
+      if(ci==null) b.innerHTML=z.ph||'drop here';
+      else b.innerHTML=o.chips[ci];
+      b.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; ui.hb.disabled=!!P.checked&&false;
+    showTry(ui,P,o.zones.length,o.done);
+  }
+  o.zones.forEach(z=>{ const b=zoneEls[z.id];
+    const drop=ci=>{ if(P.checked) return; if(ci==null){ if(P.place[z.id]!=null){ delete P.place[z.id]; save(); render(); } return; }
+      for(const k in P.place) if(P.place[k]===ci) delete P.place[k];
+      P.place[z.id]=ci; sel=null; save(); render(); };
+    b.addEventListener('click',()=>drop(sel));
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  ui.cb.addEventListener('click',()=>{
+    if(P.checked) return;
+    const empty=o.zones.filter(z=>P.place[z.id]==null).length;
+    if(empty){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill every box before you check. ${empty} still empty.`; return; }
+    const res={}; const usedInGroup={};
+    o.zones.forEach(z=>{ const t=o.chips[P.place[z.id]];
+      if(z.group){ const ans=groupAns(z.group); usedInGroup[z.group]=usedInGroup[z.group]||[]; const ok=ans.includes(t)&&!usedInGroup[z.group].includes(t); if(ok) usedInGroup[z.group].push(t); res[z.id]=ok; }
+      else res[z.id]=t===z.ans; });
+    gradeTry(P,Object.values(res),o.zones.length); save(); cloudSave(true); render(); refresh();
+  });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.zones.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- sort into bins ---------- */
+function binProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.items.length);
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const bins=h('div',{class:'bins',style:`grid-template-columns:repeat(${o.bins.length},minmax(0,1fr))`}); box.appendChild(bins);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.items.map((_,i)=>i)));
+  const binEls={};
+  o.bins.forEach(bn=>{ const b=h('div',{class:'bin',role:'button',tabindex:'0'},`<h4>${bn.label}</h4><div class="bchips"></div>`); bins.appendChild(b); binEls[bn.k]=b;
+    const drop=ci=>{ if(P.checked||ci==null) return; P.place[ci]=bn.k; sel=null; save(); render(); };
+    b.addEventListener('click',e=>{ if(e.target.closest('.chip')) return; drop(sel); });
+    b.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); drop(sel); } });
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  const binLabel=k=>(o.bins.find(b=>b.k===k)||{}).label;
+  function chipEl(ci,inBin){ const it=o.items[ci]; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true','data-key':binLabel(it.k)},it.t);
+    
+    c.disabled=!!P.checked;
+    c.addEventListener('click',e=>{ if(P.checked) return; if(inBin){ e.stopPropagation(); if(sel!=null&&sel!==ci){ P.place[sel]=P.place[ci]; sel=null; save(); render(); return; } delete P.place[ci]; save(); render(); return; } sel=sel===ci?null:ci; render(); });
+    c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+    return c; }
+  function render(){
+    pool.innerHTML='<div class="lbl">Tap an item, then tap the box it belongs in (or drag it). Tap a sorted item to take it back.</div>';
+    order.forEach(ci=>{ if(P.place[ci]==null) pool.appendChild(chipEl(ci,false)); });
+    pool.hidden=!!P.checked;
+    o.bins.forEach(bn=>{ const holder=$('.bchips',binEls[bn.k]); holder.innerHTML=''; order.forEach(ci=>{ if(P.place[ci]===bn.k) holder.appendChild(chipEl(ci,true)); }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,o.items.length,o.done);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const left=o.items.filter((_,i)=>P.place[i]==null).length;
+    if(left){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Sort every item before you check. ${left} still left.`; return; }
+    const res=o.items.map((it,i)=>P.place[i]===it.k); gradeTry(P,res,o.items.length); save(); cloudSave(true); render(); refresh(); });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.items.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- choice problems: one, two-part, or select-all ---------- */
+function choiceProblem(parent, o){   // o.parts: [{q, opts, ans (index or array for select-all)}]
+  const P=st(o.id); P.pick=P.pick||{};
+  const max=o.parts.length;
+  const box=probShell(parent,o.part,o.num,o.q,max);
+  const groups=[];
+  o.parts.forEach((pt,pi)=>{
+    const multi=Array.isArray(pt.ans);
+    if(pt.q) box.insertAdjacentHTML('beforeend',`<div style="margin:10px 0 4px">${pt.q}${multi?' <span class="small muted">(Select all that apply.)</span>':''}</div>`);
+    const ordKey=o.id+'_'+pi; const order=S.ord[ordKey]||(S.ord[ordKey]=shuffle(pt.opts.map((_,i)=>i)));
+    const wrap=h('div',{class:'opts'}); box.appendChild(wrap);
+    const btns={};
+    order.forEach((oi,pos)=>{ const correct=multi?pt.ans.includes(oi):oi===pt.ans;
+      const b=h('button',{class:'opt'+(multi?' multi':''),type:'button'},`<span class="L">${'ABCDEF'[pos]}</span><span>${pt.opts[oi]}</span>`); if(correct) b.dataset.key='1';
+      b.addEventListener('click',()=>{ if(P.checked) return; if(multi){ const s=new Set(P.pick[pi]||[]); s.has(oi)?s.delete(oi):s.add(oi); P.pick[pi]=[...s]; } else P.pick[pi]=oi; save(); paint(); });
+      wrap.appendChild(b); btns[oi]=b; });
+    groups.push({pt,multi,btns});
+  });
+  const ui=actions(box,o);
+  function gradePart(g,pi){ const pk=P.pick[pi]; if(g.multi){ const s=new Set(pk||[]); return g.pt.ans.length===s.size&&g.pt.ans.every(a=>s.has(a)); } const ans=g.pt.ansFn?g.pt.ansFn():g.pt.ans; return pk===ans; }
+  function paint(){
+    groups.forEach((g,pi)=>{ const pk=P.pick[pi];
+      Object.entries(g.btns).forEach(([oi,b])=>{ oi=+oi; const picked=g.multi?(pk||[]).includes(oi):pk===oi; const correct=g.multi?g.pt.ans.includes(oi):oi===g.pt.ans;
+        b.className='opt'+(g.multi?' multi':'')+(picked?' sel':'')+(P.checked&&P.right&&picked?' ok':''); b.disabled=!!P.checked; }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,max,o.why);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const blank=groups.some((g,pi)=>g.multi?!(P.pick[pi]||[]).length:P.pick[pi]==null);
+    if(blank){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Answer every part before you check.'; return; }
+    gradeTry(P,groups.map((g,pi)=>gradePart(g,pi)),max); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- typed blanks (two tries, like every problem) ---------- */
+function typedProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.blanks.length);
+  const inputs=o.blanks.map((bl,i)=>{ const row=h('div',{class:'brow'}); row.innerHTML=`${bl.before} <input class="blank" type="text" aria-label="${esc(strip(bl.before))}" data-key="${esc(bl.show)}"><span class="keytxt">${bl.show}</span> ${bl.after||''}`; box.appendChild(row);
+    const inp=$('input',row); inp.value=P.val[i]||''; inp.addEventListener('input',()=>{ P.val[i]=inp.value; save(); }); return inp; });
+  const ui=actions(box,o);
+  const ok=(bl,v)=>{ v=String(v||'').trim().toLowerCase(); if(bl.calc){ const n=parseFloat(v.replace(/[\u2212\u2013\u2014]/g,'-').replace(/[^0-9.\-]/g,'')); const t=bl.calc(); return !isNaN(n)&&t!=null&&!isNaN(t)&&Math.abs(n-t)<=(bl.tol==null?0.15:bl.tol); } if(bl.num){ const n=parseFloat(v.replace(/[\u2212\u2013\u2014]/g,'-').replace(/[^0-9.\-]/g,'')); return !isNaN(n)&&n>=bl.num[0]&&n<=bl.num[1]; } return bl.accept.some(a=>v.replace(/\s+/g,' ')===a); };
+  function paint(){ inputs.forEach(inp=>{ inp.classList.remove('ok','no'); if(P.checked&&P.right) inp.classList.add('ok'); inp.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; showTry(ui,P,o.blanks.length,''); }
+  ui.cb.addEventListener('click',()=>{
+    if(inputs.some(inp=>!inp.value.trim())){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Fill in every blank before you check.'; return; }
+    if(P.checked) return;
+    const res=o.blanks.map((bl,i)=>ok(bl,inputs[i].value));
+    gradeTry(P,res,o.blanks.length); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.blanks.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- written answer, scored by key ideas (two tries, like every problem) ---------- */
+function writtenProblem(parent, o){
+  const P=st(o.id); if(P.val==null) P.val='';
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const ta=h('textarea',{class:'wtext',rows:'5','aria-label':'Your answer','data-key':o.model}); ta.value=P.val; box.appendChild(ta);
+  box.appendChild(h('div',{class:'wkey'},'<b>Key:</b> '+o.model));
+  if(o.bank){ const wb=h('div',{class:'wbank2'}); wb.innerHTML='<b>Word bank</b> <span class="small muted">(tap a word to add it)</span><br>'+o.bank.map(w=>`<button type="button" class="wchip">${w}</button>`).join('');
+    box.appendChild(wb);
+    wb.querySelectorAll('.wchip').forEach(c=>c.addEventListener('click',()=>{ if(ta.disabled) return; const w=c.textContent; const a=ta.selectionStart??ta.value.length, b=ta.selectionEnd??ta.value.length;
+      const before=ta.value.slice(0,a), after=ta.value.slice(b); const pre=(before&&!/\s$/.test(before))?' ':''; const ins=pre+w+' ';
+      ta.value=before+ins+after; ta.focus(); const p=a+ins.length; ta.setSelectionRange(p,p); ta.dispatchEvent(new Event('input',{bubbles:true})); })); }
+  ta.addEventListener('input',()=>{ P.val=ta.value; save(); });
+  const ui=actions(box,o);
+  const grade=()=>{ const t=ta.value.toLowerCase(); const hits=o.groups.filter(g=>g[1].test(t)).length; const n=Math.min(o.pts,hits); return Array.from({length:o.pts},(_,i)=>i<n); };
+  function paint(){ ta.disabled=!!P.checked; ui.cb.disabled=!!P.checked; showTry(ui,P,o.pts,o.why); }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(ta.value.trim().split(/\s+/).length<5){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Write a full answer (at least one complete sentence) before you check.'; return; }
+    gradeTry(P,grade(),o.pts); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- predictions: saved once, completion credit, never marked wrong ---------- */
+function predictProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.rows.length);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb predtab"><tr><th>${o.rowsLabel||'Tube'}</th><th>Setup</th><th>My prediction</th></tr>${o.rows.map((r,i)=>`<tr><td><b>${r.id}</b></td><td>${r.desc}</td><td><select data-i="${i}" aria-label="Prediction for ${r.id}"><option value="">choose…</option>${o.choices.map(c=>`<option>${c}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select')];
+  sels.forEach((sl,i)=>{ sl.value=P.val[i]||''; sl.addEventListener('change',()=>{ P.val[i]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Lock in my predictions';
+  function paint(){ sels.forEach(sl=>sl.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Predictions saved.</b> You\'ll compare them with your results later. Your observation table on page 3 is now unlocked.'; ui.cb.textContent='Predictions locked'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(sels.some(sl=>!sl.value)){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Choose a prediction for every tube first.'; return; }
+    if(!confirm('Lock in your predictions? You can\'t change them after this.')) return;
+    P.first=o.rows.length; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.rows.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- lab data table: groups type their own measurements; graph builds from them ---------- */
+function dataTableProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const cells=o.rows.length*o.cols.length;
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb datatab"><tr><th>${o.corner}</th>${o.cols.map(c=>`<th>${c}</th>`).join('')}</tr>${o.rows.map((r,i)=>`<tr><td><b>${r}</b></td>${o.cols.map((c,j)=>`<td><input class="dcell" inputmode="decimal" data-r="${i}" data-c="${j}" aria-label="${r}, ${c}"></td>`).join('')}</tr>`).join('')}</table>`;
+  const ins=[...wrap.querySelectorAll('input.dcell')];
+  const chart=h('div',{class:'datachart'}); box.appendChild(chart);
+  ins.forEach(inp=>{ const k=inp.dataset.r+'_'+inp.dataset.c; inp.value=P.val[k]??''; inp.addEventListener('input',()=>{ P.val[k]=inp.value; save(); draw(); }); });
+  function draw(){ chart.innerHTML=o.chart(P.val); }
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Save my data';
+  function paint(){ ins.forEach(i=>i.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Data saved.</b> Your analysis questions use these numbers.'; ui.cb.textContent='Data saved'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const bad=ins.filter(i=>i.value.trim()===''||isNaN(parseFloat(i.value)));
+    if(bad.length){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill in every box with a number first (${bad.length} still empty).`; bad[0].focus(); return; }
+    if(!confirm('Save your data? You can\'t change it after this, and your analysis will use these numbers.')) return;
+    P.first=o.pts; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  draw(); paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- observation table: each row has its own menu; completion credit when saved ---------- */
+function obsTableProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb datatab"><tr><th>Observation</th><th>What you saw</th></tr>${o.rows.map((r,i)=>`<tr><td>${r.q}</td><td><select class="ocell" data-r="${i}" aria-label="${r.q.replace(/<[^>]+>/g,'')}"><option value="">choose…</option>${r.opts.map(x=>`<option>${x}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select.ocell')];
+  sels.forEach(sl=>{ const k=sl.dataset.r; sl.value=P.val[k]||''; sl.addEventListener('change',()=>{ P.val[k]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Save my observations';
+  function paint(){ sels.forEach(s=>s.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Observations saved.</b> Your analysis questions use them.'; ui.cb.textContent='Observations saved'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const bad=sels.filter(s=>!s.value); if(bad.length){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Choose an answer in every row first (${bad.length} still empty).`; return; }
+    if(!confirm('Save your observations? You can\'t change them after this, and your analysis will use them.')) return;
+    P.first=o.pts; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ============================== WORKSHEET CONTENT ============================== */
+const GENES={"A":{"name":"Hemoglobin","dna":"TACCATGTAGACTGGGGACTCACT","mrna":"AUGGUACAUCUGACCCCUGAGUGA","prot":["Met","Val","His","Leu","Thr","Pro","Glu"],"kind":"mis","sub":{"pos":20,"old":"T","new":"A","dna":"TACCATGTAGACTGGGGACACACT","mrna":"AUGGUACAUCUGACCCCUGUGUGA","prot":["Met","Val","His","Leu","Thr","Pro","Val"]},"dele":{"pos":5,"old":"A","dna":"TACCTGTAGACTGGGGACTCACT","mrna":"AUGGACAUCUGACCCCUGAGUGA","prot":["Met","Asp","Ile"]}},"B":{"name":"Insulin","dna":"TACCGCGAGACCTACTCCATC","mrna":"AUGGCGCUCUGGAUGAGGUAG","prot":["Met","Ala","Leu","Trp","Met","Arg"],"kind":"non","sub":{"pos":11,"old":"C","new":"T","dna":"TACCGCGAGATCTACTCCATC","mrna":"AUGGCGCUCUAGAUGAGGUAG","prot":["Met","Ala","Leu"]},"dele":{"pos":7,"old":"G","dna":"TACCGCAGACCTACTCCATC","mrna":"AUGGCGUCUGGAUGAGGUAG","prot":["Met","Ala","Ser","Gly"]}},"C":{"name":"Collagen","dna":"TACAAGTCAAAGCATCTGACT","mrna":"AUGUUCAGUUUCGUAGACUGA","prot":["Met","Phe","Ser","Phe","Val","Asp"],"kind":"sil","sub":{"pos":15,"old":"T","new":"A","dna":"TACAAGTCAAAGCAACTGACT","mrna":"AUGUUCAGUUUCGUUGACUGA","prot":["Met","Phe","Ser","Phe","Val","Asp"]},"dele":{"pos":6,"old":"G","dna":"TACAATCAAAGCATCTGACT","mrna":"AUGUUAGUUUCGUAGACUGA","prot":["Met","Leu","Val","Ser"]}},"D":{"name":"Albumin","dna":"TACTTCACCCACTGGAAAATT","mrna":"AUGAAGUGGGUGACCUUUUAA","prot":["Met","Lys","Trp","Val","Thr","Phe"],"kind":"mis","sub":{"pos":8,"old":"C","new":"G","dna":"TACTTCAGCCACTGGAAAATT","mrna":"AUGAAGUCGGUGACCUUUUAA","prot":["Met","Lys","Ser","Val","Thr","Phe"]},"dele":{"pos":4,"old":"T","dna":"TACTCACCCACTGGAAAATT","mrna":"AUGAGUGGGUGACCUUUUAA","prot":["Met","Ser","Gly"]}},"E":{"name":"Lysozyme","dna":"TACTTCCGTAATTATCAAATC","mrna":"AUGAAGGCAUUAAUAGUUUAG","prot":["Met","Lys","Ala","Leu","Ile","Val"],"kind":"non","sub":{"pos":11,"old":"A","new":"T","dna":"TACTTCCGTATTTATCAAATC","mrna":"AUGAAGGCAUAAAUAGUUUAG","prot":["Met","Lys","Ala"]},"dele":{"pos":4,"old":"T","dna":"TACTCCGTAATTATCAAATC","mrna":"AUGAGGCAUUAAUAGUUUAG","prot":["Met","Arg","His"]}},"F":{"name":"Actin","dna":"TACCTACTACTATATCGCACT","mrna":"AUGGAUGAUGAUAUAGCGUGA","prot":["Met","Asp","Asp","Asp","Ile","Ala"],"kind":"sil","sub":{"pos":6,"old":"A","new":"G","dna":"TACCTGCTACTATATCGCACT","mrna":"AUGGACGAUGAUAUAGCGUGA","prot":["Met","Asp","Asp","Asp","Ile","Ala"]},"dele":{"pos":9,"old":"A","dna":"TACCTACTCTATATCGCACT","mrna":"AUGGAUGAGAUAUAGCGUGA","prot":["Met","Asp","Glu","Ile"]}}};
+/* ===== Protein Synthesis Model Lab ("Build a Protein"): shared content ===== */
+/* GENES is prepended by build.py from genes.json (checked by genes2.py: start AUG, one stop, engineered substitution and deletion). */
+const GENE_INFO={A:'carries oxygen in red blood cells',B:'a hormone that helps your cells take in sugar',C:'makes skin, bones, and tendons strong',
+  D:'a blood protein that carries other molecules around the body',E:'an enzyme in tears and saliva that breaks open bacteria',F:'helps muscles contract and cells move'};
+const LETTERS=Object.keys(GENES);
+const BASEC={A:'#ef4444',T:'#3b82f6',C:'#f59e0b',G:'#22c55e',U:'#a855f7'};
+const RPAIR={A:'U',T:'A',C:'G',G:'C'};            // DNA template base -> RNA base
+const APAIR={A:'U',U:'A',G:'C',C:'G'};            // codon base -> anticodon base
+const CODE={UUU:'Phe',UUC:'Phe',UUA:'Leu',UUG:'Leu',CUU:'Leu',CUC:'Leu',CUA:'Leu',CUG:'Leu',AUU:'Ile',AUC:'Ile',AUA:'Ile',AUG:'Met',GUU:'Val',GUC:'Val',GUA:'Val',GUG:'Val',UCU:'Ser',UCC:'Ser',UCA:'Ser',UCG:'Ser',CCU:'Pro',CCC:'Pro',CCA:'Pro',CCG:'Pro',ACU:'Thr',ACC:'Thr',ACA:'Thr',ACG:'Thr',GCU:'Ala',GCC:'Ala',GCA:'Ala',GCG:'Ala',UAU:'Tyr',UAC:'Tyr',UAA:'STOP',UAG:'STOP',CAU:'His',CAC:'His',CAA:'Gln',CAG:'Gln',AAU:'Asn',AAC:'Asn',AAA:'Lys',AAG:'Lys',GAU:'Asp',GAC:'Asp',GAA:'Glu',GAG:'Glu',UGU:'Cys',UGC:'Cys',UGA:'STOP',UGG:'Trp',CGU:'Arg',CGC:'Arg',CGA:'Arg',CGG:'Arg',AGU:'Ser',AGC:'Ser',AGA:'Arg',AGG:'Arg',GGU:'Gly',GGC:'Gly',GGA:'Gly',GGG:'Gly'};
+const AAFULL={methionine:'met',valine:'val',histidine:'his',leucine:'leu',threonine:'thr',proline:'pro',alanine:'ala',tryptophan:'trp',arginine:'arg',phenylalanine:'phe',serine:'ser',lysine:'lys',isoleucine:'ile',glycine:'gly',tyrosine:'tyr',cysteine:'cys',asparagine:'asn',glutamine:'gln'};
+const AACOL=a=>({Met:'#5fe3a9',Glu:'#f472b6',Val:'#45c8f0',Pro:'#ffd35c',Leu:'#b996ff',Thr:'#fdba74',Lys:'#93c5fd',Gly:'#86efac',Ser:'#fca5a5',Cys:'#fde047',Arg:'#c4b5fd',His:'#67e8f9',Asp:'#f9a8d4',Ala:'#bef264',Trp:'#fb923c',Phe:'#e879f9',Ile:'#7dd3fc',Tyr:'#fcd34d',Asn:'#99f6e4',Gln:'#d8b4fe'})[a]||'#cbd5e1';
+const G=()=>{ const g=(S.p.gene||{}).g; return g?GENES[g]:null; };
+const GL=()=>(S.p.gene||{}).g||null;
+const trips=s=>{ const o=[]; for(let i=0;i+2<s.length;i+=3) o.push(s.slice(i,i+3)); return o; };
+const spaced=s=>{ const o=[]; for(let i=0;i<s.length;i+=3) o.push(s.slice(i,i+3)); return o.join(' '); };
+const antiOf=c=>c.split('').map(b=>APAIR[b]).join('');
+const chainTxt=a=>a.join('-');
+const nCod=g=>g.dna.length/3;
+
+/* ---------- answer matching (letters only; names or 3-letter amino acids) ---------- */
+const normSeq=v=>String(v||'').toUpperCase().replace(/[^A-Z]/g,'');
+function normAA(v,keepStop){ let s=String(v||'').toLowerCase().replace(/glutamic\s*acid|glutamate/g,'glu').replace(/aspartic\s*acid|aspartate/g,'asp');
+  let t=s.split(/[^a-z]+/).filter(Boolean).map(x=>AAFULL[x]||x).filter(x=>x!=='start'&&x!=='codon');
+  if(!keepStop) while(t.length&&t[t.length-1]==='stop') t.pop();
+  return t; }
+const isNone=v=>{ const raw=String(v||'').trim(), s=raw.toLowerCase().replace(/[^a-z]/g,''); if(!s&&/^[-–—x×]+$/.test(raw)) return true;
+  return ['none','no','notrna','nothing','na','x','stop','stopcodon','notrnamatches','nomatch','noanticodon'].includes(s); };
+function cellOK(kind,v,ans){
+  if(kind==='seq') return normSeq(v)===normSeq(ans);
+  if(kind==='anti') return ans==='none'?isNone(v):normSeq(v)===ans;
+  if(kind==='aa'){ const t=normAA(v,true); return t.length===1&&t[0]===ans.toLowerCase(); }
+  if(kind==='chain') return normAA(v).join('-')===normAA(ans).join('-');
+  return false; }
+
+/* ---------- drawing helpers ---------- */
+const tx=(x,y,t,o)=>{ o=o||{}; return `<text x="${x}" y="${y}" text-anchor="${o.a||'middle'}" font-size="${o.s||14}" font-weight="${o.w||600}" fill="${o.c||'#16213a'}">${t}</text>`; };
+const tileS=(x,y,b,sz,stroke)=>{ sz=sz||26; return `<rect x="${x}" y="${y}" width="${sz}" height="${sz}" rx="4" fill="${BASEC[b]}" stroke="${stroke||'#0f172a'}" stroke-opacity=".45" stroke-width="1.5"/><text x="${x+sz/2}" y="${y+sz*0.7}" text-anchor="middle" font-size="${sz*0.56}" font-weight="700" fill="#fff">${b}</text>`; };
+const bead=(x,y,a,r)=>{ r=r||17; return `<g><circle cx="${x}" cy="${y}" r="${r}" fill="${AACOL(a)}" stroke="#0f172a" stroke-opacity=".55" stroke-width="1.6"/><ellipse cx="${(x-r*.35).toFixed(1)}" cy="${(y-r*.42).toFixed(1)}" rx="${(r*.38).toFixed(1)}" ry="${(r*.22).toFixed(1)}" fill="#fff" opacity=".6"/><text x="${x}" y="${y+4.5}" text-anchor="middle" font-size="${r>14?12.5:10}" font-weight="700" fill="#0d1626">${a}</text></g>`; };
+const bond=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#334155" stroke-width="6" stroke-linecap="round"/><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round"/>`;
+/* tRNA: cloverleaf body, anticodon tiles at the bottom, amino acid bead on top (aa may be null) */
+function trnaSVG(cx,yb,anti,aa,o){ o=o||{}; const t=22, y0=yb-t; let s=`<g opacity="${o.op==null?1:o.op}">`;
+  s+=`<path d="M${cx} ${y0} V${yb-44} M${cx} ${yb-72} V${yb-100}" stroke="#15803d" stroke-width="7" stroke-linecap="round"/>`;
+  s+=`<circle cx="${cx-21}" cy="${yb-58}" r="11" fill="#bbf7d0" stroke="#15803d" stroke-width="3.5"/><circle cx="${cx+21}" cy="${yb-58}" r="11" fill="#bbf7d0" stroke="#15803d" stroke-width="3.5"/><ellipse cx="${cx}" cy="${yb-58}" rx="13" ry="16" fill="#86efac" stroke="#15803d" stroke-width="3.5"/>`;
+  s+=`<path d="M${cx-36} ${y0+2} q0 -14 14 -16 h44 q14 2 14 16" fill="none" stroke="#15803d" stroke-width="3"/>`;
+  if(anti) anti.split('').forEach((b,j)=>{ s+=tileS(cx-33+j*t,y0,b,t); });
+  else s+=`<rect x="${cx-33}" y="${y0}" width="66" height="${t}" rx="4" fill="#dcfce7" stroke="#15803d" stroke-dasharray="4 3"/>`;
+  if(aa) s+=bead(cx,yb-118,aa,17); else if(o.stub!==false) s+=`<circle cx="${cx}" cy="${yb-104}" r="4" fill="#15803d"/>`;
+  return s+'</g>'; }
+function riboBody(cx){ return `<path d="M${cx-150} 230 C${cx-170} 150 ${cx-110} 112 ${cx-30} 116 C${cx+10} 96 ${cx+70} 100 ${cx+110} 122 C${cx+170} 140 ${cx+168} 220 ${cx+146} 252 L${cx-140} 252 Z" fill="#fde68a" fill-opacity=".72" stroke="#b45309" stroke-width="3"/>`; }
+function riboSmall(cx){ return `<path d="M${cx-140} 296 C${cx-150} 330 ${cx-60} 338 ${cx} 334 C${cx+70} 338 ${cx+150} 330 ${cx+138} 296 Z" fill="#fcd34d" fill-opacity=".85" stroke="#b45309" stroke-width="3"/>`; }
+
+/* realistic animal cell for labeling (no words that give away answers) */
+function cellSVG(){
+  const pore=(a)=>{ const r=112, x=330+r*Math.cos(a), y=225+r*Math.sin(a), d=a*180/Math.PI; return `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${d.toFixed(1)})"><rect x="-9" y="-9" width="18" height="18" fill="#fdf2f8"/><circle cx="0" cy="-9" r="4" fill="#7c3aed"/><circle cx="0" cy="9" r="4" fill="#7c3aed"/></g>`; };
+  let s=`<svg viewBox="0 0 860 440" role="img" aria-label="An animal cell. A nucleus with a double membrane and pores holds a coiled DNA molecule. A strand leaves the nucleus through a pore and runs through a ribosome in the cytoplasm. A cloverleaf-shaped molecule carrying a bead moves toward the ribosome, and a chain of beads comes out of the top of the ribosome. Seven blank labels point to parts of the picture.">
+   <rect width="860" height="440" rx="14" fill="#f8fafc"/>
+   <path d="M190 70 C260 20 520 18 640 40 C730 58 740 160 728 250 C716 350 650 418 470 420 C300 424 180 400 166 300 C154 210 140 110 190 70 Z" fill="#fff1e6" stroke="#e8a87c" stroke-width="5"/>
+   <path d="M190 70 C260 20 520 18 640 40 C730 58 740 160 728 250 C716 350 650 418 470 420 C300 424 180 400 166 300 C154 210 140 110 190 70 Z" fill="none" stroke="#f6c8a6" stroke-width="1.5" transform="translate(4 4) scale(.99)"/>
+   ${[[230,110],[610,90],[660,340],[250,380],[520,380],[690,200]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="18" ry="9" fill="#fbd5b5" stroke="#e8a87c" transform="rotate(${(x*7)%60-30} ${x} ${y})"/>`).join('')}
+   <circle cx="330" cy="225" r="117" fill="#f3e8ff" stroke="#7c3aed" stroke-width="4"/><circle cx="330" cy="225" r="107" fill="none" stroke="#a78bfa" stroke-width="2.5"/>
+   <circle cx="360" cy="270" r="26" fill="#ddd6fe" stroke="#a78bfa"/>`;
+  let dna=''; for(let i=0;i<24;i++){ const x=262+i*6.4, y=190+16*Math.sin(i*.55), y2=190-16*Math.sin(i*.55); dna+=`<line x1="${x.toFixed(1)}" y1="${y.toFixed(1)}" x2="${x.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${['#ef4444','#3b82f6','#f59e0b','#22c55e'][i%4]}" stroke-width="2.5"/>`; }
+  let p1='M262 190', p2='M262 190'; for(let i=1;i<=24;i++){ const x=262+i*6.4; p1+=` L${x.toFixed(1)} ${(190+16*Math.sin(i*.55)).toFixed(1)}`; p2+=` L${x.toFixed(1)} ${(190-16*Math.sin(i*.55)).toFixed(1)}`; }
+  s+=dna+`<path d="${p1}" fill="none" stroke="#1d4ed8" stroke-width="4"/><path d="${p2}" fill="none" stroke="#1d4ed8" stroke-width="4"/><path d="M240 210 q-14 30 10 50 q22 18 6 40" fill="none" stroke="#1d4ed8" stroke-width="3" opacity=".55"/><path d="M420 196 q22 10 14 36" fill="none" stroke="#1d4ed8" stroke-width="3" opacity=".55"/>`;
+  s+=[-0.55,0.5,2.2,3.6,4.6].map(pore).join('');
+  /* mRNA from inside the nucleus, out through the pore at -0.55 rad, into the ribosome */
+  s+=`<path d="M392 214 C420 190 418 172 424 170 C440 160 470 160 500 196 C520 222 540 262 570 272 L712 272" fill="none" stroke="#7e22ce" stroke-width="5"/>`;
+  for(let i=0;i<14;i++){ const x=574+i*10; s+=`<line x1="${x}" y1="272" x2="${x}" y2="262" stroke="${['#ef4444','#a855f7','#f59e0b','#22c55e'][i%4]}" stroke-width="3"/>`; }
+  s+=`<ellipse cx="616" cy="292" rx="50" ry="17" fill="#fcd34d" stroke="#b45309" stroke-width="2.5"/><path d="M560 262 C556 222 590 206 622 210 C660 206 680 230 672 262 Z" fill="#fde68a" fill-opacity=".85" stroke="#b45309" stroke-width="2.5"/>`;
+  s+=trnaSVG(612,262,null,null,{stub:false}).replace('<g opacity="1">','<g opacity="1" transform="translate(612 262) scale(.55) translate(-612 -262)">');
+  /* chain of beads from the ribosome */
+  const ch=[[612,196],[592,172],[612,148],[592,124],[612,100]]; ch.slice(1).forEach((p,i)=>{ s+=bond(ch[i][0],ch[i][1],p[0],p[1]); }); ch.forEach(([x,y])=>{ s+=`<circle cx="${x}" cy="${y}" r="11" fill="#f472b6" stroke="#0f172a" stroke-opacity=".5" stroke-width="1.5"/><ellipse cx="${x-4}" cy="${y-5}" rx="4" ry="2.4" fill="#fff" opacity=".6"/>`; });
+  /* incoming tRNA with a bead */
+  s+=`<g transform="translate(688 196) scale(.6) translate(-688 -196)">${trnaSVG(688,196,null,null,{stub:false})}<circle cx="688" cy="78" r="17" fill="#45c8f0" stroke="#0f172a" stroke-opacity=".5" stroke-width="1.6"/></g>`;
+  /* leader lines (end dots on the parts) */
+  const L=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#334155" stroke-width="2"/><circle cx="${x2}" cy="${y2}" r="4.5" fill="#334155"/>`;
+  s+=L(140,110,300,190)+L(140,235,250,250)+L(140,340,255,311)+L(720,92,610,104)+L(720,175,694,168)+L(720,262,668,248)+L(720,350,690,272);
+  return s+'</svg>'; }
+const CELL_ZONES=[{id:'dna',x:75,y:110,ans:'DNA'},{id:'nuc',x:75,y:235,ans:'Nucleus'},{id:'pore',x:75,y:340,ans:'Nuclear pore'},
+  {id:'chain',x:790,y:92,ans:'Amino acid chain'},{id:'trna',x:790,y:175,ans:'tRNA'},{id:'ribo',x:790,y:262,ans:'Ribosome'},{id:'mrna',x:790,y:350,ans:'mRNA'}];
+
+/* close-up of translation for labeling (uses the student's gene) */
+function transSVG(g){
+  const cods=trips(g.mrna), cx=430, P=388, A=472, OY=20;
+  let s=`<svg viewBox="0 0 860 420" role="img" aria-label="Close-up of translation. A strand of bases runs through a ribosome. Two cloverleaf-shaped molecules sit in the ribosome. Each pairs three bases with three bases on the strand. A chain of beads hangs from one of them, and a single bead sits on the other. Seven blank labels point to parts of the picture."><rect width="860" height="420" rx="14" fill="#f8fafc"/>`;
+  s+=`<g transform="translate(0 ${OY})">`+riboBody(cx)+riboSmall(cx)+`<rect x="140" y="288" width="590" height="7" rx="3" fill="#7e22ce"/>`;
+  cods.slice(0,5).forEach((c,j)=>{ const x0=P-39+(j-1)*84; c.split('').forEach((b,i)=>{ s+=tileS(x0+i*26,260,b,26); }); });
+  s+=trnaSVG(P,258,antiOf(cods[1]),null,{stub:false})+trnaSVG(A,258,antiOf(cods[2]),g.prot[2])+`</g>`;
+  const B1=[P-66,118], B2=[P,160];   /* chain on the left tRNA: amino acid 1 joined to amino acid 2 */
+  s+=bond(B1[0],B1[1],B2[0],B2[1])+bead(B1[0],B1[1],g.prot[0],17)+bead(B2[0],B2[1],g.prot[1],17);
+  s+=`<rect x="${A-37}" y="253" width="74" height="27" rx="5" fill="none" stroke="#334155" stroke-width="2.5"/><rect x="${A-42}" y="279" width="84" height="30" rx="5" fill="none" stroke="#334155" stroke-width="2.5"/>`;
+  const L=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#334155" stroke-width="2"/><circle cx="${x2}" cy="${y2}" r="4.5" fill="#334155"/>`;
+  const mx=(B1[0]+B2[0])/2, my=(B1[1]+B2[1])/2;
+  s+=L(157,150,mx,my)+L(157,250,318,190)+L(157,330,172,311)+L(705,80,486,150)+L(705,170,504,220)+L(705,255,A+37,266)+L(705,350,A+42,298);
+  return s+'</svg>'; }
+const TRANS_ZONES=[{id:'bond',x:82,y:150,ans:'Peptide bond'},{id:'ribo',x:82,y:250,ans:'Ribosome'},{id:'mrna',x:82,y:330,ans:'mRNA'},
+  {id:'aa',x:780,y:80,ans:'Amino acid'},{id:'trna',x:780,y:170,ans:'tRNA'},{id:'anti',x:780,y:255,ans:'Anticodon'},{id:'codon',x:780,y:350,ans:'Codon'}];
+
+/* desk model / materials picture */
+const DESK_PIC=(function(){
+  let s=`<svg viewBox="0 0 760 290" role="img" aria-label="Lab materials on a desk: a gene card inside a paper circle with gaps in its edge, a paper strip, a paper ribosome cut-out, a fan of tRNA cards, a cup of pop beads, a codon chart, tape, and a marker."><rect width="760" height="290" rx="14" fill="#e9d8bd"/>`;
+  for(let i=0;i<9;i++) s+=`<path d="M0 ${18+i*32} C200 ${10+i*32} 420 ${30+i*32} 760 ${16+i*32}" fill="none" stroke="#d6bf9b" stroke-width="2"/>`;
+  s+=`<circle cx="125" cy="125" r="100" fill="#f5f3ff" stroke="#7c3aed" stroke-width="4"/><circle cx="125" cy="125" r="92" fill="none" stroke="#a78bfa" stroke-width="2"/>`;
+  [0.3,1.6,2.9,4.3,5.4].forEach(a=>{ const x=125+96*Math.cos(a), y=125+96*Math.sin(a); s+=`<rect x="${(x-8).toFixed(1)}" y="${(y-8).toFixed(1)}" width="16" height="16" fill="#e9d8bd" transform="rotate(${(a*57.3).toFixed(0)} ${x.toFixed(1)} ${y.toFixed(1)})"/>`; });
+  s+=`<g transform="rotate(-6 125 120)"><rect x="55" y="96" width="140" height="52" rx="5" fill="#fff" stroke="#94a3b8"/>${'TACCGAAAT'.split('').map((b,i)=>`<rect x="${63+i*14}" y="116" width="12" height="14" rx="2" fill="${BASEC[b]}"/>`).join('')}<rect x="63" y="104" width="44" height="5" rx="2" fill="#94a3b8"/></g>`;
+  s+=`<g transform="rotate(4 310 150)"><rect x="236" y="140" width="160" height="26" rx="2" fill="#fff" stroke="#94a3b8"/>${[0,1,2,3,4,5,6,7,8].map(i=>`<text x="${246+i*17}" y="159" font-size="15" font-weight="700" fill="#7e22ce" text-anchor="middle">${'AUGGCUUUA'[i]}</text>`).join('')}<line x1="296" y1="142" x2="296" y2="164" stroke="#64748b"/><line x1="347" y1="142" x2="347" y2="164" stroke="#64748b"/></g>`;
+  s+=`<path d="M410 120 C402 70 440 52 480 56 C530 50 556 80 548 120 Z" fill="#fde68a" stroke="#b45309" stroke-width="3"/><path d="M412 126 h134 C548 160 520 172 480 170 C440 172 410 162 412 126 Z" fill="#fcd34d" stroke="#b45309" stroke-width="3"/><rect x="448" y="112" width="30" height="22" rx="3" fill="#e9d8bd" stroke="#b45309" stroke-dasharray="3 2"/><rect x="484" y="112" width="30" height="22" rx="3" fill="#e9d8bd" stroke="#b45309" stroke-dasharray="3 2"/>`;
+  [[-14,575],[0,605],[14,635]].forEach(([r,x])=>{ s+=`<g transform="rotate(${r} ${x} 150)"><rect x="${x-34}" y="60" width="68" height="96" rx="6" fill="#fff" stroke="#94a3b8"/><g transform="translate(${x} 146) scale(.62) translate(${-x} -146)">${trnaSVG(x,146,null,null,{stub:false})}</g><circle cx="${x}" cy="76" r="8" fill="${['#5fe3a9','#f472b6','#45c8f0'][(x/30|0)%3]}" stroke="#0f172a" stroke-opacity=".5"/></g>`; });
+  s+=`<path d="M672 190 l8 74 h48 l8 -74 z" fill="#dbeafe" stroke="#64748b" stroke-width="2"/>`+[[686,186,'#f472b6'],[704,182,'#5fe3a9'],[722,186,'#ffd35c'],[694,174,'#45c8f0'],[714,172,'#fb923c']].map(([x,y,c])=>`<circle cx="${x}" cy="${y}" r="8" fill="${c}" stroke="#0f172a" stroke-opacity=".5"/><ellipse cx="${x-3}" cy="${y-3}" rx="3" ry="2" fill="#fff" opacity=".6"/>`).join('');
+  s+=`<g>${[[560,214,'#5fe3a9'],[578,222,'#f472b6'],[596,214,'#45c8f0']].map(([x,y,c],i,a)=>(i?bond(a[i-1][0],a[i-1][1],x,y):'')).join('')}${[[560,214,'#5fe3a9'],[578,222,'#f472b6'],[596,214,'#45c8f0']].map(([x,y,c])=>`<circle cx="${x}" cy="${y}" r="9" fill="${c}" stroke="#0f172a" stroke-opacity=".5"/>`).join('')}</g>`;
+  s+=`<g transform="rotate(-3 330 225)"><rect x="250" y="190" width="170" height="80" rx="3" fill="#fff" stroke="#94a3b8"/>${[0,1,2,3,4].map(i=>`<line x1="252" y1="${204+i*13}" x2="418" y2="${204+i*13}" stroke="#cbd5e1"/>`).join('')}${[0,1,2,3].map(i=>`<line x1="${292+i*32}" y1="192" x2="${292+i*32}" y2="268" stroke="#cbd5e1"/>`).join('')}<rect x="252" y="192" width="166" height="11" fill="#e3ecfb"/></g>`;
+  s+=`<circle cx="470" cy="236" r="20" fill="none" stroke="#a8a29e" stroke-width="9"/><circle cx="470" cy="236" r="12" fill="#e9d8bd"/><rect x="40" y="250" width="110" height="12" rx="6" fill="#1e293b" transform="rotate(-8 95 256)"/><rect x="132" y="243" width="18" height="12" rx="3" fill="#7e22ce" transform="rotate(-8 95 256)"/>`;
+  const lb=(x,y,t)=>`<rect x="${x-t.length*3.9-6}" y="${y-14}" width="${t.length*7.8+12}" height="20" rx="5" fill="#fff" opacity=".85"/>`+tx(x,y,t,{s:13,c:'#334155',w:600});
+  s+=lb(125,22,'gene card in a paper circle')+lb(316,124,'paper strip')+lb(480,40,'paper ribosome')+lb(605,36,'tRNA cards')+lb(704,282,'pop beads')+lb(335,284,'codon chart')+lb(470,276,'tape');
+  return s+'</svg>'; })();
+
+/* codon chart (same full 64-codon chart as the unit worksheets) */
+const chart=()=>{ const B='UCAG'; let t='<div class="wide" style="margin:8px 0 12px"><table class="nb" style="background:#f8fafc;color:#16213a;font-size:13px" aria-label="Codon chart: all 64 mRNA codons"><tr><th style="background:#e3ecfb">1st</th>'+B.split('').map(b=>`<th style="background:#e3ecfb">2nd: ${b}</th>`).join('')+'</tr>';
+  B.split('').forEach(f=>{ t+=`<tr><th style="background:#eef4ff">${f}</th>`+B.split('').map(s=>'<td>'+B.split('').map(th=>{ const c=f+s+th, a=CODE[c]; return `${c} ${a==='STOP'?'<b style="color:#b91c1c">STOP</b>':a==='Met'?'<b style="color:#15803d">Met (start)</b>':a}`; }).join('<br>')+'</td>').join('')+'</tr>'; });
+  return t+'</table></div>'; };
+const chartBox=open=>`<details class="cchart"${open?' open':''}><summary>Codon chart</summary>${chart()}</details>`;
+
+/* gene card (HTML so it wraps on small screens) */
+function geneCardHTML(L,o){ o=o||{}; const g=GENES[L]; let n=0;
+  const seq=trips(g.dna).map(t=>`<span class="gtrip">${t.split('').map(b=>{ n++; return `<span class="gb" style="background:${BASEC[b]}">${b}<i>${n}</i></span>`; }).join('')}</span>`).join('');
+  return `<div class="gcard${o.small?' small':''}"><div class="gchead"><span class="gl">Gene card ${L}</span><span class="gn">${g.name}</span></div><div class="gcfn">The ${g.name.toLowerCase()} protein ${GENE_INFO[L]}.</div>
+    <div class="gcseq" aria-label="DNA template strand: ${g.dna.split('').join(' ')}">${seq}</div><div class="gcfoot">DNA template strand · ${g.dna.length} bases</div></div>`; }
+const mutCardHTML=L=>{ const g=GENES[L]; return `<div class="mcard"><div class="gchead"><span class="gl">Mutation card ${L}</span><span class="gn">${g.name}</span></div>
+  <p style="margin:6px 0 4px"><b>1. Substitution:</b> base <b>${g.sub.pos}</b> of the DNA template changes from <b>${g.sub.old}</b> to <b>${g.sub.new}</b>.</p>
+  <p style="margin:0"><b>2. Deletion:</b> base <b>${g.dele.pos}</b> of the DNA template (a <b>${g.dele.old}</b>) is removed. Start again from the original gene card for this one.</p></div>`; };
+
+/* ---------- gene card picker (not graded; locks once) ---------- */
+function genePicker(parent,sim){
+  const P=st('gene'); const box=h('div',{class:'prob'}); parent.appendChild(box);
+  if(P.g){ box.innerHTML=`<div class="pq">Your gene card</div>${geneCardHTML(P.g)}<p class="small muted" style="margin:6px 0 0">Your gene card is locked in. Every page of this lab uses gene ${P.g}.</p>`; return; }
+  let sel=null;
+  box.innerHTML=`<div class="pq">Choose your gene card</div><p>${sim?'Use the gene letter your teacher gives you. If you do not have one, tap <b>Pick one for me</b>.':'Your teacher gives your group one gene card (A to F). Tap your letter and check that it matches your paper card.'} Then lock it in.</p>
+    <div class="gpick">${LETTERS.map(L=>`<button type="button" class="gpbtn" data-l="${L}">${geneCardHTML(L,{small:true})}</button>`).join('')}</div>
+    <div class="btnrow">${sim?'<button class="btn ghost small" type="button" id="gRand">Pick one for me</button>':''}<button class="btn primary small" type="button" id="gLock" disabled>Lock in my gene card</button></div><div class="fb info" id="gMsg" hidden></div>`;
+  const paint=()=>{ box.querySelectorAll('.gpbtn').forEach(b=>b.classList.toggle('sel',b.dataset.l===sel)); const lk=box.querySelector('#gLock'); lk.disabled=!sel; lk.textContent=sel?`Lock in gene card ${sel}`:'Lock in my gene card'; };
+  box.querySelectorAll('.gpbtn').forEach(b=>b.addEventListener('click',()=>{ sel=b.dataset.l; paint(); }));
+  const r=box.querySelector('#gRand'); if(r) r.addEventListener('click',()=>{ sel=LETTERS[Math.floor(Math.random()*LETTERS.length)]; paint(); box.querySelector(`.gpbtn[data-l="${sel}"]`).scrollIntoView({block:'nearest'}); });
+  box.querySelector('#gLock').addEventListener('click',()=>{ if(!sel) return; if(!confirm(`Lock in gene card ${sel}? You can't change it after this.`)) return;
+    P.g=sel; P.at=Date.now(); save(); cloudSave(true); const cur=S.cur||0; build(); showPart(cur,true); });
+}
+
+/* ---------- predictions with a menu per row (same lock pattern as predictProblem) ---------- */
+function predictRows(parent,o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.rows.length);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb predtab"><tr><th>#</th><th>Question</th><th>My prediction</th></tr>${o.rows.map((r,i)=>`<tr><td><b>${i+1}</b></td><td>${r.desc}</td><td><select data-i="${i}" aria-label="Prediction ${i+1}"><option value="">choose…</option>${r.choices.map(c=>`<option>${c}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select')];
+  sels.forEach((sl,i)=>{ sl.value=P.val[i]||''; sl.addEventListener('change',()=>{ P.val[i]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Lock in my predictions';
+  function paint(){ sels.forEach(sl=>sl.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Predictions saved.</b> You\'ll compare them with your results later. Page 3 is now unlocked.'; ui.cb.textContent='Predictions locked'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(sels.some(sl=>!sl.value)){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Choose a prediction in every row first.'; return; }
+    if(!confirm('Lock in your predictions? You can\'t change them after this.')) return;
+    P.first=o.rows.length; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.rows.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- sequence data table: typed cells graded against the gene (two tries; points per column) ---------- */
+function seqTableProblem(parent,o){
+  const P=st(o.id); P.val=P.val||{};
+  const max=o.cols.reduce((a,c)=>a+c.pts,0), R=o.rows.length;
+  const box=probShell(parent,o.part,o.num,o.q,max);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb datatab seqtab"><tr>${o.heads.map(x=>`<th>${x}</th>`).join('')}${o.cols.map(c=>`<th>${c.h}</th>`).join('')}</tr>${o.rows.map((r,i)=>`<tr>${r.given.map(x=>`<td class="giv">${x}</td>`).join('')}${o.cols.map((c,j)=>`<td><input class="blank sq ${c.kind}" type="text" autocomplete="off" spellcheck="false" data-r="${i}" data-c="${j}" data-key="${esc(c.ans[i])}" aria-label="${esc(strip(r.given[0]))}, ${esc(strip(c.h))}" placeholder="${c.ph||''}"><span class="keytxt">${c.ans[i]}</span></td>`).join('')}</tr>`).join('')}</table>`;
+  const ins=[...wrap.querySelectorAll('input.sq')];
+  ins.forEach(inp=>{ const k=inp.dataset.r+'_'+inp.dataset.c; inp.value=P.val[k]||''; inp.addEventListener('input',()=>{ P.val[k]=inp.value; save(); }); });
+  const ui=actions(box,o);
+  function paint(){ ins.forEach(i=>{ i.disabled=!!P.checked; i.classList.toggle('ok',!!(P.checked&&P.right)); }); ui.cb.disabled=!!P.checked; showTry(ui,P,max,o.done||''); }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const empty=ins.filter(i=>!i.value.trim()); if(empty.length){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill in every box before you check. ${empty.length} still empty.`; empty[0].focus(); return; }
+    const res=[]; o.cols.forEach((c,j)=>{ let ok=0; for(let i=0;i<R;i++) if(cellOK(c.kind,P.val[i+'_'+j],c.ans[i])) ok++; const k=ok===R?c.pts:Math.floor(c.pts*ok/R); for(let q=0;q<c.pts;q++) res.push(q<k); });
+    gradeTry(P,res,max); save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- labeled typed fields (mRNA strand, amino acid chain): 1 point each, two tries ---------- */
+function fieldsProblem(parent,o){
+  const P=st(o.id); P.val=P.val||{};
+  const max=o.fields.length; const box=probShell(parent,o.part,o.num,o.q,max);
+  const ins=o.fields.map((f,i)=>{ const row=h('div',{class:'brow frow'}); row.innerHTML=`<label>${f.before}</label><input class="blank sq wide2 ${f.kind}" type="text" autocomplete="off" spellcheck="false" data-key="${esc(f.ans)}" aria-label="${esc(strip(f.before))}" placeholder="${f.ph||''}"><span class="keytxt">${f.ans}</span>`; box.appendChild(row);
+    const inp=$('input',row); inp.value=P.val[i]||''; inp.addEventListener('input',()=>{ P.val[i]=inp.value; save(); }); return inp; });
+  const ui=actions(box,o);
+  function paint(){ ins.forEach(i=>{ i.disabled=!!P.checked; i.classList.toggle('ok',!!(P.checked&&P.right)); }); ui.cb.disabled=!!P.checked; showTry(ui,P,max,o.done||''); }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(ins.some(i=>!i.value.trim())){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Fill in every blank before you check.'; return; }
+    gradeTry(P,o.fields.map((f,i)=>cellOK(f.kind,ins[i].value,f.ans)),max); save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* data tables shared by both versions (graded against the gene; one right answer) */
+function dataTables(wrapTx,wrapTl,num,txt){
+  const g=G(), cods=trips(g.mrna), dt=trips(g.dna);
+  seqTableProblem(wrapTx,{id:'tx', part:'P3', num:num(), q:txt.tx, heads:['Codon','DNA triplet'], rows:dt.map((t,i)=>({given:[String(i+1),`<span class="mono">${t}</span>`]})),
+    cols:[{h:'mRNA codon',kind:'seq',pts:4,ans:cods,ph:'3 letters'}],
+    hint:'Use the base-pairing rules: A→U, T→A, C→G, G→C. RNA never has T.', done:'Your mRNA matches your gene card.'});
+  seqTableProblem(wrapTl,{id:'tl', part:'P3', num:num(), q:txt.tl, heads:['Codon'], rows:cods.map((c,i)=>({given:[String(i+1)]})),
+    cols:[{h:'tRNA anticodon<br><span class="small muted">(or none)</span>',kind:'anti',pts:2,ans:cods.map(c=>CODE[c]==='STOP'?'none':antiOf(c)),ph:'3 letters'},
+          {h:'Amino acid<br><span class="small muted">(or STOP)</span>',kind:'aa',pts:2,ans:cods.map(c=>CODE[c]),ph:'like Met'}],
+    hint:'Anticodons pair with codons: A with U, C with G. Look up each mRNA codon (not the anticodon) in the codon chart. A stop codon has no tRNA.', done:'Your anticodons and amino acids match your mRNA.'});
+}
+function cmpTable(parent,num,sim){
+  obsTableProblem(parent,{id:'cmp', part:'P3', num:num(), q:sim?'Record what you see about the other group\'s protein.':'Find a group with a <b>different gene letter</b>. Compare their protein with yours.', pts:4, rows:[
+    {q:'The other group\'s gene letter',opts:LETTERS.filter(L=>L!==GL())},
+    {q:'Number of amino acids in their chain',opts:['4','5','6','7','8']},
+    {q:'Was the order of their amino acids the same as yours?',opts:['Same order','Different order']},
+    {q:'Did their chain fold into the same shape as yours?',opts:['Same shape','Different shape','Hard to tell']}]});
+}
+function mutTables(wrap,num){
+  const g=G();
+  fieldsProblem(wrap,{id:'msub', part:'P3', num:num(), q:'<b>Substitution.</b> Make the substitution on your mutation card. Then transcribe and translate the new gene.',
+    fields:[{before:'New mRNA (all the bases):',kind:'seq',ans:spaced(g.sub.mrna),ph:'like AUG GCU …'},{before:'New amino acid chain, up to the stop codon:',kind:'chain',ans:chainTxt(g.sub.prot),ph:'like Met-Ser-Gly'}],
+    hint:'Only one base changes. Write the new mRNA, split it into codons of 3, and look up each codon until you reach a stop codon.', done:''});
+  fieldsProblem(wrap,{id:'mdel', part:'P3', num:num(), q:'<b>Deletion.</b> Start again from your original gene card. Remove the base on your mutation card. Then transcribe and translate the new gene.',
+    fields:[{before:'New mRNA (all the bases):',kind:'seq',ans:spaced(g.dele.mrna),ph:'like AUG GCU …'},{before:'New amino acid chain, up to the first stop codon:',kind:'chain',ans:chainTxt(g.dele.prot),ph:'like Met-Ser-Gly'}],
+    hint:'The mRNA is one base shorter. Regroup it into codons of 3 from the start codon, then look up each codon until you reach a stop codon.', done:''});
+}
+
+/* ---------- protein length graph (true values for the locked gene, shown after the data is saved) ---------- */
+const recLens=()=>{ const tl=st('tl').val||{}, n=Object.keys(tl).filter(k=>/_1$/.test(k)).length; let o=0; for(let i=0;i<n;i++){ const t=normAA(tl[i+'_1'],true); if(t.length&&t[0]!=='stop') o++; } return [o,normAA((st('msub').val||{})[1]).length,normAA((st('mdel').val||{})[1]).length]; };
+function lenChart(){ const r=recLens(), d=[['Original',r[0],'#45c8f0'],['Substitution',r[1],'#ffd35c'],['Deletion',r[2],'#f472b6']], top=8, Y0=230, Y1=40, y=v=>Y0-(Y0-Y1)*v/top;
+  let s=`<svg viewBox="0 0 560 280" role="img" aria-label="Bar graph of your recorded data: amino acids in your chain, original ${d[0][1]}, after the substitution ${d[1][1]}, after the deletion ${d[2][1]}."><rect width="560" height="280" rx="12" fill="#0f1b2e"/>`;
+  for(let v=0;v<=top;v+=2) s+=`<line x1="70" y1="${y(v)}" x2="540" y2="${y(v)}" stroke="#2a3d5f"/><text x="60" y="${y(v)+4}" text-anchor="end" font-size="12" fill="#a3b4cf">${v}</text>`;
+  s+=`<text x="20" y="${(Y0+Y1)/2}" font-size="13" fill="#a3b4cf" text-anchor="middle" transform="rotate(-90 20 ${(Y0+Y1)/2})">Number of amino acids</text>`;
+  d.forEach(([l,v,c],i)=>{ const x=110+i*150; s+=`<rect x="${x}" y="${y(v)}" width="80" height="${Y0-y(v)}" rx="4" fill="${c}"/><text x="${x+40}" y="${y(v)-6}" text-anchor="middle" font-size="14" font-weight="700" fill="#e8eef8">${v}</text><text x="${x+40}" y="${Y0+22}" text-anchor="middle" font-size="14" fill="#e8eef8">${l}</text>`; });
+  return s+`<line x1="70" y1="${Y0}" x2="540" y2="${Y0}" stroke="#a3b4cf" stroke-width="1.5"/></svg>`; }
+const changedCount=(a,b)=>{ let n=0; for(let i=0;i<Math.max(a.length,b.length);i++) if(a[i]!==b[i]) n++; return n; };
+
+/* ---------- seeded random (sim: tRNA tray order, other group) ---------- */
+function hashStr(s){ let x=2166136261; for(const ch of String(s)){ x^=ch.charCodeAt(0); x=Math.imul(x,16777619); } return x>>>0; }
+function mulberry(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+
+function buildContent(sec){
+  let n=0; const num=()=>++n;
+  const say=(s,html)=>s.insertAdjacentHTML('beforeend',html);
+  const g=G();
+  /* ---------- 1. Setup ---------- */
+  say(sec[0],`<div class="phenbox"><b>Phenomenon:</b> Your hair, your muscles, and the hemoglobin in your blood are all made of proteins. Every one of them was built from directions in your DNA. How can a list of just four bases (A, T, C, G) tell a cell how to build so many different proteins?</div>
+   <p><b>Lab question:</b> How does the DNA sequence of a gene determine the protein that is made, and how can one change in DNA change the protein?</p>
+   <p><b>Background.</b> A <b>gene</b> is a section of DNA. In <b>transcription</b>, the cell copies the gene's <b>template strand</b> into <b>mRNA</b> in the nucleus (A→U, T→A, C→G, G→C). The mRNA leaves through a <b>nuclear pore</b>. In <b>translation</b>, a <b>ribosome</b> reads the mRNA 3 bases at a time. Each group of 3 is a <b>codon</b>. A <b>tRNA</b> with the matching <b>anticodon</b> brings one <b>amino acid</b> for each codon. Translation starts at <b>AUG</b> and ends at a <b>stop codon</b> (UAA, UAG, or UGA). The amino acids join into a chain that <b>folds</b> into a protein.</p>
+   <p>Today your desk is a model cell. The paper circle is the <b>nucleus</b>, and the rest of the desk is the <b>cytoplasm</b>. Each pop bead stands for one amino acid.</p>
+   ${SETUP_HTML}`);
+  genePicker(sec[0],SIM_MODE);
+  choiceProblem(sec[0],{id:'q1', part:'P1', num:num(), q:'Check your understanding of the model.',
+    parts:[{q:'<b>Part A:</b> Why does the gene card stay inside the paper nucleus the whole time?',opts:['In a real cell, DNA stays in the nucleus. Only the mRNA copy leaves.','The gene card is too big to move.','Ribosomes are inside the nucleus.','The tRNA cards need it there.'],ans:0},
+           {q:'<b>Part B:</b> What does one pop bead stand for?',opts:['One amino acid','One base','One codon','One whole protein'],ans:0},
+           {q:'<b>Part C:</b> Each tRNA card has 3 bases on the bottom. What are those 3 bases called?',opts:['An anticodon','A codon','A gene','A nuclear pore'],ans:0}],
+    hint:'Re-read the background. DNA is the master copy. Codons are on the mRNA.', why:'DNA stays in the nucleus, one bead is one amino acid, and the 3 bases on a tRNA are its anticodon.'});
+  dragProblem(sec[0],{id:'q2', part:'P1', num:num(), q:'Label the cell. These are the real cell parts your desk model stands for.', svg:cellSVG(), vb:[860,440],
+    zones:CELL_ZONES.map(z=>Object.assign({w:150,ph:'drop here'},z)), chips:CELL_ZONES.map(z=>z.ans).concat(['Cell wall']),
+    hint:'Start with the big parts: the nucleus holds the DNA, and the ribosome is in the cytoplasm. One label is not used.', done:'DNA stays in the nucleus. mRNA leaves through a nuclear pore to a ribosome, where tRNAs bring amino acids.'});
+  /* ---------- 2. Predict ---------- */
+  if(!g){ say(sec[1],`<div class="fb info"><b>Locked.</b> Lock in your gene card on page 1 first.</div>`); }
+  else {
+    const L=g.dna.length, c=L/3;
+    say(sec[1],`<p>Look at your gene card (gene ${GL()}, ${g.name}). Before you build anything, predict. There are no wrong predictions: you get full credit for making them, but you <b>can't change them</b> after you lock them in.</p>${geneCardHTML(GL(),{small:true})}`);
+    predictRows(sec[1],{id:'pred', part:'P2', num:num(), q:'Make your predictions.',
+      rows:[{desc:`Your gene has <b>${L}</b> bases. How many amino acids will your protein have?`,choices:[...new Set([c-1,c,c+1,L].map(String))].sort((a,b)=>a-b)},
+            {desc:'What will happen to the protein if <b>one base is swapped</b> for a different base (a substitution)?',choices:['Nothing will change','One amino acid may change','Every amino acid after it will change','The protein will disappear']},
+            {desc:'What will happen to the protein if <b>one base is deleted</b> near the start of the gene?',choices:['Nothing will change','Only one amino acid will change','Many amino acids after it will change','The protein will get one amino acid shorter']}]});
+    writtenProblem(sec[1],{id:'hyp', part:'P2', num:num(), q:'Write a hypothesis about what a <b>deletion</b> will do to your protein, in the form <b>"If… then… because…"</b>.', pts:3,
+      bank:['If','then','because','one base','is deleted','amino acids','protein','codons','groups of 3','change'],
+      groups:[['If… then… form',/\bif\b[\s\S]*\bthen\b/],['names the protein or amino acids',/protein|amino|chain/],['a reason (codons, groups of 3, reading)',/because|codon|three|\b3\b|group|frame|shift|read/]],
+      model:'If one base is deleted from our gene, then many amino acids after it will change, because the ribosome reads the mRNA in groups of 3 and every codon after the deletion will be different.',
+      hint:'Say what you will change, what you think will happen to the protein, and why.', why:'A testable hypothesis names the change, the predicted result, and the reason.'});
+  }
+  /* ---------- 3. Data / Experiment ---------- */
+  if(!g){ say(sec[2],`<div class="fb info"><b>Locked.</b> Lock in your gene card on page 1 first.</div>`); window.dataRefresh=()=>{ if(window.anaRefresh) anaRefresh(); }; }
+  else buildData(sec[2],num);
+  /* ---------- 4. Analysis ---------- */
+  const alock=h('div',{class:'fb info'}); alock.innerHTML=g?'<b>Locked.</b> Finish and check every data table on page 3 first.':'<b>Locked.</b> Lock in your gene card on page 1 first.'; sec[3].appendChild(alock);
+  const awrap=h('div',{}); sec[3].appendChild(awrap);
+  const DATA_IDS=['tx','tl','cmp','msub','mdel'];
+  window.anaRefresh=()=>{ const ok=!!g&&DATA_IDS.every(id=>!!st(id).checked); alock.hidden=ok; awrap.hidden=!ok; if(ok) $$('.lenchart').forEach(e=>e.innerHTML=lenChart()); };
+  if(g){
+    const c=nCod(g), cmpV=()=>st('cmp').val||{};
+    say(awrap,`<p>Use <b>your gene card</b> and <b>your data tables</b> from page 3.</p>${geneCardHTML(GL(),{small:true})}`);
+    typedProblem(awrap,{id:'a1', part:'P4', num:num(), q:'Count from your gene and your data.',
+      blanks:[{before:'<b>Part A:</b> Number of bases in your gene =',calc:()=>g.dna.length,tol:0,show:String(g.dna.length)},
+              {before:'<b>Part B:</b> Number of codons in your mRNA =',calc:()=>c,tol:0,show:String(c)},
+              {before:'<b>Part C:</b> Number of amino acids in your protein =',calc:()=>g.prot.length,tol:0,show:String(g.prot.length)},
+              {before:'<b>Part D:</b> Number of tRNAs you used =',calc:()=>g.prot.length,tol:0,show:String(g.prot.length)}],
+      hint:'Every 3 bases make one codon. Every codon except the stop codon gets one tRNA and one amino acid.'});
+    dragProblem(awrap,{id:'a2', part:'P4', num:num(), q:'Put the steps of protein synthesis in order. Drag a step into each box.', equation:true,
+      layout:['<b>1</b>',0,'<b>2</b>',1,'<b>3</b>',2,'<b>4</b>',3,'<b>5</b>',4,'<b>6</b>',5],
+      zones:[{id:'s1',ans:'mRNA is made from the DNA template'},{id:'s2',ans:'mRNA leaves through a nuclear pore'},{id:'s3',ans:'A ribosome finds the start codon AUG'},{id:'s4',ans:'tRNAs bring amino acids, codon by codon'},{id:'s5',ans:'A stop codon releases the chain'},{id:'s6',ans:'The chain folds into a protein'}],
+      chips:['mRNA is made from the DNA template','mRNA leaves through a nuclear pore','A ribosome finds the start codon AUG','tRNAs bring amino acids, codon by codon','A stop codon releases the chain','The chain folds into a protein'],
+      hint:'Think about what you did at your desk: nucleus first, then the ribosome, then folding.', done:'Transcribe, exit, start at AUG, add amino acids, stop, fold.'});
+    awrap.lastElementChild.classList.add('ordprob');
+    binProblem(awrap,{id:'a3', part:'P4', num:num(), q:'Sort each step of your model. Was it part of transcription, translation, or both?',
+      bins:[{k:'s',label:'Transcription'},{k:'l',label:'Translation'},{k:'b',label:'Both'}],
+      items:[{t:'Writing the mRNA strip from the gene card',k:'s'},{t:'Working inside the paper nucleus',k:'s'},{t:'Uses the DNA template strand',k:'s'},{t:'Matching tRNA cards to codons',k:'l'},{t:'Snapping beads into a chain',k:'l'},{t:'Happens at the ribosome',k:'l'},{t:'Uses the codon chart',k:'l'},{t:'Uses base-pairing rules',k:'b'}],
+      hint:'Transcription makes mRNA from DNA in the nucleus. Translation makes a chain of amino acids at a ribosome. Base pairing is used in both.', done:'Transcription: nucleus, DNA template, mRNA. Translation: ribosome, tRNA, codon chart, chain. Both use base pairing.'});
+    dragProblem(awrap,{id:'a4', part:'P4', num:num(), q:'This close-up shows translation of <b>your</b> gene. Label it.', svg:transSVG(g), vb:[860,420],
+      zones:TRANS_ZONES.map(z=>Object.assign({w:150,ph:'drop here'},z)), chips:TRANS_ZONES.map(z=>z.ans).concat(['Nuclear pore']),
+      hint:'The codon is on the mRNA. The anticodon is on the tRNA. A peptide bond joins two amino acids. One label is not used.', done:'Codons on mRNA pair with tRNA anticodons, and peptide bonds join the amino acids.'});
+    say(awrap,`<div class="prob"><div class="pq">Your mutation results</div><p class="small muted" style="margin:0 0 4px">This graph is made from the chains you recorded on page 3 (STOP is not counted).</p><div class="datachart lenchart"></div></div>`);
+    const kindIdx={sil:0,mis:1,non:2}[g.kind];
+    choiceProblem(awrap,{id:'a5', part:'P4', num:num(), q:'Use <b>your</b> mutation results.',
+      parts:[{q:'<b>Part A:</b> What did the substitution do to your protein?',opts:['Nothing changed: the same amino acids (a silent mutation)','One amino acid changed','The chain stopped early, so the protein is shorter','Every amino acid after it changed'],ans:-1,ansFn:()=>kindIdx},
+             {q:'<b>Part B:</b> What did the deletion do to your protein?',opts:['Nothing changed','Only one amino acid changed','The amino acids after it changed, because the codons were regrouped (a frameshift)','Only the last amino acid was removed'],ans:2},
+             {q:'<b>Part C:</b> Which mutation changed your protein more?',opts:['The substitution','The deletion','They changed it the same amount'],ans:-1,ansFn:()=>{ const a=changedCount(g.prot,g.sub.prot), b=changedCount(g.prot,g.dele.prot); return a>b?0:b>a?1:2; }}],
+      hint:'Compare your new chains with your original chain, one amino acid at a time.', why:'Your answers match your own mutation data.'});
+    typedProblem(awrap,{id:'a6', part:'P4', num:num(), q:'Count the changes in <b>your</b> mutation results.',
+      blanks:[{before:'<b>Part A:</b> Amino acids in your chain after the substitution =',calc:()=>recLens()[1],tol:0,show:String(g.sub.prot.length)},
+              {before:'<b>Part B:</b> Amino acids in your chain after the deletion =',calc:()=>recLens()[2],tol:0,show:String(g.dele.prot.length)},
+              {before:'<b>Part C:</b> The deleted base was in which codon of the gene (1, 2, 3…)?',calc:()=>Math.ceil(g.dele.pos/3),tol:0,show:String(Math.ceil(g.dele.pos/3))}],
+      hint:'Count the amino acids in your recorded chains on page 3. Do not count STOP. Every 3 bases of the gene make one codon.'});
+    choiceProblem(awrap,{id:'a7', part:'P4', num:num(), q:'Compare with the <b>other group</b> you recorded on page 3.',
+      parts:[{q:`<b>Part A:</b> Your protein has ${g.prot.length} amino acids. The other group's protein (from your table) had…`,opts:['more amino acids than yours','fewer amino acids than yours','the same number of amino acids as yours'],ans:-1,ansFn:()=>{ const x=parseInt(cmpV()[1]); return x>g.prot.length?0:x<g.prot.length?1:2; }},
+             {q:'<b>Part B:</b> Why did the other group build a different protein?',opts:['Their gene had a different order of DNA bases','They used different base-pairing rules','Their ribosome was a different size','Their codon chart was different'],ans:0}],
+      hint:'Look at the number you recorded for the other group. Every group used the same rules and the same codon chart.', why:'Different base orders give different codons, so a different order of amino acids.'});
+    writtenProblem(awrap,{id:'a8', part:'P4', num:num(), q:'Did your results match your predictions from page 2? Explain, using your data (a number or amino acid names).', pts:2,
+      bank:['I predicted','amino acids','the substitution','the deletion','changed','stopped early','frameshift','but','because'],
+      groups:[['refers to the prediction',/predict|thought|expected|guess|hypothes/],['uses data (a number or an amino acid)',/\d|\b(met|val|his|leu|thr|pro|glu|ala|trp|arg|phe|ser|asp|lys|ile|gly|tyr|asn|gln|cys)\b/]],
+      model:`I predicted ${g.prot.length} amino acids, and our protein had ${g.prot.length}: ${chainTxt(g.prot)}. I predicted the deletion would change many amino acids, and it did: the chain became ${chainTxt(g.dele.prot)}.`,
+      hint:'Say what you predicted, then give a number or amino acids from your data.', why:'Comparing predictions with data is how scientists test their ideas.'});
+  }
+  /* ---------- 5. Conclusion ---------- */
+  say(sec[4],`<p>Write a <b>claim–evidence–reasoning</b> conclusion that answers: <i>How does the DNA sequence of a gene determine the protein that is made, and how can one change in DNA change the protein?</i></p>`);
+  writtenProblem(sec[4],{id:'k1', part:'P5', num:num(), q:'<b>Claim:</b> answer both parts of the lab question in one or two sentences.', pts:2, bank:['the order of bases','in DNA','sets','the order of amino acids','the protein','one change','a mutation','can change'],
+    groups:[['DNA base order sets the amino acids / protein',/(dna|base|gene|sequence|order)[\s\S]{0,80}(amino|protein)|(amino|protein)[\s\S]{0,80}(dna|base|gene)/],['a change (mutation) in DNA can change the protein',/(change|mutation|delet|substitut|swap)[\s\S]{0,100}(protein|amino|chain)/]],
+    model:'The order of bases in a gene sets the order of amino acids in the protein. One change in the DNA, called a mutation, can change the amino acids and the protein.', hint:'Answer both questions: how DNA sets the protein, and what one change can do.', why:'The claim answers the lab question.'});
+  writtenProblem(sec[4],{id:'k2', part:'P5', num:num(), q:'<b>Evidence:</b> use your data. Give your amino acid chain, and what happened after the substitution and after the deletion.', pts:3,
+    bank:['our chain was','Met','after the substitution','after the deletion','changed to','stopped early','amino acids'],
+    groups:[['your chain (amino acids)',/\b(met|val|his|leu|thr|pro|glu|ala|trp|arg|phe|ser|asp|lys|ile|gly|tyr)\b/],['the substitution result',/substitut|swap|one base (changed|was changed)|base \d+ chang/],['the deletion result',/delet|remov|frameshift/]],
+    model:g?`Our gene made the chain ${chainTxt(g.prot)}. After the substitution it was ${chainTxt(g.sub.prot)}. After the deletion it was ${chainTxt(g.dele.prot)}.`:'Our gene made the chain Met-Lys-Trp-Val-Thr-Phe. After the substitution it was Met-Lys-Ser-Val-Thr-Phe. After the deletion it was Met-Ser-Gly.',
+    hint:'Copy amino acids from your data tables on page 3.', why:'Good evidence uses your own data.'});
+  writtenProblem(sec[4],{id:'k3', part:'P5', num:num(), q:'<b>Reasoning:</b> explain <i>why</i> the DNA sequence decides the protein, and why a deletion can change so much.', pts:3,
+    bank:['transcription','mRNA','base pairing','codon','3 bases','tRNA','anticodon','amino acid','regroups','every codon after','shape'],
+    groups:[['transcription copies the DNA into mRNA by base pairing',/transcri|mrna|base.?pair|pairs/],['each codon (3 bases) codes for one amino acid, brought by tRNA',/codon|three|\b3\b|trna|anticodon/],['a deletion regroups every codon after it / changes the shape',/frame|shift|regroup|every codon|after (it|the deletion)|shape|fold/]],
+    model:'In transcription, the DNA template is copied into mRNA by base pairing, so the mRNA order comes from the DNA. In translation, the ribosome reads the mRNA 3 bases at a time, and each codon matches one tRNA that brings one amino acid. A deletion regroups every codon after it (a frameshift), so many amino acids change and the protein folds into a different shape.',
+    hint:'Cover three ideas: how DNA becomes mRNA, how codons become amino acids, and why a deletion changes so much.', why:'DNA → mRNA by base pairing; each codon → one amino acid; deletions shift the reading frame.'});
+  dataRefresh();
+}
+
+/* ===== Protein Synthesis Model Lab: simulation version (virtual drag-and-drop bench) ===== */
+const SIM_MODE=true;
+const SETUP_HTML=`<div class="phenbox" style="border-left-color:#7c3aed;background:rgba(124,58,237,.12)"><b>Missed the lab?</b> You'll build your protein on a virtual bench. You'll drag RNA bases onto your gene, move the mRNA out of the nucleus, and drag tRNAs into a ribosome.</div>
+   <p>In class, groups used a paper nucleus, paper strips, a paper ribosome, tRNA cards, and pop beads. Your virtual bench works the same way.</p>
+   <div class="figwrap" style="margin:12px 0 8px">${DESK_PIC}</div>
+   <p><b>Procedure (virtual):</b></p><ol class="proc">
+    <li>On this page, choose your gene card letter and lock it in. Answer the questions below.</li>
+    <li>On page 2, make your predictions and lock them in.</li>
+    <li>On page 3, use the virtual bench. <b>Transcribe:</b> drag RNA bases onto your gene, one at a time.</li>
+    <li><b>Leave the nucleus:</b> drag the mRNA through a nuclear pore.</li>
+    <li><b>Translate:</b> drag the tRNA that matches each codon into the open spot of the ribosome. Release the chain at a stop codon.</li>
+    <li><b>Fold</b> your chain, then meet another group's protein.</li>
+    <li><b>Mutation challenge:</b> make the changes on your mutation card and run the gene again.</li>
+    <li>Record what the bench shows in the tables on page 3.</li></ol>`;
+
+/* ---------- drag and drop with tap fallback (pointer events work for mouse, touch, and pen) ---------- */
+function dndInit(root,onDrop){
+  let drag=null, sel=null;
+  const mark=()=>root.querySelectorAll('[data-drag]').forEach(t=>t.classList.toggle('sel',t===sel));
+  root.addEventListener('pointerdown',e=>{ const t=e.target.closest('[data-drag]'); if(!t||t.disabled||!root.contains(t)) return; drag={t,x:e.clientX,y:e.clientY,moved:false,g:null}; });
+  window.addEventListener('pointermove',e=>{ if(!drag) return;
+    if(!drag.moved&&Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>6){ drag.moved=true; const gh=drag.t.cloneNode(true); gh.classList.add('dragghost'); gh.classList.remove('sel'); gh.style.width=drag.t.offsetWidth+'px'; document.body.appendChild(gh); drag.g=gh; }
+    if(drag.g){ drag.g.style.left=e.clientX+'px'; drag.g.style.top=e.clientY+'px'; root.querySelectorAll('[data-drop].hot').forEach(z=>z.classList.remove('hot')); const el=document.elementFromPoint(e.clientX,e.clientY), tg=el&&el.closest('[data-drop]'); if(tg&&root.contains(tg)) tg.classList.add('hot'); } });
+  window.addEventListener('pointerup',e=>{ if(!drag) return; const d=drag; drag=null;
+    if(d.moved){ if(d.g) d.g.remove(); root.querySelectorAll('[data-drop].hot').forEach(z=>z.classList.remove('hot')); const el=document.elementFromPoint(e.clientX,e.clientY), tg=el&&el.closest('[data-drop]'); sel=null; mark(); if(tg&&root.contains(tg)) onDrop(d.t.dataset.drag,tg); }
+    else { sel=sel===d.t?null:d.t; mark(); } });
+  window.addEventListener('pointercancel',()=>{ if(drag&&drag.g) drag.g.remove(); drag=null; });
+  root.addEventListener('click',e=>{ if(e.target.closest('[data-drag]')) return; const tg=e.target.closest('[data-drop]'); if(tg&&sel&&root.contains(sel)){ const v=sel.dataset.drag; sel=null; mark(); onDrop(v,tg); } });
+}
+const nuclSVG=b=>`<svg viewBox="0 0 56 56" aria-hidden="true"><line x1="15" y1="16" x2="22" y2="27" stroke="#475569" stroke-width="2.5"/><line x1="33" y1="30" x2="38" y2="30" stroke="#475569" stroke-width="2.5"/><circle cx="13" cy="13" r="7" fill="#fde68a" stroke="#a16207" stroke-width="1.5"/><path d="M27 20 L36 26 L33 37 L21 37 L18 26 Z" fill="#fecaca" stroke="#b91c1c" stroke-width="1.5"/><rect x="37" y="18" width="17" height="25" rx="3" fill="${BASEC[b]}" stroke="#0f172a" stroke-opacity=".4"/><text x="45.5" y="36" text-anchor="middle" font-size="15" font-weight="800" fill="#fff">${b}</text></svg>`;
+const trnaCard=(anti,aa)=>`<svg viewBox="0 0 84 150" aria-hidden="true">${trnaSVG(42,146,anti,aa)}</svg>`;
+const rnaTiles=m=>`<span class="rtiles">${trips(m).concat(m.length%3?[m.slice(m.length-m.length%3)]:[]).map(t=>`<span class="rgrp">${t.split('').map(b=>`<span class="bt sm" style="background:${BASEC[b]}">${b}</span>`).join('')}</span>`).join('')}</span>`;
+const chainHTML=(p,stop)=>`<span class="hchain">${p.map(a=>`<span class="hb" style="background:${AACOL(a)}">${a}</span>`).join('<i></i>')}${stop?'<span class="hstop">STOP</span>':''}</span>`;
+/* folding: a seeded compact self-avoiding walk, so each protein folds its own way */
+function foldPos(prot,key){ const rnd=mulberry(hashStr(key+prot.join(''))), D=[[1,0],[.5,.87],[-.5,.87],[-1,0],[-.5,-.87],[.5,-.87]], st=38; let pts=[[0,0]];
+  for(let i=1;i<prot.length;i++){ const [x,y]=pts[i-1]; const cx=pts.reduce((a,p)=>a+p[0],0)/pts.length, cy=pts.reduce((a,p)=>a+p[1],0)/pts.length;
+    const opts=D.map(d=>[x+d[0]*st,y+d[1]*st]).filter(p=>pts.every(q=>Math.hypot(q[0]-p[0],q[1]-p[1])>st*.8)).map(p=>({p,s:Math.hypot(p[0]-cx,p[1]-cy)+rnd()*30}));
+    opts.sort((a,b)=>a.s-b.s); pts.push(opts.length?opts[0].p:[x+st,y]); }
+  const mx=pts.reduce((a,p)=>a+p[0],0)/pts.length, my=pts.reduce((a,p)=>a+p[1],0)/pts.length; return pts.map(p=>[p[0]-mx,p[1]-my]); }
+function foldSVG(mine,tm,other,to){ const draw=(prot,t,cx,cy,key)=>{ const f=foldPos(prot,key), n=prot.length, sp=prot.map((_,i)=>[(i-(n-1)/2)*38,0]);
+    const P=prot.map((_,i)=>[cx+sp[i][0]+(f[i][0]-sp[i][0])*t, cy+sp[i][1]+(f[i][1]-sp[i][1])*t]); let s='';
+    for(let i=1;i<n;i++) s+=bond(P[i-1][0].toFixed(1),P[i-1][1].toFixed(1),P[i][0].toFixed(1),P[i][1].toFixed(1));
+    return s+P.map((p,i)=>bead(+p[0].toFixed(1),+p[1].toFixed(1),prot[i],16)).join(''); };
+  let s=`<svg viewBox="0 0 760 300" role="img" aria-label="Your amino acid chain${tm>0?', folded':''}${other?', and another group\'s chain':''}."><rect width="760" height="300" rx="14" fill="#f8fafc"/>`;
+  s+=tx(200,30,`Your chain (gene ${GL()})`,{s:15})+draw(G().prot,tm,200,160,'me');
+  if(other){ s+=`<line x1="380" y1="20" x2="380" y2="280" stroke="#cbd5e1" stroke-dasharray="6 5"/>`+tx(570,30,`Another group (gene ${other})`,{s:15})+draw(GENES[other].prot,to,570,160,'ot'); }
+  return s+'</svg>'; }
+function exitSVG(){ const cx=250, cy=160, r=128; let s=`<svg viewBox="0 0 760 320" role="img" aria-label="The nucleus with its pores, the finished mRNA and the gene inside it, and a ribosome waiting in the cytoplasm."><rect width="760" height="320" rx="14" fill="#fff1e6"/>`;
+  s+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="#f3e8ff" stroke="#7c3aed" stroke-width="4"/><circle cx="${cx}" cy="${cy}" r="${r-10}" fill="none" stroke="#a78bfa" stroke-width="2.5"/>`;
+  EXIT_PORES.forEach(a=>{ const x=cx+(r-5)*Math.cos(a), y=cy+(r-5)*Math.sin(a); s+=`<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${(a*57.3).toFixed(1)})"><rect x="-10" y="-10" width="20" height="20" fill="#fdf4ff"/><circle cx="0" cy="-10" r="4.5" fill="#7c3aed"/><circle cx="0" cy="10" r="4.5" fill="#7c3aed"/></g>`; });
+  let p1='M160 110', p2='M160 110'; for(let i=1;i<=22;i++){ const x=160+i*6; p1+=` L${x} ${(110+12*Math.sin(i*.6)).toFixed(1)}`; p2+=` L${x} ${(110-12*Math.sin(i*.6)).toFixed(1)}`; }
+  s+=`<path d="${p1}" fill="none" stroke="#1d4ed8" stroke-width="4"/><path d="${p2}" fill="none" stroke="#1d4ed8" stroke-width="4"/>`;
+  let m='M170 200'; for(let i=1;i<=30;i++) m+=` L${170+i*5} ${(200+8*Math.sin(i*.7)).toFixed(1)}`;
+  s+=`<path d="${m}" fill="none" stroke="#7e22ce" stroke-width="5" stroke-linecap="round"/>`;
+  s+=`<g transform="translate(610 175)"><path d="M-62 0 C-66 -40 -30 -56 0 -54 C34 -58 66 -38 60 0 Z" fill="#fde68a" stroke="#b45309" stroke-width="3"/><path d="M-58 6 h116 C60 30 30 38 0 36 C-30 38 -60 30 -58 6 Z" fill="#fcd34d" stroke="#b45309" stroke-width="3"/></g>`;
+  s+=[[520,70],[690,90],[700,260],[540,280]].map(([x,y])=>`<g transform="translate(${x} ${y}) scale(.3)"><path d="M-62 0 C-66 -40 -30 -56 0 -54 C34 -58 66 -38 60 0 Z" fill="#fde68a" stroke="#b45309" stroke-width="6"/><path d="M-58 6 h116 C60 30 30 38 0 36 C-30 38 -60 30 -58 6 Z" fill="#fcd34d" stroke="#b45309" stroke-width="6"/></g>`).join('');
+  return s+tx(610,250,'ribosome',{s:14,c:'#92400e'})+'</svg>'; }
+const EXIT_PORES=[-0.75,-0.1,0.6,2.5,3.9];
+/* the ribosome scene; k = codon in the open (A) site; joining = matching tRNA shown in the A site */
+function riboScene(g,k,joining,released){ const cods=trips(g.mrna), P=386, A=470, cx=428;
+  let s=`<svg viewBox="150 40 560 300" role="img" aria-label="A ribosome on the mRNA. ${released?'The finished chain has been released.':`Codon ${k+1} is in the open spot.`}"><rect x="150" y="40" width="560" height="300" rx="14" fill="#fff1e6"/>`;
+  s+=released?`<g transform="translate(0 -18)">${riboBody(cx)}</g><g transform="translate(0 16)">${riboSmall(cx)}</g>`:riboBody(cx)+riboSmall(cx);
+  s+=`<rect x="0" y="288" width="760" height="7" fill="#7e22ce"/>`;
+  cods.forEach((c,j)=>{ const x0=A-39+(j-k)*84; if(x0<-90||x0>770) return; c.split('').forEach((b,i)=>{ s+=tileS(x0+i*26,260,b,26); }); });
+  if(!released){ s+=`<rect x="${A-42}" y="257" width="84" height="32" rx="6" fill="none" stroke="#ca8a04" stroke-width="3" stroke-dasharray="6 4"/>`;
+    if(k>0){ const ch=g.prot.slice(0,k).reverse(); const pos=ch.map((_,i)=>i===0?[P,140]:[P-34*i,i%2?108:132]);
+      s+=trnaSVG(P,258,antiOf(cods[k-1]),null,{stub:false});
+      for(let i=1;i<pos.length;i++) s+=bond(pos[i-1][0],pos[i-1][1],pos[i][0],pos[i][1]);
+      if(joining) s+=bond(P,140,A,140);
+      s+=ch.map((a,i)=>bead(pos[i][0],pos[i][1],a,17)).join(''); }
+    if(joining) s+=trnaSVG(A,258,antiOf(cods[k]),g.prot[k]); }
+  else { const n=g.prot.length; let c=''; for(let i=1;i<n;i++) c+=bond(210+(i-1)*42,70+((i-1)%2)*22,210+i*42,70+(i%2)*22); s+=c+g.prot.map((a,i)=>bead(210+i*42,70+(i%2)*22,a,17)).join('')+tx(210+(n-1)*21,126,'released chain',{s:13,c:'#475569'}); }
+  return s+'</svg>'; }
+
+function buildData(s,num){
+  const g=G(), L=GL(), n=g.dna.length, cods=trips(g.mrna), NC=cods.length;
+  const lock=h('div',{class:'fb info'}); lock.innerHTML='<b>Locked.</b> Lock in your predictions on page 2 first.'; s.appendChild(lock);
+  const SIMS=st('vsim'); if(SIMS.tx==null) SIMS.tx=''; if(SIMS.ti==null) SIMS.ti=0; if(SIMS.mu==null) SIMS.mu=0;
+  const stu=S.student||{}; const seed=hashStr((stu.id||'')+'|'+(stu.last||'').toLowerCase()+'|'+WS_ID);
+  if(!SIMS.otherL){ const others=LETTERS.filter(x=>x!==L); SIMS.otherL=others[seed%others.length]; }
+  const rnd=mulberry(seed);
+  const used=[...new Set(cods.filter(c=>CODE[c]!=='STOP'))], pool=Object.keys(CODE).filter(c=>CODE[c]!=='STOP'&&!used.includes(c)&&!used.map(antiOf).includes(antiOf(c)));
+  const decoys=[]; while(decoys.length<3){ const c=pool[Math.floor(rnd()*pool.length)]; if(!decoys.includes(c)) decoys.push(c); }
+  const tray=used.concat(decoys).map(c=>({anti:antiOf(c),aa:CODE[c],r:rnd()})).sort((a,b)=>a.r-b.r);
+  const bench=h('div',{class:'vbench'}); s.appendChild(bench);
+  bench.innerHTML=`<h3 style="margin:0 0 6px">Virtual lab bench</h3><div class="bsteps" id="bSteps"></div><div id="bStage"></div><div class="fb info bmsg" id="bMsg" aria-live="polite" hidden></div>
+    <div class="bres" id="bRes"></div>`;
+  const bq=q=>bench.querySelector(q);
+  let joining=false;
+  const stage=()=>SIMS.tx.length<n?0:!SIMS.exited?1:!SIMS.released?2:!SIMS.go4?3:4;
+  const msg=(t,ok)=>{ const m=bq('#bMsg'); m.hidden=!t; m.className='fb bmsg '+(ok?'ok':t?'no':'info'); m.innerHTML=t||''; };
+  function pct(x,y,w,hh,W,H){ return `left:${(x-w/2)/W*100}%;top:${(y-hh/2)/H*100}%;width:${w/W*100}%;height:${hh/H*100}%`; }
+  function draw(){ const k=stage();
+    bq('#bSteps').innerHTML=['Transcribe','Leave the nucleus','Translate','Fold','Mutate'].map((t,i)=>`<span class="bstep${i===k?' cur':''}${i<k||SIMS.done?' done':''}">${i+1}. ${t}</span>`).join('');
+    const st0=bq('#bStage');
+    if(k===0){ const next=SIMS.tx.length;
+      st0.innerHTML=`<p class="bhelp">Drag an RNA base onto the glowing box (or tap a base, then tap the box). RNA polymerase adds one base at a time.</p>
+        <div class="nucpanel"><span class="nuctag">nucleus</span><div class="strandwrap">${trips(g.dna).map((t,ti)=>`<div class="btrip${Math.floor(next/3)===ti?' cur':''}">${Math.floor(next/3)===ti?'<span class="rnap">RNA polymerase</span>':''}
+          <div class="brow2">${[0,1,2].map(j=>{ const i=ti*3+j, b=SIMS.tx[i]; return b?`<span class="bt" style="background:${BASEC[b]}">${b}</span>`:`<span class="bt slot${i===next?' next':''}" data-drop="s${i}" aria-label="Empty box ${i+1}"></span>`; }).join('')}</div>
+          <div class="brow2">${t.split('').map(b=>`<span class="bt dna" style="background:${BASEC[b]}">${b}</span>`).join('')}</div><div class="bnum">${ti*3+1}-${ti*3+3}</div></div>`).join('')}</div>
+          <div class="small" style="color:#5b21b6;margin-top:4px">Top row: the mRNA you build. Bottom row: the DNA template strand (gene ${L}).</div></div>
+        <div class="tray"><span class="tlab">RNA nucleotides</span>${['A','U','G','C','T'].map(b=>`<button type="button" class="nucl" data-drag="${b}" aria-label="Nucleotide ${b}">${nuclSVG(b)}</button>`).join('')}</div>`; }
+    if(k===1){ const W=760,H=320, cx=250, cy=160, r=123;
+      st0.innerHTML=`<p class="bhelp">Your mRNA is done. Drag the <b>mRNA</b> out of the nucleus through a <b>nuclear pore</b>.</p>
+        <div class="figwrap exitfig" data-drop="wall">${exitSVG()}${EXIT_PORES.map(a=>`<div class="pz" data-drop="pore" style="${pct(cx+r*Math.cos(a),cy+r*Math.sin(a),56,56,W,H)}" aria-label="nuclear pore"></div>`).join('')}</div>
+        <div class="tray"><button type="button" class="dchip" data-drag="mrna"><svg viewBox="0 0 90 24" width="90" height="24" aria-hidden="true"><path d="M4 12 q10 -10 20 0 t20 0 t20 0 t20 0" fill="none" stroke="#a855f7" stroke-width="5" stroke-linecap="round"/></svg>mRNA</button><button type="button" class="dchip" data-drag="dna"><svg viewBox="0 0 90 24" width="90" height="24" aria-hidden="true"><path d="M4 6 q10 14 20 0 t20 0 t20 0 t20 0 M4 18 q10 -14 20 0 t20 0 t20 0 t20 0" fill="none" stroke="#3b82f6" stroke-width="3.5"/></svg>gene (DNA)</button></div>`; }
+    if(k===2){ const kk=SIMS.ti;
+      st0.innerHTML=`<p class="bhelp">Drag the tRNA whose <b>anticodon</b> pairs with the codon in the open spot (A site). Tap a tRNA, then the spot, also works. When no tRNA pairs with the codon, release the chain.</p>
+        <div class="figwrap ribofig">${riboScene(g,kk,joining,false)}${joining?'':`<div class="az" data-drop="A" style="${pct(470-150,196-40,88,124,560,300)}"><span>A site</span></div>`}</div>
+        <div class="tray trtray"><span class="tlab">tRNA cards (you can use a card more than once)</span>${tray.map(t=>`<button type="button" class="trcard" data-drag="${t.anti}" aria-label="tRNA with anticodon ${t.anti.split('').join(' ')} carrying ${t.aa}">${trnaCard(t.anti,t.aa)}</button>`).join('')}</div>
+        <div class="btnrow"><button class="btn ghost small" type="button" id="relBtn">No tRNA pairs: release the chain</button><span class="small muted">Codon ${kk+1} of ${NC}</span></div>`;
+      bq('#relBtn').addEventListener('click',()=>{ if(joining) return; if(CODE[cods[SIMS.ti]]==='STOP'){ SIMS.released=true; save(); cloudSave(true); msg('The ribosome reached a stop codon and released your chain.',true); draw(); dataRefresh(); } else msg('A tRNA can still pair with this codon. Release the chain only when no tRNA pairs.'); }); }
+    if(k===3){ const fm=SIMS.folded?1:0, fo=SIMS.met?1:0;
+      st0.innerHTML=`<p class="bhelp">Your chain is free. Fold it, then meet another group's protein.</p><div class="figwrap" id="foldFig">${foldSVG(g.prot,fm,SIMS.met?SIMS.otherL:null,fo)}</div>
+        <div class="btnrow"><button class="btn primary small" type="button" id="foldBtn" ${SIMS.folded?'disabled':''}>Fold the chain</button><button class="btn primary small" type="button" id="otherBtn" ${!SIMS.folded||SIMS.met?'disabled':''}>Meet another group</button><button class="btn ghost small" type="button" id="go4" ${SIMS.met?'':'disabled'}>Next: mutation challenge</button></div>`;
+      const anim=(fn,done)=>{ const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches; if(reduce){ fn(1); done(); return; } const t0=performance.now(); (function fr(now){ const t=Math.min(1,(now-t0)/1400), e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2; fn(e); if(t<1) requestAnimationFrame(fr); else done(); })(t0); };
+      bq('#foldBtn').addEventListener('click',()=>{ if(SIMS.folded) return; SIMS.folded=true; save(); bq('#foldBtn').disabled=true; anim(t=>{ const f=bq('#foldFig'); if(f) f.innerHTML=foldSVG(g.prot,t,null,0); },()=>draw()); });
+      bq('#otherBtn').addEventListener('click',()=>{ if(SIMS.met||!SIMS.folded) return; SIMS.met=true; save(); cloudSave(true); bq('#otherBtn').disabled=true; anim(t=>{ const f=bq('#foldFig'); if(f) f.innerHTML=foldSVG(g.prot,1,SIMS.otherL,t); },()=>{ draw(); dataRefresh(); }); });
+      bq('#go4').addEventListener('click',()=>{ SIMS.go4=true; save(); msg(''); draw(); }); }
+    if(k===4){ const mu=SIMS.mu, subP=g.sub.pos-1, delP=g.dele.pos-1, onDel=mu>=3;
+      const tiles=g.dna.split('').map((b,i)=>{ let bb=b, cls='gbt'; if(!onDel&&mu>=1&&i===subP){ bb=g.sub.new; cls+=' mut'; } if(onDel&&mu>=4&&i===delP) cls+=' gone';
+        return `<button type="button" class="${cls}" data-i="${i}" ${mu===1||mu===2||mu>=4?'disabled':''}><span class="gb" style="background:${BASEC[bb]}">${bb}<i>${i+1}</i></span></button>${i%3===2?'<span class="gsp"></span>':''}`; }).join('');
+      const task=mu===0?`<b>Substitution:</b> tap base <b>${g.sub.pos}</b> to change it from <b>${g.sub.old}</b> to <b>${g.sub.new}</b>.`:mu<=2?`<b>Substitution:</b> base ${g.sub.pos} changed from ${g.sub.old} to ${g.sub.new}.`:mu===3?`<b>Deletion:</b> this is your original gene again. Tap base <b>${g.dele.pos}</b> (a ${g.dele.old}) to remove it.`:`<b>Deletion:</b> base ${g.dele.pos} (a ${g.dele.old}) was removed.`;
+      const out=mu===2?`<div class="mout"><div><b>New mRNA:</b> ${rnaTiles(g.sub.mrna)}</div><div><b>New chain:</b> ${chainHTML(g.sub.prot,true)}</div></div>`:mu===5?`<div class="mout"><div><b>New mRNA:</b> ${rnaTiles(g.dele.mrna)}</div><div><b>New chain:</b> ${chainHTML(g.dele.prot,true)}</div></div>`:'';
+      st0.innerHTML=`${mutCardHTML(L)}<p class="bhelp" style="margin-top:10px">${task}</p><div class="gtiles">${tiles}</div>${out}
+        <div class="btnrow">${mu===1||mu===4?'<button class="btn primary small" type="button" id="runBtn">Transcribe and translate the new gene</button>':''}${mu===2?'<button class="btn primary small" type="button" id="nextDel">Next: the deletion</button>':''}${mu===5?'<span class="small" style="color:var(--ok)">Bench complete. Record your results in the tables below.</span>':''}</div>`;
+      bench.querySelectorAll('.gbt').forEach(b=>b.addEventListener('click',()=>{ const i=+b.dataset.i; const want=mu===0?subP:mu===3?delP:-1; if(want<0) return;
+        if(i!==want){ msg(`That is base ${i+1}. Find base ${want+1}. The small numbers count the bases from the left.`); return; }
+        SIMS.mu=mu+1; save(); msg(''); draw(); }));
+      const rb=bq('#runBtn'); if(rb) rb.addEventListener('click',()=>{ SIMS.mu=mu+1; if(SIMS.mu===5) SIMS.done=true; save(); cloudSave(true); draw(); dataRefresh(); });
+      const nd=bq('#nextDel'); if(nd) nd.addEventListener('click',()=>{ SIMS.mu=3; save(); draw(); }); }
+    /* bench results (readings to record) */
+    let r='';
+    if(SIMS.tx.length===n) r+=`<div class="rrow"><b>mRNA you built:</b> ${rnaTiles(SIMS.tx)}</div>`;
+    if(SIMS.ti>0||SIMS.released){ const done=cods.slice(0,SIMS.ti); r+=`<div class="rrow"><b>tRNAs you used, in order:</b> <span class="usedtr">${done.map(c=>`<span class="ut"><span class="mono">${antiOf(c)}</span>${chainHTML([CODE[c]],false)}</span>`).join('')}</span></div>`; }
+    if(SIMS.released) r+=`<div class="rrow"><b>Your chain:</b> ${chainHTML(g.prot,true)}</div>`;
+    if(SIMS.met) r+=`<div class="rrow"><b>Another group (gene ${SIMS.otherL}):</b> ${chainHTML(GENES[SIMS.otherL].prot,true)}</div>`;
+    if(SIMS.mu>=2) r+=`<div class="rrow"><b>After the substitution:</b> ${rnaTiles(g.sub.mrna)} ${chainHTML(g.sub.prot,true)}</div>`;
+    if(SIMS.mu>=5) r+=`<div class="rrow"><b>After the deletion:</b> ${rnaTiles(g.dele.mrna)} ${chainHTML(g.dele.prot,true)}</div>`;
+    bq('#bRes').innerHTML=r?`<h4 style="margin:12px 0 6px">Bench results</h4>${r}`:'';
+  }
+  dndInit(bench,(v,tg)=>{ const k=stage(), d=tg.dataset.drop;
+    if(k===0){ if(!/^s\d+$/.test(d)) return; const i=+d.slice(1), next=SIMS.tx.length;
+      if(i!==next){ msg('RNA polymerase adds bases in order. Use the glowing box.'); return; }
+      if(v==='T'){ msg('T is a DNA base. RNA uses U instead of T.'); return; }
+      if(!'AUGC'.includes(v)) return;
+      if(v!==RPAIR[g.dna[i]]){ msg('That base does not pair with the DNA base below it. Try another.'); return; }
+      SIMS.tx+=v; msg(SIMS.tx.length===n?'Transcription is done. Now move the mRNA out of the nucleus.':'',SIMS.tx.length===n); save(); if(SIMS.tx.length===n) cloudSave(true); draw(); dataRefresh(); return; }
+    if(k===1){ if(v==='dna'){ msg('DNA stays in the nucleus. Only the mRNA copy leaves.'); return; }
+      if(v!=='mrna') return;
+      if(d==='pore'){ SIMS.exited=true; save(); cloudSave(true); msg('The mRNA left through a nuclear pore and reached a ribosome.',true); draw(); dataRefresh(); }
+      else msg('The mRNA cannot pass through the nuclear membrane. Find a nuclear pore.'); return; }
+    if(k===2&&d==='A'&&!joining){ const c=cods[SIMS.ti];
+      if(CODE[c]==='STOP'||v!==antiOf(c)){ msg('That anticodon does not pair with this codon. Try another tRNA.'); return; }
+      joining=true; msg(''); draw(); setTimeout(()=>{ joining=false; SIMS.ti++; save(); draw(); dataRefresh(); },650); }
+  });
+  draw();
+  /* tables (same as the hands-on lab), each unlocked by its bench step */
+  const step=(t)=>{ const l=h('div',{class:'fb info'}); l.innerHTML=`<b>Locked.</b> ${t}`; s.appendChild(l); const w=h('div',{}); s.appendChild(w); return [l,w]; };
+  s.insertAdjacentHTML('beforeend',`<h3 class="stephead">Record your data</h3><p>Copy what the bench shows into each table. Each table has <b>two tries</b>.</p>`);
+  const [l1,w1]=step('Finish transcription on the bench first.');
+  const [l2,w2]=step('Finish translation on the bench first (release the chain).');
+  dataTables(w1,w2,num,{tx:'Record your mRNA. Write the codon that pairs with each DNA triplet.',tl:'Record the tRNA anticodon and the amino acid for each codon of your mRNA.'});
+  const [l3,w3]=step('Fold your chain and meet another group on the bench first.'); cmpTable(w3,num,true);
+  s.insertAdjacentHTML('beforeend',chartBox(false));
+  const [l4,w4]=step('Finish the substitution on the bench first.'); const [l5,w5]=step('Finish the deletion on the bench first.');
+  mutTables(w4,num); w5.appendChild(w4.lastElementChild);   /* the deletion table waits for the deletion run */
+  window.dataRefresh=()=>{ const ok=!!st('pred').checked, a=SIMS.tx.length===n, b=!!SIMS.released, c=!!SIMS.met, d=SIMS.mu>=2, e=SIMS.mu>=5;
+    lock.hidden=ok; bench.classList.toggle('off',!ok);
+    [[l1,w1,a],[l2,w2,b],[l3,w3,c],[l4,w4,d],[l5,w5,e]].forEach(([l,w,u])=>{ l.hidden=!ok||u; w.classList.toggle('off',!(ok&&u)); });
+    if(window.anaRefresh) anaRefresh(); };
+}
+
+/* ============================== BUILD / SCORE ============================== */
+function scoreAll(){ const parts=PARTS.slice(0,-1).map(p=>({k:p.k,label:p.label,got:0,max:0})); PROBS.forEach(pr=>{ const pt=parts.find(x=>x.k===pr.part); pt.got+=pr.score(); pt.max+=pr.max; });
+  return {parts, total:parts.reduce((a,b)=>a+b.got,0), max:parts.reduce((a,b)=>a+b.max,0)}; }
+function build(){
+  PROBS.length=0; const ws=$('#ws'); ws.innerHTML='';
+  $('#nav').innerHTML=PARTS.map((pt,i)=>`<button class="ntile" type="button" data-i="${i}" aria-label="${pt.title}"><span class="ic">${ico(i,22)}</span><span class="nm">${pt.label}</span></button>`).join('');
+  $$('#nav .ntile').forEach(b=>b.addEventListener('click',()=>showPart(+b.dataset.i)));
+  const secs=PARTS.map((pt,i)=>{ const el=h('section',{class:'sec',id:'part'+i}); const last=i===PARTS.length-1;
+    el.innerHTML=`<div class="sechead"><div class="badge"><span class="z">${i+1}</span>${ico(i,34)}</div><div><div class="meta">${last?'Grade':`Section ${i+1} of ${PARTS.length-1} · about ${pt.min} min`}</div><h2>${pt.title}</h2></div></div>`;
+    const c=h('div',{class:'card'}); el.appendChild(c);
+    const nav=h('div',{class:'secnav'});
+    const back=h('button',{class:'btn ghost',type:'button'},i===0?'':'← Back'); if(i===0) back.style.visibility='hidden'; back.addEventListener('click',()=>showPart(i-1));
+    nav.appendChild(back);
+    if(!last){ const nx=h('button',{class:'btn primary',type:'button'},i===PARTS.length-2?'See my grade →':`Next: ${PARTS[i+1].title} →`); nx.addEventListener('click',()=>showPart(i+1)); nav.appendChild(nx); }
+    el.appendChild(nav); ws.appendChild(el); return c; });
+  buildContent(secs);
+  secs[PARTS.length-1].id='turnin';
+  showPart(Math.min(S.cur||0,PARTS.length-1),true);
+  $('#whoami').textContent=S.student?`${S.student.first} ${S.student.last}`:''; refresh();
+}
+function showPart(i,noScroll){
+  S.cur=i; $$('#ws .sec').forEach((el,j)=>el.hidden=j!==i);
+  $$('#nav .ntile').forEach((t,j)=>t.classList.toggle('cur',j===i));
+  if(!noScroll){ save(); window.scrollTo(0,0); }
+}
+function refresh(){
+  const sc=scoreAll(), done=PROBS.filter(p=>p.checked()).length;
+  $('#scorePill').textContent=`${done}/${PROBS.length} checked · ${sc.total}/${sc.max} pts`;
+  PARTS.slice(0,-1).forEach((pt,i)=>{ const t=$(`#nav .ntile[data-i="${i}"]`); if(t) t.classList.toggle('done',PROBS.filter(p=>p.part===pt.k).every(p=>p.checked())); });
+  const t7=$(`#nav .ntile[data-i="${PARTS.length-1}"]`); if(t7) t7.classList.toggle('done',!!S.submittedAt);
+  const c=$('#turnin'); if(!c) return;
+  const rows=sc.parts.map(p=>`<tr><th>${p.label}</th><td>${p.got} / ${p.max}</td></tr>`).join('');
+  c.innerHTML=`<div style="display:flex;gap:22px;align-items:center;flex-wrap:wrap"><div class="big">${sc.total}/${sc.max}</div><div><h3 style="margin:0">${esc(S.student?S.student.first+' '+S.student.last:'')}</h3><p class="muted" style="margin:0">${done} of ${PROBS.length} problems checked</p></div></div>
+    <table class="res" style="margin-top:12px">${rows}</table>
+    <p class="small muted" style="margin-top:10px">Problems you haven't checked count as 0. You can turn in again later; your teacher sees the newest one.</p>
+    <div class="btnrow"><button class="btn primary" id="subBtn" type="button">${S.submittedAt?'Turn in again':'Turn in my lab'}</button><button class="btn ghost" id="csvBtn" type="button">Download CSV</button></div>
+    <p class="fb info sheetStatus" aria-live="polite">${S.sentAt?`Sent to your teacher ${new Date(S.sentAt).toLocaleString()}.`:'Not turned in yet.'}</p>`;
+  $('#subBtn').addEventListener('click',turnIn);
+  $('#csvBtn').addEventListener('click',()=>downloadCSV([recordRow()],`ProteinSynthLabSim_${(S.student&&S.student.last||'student').replace(/\W+/g,'')}.csv`));
+}
+const CSV_HEAD=['Student ID','Last Name','First Name','Period','Teacher','Activity','Score','Total','Percent',...PARTS.slice(0,-1).map(p=>p.label),'Date'];
+function recordRow(){ const st=S.student||{}, sc=scoreAll(); return [st.id||'',st.last||'',st.first||'',st.period||'',st.teacher||'',ACTIVITY,sc.total,sc.max,Math.round(100*sc.total/sc.max)+'%',...sc.parts.map(p=>p.got),new Date(S.submittedAt||Date.now()).toLocaleString()]; }
+function csvText(rows){ const q=v=>{ v=String(v==null?'':v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }; return [CSV_HEAD,...rows].map(r=>r.map(q).join(',')).join('\r\n')+'\r\n'; }
+function downloadCSV(rows,name){ const b=new Blob([csvText(rows)],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500); }
+const loadRecs=()=>{ try{ return (JSON.parse(localStorage.getItem(RECS))||[]).filter(r=>r.length===CSV_HEAD.length); }catch(e){ return []; } };
+function saveRecord(){ if(S.preview) return; const recs=loadRecs(), row=recordRow(); const i=recs.findIndex(r=>r[0]===row[0]&&r[1]===row[1]); if(i>=0) recs[i]=row; else recs.push(row); try{ localStorage.setItem(RECS,JSON.stringify(recs)); }catch(e){} }
+function turnIn(){
+  const left=PROBS.filter(p=>!p.checked()).length;
+  if(left&&!confirm(`${left} problem${left>1?'s':''} not checked yet (they count as 0). Turn in anyway?`)) return;
+  S.submittedAt=Date.now(); save(); saveRecord(); cloudSave(true); disarm(); refresh();
+  const msg=t=>$$('.sheetStatus').forEach(e=>e.textContent=t);
+  if(S.preview){ msg('Preview mode: nothing is sent.'); return; }
+  const st=S.student, sc=scoreAll();
+  const body={studentId:st.id||'',firstName:st.first||'',lastName:st.last||'',period:st.period||'',teacher:st.teacher||'',locks:'0',when:new Date().toString(),activity:ACTIVITY,score:String(sc.total),total:String(sc.max),
+    qlabels:sc.parts.map((p,i)=>'P'+(i+1)+' '+PARTS[i].label).join('|'),qpoints:sc.parts.map(p=>p.got).join('|'),qmax:sc.parts.map(p=>p.max).join('|')};
+  msg('Sending...');
+  fetch(sheetURL(),{method:'POST',mode:'no-cors',body:new URLSearchParams(body)}).then(()=>{ S.sentAt=new Date().toISOString(); save(); msg('Sent! Your teacher will see your score.'); }).catch(()=>msg("Couldn't send. Check the Wi-Fi and try again, or download the CSV."));
+}
+
+/* ============================== NO LOCKDOWN ON WORKSHEETS ============================== */
+let teacherOpen=false;
+function arm(){} function disarm(){} function showLock(){} function enterFS(){}
+['copy','cut','paste','contextmenu'].forEach(ev=>document.addEventListener(ev,e=>{ if(teacherOpen||S.preview) return; e.preventDefault(); }));
+
+/* ============================== SIGN IN ============================== */
+function showWS(){ $('#start').hidden=true; $('#top').hidden=false; $('#ws').hidden=false; build(); window.scrollTo(0,0); if(S.locked&&LOCKDOWN&&!S.lockOff) showLock(); else arm(); }
+function renderStart(){ const has=!!S.student; $('#resumeBox').hidden=!has; $('#startForm').hidden=has; $('#signinTitle').textContent=has?'Welcome back':'Sign in to start';
+  if(has) $('#resumeText').innerHTML=`Signed in as <b>${esc(S.student.first)} ${esc(S.student.last)}</b>, period ${esc(S.student.period)}.`; }
+$('#fPeriod').innerHTML='<option value="">Choose your period</option>'+periodList().map(p=>`<option>${esc(p)}</option>`).join('');
+$('#fTeacher').innerHTML='<option value="">Choose your teacher</option>'+teacherList().map(t=>`<option>${esc(t)}</option>`).join('');
+let starting=false;
+async function start(){
+  if(starting) return; starting=true;
+  try{
+    const v={first:$('#fFirst').value.trim(),last:$('#fLast').value.trim(),id:$('#fId').value.trim(),period:$('#fPeriod').value,teacher:$('#fTeacher').value};
+    const miss=[]; if(!v.first) miss.push('first name'); if(!v.last) miss.push('last name'); if(!v.id) miss.push('student ID'); if(!v.period) miss.push('period'); if(!v.teacher) miss.push('teacher');
+    const err=$('#formErr'); if(miss.length){ err.className='fb no'; err.textContent='Fill in your '+miss.join(', ')+'.'; err.hidden=false; return; }
+    if(LOCKDOWN) enterFS();
+    err.className='fb info'; err.textContent='Checking for your saved work...'; err.hidden=false;
+    const res=await cloudLoad(v); err.hidden=true;
+    if(res.status==='found'){ const d=res.data; d.student=Object.assign({},d.student||{},{first:v.first,period:v.period,teacher:v.teacher}); adopt(d); showWS(); note('✓ Your saved work was loaded'); return; }
+    const ns=fresh(); ns.student=v; adopt(ns); showWS(); cloudSave(true);
+  } catch(ex){ const er=$('#formErr'); er.className='fb no'; er.textContent='Something went wrong starting ('+(ex&&ex.message||ex)+'). Reload and try again.'; er.hidden=false; }
+  finally{ starting=false; }
+}
+$('#startBtn').addEventListener('click',start);
+$('#startForm').addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.tagName==='INPUT'){ e.preventDefault(); start(); } });
+$('#resumeBtn').addEventListener('click',async()=>{ const b=$('#resumeBtn'); b.disabled=true; b.textContent='Loading your work...'; if(LOCKDOWN&&!S.locked) enterFS();
+  const res=await cloudLoad(S.student); b.disabled=false; b.textContent='Continue my lab';
+  if(res.status==='found'&&(res.data.updatedAt||0)>(S.updatedAt||0)&&checkedCount(res.data)>=checkedCount(S)){ const d=res.data; d.student=S.student; adopt(d); note('✓ Your newest saved work was loaded'); } showWS(); });
+$('#notMeBtn').addEventListener('click',async()=>{ const b=$('#notMeBtn'); b.disabled=true;
+  try{ if(cloudOK()) await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); }catch(e){ b.disabled=false; $('#resumeErr').textContent="Can't back up the last student's work right now. Check the Wi-Fi, or ask your teacher."; $('#resumeErr').hidden=false; return; }
+  b.disabled=false; adopt(fresh()); ['#fFirst','#fLast','#fId','#fPeriod','#fTeacher'].forEach(s=>$(s).value=''); renderStart(); });
+
+/* ============================== TEACHER ============================== */
+function openTeacher(){ teacherOpen=true; $('#teachLogin').hidden=false; $('#teachPanel').hidden=true; $('#teachErr').hidden=true; $('#teachCode').value=''; $('#teachOv').classList.add('show'); setTimeout(()=>$('#teachCode').focus(),50); }
+function closeTeacher(){ $('#teachOv').classList.remove('show'); teacherOpen=false; }
+$('#teacherLink').addEventListener('click',openTeacher); $('#teachBtn').addEventListener('click',openTeacher);
+$('#teachCancel').addEventListener('click',closeTeacher);
+$('#teachCode').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#teachGo').click(); });
+$('#teachGo').addEventListener('click',()=>{ if(!codeIs($('#teachCode').value,TEACHER_CODE)){ $('#teachErr').hidden=false; return; } $('#teachLogin').hidden=true; $('#teachPanel').hidden=false; renderTeacher(); });
+function renderTeacher(){
+  const recs=loadRecs(), p=$('#teachPanel'), keyOn=document.body.classList.contains('keyon');
+  p.innerHTML=`<h2>Teacher tools</h2>
+    <div class="btnrow"><button class="btn ghost" id="tKey" type="button">${keyOn?'Hide answer key':'Answer key'}</button>
+      <button class="btn ghost" id="tPrev" type="button">${S.preview?'End preview':'Preview (saves nothing)'}</button>
+      <button class="btn ghost" id="tResetWrong" type="button">Reset all wrong answers</button>
+      <button class="btn ghost" id="tReset" type="button">Reset this Chromebook</button><button class="btn ghost" id="tClose" type="button">Close</button></div>
+    <h3 style="margin-top:16px">Scores saved on this Chromebook (${recs.length})</h3>
+    <div class="wide">${recs.length?`<table class="nb"><tr><th>Student</th><th>ID</th><th>Period</th><th>Score</th><th>Date</th></tr>${recs.map(r=>`<tr><td>${esc(r[1])}, ${esc(r[2])}</td><td>${esc(r[0])}</td><td>${esc(r[3])}</td><td>${r[6]}/${r[7]}</td><td>${esc(r[r.length-1])}</td></tr>`).join('')}</table>`:'<p class="muted">None yet.</p>'}</div>
+    <div class="btnrow"><button class="btn primary" id="tCsv" type="button" ${recs.length?'':'disabled'}>Download scores (CSV)</button></div>
+    <h3 style="margin-top:16px">Load a student's saved work</h3>
+    <div class="btnrow"><input class="code" id="tId" placeholder="Student ID" style="width:150px"><input class="code" id="tLast" placeholder="Last name" style="width:170px"><button class="btn ghost" id="tLoad" type="button">Load work</button></div>
+    <p class="fb info" id="tMsg" style="min-height:1em"></p>`;
+  const msg=t=>$('#tMsg').textContent=t;
+  $('#tKey').addEventListener('click',()=>{ document.body.classList.toggle('keyon'); renderTeacher(); msg(document.body.classList.contains('keyon')?'Answer key on: each box shows its answer, sort chips show their box, and correct choices have a dashed gold outline.':'Answer key off.'); });
+  $('#tPrev').addEventListener('click',()=>{ if(S.preview){ location.reload(); return; } const ns=fresh(); ns.preview=true; ns.student={first:'Teacher',last:'Preview',id:'0',period:'-',teacher:teacherList()[0]}; S=ns; closeTeacher(); showWS(); note('Preview: nothing is saved'); });
+  $('#tReset').addEventListener('click',()=>{ if(confirm('Erase this lab on this Chromebook? Work backed up to the Saved Student Work sheet is not deleted.')){ try{ localStorage.removeItem(STORE); }catch(e){} location.reload(); } });
+  $('#tResetWrong').addEventListener('click',()=>{
+    const wrong=PROBS.filter(pr=>{ const P=S.p[pr.id]||{}; return (P.tries||0)>0 && !P.right; });
+    if(!wrong.length){ msg('Nothing to reset: this student has no wrong answers.'); return; }
+    if(!confirm(`Reset ${wrong.length} problem${wrong.length>1?'s':''} that ${wrong.length>1?'are':'is'} wrong or on a second try for ${(S.student&&S.student.first)||'this student'}? Correct answers stay.`)) return;
+    wrong.forEach(pr=>{ delete S.p[pr.id]; });
+    save(); cloudSave(true); msg(`Reset ${wrong.length} problem${wrong.length>1?'s':''}. Reloading…`); setTimeout(()=>location.reload(),700); });
+  $('#tClose').addEventListener('click',closeTeacher);
+  $('#tCsv').addEventListener('click',()=>downloadCSV(recs,`ProteinSynthLabSim_scores_${new Date().toISOString().slice(0,10)}.csv`));
+  $('#tLoad').addEventListener('click',async()=>{ const s={id:$('#tId').value.trim(),last:$('#tLast').value.trim()}; if(!s.id||!s.last){ msg('Type the student ID and last name.'); return; } msg('Looking up saved work...');
+    const r=await cloudLoad(s); if(r.status==='found'){ adopt(r.data); closeTeacher(); renderStart(); $('#start').hidden=false; $('#ws').hidden=true; $('#top').hidden=true; } else msg(r.status==='none'?'No saved work found for that student.':"Couldn't reach the saved-work sheet."); });
+}
+
+if(!STORAGE_OK) $('#noStore').hidden=false;
+renderStart();
+})();
+</script>
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>
