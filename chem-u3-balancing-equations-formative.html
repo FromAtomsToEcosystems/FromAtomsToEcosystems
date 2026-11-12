@@ -218,7 +218,7 @@ select.blank.filled{background:#e4effb;border-color:var(--blue)}
 <script>
 const ACTIVITY="Balancing Equations Formative";
 const SHEETS_ACTIVITY_NAME=ACTIVITY;
-const UNLOCK_CODE="bonding"; /* lock-screen code = last word of the lesson title */
+const UNLOCK_CODE="equations"; /* lock-screen code = last word of the lesson title */
 const TEACHER_CODE="teacher007"; /* teacher tools code */
 const codeIs=v=>{v=String(v||"").trim().toLowerCase();return v===UNLOCK_CODE||v===TEACHER_CODE;};
 const $=s=>document.querySelector(s);
@@ -1185,6 +1185,78 @@ render();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount); else mount();
   window.__sciCalcEval = (s, a) => fmt(evaluate(s, a));
+})();
+
+</script>
+<script>
+/* ===== Teacher menu for warm-ups / exit tickets: print blank copy or answer key ===== */
+(function () {
+  if (window.__castPrint) return; window.__castPrint = true;
+  const css = `.ct-menu{position:fixed;inset:0;background:rgba(15,23,42,.45);display:flex;align-items:center;justify-content:center;z-index:99995}
+  .ct-box{background:#fff;color:#16213a;border-radius:14px;padding:18px 20px;width:min(380px,92vw);box-shadow:0 20px 50px rgba(0,0,0,.3);font:15px/1.4 system-ui,sans-serif}
+  .ct-box h3{margin:0 0 10px}.ct-box button{display:block;width:100%;margin:6px 0;padding:10px;border-radius:10px;border:1.5px solid #cbd5e1;background:#f8fafc;font:600 15px system-ui;cursor:pointer;text-align:left}
+  .ct-box button:hover{background:#eef2f8}.ct-box .x{text-align:center;background:none;border:0;color:#5b6b86}
+  #ctPrint{display:none}
+  @media print{body.ct-printing #root,body.ct-printing .scalc,body.ct-printing .scalc-btn,body.ct-printing .ct-menu,body.ct-printing header,body.ct-printing .topbar{display:none!important}
+   body.ct-printing #ctPrint{display:block!important}
+   #ctPrint .ct-q{break-inside:avoid;border:1px solid #cbd5e1;border-radius:8px;padding:10px;margin:10px 0}
+   #ctPrint .ct-stim{border:1px solid #cbd5e1;border-radius:8px;padding:10px;margin:8px 0;break-inside:avoid}
+   #ctPrint .ct-key{margin-top:6px;padding:6px 8px;background:#ecfdf5!important;border-left:4px solid #16a34a;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+   #ctPrint .foot,#ctPrint .flag,#ctPrint .tabs{display:none!important}}`;
+  const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
+  const ok = v => { try { return typeof codeIs === 'function' ? codeIs(v) : String(v || '').trim().toLowerCase() === 'teacher007'; } catch (e) { return false; } };
+  const plain = s => String(s || '').replace(/<[^>]+>/g, '');
+  function build(withKey) {
+    const box = document.createElement('div'); box.id = 'ctPrint';
+    let h = `<h1 style="margin:0 0 4px">${document.title.replace(/\|.*/, '')}</h1><p style="margin:0 0 8px">Name ______________________ &nbsp; Period ____ &nbsp; Date __________</p>`;
+    try { const intro = document.querySelector('.phen'); } catch (e) {}
+    const saveTab = (typeof tab !== 'undefined') ? tab : null;
+    for (const t of ['passage', 'diagram', 'data', 'graph', 'sim']) {
+      try { tab = t; const sh = stimHTML(); const body = sh.split('<div class="tabbody">')[1] || ''; if (body.replace(/<[^>]+>|\s/g, '').length > 10) h += `<div class="ct-stim">${body}</div>`; } catch (e) {}
+    }
+    try { if (saveTab != null) tab = saveTab; } catch (e) {}
+    QS.forEach((q, i) => {
+      let qh = ''; try { qh = qHTML(i); } catch (e) { qh = `<b>Question ${i + 1}.</b> ${q.prompt || ''}`; }
+      let key = '';
+      if (withKey) {
+        let ans = '';
+        try {
+          if (q.t === 'sort' && typeof CARDS !== 'undefined') ans = CARDS.map(c => `${plain(c.text)} → ${(typeof SLOT_NAME !== 'undefined' ? SLOT_NAME[c.slot] : c.slot)}`).join('; ');
+          if (q.t === 'twopart' && typeof TP !== 'undefined') ans = ['A', 'B'].map(k => `Part ${k}: ${plain((TP[k].opts.find(o => o[0] === TP[k].ans) || [])[1])}`).join(' · ');
+          if (q.t === 'selall' && typeof SEL !== 'undefined') ans = 'Select: ' + SEL.opts.filter(o => o[2]).map(o => plain(o[1])).join('; ');
+          if (q.t === 'cer' && q.model) ans = `Claim: ${q.model.c}<br>Evidence: ${q.model.e}<br>Reasoning: ${q.model.r}`;
+        } catch (e) {}
+        key = `<div class="ct-key"><b>Answer:</b> ${ans || ''}${q.why ? `<br><i>${q.why}</i>` : ''}</div>`;
+      }
+      h += `<div class="ct-q">${qh}${key}</div>`;
+    });
+    box.innerHTML = h; return box;
+  }
+  function doPrint(withKey) {
+    closeMenu(); const box = build(withKey); document.body.appendChild(box); document.body.classList.add('ct-printing');
+    const done = () => { window.removeEventListener('afterprint', done); box.remove(); document.body.classList.remove('ct-printing'); };
+    window.addEventListener('afterprint', done); setTimeout(() => { window.print(); setTimeout(() => { if (document.body.classList.contains('ct-printing')) done(); }, 1500); }, 120);
+  }
+  let menu = null; const closeMenu = () => { if (menu) { menu.remove(); menu = null; } };
+  function openMenu() {
+    const c = window.prompt('Teacher code:'); if (c === null) return; if (!ok(c)) { alert("That code isn't right."); return; }
+    menu = document.createElement('div'); menu.className = 'ct-menu';
+    menu.innerHTML = `<div class="ct-box" role="dialog" aria-label="Teacher menu"><h3>Teacher</h3>
+      <button type="button" data-a="blank">🖨 Print blank copy (all questions)</button><button type="button" data-a="key">🖨 Print answer key</button>
+      <button type="button" data-a="reset">Reset this device (erase this student's work)</button><button type="button" class="x" data-a="close">Close</button></div>`;
+    menu.addEventListener('click', e => { const a = e.target.closest('button') && e.target.closest('button').dataset.a; if (!a && e.target === menu) closeMenu();
+      if (a === 'blank') doPrint(false); if (a === 'key') doPrint(true); if (a === 'close') closeMenu();
+      if (a === 'reset') { closeMenu(); try { clearState(); location.reload(); } catch (err) {} } });
+    document.body.appendChild(menu);
+  }
+  window.__castTeacherPrint = doPrint;
+  function mount() {
+    const aplus = [...document.querySelectorAll('button')].find(b => (b.textContent || '').trim() === 'A+'); if (!aplus || document.querySelector('.ct-teacher')) return;
+    const b = document.createElement('button'); b.type = 'button'; b.className = (aplus.className || '') + ' ct-teacher'; b.textContent = 'Teacher'; b.style.width = 'auto'; b.style.padding = '0 10px';
+    b.addEventListener('click', openMenu);
+    const calc = document.querySelector('.scalc-btn'); (calc && calc.parentNode === aplus.parentNode ? calc : aplus).after(b);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => setTimeout(mount, 50)); else setTimeout(mount, 50);
 })();
 
 </script>

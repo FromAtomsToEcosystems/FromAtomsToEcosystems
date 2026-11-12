@@ -702,6 +702,8 @@ textarea.wbox:focus{outline:none;border-color:var(--e)}
 <div id="toast" role="status" aria-live="polite"></div>
 <script src="sheets-config.js"></script>
 <script>
+const __codeOK = v => ['teacher007', 'austin', 'trends'].includes(String(v || '').trim().toLowerCase());
+
 (() => {
 'use strict';
 
@@ -1739,7 +1741,7 @@ document.addEventListener('visibilitychange', () => { if (document.hidden) lockN
 window.addEventListener('blur', () => { setTimeout(() => { if (!document.hasFocus()) lockNow(); }, 150); });
 document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && !fsExiting) lockNow(); });
 function tryUnlock() {
-  if ($('#lockCode').value.trim().toLowerCase() === TEACHER_CODE) { S.locked = false; save(); $('#lockOv').hidden = true; reqFS(); toast('Unlocked'); }
+  if (__codeOK($('#lockCode').value.trim().toLowerCase())) { S.locked = false; save(); $('#lockOv').hidden = true; reqFS(); toast('Unlocked'); }
   else { $('#lockMsg').textContent = 'That code is not correct.'; shake($('#lockCode')); }
 }
 $('#lockGo').addEventListener('click', tryUnlock);
@@ -1762,7 +1764,7 @@ $('#teacherBtn').addEventListener('click', () => {
   $('#tCode').value = ''; $('#tMsg').textContent = ''; setTimeout(() => $('#tCode').focus(), 50);
 });
 const tLogin = () => {
-  if ($('#tCode').value.trim().toLowerCase() === TEACHER_CODE) { $('#tLogin').classList.add('hidden'); $('#tPanel').classList.remove('hidden'); teacherInfo(); }
+  if (__codeOK($('#tCode').value.trim().toLowerCase())) { $('#tLogin').classList.add('hidden'); $('#tPanel').classList.remove('hidden'); teacherInfo(); }
   else { $('#tMsg').textContent = 'That code is not correct.'; shake($('#tCode')); }
 };
 $('#tGo').addEventListener('click', tLogin);
@@ -2080,6 +2082,48 @@ if (S.locked && S.lockActive) showLock();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount); else mount();
   window.__sciCalcEval = (s, a) => fmt(evaluate(s, a));
+})();
+
+</script>
+<script>
+/* ===== Teacher: print the whole activity ===== */
+(function () {
+  if (window.__tPrint) return; window.__tPrint = true;
+  const css = `@media print{.scalc,.scalc-btn,.tprint-btn,#lockOv,.toast,.cloudchip,#tPanel,.tpanel,[role=dialog].teacher,.navtiles,.topbar nav{display:none!important}
+    body.printing-all .screen.print-on{display:block!important;break-before:page}
+    body.ws-printing #app{display:none!important} body.ws-printing #wsPrintAll{display:block!important}
+    body.printing-all .page{break-inside:auto}
+    body.printing-all *{animation:none!important;transition:none!important}
+    body.printing-all, body.printing-all *:not(svg):not(svg *){background:transparent!important;color:#111!important;box-shadow:none!important;text-shadow:none!important}
+    body.printing-all{background:#fff!important}
+    body.printing-all *:not(svg):not(svg *){border-color:#9aa5b5!important}
+    body.printing-all .btn,body.printing-all .sec-foot,body.printing-all .unlock,body.printing-all .pr-btns,body.printing-all .btn-row .btn,body.printing-all .progress-pips,body.printing-all .pr-levels{display:none!important}
+    body.printing-all svg{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+    body.printing-all .pr-pic,body.printing-all .pic,body.printing-all .tsvg,body.printing-all .bal-pics,body.printing-all .drop-fig,body.printing-all .eq-pics,body.printing-all .scene-wrap,body.printing-all .cnt-pic{background:#0c1424!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+    body.printing-all .pr-pic *:not(svg):not(svg *),body.printing-all .pic *:not(svg):not(svg *),body.printing-all .drop-fig *:not(svg):not(svg *),body.printing-all .bal-pics *:not(svg):not(svg *),body.printing-all .eq-pics *:not(svg):not(svg *),body.printing-all .scene-wrap *:not(svg):not(svg *){color:#fff!important}
+    body.printing-all input,body.printing-all select,body.printing-all textarea{border:1px solid #777!important}}
+    #wsPrintAll{display:none}#wsPrintAll .ws-p{break-inside:avoid;margin-bottom:14px}`;
+  const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
+  function doPrint() {
+    const restore = [];
+    const panel = document.querySelector('#tPanel'); if (panel && !panel.hidden) { panel.hidden = true; restore.push(() => { panel.hidden = false; }); }
+    document.querySelectorAll('.screen').forEach(s => { if (/scr-(0|9|10)$/.test(s.id) || s.classList.contains('on')) return; s.classList.add('on', 'print-on'); restore.push(() => s.classList.remove('on', 'print-on')); });
+    document.querySelectorAll('.page[hidden]').forEach(p => { p.hidden = false; restore.push(() => { p.hidden = true; }); });
+    if (typeof window.__wsPrintHTML === 'function') { const box = document.createElement('div'); box.id = 'wsPrintAll'; try { box.innerHTML = window.__wsPrintHTML(); } catch (e) { box.innerHTML = ''; }
+      document.body.appendChild(box); document.body.classList.add('ws-printing'); restore.push(() => { box.remove(); document.body.classList.remove('ws-printing'); }); }
+    document.body.classList.add('printing-all'); restore.push(() => document.body.classList.remove('printing-all'));
+    const done = () => { window.removeEventListener('afterprint', done); restore.reverse().forEach(f => f()); };
+    window.addEventListener('afterprint', done);
+    setTimeout(() => { window.print(); setTimeout(() => { if (document.body.classList.contains('printing-all')) done(); }, 1500); }, 120);
+  }
+  window.__teacherPrint = doPrint;
+  function mount() {
+    const k = document.querySelector('#tKey') || document.querySelector('#tReset'); if (!k || document.querySelector('.tprint-btn')) return;
+    const b = document.createElement('button'); b.type = 'button'; b.className = (k.className || 'btn').replace(/\bamber\b|\bprimary\b/g, 'ghost') + ' tprint-btn';
+    b.textContent = '🖨 Print this activity'; b.title = 'Prints every section. Turn on the answer key first to print the key.';
+    b.addEventListener('click', doPrint); k.parentNode.insertBefore(b, k.nextSibling);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount); else mount();
 })();
 
 </script>
