@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sealed Jar | Biology</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1220;--panel:#121c31;--panel2:#18243d;--line:#2b3a58;--text:#e8eefc;--muted:#9fb0cf;--gold:#facc15;--gold2:#fbbf24;--ok:#34d399;--bad:#f87171;--violet:#a78bfa}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 "Atkinson Hyperlegible",Arial,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:#0e172a}
+header .t{font-weight:800;font-size:17px}
+header .s{color:var(--muted);font-size:13px}
+header .sp{flex:1}
+.btn{font:inherit;font-weight:700;border-radius:10px;padding:9px 16px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--gold);color:#1a1300;border-color:var(--gold)}
+.btn:disabled{opacity:.5;cursor:default}
+main{max-width:1000px;margin:0 auto;padding:14px 16px 30px}
+.stage{position:relative;width:100%;aspect-ratio:16/10;background:#050a14;border:1px solid var(--line);border-radius:14px;overflow:hidden;touch-action:none}
+canvas{display:block;width:100%;height:100%}
+.ov{position:absolute;inset:0;display:flex;background:rgba(5,10,20,.78);padding:14px;overflow:auto}
+.ov>.card{margin:auto}
+#teachOv{position:fixed;z-index:60;background:rgba(5,10,20,.94)}
+.ov[hidden]{display:none}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;max-width:640px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.card h2{margin:0 0 6px;font-size:22px}
+.card h3{margin:12px 0 6px;font-size:15px;color:var(--gold)}
+.muted{color:var(--muted)} .small{font-size:13.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chip{font:inherit;font-size:14px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.chip.on{border-color:var(--gold);background:rgba(250,204,21,.16);font-weight:700}
+.qtag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--violet);margin-bottom:4px}
+.qtext{font-size:18px;margin:4px 0 12px}
+.opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:15.5px}
+.opt:hover:not(:disabled){border-color:var(--gold)}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:13px;font-weight:800}
+.opt.pick{border-color:var(--gold)}
+.fb{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:15.5px}
+.fb.ok{background:rgba(52,211,153,.14);border:1px solid rgba(52,211,153,.5)}
+.fb.no{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.45)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:14px;margin:6px 0}
+.keys b{color:var(--gold)}
+.ladder{display:flex;flex-wrap:wrap;gap:6px;font-size:13px;margin-top:6px}
+.ladder span{padding:3px 8px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}
+.touch{display:none;gap:10px;justify-content:space-between;margin-top:10px;user-select:none;-webkit-user-select:none}
+.touch .grp{display:flex;gap:10px}
+.tbtn{width:64px;height:58px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:22px;font-weight:800;touch-action:none}
+.tbtn.fire{width:110px;background:#3b2a07;border-color:var(--gold);color:var(--gold);font-size:17px}
+.tbtn.on{background:#334155}
+@media (pointer:coarse){.touch{display:flex}}
+@media (max-width:480px){.tbtn{width:52px;height:54px;font-size:20px}.tbtn.fire{width:86px}.touch .grp{gap:7px}.touch{gap:6px}}
+@media (max-width:760px),(max-height:560px){.ov{position:fixed;z-index:50;background:rgba(5,10,20,.92)}}
+body.showtouch .touch{display:flex}
+.info{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:14px;color:var(--muted)}
+.tpanel h3{margin-top:14px}
+.tq{margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font-size:14px}
+.tq ol{margin:4px 0 0;padding-left:22px}
+.tq li.right{color:var(--ok);font-weight:700}
+input.code{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0b1220;color:var(--text);width:180px}
+#printView{display:none}
+@media print{
+  body>*:not(#printView){display:none!important}
+  #printView{display:block!important;color:#000;background:#fff;font:12px/1.4 Arial,sans-serif}
+  #printView h1{font-size:18px;margin:0 0 4px} #printView .pq{break-inside:avoid;margin:8px 0}
+  #printView ol{margin:2px 0 0;padding-left:22px} #printView li.right{font-weight:700;text-decoration:underline}
+  html,body{background:#fff}
+}
+
+.stage{aspect-ratio:auto;min-height:600px;overflow:visible}.stage .ov{position:fixed;z-index:50}.app{padding:12px}.status{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14px;color:var(--muted);margin-bottom:8px}.status b{color:var(--text)}.ocard{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 14px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.grid2{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:12px;align-items:start}@media (max-width:820px){.grid2{grid-template-columns:1fr}}.btns{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin-top:8px}.gbtn{font:inherit;text-align:left;display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:14px;line-height:1.3}.gbtn:hover:not(:disabled){border-color:var(--gold)}.gbtn:disabled{opacity:.45;cursor:not-allowed}.gbtn.on{border-color:var(--gold);background:rgba(250,204,21,.14)}.gbtn .k{flex:none;min-width:22px;height:22px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:12px;font-weight:800;padding:0 4px}.meter{margin:6px 0}.meter .lab{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}.meter .lab b{color:var(--text)}.meter .tr{height:12px;border-radius:6px;background:#1e293b;overflow:hidden}.meter .fl{height:100%;border-radius:6px;transition:width .25s}.chipsrow{display:flex;flex-wrap:wrap;gap:6px}table.ktab{border-collapse:collapse;font-size:13px;width:100%}table.ktab td,table.ktab th{border:1px solid var(--line);padding:4px 6px;text-align:left;vertical-align:top}.log{font-size:13px;max-height:170px;overflow:auto}.log div{padding:3px 0;border-bottom:1px solid var(--line)}.big{font-size:22px;font-weight:800}svg.jar{width:180px;height:auto}svg.chart{width:100%;max-width:340px;height:auto;background:#0e1a33;border-radius:8px;margin-top:6px}</style>
+</head>
+<body>
+<header>
+  <div><div class="t">Sealed Jar</div><div class="s">Biology · Unit 2: Cell Transport, Photosynthesis, and Cellular Respiration · Review game</div></div>
+  <div class="sp"></div>
+  <button class="btn" id="teachBtn" type="button">Teacher</button>
+</header>
+<main>
+  <div class="stage" id="stage">
+    <div class="app" id="app"><p class="muted">Press Start.</p></div>
+    <div class="ov" id="startOv"><div class="card"><h2>Sealed Jar</h2><p class="small muted" style="margin:0 0 8px">A sealed jar holds water, BTB indicator, water plants, and snails. Nothing can get in or out. For 10 days, choose how many hours of light the jar gets and adjust the plants and snails so the oxygen and carbon dioxide stay safe. Each day, predict the BTB color first.</p><p class="small">BTB is <b style="color:#60a5fa">blue</b> with little CO₂, <b style="color:#4ade80">green</b> with some, and <b style="color:#facc15">yellow</b> with lots.</p><div class="row"><button class="btn primary" id="startBtn" type="button">Start</button><span class="small muted" id="hiTxt"></span></div></div></div>
+    <div class="ov" id="overOv" hidden><div class="card"><h2 id="overTitle"></h2><div id="overBody"></div><div class="row"><button class="btn primary" id="againBtn" type="button">Play again</button></div></div></div>
+
+    <div class="ov" id="pauseOv" hidden><div class="card" style="max-width:380px;text-align:center"><h2>Paused</h2><p class="muted">Press P or the button to keep playing.</p><button class="btn primary" id="resumeBtn" type="button">Resume</button></div></div>
+  </div>
+
+</main>
+<div class="ov" id="teachOv" hidden>
+  <div class="card tpanel" style="max-width:780px">
+    <h2>Teacher tools</h2>
+    <div id="tLogin"><p class="small muted">Enter the teacher code.</p><div class="row" style="margin-top:4px"><input class="code" id="tCode" type="password" autocomplete="off" aria-label="Teacher code"><button class="btn primary" id="tGo" type="button">Open</button><button class="btn" id="tClose0" type="button">Close</button></div><div class="small" id="tMsg" style="color:var(--bad);margin-top:6px"></div></div>
+    <div id="tBody" hidden>
+      <div class="row"><button class="btn" id="tPrint" type="button">🖨 Print the reference sheet</button><button class="btn" id="tTouch" type="button">Show touch buttons</button><button class="btn" id="tClose" type="button">Close</button></div>
+      <div id="tInfo"></div>
+    </div>
+  </div>
+</div>
+<div id="printView"></div>
+<script>
+const META={"store": "bioU2SealedJar"};
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const store={ get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+const shuffle=a=>{ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const rnd=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const GAME={onPause:()=>{}, onResume:()=>{}, teacherHTML:()=>'', printHTML:()=>''};
+/* teacher tools (code Teacher007) */
+function tShow(on){ $('#teachOv').hidden=!on; if(on){ GAME.onPause(); $('#tCode').value=''; $('#tMsg').textContent=''; setTimeout(()=>$('#tCode').focus(),30); } }
+$('#teachBtn').addEventListener('click',()=>tShow(true)); $('#tClose0').addEventListener('click',()=>tShow(false));
+$('#tClose').addEventListener('click',()=>{ tShow(false); $('#tBody').hidden=true; $('#tLogin').hidden=false; });
+function tOpen(){ if($('#tCode').value.trim().toLowerCase()!=='teacher007'){ $('#tMsg').textContent='Code not recognized.'; return; } $('#tLogin').hidden=true; $('#tBody').hidden=false; $('#tInfo').innerHTML=GAME.teacherHTML(); }
+$('#tGo').addEventListener('click',tOpen); $('#tCode').addEventListener('keydown',e=>{ if(e.key==='Enter') tOpen(); });
+$('#tTouch').addEventListener('click',()=>document.body.classList.toggle('showtouch'));
+$('#tPrint').addEventListener('click',()=>{ $('#printView').innerHTML=GAME.printHTML(); setTimeout(()=>window.print(),100); });
+$('#resumeBtn').addEventListener('click',()=>GAME.onResume());
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) GAME.onPause(); });
+
+const meter=(lab,v,max,col,txt)=>`<div class="meter"><div class="lab"><span>${lab}</span><b>${txt!=null?txt:Math.round(v)}</b></div><div class="tr"><div class="fl" style="width:${Math.max(0,Math.min(100,100*v/max))}%;background:${col}"></div></div></div>`;
+const HIKEY=META.store+'_hi'; function hiTxt(){ const h=+store.get(HIKEY)||0; const e=$('#hiTxt'); if(e) e.textContent=h?`High score on this Chromebook: ${h}`:''; } hiTxt();
+function saveHi(v){ const h=+store.get(HIKEY)||0; if(v>h){ store.set(HIKEY,v); return true; } return false; }
+function over(title,html){ $('#overTitle').textContent=title; $('#overBody').innerHTML=html; $('#overOv').hidden=false; hiTxt(); }
+/* ===================== SEALED JAR (photosynthesis + respiration) ===================== */
+const DAYS=10, EVT={3:{t:'Cloudy day: the most light you can get today is 6 hours.',max:6},6:{t:'Snail eggs hatched: +1 snail.',snail:1},8:{t:'Power outage: the lamp is off all day (0 hours of light).',max:0}};
+let st;
+const btb=c=>c<25?['blue','#2563eb']:c<55?['green','#22c55e']:['yellow','#eab308'];
+function startGame(){ st={day:1,plants:2,snails:2,co2:40,o2:60,light:12,changed:false,pred:null,score:0,right:0,asked:0,hist:[{d:0,co2:40,o2:60}],log:['The jar is sealed: no gas can get in or out. Plants and snails share the same air and water.']}; $('#startOv').hidden=true; $('#overOv').hidden=true; applyEvent(); render(); }
+function applyEvent(){ const E=EVT[st.day]; if(!E) return; if(E.snail){ st.snails+=E.snail; } if(E.max!=null) st.light=Math.min(st.light,E.max); st.log.unshift(`<b>Day ${st.day}:</b> ${E.t}`); }
+function sim(s){ const h=s.light; const photo=Math.min(s.co2+20,s.plants*h*0.9); const resp=s.plants*24*0.15+s.snails*24*0.45; return {co2:Math.max(0,Math.min(100,s.co2-photo+resp)),o2:Math.max(0,Math.min(100,s.o2+photo-resp)),photo,resp}; }
+function change(k,d){ if(st.changed&&!(k==='light')) return; if(k==='light'){ const E=EVT[st.day]; const max=E&&E.max!=null?E.max:18; st.light=Math.max(0,Math.min(max,st.light+d)); }
+  else { const v=st[k]+d; if(v<0||v>6) return; st[k]=v; st.changed=true; } render(); }
+function run(){ if(!st.pred) return; const r=sim(st); const col=btb(r.co2)[0]; st.asked++; const ok=st.pred===col; if(ok){ st.right++; st.score+=50; }
+  st.log.unshift(`<b>Day ${st.day} results:</b> photosynthesis used ${Math.round(r.photo)} units of CO₂ and released O₂. Respiration (plants AND snails, all day and night) used ${Math.round(r.resp)} units of O₂ and released CO₂. The BTB turned <b>${col}</b>. ${ok?'Your prediction was right! +50':'Your prediction was '+st.pred+'.'}`);
+  st.co2=r.co2; st.o2=r.o2; st.hist.push({d:st.day,co2:st.co2,o2:st.o2});
+  const dead=st.o2<20?'The snails ran out of oxygen.':st.co2>85?'Too much CO₂: the snails could not survive.':st.co2<3&&st.plants>0?'The plants ran out of CO₂ and stopped growing.':null;
+  if(dead) return end(false,dead); st.score+=100; st.day++; if(st.day>DAYS) return end(true); st.changed=false; st.pred=null; applyEvent(); render(); }
+function jarSVG(){ const c=btb(st.co2)[1]; let s=`<svg viewBox="0 0 220 260" class="jar"><rect x="40" y="10" width="140" height="22" rx="6" fill="#64748b"/><path d="M30 40h160v190a20 20 0 0 1-20 20H50a20 20 0 0 1-20-20z" fill="${c}" fill-opacity=".55" stroke="#e2e8f0" stroke-width="4"/>`;
+  for(let i=0;i<st.plants;i++){ const x=55+i*22; s+=`<path d="M${x} 245 C${x-6} 200 ${x+8} 160 ${x} 120" stroke="#15803d" stroke-width="4" fill="none"/>${[0,1,2,3].map(k=>`<ellipse cx="${x+(k%2?7:-7)}" cy="${225-k*28}" rx="7" ry="3" fill="#22c55e" transform="rotate(${k%2?-30:30} ${x} ${225-k*28})"/>`).join('')}`; }
+  for(let i=0;i<st.snails;i++){ const x=60+(i%3)*50, y=232-(i>2?18:0); s+=`<g transform="translate(${x} ${y})"><ellipse cx="0" cy="6" rx="14" ry="5" fill="#d6b88a"/><circle cx="2" cy="-2" r="9" fill="#92400e"/><path d="M2 -2 m-5 0 a5 5 0 1 1 5 5" fill="none" stroke="#fde68a" stroke-width="1.5"/></g>`; }
+  return s+`<text x="110" y="30" text-anchor="middle" font-size="11" fill="#e2e8f0">sealed lid</text></svg>`; }
+function chart(){ const W=320,H=150, X=d=>20+d*(W-30)/DAYS, Y=v=>H-18-v*(H-30)/100; let s=`<svg viewBox="0 0 ${W} ${H}" class="chart"><rect x="20" y="${Y(85)}" width="${W-30}" height="${Y(20)-Y(85)}" fill="rgba(52,211,153,.08)"/>`;
+  [['o2','#38bdf8'],['co2','#eab308']].forEach(([k,c])=>{ s+=`<polyline fill="none" stroke="${c}" stroke-width="2.5" points="${st.hist.map(h=>X(h.d)+','+Y(h[k])).join(' ')}"/>`; });
+  return s+`<text x="22" y="12" font-size="11" fill="#38bdf8">O₂</text><text x="50" y="12" font-size="11" fill="#eab308">CO₂</text><text x="${W-10}" y="${H-4}" font-size="10" fill="#94a3b8" text-anchor="end">day</text></svg>`; }
+function render(){ const E=EVT[st.day], max=E&&E.max!=null?E.max:18;
+  $('#app').innerHTML=`<div class="status"><span>Day <b>${st.day} of ${DAYS}</b></span><span>Score <b>${st.score}</b></span><span>Predictions right <b>${st.right} of ${st.asked}</b></span></div>
+  <div class="grid2"><div class="panel" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">${jarSVG()}<div style="flex:1;min-width:180px">${meter('Oxygen (O₂)',st.o2,100,'#38bdf8')}${meter('Carbon dioxide (CO₂)',st.co2,100,'#eab308')}
+    <p class="small">BTB indicator now: <b style="color:${btb(st.co2)[1]}">${btb(st.co2)[0]}</b> (blue = little CO₂, green = medium, yellow = lots)</p><p class="small muted">Snails need O₂ above 20 and CO₂ below 85. Plants need some CO₂.</p>${chart()}</div></div>
+   <div><div class="panel"><h3 style="margin:0 0 6px">Plan day ${st.day}</h3>
+    <div class="row" style="margin:4px 0"><span>Hours of light: <b>${st.light}</b></span><button class="btn" data-c="light" data-d="-6" type="button">−6</button><button class="btn" data-c="light" data-d="6" type="button" ${st.light>=max?'disabled':''}>+6</button></div>
+    <p class="small muted" style="margin:2px 0">You can make <b>one</b> change to the living things each day${st.changed?' (used)':''}:</p>
+    <div class="row" style="margin:4px 0"><span>🌿 Plants: <b>${st.plants}</b></span><button class="btn" data-c="plants" data-d="-1" type="button" ${st.changed?'disabled':''}>−</button><button class="btn" data-c="plants" data-d="1" type="button" ${st.changed?'disabled':''}>+</button>
+     <span>🐌 Snails: <b>${st.snails}</b></span><button class="btn" data-c="snails" data-d="-1" type="button" ${st.changed?'disabled':''}>−</button><button class="btn" data-c="snails" data-d="1" type="button" ${st.changed?'disabled':''}>+</button></div>
+    <p style="margin:8px 0 4px"><b>Predict:</b> what color will the BTB be at the end of the day?</p><div class="chipsrow">${['blue','green','yellow'].map(c=>`<button type="button" class="chip${st.pred===c?' on':''}" data-p="${c}">${c}</button>`).join('')}</div>
+    <div class="row"><button class="btn primary" id="runBtn" type="button" ${st.pred?'':'disabled'}>Run day ${st.day}</button></div></div>
+    <div class="panel" style="margin-top:10px"><div class="log">${st.log.slice(0,5).map(l=>`<div>${l}</div>`).join('')}</div></div></div></div>`;
+  $$('#app [data-c]').forEach(b=>b.addEventListener('click',()=>change(b.dataset.c,+b.dataset.d))); $$('#app [data-p]').forEach(b=>b.addEventListener('click',()=>{ st.pred=b.dataset.p; render(); })); $('#runBtn').addEventListener('click',run); }
+function end(ok,why){ const nh=saveHi(st.score);
+  over(ok?'The jar stayed balanced for 10 days!':'The jar fell out of balance',`<p style="font-size:18px;margin:4px 0">Score: <b>${st.score}</b>${nh?' <span style="color:var(--gold)">New high score!</span>':''} · Predictions right: <b>${st.right} of ${st.asked}</b></p>${why?`<p class="small">${why}</p>`:''}
+   <p class="small"><b>The big idea:</b> plants do photosynthesis only in the light (CO₂ in, O₂ out), but plants <b>and</b> animals do cellular respiration all the time (O₂ in, CO₂ out). The products of one are the reactants of the other. In the dark, even plants add CO₂. The jar stays balanced when photosynthesis and respiration match.</p>`); }
+$('#startBtn').addEventListener('click',startGame); $('#againBtn').addEventListener('click',startGame);
+GAME.onPause=()=>{}; GAME.onResume=()=>{};
+GAME.teacherHTML=()=>`<p class="small muted">Practice game, not graded.</p><h3>How it works</h3><p class="small">10 days, turn by turn. Each day students set the hours of light and may add or remove one plant or snail, predict the BTB color, and run the day. Photosynthesis = plants × hours of light (CO₂ → O₂). Respiration = plants (small) and snails (larger), 24 hours a day (O₂ → CO₂). Events: a cloudy day (max 6 h), baby snails (+1), and a power outage (0 h).</p><p class="small">A balanced setup: 3 plants and 2 snails with 12 hours of light. Each snail needs about one more plant, or 6 more hours of light for the plants it has.</p>`;
+GAME.printHTML=()=>`<h1>Sealed Jar data table</h1><table border="1" cellpadding="6" style="border-collapse:collapse;font-size:13px;width:100%"><tr><th>Day</th><th>Plants</th><th>Snails</th><th>Hours of light</th><th>Predicted BTB</th><th>Actual BTB</th></tr>${Array.from({length:DAYS},(_,i)=>`<tr><td>${i+1}</td><td></td><td></td><td></td><td></td><td></td></tr>`).join('')}</table><p>Why did the BTB turn yellow in the dark, even with plants in the jar? ________________________</p>`;
+window.__jar={get st(){return st;}, sim, btb, change, run, setPred:p=>{ st.pred=p; }};
+
+</script>
+
+
+
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

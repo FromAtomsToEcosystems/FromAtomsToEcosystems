@@ -243,6 +243,7 @@ body.key .keyonly{display:block!important}
 @media print{.top,#calc{display:none}}
 .phbox{width:100%;min-height:60px;border:1px solid var(--line2);border-radius:8px;padding:8px;background:var(--bg2);color:var(--ink);font-family:inherit;font-size:.92rem;resize:vertical;margin-top:3px}
 </style>
+<style id="nolock">#tEndLock,#endLockBtn,#unlockInfo{display:none!important}</style>
 </head>
 <body>
 <div class="preview-bar" id="previewBar" hidden>Preview mode: nothing is saved or sent. Reload the page to leave preview mode.</div>
@@ -391,6 +392,7 @@ body.key .keyonly{display:block!important}
    ========================================================= */
 const LESSON = 'Second Law Calculations and Multistep Problems';
 const LESSON_ID = 'phys-u4-second-law-multistep-problems';
+function __ord(seed, arr) { let h = 2166136261; for (const ch of String(seed)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } const idx = arr.map((_, i) => i); for (let i = idx.length - 1; i > 0; i--) { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; const j = (h >>> 0) % (i + 1); [idx[i], idx[j]] = [idx[j], idx[i]]; } return idx; }
 const KEY = 'fate_phys_u4_multistep_v1';
 const RECS = KEY + '_records';
 const UNLOCK_CODE = 'problems';           // last word of the lesson title: unlocks the lockdown screen only
@@ -412,7 +414,7 @@ function saveURL() {
   return SAVE_URL_BUILTIN;
 }
 const CLOUD = () => !!saveURL() && /^https?:/.test(location.protocol);
-const LOCK_ON = /github\.io$/i.test(location.hostname) || new URLSearchParams(location.search).has('lockdown');
+const LOCK_ON = false; // lockdown is used on tests only
 const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* =========================================================
@@ -443,7 +445,7 @@ const subs = s => String(s).replace(/\b([vDa])_(ix|iy|fy|fx|x|y)\b/g, (m, b, s2)
 function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toast.T); toast.T = setTimeout(() => el.classList.remove('show'), 2600); }
 function parseNum(s) {
   s = String(s || '').trim().replace(/[−–—]/g, '-').replace(/,/g, '');
-  s = s.replace(/\s*[x×*·]\s*10\s*\^\s*\(?\s*([+-]?\d+)\s*\)?/i, 'e$1');
+  s = s.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺]+/g, m => '^' + [...m].map(ch => ch === '⁻' ? '-' : ch === '⁺' ? '+' : '⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(ch)).join('')).replace(/\s*[x×*·]\s*10\s*\^\s*\(?\s*([+-]?\d+)\s*\)?/i, 'e$1');
   const m = s.match(/-?\d*\.?\d+(e[+-]?\d+)?/i); if (!m) return NaN; return parseFloat(m[0]);
 }
 function close(ans, v, tol) { if (!isFinite(v)) return false; const t = tol != null ? tol : Math.max(0.051, Math.abs(ans) * 0.02); return Math.abs(v - ans) <= t + 1e-9; }
@@ -704,8 +706,8 @@ const QC = {};
 function qcHTML(n, k, q) {
   const id = `s${n}${k}`; QC[id] = Object.assign({ n, k }, q);
   return `<div class="qcwrap" id="qc-${id}"><p><b>${q.label || 'Quick check ' + (k === 'q1' ? 1 : 2)}.</b> ${q.q}</p>${q.fig || ''}
-    <div class="opts">${q.opts.map((o, i) => `<button type="button" class="opt" data-qc="${id}" data-i="${i}"><span class="L">${LET[i]}</span><span>${o}</span></button>`).join('')}</div>
-    <p class="fb" data-fb></p><div class="keyonly keytag">Answer: ${LET[q.a]}</div></div>`;
+    <div class="opts">${__ord(LESSON_ID + id, q.opts).map((i, pos) => `<button type="button" class="opt" data-qc="${id}" data-i="${i}"><span class="L">${LET[pos]}</span><span>${q.opts[i]}</span></button>`).join('')}</div>
+    <p class="fb" data-fb></p><div class="keyonly keytag">Answer: ${LET[__ord(LESSON_ID + id, q.opts).indexOf(q.a)]}</div></div>`;
 }
 function qcCard(n, a, b) { return `<div class="card"><span class="chip qc">Quick check</span>${qcHTML(n, 'q1', a)}${qcHTML(n, 'q2', b)}</div>`; }
 function paintQC(id) {
@@ -867,7 +869,7 @@ function build1() {
       <p>Real objects usually have several forces on them. ${Fnet} = m${AA} uses the <b>net</b> force, so always add the forces (with signs) <b>before</b> you divide by the mass.</p>
       <p>If the net force is negative (left or down), the acceleration is negative too: it points the same way.</p>
       <div class="callout"><b>Example.</b> A 5.0 kg box has three horizontal forces: 40 N right, 15 N left, and 10 N left.
-        ${work('', [['Net force', `${SFx} = 40 + (−15) + (−10) = <b>+15 N</b>`], ['Equation', `${Fnet} = m${AA}`], ['Plug in', `15 = 5.0${AA}`], ['Solve', `${AA} = <b>3.0 m/s²</b> to the right`]])}</div>
+        <div class='fig' style='margin:10px 0'><svg viewBox='0 0 610 220' role='img' aria-label='Diagram'><defs></defs><line x1='10.0' y1='172.0' x2='320.0' y2='172.0' stroke='#5d6f96' stroke-width='2'/><line x1='16.0' y1='172.0' x2='9.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='30.0' y1='172.0' x2='23.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='44.0' y1='172.0' x2='37.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='58.0' y1='172.0' x2='51.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='72.0' y1='172.0' x2='65.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='86.0' y1='172.0' x2='79.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='100.0' y1='172.0' x2='93.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='114.0' y1='172.0' x2='107.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='128.0' y1='172.0' x2='121.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='142.0' y1='172.0' x2='135.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='156.0' y1='172.0' x2='149.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='170.0' y1='172.0' x2='163.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='184.0' y1='172.0' x2='177.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='198.0' y1='172.0' x2='191.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='212.0' y1='172.0' x2='205.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='226.0' y1='172.0' x2='219.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='240.0' y1='172.0' x2='233.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='254.0' y1='172.0' x2='247.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='268.0' y1='172.0' x2='261.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='282.0' y1='172.0' x2='275.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='296.0' y1='172.0' x2='289.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='310.0' y1='172.0' x2='303.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><rect x='132.0' y='132.0' width='70.0' height='30.0' rx='4' fill='#1a2746' stroke='#5d6f96' stroke-width='1.5' opacity='1'/><circle cx='146.0' cy='166.0' r='6.0' fill='#24345a' stroke='#5d6f96' stroke-width='1.5'/><circle cx='188.0' cy='166.0' r='6.0' fill='#24345a' stroke='#5d6f96' stroke-width='1.5'/><text x='167' y='152' font-size='12' fill='#e9eefb' text-anchor='middle' font-family='Lexend, sans-serif' font-weight="700">5.0 kg</text><line x1='334' y1='10' x2='334' y2='210' stroke='#2a3a60' stroke-dasharray='4 4'/><g transform='translate(340,0.0)'><defs><marker id='pm54ffcf5a' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='6' markerHeight='6' orient='auto'><path d='M0 0L10 5L0 10z' fill='#ffcf5a'/></marker></defs><text x='135' y='16' font-size='11' fill='#7385aa' text-anchor='middle' font-family='Lexend, sans-serif'>Free-body diagram</text><rect x='113.0' y='98.0' width='44.0' height='36.0' rx='4' fill='#1a2746' stroke='#5d6f96' stroke-width='1.5' opacity='1'/><line x1='135.0' y1='116.0' x2='201.0' y2='116.0' stroke='#ffcf5a' stroke-width='3.2' marker-end='url(#pm54ffcf5a)'/><text x='211.0' y='120.0' font-size='15' fill='#ffcf5a' text-anchor='start' font-family='Lexend, sans-serif'><tspan font-style='italic'>F</tspan><tspan baseline-shift='sub' font-size='10'>a</tspan><tspan baseline-shift='0'> </tspan><tspan fill='#a3b2d2' font-size='12.5' dx='4'>40 N</tspan></text><line x1='135.0' y1='126.0' x2='95.0' y2='126.0' stroke='#ffcf5a' stroke-width='3.2' marker-end='url(#pm54ffcf5a)'/><text x='85.0' y='130.0' font-size='15' fill='#ffcf5a' text-anchor='end' font-family='Lexend, sans-serif'><tspan font-style='italic'>F</tspan><tspan baseline-shift='sub' font-size='10'>a</tspan><tspan baseline-shift='0'> </tspan><tspan fill='#a3b2d2' font-size='12.5' dx='4' dy='0'>15 N</tspan></text><line x1='135.0' y1='104.0' x2='101.0' y2='104.0' stroke='#ffcf5a' stroke-width='3.2' marker-end='url(#pm54ffcf5a)'/><text x='91.0' y='108.0' font-size='15' fill='#ffcf5a' text-anchor='end' font-family='Lexend, sans-serif'><tspan font-style='italic'>F</tspan><tspan baseline-shift='sub' font-size='10'>a</tspan><tspan baseline-shift='0'> </tspan><tspan fill='#a3b2d2' font-size='12.5' dx='4' dy='0'>10 N</tspan></text><circle cx='135.0' cy='116.0' r='5.0' fill='#e9eefb' stroke='#e9eefb' stroke-width='1.5'/></g></svg></div>${work('', [['Net force', `${SFx} = 40 + (−15) + (−10) = <b>+15 N</b>`], ['Equation', `${Fnet} = m${AA}`], ['Plug in', `15 = 5.0${AA}`], ['Solve', `${AA} = <b>3.0 m/s²</b> to the right`]])}</div>
     </div><div>${EQ_ALL}</div></div></div>
   <div class="card"><span class="chip try">Try it</span><h3>Three forces on a cart</h3><p>Set three horizontal forces (negative = left) and the mass. Complete all three missions.</p>
     <div class="fig" id="t1fig"></div>
@@ -905,7 +907,7 @@ function build2() {
     <div class="cols"><div>
       <p>Acceleration is the <b>bridge</b> between forces and motion. Use ${Fnet} = m${AA} to find ${AA}, then put ${AA} into a kinematics equation to find speed, time, or distance. Or go the other way: find ${AA} from the motion, then the force.</p>
       <div class="callout"><b>Example.</b> A 1,200 kg car starts from rest with a net force of 3,600 N. How fast is it going after 5.0 s?
-        ${work('', [['Step 1', `${AA} = ${Fnet} ÷ m = 3600 ÷ 1200 = <b>3.0 m/s²</b>`], ['Step 2 equation', `${VF} = ${VI} + ${AA}${DT}`], ['Plug in', `${VF} = 0 + (3.0)(5.0)`], ['Solve', `${VF} = <b>15 m/s</b>`]])}</div>
+        <div class='fig' style='margin:10px 0'><svg viewBox='0 0 610 220' role='img' aria-label='Diagram'><defs><marker id='pm556cb8ff' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='6' markerHeight='6' orient='auto'><path d='M0 0L10 5L0 10z' fill='#6cb8ff'/></marker></defs><line x1='10.0' y1='140.0' x2='320.0' y2='140.0' stroke='#5d6f96' stroke-width='2'/><path d='M110 128 L110 110 L140.0 108 L155.6 90 L200.0 90 L215.6 108 L230 112 L230 128 Z' stroke='#8fb3ff' stroke-width='1.5' fill='#4f7ed8'/><circle cx='136.4' cy='130.0' r='10.0' fill='#24345a' stroke='#e9eefb' stroke-width='1.5'/><circle cx='203.6' cy='130.0' r='10.0' fill='#24345a' stroke='#e9eefb' stroke-width='1.5'/><line x1='130.0' y1='60.0' x2='200.0' y2='60.0' stroke='#6cb8ff' stroke-width='2.2' marker-end='url(#pm556cb8ff)' stroke-dasharray="5 3"/><text x='212' y='64' font-size='12' fill='#6cb8ff' text-anchor='start' font-family='Lexend, sans-serif'>5.0 s</text><text x='12' y='20' font-size='12' fill='#a3b2d2' text-anchor='start' font-family='Lexend, sans-serif'>1,200 kg from rest</text><line x1='334' y1='10' x2='334' y2='210' stroke='#2a3a60' stroke-dasharray='4 4'/><g transform='translate(340,0.0)'><defs><marker id='pm56ffcf5a' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='6' markerHeight='6' orient='auto'><path d='M0 0L10 5L0 10z' fill='#ffcf5a'/></marker></defs><text x='135' y='16' font-size='11' fill='#7385aa' text-anchor='middle' font-family='Lexend, sans-serif'>Free-body diagram</text><rect x='113.0' y='98.0' width='44.0' height='36.0' rx='4' fill='#1a2746' stroke='#5d6f96' stroke-width='1.5' opacity='1'/><line x1='135.0' y1='116.0' x2='201.0' y2='116.0' stroke='#ffcf5a' stroke-width='3.2' marker-end='url(#pm56ffcf5a)'/><text x='211.0' y='120.0' font-size='15' fill='#ffcf5a' text-anchor='start' font-family='Lexend, sans-serif'><tspan font-style='italic'>F</tspan><tspan baseline-shift='sub' font-size='10'>a</tspan><tspan baseline-shift='0'> </tspan><tspan fill='#a3b2d2' font-size='12.5' dx='4'>Fnet = 3,600 N</tspan></text><circle cx='135.0' cy='116.0' r='5.0' fill='#e9eefb' stroke='#e9eefb' stroke-width='1.5'/></g></svg></div>${work('', [['Step 1', `${AA} = ${Fnet} ÷ m = 3600 ÷ 1200 = <b>3.0 m/s²</b>`], ['Step 2 equation', `${VF} = ${VI} + ${AA}${DT}`], ['Plug in', `${VF} = 0 + (3.0)(5.0)`], ['Solve', `${VF} = <b>15 m/s</b>`]])}</div>
     </div><div>${EQ_ALL}</div></div></div>
   <div class="card"><span class="chip try">Try it</span><h3>Drag strip</h3><p>Set the engine\u2019s net force and the car\u2019s mass. The car starts from rest and accelerates for 5.0 s. Complete all three missions.</p>
     <div class="fig" id="d2fig"></div>
@@ -939,7 +941,7 @@ function build3() {
       <p><b>Convert before you calculate.</b> Mass must be in kilograms (g ÷ 1000) and speed in m/s (km/h ÷ 3.6). Otherwise the newtons come out wrong.</p>
       <p><b>Working backward:</b> if you know the motion, find ${AA} with kinematics first, then the force with ${Fnet} = m${AA}.</p>
       <div class="callout"><b>Example.</b> A 1,200 kg car going 54 km/h stops in 3.0 s. What net force stopped it?
-        ${work('', [['Convert', `54 ÷ 3.6 = <b>15 m/s</b>`], ['Step 1', `${VF} = ${VI} + ${AA}${DT} → 0 = 15 + ${AA}(3.0) → ${AA} = <b>−5.0 m/s²</b>`], ['Step 2', `${Fnet} = m${AA} = 1200 × (−5.0)`], ['Solve', `${Fnet} = <b>−6,000 N</b> (6,000 N backward)`]])}</div>
+        <div class='fig' style='margin:10px 0'><svg viewBox='0 0 610 220' role='img' aria-label='Diagram'><defs><marker id='pm576cb8ff' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='6' markerHeight='6' orient='auto'><path d='M0 0L10 5L0 10z' fill='#6cb8ff'/></marker></defs><line x1='10.0' y1='140.0' x2='320.0' y2='140.0' stroke='#5d6f96' stroke-width='2'/><path d='M110 128 L110 110 L140.0 108 L155.6 90 L200.0 90 L215.6 108 L230 112 L230 128 Z' stroke='#8fb3ff' stroke-width='1.5' fill='#4f7ed8'/><circle cx='136.4' cy='130.0' r='10.0' fill='#24345a' stroke='#e9eefb' stroke-width='1.5'/><circle cx='203.6' cy='130.0' r='10.0' fill='#24345a' stroke='#e9eefb' stroke-width='1.5'/><line x1='130.0' y1='60.0' x2='200.0' y2='60.0' stroke='#6cb8ff' stroke-width='2.2' marker-end='url(#pm576cb8ff)' stroke-dasharray="5 3"/><text x='212' y='64' font-size='12' fill='#6cb8ff' text-anchor='start' font-family='Lexend, sans-serif'>54 km/h</text><text x='12' y='20' font-size='12' fill='#a3b2d2' text-anchor='start' font-family='Lexend, sans-serif'>1,200 kg: 54 km/h → stop in 3.0 s</text><line x1='334' y1='10' x2='334' y2='210' stroke='#2a3a60' stroke-dasharray='4 4'/><g transform='translate(340,0.0)'><defs><marker id='pm58ff9f5a' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='6' markerHeight='6' orient='auto'><path d='M0 0L10 5L0 10z' fill='#ff9f5a'/></marker></defs><text x='135' y='16' font-size='11' fill='#7385aa' text-anchor='middle' font-family='Lexend, sans-serif'>Free-body diagram</text><rect x='113.0' y='98.0' width='44.0' height='36.0' rx='4' fill='#1a2746' stroke='#5d6f96' stroke-width='1.5' opacity='1'/><line x1='135.0' y1='116.0' x2='69.0' y2='116.0' stroke='#ff9f5a' stroke-width='3.2' marker-end='url(#pm58ff9f5a)'/><text x='59.0' y='120.0' font-size='15' fill='#ff9f5a' text-anchor='end' font-family='Lexend, sans-serif'><tspan font-style='italic'>F</tspan><tspan baseline-shift='sub' font-size='10'>f</tspan><tspan baseline-shift='0'> </tspan><tspan fill='#a3b2d2' font-size='12.5' dx='4' dy='0'>Fnet = ?</tspan></text><circle cx='135.0' cy='116.0' r='5.0' fill='#e9eefb' stroke='#e9eefb' stroke-width='1.5'/></g></svg></div>${work('', [['Convert', `54 ÷ 3.6 = <b>15 m/s</b>`], ['Step 1', `${VF} = ${VI} + ${AA}${DT} → 0 = 15 + ${AA}(3.0) → ${AA} = <b>−5.0 m/s²</b>`], ['Step 2', `${Fnet} = m${AA} = 1200 × (−5.0)`], ['Solve', `${Fnet} = <b>−6,000 N</b> (6,000 N backward)`]])}</div>
     </div><div>${EQ_ALL}</div></div></div>
   ${pracCard(3, 'Practice (you solve it)', 'A little different from the example: grams, and a speeding-up object.', [
     { id: 'p3x', q: 'A 450 g ball starts at rest and reaches 12 m/s in 0.30 s. What net force acted on it?', ans: 18, show: '18', unit: 'N', tol: 0.2, hint: 'Convert 450 g to kg. Find a = (12 − 0) ÷ 0.30, then F = ma.', sol: 'm = 0.450 kg; a = 12 ÷ 0.30 = 40 m/s²; F = 0.450 × 40 = 18 N' }])}
@@ -1280,6 +1282,14 @@ heroFig(); buildAll(); renderStart(); showNote();
 go(0);
 if (S.student && S.locked && lockLive()) showLock();
 })();
+</script>
+<script>/* sandbox-safe sign-in: works even where form submissions are blocked (e.g., previews) */
+(function () { document.querySelectorAll('#startForm, #signForm').forEach(f => {
+  const go = () => f.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+  f.requestSubmit = go;
+  f.querySelectorAll('button[type="submit"]').forEach(b => { b.type = 'button'; b.addEventListener('click', go); });
+  f.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName === 'INPUT') { e.preventDefault(); go(); } });
+}); })();
 </script>
 </body>
 </html>

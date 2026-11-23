@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Onion Root Tip Mitosis Lab | Biology Unit 4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1626; --panel:#142136; --panel2:#1a2a44; --line:#2a3d5f; --line2:#3a5580;
+  --text:#e8eef8; --muted:#a3b4cf; --dim:#7488a9;
+  --leaf:#5fe3a9; --sun:#ffd35c; --r:#ffd35c; --sky:#45c8f0; --ok:#4ade80; --bad:#fb7185; --pink:#f472b6;
+  --font:'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+*{box-sizing:border-box} [hidden]{display:none !important}
+html,body{margin:0}
+body{background-color:var(--bg); background-image:linear-gradient(rgba(110,150,210,.065) 1px,transparent 1px),linear-gradient(90deg,rgba(110,150,210,.065) 1px,transparent 1px); background-size:32px 32px;
+  color:var(--text); font-family:var(--font); font-size:17px; line-height:1.55; -webkit-user-select:none; user-select:none}
+input,textarea{-webkit-user-select:text; user-select:text}
+h1,h2,h3,h4{margin:0 0 .45em; line-height:1.2; font-weight:600}
+h1{font-size:clamp(28px,4.4vw,40px); font-weight:700} h2{font-size:24px} h3{font-size:19px}
+p{margin:0 0 .75em} .muted{color:var(--muted)} .small{font-size:14px}
+sub,sup{font-size:.72em}
+:focus-visible{outline:3px solid var(--r); outline-offset:2px}
+.top{position:sticky; top:0; z-index:20; background:rgba(13,22,38,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+.top-in{max-width:1100px; margin:0 auto; padding:8px 16px; display:flex; gap:12px; align-items:center}
+.brand{font-weight:600; font-size:15px; white-space:nowrap} .brand span{display:block; font-weight:400; font-size:12px; color:var(--muted)}
+.nav{display:flex; gap:6px; flex:1; overflow-x:auto; padding:3px 2px}
+.ntile{flex:0 0 auto; width:54px; height:54px; border-radius:7px; border:1.5px solid var(--line2); background:var(--panel); color:var(--text); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer; position:relative; font:inherit; padding:0}
+.ntile .ic{color:var(--leaf); line-height:0} .ntile .nm{font-size:8.5px; color:var(--muted)}
+.ntile.cur{border-color:var(--r); background:rgba(255,211,92,.14)}
+.ntile.cur .nm{color:var(--r)}
+.secnav{display:flex; justify-content:space-between; gap:10px; margin-top:4px}
+.ntile.done::after{content:'✓'; position:absolute; top:1px; right:4px; font-size:10px; font-weight:700; color:var(--ok)}
+.scorepill{font-size:13px; padding:4px 10px; border-radius:999px; background:var(--panel2); white-space:nowrap}
+.savenote{font-size:12.5px; color:var(--ok); white-space:nowrap} @media (max-width:1300px){ .savenote{display:none} } @media (max-width:900px){ .scorepill{display:none} }
+main{max-width:1000px; margin:0 auto; padding:20px 16px 80px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin:0 0 18px}
+.sec{scroll-margin-top:80px}
+.sechead{display:flex; gap:14px; align-items:center; margin:28px 0 10px}
+.badge{width:66px; height:66px; border-radius:10px; border:2px solid var(--leaf); background:var(--panel); display:flex; align-items:center; justify-content:center; position:relative; flex:0 0 auto; color:var(--leaf)}
+.badge .z{position:absolute; top:3px; left:6px; font-size:11px; color:var(--muted)}
+.meta{color:var(--muted); font-size:14px}
+.btn{font:inherit; font-weight:600; font-size:15px; border-radius:10px; padding:10px 18px; cursor:pointer; border:1.5px solid transparent}
+.btn.primary{background:var(--r); color:#231a00} .btn.ghost{background:transparent; border-color:var(--line2); color:var(--text)}
+.btn.small{padding:6px 12px; font-size:14px} .btn:disabled{opacity:.45; cursor:not-allowed}
+.btnrow{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:12px}
+.field{display:flex; flex-direction:column; gap:4px; font-size:14px; color:var(--muted)}
+.field input,.field select{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px}
+.formgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin:10px 0}
+.fb{margin-top:10px; padding:10px 14px; border-radius:10px; font-size:15px}
+.fb.ok{background:rgba(74,222,128,.12); color:#c9f7d8} .fb.no{background:rgba(251,113,133,.12); color:#ffd3db} .fb.info{background:var(--panel2)}
+.prob{border-top:1px solid var(--line); padding-top:16px; margin-top:16px}
+.prob:first-of-type{border-top:none; padding-top:0; margin-top:0}
+.pq{font-weight:500; margin-bottom:8px}
+.pnum{display:inline-block; min-width:30px; font-weight:700; color:var(--leaf)}
+.pts{font-size:13px; color:var(--muted); font-weight:400}
+.hintbox{background:rgba(255,211,92,.08); border-left:3px solid var(--r); border-radius:8px; padding:8px 12px; margin-top:8px; font-size:15px}
+/* drag and drop */
+.figwrap{position:relative; width:100%}
+.figwrap svg{width:100%; height:auto; display:block; background:#0a1322; border:1px solid var(--line); border-radius:12px}
+.figwrap svg text{font-family:var(--font)}
+.zone{position:absolute; transform:translate(-50%,-50%); min-height:32px; border:2px dashed #8fb3e6; border-radius:9px; background:rgba(13,22,38,.92); color:var(--text); font:inherit; font-size:14px; font-weight:600; display:flex; align-items:center; justify-content:center; padding:2px 6px; cursor:pointer; text-align:center; line-height:1.15}
+.zone.empty{color:var(--dim); font-weight:400; font-size:12.5px}
+.zone.filled{border-style:solid; border-color:var(--r); background:#2b2410}
+.zone.hot{box-shadow:0 0 0 3px rgba(255,211,92,.5)}
+.zone.locked{opacity:.9}
+.zone.ok{border-color:var(--ok); background:#0f2e1d} .zone.no{border-color:var(--bad); background:#3a0f1a}
+.pool{display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 4px; padding:10px; border:1px dashed var(--line2); border-radius:10px; min-height:52px}
+.pool .lbl{width:100%; font-size:12.5px; color:var(--muted)}
+.chip{font:inherit; font-size:15px; font-weight:600; padding:6px 14px; border-radius:999px; border:1.5px solid var(--line2); background:var(--panel2); color:var(--text); cursor:grab; touch-action:none}
+.chip.sel{border-color:var(--r); background:rgba(255,211,92,.16); box-shadow:0 0 0 3px rgba(255,211,92,.35)}
+.bins{display:grid; gap:10px; margin-top:6px}
+.bin{border:2px dashed var(--line2); border-radius:12px; padding:10px; min-height:96px; cursor:pointer; background:rgba(13,22,38,.5)}
+.bin h4{margin:0 0 8px; font-size:15px; color:var(--leaf)} .bin.hot{border-color:var(--r)}
+.bin .chip{cursor:pointer; margin:3px} .bin .chip.ok{border-color:var(--ok); background:#0f2e1d} .bin .chip.no{border-color:var(--bad); background:#3a0f1a}
+.phenbox{background:rgba(244,114,182,.1); border-left:4px solid #f472b6; border-radius:8px; padding:10px 14px; margin-bottom:14px}
+.fixnote{font-size:12px; color:#ffd3db; font-weight:400}
+/* equation */
+.eq{display:flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:20px; font-weight:600; margin:10px 0}
+.eq .zone{position:static; transform:none; min-width:120px; min-height:40px}
+/* choices */
+.opts{display:grid; gap:8px; margin:6px 0}
+.opt{display:flex; gap:12px; align-items:center; text-align:left; background:var(--panel2); border:1.5px solid var(--line); color:var(--text); border-radius:10px; padding:9px 14px; font:inherit; font-size:16px; cursor:pointer}
+.opt .L{flex:0 0 26px; height:26px; border-radius:50%; display:grid; place-items:center; background:var(--bg); font-weight:600; font-size:13px}
+.opt.multi .L{border-radius:6px}
+.opt.sel{border-color:var(--r); background:rgba(255,211,92,.08)} .opt.sel .L{background:var(--r); color:#231a00}
+.opt.ok{border-color:var(--ok); background:rgba(74,222,128,.1)} .opt.no{border-color:var(--bad); background:rgba(251,113,133,.1)}
+.opt:disabled{cursor:default}
+input.blank{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:7px 10px; font:inherit; font-size:16px; width:170px}
+input.blank.ok{border-color:var(--ok)} input.blank.no{border-color:var(--bad)}
+.brow{margin:8px 0}
+/* answer key (teacher) */
+body.keyon .zone[data-key]::after{content:'key: ' attr(data-key); position:absolute; top:100%; left:50%; transform:translateX(-50%); font-size:11px; color:var(--r); white-space:nowrap; margin-top:2px}
+body.keyon .chip[data-key]::after{content:' → ' attr(data-key); font-size:11px; color:var(--r)}
+body.keyon .opt[data-key]{outline:2px dashed var(--r); outline-offset:2px}
+body.keyon input.blank[data-key]+.keytxt{display:inline}
+.datatab select.ocell{font:inherit; padding:4px 6px; border-radius:8px; max-width:100%}
+.datatab input.dcell{width:72px; font:inherit; padding:4px 6px; border-radius:8px; text-align:center}
+.datachart svg{width:100%; height:auto; display:block; margin-top:10px}
+ol.proc li{margin:4px 0}
+.off{opacity:.35; pointer-events:none}
+.btbkey{display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; margin:6px 0 10px}.btbkey span{display:inline-block; width:16px; height:16px; border-radius:50%; vertical-align:middle; border:1px solid rgba(255,255,255,.4)}
+.simwrap{display:grid; grid-template-columns:minmax(150px,220px) 1fr; gap:18px; align-items:start; background:rgba(255,255,255,.04); border:1px solid var(--line,#2a3d5f); border-radius:14px; padding:14px}
+.simwrap.off{opacity:.35; pointer-events:none}
+.bigtube svg{width:100%; height:auto; display:block}.clock{text-align:center; font-weight:700; font-size:20px; margin-top:6px}
+.tg{display:block; margin:4px 0; font-size:17px}.tg input{transform:scale(1.3); margin-right:8px}
+.sensor{margin:10px 0; font-size:18px}.sensor b{font-size:24px; color:#ffd35c}
+.btn.on{outline:2px solid #ffd35c}
+.dot{display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:6px; vertical-align:middle}
+.predtab select{font:inherit; padding:4px 6px; border-radius:8px}
+#sChart svg{width:100%; height:auto; display:block}
+@media (max-width:700px){ .simwrap{grid-template-columns:1fr} .bigtube{max-width:180px; margin:0 auto} }
+.wbank2{margin-top:8px; padding:8px 10px; border:1px dashed rgba(163,180,207,.5); border-radius:10px; font-size:14px; line-height:2}
+.wchip{font:inherit; font-size:14px; margin:2px 4px 2px 0; padding:2px 10px; border-radius:999px; border:1px solid rgba(163,180,207,.6); background:rgba(255,255,255,.06); color:inherit; cursor:pointer}
+.wchip:hover{border-color:#ffd35c}
+.wtext{width:100%; min-height:110px; font:inherit; padding:10px; border-radius:10px; border:1.5px solid var(--line,#2a3d5f); background:rgba(255,255,255,.04); color:inherit; resize:vertical}
+.wkey{display:none; margin-top:6px; font-size:14px; color:var(--r,#ffd35c)}
+body.keyon .wkey{display:block}
+.keytxt{display:none; font-size:12px; color:var(--r); margin-left:6px}
+.big{font-size:52px; font-weight:700; color:var(--r); line-height:1}
+table.res{border-collapse:collapse; width:100%} table.res th,table.res td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line)} table.res th{color:var(--muted); font-weight:400}
+.card.nostore{border:2px solid var(--bad); background:rgba(251,113,133,.08)}
+.overlay{position:fixed; inset:0; background:rgba(4,9,18,.94); z-index:100; display:none; align-items:center; justify-content:center; padding:20px}
+.overlay.show{display:flex}
+.modal{background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:24px; max-width:900px; width:100%; max-height:92vh; overflow:auto}
+input.code{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px; width:200px}
+table.nb{border-collapse:collapse; width:100%; font-size:14px} table.nb th,table.nb td{border:1px solid var(--line2); padding:6px 8px} table.nb th{background:var(--panel2)}
+.wide{overflow-x:auto}
+@media (max-width:700px){ .zone{font-size:11px; min-height:26px} .chip{font-size:13px; padding:5px 10px} }
+@media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important} }
+.prob + p,.prob + .phenbox,.prob + .figwrap{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+
+.vbench{background:rgba(255,255,255,.04); border:1px solid #2a3d5f; border-radius:14px; padding:12px; margin-bottom:12px}
+.vbench.off{opacity:.45; pointer-events:none}
+.isstat{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; font-weight:600; margin-bottom:6px}
+.isclock{font-variant-numeric:tabular-nums; font-size:22px; color:var(--r); background:var(--bg); border:1px solid var(--line2); border-radius:8px; padding:2px 12px}
+.vbpic svg{width:100%; height:auto; display:block; border-radius:12px}
+.vbm.on,.vbl.on{background:var(--r); color:#231a00; border-color:var(--r)}
+.vbzoom{margin-top:10px} .vbzoom svg{width:100%; max-width:640px; height:auto; display:block; border-radius:12px; border:1px solid var(--line)}
+.datatab input.dcell{background:var(--bg); color:var(--text); border:1.5px solid var(--line2)}
+.datatab input.dcell:disabled,.datatab select.ocell:disabled{opacity:1; color:var(--text); border-color:var(--line); background:var(--panel2)}
+.datatab select.ocell,.predtab select{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); max-width:100%}
+.datachart svg,.anachart svg{width:100%; height:auto; display:block; margin-top:10px}
+.proc ul{margin:6px 0 4px; padding-left:20px}
+.ordwrap .eq{display:grid; grid-template-columns:auto minmax(0,1fr); gap:8px 12px; font-size:16px; align-items:center}
+.ordwrap .eq .zone{width:100%; min-height:42px; font-size:15px; justify-content:flex-start; text-align:left; padding:4px 10px}
+.ordwrap .chip{font-size:14px; text-align:left; border-radius:12px}
+@media (max-width:620px){ .ordwrap .eq{grid-template-columns:1fr} .ordwrap .eq .zone{font-size:13px} .predtab td,.predtab th{padding:5px} }
+
+</style>
+</head>
+<body>
+<header class="top" id="top" hidden>
+  <div class="top-in">
+    <div class="brand">Onion root tip lab<span id="whoami"></span></div>
+    <nav class="nav" id="nav" aria-label="Worksheet parts"></nav>
+    <span class="scorepill" id="scorePill"></span>
+    <span class="savenote" id="saveNote" aria-live="polite"></span>
+    <button class="btn ghost small" id="teachBtn" type="button">Teacher</button>
+  </div>
+</header>
+
+<main>
+  <section id="start">
+    <div class="muted" style="margin-top:8px">Biology · Unit 4: Genetics · Lab · about 50 minutes</div>
+    <h1>Onion Root Tip Mitosis Lab</h1>
+    <p class="muted" style="font-size:18px;max-width:42em">Use a microscope to find cells caught in every phase of mitosis in an onion root tip, count them, and estimate how long each stage of the cell cycle lasts.<span style="display:block;font-size:14px;margin-top:8px">Standard: NGSS HS-LS1-4: cell division (mitosis) produces and maintains complex organisms.</span></p>
+    <div class="card"><h3>How it works</h3>
+      <p style="margin:0">Each problem gets <b>two tries</b>. Right on either try earns full credit. If your first try is wrong, you'll be told it isn't right yet (but not the answer), so look again and try once more. Wrong twice and the problem is marked wrong and locks. Stuck? Tap <b>Hint</b> before you check.</p></div>
+    <div class="card nostore" id="noStore" hidden><h3>This browser can't save your work</h3><p style="margin:0">You may be in guest or incognito mode. Sign in to your school account and open the worksheet again.</p></div>
+    <div class="card">
+      <h3 id="signinTitle">Sign in to start</h3>
+      <div id="resumeBox" hidden><p id="resumeText"></p>
+        <div class="btnrow"><button class="btn primary" id="resumeBtn" type="button">Continue my lab</button><button class="btn ghost small" id="notMeBtn" type="button">Not you? Sign in as a different student</button></div>
+        <div class="fb no" id="resumeErr" hidden></div></div>
+      <div id="startForm">
+        <div class="formgrid">
+          <label class="field">First name<input id="fFirst" autocomplete="off"></label><label class="field">Last name<input id="fLast" autocomplete="off"></label>
+          <label class="field">Student ID<input id="fId" inputmode="numeric" autocomplete="off"></label>
+          <label class="field">Period<select id="fPeriod"></select></label><label class="field">Teacher<select id="fTeacher"></select></label>
+        </div>
+        <p class="small muted">Your work saves as you go. On any Chromebook, sign in with the same student ID and last name to pick up where you left off.</p>
+        <div class="fb no" id="formErr" hidden></div>
+        <div class="btnrow"><button class="btn primary" type="button" id="startBtn">Start the lab</button></div>
+      </div>
+    </div>
+    <p style="text-align:center"><button class="btn ghost" id="teacherLink" type="button">Teacher: enter unlock code</button></p>
+  </section>
+  <div id="ws" hidden></div>
+</main>
+
+<div class="overlay" id="teachOv" role="dialog" aria-modal="true" aria-labelledby="tTitle">
+  <div class="modal"><div id="teachLogin"><h2 id="tTitle">Teacher</h2>
+    <div class="btnrow"><input class="code" id="teachCode" type="password" placeholder="Teacher code" autocomplete="off"><button class="btn primary" id="teachGo" type="button">Open</button><button class="btn ghost" id="teachCancel" type="button">Close</button></div>
+    <div class="fb no" id="teachErr" hidden>That code didn't work.</div></div><div id="teachPanel" hidden></div></div>
+</div>
+<div class="overlay" id="tabOv" role="dialog" aria-modal="true"><div class="modal" style="max-width:520px"><h2>This lab is open in another tab</h2><p>To keep your newest work safe, this copy stopped saving. Close the extra tab, then reload this one.</p><div class="btnrow"><button class="btn primary" type="button" onclick="location.reload()">Reload with my newest work</button></div></div></div>
+
+<script src="sheets-config.js"></script>
+<script>
+(function(){
+'use strict';
+/* ============================== SETTINGS ============================== */
+const LESSON_TITLE='Mitosis and the Cell Cycle';           // unlock code = last word of this title
+const UNLOCK_CODE=LESSON_TITLE.trim().split(/\s+/).pop();
+const TEACHER_CODE='Teacher007';   // universal teacher-tools code
+const codeIs=(v,c)=>String(v||'').trim().toLowerCase()===String(c).toLowerCase();
+const WS_ID='bio-u4-onion-root-tip-lab', ACTIVITY='Onion Root Tip Lab';
+const BACKUP_URL='https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const SAVE_URL_BUILTIN='https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';
+const BACKUP_TEACHERS=['Austin','Mueller','McCue','Arce','Trimm','Garcia','Trimm/Callanan','Callanan'], BACKUP_PERIODS=['1','2','3','4','5','6','7','8'];
+const STORE='onionLab_v1', RECS='onionLab_records_v1';
+/* ===================================================================== */
+const teacherList=()=>{ try{ if(typeof TEACHERS!=='undefined'&&Array.isArray(TEACHERS)&&TEACHERS.length) return TEACHERS.map(String); }catch(e){} return BACKUP_TEACHERS; };
+const periodList=()=>{ try{ if(typeof PERIODS!=='undefined'&&Array.isArray(PERIODS)&&PERIODS.length) return PERIODS.map(String); }catch(e){} return BACKUP_PERIODS; };
+const sheetURL=()=>{ try{ if(typeof SHEETS_WEBHOOK_URL!=='undefined'&&SHEETS_WEBHOOK_URL&&String(SHEETS_WEBHOOK_URL).indexOf('PASTE')<0) return String(SHEETS_WEBHOOK_URL); }catch(e){} return BACKUP_URL; };
+const saveURL=()=>{ try{ if(typeof SAVE_WEBHOOK_URL!=='undefined'&&SAVE_WEBHOOK_URL&&String(SAVE_WEBHOOK_URL).indexOf('PASTE')<0) return String(SAVE_WEBHOOK_URL); }catch(e){} return SAVE_URL_BUILTIN; };
+const LOCKDOWN=false;   // worksheets never lock down
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const strip=s=>String(s).replace(/<[^>]+>/g,'');
+function h(tag,attrs,html){ const e=document.createElement(tag); if(attrs) for(const k in attrs){ if(attrs[k]===false||attrs[k]==null) continue; if(k==='class') e.className=attrs[k]; else if(k==='hidden') e.hidden=!!attrs[k]; else e.setAttribute(k,attrs[k]); } if(html!=null) e.innerHTML=html; return e; }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* ---------- state + saving ---------- */
+function fresh(){ return {ws:WS_ID, student:null, p:{}, ord:{}, locks:0, locked:false, lockOff:false, submittedAt:null, sentAt:null}; }
+let S; try{ S=JSON.parse(localStorage.getItem(STORE)); }catch(e){} if(!S||S.ws!==WS_ID) S=fresh();
+let STORAGE_OK=true, saveBlocked=false;
+try{ localStorage.setItem('__ps_t','1'); STORAGE_OK=localStorage.getItem('__ps_t')==='1'; localStorage.removeItem('__ps_t'); }catch(e){ STORAGE_OK=false; }
+function save(){
+  if(saveBlocked) return;
+  if(S.preview){ note('Preview: nothing is saved'); return; }
+  try{ const raw=localStorage.getItem(STORE); if(raw){ const st=JSON.parse(raw); if(st&&st.ws===WS_ID&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); return; } }
+    S.rev=(S.rev||0)+1; S.updatedAt=Date.now(); localStorage.setItem(STORE,JSON.stringify(S)); note(); cloudSave(false); }catch(e){}
+}
+window.addEventListener('storage',e=>{ if(e.key!==STORE||!e.newValue) return; try{ const st=JSON.parse(e.newValue); if(st&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); } }catch(_){} });
+const saveKey=st=>(String(st.id||'').replace(/\s+/g,'')+'-'+String(st.last||'').toLowerCase().replace(/[^a-z]/g,'')).toLowerCase();
+const checkedCount=st=>Object.values((st||S).p).filter(x=>x&&x.checked).length;
+let cloudTimer=null, cloudDirty=false, cloudBusy=false, cloudAt=null, cloudErr=false;
+const cloudOK=()=>!!saveURL()&&S.student&&!saveBlocked&&!S.preview;
+function cloudBody(){ const st=S.student||{}, sc=scoreAll();
+  return new URLSearchParams({code:saveKey(st), lesson:WS_ID, ver:String(S.updatedAt||Date.now()), prog:String((S.submittedAt?100000:0)+checkedCount(S)), studentId:st.id||'', lastName:st.last||'', firstName:st.first||'', period:st.period||'', teacher:st.teacher||'',
+    summary:S.submittedAt?`Turned in · ${sc.total}/${sc.max}`:`${checkedCount(S)} of ${PROBS.length} problems checked`, data:JSON.stringify(S)}); }
+function cloudSave(soon){ if(!cloudOK()) return; cloudDirty=true; if(soon){ clearTimeout(cloudTimer); cloudTimer=setTimeout(cloudFlush,1200); } else if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); }
+async function cloudFlush(){ cloudTimer=null; if(!cloudOK()||!cloudDirty) return; if(cloudBusy){ cloudTimer=setTimeout(cloudFlush,4000); return; } cloudBusy=true; cloudDirty=false;
+  try{ await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); cloudAt=new Date(); cloudErr=false; }catch(e){ cloudDirty=true; cloudErr=true; if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); } finally{ cloudBusy=false; note(); } }
+function cloudBeacon(){ if(!cloudOK()||!cloudDirty) return; try{ if(navigator.sendBeacon&&navigator.sendBeacon(saveURL(),cloudBody())) cloudDirty=false; }catch(e){} }
+async function cloudLoad(st){ const ctrl=new AbortController(), t=setTimeout(()=>ctrl.abort(),5000);
+  try{ const r=await fetch(saveURL()+'?'+new URLSearchParams({code:saveKey(st),lesson:WS_ID}),{signal:ctrl.signal}); const j=await r.json(); if(j&&j.found&&j.data){ const d=JSON.parse(j.data); if(d&&d.ws===WS_ID) return {status:'found',data:d}; } return {status:'none'}; }
+  catch(e){ return {status:'error'}; } finally{ clearTimeout(t); } }
+function adopt(ns){ let sr=0; try{ const raw=localStorage.getItem(STORE); if(raw) sr=JSON.parse(raw).rev||0; }catch(e){} ns.rev=Math.max(ns.rev||0,sr); S=ns; saveBlocked=false; save(); }
+function note(msg){ const n=$('#saveNote'); if(!n) return; const tm=d=>d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}); n.textContent=msg||(cloudErr?'✓ Saved on this Chromebook':'✓ Saved '+tm(new Date())+(cloudAt?' · backed up '+tm(cloudAt):'')); }
+document.addEventListener('visibilitychange',()=>{ if(document.hidden){ save(); cloudBeacon(); } });
+window.addEventListener('pagehide',()=>{ save(); cloudBeacon(); });
+
+/* ============================== DIAGRAMS ============================== */
+/* ============================== PROBLEMS ============================== */
+const PARTS=[
+ {k:'P1', label:'Setup', title:'Purpose and setup', min:8, icon:'<path d="M9 2.5h6M10 2.5v6.5L5 18.5A2 2 0 0 0 6.8 21.5h10.4a2 2 0 0 0 1.8-3L14 9V2.5"/><path d="M7.5 15h9"/>'},
+ {k:'P2', label:'Predict', title:'Predict', min:5, icon:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z"/>'},
+ {k:'P3', label:'Observe', title:'Microscope and data', min:20, icon:'<path d="M8 2.5v15a3 3 0 0 0 6 0v-15"/><path d="M7 2.5h8"/><path d="M8 11h6"/><path d="M18 6v12M17 8h2M17 12h2M17 16h2"/>'},
+ {k:'P4', label:'Analysis', title:'Analysis', min:15, icon:'<path d="M3 21h18"/><rect x="5" y="12" width="3" height="7"/><rect x="10.5" y="7" width="3" height="12"/><rect x="16" y="14" width="3" height="5"/>'},
+ {k:'P5', label:'Conclusion', title:'Conclusion (CER)', min:8, icon:'<path d="M4 4h12l4 4v12H4z"/><path d="M8 11h8M8 15h6"/>'},
+ {k:'P6', label:'Grade', title:'Your grade', min:1, icon:'<rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4V2.5h6V4"/><path d="M8.5 13l2.5 2.5 4.5-5"/>'}
+];
+const ico=(i,s)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PARTS[i].icon}</svg>`;
+const PROBS=[];   // every problem: {id, part, max, score(), key()}
+
+function probShell(parent, part, num, q, pts){
+  const box=h('div',{class:'prob'}); parent.appendChild(box);
+  box.innerHTML=`<div class="pq"><span class="pnum">${num}.</span> ${q} <span class="pts">(${pts} pt${pts>1?'s':''})</span></div>`;
+  return box;
+}
+function actions(box, o){ // Hint + Check buttons + feedback
+  const row=h('div',{class:'btnrow'}); const hb=h('button',{class:'btn ghost small',type:'button'},'Hint'); const cb=h('button',{class:'btn primary small',type:'button'},'Check');
+  row.append(hb,cb); box.appendChild(row);
+  const hint=h('div',{class:'hintbox',hidden:true},'💡 '+o.hint); box.appendChild(hint);
+  const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'}); box.appendChild(fb);
+  hb.addEventListener('click',()=>{ hint.hidden=!hint.hidden; });
+  return {row,hb,cb,hint,fb};
+}
+const st=id=>S.p[id]||(S.p[id]={});
+/* Two tries per problem. Right on try 1 or 2 = full credit. Wrong twice = marked wrong (credit for parts right on try 2).
+   The correct answer is never shown. */
+function gradeTry(P,res,max){ const n=res.filter(Boolean).length; P.tries=(P.tries||0)+1;
+  if(n===max){ P.first=max; P.checked=true; P.right=true; }
+  else if(P.tries>=2){ P.first=n; P.checked=true; P.right=false; }
+  return n===max; }
+function showTry(ui,P,max,doneText){
+  if(P.checked&&P.right){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML=`<b>Correct!</b> ${doneText||''}`; }
+  else if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`<b>Marked wrong.</b> You earned ${P.first} of ${max} point${max>1?'s':''}. Ask your teacher if you'd like to try it again.`; }
+  else if(P.tries===1){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=max>1?'<b>Not quite.</b> Something isn\'t right yet. You have <b>one more try</b>.':'<b>Not quite.</b> You have <b>one more try</b>.'; }
+  else ui.fb.hidden=true;
+  if(ui.cb) ui.cb.textContent=P.checked?'Checked':(P.tries===1?'Check (last try)':'Check'); }
+
+/* ---------- drag onto a diagram (or into equation slots) ---------- */
+function dragProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.zones.length);
+  let fig;
+  if(o.equation){ fig=h('div',{class:'eq'}); box.appendChild(fig); }
+  else { fig=h('div',{class:'figwrap'}); fig.innerHTML=o.svg; box.appendChild(fig); }
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.chips.map((_,i)=>i)));
+  const zoneEls={};
+  const groupAns=g=>o.zones.filter(z=>z.group===g).map(z=>z.ans);
+  if(o.equation){ o.layout.forEach(item=>{ if(typeof item==='string'){ fig.appendChild(h('span',null,item)); } else { const z=o.zones[item]; const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans}); fig.appendChild(b); zoneEls[z.id]=b; } }); }
+  else o.zones.forEach(z=>{ const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans});
+    b.style.left=(z.x/o.vb[0]*100)+'%'; b.style.top=(z.y/o.vb[1]*100)+'%'; b.style.width=((z.w||130)/o.vb[0]*100)+'%'; fig.appendChild(b); zoneEls[z.id]=b; });
+  function placedChips(){ return new Set(Object.values(P.place)); }
+  function render(){
+    const used=placedChips();
+    pool.innerHTML='<div class="lbl">Tap a label, then tap a box (or drag it). Tap a filled box to take its label back.</div>';
+    order.forEach(ci=>{ if(used.has(ci)) return; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true'},o.chips[ci]); c.disabled=!!P.checked;
+      c.addEventListener('click',()=>{ sel=sel===ci?null:ci; render(); });
+      c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+      pool.appendChild(c); });
+    if(P.checked&&!pool.querySelector('.chip')) pool.hidden=true;
+    o.zones.forEach(z=>{ const b=zoneEls[z.id]; const ci=P.place[z.id];
+      b.className='zone'+(ci==null?' empty':' filled')+(P.checked?' locked':'');
+      if(ci==null) b.innerHTML=z.ph||'drop here';
+      else b.innerHTML=o.chips[ci];
+      b.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; ui.hb.disabled=!!P.checked&&false;
+    showTry(ui,P,o.zones.length,o.done);
+  }
+  o.zones.forEach(z=>{ const b=zoneEls[z.id];
+    const drop=ci=>{ if(P.checked) return; if(ci==null){ if(P.place[z.id]!=null){ delete P.place[z.id]; save(); render(); } return; }
+      for(const k in P.place) if(P.place[k]===ci) delete P.place[k];
+      P.place[z.id]=ci; sel=null; save(); render(); };
+    b.addEventListener('click',()=>drop(sel));
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  ui.cb.addEventListener('click',()=>{
+    if(P.checked) return;
+    const empty=o.zones.filter(z=>P.place[z.id]==null).length;
+    if(empty){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill every box before you check. ${empty} still empty.`; return; }
+    const res={}; const usedInGroup={};
+    o.zones.forEach(z=>{ const t=o.chips[P.place[z.id]];
+      if(z.group){ const ans=groupAns(z.group); usedInGroup[z.group]=usedInGroup[z.group]||[]; const ok=ans.includes(t)&&!usedInGroup[z.group].includes(t); if(ok) usedInGroup[z.group].push(t); res[z.id]=ok; }
+      else res[z.id]=t===z.ans; });
+    gradeTry(P,Object.values(res),o.zones.length); save(); cloudSave(true); render(); refresh();
+  });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.zones.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- sort into bins ---------- */
+function binProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.items.length);
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const bins=h('div',{class:'bins',style:`grid-template-columns:repeat(${o.bins.length},minmax(0,1fr))`}); box.appendChild(bins);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.items.map((_,i)=>i)));
+  const binEls={};
+  o.bins.forEach(bn=>{ const b=h('div',{class:'bin',role:'button',tabindex:'0'},`<h4>${bn.label}</h4><div class="bchips"></div>`); bins.appendChild(b); binEls[bn.k]=b;
+    const drop=ci=>{ if(P.checked||ci==null) return; P.place[ci]=bn.k; sel=null; save(); render(); };
+    b.addEventListener('click',e=>{ if(e.target.closest('.chip')) return; drop(sel); });
+    b.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); drop(sel); } });
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  const binLabel=k=>(o.bins.find(b=>b.k===k)||{}).label;
+  function chipEl(ci,inBin){ const it=o.items[ci]; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true','data-key':binLabel(it.k)},it.t);
+    
+    c.disabled=!!P.checked;
+    c.addEventListener('click',e=>{ if(P.checked) return; if(inBin){ e.stopPropagation(); if(sel!=null&&sel!==ci){ P.place[sel]=P.place[ci]; sel=null; save(); render(); return; } delete P.place[ci]; save(); render(); return; } sel=sel===ci?null:ci; render(); });
+    c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+    return c; }
+  function render(){
+    pool.innerHTML='<div class="lbl">Tap an item, then tap the box it belongs in (or drag it). Tap a sorted item to take it back.</div>';
+    order.forEach(ci=>{ if(P.place[ci]==null) pool.appendChild(chipEl(ci,false)); });
+    pool.hidden=!!P.checked;
+    o.bins.forEach(bn=>{ const holder=$('.bchips',binEls[bn.k]); holder.innerHTML=''; order.forEach(ci=>{ if(P.place[ci]===bn.k) holder.appendChild(chipEl(ci,true)); }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,o.items.length,o.done);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const left=o.items.filter((_,i)=>P.place[i]==null).length;
+    if(left){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Sort every item before you check. ${left} still left.`; return; }
+    const res=o.items.map((it,i)=>P.place[i]===it.k); gradeTry(P,res,o.items.length); save(); cloudSave(true); render(); refresh(); });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.items.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- choice problems: one, two-part, or select-all ---------- */
+function choiceProblem(parent, o){   // o.parts: [{q, opts, ans (index or array for select-all)}]
+  const P=st(o.id); P.pick=P.pick||{};
+  const max=o.parts.length;
+  const box=probShell(parent,o.part,o.num,o.q,max);
+  const groups=[];
+  o.parts.forEach((pt,pi)=>{
+    const multi=Array.isArray(pt.ans);
+    if(pt.q) box.insertAdjacentHTML('beforeend',`<div style="margin:10px 0 4px">${pt.q}${multi?' <span class="small muted">(Select all that apply.)</span>':''}</div>`);
+    const ordKey=o.id+'_'+pi; const order=S.ord[ordKey]||(S.ord[ordKey]=shuffle(pt.opts.map((_,i)=>i)));
+    const wrap=h('div',{class:'opts'}); box.appendChild(wrap);
+    const btns={};
+    order.forEach((oi,pos)=>{ const correct=multi?pt.ans.includes(oi):oi===pt.ans;
+      const b=h('button',{class:'opt'+(multi?' multi':''),type:'button'},`<span class="L">${'ABCDEF'[pos]}</span><span>${pt.opts[oi]}</span>`); if(correct) b.dataset.key='1';
+      b.addEventListener('click',()=>{ if(P.checked) return; if(multi){ const s=new Set(P.pick[pi]||[]); s.has(oi)?s.delete(oi):s.add(oi); P.pick[pi]=[...s]; } else P.pick[pi]=oi; save(); paint(); });
+      wrap.appendChild(b); btns[oi]=b; });
+    groups.push({pt,multi,btns});
+  });
+  const ui=actions(box,o);
+  function gradePart(g,pi){ const pk=P.pick[pi]; if(g.multi){ const s=new Set(pk||[]); return g.pt.ans.length===s.size&&g.pt.ans.every(a=>s.has(a)); } const ans=g.pt.ansFn?g.pt.ansFn():g.pt.ans; return pk===ans; }
+  function paint(){
+    groups.forEach((g,pi)=>{ const pk=P.pick[pi];
+      Object.entries(g.btns).forEach(([oi,b])=>{ oi=+oi; const picked=g.multi?(pk||[]).includes(oi):pk===oi; const correct=g.multi?g.pt.ans.includes(oi):oi===g.pt.ans;
+        b.className='opt'+(g.multi?' multi':'')+(picked?' sel':'')+(P.checked&&P.right&&picked?' ok':''); b.disabled=!!P.checked; }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,max,o.why);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const blank=groups.some((g,pi)=>g.multi?!(P.pick[pi]||[]).length:P.pick[pi]==null);
+    if(blank){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Answer every part before you check.'; return; }
+    gradeTry(P,groups.map((g,pi)=>gradePart(g,pi)),max); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- typed blanks (two tries, like every problem) ---------- */
+function typedProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.blanks.length);
+  const inputs=o.blanks.map((bl,i)=>{ const row=h('div',{class:'brow'}); row.innerHTML=`${bl.before} <input class="blank" type="text" aria-label="${esc(strip(bl.before))}" data-key="${esc(bl.show)}"><span class="keytxt">${bl.show}</span> ${bl.after||''}`; box.appendChild(row);
+    const inp=$('input',row); inp.value=P.val[i]||''; inp.addEventListener('input',()=>{ P.val[i]=inp.value; save(); }); return inp; });
+  const ui=actions(box,o);
+  const ok=(bl,v)=>{ v=String(v||'').trim().toLowerCase(); if(bl.calc){ const n=parseFloat(v.replace(/[\u2212\u2013\u2014]/g,'-').replace(/[^0-9.\-]/g,'')); const t=bl.calc(); return !isNaN(n)&&t!=null&&!isNaN(t)&&Math.abs(n-t)<=(bl.tol==null?0.15:bl.tol); } if(bl.num){ const n=parseFloat(v.replace(/[\u2212\u2013\u2014]/g,'-').replace(/[^0-9.\-]/g,'')); return !isNaN(n)&&n>=bl.num[0]&&n<=bl.num[1]; } return bl.accept.some(a=>v.replace(/\s+/g,' ')===a); };
+  function paint(){ inputs.forEach(inp=>{ inp.classList.remove('ok','no'); if(P.checked&&P.right) inp.classList.add('ok'); inp.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; showTry(ui,P,o.blanks.length,''); }
+  ui.cb.addEventListener('click',()=>{
+    if(inputs.some(inp=>!inp.value.trim())){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Fill in every blank before you check.'; return; }
+    if(P.checked) return;
+    const res=o.blanks.map((bl,i)=>ok(bl,inputs[i].value));
+    gradeTry(P,res,o.blanks.length); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.blanks.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- written answer, scored by key ideas (two tries, like every problem) ---------- */
+function writtenProblem(parent, o){
+  const P=st(o.id); if(P.val==null) P.val='';
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const ta=h('textarea',{class:'wtext',rows:'5','aria-label':'Your answer','data-key':o.model}); ta.value=P.val; box.appendChild(ta);
+  box.appendChild(h('div',{class:'wkey'},'<b>Key:</b> '+o.model));
+  if(o.bank){ const wb=h('div',{class:'wbank2'}); wb.innerHTML='<b>Word bank</b> <span class="small muted">(tap a word to add it)</span><br>'+o.bank.map(w=>`<button type="button" class="wchip">${w}</button>`).join('');
+    box.appendChild(wb);
+    wb.querySelectorAll('.wchip').forEach(c=>c.addEventListener('click',()=>{ if(ta.disabled) return; const w=c.textContent; const a=ta.selectionStart??ta.value.length, b=ta.selectionEnd??ta.value.length;
+      const before=ta.value.slice(0,a), after=ta.value.slice(b); const pre=(before&&!/\s$/.test(before))?' ':''; const ins=pre+w+' ';
+      ta.value=before+ins+after; ta.focus(); const p=a+ins.length; ta.setSelectionRange(p,p); ta.dispatchEvent(new Event('input',{bubbles:true})); })); }
+  ta.addEventListener('input',()=>{ P.val=ta.value; save(); });
+  const ui=actions(box,o);
+  const grade=()=>{ const t=ta.value.toLowerCase(); const hits=o.groups.filter(g=>g[1].test(t)).length; const n=Math.min(o.pts,hits); return Array.from({length:o.pts},(_,i)=>i<n); };
+  function paint(){ ta.disabled=!!P.checked; ui.cb.disabled=!!P.checked; showTry(ui,P,o.pts,o.why); }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(ta.value.trim().split(/\s+/).length<5){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Write a full answer (at least one complete sentence) before you check.'; return; }
+    gradeTry(P,grade(),o.pts); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- predictions: saved once, completion credit, never marked wrong ---------- */
+function predictProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.rows.length);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb predtab"><tr><th>${o.rowsLabel||'Tube'}</th><th>Setup</th><th>My prediction</th></tr>${o.rows.map((r,i)=>`<tr><td><b>${r.id}</b></td><td>${r.desc}</td><td><select data-i="${i}" aria-label="Prediction for ${r.id}"><option value="">choose…</option>${o.choices.map(c=>`<option>${c}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select')];
+  sels.forEach((sl,i)=>{ sl.value=P.val[i]||''; sl.addEventListener('change',()=>{ P.val[i]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Lock in my predictions';
+  function paint(){ sels.forEach(sl=>sl.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Predictions saved.</b> You\'ll compare them with your results later. Your observation table on page 3 is now unlocked.'; ui.cb.textContent='Predictions locked'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(sels.some(sl=>!sl.value)){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Choose a prediction for every tube first.'; return; }
+    if(!confirm('Lock in your predictions? You can\'t change them after this.')) return;
+    P.first=o.rows.length; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.rows.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- lab data table: groups type their own measurements; graph builds from them ---------- */
+function dataTableProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const cells=o.rows.length*o.cols.length;
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb datatab"><tr><th>${o.corner}</th>${o.cols.map(c=>`<th>${c}</th>`).join('')}</tr>${o.rows.map((r,i)=>`<tr><td><b>${r}</b></td>${o.cols.map((c,j)=>`<td><input class="dcell" inputmode="decimal" data-r="${i}" data-c="${j}" aria-label="${r}, ${c}"></td>`).join('')}</tr>`).join('')}</table>`;
+  const ins=[...wrap.querySelectorAll('input.dcell')];
+  const chart=h('div',{class:'datachart'}); box.appendChild(chart);
+  ins.forEach(inp=>{ const k=inp.dataset.r+'_'+inp.dataset.c; inp.value=P.val[k]??''; inp.addEventListener('input',()=>{ P.val[k]=inp.value; save(); draw(); }); });
+  function draw(){ chart.innerHTML=o.chart(P.val); }
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Save my data';
+  function paint(){ ins.forEach(i=>i.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Data saved.</b> Your analysis questions use these numbers.'; ui.cb.textContent='Data saved'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const bad=ins.filter(i=>i.value.trim()===''||isNaN(parseFloat(i.value)));
+    if(bad.length){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill in every box with a number first (${bad.length} still empty).`; bad[0].focus(); return; }
+    if(!confirm('Save your data? You can\'t change it after this, and your analysis will use these numbers.')) return;
+    P.first=o.pts; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  draw(); paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- observation table: each row has its own menu; completion credit when saved ---------- */
+function obsTableProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb datatab"><tr><th>Observation</th><th>What you saw</th></tr>${o.rows.map((r,i)=>`<tr><td>${r.q}</td><td><select class="ocell" data-r="${i}" aria-label="${r.q.replace(/<[^>]+>/g,'')}"><option value="">choose…</option>${r.opts.map(x=>`<option>${x}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select.ocell')];
+  sels.forEach(sl=>{ const k=sl.dataset.r; sl.value=P.val[k]||''; sl.addEventListener('change',()=>{ P.val[k]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Save my observations';
+  function paint(){ sels.forEach(s=>s.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Observations saved.</b> Your analysis questions use them.'; ui.cb.textContent='Observations saved'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const bad=sels.filter(s=>!s.value); if(bad.length){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Choose an answer in every row first (${bad.length} still empty).`; return; }
+    if(!confirm('Save your observations? You can\'t change them after this, and your analysis will use them.')) return;
+    P.first=o.pts; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ============================== WORKSHEET CONTENT ============================== */
+const SIM=false;
+/* ===== shared helpers for the Unit 2 lab simulations (osmosis, leaf discs, dialysis) ===== */
+const f1=v=>(+v).toFixed(1), f2=v=>(+v).toFixed(2);
+let UIDN=0; const uid=p=>p+'_'+(++UIDN);
+const tx=(x,y,t,fs,col,anchor,bold)=>`<text x="${x}" y="${y}" text-anchor="${anchor||'middle'}" font-size="${fs||14}" fill="${col||'#e8eef8'}"${bold?' font-weight="700"':''}>${t}</text>`;
+function rng(seed){ let s=seed%233280; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
+function hashStr(s){ let x=2166136261; for(const ch of String(s)){ x^=ch.charCodeAt(0); x=Math.imul(x,16777619); } return x>>>0; }
+function mulberry(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const easeOut=t=>1-Math.pow(1-clamp(t,0,1),2.4);
+const fmtClock=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
+function arw(x1,y1,x2,y2,col,w){ w=w||2.4; const a=Math.atan2(y2-y1,x2-x1), L=w*3+6, bx=x2-Math.cos(a)*L, by=y2-Math.sin(a)*L;
+  return `<line x1="${f1(x1)}" y1="${f1(y1)}" x2="${f1(bx)}" y2="${f1(by)}" stroke="${col}" stroke-width="${w}"/><path d="M${f1(x2)},${f1(y2)} L${f1(bx+Math.sin(a)*L*0.55)},${f1(by-Math.cos(a)*L*0.55)} L${f1(bx-Math.sin(a)*L*0.55)},${f1(by+Math.cos(a)*L*0.55)}Z" fill="${col}"/>`; }
+const mkr=(x,y,n,r)=>{ r=r||14; return `<circle cx="${f1(x)}" cy="${f1(y)}" r="${r}" fill="#ffd35c" stroke="#16213a" stroke-width="2"/>`+tx(f1(x),f1(y+r*0.4),n,r*1.15,'#16213a',null,true); };
+
+/* ---------- equipment ---------- */
+function beakerG(x,yb,o){ const w=o.w||64, hh=o.h||82, L=x-w/2, R=x+w/2, T=yb-hh, lv=yb-hh*(o.lvl==null?.6:o.lvl), cid=uid('bk'), gid=uid('bg');
+  const inner=`M${L+2},${T+4} L${L+2},${yb-7} Q${L+2},${yb-2} ${L+7},${yb-2} L${R-7},${yb-2} Q${R-2},${yb-2} ${R-2},${yb-7} L${R-2},${T+4} Z`;
+  let g=`<defs><clipPath id="${cid}"><path d="${inner}"/></clipPath><linearGradient id="${gid}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffffff" stop-opacity=".5"/><stop offset=".25" stop-color="#ffffff" stop-opacity="0"/><stop offset=".8" stop-color="#ffffff" stop-opacity="0"/><stop offset="1" stop-color="#94a3b8" stop-opacity=".25"/></linearGradient></defs>`;
+  g+=`<ellipse cx="${x}" cy="${yb+2}" rx="${w/2+4}" ry="4" fill="#000" opacity=".12"/>`;
+  g+=`<g clip-path="url(#${cid})"><rect x="${L}" y="${f1(lv)}" width="${w}" height="${f1(yb-lv)}" fill="${o.liq||'#cfe8fb'}" opacity="${o.op||.75}"/><path d="M${L},${f1(lv)} L${R},${f1(lv)}" stroke="${o.edge||'#93c5fd'}" stroke-width="1.5" opacity=".9"/>${o.inner?o.inner(L,R,lv,yb):''}</g>`;
+  g+=`<path d="M${L-3},${T} Q${L},${T+1} ${L},${T+6} L${L},${yb-6} Q${L},${yb} ${L+6},${yb} L${R-6},${yb} Q${R},${yb} ${R},${yb-6} L${R},${T+2}" fill="url(#${gid})" stroke="#64748b" stroke-width="1.8" stroke-linejoin="round"/>`;
+  if(o.grad!==false) for(let i=1;i<=3;i++){ const yy=yb-hh*0.22*i; g+=`<line x1="${R-12}" y1="${f1(yy)}" x2="${R-4}" y2="${f1(yy)}" stroke="#64748b" stroke-width="1"/>`; }
+  return g; }
+function balanceG(x,yb,reading,o){ o=o||{}; const w=o.w||150; return `<rect x="${x-w/2}" y="${yb-46}" width="${w}" height="46" rx="8" fill="#e5e7eb" stroke="#475569" stroke-width="1.6"/><rect x="${x-w*0.4}" y="${yb-58}" width="${w*0.8}" height="10" rx="4" fill="#cbd5e1" stroke="#475569"/>
+  <rect x="${x-46}" y="${yb-36}" width="92" height="26" rx="4" fill="#0f172a"/><text x="${x+40}" y="${yb-17}" font-family="Consolas,monospace" font-size="17" fill="#86efac" text-anchor="end">${reading}</text><circle cx="${x+w/2-14}" cy="${yb-23}" r="5" fill="#64748b"/>`; }
+function rulerH(x,y,len,mm,o){ o=o||{}; const hgt=o.h||30; let g=`<rect x="${x-6}" y="${y}" width="${len*mm+12}" height="${hgt}" rx="3" fill="#fde68a" stroke="#b45309" stroke-width="1.2"/>`;
+  for(let i=0;i<=len;i++){ const xx=x+i*mm, L=i%10===0?hgt*0.55:i%5===0?hgt*0.4:hgt*0.25;
+    g+=`<line x1="${f1(xx)}" y1="${y}" x2="${f1(xx)}" y2="${f1(y+L)}" stroke="#422006" stroke-width="${i%10===0?1.4:.8}"/>`;
+    if(i%10===0) g+=`<text x="${f1(xx)}" y="${f1(y+hgt-4)}" text-anchor="middle" font-size="${o.fs||11}" fill="#422006">${i}</text>`; }
+  return g+`<text x="${f1(x+len*mm+12)}" y="${f1(y+hgt/2+5)}" text-anchor="start" font-size="${o.fs||11}" fill="#422006" font-weight="700">mm</text>`; }
+function clockG(x,y,r,frac,label){ const a=frac*2*Math.PI*24, b=frac*2*Math.PI*2; return `<circle cx="${x}" cy="${y}" r="${r}" fill="#f8fafc" stroke="#334155" stroke-width="2.5"/>${[...Array(12)].map((_,i)=>{ const t=i/12*2*Math.PI; return `<line x1="${f1(x+Math.sin(t)*r*.8)}" y1="${f1(y-Math.cos(t)*r*.8)}" x2="${f1(x+Math.sin(t)*r*.92)}" y2="${f1(y-Math.cos(t)*r*.92)}" stroke="#334155" stroke-width="1.5"/>`; }).join('')}
+  <line x1="${x}" y1="${y}" x2="${f1(x+Math.sin(a)*r*.75)}" y2="${f1(y-Math.cos(a)*r*.75)}" stroke="#0f172a" stroke-width="2"/><line x1="${x}" y1="${y}" x2="${f1(x+Math.sin(b)*r*.5)}" y2="${f1(y-Math.cos(b)*r*.5)}" stroke="#0f172a" stroke-width="3"/><circle cx="${x}" cy="${y}" r="3" fill="#0f172a"/>${label?tx(x,y+r+16,label,12.5,'#334155',null,true):''}`; }
+
+/* ---------- reading the student's tables ---------- */
+const cellv=(v,r,c)=>{ const x=parseFloat((v||{})[r+'_'+c]); return isNaN(x)?null:x; };
+
+/* ---------- charts drawn only from numbers the student typed ---------- */
+const CCOL=['#93c5fd','#5fe3a9','#fb923c','#f87171','#c4b5fd'];
+const niceStep=span=>span<=2?0.5:span<=5?1:span<=12?2:span<=30?5:span<=60?10:span<=150?20:span<=300?50:100;
+function barChart(groups,o){ o=o||{}; const W=680,H=340,X0=78,X1=660,Y0=272,Y1=56; const vals=groups.flatMap(g=>g.vals.filter(v=>v!=null));
+  let mx=Math.max(o.min0===false?0:1,...vals,0), mn=Math.min(0,...vals); const step=niceStep(mx-mn); mx=Math.ceil(mx/step)*step||step; mn=Math.floor(mn/step)*step;
+  const y=v=>Y0-(Y0-Y1)*(v-mn)/(mx-mn), gw=(X1-X0)/groups.length, nb=groups[0].vals.length, bw=gw*0.7/nb;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${o.aria||'Bar graph from your data table.'}"><rect width="${W}" height="${H}" rx="12" fill="#0f1b2e"/>`+tx(W/2,28,o.title||'',14.5,'#ffd35c',null,true);
+  for(let k=mn;k<=mx+1e-9;k+=step) s+=`<line x1="${X0}" y1="${f1(y(k))}" x2="${X1}" y2="${f1(y(k))}" stroke="${Math.abs(k)<1e-9?'#a3b4cf':'#2a3d5f'}" stroke-width="${Math.abs(k)<1e-9?1.6:1}"/>`+tx(X0-8,f1(y(k)+4),+k.toFixed(2),12,'#a3b4cf','end');
+  s+=`<text x="22" y="${(Y0+Y1)/2}" font-size="13" fill="#a3b4cf" transform="rotate(-90 22 ${(Y0+Y1)/2})" text-anchor="middle">${o.ylab||''}</text>`;
+  groups.forEach((g,gi)=>{ const cx=X0+gw*gi+gw/2; s+=tx(f1(cx),Y0+22,g.label,13,'#e8eef8');
+    g.vals.forEach((v,j)=>{ if(v==null) return; const x=cx-nb*bw/2+j*bw, top=y(Math.max(v,0)), bot=y(Math.min(v,0)), col=(o.cols||CCOL)[nb>1?j:gi%5];
+      s+=`<rect class="abar" x="${f1(x+2)}" y="${f1(top)}" width="${f1(bw-4)}" height="${f1(Math.max(1,bot-top))}" rx="3" fill="${col}" opacity=".8"/>`+tx(f1(x+bw/2),f1(v>=0?top-6:bot+15),+v.toFixed(o.dec==null?1:o.dec),11.5,'#e8eef8',null,true); }); });
+  if(o.legend) s+=o.legend.map((l,j)=>`<rect x="${X0+60+j*170}" y="${H-24}" width="14" height="14" rx="3" fill="${(o.cols||CCOL)[j]}"/>`+tx(X0+80+j*170,H-12,l,12.5,'#a3b4cf','start')).join('');
+  return s+'</svg>'; }
+function lineChart(series,o){ const W=680,H=340,X0=70,X1=650,Y0=270,Y1=50; const xm=o.xmax, ym=o.ymax, X=v=>X0+(X1-X0)*v/xm, Y=v=>Y0-(Y0-Y1)*v/ym;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${o.aria||'Line graph from your data table.'}"><rect width="${W}" height="${H}" rx="12" fill="#0f1b2e"/>`+tx(W/2,28,o.title||'',14.5,'#ffd35c',null,true);
+  for(let k=0;k<=ym;k+=o.ystep) s+=`<line x1="${X0}" y1="${f1(Y(k))}" x2="${X1}" y2="${f1(Y(k))}" stroke="#2a3d5f"/>`+tx(X0-8,f1(Y(k)+4),k,12,'#a3b4cf','end');
+  for(let k=0;k<=xm;k+=o.xstep) s+=tx(f1(X(k)),Y0+20,k,12,'#a3b4cf');
+  if(o.hline!=null) s+=`<line x1="${X0}" y1="${f1(Y(o.hline))}" x2="${X1}" y2="${f1(Y(o.hline))}" stroke="#ffd35c" stroke-dasharray="6 4" stroke-width="1.5"/>`+tx(X1,f1(Y(o.hline)-6),o.hlab||'',12,'#ffd35c','end');
+  s+=tx((X0+X1)/2,H-14,o.xlab,13,'#a3b4cf')+`<text x="20" y="${(Y0+Y1)/2}" font-size="13" fill="#a3b4cf" transform="rotate(-90 20 ${(Y0+Y1)/2})" text-anchor="middle">${o.ylab}</text>`;
+  series.forEach((S,i)=>{ const pts=S.pts.filter(p=>p[1]!=null); if(pts.length>1) s+=`<polyline points="${pts.map(p=>f1(X(p[0]))+','+f1(Y(p[1]))).join(' ')}" fill="none" stroke="${S.col}" stroke-width="2.5"/>`;
+    pts.forEach(p=>s+=`<circle class="tdot" cx="${f1(X(p[0]))}" cy="${f1(Y(p[1]))}" r="5" fill="${S.col}" stroke="#0f1b2e" stroke-width="1.5"/>`);
+    s+=`<rect x="${X0+20+i*200}" y="${Y1-26}" width="14" height="4" fill="${S.col}"/>`+tx(X0+40+i*200,Y1-20,S.name,12.5,'#e8eef8','start'); });
+  return s+`<line x1="${X0}" y1="${Y0}" x2="${X1}" y2="${Y0}" stroke="#a3b4cf" stroke-width="1.5"/></svg>`; }
+
+/* ---------- answer keys that follow the student's own data ---------- */
+const LIVE=[];
+function liveChoice(parent,o){ choiceProblem(parent,o); LIVE.push({box:parent.lastElementChild, parts:o.parts}); }
+function liveKeys(){ LIVE.forEach(({box,parts})=>{ const wraps=box.querySelectorAll('.opts');
+  parts.forEach((pt,pi)=>{ if(!pt.ansFn) return; const want=pt.opts[pt.ansFn()]; wraps[pi].querySelectorAll('.opt').forEach(b=>{ const t=b.children[1]?b.children[1].innerHTML:''; if(t===want) b.dataset.key='1'; else delete b.dataset.key; }); }); }); }
+window.__TY={};
+function calcProblem(parent,o){ typedProblem(parent,o); parent.lastElementChild.dataset.pid=o.id; window.__TY[o.id]=()=>o.blanks.map(b=>b.calc()); }
+function teacherNote(html){ const tp=document.getElementById('teachPanel'); if(!tp||!window.MutationObserver||tp.dataset.ln) return; tp.dataset.ln='1';
+  new MutationObserver(()=>{ if(tp.firstElementChild&&!tp.querySelector('.labnote')){ const d=document.createElement('div'); d.className='labnote'; d.innerHTML=html; tp.appendChild(d); } }).observe(tp,{childList:true}); }
+const simSeed=V=>{ if(V.seed==null){ const stu=S.student||{}; V.seed=hashStr((stu.id||'')+'|'+(stu.last||'').toLowerCase()+'|'+WS_ID); } return V.seed; };
+
+/* ---------- generic virtual bench: steps, animation, measuring views, look again ----------
+   cfg: steps [{name, btn, text(ran), dur, total(sec shown on clock)}], scene(i,prog)->svg, onRun(i) (makes the numbers), measures(i)->[{label, html}] */
+function makeBench(s,cfg){
+  const V=st('vsim'); if(V.k==null){ V.k=0; V.ran=false; }
+  const bench=h('div',{class:'vbench'}); s.appendChild(bench);
+  bench.innerHTML=`<h3 style="margin:0 0 6px">Virtual lab bench</h3><div class="isstat"><span id="vbStep"></span><span class="isclock" id="vbClock">0:00</span></div>
+    <div class="vbpic" id="vbPic"></div><p id="vbTxt" style="margin:8px 0"></p>
+    <div class="btnrow"><button class="btn primary" id="vbRun" type="button"></button><button class="btn primary" id="vbNext" type="button"></button><button class="btn ghost" id="vbBack" type="button">Back to the current step</button><label class="small muted" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="vbFast"> Fast animation</label></div>
+    <div id="vbMeas"></div><div id="vbLook"></div>`;
+  const bq=q=>bench.querySelector(q); let anim=false, timer=null, view=null, sel=null; const N=cfg.steps.length;
+  const cur=()=>V.k, vIdx=()=>view!=null?view:Math.min(cur(),N-1), hasRun=i=>i<cur()||(i===cur()&&V.ran);
+  function paint(prog){ const i=vIdx(), g=cfg.steps[i], live=view==null||view===cur();
+    bq('#vbPic').innerHTML=cfg.scene(i,prog!=null?prog:(hasRun(i)?1:0));
+    bq('#vbStep').textContent=cur()>=N&&view==null?'Procedure complete':`Step ${i+1} of ${N}${live?'':' (looking again)'}`;
+    bq('#vbTxt').innerHTML=cur()>=N&&view==null?'Procedure complete. Fill in the tables below. Use <b>Look again</b> to see any step and measure again.':live?g.text(hasRun(i)):`You are looking again at <b>${g.name}</b>.`;
+    if(!anim) bq('#vbClock').textContent=hasRun(i)?(g.clock||fmtClock(g.total||0)):'0:00';
+    const k=cur(), pre=!st('pred').checked, atCur=view==null&&k<N, runB=bq('#vbRun'), nxB=bq('#vbNext');
+    runB.hidden=!(atCur&&!V.ran); runB.disabled=anim||pre; runB.textContent=atCur?cfg.steps[k].btn:'';
+    nxB.hidden=!(atCur&&V.ran); nxB.disabled=anim; nxB.textContent=k+1>=N?'Finish the procedure':'Next: '+cfg.steps[k+1].name;
+    bq('#vbBack').hidden=view==null;
+    const ms=(!anim&&hasRun(i)&&cfg.measures)?cfg.measures(i):[];
+    bq('#vbMeas').innerHTML=ms.length?`<div class="small" style="font-weight:600;margin:12px 0 6px">${cfg.measLabel||'Measure:'}</div><div class="btnrow" style="margin-top:0">${ms.map((m,j)=>`<button class="btn ghost small vbm${sel===j?' on':''}" data-j="${j}" type="button">${m.label}</button>`).join('')}</div>${sel!=null&&ms[sel]?`<div class="vbzoom">${ms[sel].html}</div>`:''}`:'';
+    const done=cfg.steps.map((_,j)=>j).filter(j=>hasRun(j)&&cfg.measures&&cfg.measures(j).length);
+    bq('#vbLook').innerHTML=!anim&&done.length?`<div class="small" style="font-weight:600;margin:14px 0 6px">Look again:</div><div class="btnrow" style="margin-top:0">${done.map(j=>`<button class="btn ghost small vbl${vIdx()===j?' on':''}" data-i="${j}" type="button">${cfg.steps[j].name}</button>`).join('')}</div>`:'';
+    bench.querySelectorAll('.vbm').forEach(b=>b.addEventListener('click',()=>{ sel=+b.dataset.j; paint(); }));
+    bench.querySelectorAll('.vbl').forEach(b=>b.addEventListener('click',()=>{ const ii=+b.dataset.i; view=(ii===cur()&&cur()<N)?null:ii; sel=null; paint(); })); }
+  bq('#vbRun').addEventListener('click',()=>{ if(anim||!st('pred').checked||cur()>=N||V.ran) return; view=null; sel=null; const i=cur(), g=cfg.steps[i]; simSeed(V); cfg.onRun(i); V.ran=true; save(); cloudSave(true);
+    const fast=bq('#vbFast').checked, dur=fast?Math.min(800,g.dur||1500):(g.dur||1500); anim=true; const t0=performance.now(); clearInterval(timer);
+    timer=setInterval(()=>{ const p=Math.min(1,(performance.now()-t0)/dur); bq('#vbPic').innerHTML=cfg.scene(i,Math.max(p,0.0001)); if(g.total) bq('#vbClock').textContent=g.clockFn?g.clockFn(p):fmtClock(g.total*p);
+      if(p>=1){ clearInterval(timer); anim=false; paint(); if(window.dataRefresh) dataRefresh(); } },45); paint(0.0001); });
+  bq('#vbNext').addEventListener('click',()=>{ if(anim||!V.ran) return; V.k++; V.ran=false; sel=null; view=null; if(V.k>=N) V.done=true; save(); cloudSave(true); paint(); if(window.dataRefresh) dataRefresh(); });
+  bq('#vbBack').addEventListener('click',()=>{ view=null; sel=null; paint(); });
+  paint(); return {bench,V,repaint:()=>{ if(!anim) paint(); }};
+}
+const BENCH_CSS=`
+.vbench{background:rgba(255,255,255,.04); border:1px solid #2a3d5f; border-radius:14px; padding:12px; margin-bottom:12px}
+.vbench.off{opacity:.45; pointer-events:none}
+.isstat{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; font-weight:600; margin-bottom:6px}
+.isclock{font-variant-numeric:tabular-nums; font-size:22px; color:var(--r); background:var(--bg); border:1px solid var(--line2); border-radius:8px; padding:2px 12px}
+.vbpic svg{width:100%; height:auto; display:block; border-radius:12px}
+.vbm.on,.vbl.on{background:var(--r); color:#231a00; border-color:var(--r)}
+.vbzoom{margin-top:10px} .vbzoom svg{width:100%; max-width:640px; height:auto; display:block; border-radius:12px; border:1px solid var(--line)}
+.datatab input.dcell{background:var(--bg); color:var(--text); border:1.5px solid var(--line2)}
+.datatab input.dcell:disabled,.datatab select.ocell:disabled{opacity:1; color:var(--text); border-color:var(--line); background:var(--panel2)}
+.datatab select.ocell,.predtab select{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); max-width:100%}
+.datachart svg,.anachart svg{width:100%; height:auto; display:block; margin-top:10px}
+.proc ul{margin:6px 0 4px; padding-left:20px}
+.ordwrap .eq{display:grid; grid-template-columns:auto minmax(0,1fr); gap:8px 12px; font-size:16px; align-items:center}
+.ordwrap .eq .zone{width:100%; min-height:42px; font-size:15px; justify-content:flex-start; text-align:left; padding:4px 10px}
+.ordwrap .chip{font-size:14px; text-align:left; border-radius:12px}
+@media (max-width:620px){ .ordwrap .eq{grid-template-columns:1fr} .ordwrap .eq .zone{font-size:13px} .predtab td,.predtab th{padding:5px} }
+`;
+if(!window.__anaClick){ window.__anaClick=true; document.addEventListener('click',e=>{ if(e.target.closest&&e.target.closest('#part3 .btn.primary')) setTimeout(()=>{ if(window.anaRefresh) anaRefresh(); },0); }); }
+
+/* ===================== shared drawings: cells in each phase of the cell cycle ===================== */
+// phases: 'inter','pro','meta','ana','telo','cyto'. Animal cell = round; plant (o.plant) = brick with a wall.
+// o.stain = microscope look (onion root tip: pale pink cells, dark purple chromosomes). 2n = 4 in the drawings.
+const MCOL={m:'#e11d48',p:'#2563eb'}; // chromosome colors in diagrams: from mom (red) and dad (blue)
+const STAIN={cell:'#f3e3ea',edge:'#b98aa3',chrom:'#4c1d5e',nuc:'#e4c6d6',wall:'#c9a3b8'};
+const r1=v=>Math.round(v*10)/10;
+function chromatid(x,y,len,w,ang,col){ return `<rect x="${r1(x-w/2)}" y="${r1(y-len/2)}" width="${r1(w)}" height="${r1(len)}" rx="${r1(w/2)}" fill="${col}" transform="rotate(${r1(ang)} ${r1(x)} ${r1(y)})"/>`; }
+function xchrom(x,y,len,w,ang,col,cen){ const a=ang||0; return `<g>${chromatid(x,y,len,w,a-11,col)}${chromatid(x,y,len,w,a+11,col)}<circle cx="${r1(x)}" cy="${r1(y)}" r="${r1(w*0.55)}" fill="${cen||'#0f172a'}" opacity=".55"/></g>`; }
+function vchrom(x,y,len,w,dir,col){ // one chromatid pulled toward a pole: a V with its point (centromere) toward the pole. dir=-1: pole is above; +1: below
+  const e=y-dir*len*0.5; return `<path d="M${r1(x-len*0.22)},${r1(e)} L${r1(x)},${r1(y)} L${r1(x+len*0.22)},${r1(e)}" stroke="${col}" stroke-width="${r1(w)}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`; }
+function chromatin(cx,cy,r,col,seed){ let s='', a=seed||1; const R=()=>{ a=(a*9301+49297)%233280; return a/233280; };
+  for(let i=0;i<6;i++){ const ang=R()*6.28, rr=R()*r*0.6; let x=cx+Math.cos(ang)*rr, y=cy+Math.sin(ang)*rr, d=`M${r1(x)},${r1(y)}`;
+    for(let k=0;k<4;k++){ const dx=(R()-.5)*r*.5, dy=(R()-.5)*r*.5; d+=` q${r1(dx*0.5+(R()-.5)*r*.3)},${r1(dy*0.5+(R()-.5)*r*.3)} ${r1(dx)},${r1(dy)}`; }
+    s+=`<path d="${d}" stroke="${col}" stroke-width="1.2" fill="none" opacity=".6"/>`; }
+  return s; }
+function spindle(cx,cy,R,targets,col){ const pL=[cx,cy-R*0.82], pR=[cx,cy+R*0.82]; let s='';
+  targets.forEach(([x,y,side])=>{ const p=side<0?pL:side>0?pR:null; if(p) s+=`<line x1="${r1(p[0])}" y1="${r1(p[1])}" x2="${r1(x)}" y2="${r1(y)}" stroke="${col}" stroke-width="1" opacity=".55"/>`; else { s+=`<line x1="${r1(pL[0])}" y1="${r1(pL[1])}" x2="${r1(x)}" y2="${r1(y)}" stroke="${col}" stroke-width="1" opacity=".55"/><line x1="${r1(pR[0])}" y1="${r1(pR[1])}" x2="${r1(x)}" y2="${r1(y)}" stroke="${col}" stroke-width="1" opacity=".55"/>`; } });
+  return s; }
+function aster(x,y,col,plant){ if(plant) return ''; let s=`<circle cx="${r1(x)}" cy="${r1(y)}" r="3.2" fill="${col}"/>`; for(let i=0;i<10;i++){ const a=i/10*2*Math.PI; s+=`<line x1="${r1(x)}" y1="${r1(y)}" x2="${r1(x+Math.cos(a)*9)}" y2="${r1(y+Math.sin(a)*9)}" stroke="${col}" stroke-width=".9" opacity=".7"/>`; } return s; }
+/* the four chromosomes (2 pairs). k: 0..3 -> [color, length factor] */
+const CH=[['m',1],['p',1],['m',.62],['p',.62]];
+function mitCell(cx,cy,R,ph,o){ o=o||{}; const st=o.stain, pl=o.plant, L=R*0.42, W=Math.max(3,R*0.075);
+  const col=k=>st?STAIN.chrom:MCOL[CH[k][0]], len=k=>L*CH[k][1], fib=st?'#9d7a8f':'#94a3b8', cent=st?'#7a5a6c':'#f59e0b';
+  const fill=st?STAIN.cell:(pl?'#ecfccb':'#fde7f3'), edge=st?STAIN.edge:(pl?'#4d7c0f':'#be185d');
+  // body (anaphase/telophase cells stretch along the vertical axis; poles are top and bottom)
+  const sy=ph==='ana'?1.12:ph==='telo'?1.22:1; let s='';
+  const body=(x,y,rx,ry,pinch)=>{ if(pl) return `<rect x="${r1(x-rx)}" y="${r1(y-ry)}" width="${r1(rx*2)}" height="${r1(ry*2)}" rx="4" fill="${fill}" stroke="${st?STAIN.wall:edge}" stroke-width="${st?2:3}"/>`;
+    if(!pinch) return `<ellipse cx="${r1(x)}" cy="${r1(y)}" rx="${r1(rx)}" ry="${r1(ry)}" fill="${fill}" stroke="${edge}" stroke-width="2.2"/>`;
+    const k=pinch; return `<path d="M${r1(x)},${r1(y-ry)} C${r1(x+rx*1.15)},${r1(y-ry)} ${r1(x+rx*(1-k*0.9))},${r1(y-ry*0.1)} ${r1(x+rx*(1-k))},${r1(y)} C${r1(x+rx*(1-k*0.9))},${r1(y+ry*0.1)} ${r1(x+rx*1.15)},${r1(y+ry)} ${r1(x)},${r1(y+ry)} C${r1(x-rx*1.15)},${r1(y+ry)} ${r1(x-rx*(1-k*0.9))},${r1(y+ry*0.1)} ${r1(x-rx*(1-k))},${r1(y)} C${r1(x-rx*(1-k*0.9))},${r1(y-ry*0.1)} ${r1(x-rx*1.15)},${r1(y-ry)} ${r1(x)},${r1(y-ry)} Z" fill="${fill}" stroke="${edge}" stroke-width="2.2"/>`; };
+  const nucleus=(x,y,r,dashed,seed)=>`<circle cx="${r1(x)}" cy="${r1(y)}" r="${r1(r)}" fill="${st?STAIN.nuc:'#ede9fe'}" stroke="${st?STAIN.edge:'#6d28d9'}" stroke-width="1.6"${dashed?' stroke-dasharray="5 4"':''}/>${dashed?'':`<circle cx="${r1(x+r*0.25)}" cy="${r1(y-r*0.2)}" r="${r1(r*0.22)}" fill="${st?STAIN.chrom:'#7c3aed'}" opacity="${st?.5:.8}"/>`}${chromatin(x,y,r*0.8,st?STAIN.chrom:'#7c3aed',seed||3)}`;
+  if(ph==='cyto'){ const off=R*0.62; [[cx,cy-off],[cx,cy+off]].forEach(([x,y],i)=>{ s+=body(x,y,R*0.78,R*0.58); s+=nucleus(x,y,R*0.3,false,7+i); }); return s; }
+  s+=body(cx,cy,R,R*sy,ph==='telo'?0.55:0);
+  if(ph==='inter'){ s+=nucleus(cx,cy,R*0.45,false,5); if(!pl) s+=aster(cx+R*0.5,cy-R*0.5,cent); return s; }
+  if(ph==='pro'){ s+=`<circle cx="${cx}" cy="${cy}" r="${r1(R*0.5)}" fill="none" stroke="${st?STAIN.edge:'#6d28d9'}" stroke-width="1.4" stroke-dasharray="6 6" opacity=".7"/>`;
+    const P=[[-.22,-.18,30],[.2,-.15,-40],[-.15,.2,70],[.2,.18,-10]]; P.forEach(([dx,dy,a],k)=>s+=xchrom(cx+dx*R,cy+dy*R,len(k),W,a,col(k)));
+    s+=aster(cx-R*0.18,cy-R*0.78,cent,pl)+aster(cx+R*0.18,cy+R*0.78,cent,pl); return s; }
+  if(ph==='meta'){ const xs=[-.33,-.11,.11,.33], T=xs.map(dx=>[cx+dx*R,cy,0]);
+    s+=spindle(cx,cy,R,T,fib); xs.forEach((dx,k)=>s+=xchrom(cx+dx*R,cy,len(k)*0.85,W,0,col(k)));
+    s+=aster(cx,cy-R*0.82,cent,pl)+aster(cx,cy+R*0.82,cent,pl); return s; }
+  if(ph==='ana'){ const T=[], xs=[-.27,-.09,.09,.27], d=R*0.45*sy; xs.forEach(dx=>{ T.push([cx+dx*R,cy-d,-1]); T.push([cx+dx*R,cy+d,1]); });
+    s+=spindle(cx,cy,R*sy,T,fib); xs.forEach((dx,k)=>{ s+=vchrom(cx+dx*R,cy-d,len(k)*0.8,W,-1,col(k))+vchrom(cx+dx*R,cy+d,len(k)*0.8,W,1,col(k)); });
+    s+=aster(cx,cy-R*0.82*sy,cent,pl)+aster(cx,cy+R*0.82*sy,cent,pl); return s; }
+  if(ph==='telo'){ const off=R*0.62*sy; [[cx,cy-off],[cx,cy+off]].forEach(([x,y],i)=>{ s+=`<circle cx="${r1(x)}" cy="${r1(y)}" r="${r1(R*0.3)}" fill="${st?STAIN.nuc:'#ede9fe'}" stroke="${st?STAIN.edge:'#6d28d9'}" stroke-width="1.4" stroke-dasharray="${i?'3 2':'3 2'}"/>`;
+      [-.12,-.04,.04,.12].forEach((dx,k)=>s+=chromatid(x+dx*R,y,len(k)*0.6,W*0.8,0,col(k))); });
+    if(pl) s+=`<line x1="${r1(cx-R*0.8)}" y1="${cy}" x2="${r1(cx+R*0.8)}" y2="${cy}" stroke="${st?STAIN.wall:'#65a30d'}" stroke-width="3" stroke-dasharray="6 3"/>`;
+    return s; }
+  return s; }
+const PHASES=[{k:'inter',n:'Interphase'},{k:'pro',n:'Prophase'},{k:'meta',n:'Metaphase'},{k:'ana',n:'Anaphase'},{k:'telo',n:'Telophase'},{k:'cyto',n:'Cytokinesis'}];
+/* an onion root tip field of view: rows of brick cells, each in a phase. cells: array of phase keys (row-major), returns svg inner */
+function rootField(x0,y0,cols,rows,cw,chh,phs,o){ o=o||{}; let s=''; let i=0;
+  for(let r=0;r<rows;r++) for(let c=0;c<cols;c++){ const ph=phs[i++]||'inter', x=x0+c*cw, y=y0+r*chh; const cx=x+cw/2, cy=y+chh/2;
+    s+=`<g class="rc" data-i="${i-1}">${mitCell(cx,cy,Math.min(cw,chh)*0.48,ph,{plant:true,stain:true})}${o.mark&&o.mark[i-1]?`<rect x="${r1(x+2)}" y="${r1(y+2)}" width="${r1(cw-4)}" height="${r1(chh-4)}" fill="none" stroke="${o.mark[i-1]}" stroke-width="3" rx="4"/>`:''}</g>`; }
+  return s; }
+
+/* ===== Onion Root Tip Lab (hands-on + simulation share this file; SIM is set by build.py) ===== */
+const PH5=[{k:'inter',n:'Interphase'},{k:'pro',n:'Prophase'},{k:'meta',n:'Metaphase'},{k:'ana',n:'Anaphase'},{k:'telo',n:'Telophase'}];
+const FIELDS=['Field 1','Field 2','Field 3'], FC=6, FR=5, CYCLE_H=24;
+function makeFields(seed){ const r=mulberry(hashStr(seed+'|onion')); const ri=(a,b)=>a+Math.floor(r()*(b-a+1));
+  return FIELDS.map(()=>{ const n={pro:ri(2,5),meta:ri(1,2),ana:ri(0,2),telo:ri(1,2)}; const L=[]; Object.entries(n).forEach(([k,c])=>{ for(let i=0;i<c;i++) L.push(k); });
+    while(L.length<FC*FR) L.push('inter'); for(let i=L.length-1;i>0;i--){ const j=Math.floor(r()*(i+1)); [L[i],L[j]]=[L[j],L[i]]; } return L; }); }
+const tally=F=>F.map(L=>PH5.map(p=>L.filter(x=>x===p.k).length));
+function fieldSVG(L,label){ let s=`<svg viewBox="0 0 640 420" role="img" aria-label="${label}: microscope view at 400x of 30 stained onion root tip cells. Count the cells in each phase."><rect width="640" height="420" rx="14" fill="#efe2e8"/>`;
+  L.forEach((ph,i)=>{ const c=i%FC, r=Math.floor(i/FC); s+=mitCell(70+c*100,50+r*80,33,ph,{plant:true,stain:true}); }); return s+`<rect width="640" height="420" rx="14" fill="none" stroke="#3b2a33" stroke-width="10" opacity=".55"/></svg>`; }
+const ATLAS=(()=>{ let s=`<svg viewBox="0 0 640 170" role="img" aria-label="Reference: one stained onion cell in each phase."><rect width="640" height="170" rx="12" fill="#efe2e8"/>`;
+  PH5.forEach((p,i)=>{ const x=66+i*127; s+=mitCell(x,70,50,p.k,{plant:true,stain:true})+tx(x,150,p.n,14,'#3b2a33',null,true); }); return s+'</svg>'; })();
+const ATLAS_NOTE='<p class="small" style="margin:6px 0 0"><b>Interphase:</b> one round nucleus, no thick chromosomes. <b>Prophase:</b> thick, tangled chromosomes in the nucleus area. <b>Metaphase:</b> a line across the middle. <b>Anaphase:</b> two groups moving apart. <b>Telophase:</b> two groups at the ends, often with a new wall (cell plate) forming between them. Count a cell with a cell plate as telophase.</p>';
+const OBS_ROWS=[
+ {q:'In which phase were the chromosomes <b>hardest</b> to see as separate pieces?',opts:['Interphase','Metaphase','Anaphase','Telophase']},
+ {q:'Which phase of mitosis did you find <b>most</b> often?',opts:['Prophase','Metaphase','Anaphase','Telophase']},
+ {q:'What shape were the onion root tip cells?',opts:['Brick-shaped, in rows','Round and loose','Long and thin like threads','Star-shaped']},
+ {q:'Did you see a cell plate forming between two new nuclei?',opts:['Yes','No','Not sure']}];
+const TEACH_HTML=`<h3 style="margin-top:16px">About this ${SIM?'simulation':'lab'}</h3><p class="small">${SIM?'Each student gets different microscope fields (a seed from the student ID and name), so reloading keeps the same cells. Each field has 30 cells: 2 to 5 in prophase, 1 to 2 in metaphase, 0 to 2 in anaphase, 1 to 2 in telophase, and the rest in interphase, so about 75 to 85% of cells are in interphase. The data table warns a student if a count does not match the picture.':'Use prepared onion root tip slides (longitudinal sections) at 400x. Students count 3 fields in the zone just behind the root cap, where cells are dividing. Typical class results: 75 to 90% interphase, prophase the most common phase of mitosis, anaphase the rarest.'} Analysis answers are calculated from each student\'s own table. The time estimate uses a 24-hour cell cycle for onion root tip cells.</p>`;
+const tot=c=>{ const v=st('ddat').val||{}; let s=0; FIELDS.forEach((_,r)=>{ s+=cellv(v,r,c)||0; }); return s; };
+const grand=()=>PH5.reduce((a,_,c)=>a+tot(c),0);
+const pct=c=>grand()?tot(c)/grand()*100:0;
+function rootBench(i,p){ const W=780,H=400,B=350; let o=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Virtual lab bench, step ${i+1}."><rect width="${W}" height="${H}" rx="14" fill="#e2e8f0"/><rect x="0" y="${B}" width="${W}" height="${H-B}" fill="#cbd5e1"/><rect x="0" y="${B}" width="${W}" height="5" fill="#94a3b8"/>`;
+  if(i===0){ // onion on a jar with roots, scissors cut the tip, tip drops into acid
+    o+=`<path d="M90 ${B} L90 220 Q90 205 105 205 L215 205 Q230 205 230 220 L230 ${B} Z" fill="#dbeafe" opacity=".7" stroke="#64748b" stroke-width="2"/><rect x="92" y="240" width="136" height="${B-242}" fill="#bfdbfe" opacity=".6"/>`;
+    o+=`<g transform="translate(160 160)"><path d="M0,-80 C10,-60 60,-40 60,5 C60,40 30,50 0,50 C-30,50 -60,40 -60,5 C-60,-40 -10,-60 0,-80Z" fill="#c084fc" stroke="#7e22ce" stroke-width="2"/><path d="M0,-80 C-6,-40 -20,0 -14,48 M0,-80 C6,-40 20,0 14,48" stroke="#a855f7" fill="none"/></g>`;
+    for(let k=0;k<7;k++){ const x=128+k*10, L=k===3?(p>0.4?110:130):120+((k*17)%20); o+=`<path d="M${x} 208 Q${x+(k%2?6:-6)} ${208+L/2} ${x+(k-3)*3} ${208+L}" stroke="#f5f5f4" stroke-width="3" fill="none"/>`; }
+    const sx=330-Math.min(1,p*2)*120; o+=`<g transform="translate(${sx} 330)"><circle cx="0" cy="-10" r="12" fill="none" stroke="#dc2626" stroke-width="5"/><circle cx="0" cy="14" r="12" fill="none" stroke="#dc2626" stroke-width="5"/><path d="M8,-4 L-60,6 M8,8 L-60,0" stroke="#94a3b8" stroke-width="5" stroke-linecap="round"/></g>`;
+    o+=`<ellipse cx="560" cy="${B-12}" rx="90" ry="18" fill="#f1f5f9" stroke="#64748b" stroke-width="2"/><ellipse cx="560" cy="${B-16}" rx="76" ry="11" fill="#fef9c3" opacity=".8"/>`+tx(560,B+30,'1 M hydrochloric acid, 4 minutes',13,'#334155',null,true);
+    if(p>0.5){ const q=Math.min(1,(p-0.5)*2.2); o+=`<rect x="${f1(150+q*405)}" y="${f1(338-Math.sin(q*3.14)*120-q*20)}" width="12" height="4" rx="2" fill="#fafaf9" stroke="#a8a29e"/>`; }
+    o+=tx(160,60,'Onion growing roots in water',14,'#334155',null,true); }
+  if(i===1){ // slide, drop of stain, cover slip pressed
+    o+=`<rect x="200" y="${B-40}" width="380" height="26" rx="3" fill="#e0f2fe" stroke="#64748b" stroke-width="2"/><ellipse cx="390" cy="${B-40}" rx="${f1(30*Math.min(1,p*2))}" ry="6" fill="#7e22ce" opacity=".75"/><rect x="384" y="${B-44}" width="12" height="4" rx="2" fill="#6b21a8"/>`;
+    o+=`<g transform="translate(390 ${f1(120+Math.min(1,p*2)*70)})"><rect x="-8" y="-90" width="16" height="70" rx="5" fill="#f1f5f9" stroke="#64748b" stroke-width="2"/><ellipse cx="0" cy="-92" rx="13" ry="9" fill="#7e22ce"/><path d="M-5,-20 L0,-6 L5,-20Z" fill="#f1f5f9" stroke="#64748b"/></g>`;
+    if(p>0.5){ const q=Math.min(1,(p-0.5)*2); o+=`<rect x="350" y="${f1(B-46-(1-q)*80)}" width="80" height="5" fill="#f0f9ff" stroke="#94a3b8" opacity=".95"/>`; if(q>=1) o+=`<g transform="translate(390 ${B-48})"><rect x="-10" y="-120" width="20" height="110" rx="4" fill="#facc15" stroke="#a16207"/><rect x="-10" y="-14" width="20" height="14" rx="4" fill="#f9a8d4"/></g>`; }
+    o+=tx(390,60,'Stain, cover slip, then press down gently to squash the cells into one layer',14,'#334155',null,true)+tx(390,B+30,'stain colors the chromosomes dark purple',13,'#475569'); }
+  if(i===2){ // microscope + low-power view of the root tip
+    o+=`<g transform="translate(110 70)"><rect x="-20" y="250" width="200" height="26" rx="8" fill="#334155"/><path d="M150 250 C162 180 160 100 124 40 L104 54 C132 100 132 180 124 250 Z" fill="#475569"/><rect x="10" y="190" width="150" height="12" rx="3" fill="#1e293b"/><rect x="50" y="185" width="70" height="6" fill="#e0f2fe" stroke="#94a3b8"/><ellipse cx="85" cy="187" rx="7" ry="2.4" fill="#7e22ce"/><rect x="62" y="80" width="46" height="34" rx="6" fill="#64748b"/><path d="M66 114 l-6 40 h12 z M85 114 v46 M102 114 l6 36 h-12 z" fill="#cbd5e1" stroke="#475569" stroke-width="2"/><path d="M62 80 L40 34 L58 25 L80 72 Z" fill="#334155"/><rect x="32" y="12" width="22" height="26" rx="3" fill="#1e293b" transform="rotate(-25 43 25)"/><circle cx="140" cy="170" r="14" fill="#64748b" stroke="#1e293b" stroke-width="2"/></g>`;
+    const R=130, cx=540, cy=190; o+=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="#f5e9ef" stroke="#1f2937" stroke-width="8"/><clipPath id="lp"><circle cx="${cx}" cy="${cy}" r="${R-4}"/></clipPath><g clip-path="url(#lp)" opacity="${f1(Math.min(1,p*1.6))}"><path d="M${cx-200},${cy-55} L${cx+40},${cy-55} Q${cx+120},${cy-50} ${cx+150},${cy} Q${cx+120},${cy+50} ${cx+40},${cy+55} L${cx-200},${cy+55} Z" fill="#e9c9d8" stroke="#b98aa3" stroke-width="2"/><path d="M${cx+70},${cy-48} Q${cx+130},${cy-40} ${cx+150},${cy} Q${cx+130},${cy+40} ${cx+70},${cy+48} Q${cx+95},${cy} ${cx+70},${cy-48}Z" fill="#f3d9e4" stroke="#b98aa3"/>`;
+    for(let k=0;k<16;k++){ const x=cx-150+k*13; for(let j=0;j<6;j++){ const y=cy-45+j*17; o+=`<circle cx="${x}" cy="${y}" r="${k>8&&k<15&&(k*7+j*3)%5===0?3.4:2.2}" fill="#6b2a5e" opacity=".8"/>`; } }
+    o+=`<rect x="${cx-28}" y="${cy-60}" width="74" height="120" fill="none" stroke="#f59e0b" stroke-width="3" stroke-dasharray="6 4"/></g>`+tx(cx,cy+R+30,'Low power: dividing cells are just behind the root cap (box)',13,'#334155',null,true); }
+  return o+'</svg>'; }
+function buildData(s,num){
+  teacherNote(TEACH_HTML);
+  const lock=h('div',{class:'fb info'}); lock.innerHTML='<b>Locked.</b> Lock in your predictions on page 2 first.'; s.appendChild(lock);
+  let B1=null;
+  if(SIM){
+    const STEPS=[{name:'Cut and soften the tip',btn:'Cut a root tip and put it in acid',dur:2600,total:240,clock:'4:00',text:r=>r?'The 2 mm root tip soaked in hydrochloric acid for 4 minutes. The acid softens the tip and loosens the cells from each other, so they can spread out.':'An onion has been growing roots in water for a few days. Cut off the last 2 mm of one root (the tip, where cells divide) and put it in acid.'},
+      {name:'Stain and squash',btn:'Stain the tip and squash it',dur:2400,total:0,clock:'ready',text:r=>r?'The stain colored the chromosomes dark purple. Pressing on the cover slip squashed the tip into a single layer of cells.':'Move the tip to a slide, add a drop of stain, put on a cover slip, and press down gently with a pencil eraser.'},
+      {name:'Look under the microscope',btn:'Focus on the root tip',dur:2200,total:0,clock:'400x',text:r=>r?'Switch to high power (400x) and look at <b>three fields</b> in the boxed zone. Use the <b>Field</b> buttons below. In each field, <b>count</b> the cells in each phase.':'Find the root tip on low power first.'}];
+    B1=makeBench(s,{steps:STEPS,scene:(i,p)=>rootBench(i,p),measLabel:'Look at (400x):',onRun:i=>{ const V=st('vsim'); if(i===2) V.F=makeFields(V.seed); },
+      measures:i=>{ const V=st('vsim'); return i!==2||!V.F?[]:FIELDS.map((f,j)=>({label:f,html:fieldSVG(V.F[j],f)+`<p class="small" style="margin:6px 0 0"><b>${f}.</b> Count the cells in each phase. Every cell is counted once (30 cells in all).</p><details class="refbox"><summary>Reference: what each phase looks like</summary><div class="figwrap" style="margin-top:6px">${ATLAS}</div>${ATLAS_NOTE}</details>`})); }});
+  } else {
+    s.insertAdjacentHTML('beforeend',`<div class="prob" style="border:none;padding:0"><h3 style="margin:0 0 6px">Reference: what each phase looks like</h3><div class="figwrap">${ATLAS}</div>${ATLAS_NOTE}</div>`);
+  }
+  const dlock=h('div',{class:'fb info'}); dlock.innerHTML='<b>Tables locked.</b> Finish the virtual procedure first (all 3 steps).'; s.appendChild(dlock);
+  const dwrap=h('div',{}); s.appendChild(dwrap);
+  dwrap.insertAdjacentHTML('beforeend',SIM?'<p>Record the number of cells in each phase for each field. Each row should add up to 30.</p>':'<p>At 400x, find the zone just behind the root cap. Count <b>every</b> cell in one field of view and record how many are in each phase. Move the slide slightly and repeat for 3 fields that do not overlap.</p>');
+  const check=v=>{ let w=''; const rows=[];
+    FIELDS.forEach((f,r)=>{ const vals=PH5.map((_,c)=>cellv(v,r,c)); if(vals.every(x=>x!=null)){ const sm=vals.reduce((a,b)=>a+b,0); if(SIM&&sm!==30) rows.push(`${f} adds up to ${sm}, not 30`); } });
+    const V=st('vsim'); if(SIM&&V.done&&V.F){ const T=tally(V.F); FIELDS.forEach((f,r)=>PH5.forEach((p,c)=>{ const x=cellv(v,r,c); if(x!=null&&x!==T[r][c]) rows.push(`${f}, ${p.n.toLowerCase()}`); })); }
+    if(rows.length) w=`<div class="fb no small vbwarn">Count again: ${rows.join('; ')}. Use the Field buttons above.</div>`; return w; };
+  dataTableProblem(dwrap,{id:'ddat', part:'P3', num:num(), q:'<b>Number of cells in each phase.</b>', pts:6, corner:'Field', cols:PH5.map(p=>p.n), rows:FIELDS,
+    chart:v=>barChart(PH5.map((p,c)=>({label:p.n,vals:[FIELDS.reduce((a,_,r)=>{ const x=cellv(v,r,c); return x==null?a:(a||0)+x; },null)]})),{title:'Total cells in each phase (all fields)',ylab:'Number of cells',dec:0})+check(v)});
+  obsTableProblem(dwrap,{id:'obs', part:'P3', num:num(), q:'Record what you observed.', pts:4, rows:OBS_ROWS});
+  window.dataRefresh=()=>{ const ok=!!st('pred').checked, ran=!SIM||!!st('vsim').done; lock.hidden=ok; if(B1){ B1.bench.classList.toggle('off',!ok); B1.repaint(); } dlock.hidden=!ok||ran||!SIM; dwrap.classList.toggle('off',!(ok&&ran)); if(window.anaRefresh) anaRefresh(); };
+}
+const mostMit=()=>{ let b=1; for(let c=2;c<5;c++) if(tot(c)>tot(b)) b=c; return b-1; };
+const leastMit=()=>{ let b=1; for(let c=2;c<5;c++) if(tot(c)<tot(b)) b=c; return b-1; };
+function buildContent(sec){
+  let n=0; const num=()=>++n; const say=(s,html)=>s.insertAdjacentHTML('beforeend',html); LIVE.length=0;
+  say(sec[0],`<div class="phenbox"><b>Phenomenon:</b> An onion set in a glass of water grows roots about 1 cm longer every day. The new cells come from mitosis near the tip of each root. If you could freeze those cells in place, how many would you catch dividing?</div>
+   <p><b>Lab question:</b> How long does an onion root tip cell spend in each stage of the cell cycle?</p>
+   <p><b>Background.</b> Every cell in the root tip is somewhere in the cell cycle. Cells don't divide in step with each other, so a slide is like a snapshot of thousands of cells caught at random moments. <b>The longer a stage lasts, the more cells you will catch in that stage.</b> So if 20% of the cells are in prophase, prophase takes about 20% of the cell cycle. An onion root tip cell takes about <b>${CYCLE_H} hours</b> to go through one full cycle.</p>
+   <div class="figwrap" style="margin:10px 0">${ATLAS}</div>
+   ${SIM?`<div class="phenbox" style="border-left-color:#7c3aed;background:rgba(124,58,237,.12)"><b>Missed the lab?</b> You'll prepare a root tip squash on a virtual lab bench and look at it under a virtual microscope. Your cells are different from everyone else's, so your numbers are your own. You must <b>count</b> the cells yourself.</div>
+   <p><b>In the real lab:</b> each group used onion root tips, 1 M hydrochloric acid, a stain for chromosomes, slides and cover slips, a pencil with an eraser, and a compound microscope.</p>
+   <p><b>Procedure (virtual):</b></p><ol class="proc"><li>Answer the questions below. On page 2, make your predictions and lock them in.</li><li>On page 3, cut a root tip and soften it in acid.</li><li>Stain it and squash it on a slide.</li><li>Find the root tip on low power, then look at 3 fields at 400x.</li><li>Count the cells in each phase in each field and record your counts.</li></ol>`
+   :`<p><b>Materials (per pair):</b> a compound light microscope, a prepared onion root tip slide, and this page.</p>
+   <p><b>Safety:</b> carry the microscope with two hands (one on the arm, one under the base). Never use the coarse focus knob on high power.</p>
+   <p><b>Procedure:</b></p><ol class="proc"><li>Answer the questions below. On page 2, make your predictions and lock them in.</li><li>Put the slide on the stage. Start on the lowest power and focus with the coarse knob.</li><li>Find the root tip. Center the zone just behind the root cap, where the cells are small and square with dark nuclei.</li><li>Switch to high power (400x). Use only the fine focus knob.</li><li>Count every cell in your field of view and record how many are in each phase. Count a cell with a cell plate as telophase.</li><li>Move the slide a little to a new field that does not overlap, and count again. Do 3 fields in all.</li><li>Record your observations, then return the slide and put the microscope away on low power.</li></ol>`}`);
+  choiceProblem(sec[0],{id:'q1', part:'P1', num:num(), q:'Check your understanding.',
+    parts:[{q:'<b>Part A:</b> Why do scientists use the <b>tip</b> of the root?',opts:['Cells there divide quickly, so many are in mitosis','It is the easiest part to cut','It has the biggest cells','It has no chromosomes'],ans:0},
+           {q:'<b>Part B:</b> Why is the root tip stained?',opts:['So the chromosomes are dark and easy to see','To kill bacteria','To make the cells divide','To make the cells bigger'],ans:0},
+           {q:'<b>Part C:</b> If more cells are found in one stage than another, that stage…',opts:['lasts longer','lasts a shorter time','happens first','has more chromosomes'],ans:0},
+           {q:'<b>Part D:</b> Why count 3 fields instead of 1?',opts:['A bigger sample gives more reliable percentages','To make the slide last longer','Because each field shows a different plant','To find the nucleus'],ans:0}],
+    hint:'Re-read the background.', why:'Fast-dividing cells, stained chromosomes, and a big sample give the best estimate of time in each stage.'});
+  dragProblem(sec[0],{id:'q2', part:'P1', num:num(), q:'Practice: put the phases of mitosis in order.', equation:true, layout:['1',0,'2',1,'3',2,'4',3],
+    zones:[{id:'a',ans:'Prophase',ph:'first'},{id:'b',ans:'Metaphase',ph:'second'},{id:'c',ans:'Anaphase',ph:'third'},{id:'d',ans:'Telophase',ph:'fourth'}], chips:['Anaphase','Telophase','Prophase','Metaphase','Interphase'],
+    hint:'PMAT.', done:'Prophase, metaphase, anaphase, telophase.'});
+  say(sec[1],`<p>Predict how common each stage will be. You get full credit for predicting, but you <b>can't change</b> your predictions after you lock them in.</p>`);
+  predictProblem(sec[1],{id:'pred', part:'P2', num:num(), q:'Make your predictions.', rowsLabel:'Stage', rows:PH5.map(p=>({id:p.n,desc:p.k==='inter'?'Growing and copying DNA, not dividing':'A phase of mitosis'})), choices:['Most of the cells','Some of the cells','Very few cells']});
+  writtenProblem(sec[1],{id:'hyp', part:'P2', num:num(), q:'Write a hypothesis about which stage you will find <b>most</b> often, in the form <b>"If… then… because…"</b>.', pts:3, bank:['If','then','because','interphase','most','longest','time','grow','copy DNA'],
+    groups:[['If… then… form',/\bif\b[\s\S]*\bthen\b/],['names a stage that will be most common',/interphase|prophase|metaphase|anaphase|telophase/],['a reason about time spent',/because|since|long|time|grow|copy|most of/]],
+    model:'If I count cells in an onion root tip, then most of them will be in interphase, because cells spend most of their time growing and copying their DNA.',
+    hint:'Name the stage and explain why it would be the most common.', why:'A good hypothesis gives a prediction and a reason.'});
+  buildData(sec[2],num);
+  const alock=h('div',{class:'fb info'}); alock.innerHTML='<b>Locked.</b> Save your data table and observations on page 3 first.'; sec[3].appendChild(alock);
+  const aw=h('div',{}); sec[3].appendChild(aw);
+  window.anaRefresh=()=>{ const ok=['ddat','obs'].every(k=>!!st(k).checked); alock.hidden=ok; aw.hidden=!ok; if(ok){ liveKeys(); const c=$('.anachart',aw); if(c) c.innerHTML=barChart(PH5.map((p,ci)=>({label:p.n,vals:[+pct(ci).toFixed(1)]})),{title:'Your data: percent of cells in each stage',ylab:'Percent of cells',dec:1}); } };
+  say(aw,`<p>Use <b>your data</b> from page 3.</p><div class="prob"><div class="pq">Your graph</div><div class="anachart"></div></div>`);
+  calcProblem(aw,{id:'a1', part:'P4', num:num(), q:'Add up your table.',
+    blanks:[{before:'<b>Part A:</b> Total cells counted (all phases, all fields) =',calc:()=>grand(),tol:0,after:'cells',show:'sum of every number in the table'},
+            {before:'<b>Part B:</b> Total cells in interphase =',calc:()=>tot(0),tol:0,after:'cells',show:'sum of the interphase column'},
+            {before:'<b>Part C:</b> Total cells in any phase of mitosis =',calc:()=>grand()-tot(0),tol:0,after:'cells',show:'total minus interphase'}],
+    hint:'Add down each column, then add the column totals.'});
+  calcProblem(aw,{id:'a2', part:'P4', num:num(), q:'Percent of cells in each stage = (cells in that stage ÷ total cells) × 100. Round to the nearest whole percent.',
+    blanks:PH5.map((p,c)=>({before:`<b>Part ${'ABCDE'[c]}:</b> ${p.n} =`,calc:()=>pct(c),tol:1,after:'%',show:`${p.n.toLowerCase()} ÷ total × 100`})),
+    hint:'Divide each column total by your grand total, then multiply by 100. The five answers should add up to about 100%.'});
+  calcProblem(aw,{id:'a3', part:'P4', num:num(), q:`Estimate the time. One cell cycle takes about ${CYCLE_H} hours (${CYCLE_H*60} minutes). Time in a stage = (percent ÷ 100) × total time.`,
+    blanks:[{before:'<b>Part A:</b> Time in interphase =',calc:()=>pct(0)/100*CYCLE_H,tol:0.5,after:'hours',show:'interphase % ÷ 100 × 24'},
+            {before:'<b>Part B:</b> Time in prophase =',calc:()=>pct(1)/100*CYCLE_H*60,tol:15,after:'minutes',show:'prophase % ÷ 100 × 1,440'},
+            {before:'<b>Part C:</b> Time in metaphase =',calc:()=>pct(2)/100*CYCLE_H*60,tol:15,after:'minutes',show:'metaphase % ÷ 100 × 1,440'}],
+    hint:'Use your percents from the last problem. Hours for interphase, minutes for the phases of mitosis.'});
+  liveChoice(aw,{id:'a4', part:'P4', num:num(), q:'Read your results.',
+    parts:[{q:'<b>Part A:</b> In your data, which phase of mitosis lasted the longest?',opts:['Prophase','Metaphase','Anaphase','Telophase'],ans:-1,ansFn:mostMit},
+           {q:'<b>Part B:</b> In your data, which phase of mitosis was the shortest?',opts:['Prophase','Metaphase','Anaphase','Telophase'],ans:-1,ansFn:leastMit},
+           {q:'<b>Part C:</b> Did your prediction for interphase match your data?',opts:['Yes','No'],ans:-1,ansFn:()=>((st('pred').val||{})[0]==='Most of the cells')===(pct(0)>50)?0:1}],
+    hint:'More cells in a stage means more time in that stage. If two phases tie, pick the one listed first.', why:'Your answers match your own data.'});
+  dragProblem(aw,{id:'a5', part:'P4', num:num(), q:'Practice: name the phase of each stained cell.', svg:(()=>{ const O=['ana','pro','telo','meta','inter']; let s='<svg viewBox="0 0 640 190" role="img" aria-label="Five stained onion cells, each with a blank label box under it."><rect width="640" height="190" rx="12" fill="#efe2e8"/>'; O.forEach((k,i)=>{ s+=mitCell(66+i*127,72,52,k,{plant:true,stain:true}); }); return s+'</svg>'; })(), vb:[640,190],
+    zones:['Anaphase','Prophase','Telophase','Metaphase','Interphase'].map((a,i)=>({id:'z'+i,x:66+i*127,y:162,w:118,ans:a})), chips:['Interphase','Prophase','Metaphase','Anaphase','Telophase'],
+    hint:'Line in the middle = metaphase. Two groups moving apart = anaphase. Two groups at the ends = telophase.', done:'You can spot every phase.'});
+  choiceProblem(aw,{id:'a6', part:'P4', num:num(), q:'Think about the method.',
+    parts:[{q:'<b>Part A:</b> A student counts cells far from the tip and finds almost no cells in mitosis. Why?',opts:['Cells farther from the tip have mostly stopped dividing and are growing longer','The stain did not work there','Those cells have no DNA','Mitosis only happens at night'],ans:0},
+           {q:'<b>Part B:</b> Why does this method only <b>estimate</b> the time in each stage?',opts:['It is based on a sample of cells caught at one moment','Onions do not do mitosis','The microscope changes the cells','Time cannot be measured'],ans:0},
+           {q:'<b>Part C:</b> How could you make your percentages more reliable?',opts:['Count more cells and combine data from the whole class','Count fewer cells','Only count dividing cells','Use a lower power lens'],ans:0}],
+    hint:'Think about where cells divide and about sample size.', why:'A larger sample from the dividing zone gives a better estimate.'});
+  writtenProblem(aw,{id:'a7', part:'P4', num:num(), q:'Explain why most of the cells you counted were in <b>interphase</b>. Use the words <b>grow</b>, <b>DNA</b>, and <b>time</b>.', pts:3, bank:['interphase','most of the time','grow','copy','DNA','S phase','get ready','divide'],
+    groups:[['interphase takes most of the time',/time|long|most/],['the cell grows',/grow/],['the DNA is copied',/dna|copy|copies|s phase/]],
+    model:'Most cells were in interphase because a cell spends most of its time there. During interphase the cell grows, copies its DNA in S phase, and gets ready to divide. Mitosis itself is quick.',
+    hint:'What happens in interphase, and why does it take so long?', why:'Interphase is about 90% of the cell cycle.'});
+  say(sec[4],'<p>Write a <b>claim, evidence, and reasoning</b> conclusion that answers: <i>How long does an onion root tip cell spend in each stage of the cell cycle?</i></p>');
+  writtenProblem(sec[4],{id:'k1', part:'P5', num:num(), q:'<b>Claim:</b> answer the question in one sentence.', pts:2, bank:['interphase','most of the time','mitosis','short','prophase','longest'],
+    groups:[['interphase is the longest',/interphase[\s\S]{0,60}(most|long)|(most|long)[\s\S]{0,60}interphase/],['mitosis is short / names the longest phase of mitosis',/mitosis|prophase|metaphase|anaphase|telophase|short|quick/]],
+    model:'A root tip cell spends most of its time in interphase, and only a short time in mitosis, with prophase the longest phase of mitosis.', hint:'Answer the lab question directly.', why:'The claim answers the question.'});
+  writtenProblem(sec[4],{id:'k2', part:'P5', num:num(), q:'<b>Evidence:</b> use your percents and your time estimates.', pts:3, bank:['%','percent','interphase','prophase','hours','minutes','cells counted'],
+    groups:[['percent in interphase',/interphase[\s\S]{0,40}\d|\d[\s\S]{0,40}interphase/],['percent or time for a phase of mitosis',/(prophase|metaphase|anaphase|telophase)[\s\S]{0,40}\d|\d[\s\S]{0,40}(prophase|metaphase|anaphase|telophase)/],['a time estimate (hours or minutes)',/hour|minute|hr|min/]],
+    model:'I counted 90 cells. 80% were in interphase (about 19 hours), 11% were in prophase (about 160 minutes), and only 3% were in anaphase (about 43 minutes).',
+    hint:'Use your answers to problems 2 and 3 of the Analysis.', why:'Good evidence uses specific numbers.'});
+  writtenProblem(sec[4],{id:'k3', part:'P5', num:num(), q:'<b>Reasoning:</b> explain why the number of cells in a stage tells you how long that stage lasts, and why interphase lasts so long.', pts:3, bank:['snapshot','random','more cells','longer','grow','copy DNA','interphase'],
+    groups:[['cells are caught at random / snapshot',/random|snapshot|moment|caught|frozen|any time/],['more cells means longer stage',/more cells[\s\S]{0,40}long|long[\s\S]{0,40}more cells|proportion|percent/],['interphase: growing and copying DNA',/grow|copy|dna|get ready/]],
+    model:'The slide is a snapshot of cells caught at random moments, so a stage that lasts longer has more cells in it at any moment. Interphase lasts the longest because the cell has to grow and copy all of its DNA before it can divide.',
+    hint:'Connect snapshot → number of cells → time. Then explain interphase.', why:'The percent of cells in a stage estimates the percent of time spent in it.'});
+  dataRefresh();
+}
+window.__truth=()=>{ const V=st('vsim'); const T=SIM?tally(V.F):[[24,3,1,1,1],[25,2,1,1,1],[23,4,1,0,2]]; return {ddat:{first:'Field 1',vals:T}}; };
+
+/* ============================== BUILD / SCORE ============================== */
+function scoreAll(){ const parts=PARTS.slice(0,-1).map(p=>({k:p.k,label:p.label,got:0,max:0})); PROBS.forEach(pr=>{ const pt=parts.find(x=>x.k===pr.part); pt.got+=pr.score(); pt.max+=pr.max; });
+  return {parts, total:parts.reduce((a,b)=>a+b.got,0), max:parts.reduce((a,b)=>a+b.max,0)}; }
+function build(){
+  PROBS.length=0; const ws=$('#ws'); ws.innerHTML='';
+  $('#nav').innerHTML=PARTS.map((pt,i)=>`<button class="ntile" type="button" data-i="${i}" aria-label="${pt.title}"><span class="ic">${ico(i,22)}</span><span class="nm">${pt.label}</span></button>`).join('');
+  $$('#nav .ntile').forEach(b=>b.addEventListener('click',()=>showPart(+b.dataset.i)));
+  const secs=PARTS.map((pt,i)=>{ const el=h('section',{class:'sec',id:'part'+i}); const last=i===PARTS.length-1;
+    el.innerHTML=`<div class="sechead"><div class="badge"><span class="z">${i+1}</span>${ico(i,34)}</div><div><div class="meta">${last?'Grade':`Section ${i+1} of ${PARTS.length-1} · about ${pt.min} min`}</div><h2>${pt.title}</h2></div></div>`;
+    const c=h('div',{class:'card'}); el.appendChild(c);
+    const nav=h('div',{class:'secnav'});
+    const back=h('button',{class:'btn ghost',type:'button'},i===0?'':'← Back'); if(i===0) back.style.visibility='hidden'; back.addEventListener('click',()=>showPart(i-1));
+    nav.appendChild(back);
+    if(!last){ const nx=h('button',{class:'btn primary',type:'button'},i===PARTS.length-2?'See my grade →':`Next: ${PARTS[i+1].title} →`); nx.addEventListener('click',()=>showPart(i+1)); nav.appendChild(nx); }
+    el.appendChild(nav); ws.appendChild(el); return c; });
+  buildContent(secs);
+  secs[PARTS.length-1].id='turnin';
+  showPart(Math.min(S.cur||0,PARTS.length-1),true);
+  $('#whoami').textContent=S.student?`${S.student.first} ${S.student.last}`:''; refresh();
+}
+function showPart(i,noScroll){
+  S.cur=i; $$('#ws .sec').forEach((el,j)=>el.hidden=j!==i);
+  $$('#nav .ntile').forEach((t,j)=>t.classList.toggle('cur',j===i));
+  if(!noScroll){ save(); window.scrollTo(0,0); }
+}
+function refresh(){
+  const sc=scoreAll(), done=PROBS.filter(p=>p.checked()).length;
+  $('#scorePill').textContent=`${done}/${PROBS.length} checked · ${sc.total}/${sc.max} pts`;
+  PARTS.slice(0,-1).forEach((pt,i)=>{ const t=$(`#nav .ntile[data-i="${i}"]`); if(t) t.classList.toggle('done',PROBS.filter(p=>p.part===pt.k).every(p=>p.checked())); });
+  const t7=$(`#nav .ntile[data-i="${PARTS.length-1}"]`); if(t7) t7.classList.toggle('done',!!S.submittedAt);
+  const c=$('#turnin'); if(!c) return;
+  const rows=sc.parts.map(p=>`<tr><th>${p.label}</th><td>${p.got} / ${p.max}</td></tr>`).join('');
+  c.innerHTML=`<div style="display:flex;gap:22px;align-items:center;flex-wrap:wrap"><div class="big">${sc.total}/${sc.max}</div><div><h3 style="margin:0">${esc(S.student?S.student.first+' '+S.student.last:'')}</h3><p class="muted" style="margin:0">${done} of ${PROBS.length} problems checked</p></div></div>
+    <table class="res" style="margin-top:12px">${rows}</table>
+    <p class="small muted" style="margin-top:10px">Problems you haven't checked count as 0. You can turn in again later; your teacher sees the newest one.</p>
+    <div class="btnrow"><button class="btn primary" id="subBtn" type="button">${S.submittedAt?'Turn in again':'Turn in my lab'}</button><button class="btn ghost" id="csvBtn" type="button">Download CSV</button></div>
+    <p class="fb info sheetStatus" aria-live="polite">${S.sentAt?`Sent to your teacher ${new Date(S.sentAt).toLocaleString()}.`:'Not turned in yet.'}</p>`;
+  $('#subBtn').addEventListener('click',turnIn);
+  $('#csvBtn').addEventListener('click',()=>downloadCSV([recordRow()],`OnionRootTipLab_${(S.student&&S.student.last||'student').replace(/\W+/g,'')}.csv`));
+}
+const CSV_HEAD=['Student ID','Last Name','First Name','Period','Teacher','Activity','Score','Total','Percent',...PARTS.slice(0,-1).map(p=>p.label),'Date'];
+function recordRow(){ const st=S.student||{}, sc=scoreAll(); return [st.id||'',st.last||'',st.first||'',st.period||'',st.teacher||'',ACTIVITY,sc.total,sc.max,Math.round(100*sc.total/sc.max)+'%',...sc.parts.map(p=>p.got),new Date(S.submittedAt||Date.now()).toLocaleString()]; }
+function csvText(rows){ const q=v=>{ v=String(v==null?'':v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }; return [CSV_HEAD,...rows].map(r=>r.map(q).join(',')).join('\r\n')+'\r\n'; }
+function downloadCSV(rows,name){ const b=new Blob([csvText(rows)],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500); }
+const loadRecs=()=>{ try{ return (JSON.parse(localStorage.getItem(RECS))||[]).filter(r=>r.length===CSV_HEAD.length); }catch(e){ return []; } };
+function saveRecord(){ if(S.preview) return; const recs=loadRecs(), row=recordRow(); const i=recs.findIndex(r=>r[0]===row[0]&&r[1]===row[1]); if(i>=0) recs[i]=row; else recs.push(row); try{ localStorage.setItem(RECS,JSON.stringify(recs)); }catch(e){} }
+function turnIn(){
+  const left=PROBS.filter(p=>!p.checked()).length;
+  if(left&&!confirm(`${left} problem${left>1?'s':''} not checked yet (they count as 0). Turn in anyway?`)) return;
+  S.submittedAt=Date.now(); save(); saveRecord(); cloudSave(true); disarm(); refresh();
+  const msg=t=>$$('.sheetStatus').forEach(e=>e.textContent=t);
+  if(S.preview){ msg('Preview mode: nothing is sent.'); return; }
+  const st=S.student, sc=scoreAll();
+  const body={studentId:st.id||'',firstName:st.first||'',lastName:st.last||'',period:st.period||'',teacher:st.teacher||'',locks:'0',when:new Date().toString(),activity:ACTIVITY,score:String(sc.total),total:String(sc.max),
+    qlabels:sc.parts.map((p,i)=>'P'+(i+1)+' '+PARTS[i].label).join('|'),qpoints:sc.parts.map(p=>p.got).join('|'),qmax:sc.parts.map(p=>p.max).join('|')};
+  msg('Sending...');
+  fetch(sheetURL(),{method:'POST',mode:'no-cors',body:new URLSearchParams(body)}).then(()=>{ S.sentAt=new Date().toISOString(); save(); msg('Sent! Your teacher will see your score.'); }).catch(()=>msg("Couldn't send. Check the Wi-Fi and try again, or download the CSV."));
+}
+
+/* ============================== NO LOCKDOWN ON WORKSHEETS ============================== */
+let teacherOpen=false;
+function arm(){} function disarm(){} function showLock(){} function enterFS(){}
+['copy','cut','paste','contextmenu'].forEach(ev=>document.addEventListener(ev,e=>{ if(teacherOpen||S.preview) return; e.preventDefault(); }));
+
+/* ============================== SIGN IN ============================== */
+function showWS(){ $('#start').hidden=true; $('#top').hidden=false; $('#ws').hidden=false; build(); window.scrollTo(0,0); if(S.locked&&LOCKDOWN&&!S.lockOff) showLock(); else arm(); }
+function renderStart(){ const has=!!S.student; $('#resumeBox').hidden=!has; $('#startForm').hidden=has; $('#signinTitle').textContent=has?'Welcome back':'Sign in to start';
+  if(has) $('#resumeText').innerHTML=`Signed in as <b>${esc(S.student.first)} ${esc(S.student.last)}</b>, period ${esc(S.student.period)}.`; }
+$('#fPeriod').innerHTML='<option value="">Choose your period</option>'+periodList().map(p=>`<option>${esc(p)}</option>`).join('');
+$('#fTeacher').innerHTML='<option value="">Choose your teacher</option>'+teacherList().map(t=>`<option>${esc(t)}</option>`).join('');
+let starting=false;
+async function start(){
+  if(starting) return; starting=true;
+  try{
+    const v={first:$('#fFirst').value.trim(),last:$('#fLast').value.trim(),id:$('#fId').value.trim(),period:$('#fPeriod').value,teacher:$('#fTeacher').value};
+    const miss=[]; if(!v.first) miss.push('first name'); if(!v.last) miss.push('last name'); if(!v.id) miss.push('student ID'); if(!v.period) miss.push('period'); if(!v.teacher) miss.push('teacher');
+    const err=$('#formErr'); if(miss.length){ err.className='fb no'; err.textContent='Fill in your '+miss.join(', ')+'.'; err.hidden=false; return; }
+    if(LOCKDOWN) enterFS();
+    err.className='fb info'; err.textContent='Checking for your saved work...'; err.hidden=false;
+    const res=await cloudLoad(v); err.hidden=true;
+    if(res.status==='found'){ const d=res.data; d.student=Object.assign({},d.student||{},{first:v.first,period:v.period,teacher:v.teacher}); adopt(d); showWS(); note('✓ Your saved work was loaded'); return; }
+    const ns=fresh(); ns.student=v; adopt(ns); showWS(); cloudSave(true);
+  } catch(ex){ const er=$('#formErr'); er.className='fb no'; er.textContent='Something went wrong starting ('+(ex&&ex.message||ex)+'). Reload and try again.'; er.hidden=false; }
+  finally{ starting=false; }
+}
+$('#startBtn').addEventListener('click',start);
+$('#startForm').addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.tagName==='INPUT'){ e.preventDefault(); start(); } });
+$('#resumeBtn').addEventListener('click',async()=>{ const b=$('#resumeBtn'); b.disabled=true; b.textContent='Loading your work...'; if(LOCKDOWN&&!S.locked) enterFS();
+  const res=await cloudLoad(S.student); b.disabled=false; b.textContent='Continue my lab';
+  if(res.status==='found'&&(res.data.updatedAt||0)>(S.updatedAt||0)&&checkedCount(res.data)>=checkedCount(S)){ const d=res.data; d.student=S.student; adopt(d); note('✓ Your newest saved work was loaded'); } showWS(); });
+$('#notMeBtn').addEventListener('click',async()=>{ const b=$('#notMeBtn'); b.disabled=true;
+  try{ if(cloudOK()) await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); }catch(e){ b.disabled=false; $('#resumeErr').textContent="Can't back up the last student's work right now. Check the Wi-Fi, or ask your teacher."; $('#resumeErr').hidden=false; return; }
+  b.disabled=false; adopt(fresh()); ['#fFirst','#fLast','#fId','#fPeriod','#fTeacher'].forEach(s=>$(s).value=''); renderStart(); });
+
+/* ============================== TEACHER ============================== */
+function openTeacher(){ teacherOpen=true; $('#teachLogin').hidden=false; $('#teachPanel').hidden=true; $('#teachErr').hidden=true; $('#teachCode').value=''; $('#teachOv').classList.add('show'); setTimeout(()=>$('#teachCode').focus(),50); }
+function closeTeacher(){ $('#teachOv').classList.remove('show'); teacherOpen=false; }
+$('#teacherLink').addEventListener('click',openTeacher); $('#teachBtn').addEventListener('click',openTeacher);
+$('#teachCancel').addEventListener('click',closeTeacher);
+$('#teachCode').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#teachGo').click(); });
+$('#teachGo').addEventListener('click',()=>{ if(!codeIs($('#teachCode').value,TEACHER_CODE)){ $('#teachErr').hidden=false; return; } $('#teachLogin').hidden=true; $('#teachPanel').hidden=false; renderTeacher(); });
+function renderTeacher(){
+  const recs=loadRecs(), p=$('#teachPanel'), keyOn=document.body.classList.contains('keyon');
+  p.innerHTML=`<h2>Teacher tools</h2>
+    <div class="btnrow"><button class="btn ghost" id="tKey" type="button">${keyOn?'Hide answer key':'Answer key'}</button>
+      <button class="btn ghost" id="tPrev" type="button">${S.preview?'End preview':'Preview (saves nothing)'}</button>
+      <button class="btn ghost" id="tResetWrong" type="button">Reset all wrong answers</button>
+      <button class="btn ghost" id="tReset" type="button">Reset this Chromebook</button><button class="btn ghost" id="tClose" type="button">Close</button></div>
+    <h3 style="margin-top:16px">Scores saved on this Chromebook (${recs.length})</h3>
+    <div class="wide">${recs.length?`<table class="nb"><tr><th>Student</th><th>ID</th><th>Period</th><th>Score</th><th>Date</th></tr>${recs.map(r=>`<tr><td>${esc(r[1])}, ${esc(r[2])}</td><td>${esc(r[0])}</td><td>${esc(r[3])}</td><td>${r[6]}/${r[7]}</td><td>${esc(r[r.length-1])}</td></tr>`).join('')}</table>`:'<p class="muted">None yet.</p>'}</div>
+    <div class="btnrow"><button class="btn primary" id="tCsv" type="button" ${recs.length?'':'disabled'}>Download scores (CSV)</button></div>
+    <h3 style="margin-top:16px">Load a student's saved work</h3>
+    <div class="btnrow"><input class="code" id="tId" placeholder="Student ID" style="width:150px"><input class="code" id="tLast" placeholder="Last name" style="width:170px"><button class="btn ghost" id="tLoad" type="button">Load work</button></div>
+    <p class="fb info" id="tMsg" style="min-height:1em"></p>`;
+  const msg=t=>$('#tMsg').textContent=t;
+  $('#tKey').addEventListener('click',()=>{ document.body.classList.toggle('keyon'); renderTeacher(); msg(document.body.classList.contains('keyon')?'Answer key on: each box shows its answer, sort chips show their box, and correct choices have a dashed gold outline.':'Answer key off.'); });
+  $('#tPrev').addEventListener('click',()=>{ if(S.preview){ location.reload(); return; } const ns=fresh(); ns.preview=true; ns.student={first:'Teacher',last:'Preview',id:'0',period:'-',teacher:teacherList()[0]}; S=ns; closeTeacher(); showWS(); note('Preview: nothing is saved'); });
+  $('#tReset').addEventListener('click',()=>{ if(confirm('Erase this lab on this Chromebook? Work backed up to the Saved Student Work sheet is not deleted.')){ try{ localStorage.removeItem(STORE); }catch(e){} location.reload(); } });
+  $('#tResetWrong').addEventListener('click',()=>{
+    const wrong=PROBS.filter(pr=>{ const P=S.p[pr.id]||{}; return (P.tries||0)>0 && !P.right; });
+    if(!wrong.length){ msg('Nothing to reset: this student has no wrong answers.'); return; }
+    if(!confirm(`Reset ${wrong.length} problem${wrong.length>1?'s':''} that ${wrong.length>1?'are':'is'} wrong or on a second try for ${(S.student&&S.student.first)||'this student'}? Correct answers stay.`)) return;
+    wrong.forEach(pr=>{ delete S.p[pr.id]; });
+    save(); cloudSave(true); msg(`Reset ${wrong.length} problem${wrong.length>1?'s':''}. Reloading…`); setTimeout(()=>location.reload(),700); });
+  $('#tClose').addEventListener('click',closeTeacher);
+  $('#tCsv').addEventListener('click',()=>downloadCSV(recs,`OnionRootTipLab_scores_${new Date().toISOString().slice(0,10)}.csv`));
+  $('#tLoad').addEventListener('click',async()=>{ const s={id:$('#tId').value.trim(),last:$('#tLast').value.trim()}; if(!s.id||!s.last){ msg('Type the student ID and last name.'); return; } msg('Looking up saved work...');
+    const r=await cloudLoad(s); if(r.status==='found'){ adopt(r.data); closeTeacher(); renderStart(); $('#start').hidden=false; $('#ws').hidden=true; $('#top').hidden=true; } else msg(r.status==='none'?'No saved work found for that student.':"Couldn't reach the saved-work sheet."); });
+}
+
+if(!STORAGE_OK) $('#noStore').hidden=false;
+renderStart();
+})();
+</script>
+
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

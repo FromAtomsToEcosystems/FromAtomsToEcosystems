@@ -968,6 +968,12 @@ const P = [
     model: 'C₂H₆ is a fuel (a hydrocarbon) and it is reacting with oxygen, O₂. A fuel burning in oxygen is combustion, so the products are carbon dioxide and water: 2C₂H₆ + 7O₂ → 4CO₂ + 6H₂O.' }
 ];
 
+
+/* rotate correct-answer positions so the right choice isn't always first (fixed order, so saved work still matches) */
+(function () { let k = 0; P.forEach(p => {
+  if (p.type === 'mc' && Array.isArray(p.opts) && typeof p.a === 'number') { const n = p.opts.length, t = (k * 3 + 1) % n; k++; const o = p.opts.slice(); const c = o.splice(p.a, 1)[0]; o.splice(t, 0, c); p.opts = o; p.a = t; }
+  else if (p.type === 'ms' && Array.isArray(p.opts)) { const n = p.opts.length, r = (k * 2 + 1) % n; k++; p.opts = p.opts.slice(r).concat(p.opts.slice(0, r)); }
+}); })();
 const N = P.length, TOTAL = P.reduce((a, p) => a + p.pts, 0);
 
 /* ---------- state ---------- */

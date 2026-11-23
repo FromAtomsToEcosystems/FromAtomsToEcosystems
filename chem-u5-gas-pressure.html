@@ -1,0 +1,2294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Measuring Gas Pressure | Chemistry Unit 5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c1424; --bg2:#101b30; --panel:#14203a; --panel2:#1b2a49; --panel3:#223358;
+  --line:#26375a; --line2:#35496f;
+  --text:#e8eef8; --muted:#a3b4d1; --dim:#7488ab;
+  --e:#5fe1ff; --e-glow:rgba(95,225,255,.55); --p:#ff7d66; --n:#aab6cc; --val:#ffd36b; --gain:#ff8fd0;
+  --amber:#f6b93b; --good:#4ade80; --bad:#fb7185;
+  --c-nonmetal:#45c08f; --c-noble:#a084ff; --c-alkali:#ff8f5e; --c-alkaline:#ffcb5c;
+  --c-metalloid:#46c7d8; --c-post:#8ea8cc; --c-halogen:#f477b8;
+  --r-lg:16px; --r-md:12px; --r-sm:8px;
+  --font:"Lexend","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 110px)}
+*,*::before,*::after{box-sizing:inherit}
+body{
+  margin:0; min-height:100vh; color:var(--text); font-family:var(--font);
+  font-size:17px; line-height:1.6; font-weight:300;
+  background:
+    radial-gradient(900px 520px at 85% -8%, #1a2d52 0%, transparent 62%),
+    radial-gradient(700px 420px at -10% 30%, #13233f 0%, transparent 60%),
+    var(--bg);
+  background-attachment:fixed;
+}
+b,strong{font-weight:600}
+h1,h2,h3{font-weight:600;line-height:1.2;margin:0}
+p{margin:.5em 0}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--e);outline-offset:2px;border-radius:6px}
+.small{font-size:14px}
+.muted{color:var(--muted)}
+.hidden{display:none!important}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:sticky; top:0; z-index:40;
+  padding-top:env(safe-area-inset-top,0px);
+  background:rgba(12,20,36,.9); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.topbar-in{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:14px;padding:10px 18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:16px;white-space:nowrap}
+.brand svg{width:30px;height:30px}
+.navtiles{display:flex;gap:6px;overflow-x:auto;padding:4px 2px;flex:1;scrollbar-width:thin}
+.top-actions{display:flex;gap:8px}
+.top-btn{background:var(--panel2);border:1px solid var(--line2);border-radius:999px;padding:6px 14px;font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap}
+.top-btn:hover{background:var(--panel3)}
+
+/* ---------- element tiles ---------- */
+.tile{
+  --c:var(--c-nonmetal);
+  position:relative; flex:0 0 auto; width:46px; height:52px; border-radius:8px;
+  background:var(--panel2);
+  background:color-mix(in srgb, var(--c) 20%, var(--panel));
+  border:1.5px solid var(--c);
+  border-color:color-mix(in srgb, var(--c) 75%, transparent);
+  display:grid; place-items:center; font-weight:700; font-size:19px; line-height:1;
+  color:var(--text); cursor:pointer; padding:0;
+  transition:transform .2s, box-shadow .2s, opacity .2s;
+}
+.tile .z{position:absolute;top:4px;left:5px;font-size:10px;font-weight:500;color:var(--muted)}
+.tile:hover:not(:disabled){transform:translateY(-2px)}
+.tile.current{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--c)}
+.tile:disabled{cursor:not-allowed;opacity:.32;filter:saturate(.3)}
+.tile .ck{position:absolute;right:-5px;bottom:-5px;width:17px;height:17px;border-radius:50%;background:var(--good);color:#06240f;font-size:11px;display:grid;place-items:center;font-weight:700;opacity:0;transform:scale(.4);transition:.25s}
+.tile.done .ck{opacity:1;transform:scale(1)}
+.tile.unlocking{animation:unlockPop .7s cubic-bezier(.2,1.6,.4,1)}
+@keyframes unlockPop{0%{transform:scale(.7)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
+.tile.big{width:74px;height:82px;font-size:32px;border-width:2px;cursor:default}
+.tile.big .z{font-size:13px;top:6px;left:8px}
+.cat-nonmetal{--c:var(--c-nonmetal)} .cat-noble{--c:var(--c-noble)} .cat-alkali{--c:var(--c-alkali)}
+.cat-alkaline{--c:var(--c-alkaline)} .cat-metalloid{--c:var(--c-metalloid)} .cat-post{--c:var(--c-post)} .cat-halogen{--c:var(--c-halogen)}
+
+/* ---------- layout ---------- */
+main{max-width:980px;margin:0 auto;padding:22px 18px 80px}
+.screen{display:none}
+.screen.on{display:block;animation:screenIn .35s ease-out}
+@keyframes screenIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sec-head{display:flex;align-items:center;gap:18px;margin:8px 0 10px}
+.sec-meta{color:var(--muted);font-size:15px;margin:0 0 4px}
+.sec-head h2{font-size:clamp(26px,4vw,36px);letter-spacing:-.01em}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px 24px;margin:18px 0}
+.card h3{font-size:21px;margin:2px 0 10px}
+.tag{display:inline-block;font-size:13px;font-weight:600;color:var(--muted);background:var(--panel2);border-radius:999px;padding:3px 12px;margin-bottom:8px}
+.k-read .tag{color:#c3cffc;background:#25305a}
+.k-try .tag{color:#0b2630;background:var(--e)}
+.k-qc{border:2px solid var(--amber)}
+.k-qc .tag{color:#241703;background:var(--amber)}
+.read-text{max-width:68ch}
+
+.btn{border:0;border-radius:10px;padding:11px 20px;font-weight:600;font-size:16px;cursor:pointer;transition:transform .15s, background .2s, opacity .2s}
+.btn:active:not(:disabled){transform:scale(.97)}
+.btn.primary{background:var(--e);color:#062430}
+.btn.primary:hover:not(:disabled){background:#8eebff}
+.btn.ghost{background:transparent;border:1.5px solid var(--line2);color:var(--text)}
+.btn.ghost:hover:not(:disabled){background:var(--panel2)}
+.btn.amber{background:var(--amber);color:#241703}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.sm{padding:7px 14px;font-size:14px;border-radius:8px}
+.btn-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}
+
+.sec-foot{display:flex;justify-content:space-between;gap:12px;margin-top:22px}
+
+/* word-help chips */
+.chip{display:inline;background:rgba(95,225,255,.1);border:0;border-bottom:1.5px dotted var(--e);color:#bff3ff;padding:0 4px;border-radius:4px;cursor:help;font-weight:400}
+.chip:hover{background:rgba(95,225,255,.2)}
+#pop{position:fixed;z-index:80;max-width:300px;background:var(--panel3);border:1px solid var(--line2);border-radius:12px;padding:12px 14px;box-shadow:0 14px 40px rgba(0,0,0,.45);font-size:15px}
+#pop b{display:block;color:var(--e);margin-bottom:2px;text-transform:capitalize}
+#pop p{margin:0}
+
+/* particle dots + small tables */
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px;vertical-align:-1px}
+.dot.p{background:var(--p)} .dot.n{background:var(--n)} .dot.e{background:var(--e);box-shadow:0 0 8px var(--e-glow)}
+.mini-table{border-collapse:collapse;margin:14px 0 4px;font-size:15px;min-width:300px}
+.mini-table th,.mini-table td{padding:7px 16px 7px 0;border-bottom:1px solid var(--line);text-align:left}
+.mini-table th{color:var(--muted);font-weight:500}
+.table-scroll{overflow-x:auto}
+.rules{display:grid;gap:8px;margin:12px 0}
+.rule{background:var(--panel2);border-radius:10px;padding:10px 14px}
+.rule small{color:var(--muted)}
+
+/* ---------- Bohr SVG ---------- */
+svg.bohr{width:100%;max-width:340px;height:auto;display:block;margin:0 auto;overflow:visible}
+.bohr .ring{fill:none;stroke:var(--line2);stroke-width:2}
+.bohr .ring.outer{stroke:rgba(255,211,107,.55);stroke-width:2.5}
+.bohr .ring-in{animation:ringIn .45s ease-out}
+@keyframes ringIn{from{opacity:0;stroke-width:8}to{opacity:1}}
+.bohr .nucleus{fill:url(#nucGrad);stroke:rgba(255,125,102,.6);stroke-width:1.5}
+.bohr .nt{fill:#fff;font-size:12.5px;font-weight:600;text-anchor:middle;font-family:var(--font)}
+.bohr .e{fill:var(--e);filter:drop-shadow(0 0 4px var(--e-glow));transform-box:view-box;transform-origin:0 0;
+  transition:transform .55s cubic-bezier(.2,.85,.25,1), opacity .35s, fill .3s}
+.bohr .e.val{fill:var(--val);filter:drop-shadow(0 0 5px rgba(255,211,107,.7))}
+.bohr .e.gain{fill:var(--gain);filter:drop-shadow(0 0 5px rgba(255,143,208,.75))}
+.bohr .ring-out{opacity:0;transition:opacity .45s}
+.bohr .bracket{fill:none;stroke:var(--text);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+.bohr .charge{fill:var(--text);font-size:28px;font-weight:700;font-family:var(--font)}
+.bohr .ion-in{animation:ionIn .6s ease-out}
+@keyframes ionIn{from{opacity:0;transform:scale(1.08)}to{opacity:1;transform:none}}
+.bohr .ionmark{transform-box:view-box;transform-origin:150px 150px}
+.ion{white-space:nowrap;font-weight:600}
+.ion sup{font-size:.62em;margin-left:1px}
+.dot.g{background:var(--gain);box-shadow:0 0 8px rgba(255,143,208,.7)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;color:var(--muted);margin:8px 0 0;justify-content:center}
+.token .tok-model{display:block;width:70px;margin:0 auto 2px}
+.token.model-token{display:inline-flex;flex-direction:column;align-items:center;padding:6px 10px;font-size:14px}
+.big-ion{font-size:clamp(48px,9vw,80px);font-weight:700;line-height:1;text-align:center;margin:8px 0}
+.big-ion sup{font-size:.45em;vertical-align:1.1em;margin-left:2px}
+.arrow-cap{text-align:center;color:var(--muted);font-size:14px}
+.atom-ion{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center}
+.atom-ion .arr{font-size:30px;color:var(--amber);font-weight:700}
+.atom-ion figure{margin:0;text-align:center}
+.atom-ion figcaption{font-size:14px;color:var(--muted);margin-top:4px}
+.atom-ion svg{max-width:220px}
+.meter{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.meter div{background:var(--panel2);border-radius:10px;padding:8px;text-align:center}
+.meter .k{font-size:13px;color:var(--muted)} .meter .v{font-size:24px;font-weight:600}
+.meter .v.pos{color:var(--p)} .meter .v.neg{color:var(--e)}
+.hero-ion svg{max-width:460px;width:100%;height:auto;display:block;margin:0 auto;overflow:visible}
+.hero-ion .travel{transition:transform 1.3s cubic-bezier(.45,0,.25,1)}
+.hero-fig.hero-ion svg{max-width:470px}
+.hero-ion .ionmark{animation:fadeIn .7s ease-out}
+@keyframes fadeIn{from{opacity:0}}
+.bohr.static .e{transition:none}
+.bohr .zone{fill:rgba(95,225,255,.06);stroke:var(--e);stroke-width:1.5;stroke-dasharray:4 3;cursor:pointer;opacity:.75;transition:fill .2s,opacity .2s}
+.bohr .zone:hover,.bohr .zone:focus{fill:rgba(95,225,255,.22);opacity:1;outline:none}
+.bohr .zone.bad{stroke:var(--bad);fill:rgba(251,113,133,.25)}
+.bohr.pulse .zone{animation:zonePulse 1.6s ease-in-out infinite}
+@keyframes zonePulse{50%{fill:rgba(95,225,255,.2)}}
+.bohr.mode-add .e{pointer-events:none}
+.bohr.mode-erase .zone{pointer-events:none;opacity:.25}
+.bohr.mode-erase .e{cursor:pointer}
+.bohr.mode-erase .e:hover{fill:var(--bad)}
+.bohr .sh{transform-box:view-box;transform-origin:150px 150px}
+.bohr.orbit .sh0{animation:spin 14s linear infinite}
+.bohr.orbit .sh1{animation:spin 24s linear infinite}
+.bohr.orbit .sh2{animation:spin 36s linear infinite}
+.bohr.orbit .sh3{animation:spin 50s linear infinite}
+.bohr.celebrate .sh{animation:spin 1.1s cubic-bezier(.3,0,.2,1) 1}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pin circle{fill:var(--panel3);stroke:var(--amber);stroke-width:2}
+.pin text{fill:var(--text);font-size:14px;font-weight:700;text-anchor:middle;font-family:var(--font)}
+.leader{stroke:var(--amber);stroke-width:1.5;stroke-dasharray:4 4;opacity:.8}
+
+/* ---------- start / hero ---------- */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center;margin:12px 0 6px}
+.hero h1{font-size:clamp(40px,7vw,72px);letter-spacing:-.025em;font-weight:700;line-height:1.02;margin:6px 0 14px}
+.hero .unit{color:var(--muted);margin:0;font-size:16px}
+.hero .lede{font-size:19px;max-width:44ch;color:#d3def0}
+.hero-fig{position:relative}
+.hero-fig svg{max-width:360px}
+.hero-cap{text-align:center;color:var(--muted);margin:4px 0 0;font-size:15px;min-height:1.6em}
+.hero-cap b{color:var(--text)}
+.start-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.start-grid .card{margin:0}
+.start-grid + .start-grid{margin-top:18px}
+.obj{border-left:4px solid var(--e)}
+.std{border-left:4px solid var(--c-noble)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;margin:8px 0 6px}
+.form-grid label{display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--muted);font-weight:500}
+input[type=text],input[type=number],input[type=password],select,.inp{
+  background:var(--bg2);border:1.5px solid var(--line2);border-radius:9px;padding:9px 11px;color:var(--text);font-size:16px;width:100%}
+input:focus,select:focus{border-color:var(--e);outline:none}
+.form-msg{color:var(--bad);min-height:1.4em;font-size:15px;margin:4px 0}
+.welcome{background:var(--panel2);border-radius:12px;padding:14px 16px}
+
+/* goals checklist */
+.goals{list-style:none;margin:6px 0;padding:0;display:grid;gap:8px}
+.goals li{display:flex;gap:10px;align-items:flex-start;font-size:15.5px}
+.box{flex:0 0 22px;width:22px;height:22px;border-radius:6px;border:2px solid var(--line2);display:grid;place-items:center;margin-top:1px;transition:.25s}
+.ok > .box,.mission.ok .mt > .box{background:var(--good);border-color:var(--good)}
+.ok > .box::after,.mission.ok .mt > .box::after{content:"";width:6px;height:11px;border:solid #06240f;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.ok{color:var(--text)}
+.goals li:not(.ok){color:var(--muted)}
+.just-ok > .box{animation:tickPop .6s cubic-bezier(.2,1.7,.4,1)}
+@keyframes tickPop{0%{transform:scale(.5)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
+
+/* unlock checklist */
+.unlock{background:var(--bg2);border-style:dashed}
+.unlock h3{font-size:17px;color:var(--muted);font-weight:500}
+.reqs{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.reqs li{display:flex;gap:10px;align-items:flex-start}
+.reqs li:not(.ok){color:var(--muted)}
+.unlock.all-done{border-color:var(--good);border-style:solid}
+
+/* ---------- quick checks ---------- */
+.qc-q{font-weight:500;font-size:18px;margin:4px 0 12px}
+.opts{display:grid;gap:9px}
+.opts.grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+.opt{display:flex;gap:12px;align-items:center;text-align:left;background:var(--panel2);border:1.5px solid var(--line2);border-radius:11px;padding:10px 14px;cursor:pointer;transition:border-color .2s, background .2s, transform .15s;width:100%}
+.opt:hover:not(:disabled){border-color:var(--e)}
+.opt .L{flex:0 0 30px;height:30px;border-radius:8px;background:var(--panel3);display:grid;place-items:center;font-weight:600}
+.opts.grid .opt{flex-direction:column;align-items:stretch;padding:10px}
+.opts.grid .opt .L{align-self:flex-start}
+.opts.grid .opt svg{max-width:170px;stroke-width:1}
+.opts.grid .ring{stroke-width:3}
+.opt.right{border-color:var(--good);background:rgba(74,222,128,.12)}
+.opt.right .L{background:var(--good);color:#06240f}
+.opt.wrong{border-color:var(--bad);background:rgba(251,113,133,.1);opacity:.75}
+.opt.wrong .L{background:var(--bad);color:#2a0710}
+.opt.picked{border-color:var(--e);background:rgba(95,225,255,.12)}
+.opt.picked .L{background:var(--e);color:#062430}
+.opt:disabled{cursor:default}
+body.show-key .opt[data-key]{box-shadow:0 0 0 2px var(--amber)}
+body.show-key .opt[data-key]::after{content:"key";margin-left:auto;font-size:12px;color:var(--amber);font-weight:600}
+.qc-fb{min-height:1.5em;margin:12px 0 0}
+.qc-fb.good{color:#b9f5cf} .qc-fb.bad{color:#ffc2cd}
+.qc-fig{margin:4px 0 10px}
+.qc-fig svg{max-width:280px;margin:0}
+.shake{animation:shake .45s}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+
+/* ---------- sorter (tap or drag) ---------- */
+.sorter .tray{display:flex;flex-wrap:wrap;gap:8px;min-height:50px;padding:10px;background:var(--bg2);border-radius:12px;border:1px dashed var(--line2)}
+.sorter .tray:empty::after{content:"All sorted";color:var(--good);font-size:14px;padding:6px}
+.token{background:var(--panel3);border:1.5px solid var(--line2);border-radius:9px;padding:8px 14px;font-weight:500;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;transition:transform .15s, border-color .15s, background .2s}
+.token.sel{border-color:var(--e);background:#20456a;transform:translateY(-2px)}
+.token.placed{cursor:default;border-color:var(--good);background:rgba(74,222,128,.14);animation:tickPop .45s}
+.token.el-token{display:inline-flex;gap:8px;align-items:center}
+.token.el-token .sym{font-weight:700;font-size:18px}
+.token.el-token .nm{font-size:13px;color:var(--muted)}
+.ghost-token{position:fixed;z-index:90;pointer-events:none;opacity:.92;transform:translate(-50%,-50%) rotate(-3deg);box-shadow:0 12px 28px rgba(0,0,0,.5)}
+.sorter .bins{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:12px}
+.bin{background:var(--panel2);border:1.5px solid var(--line2);border-radius:12px;padding:10px;min-height:96px;cursor:pointer;transition:border-color .2s, background .2s}
+.bin.hover,.bin:focus-visible{border-color:var(--e);background:#1f3a5e}
+.bin-label{font-size:14px;font-weight:600;color:var(--muted);margin-bottom:6px}
+.bin-drop{display:flex;flex-wrap:wrap;gap:6px}
+.sorter.rows .bins{grid-template-columns:1fr;gap:8px}
+.sorter.six .bins{grid-template-columns:repeat(3,1fr)}
+.sorter.rows .bin{display:flex;align-items:center;gap:12px;min-height:54px;padding:8px 10px}
+.sorter.rows .bin-label{margin:0;width:32px;height:32px;border-radius:50%;border:2px solid var(--amber);display:grid;place-items:center;color:var(--text);flex:0 0 32px}
+.sorter.rows .bin-drop:empty::before{content:"Drop a label here";color:var(--dim);font-size:14px}
+.sort-msg{min-height:1.4em;margin:8px 0 0;font-size:15px}
+.label-wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center}
+.label-fig svg{max-width:360px}
+
+/* ---------- element tile explorer ---------- */
+.tile-explore{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center}
+.big-tile{--c:var(--c-alkali);width:190px;height:220px;border-radius:16px;background:color-mix(in srgb,var(--c) 18%,var(--panel));border:2.5px solid var(--c);position:relative;display:grid;grid-template-rows:auto 1fr auto auto;padding:12px;gap:2px}
+.part{background:transparent;border:2px dashed transparent;border-radius:8px;cursor:pointer;padding:2px 6px;transition:border-color .2s, background .2s}
+.part:hover{border-color:rgba(255,255,255,.35)}
+.part.seen{border-color:var(--good)}
+.part.active{background:rgba(255,255,255,.1);border-color:var(--e)}
+.p-z{justify-self:start;font-size:24px;font-weight:600}
+.p-sym{font-size:64px;font-weight:700;line-height:1;justify-self:center;align-self:center}
+.p-name{font-size:18px;justify-self:center}
+.p-mass{font-size:18px;justify-self:center;color:#d5def0}
+.part-info{background:var(--panel2);border-radius:12px;padding:14px 16px;min-height:120px}
+.part-info h4{margin:0 0 4px;color:var(--e);font-size:17px;font-weight:600}
+
+/* notebook tables */
+.notebook{width:100%;border-collapse:collapse;font-size:15px;margin-top:8px}
+.notebook th{color:var(--muted);font-weight:500;text-align:left;padding:6px 8px;border-bottom:1px solid var(--line2)}
+.notebook td{padding:7px 8px;border-bottom:1px solid var(--line)}
+.notebook input{width:76px;text-align:center;padding:7px}
+.notebook input.good{border-color:var(--good);background:rgba(74,222,128,.1)}
+.notebook input.badv{border-color:var(--bad);background:rgba(251,113,133,.1)}
+.mtile{display:inline-grid;grid-template-columns:auto auto;gap:0 8px;align-items:center;background:color-mix(in srgb,var(--c) 18%,var(--panel));border:1.5px solid var(--c);border-radius:8px;padding:4px 9px;font-size:12px;color:var(--muted);line-height:1.25}
+.mtile .s{grid-row:span 2;font-size:20px;font-weight:700;color:var(--text)}
+.fb-line{min-height:1.4em;margin:10px 0 0}
+.fb-line.good{color:#b9f5cf} .fb-line.bad{color:#ffc2cd}
+
+/* ---------- simulators ---------- */
+.sim{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+.sim-el{display:flex;gap:14px;align-items:center;background:var(--panel2);border-radius:12px;padding:12px}
+.sim-el .nm{font-size:20px;font-weight:600}
+.sim-el .ar{color:var(--muted);font-size:15px}
+.sim-el .ar b{color:var(--e);font-size:18px}
+.missions{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:10px}
+.mission{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.mission.ok{border-color:var(--good)}
+.mission .mt{display:flex;gap:10px;align-items:flex-start}
+.mission .mfb{font-size:14px;margin:6px 0 0 32px;min-height:0}
+.mission .btn{margin:8px 0 0 32px}
+.mission.ok .lockin{display:none}
+.counter{font-size:14px;color:var(--muted)}
+
+/* flipchart */
+.flip{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center;background:var(--bg2);border-radius:14px;padding:16px;margin-top:12px}
+.flip-step{color:var(--amber);font-weight:600;font-size:14px;margin:0}
+.flip-text{font-size:18px;min-height:3.4em}
+.flip-left{background:var(--panel2);border-radius:10px;padding:8px 12px;display:inline-block}
+.flip-left b{color:var(--e);font-size:20px}
+.flip-dots{display:flex;gap:6px;margin-top:10px}
+.flip-dots i{width:9px;height:9px;border-radius:50%;background:var(--line2);transition:.3s}
+.flip-dots i.on{background:var(--amber);transform:scale(1.25)}
+
+/* steppers */
+.steppers{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+.stp{background:var(--panel2);border-radius:10px;padding:8px;text-align:center}
+.stp .lab{font-size:13px;color:var(--muted)}
+.stp .row{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:4px}
+.stp button{width:32px;height:32px;border-radius:8px;border:1px solid var(--line2);background:var(--panel3);cursor:pointer;font-size:18px;font-weight:600;line-height:1}
+.stp output{min-width:26px;font-size:20px;font-weight:600}
+.target{display:flex;gap:14px;align-items:center;margin:4px 0 6px}
+.target .t-name{font-size:20px;font-weight:600}
+.progress-pips{display:flex;gap:6px}
+.progress-pips i{width:26px;height:8px;border-radius:4px;background:var(--line2);transition:.3s}
+.progress-pips i.on{background:var(--good)}
+
+/* builder */
+.builder{display:grid;grid-template-columns:1.05fr .95fr;gap:22px;align-items:start}
+.b-fig{background:var(--bg2);border-radius:14px;padding:12px;position:sticky;top:96px}
+.b-fig svg{max-width:420px}
+.b-note{text-align:center;color:var(--muted);font-size:14px;margin:6px 0 0}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.tab{background:var(--panel2);border:1.5px solid var(--line2);border-radius:999px;padding:6px 14px;font-weight:500;cursor:pointer;font-size:15px}
+.tab[aria-selected=true]{border-color:var(--e);background:#1f3a5e}
+.tab.ok::after{content:" ✓";color:var(--good);font-weight:700}
+fieldset{border:1px solid var(--line);border-radius:12px;padding:10px 12px 12px;margin:0 0 10px}
+legend{padding:0 6px;color:var(--muted);font-size:14px;font-weight:500}
+.nuc-in{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.nuc-in label{font-size:14px;color:var(--muted);display:flex;flex-direction:column;gap:3px}
+.seg{display:inline-flex;background:var(--bg2);border-radius:10px;padding:3px;border:1px solid var(--line2)}
+.seg button{border:0;background:transparent;padding:7px 16px;border-radius:8px;cursor:pointer;font-weight:500}
+.seg button[aria-pressed=true]{background:var(--e);color:#062430}
+.inline-stepper{display:inline-flex;align-items:center;gap:8px}
+.inline-stepper button{width:34px;height:34px;border-radius:8px;border:1px solid var(--line2);background:var(--panel3);cursor:pointer;font-size:18px;font-weight:600}
+.inline-stepper output{font-size:20px;font-weight:600;min-width:24px;text-align:center}
+.report{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:7px}
+.report li{display:flex;gap:10px;align-items:flex-start;font-size:15px}
+.report .ic{flex:0 0 22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700}
+.report .y .ic{background:var(--good);color:#06240f}
+.report .x .ic{background:var(--bad);color:#2a0710}
+.report .w .ic{background:var(--line2);color:var(--muted)}
+
+/* placement game */
+.place-prompt{font-size:17px;background:var(--bg2);border-radius:10px;padding:10px 14px;margin:8px 0}
+.place-prompt b{color:var(--e)}
+.num-fig svg{max-width:280px}
+.demo-cap{text-align:center;font-size:16px;min-height:2.8em;margin:6px 0}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:center}
+
+/* periodic table */
+.pt{display:grid;grid-template-columns:repeat(8,minmax(38px,1fr));gap:5px;max-width:460px}
+.pt .gh{text-align:center;font-size:12px;color:var(--muted);font-weight:500}
+.pt .tile{width:auto;height:48px;font-size:17px}
+.pt .tile.same{box-shadow:0 0 0 2px var(--val)}
+.pt .tile.seen::before{content:"";position:absolute;right:4px;top:4px;width:6px;height:6px;border-radius:50%;background:var(--good)}
+.pt-wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:center}
+.pt-info{text-align:center;min-height:3em;margin:4px 0 0}
+.pt-info b.v{color:var(--val)}
+.ans-grid{display:grid;grid-template-columns:repeat(10,minmax(34px,1fr));gap:5px;margin-top:10px}
+.ans-grid .tile{width:auto;height:44px;font-size:16px}
+
+/* final check */
+.fc-dots{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 14px}
+.fc-dots button{width:32px;height:32px;border-radius:8px;border:1.5px solid var(--line2);background:var(--panel2);cursor:pointer;font-size:13px;font-weight:600}
+.fc-dots button.ans{background:#1f3a5e;border-color:var(--e)}
+.fc-dots button.cur{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--amber)}
+.score-big{font-size:64px;font-weight:700;line-height:1;margin:6px 0}
+.score-big.pass{color:var(--good)} .score-big.fail{color:var(--amber)}
+.review-item{border-top:1px solid var(--line);padding:12px 0}
+.review-item .yours{color:#ffc2cd} .review-item .right{color:#b9f5cf}
+.attempts{font-size:15px;color:var(--muted)}
+.lock-note{background:rgba(246,185,59,.1);border:1px solid rgba(246,185,59,.5);border-radius:10px;padding:10px 14px;font-size:15px}
+.review-box{background:var(--bg2);border-radius:12px;padding:12px 16px;margin:10px 0}
+.review-box li{margin:4px 0}
+
+/* results */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:12px 0}
+.stat{background:var(--panel2);border-radius:12px;padding:12px 14px}
+.stat .k{font-size:13px;color:var(--muted)}
+.stat .v{font-size:26px;font-weight:600}
+.who{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 16px;font-size:15px}
+.who span{color:var(--muted);display:block;font-size:13px}
+
+/* overlays */
+.overlay{position:fixed;inset:0;z-index:100;background:rgba(6,11,22,.86);backdrop-filter:blur(6px);display:grid;place-items:center;padding:20px}
+.overlay[hidden]{display:none}
+.modal{background:var(--panel);border:1px solid var(--line2);border-radius:18px;padding:24px;max-width:460px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.modal h3{font-size:22px;margin-bottom:6px}
+.lock-modal{border:2px solid var(--amber);text-align:center}
+.lock-icon{font-size:44px;line-height:1}
+.teacher-tools{display:grid;gap:8px;margin-top:12px}
+.drawer{position:fixed;right:16px;top:76px;z-index:60;width:min(360px,calc(100vw - 32px));background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.55)}
+.drawer[hidden]{display:none}
+.sheetbox{font-size:15px;color:var(--muted);margin:8px 0 0;min-height:1.4em}
+#toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);opacity:0;z-index:120;background:var(--panel3);border:1px solid var(--good);color:var(--text);border-radius:12px;padding:10px 18px;font-weight:500;transition:.35s;pointer-events:none;max-width:90vw;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:820px){
+  .hero,.start-grid,.sim,.builder,.flip,.two-col,.pt-wrap,.label-wrap,.tile-explore{grid-template-columns:1fr}
+  .b-fig{position:static}
+  .brand span{display:none}
+  .form-grid{grid-template-columns:1fr}
+  .big-tile{margin:0 auto}
+  .ans-grid{grid-template-columns:repeat(5,1fr)}
+  .steppers{grid-template-columns:repeat(2,1fr)}
+  .card{padding:18px 16px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .bohr.orbit .sh{animation:none!important}
+}
+@media print{
+  body{background:#fff;color:#000}
+  .topbar,.sec-foot,#toast,.drawer,.overlay,.no-print{display:none!important}
+  .screen{display:none!important}
+  #scr-10{display:block!important}
+  .card,.stat{background:#fff;border:1px solid #999;color:#000}
+  .stat .k,.who span,.muted{color:#333}
+  .goals li:not(.ok){color:#333}
+}
+
+/* ion-themed tiles */
+.tile.ion{font-size:15px;letter-spacing:-.3px}
+.tile.ion .lab{white-space:nowrap}.tile.ion sup{font-size:.62em;margin-left:1px;vertical-align:.55em;line-height:0}
+.tile.ion.pos{--c:#60a5fa}.tile.ion.neg{--c:#f472b6}.tile.ion.neu{--c:#f6b93b}
+.tile.ion.big{font-size:22px}
+.tile.ion.long{font-size:11.5px;letter-spacing:-.5px}.tile.ion.big.long{font-size:17px}
+/* section 9: balance the charges */
+.combo-ex{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;margin:12px 0;font-size:22px;font-weight:700}
+.cx-side,.cx-res{display:grid;justify-items:center;gap:2px;padding:8px 14px;border-radius:12px;background:color-mix(in srgb,#60a5fa 18%,var(--panel));border:1.5px solid #60a5fa}
+.cx-side.neg{background:color-mix(in srgb,#f472b6 18%,var(--panel));border-color:#f472b6}
+.cx-row{display:flex;gap:10px}
+.cx-res{background:color-mix(in srgb,#f6b93b 18%,var(--panel));border-color:#f6b93b}
+.combo-ex small{font-size:12px;font-weight:500;color:var(--muted)}
+.cx-op{color:var(--muted)}
+.bal-grid{display:grid;grid-template-columns:1fr 1.1fr 1fr;gap:12px;align-items:center;margin-top:8px}
+.bal-col{background:var(--panel2);border-radius:14px;padding:10px;display:grid;gap:8px;justify-items:center;border:1.5px solid #60a5fa;min-height:190px}
+.bal-col.neg{border-color:#f472b6}
+.bal-head{font-weight:700;text-align:center}
+.bal-ions{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-height:56px;align-content:center}
+.ichip{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:15px}
+.ichip.pos{background:color-mix(in srgb,#60a5fa 30%,var(--panel));border:2px solid #60a5fa}
+.ichip.neg{background:color-mix(in srgb,#f472b6 30%,var(--panel));border:2px solid #f472b6}
+.ichip.pop{animation:unlockPop .45s cubic-bezier(.2,1.6,.4,1)}
+.bal-btns{display:flex;align-items:center;gap:10px}.bal-btns b{font-size:22px;min-width:20px;text-align:center}
+.bal-tot{font-weight:700;color:var(--muted)}
+.bal-mid{text-align:center}.beam{width:100%;max-width:220px}
+.beam-g{transform-origin:100px 76px;transition:transform .6s cubic-bezier(.3,1.4,.5,1)}
+.beam-t{fill:var(--text);font:700 15px var(--font)}
+.bal-status{font-size:15px}.ok-t{color:var(--good)}
+.formula{font-size:1.15em;color:var(--amber)}
+@media (max-width:720px){.bal-grid{grid-template-columns:1fr}.bal-mid{order:-1}}
+.cmp{display:flex;gap:14px;justify-content:center;align-items:stretch;flex-wrap:wrap;margin:8px 0}
+.choice{background:var(--panel2);border:2px solid var(--line2);border-radius:16px;padding:10px 16px;color:var(--text);min-width:140px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:16px}
+.choice:hover{border-color:var(--e)}
+.choice.ok{border-color:var(--good);box-shadow:0 0 0 4px rgba(74,222,128,.22)}
+.choice.no{border-color:var(--bad);opacity:.7}
+.choice .mtile{margin:0}
+.choice .ctext{display:block;text-align:left;font-weight:500}
+/* ionic bonding */
+.tile.icon{padding:0;overflow:hidden}.tile.icon svg{width:62%;height:62%;margin-top:6px}
+.tile.icon.big svg{width:64%;height:64%;margin-top:8px}
+.warnbar{position:sticky;top:64px;z-index:15;max-width:1000px;margin:8px auto 0;background:color-mix(in srgb,var(--amber) 22%,var(--panel));border:1.5px solid var(--amber);border-radius:12px;padding:10px 14px;font-weight:600}
+.scene-wrap{background:var(--bg2);border-radius:14px;padding:6px;margin:10px 0;overflow-x:auto}
+svg.tscene{width:100%;min-width:560px;height:auto;display:block}
+.tscene .tat.tap{cursor:pointer}.tscene .hit{fill:transparent}
+.tscene .tat.sel .ring,.tscene .tat.sel .l-sym{stroke:var(--amber)}
+.tscene .tat.m.tap:hover .e.val,.tscene .e.val{filter:drop-shadow(0 0 6px #fde047)}
+.tscene .l-sym{font:800 46px var(--font);fill:var(--text);text-anchor:middle}
+.tscene .tat.sel .l-sym{fill:var(--amber)}
+.tscene .l-dot{fill:var(--e)}.tscene .l-dot.gain{fill:#f472b6}.tscene .l-dot.val{fill:#fde047;filter:drop-shadow(0 0 5px #fde047)}
+.tscene .l-br{fill:none;stroke:var(--text);stroke-width:3}.tscene .l-q{font:800 26px var(--font);fill:var(--text)}
+.tscene .t-lab{font:700 22px var(--font);fill:var(--muted);text-anchor:middle}
+.tscene .flyer{fill:#fde047;filter:drop-shadow(0 0 10px #fde047)}
+.tscene .trail{fill:none;stroke:#fde047;stroke-width:2.5;stroke-dasharray:6 6;opacity:.7}
+.tscene .attract{stroke:var(--good);stroke-width:3;stroke-dasharray:8 6;animation:pulseA 1.2s ease-in-out infinite}
+.tscene .attract-t{font:800 22px var(--font);fill:var(--good);text-anchor:middle}
+@keyframes pulseA{50%{opacity:.35}}
+.legend .dot.y{background:#fde047}
+.mini-flow,.mist{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;margin:10px 0}
+.pill{padding:6px 14px;border-radius:999px;background:var(--panel2);border:1.5px solid var(--line2);font-weight:700}
+.pill.pos{border-color:#60a5fa}.pill.neg{border-color:#f472b6}.arr{color:var(--amber);font-weight:700}
+.count-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:8px 0}
+.cnt{display:flex;align-items:center;gap:8px;background:var(--panel2);border-radius:12px;padding:6px 10px}
+.cnt button{width:32px;height:32px;border-radius:8px;border:1px solid var(--line2);background:var(--bg2);color:var(--text);font-weight:800}
+.cnt b{min-width:18px;text-align:center;font-size:18px}
+.fb-build{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;align-items:stretch;margin:8px 0}
+.ionbox{background:var(--panel2);border-radius:14px;padding:10px;display:grid;justify-items:center;gap:8px;border:1.5px solid #60a5fa}.ionbox.neg{border-color:#f472b6}
+.ionbox .ions{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;min-height:56px}
+.ionbox small{color:var(--muted)}
+.ichip{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:15px;animation:unlockPop .4s}
+.ichip.pos{background:color-mix(in srgb,#60a5fa 30%,var(--panel));border:2px solid #60a5fa}.ichip.neg{background:color-mix(in srgb,#f472b6 30%,var(--panel));border:2px solid #f472b6}
+.ftot{background:var(--panel2);border-radius:14px;padding:10px;display:grid;justify-items:center;align-content:center;gap:8px}
+.fout{font-size:30px;font-weight:800;color:var(--amber)}.ok-t{color:var(--good)}
+.ide{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.ide span{background:var(--panel2);border-radius:10px;padding:6px 12px}
+.lat-wrap{background:var(--bg2);border-radius:14px;padding:8px;margin:10px 0}
+svg.lattice{width:100%;max-width:620px;display:block;margin:0 auto}
+.lattice .lat-box{fill:none;stroke:var(--line2);stroke-width:2;stroke-dasharray:6 6}
+.lattice .ip{fill:color-mix(in srgb,#60a5fa 55%,#0b1220);stroke:#60a5fa;stroke-width:2}.lattice .in{fill:color-mix(in srgb,#f472b6 45%,#0b1220);stroke:#f472b6;stroke-width:2}
+.lattice .it{font:700 11px var(--font);fill:#fff;text-anchor:middle}
+.lattice .wire{fill:none;stroke:#94a3b8;stroke-width:3}.lattice .bulb{fill:#334155;stroke:#94a3b8;stroke-width:2;transition:fill .4s}.lattice .bulb.on{fill:#fde047;filter:drop-shadow(0 0 16px #fde047)}.lattice .bulb-base{fill:#94a3b8}
+.tp-h{margin:14px 0 4px}.sa-tag{display:inline-block;font-size:12px;font-weight:800;color:var(--amber);border:1px solid var(--amber);border-radius:999px;padding:1px 8px;margin-left:6px}
+.opt.sa .cbx{flex:0 0 18px;height:18px;border-radius:4px;border:2px solid var(--muted);margin-right:4px}.opt.sa.picked .cbx{background:var(--e);border-color:var(--e)}
+/* phenomenon card */
+.k-phen{border:2px solid #fb923c;background:linear-gradient(180deg,color-mix(in srgb,#fb923c 10%,var(--panel)),var(--panel))}
+.k-phen .tag{color:#2a1305;background:#fb923c}
+.phen-svg{width:100%;max-width:720px;display:block;margin:6px auto 10px}
+.phen-svg .ph-l{font:600 14px var(--font);fill:var(--muted);text-anchor:middle}.phen-svg .ph-op{font:800 40px var(--font);fill:var(--text)}
+body.preview .topbar{box-shadow:inset 0 -3px 0 var(--amber)}
+@media (max-width:720px){.fb-build{grid-template-columns:1fr}}
+.sorter .token.placed{cursor:pointer}.sorter .token.locked{cursor:default;opacity:.95}.sorter .tray.hover,.sorter .tray:focus-visible{outline:2px dashed var(--e)}.sort-row{margin-top:10px;align-items:center}
+.lockcode-box{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:2px 12px;background:color-mix(in srgb,var(--amber) 16%,var(--panel2));border:1.5px solid var(--amber);border-radius:12px;padding:10px 14px;margin:0 0 12px}.lockcode-box span{color:var(--muted);font-size:13px;font-weight:700}.lockcode-box b{font-size:24px;letter-spacing:1px;color:var(--amber)}.lockcode-box small{grid-column:1/-1;color:var(--muted)}
+
+/* covalent bonding scenes */
+svg.sscene{width:100%;min-width:480px;height:auto;display:block}
+.sscene .ssym{font:800 40px var(--font);fill:var(--text);text-anchor:middle}
+.sscene .ldot{fill:var(--e)}
+.sscene .udot{fill:#fde047;filter:drop-shadow(0 0 5px #fde047)}
+.sscene .sdot{fill:#fde047}
+.sscene .bline{stroke:var(--text);stroke-width:3.5;stroke-linecap:round}
+.sscene .oct{fill:none;stroke:var(--line2);stroke-width:2;stroke-dasharray:6 6}.sscene .oct.full{stroke:var(--good)}
+.sscene .octn{font:800 15px var(--font);fill:var(--good);text-anchor:middle}
+.sscene .slab{font:700 16px var(--font);fill:var(--muted);text-anchor:middle}.sscene .slab.sm{font-size:13px;font-weight:600}
+.sscene .sat.tap{cursor:pointer}.sscene .hit{fill:transparent}
+.legend .dot.g2{background:transparent;border:2px dashed var(--good)}
+.bond-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px}
+.bond-card{background:var(--panel2);border-radius:12px;padding:10px;text-align:center;display:grid;gap:2px}
+.bond-card b{font-size:28px}.bond-card span{color:var(--muted);font-size:13px}.bond-card em{font-style:normal;font-weight:800;color:var(--amber)}
+@media (max-width:640px){.bond-row{grid-template-columns:1fr 1fr}}
+
+/* build-it-yourself */
+.bld-steps{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.bstep{padding:4px 12px;border-radius:999px;background:var(--panel2);color:var(--muted);font-weight:700;font-size:13px}.bstep.on{background:var(--e);color:#0b2630}
+.bld-msg.bad{color:#ffc2cd}
+.bld-tray{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0;min-height:20px}
+.dcard{display:grid;justify-items:center;gap:2px;background:var(--panel2);border:1.5px solid var(--line2);border-radius:12px;padding:6px 10px;color:var(--text);cursor:grab}
+.dcard span{font-size:12px;color:var(--muted)}.dcard.sel{border-color:var(--amber);box-shadow:0 0 0 2px rgba(246,185,59,.35)}.dcard.used{opacity:.3}
+.sscene .slot rect{fill:rgba(95,225,255,.04);stroke:var(--line2);stroke-width:2;stroke-dasharray:6 6}.sscene .slot{cursor:pointer}.sscene .slot.filled rect{stroke:var(--e)}
+.sscene .slot-l{font:600 12px var(--font);fill:var(--muted);text-anchor:middle}.sscene .placed{color:var(--text)}
+.sscene .tapdot{cursor:pointer}.sscene .tapdot.sel{stroke:#fff;stroke-width:3}
+.sscene .bdot{fill:var(--e)}.sscene .bhit{fill:transparent;cursor:pointer}.sscene .tapdot.sel{fill:#fff;stroke:var(--e);stroke-width:3}
+
+/* metallic bonding scenes */
+svg.mscene{width:100%;min-width:420px;height:auto;display:block}
+.mscene .mbox{fill:rgba(148,163,184,.06);stroke:var(--line2);stroke-width:2}
+.mscene .mcat{fill:#64748b;stroke:#cbd5e1;stroke-width:1.5}.mscene .mcl{font:800 12px var(--font);fill:#fff;text-anchor:middle}
+.mscene .mel{fill:var(--e);filter:drop-shadow(0 0 4px rgba(95,225,255,.7))}
+.mscene .ipos{fill:#25406b;stroke:#60a5fa;stroke-width:2}.mscene .ineg{fill:#5a2747;stroke:#f472b6;stroke-width:2}
+.mscene .crack{fill:none;stroke:#f87171;stroke-width:3}.mscene .repel{stroke:#f87171;stroke-width:2.5}
+.mscene .mnote{font:700 14px var(--font);text-anchor:middle}.mscene .mnote.good{fill:var(--good)}.mscene .mnote.bad{fill:#f87171}
+.mscene .wire{fill:none;stroke:#94a3b8;stroke-width:3}.mscene .batt{fill:#334155;stroke:#94a3b8}.mscene .battl{font:700 11px var(--font);fill:#cbd5e1;text-anchor:middle}
+.mscene .bulb{fill:#334155;stroke:#94a3b8;stroke-width:2;transition:fill .3s}.mscene .bulb.on{fill:#fde047;filter:drop-shadow(0 0 14px #fde047)}
+.two-scene{display:grid;grid-template-columns:1fr;gap:6px}.two-scene h4{margin:6px 0;color:var(--muted)}
+.ph-pair{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}.ph-pair figure{margin:0;text-align:center}.ph-svg{width:220px}.ph-pair figcaption{color:var(--muted);font-size:13px}
+.legend .dot.gray{background:#64748b}
+.cmp-table{width:100%;border-collapse:collapse}.cmp-table th,.cmp-table td{border:1px solid var(--line2);padding:8px 10px;text-align:left}.cmp-table th{color:var(--e)}.cmp-table td:first-child{color:var(--muted);font-weight:700}
+@media (max-width:720px){.two-scene{grid-template-columns:1fr}}
+
+/* counting atoms */
+.coef{font-size:1.15em;color:var(--amber);margin-right:2px}
+.formula-big{font-size:46px;font-weight:600;margin:6px 0 10px;letter-spacing:.02em}.formula-big sub{font-size:.55em}
+.cnt-rows{display:grid;gap:8px;max-width:440px}.cnt-row{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--panel2);border-radius:10px;padding:8px 12px}
+.cnt-row input{width:90px;font:600 20px var(--font);padding:6px 8px;border-radius:8px;border:1.5px solid var(--line2);background:var(--panel);color:var(--text);text-align:center}
+.cnt-el{display:flex;align-items:center;gap:8px}.dot{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:middle;border:1px solid rgba(0,0,0,.3)}
+svg.psvg{width:100%;max-width:560px;height:auto;display:block}.cnt-pic{margin-top:8px}
+.eqline{font-size:28px;font-weight:600;margin:6px 0 10px}.eqline sub{font-size:.6em}
+.eq-pics{display:flex;align-items:center;flex-wrap:wrap;gap:4px}.eq-pics svg.psvg{max-width:260px}.arrow-big{font-size:40px;padding:0 6px}
+.side-table{border-collapse:collapse;margin:8px 0}.side-table th,.side-table td{border:1px solid var(--line2);padding:6px 12px;text-align:left}.side-table th{color:var(--e)}
+.side-table input{width:80px;font:600 18px var(--font);padding:4px 6px;border-radius:8px;border:1.5px solid var(--line2);background:var(--panel2);color:var(--text);text-align:center}
+.pic-q svg.psvg{max-width:420px;margin:6px 0}.cmp2{display:flex;gap:16px;flex-wrap:wrap}.cmp2>div{text-align:center}.cmp2 svg.psvg{max-width:280px}
+
+/* types of reactions */
+svg.rxsvg{width:100%;height:auto;display:block;min-width:520px}.rxsvg .rxlab{font:600 13px var(--font);fill:var(--muted);text-anchor:middle}.rxsvg .rxarrow{font:700 34px var(--font);fill:var(--text);text-anchor:middle}
+.rxsvg .rxplus{font:700 22px var(--font);fill:var(--text);text-anchor:middle}.rxsvg .rxbond{stroke:#94a3b8;stroke-width:3.5}.rxsvg .rxring{fill:rgba(148,163,184,.06);stroke:#35496f;stroke-dasharray:4 4}.rxsvg .rxfly{opacity:.9}
+.ph-list{display:grid;gap:6px;margin:6px 0 10px}.ph-list div{display:flex;justify-content:space-between;gap:10px;background:var(--panel2);border-radius:10px;padding:8px 12px;flex-wrap:wrap}.ph-list span{font-weight:600;color:var(--e)}
+table.types{border-collapse:collapse;width:100%;margin:8px 0}table.types td{border:1px solid var(--line2);padding:6px 10px}table.types td:nth-child(2){font-weight:600;color:var(--amber);white-space:nowrap}
+
+/* balancing equations */
+.bal-eq{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0}.bsub{display:inline-flex;align-items:center;gap:6px;background:var(--panel2);border-radius:12px;padding:6px 10px}
+.bform{font-size:26px;font-weight:600}.bform sub{font-size:.6em}.bop{font-size:26px;font-weight:700;padding:0 4px}
+.stepper{display:inline-flex;align-items:center;gap:2px}.stepper button{width:30px;height:30px;border-radius:8px;border:1.5px solid var(--line2);background:var(--panel);color:var(--text);font:700 18px var(--font);cursor:pointer}.stepper button:disabled{opacity:.4}
+.bcoef{min-width:26px;text-align:center;font-size:24px;color:var(--muted)}.bcoef.on{color:var(--amber)}
+.bal-pics{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#0b1322;border:1px solid var(--line2);border-radius:12px;padding:8px;margin:8px 0;overflow-x:auto}
+.bp-side{display:flex;align-items:center;gap:4px;flex-wrap:wrap}.bp-side small{width:100%;color:var(--muted);font-size:12px}.bp-arrow{font-size:30px;font-weight:700}.bplus{font-size:20px;padding:0 2px}
+.bpic{display:inline-block}.bpic svg{display:block}.side-table tr.ok td{color:var(--good)}.side-table tr.off td{color:#fca5a5}.side-table td:last-child{font-weight:800}
+
+/* molar mass */
+.mm-tiles{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.ptile{width:86px;border:2px solid var(--line2);border-radius:10px;padding:6px;background:var(--panel2);display:flex;flex-direction:column;align-items:center;line-height:1.15}
+.ptile small{align-self:flex-start;color:var(--muted);font-size:12px}.ptile b{font-size:26px}.ptile span{font-size:11px;color:var(--muted)}.ptile em{font-style:normal;font-weight:700;color:var(--amber)}
+.side-table.mm input{width:90px}.side-table.mm tr.tot td{border-top:2px solid var(--line2)}
+.calc-q{font-size:18px;margin:8px 0}.calc-in{width:150px;font:600 20px var(--font);padding:6px 10px;border-radius:8px;border:1.5px solid var(--line2);background:var(--panel2);color:var(--text)}.calc-unit{font-weight:700;margin:0 8px}
+.molemap{display:flex;align-items:center;justify-content:center;gap:12px;margin:10px 0}.mbox{border:2px solid var(--e);border-radius:12px;padding:14px 22px;font-size:22px;font-weight:700}.marrows{display:flex;flex-direction:column;gap:6px;font-weight:700;color:var(--amber)}.marrows span:last-child{color:var(--good)}
+.drop-fig{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#0b1322;border-radius:12px;padding:8px;margin:6px 0}.drop-fig span{font-weight:700;color:var(--amber)}
+
+/* parts of an atom */
+.hero-spin{transform-origin:150px 150px;animation:heroSpin 40s linear infinite}@keyframes heroSpin{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){.hero-spin{animation:none}}
+.zoom-steps{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}.zs{padding:6px 10px;border-radius:999px;border:1.5px solid var(--line2);background:var(--panel2);color:var(--muted);font:600 13px var(--font);cursor:pointer}.zs.seen{color:var(--text)}.zs.on{border-color:var(--e);color:var(--e)}
+.zoom-fig{display:flex;justify-content:center;background:#0b1322;border-radius:12px;padding:8px}.zoom-fig svg{max-width:420px}.zoom-cap{font-size:17px;margin:8px 0}
+.foil-t td{font-size:20px;font-weight:700;text-align:center}
+.lab-wrap{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start}.lab-fig{position:relative;width:320px;max-width:100%;background:#0b1322;border-radius:12px}.lab-fig>svg.tsvg{max-width:none!important;width:100%}.lab-lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.lab-fig svg{display:block;width:100%;height:auto}
+.lab-t{position:absolute;transform:translate(-50%,-50%);min-width:34px;padding:4px 8px;border-radius:8px;border:2px dashed var(--amber);background:rgba(11,19,34,.85);color:var(--amber);font:700 13px var(--font);cursor:pointer;white-space:nowrap}
+.lab-t.filled{border-style:solid;color:var(--text);border-color:var(--e)}.lab-t.ok{border-color:var(--good);color:var(--good)}
+.lab-bank{display:flex;flex-direction:column;gap:8px;min-width:170px}.lab-l{padding:8px 12px;border-radius:10px;border:1.5px solid var(--line2);background:var(--panel2);color:var(--text);font:600 14px var(--font);cursor:grab;text-align:left}.lab-l.sel{border-color:var(--amber);box-shadow:0 0 0 2px rgba(246,185,59,.35)}
+.build-wrap{display:flex;gap:14px;flex-wrap:wrap;align-items:center}.build-fig{background:#0b1322;border-radius:12px;width:300px;max-width:100%}.build-fig svg{display:block;width:100%;height:auto}
+.build-side{display:flex;flex-direction:column;gap:10px;min-width:240px}.b-step{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--panel2);border-radius:10px;padding:6px 10px}
+.b-step .stepper button{width:32px;height:32px;border-radius:8px;border:1.5px solid var(--line2);background:var(--panel);color:var(--text);font:700 18px var(--font);cursor:pointer}.b-step .stepper b{min-width:28px;display:inline-block;text-align:center;font-size:20px}
+.b-read{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}.b-read div{background:#0b1322;border-radius:10px;padding:6px 8px;text-align:center}.b-read small{display:block;color:var(--muted);font-size:11px}.b-read b{color:var(--e)}
+.tbl-scroll{overflow-x:auto}.fill-t input{width:64px}.fill-t td.given{color:var(--amber);font-weight:700;background:rgba(246,185,59,.08)}.fill-t input.bad{border-color:var(--bad)!important}
+.ptile.big{width:150px;padding:10px;position:relative}.ptile.big b{font-size:40px}.ptile.big em{font-size:18px}.big-eq{font-size:20px;text-align:center}
+.tl{position:absolute;font-style:normal;font-size:11px;color:var(--e);white-space:nowrap}.tl1{left:-112px;top:6px}.tl2{right:-62px;top:34px}.tl3{left:-56px;top:70px}.tl4{right:-142px;bottom:8px}
+.cnt-row{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--panel2);border-radius:10px;padding:8px 12px;max-width:420px;margin:6px 0}.cnt-row input{width:110px;font:600 18px var(--font);padding:5px 8px;border-radius:8px;border:1.5px solid var(--line2);background:var(--panel);color:var(--text);text-align:center}
+
+/* dimensional analysis */
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px;font-weight:600}.frac .ft{padding:0 6px 3px}.frac .fb{padding:3px 6px 0;border-top:2px solid currentColor}
+.cx{text-decoration:line-through;text-decoration-color:#f87171;text-decoration-thickness:2px;color:var(--muted)}
+.cf-row{display:flex;align-items:center;justify-content:center;gap:16px;font-size:22px;margin:8px 0}
+.bridge{display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-size:21px;background:#0b1322;border-radius:12px;padding:12px;margin:8px 0}.bridge.demo{justify-content:center}
+.b-start{font-weight:700}.b-x{font-weight:700;color:var(--muted)}.b-ans input{width:120px;font:600 19px var(--font);padding:4px 8px;border-radius:8px;border:1.5px solid var(--e);background:var(--panel);color:var(--text);text-align:center}
+.b-slot{min-width:150px;min-height:70px;border-radius:10px;border:2px dashed var(--amber);background:rgba(246,185,59,.05);color:var(--text);font:600 18px var(--font);cursor:pointer}.b-slot.filled{border-style:solid;border-color:var(--e)}.b-empty{font-size:13px;color:var(--amber)}
+.b-tray{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0}.b-tile{padding:6px 10px;border-radius:10px;border:1.5px solid var(--line2);background:var(--panel2);color:var(--text);font:600 17px var(--font);cursor:grab}.b-tile.sel{border-color:var(--amber);box-shadow:0 0 0 2px rgba(246,185,59,.35)}
+.pen-wrap{display:flex;gap:14px;flex-wrap:wrap;align-items:center}.pen-svg{max-width:320px;background:#0b1322;border-radius:12px}.pen-side{flex:1;min-width:240px}
+.nfields{display:grid;gap:6px;max-width:440px}
+.zoom-fig svg.wide{max-width:600px;width:100%}
+.state-wrap{display:flex;gap:14px;flex-wrap:wrap;align-items:center}.pview{width:320px;max-width:100%;height:auto;background:#0b1322;border-radius:12px}
+.tside{flex:1;min-width:240px}.tlabel{display:block;font-size:16px;margin:8px 0}.tlabel input{width:100%;margin-top:6px;accent-color:#f97316}
+.pd-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}.pd-row figure{margin:0;text-align:center;max-width:150px}.pd-row figcaption{font-size:13px;color:var(--muted)}
+.kegraph{width:100%;max-width:560px;background:#0b1322;border-radius:12px}.token svg{display:block}
+.zoom-fig svg.vpgraph,.vpgraph{width:100%;max-width:560px;background:#0b1322;border-radius:12px}.gauge{background:#0b1322;border-radius:10px;padding:8px 12px;margin:8px 0;text-align:center}.gauge small{display:block;color:var(--muted)}.gauge b{font-size:26px;color:var(--e)}
+.chips-row{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.b-read.b3{grid-template-columns:repeat(3,1fr)}
+.zoom-fig svg.pdgraph,.pdgraph{width:100%;max-width:560px;background:#0b1322;border-radius:12px}.xp-fig{max-width:560px}.xp-fig svg{cursor:crosshair}.xp-ctl{max-width:560px}
+.cmp2 svg.pdgraph{max-width:100%}.lab-fig>svg.pdgraph{max-width:none!important;width:100%}
+.zoom-fig svg.hcgraph,.hcgraph{width:100%;max-width:560px;background:#0b1322;border-radius:12px}.heat-wrap{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start}.beaker{width:220px;max-width:40%;background:#0b1322;border-radius:12px}.heat-side{flex:1;min-width:280px}
+.bars{display:grid;gap:10px;margin:8px 0}.bars div{position:relative;background:#0b1322;border-radius:8px;padding:8px 10px;overflow:hidden}.bars span{position:absolute;left:0;top:0;bottom:0;opacity:.45}.bars .bar1{background:#5fe1ff}.bars .bar2{background:#f97316}.bars b{position:relative}
+.baro{width:300px;max-width:100%;background:#0b1322;border-radius:12px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <radialGradient id="nucGrad" cx="40%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#ff9b84"/>
+      <stop offset="55%" stop-color="#d9563f"/>
+      <stop offset="100%" stop-color="#7a2c22"/>
+    </radialGradient>
+  </defs>
+</svg>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="5" fill="#e0654f"/><circle cx="20" cy="20" r="11" fill="none" stroke="#35496f" stroke-width="2"/><circle cx="20" cy="20" r="17" fill="none" stroke="#35496f" stroke-width="2"/><circle cx="20" cy="9" r="2.6" fill="#5fe1ff"/><circle cx="37" cy="20" r="2.6" fill="#5fe1ff"/><circle cx="20" cy="37" r="2.6" fill="#5fe1ff"/></svg>
+      <span>Measuring Gas Pressure</span>
+    </div>
+    <nav class="navtiles" id="navTiles" aria-label="Lesson sections"></nav>
+    <div class="top-actions">
+      <button class="top-btn" id="goalsBtn" type="button" aria-expanded="false" aria-controls="goalsDrawer">Goals 0/6</button>
+      <button class="top-btn" id="teacherBtn" type="button">Teacher</button>
+    </div>
+  </div>
+</header>
+
+<div class="warnbar hidden" id="warnBar" role="alert"></div>
+<main id="app">
+  <!-- START -->
+  <section class="screen" id="scr-0" aria-label="Start">
+    <div class="hero">
+      <div>
+        <p class="unit">Chemistry, Unit 5: States of Matter</p>
+        <h1>Measuring Gas Pressure</h1>
+        <p class="lede">Watch particles crash into walls, read a mercury barometer at sea level and on Mount Everest, and convert pressures between atm, mmHg, torr, and kPa. Nine short sections, about 40 minutes.</p>
+      </div>
+      <div class="hero-fig hero-ion">
+        <svg id="heroSvg" viewBox="0 0 600 260" aria-label="Mercury barometer at sea level reading 760 millimeters"></svg>
+        <p class="hero-cap" id="heroCap"></p>
+      </div>
+    </div>
+
+    <div class="start-grid">
+      <section class="card obj">
+        <span class="tag">Objective</span>
+        <p>I can explain gas pressure using particle collisions, describe how a barometer works, and convert pressures between atm, mmHg, torr, and kPa.</p>
+      </section>
+      <section class="card std">
+        <span class="tag">Standard</span>
+        <p><b>NGSS HS-PS1-3</b> (bulk properties from particle behavior) and <b>HSN-Q.A.1</b> (use units to guide multi-step problems).</p>
+      </section>
+    </div>
+
+    <div class="start-grid">
+      <section class="card" id="startCard">
+        <span class="tag">Before you start</span>
+        <div id="welcomeBack" class="welcome hidden"></div>
+        <div id="startForm">
+          <div class="form-grid">
+            <label>First name<input type="text" id="fFirst" autocomplete="given-name"></label>
+            <label>Last name<input type="text" id="fLast" autocomplete="family-name"></label>
+            <label>Period
+              <select id="fPeriod">
+                <option value="">Choose your period</option>
+                <option>1</option><option>2</option><option>3</option><option>4</option>
+                <option>5</option><option>6</option><option>7</option><option>8</option>
+              </select>
+            </label>
+            <label>Teacher's name<select id="fTeacher"></select></label>
+            <label>Student ID<input type="text" id="fSid" inputmode="numeric" autocomplete="off"></label>
+          </div>
+          <p class="form-msg" id="formMsg" aria-live="polite"></p>
+          <button class="btn primary" id="fStart" type="button">Start the lesson</button>
+        </div>
+      </section>
+      <section class="card">
+        <span class="tag">Your goals</span>
+        <ul class="goals" id="goalsStart"></ul>
+        <p class="small muted">These check themselves off as you finish sections. Your progress saves on this device.</p>
+      </section>
+    </div>
+  </section>
+
+  <section class="screen" id="scr-1"></section>
+  <section class="screen" id="scr-2"></section>
+  <section class="screen" id="scr-3"></section>
+  <section class="screen" id="scr-4"></section>
+  <section class="screen" id="scr-5"></section>
+  <section class="screen" id="scr-6"></section>
+  <section class="screen" id="scr-7"></section>
+  <section class="screen" id="scr-8"></section>
+  <section class="screen" id="scr-9"></section>
+  <section class="screen" id="scr-10"></section>
+</main>
+
+<!-- goals drawer -->
+<aside class="drawer" id="goalsDrawer" hidden aria-label="Your goals">
+  <h3 style="font-size:18px;margin-bottom:10px">Your goals</h3>
+  <ul class="goals" id="goalsDrawerList"></ul>
+  <div class="btn-row"><button class="btn ghost sm" id="goalsClose" type="button">Close</button></div>
+</aside>
+
+<!-- word help popover -->
+<div id="pop" role="dialog" aria-live="polite" hidden><b></b><p></p></div>
+
+<!-- teacher modal -->
+<div class="overlay" id="teacherOv" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="tTitle">
+    <h3 id="tTitle">Teacher view</h3>
+    <div id="tLogin">
+      <p class="muted small">Enter the teacher code.</p>
+      <input type="password" id="tCode" autocomplete="off" aria-label="Teacher code">
+      <p class="form-msg" id="tMsg"></p>
+      <div class="btn-row"><button class="btn primary" id="tGo" type="button">Open teacher view</button><button class="btn ghost" id="tCancel" type="button">Cancel</button></div>
+    </div>
+    <div id="tPanel" class="hidden">
+      <div class="lockcode-box"><span>Lock screen code</span><b>pressure</b><small>Type this on a student's locked screen. teacher007 also works there.</small></div>
+      <p class="small muted" id="tInfo"></p>
+      <div class="teacher-tools">
+        <button class="btn ghost" id="tUnlock" type="button">Unlock every section</button>
+        <button class="btn ghost" id="tKey" type="button">Show answer key</button>
+        <button class="btn ghost" id="tEndLock" type="button">End lockdown for this check</button>
+        <button class="btn ghost" id="tSend" type="button">Send this student's scores to the sheet</button>
+        <button class="btn ghost" id="tCsv" type="button">Download scores saved on this Chromebook</button>
+        <button class="btn ghost" id="tPreview" type="button">Preview mode (saves nothing)</button>
+        <button class="btn ghost" id="tReset" type="button">Reset this device (erase progress)</button>
+        <p class="sheetbox sheetStatus small" aria-live="polite"></p>
+      </div>
+      <div class="btn-row"><button class="btn primary" id="tClose" type="button">Close</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- lockdown -->
+<div class="overlay" id="lockOv" hidden>
+  <div class="modal lock-modal" role="alertdialog" aria-modal="true" aria-labelledby="lockTitle">
+    <div class="lock-icon" aria-hidden="true">🔒</div>
+    <h3 id="lockTitle">Your final check is locked</h3>
+    <p class="muted">You left the page or exited full screen. Ask your teacher to unlock it.</p>
+    <input type="password" id="lockCode" autocomplete="off" aria-label="Teacher unlock code" placeholder="Teacher code">
+    <p class="form-msg" id="lockMsg"></p>
+    <button class="btn amber" id="lockGo" type="button">Unlock</button>
+  </div>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="sheets-config.js"></script>
+<script>
+(() => {
+'use strict';
+
+/* =========================================================
+   SETTINGS
+   ========================================================= */
+const KEY = 'fate_chem_gas_pressure_v1';
+const UNLOCK_CODE = 'pressure'; /* lock-screen code = last word of the lesson title, any capitalization */
+const TEACHER_CODE = 'teacher007'; /* opens the Teacher button tools, any capitalization */
+const LESSON = 'Measuring Gas Pressure';
+/* Google Sheets + teacher list: same setup as the formative assessments.
+   If sheets-config.js (next to this file on the site) defines TEACHERS or SHEETS_WEBHOOK_URL, those win. */
+const BACKUP_URL = 'https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const BACKUP_TEACHERS = ['Austin', 'Mueller', 'McCue', 'Arce', 'Trimm', 'Garcia', 'Trimm/Callanan', 'Callanan'];
+function periodList() { try { if (typeof PERIODS !== 'undefined' && Array.isArray(PERIODS) && PERIODS.length) return PERIODS.map(String); } catch (e) {} return ['1', '2', '3', '4', '5', '6', '7', '8']; }
+function teacherList() { try { if (typeof TEACHERS !== 'undefined' && Array.isArray(TEACHERS) && TEACHERS.length) return TEACHERS.map(String).filter(Boolean); } catch (e) {} return BACKUP_TEACHERS; }
+function sheetURL() { try { if (typeof SHEETS_WEBHOOK_URL !== 'undefined' && SHEETS_WEBHOOK_URL && String(SHEETS_WEBHOOK_URL).indexOf('PASTE') < 0) return String(SHEETS_WEBHOOK_URL); } catch (e) {} return BACKUP_URL; }
+const PASS_SCORE = 8, FC_LEN = 10;
+const LOCK_ON = false /* lockdown removed */;
+const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const sum = a => a.reduce((x, y) => x + y, 0);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+/* =========================================================
+   ELEMENT DATA (first 20)
+   ========================================================= */
+const EL = [
+  ['H', 'Hydrogen', '1.008', 1, 1, 'nonmetal'], ['He', 'Helium', '4.003', 18, 1, 'noble'],
+  ['Li', 'Lithium', '6.94', 1, 2, 'alkali'], ['Be', 'Beryllium', '9.012', 2, 2, 'alkaline'],
+  ['B', 'Boron', '10.81', 13, 2, 'metalloid'], ['C', 'Carbon', '12.011', 14, 2, 'nonmetal'],
+  ['N', 'Nitrogen', '14.007', 15, 2, 'nonmetal'], ['O', 'Oxygen', '15.999', 16, 2, 'nonmetal'],
+  ['F', 'Fluorine', '18.998', 17, 2, 'halogen'], ['Ne', 'Neon', '20.180', 18, 2, 'noble'],
+  ['Na', 'Sodium', '22.990', 1, 3, 'alkali'], ['Mg', 'Magnesium', '24.305', 2, 3, 'alkaline'],
+  ['Al', 'Aluminum', '26.982', 13, 3, 'post'], ['Si', 'Silicon', '28.086', 14, 3, 'metalloid'],
+  ['P', 'Phosphorus', '30.974', 15, 3, 'nonmetal'], ['S', 'Sulfur', '32.06', 16, 3, 'nonmetal'],
+  ['Cl', 'Chlorine', '35.45', 17, 3, 'halogen'], ['Ar', 'Argon', '39.948', 18, 3, 'noble'],
+  ['K', 'Potassium', '39.098', 1, 4, 'alkali'], ['Ca', 'Calcium', '40.078', 2, 4, 'alkaline']
+].map((a, i) => ({ z: i + 1, sym: a[0], name: a[1], massStr: a[2], mass: parseFloat(a[2]), group: a[3], period: a[4], cat: a[5] }));
+const E = z => EL[z - 1];
+/* usual ion charge for the first 20 (null = usually shares electrons instead) */
+const ION = { H: 1, He: 0, Li: 1, Be: 2, B: null, C: null, N: -3, O: -2, F: -1, Ne: 0, Na: 1, Mg: 2, Al: 3, Si: null, P: -3, S: -2, Cl: -1, Ar: 0, K: 1, Ca: 2 };
+const ionCharge = z => ION[E(z).sym];
+const chargeText = c => c > 0 ? (c > 1 ? c : '') + '+' : c < 0 ? (c < -1 ? -c : '') + '−' : '';
+const ionHTML = (sym, c) => `<span class="ion">${sym}${c ? `<sup>${chargeText(c)}</sup>` : ''}</span>`;
+const IDE = { F: 'fluoride', Cl: 'chloride', O: 'oxide', S: 'sulfide', N: 'nitride', P: 'phosphide' };
+const ionName = z => { const e = E(z), c = ionCharge(z); return c < 0 ? IDE[e.sym] : e.name.toLowerCase() + ' ion'; };
+const bySym = s => EL.find(e => e.sym === s);
+const massNum = z => Math.round(E(z).mass);
+const neutrons = z => massNum(z) - z;
+function arr(z) { const caps = [2, 8, 8, 8], out = []; let left = z; for (const c of caps) { if (left <= 0) break; const k = Math.min(c, left); out.push(k); left -= k; } return out; }
+const valence = z => arr(z)[arr(z).length - 1];
+/* Class rule: one at a time top, right, bottom, left; the 5th pairs with the 1st, and so on. */
+function conv(n) { n = Math.max(0, Math.min(8, n)); const b = Math.floor(n / 4), r = n % 4; return [0, 1, 2, 3].map(s => b + (s < r ? 1 : 0)); }
+const norm = s => Array.isArray(s) ? s : conv(s);
+const SIDE = ['top', 'right', 'bottom', 'left'];
+const CAP = [2, 8, 8, 8];
+
+/* =========================================================
+   GLOSSARY (word-help chips)
+   ========================================================= */
+const GLOSS = {
+  'Pressure': 'How hard something pushes on an area (force per area).',
+  'gas pressure': 'The push of gas particles hitting the walls of their container.',
+  'barometer': 'An instrument that measures air pressure.',
+  'pressure units': 'atm, mmHg, torr, kPa, and psi. 1 atm = 760 mmHg = 760 torr = 101.3 kPa = 14.7 psi.',
+  'conversion factors': 'Fractions made from an equality; they equal 1 and change units without changing the amount.'
+};
+const c = (term, label) => `<button type="button" class="chip" data-term="${term}">${label || term}</button>`;
+
+/* =========================================================
+   STATE (saved on this device)
+   ========================================================= */
+const DEF = () => ({
+  v: 3, student: null, cur: 0, reqs: {}, secDone: {}, qc: {}, tasks: {},
+  final: { attempts: [], passed: false, best: 0, current: null, reviewAt: 0 },
+  lockouts: 0, locked: false, lockActive: false, teacherUnlock: false, startedAt: null, completedAt: null
+});
+let S;
+try {
+  const raw = JSON.parse(localStorage.getItem(KEY) || 'null');
+  S = Object.assign(DEF(), raw || {});
+  S.final = Object.assign(DEF().final, S.final || {});
+  /* v1 had 9 sections (final check = 9, results = 10). v2 adds "Ions combine" as section 9. */
+  if ((S.v || 1) < 2) {
+    if (S.secDone[9]) { S.secDone[10] = true; delete S.secDone[9]; }
+    Object.keys(S.reqs).filter(k => k.startsWith('9.')).forEach(k => { S.reqs['10.' + k.slice(2)] = S.reqs[k]; delete S.reqs[k]; });
+    if (S.cur === 10) S.cur = 11; else if (S.cur === 9) S.cur = 10;
+    S.v = 2;
+  }
+  /* v2 had 10 sections. v3 merges old 3 (lose) and 4 (gain) into one section and shifts the rest down by one. */
+  if (S.v === 2) {
+    const sd = S.secDone, rq = S.reqs, nsd = {}, nrq = {};
+    const map = k => k <= 2 ? k : k <= 4 ? 3 : k - 1;
+    Object.keys(sd).forEach(k => { const n = +k; if (n !== 3 && n !== 4) nsd[map(n)] = sd[k]; });
+    if (sd[3] && sd[4]) nsd[3] = true;
+    Object.keys(rq).forEach(k => { const [n, id] = k.split('.'); const nn = +n;
+      if (nn === 3 || nn === 4) return;
+      if (nn === 2 && id === 'table') return;
+      nrq[map(nn) + '.' + id] = rq[k]; });
+    if (rq['3.lose'] && rq['4.gain']) nrq['3.ions'] = true;
+    if (rq['4.qc4']) nrq['3.qc3'] = true;
+    S.secDone = nsd; S.reqs = nrq;
+    if (S.cur >= 3) S.cur = map(S.cur);
+    S.v = 3;
+  }
+} catch (e) { S = DEF(); }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* storage blocked: keep going */ } }
+
+/* =========================================================
+   BOHR MODEL RENDERING
+   ========================================================= */
+const R = [48, 78, 106, 134], CX = 150, CY = 150, SIDE_ANG = [-90, 0, 90, 180];
+function ePos(r, side, k, count, gap = 8.8) {
+  let a = SIDE_ANG[side] * Math.PI / 180;
+  if (count === 2) { const off = gap / r; a += (k === 0 ? -off : off); }
+  return [CX + r * Math.cos(a), CY + r * Math.sin(a)];
+}
+const NS = 'http://www.w3.org/2000/svg';
+function svgEl(tag, attrs) { const el = document.createElementNS(NS, tag); for (const k in attrs) el.setAttribute(k, attrs[k]); return el; }
+
+/* Static Bohr model as an SVG string */
+function bohrInner(spec) {
+  const radii = spec.radii || R;
+  const shells = (spec.shells || []).map(norm);
+  const nr = spec.rings != null ? spec.rings : shells.length;
+  let s = '';
+  for (let i = 0; i < nr; i++) s += `<circle class="ring${spec.val && i === nr - 1 ? ' outer' : ''}" cx="150" cy="150" r="${radii[i]}"/>`;
+  if (!spec.noNucleus) {
+    const nrad = spec.nucR || 31;
+    s += `<circle class="nucleus" cx="150" cy="150" r="${nrad}"/>`;
+    const l1 = spec.l1 != null ? spec.l1 : (spec.p == null ? '?' : spec.p + ' p⁺');
+    const l2 = spec.l2 != null ? spec.l2 : (spec.n == null ? '' : spec.n + ' n⁰');
+    s += `<text class="nt" x="150" y="${l2 ? 146 : 154}">${l1}</text>`;
+    if (l2) s += `<text class="nt" x="150" y="163">${l2}</text>`;
+  }
+  shells.forEach((sides, i) => {
+    if (i >= nr) return;
+    const er = spec.er || 6.5;
+    sides.forEach((cnt, sd) => { for (let k = 0; k < cnt; k++) { const [x, y] = ePos(radii[i], sd, k, cnt, er + 2.6); const g = isGained(spec.orig, i, sd, k, cnt); s += `<circle class="e${g ? ' gain' : ''}${spec.val && i === nr - 1 ? ' val' : ''}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${er}"/>`; } });
+  });
+  if (spec.charge) s += ionMarks(nr, spec.charge, radii);
+  return s;
+}
+/* which electrons were gained (order index past the neutral atom's count in that shell) */
+function isGained(orig, i, sd, k, cnt) {
+  if (!orig) return false;
+  const j = cnt === 2 && k === 1 ? sd + 4 : sd;
+  return i >= orig.length ? true : j >= orig[i];
+}
+function ionMarks(nr, charge, radii = R) {
+  const ro = radii[Math.max(0, nr - 1)] + 16, L = 150 - ro, Rr = 150 + ro, T = 150 - ro, B = 150 + ro, t = 13;
+  return `<g class="ionmark"><path class="bracket" d="M${L + t} ${T} H${L} V${B} H${L + t}"/><path class="bracket" d="M${Rr - t} ${T} H${Rr} V${B} H${Rr - t}"/><text class="charge" x="${Rr + 5}" y="${T + 10}">${chargeText(charge)}</text></g>`;
+}
+function bohrSVG(spec, cls = '') {
+  return `<svg viewBox="0 0 300 300" class="bohr static ${cls}" role="img" aria-label="${esc(spec.aria || 'Bohr model')}">${bohrInner(spec)}</svg>`;
+}
+
+/* Live, animated Bohr model */
+class BohrView {
+  constructor(svg, o = {}) {
+    this.svg = svg; this.o = o;
+    svg.setAttribute('viewBox', '0 0 300 300');
+    svg.classList.add('bohr');
+    svg.innerHTML = '<g class="rings"></g><g class="zones"></g><g class="nuc"><circle class="nucleus" cx="150" cy="150" r="31"></circle><text class="nt" x="150" y="146"></text><text class="nt" x="150" y="163"></text></g><g class="els"><g class="sh sh0"></g><g class="sh sh1"></g><g class="sh sh2"></g><g class="sh sh3"></g></g><g class="ionwrap"></g>';
+    this.ionG = $('.ionwrap', svg); this.ringEls = []; this._ionKey = '';
+    this.ringsG = $('.rings', svg); this.zonesG = $('.zones', svg);
+    this.nt = $$('.nt', svg); this.shG = $$('.sh', svg);
+    this.map = new Map();
+    this.st = { p: null, n: null, shells: [], rings: null, val: false, zones: null };
+    const act = (e) => {
+      const z = e.target.closest && e.target.closest('.zone');
+      if (z && this.o.onZone) { this.o.onZone(+z.dataset.shell, +z.dataset.side, z); return true; }
+      const el = e.target.closest && e.target.closest('.e');
+      if (el && el.dataset.gone) return true;
+      if (el && this.o.onElectron) { this.o.onElectron(+el.dataset.shell, +el.dataset.side, el); return true; }
+      return false;
+    };
+    svg.addEventListener('click', act);
+    svg.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && act(e)) e.preventDefault(); });
+  }
+  set(p) { Object.assign(this.st, p); this.draw(); }
+  draw() {
+    const st = this.st, shells = (st.shells || []).map(norm);
+    const nr = st.rings != null ? st.rings : shells.length;
+    // rings
+    while (this.ringEls.length < nr) {
+      const i = this.ringEls.length, c = svgEl('circle', { cx: 150, cy: 150, r: R[i], class: 'ring ring-in' });
+      this.ringsG.appendChild(c); this.ringEls.push(c);
+    }
+    while (this.ringEls.length > nr) { const c = this.ringEls.pop(); c.classList.add('ring-out'); setTimeout(() => c.remove(), REDUCED ? 0 : 500); }
+    this.ringEls.forEach((ci, i) => ci.classList.toggle('outer', !!st.val && i === nr - 1));
+    // ion brackets + charge
+    const ik = st.charge ? `${nr}|${st.charge}` : '';
+    if (ik !== this._ionKey) {
+      this._ionKey = ik;
+      this.ionG.innerHTML = ik ? ionMarks(nr, st.charge) : '';
+      if (ik && !this.o.instant) { const g = this.ionG.firstChild; g.classList.add('ion-in'); }
+    }
+    // nucleus labels
+    const l1 = st.l1 != null ? st.l1 : (st.p == null ? '?' : st.p + ' p⁺');
+    const l2 = st.l2 != null ? st.l2 : (st.n == null ? '' : st.n + ' n⁰');
+    this.nt[0].textContent = l1; this.nt[1].textContent = l2;
+    this.nt[0].setAttribute('y', l2 ? 146 : 154);
+    // zones
+    this.zonesG.innerHTML = '';
+    if (st.zones) {
+      const list = st.zones === 'all' ? [...Array(nr).keys()] : st.zones;
+      for (const i of list) {
+        if (i >= nr) continue;
+        for (let s = 0; s < 4; s++) {
+          const [x, y] = ePos(R[i], s, 0, 1);
+          this.zonesG.appendChild(svgEl('circle', { cx: x, cy: y, r: 16, class: 'zone', 'data-shell': i, 'data-side': s, tabindex: 0, role: 'button', 'aria-label': `Shell ${i + 1}, ${SIDE[s]}` }));
+        }
+      }
+    }
+    // electrons (diffed so moves animate)
+    const want = new Map();
+    shells.forEach((sides, i) => { if (i >= nr) return; sides.forEach((cnt, sd) => { for (let k = 0; k < cnt; k++) want.set(`${i}-${sd}-${k}`, ePos(R[i], sd, k, cnt)); }); });
+    for (const [key, el] of this.map) {
+      if (!want.has(key)) {
+        this.map.delete(key);
+        const a = Math.atan2(el._y - 150, el._x - 150);
+        el.dataset.gone = '1';
+        el.style.opacity = '0';
+        el.style.transform = `translate(${el._x + 80 * Math.cos(a)}px,${el._y + 80 * Math.sin(a)}px) scale(.7)`;
+        setTimeout(() => el.remove(), 480);
+      }
+    }
+    const instant = REDUCED || this.o.instant;
+    for (const [key, [x, y]] of want) {
+      const [i, sd] = key.split('-').map(Number);
+      let el = this.map.get(key);
+      if (!el) {
+        el = svgEl('circle', { r: 6.5, cx: 0, cy: 0, class: 'e', 'data-shell': i, 'data-side': sd });
+        if (this.o.erasable) { el.setAttribute('tabindex', '0'); el.setAttribute('role', 'button'); el.setAttribute('aria-label', `Electron, shell ${i + 1}, ${SIDE[sd]}`); }
+        const a = SIDE_ANG[sd] * Math.PI / 180, rr = R[i] + 46;
+        if (!instant) {
+          el.style.transform = `translate(${CX + rr * Math.cos(a)}px,${CY + rr * Math.sin(a)}px) scale(.6)`;
+          el.style.opacity = '0';
+        }
+        this.shG[i].appendChild(el);
+        this.map.set(key, el);
+        if (!instant) el.getBoundingClientRect();
+      }
+      el._x = x; el._y = y;
+      el.style.transform = `translate(${x}px,${y}px)`;
+      el.style.opacity = '1';
+      el.classList.toggle('val', !!st.val && i === nr - 1);
+      const cnt = shells[i][sd], k = +key.split('-')[2];
+      el.classList.toggle('gain', isGained(st.orig, i, sd, k, cnt));
+    }
+  }
+  celebrate() {
+    if (REDUCED) return;
+    this.svg.classList.remove('celebrate'); void this.svg.getBoundingClientRect();
+    this.svg.classList.add('celebrate');
+    setTimeout(() => this.svg.classList.remove('celebrate'), 1200);
+  }
+}
+
+/* small element tile chip */
+const mtile = (z) => { const e = E(z); return `<span class="mtile cat-${e.cat}"><span class="s">${e.sym}</span><span>${e.z}</span><span>${e.massStr}</span></span>`; };
+
+/* =========================================================
+   UI HELPERS
+   ========================================================= */
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('on');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('on'), 2600);
+}
+function shake(el) { if (!el) return; el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); setTimeout(() => el.classList.remove('shake'), 500); }
+const card = (kind, title, body, extra = '') => {
+  const label = { read: 'Read', try: 'Try it', qc: 'Quick check', final: 'Final check', phen: 'Phenomenon' }[kind];
+  const cls = kind === 'final' ? 'qc' : kind;
+  return `<section class="card k-${cls}" ${extra}><span class="tag">${label}</span>${title ? `<h3>${title}</h3>` : ''}${body}</section>`;
+};
+
+/* Quick check (A–D) */
+function makeQC(root, cfg) {
+  const st = S.qc[cfg.id] || (S.qc[cfg.id] = { done: false, first: null, tries: 0 });
+  const opts = cfg.opts.map((o, i) => `<button type="button" class="opt" data-i="${i}" ${i === cfg.ans ? 'data-key="1"' : ''}><span class="L">${'ABCD'[i]}</span><span class="ot">${o}</span></button>`).join('');
+  root.innerHTML = `${cfg.fig ? `<div class="qc-fig">${cfg.fig}</div>` : ''}<p class="qc-q">${cfg.q}</p><div class="opts ${cfg.grid ? 'grid' : ''}">${opts}</div><p class="qc-fb" aria-live="polite"></p>`;
+  const fb = $('.qc-fb', root), btns = $$('.opt', root);
+  const finish = () => {
+    btns.forEach(b => { b.disabled = true; if (+b.dataset.i === cfg.ans) b.classList.add('right'); });
+    fb.className = 'qc-fb good'; fb.innerHTML = `<strong>Correct.</strong> ${cfg.explain}`;
+  };
+  if (st.done) finish();
+  btns.forEach(b => b.addEventListener('click', () => {
+    if (st.done) return;
+    const i = +b.dataset.i; st.tries++;
+    if (i === cfg.ans) {
+      if (st.first === null) st.first = true;
+      st.done = true; finish(); save();
+      cfg.onCorrect && cfg.onCorrect();
+    } else {
+      if (st.first === null) st.first = false;
+      b.classList.add('wrong'); b.disabled = true; shake(b);
+      fb.className = 'qc-fb bad'; fb.innerHTML = `<strong>Not quite.</strong> ${cfg.hint || 'Look back at the Read card and try again.'}`;
+      save();
+    }
+  }));
+}
+
+/* Tap-or-drag sorter */
+function makeSorter(root, cfg) {
+  /* Students can place cards anywhere (and move them). Check only says whether everything is right. */
+  const doneAlready = !!S.tasks[cfg.id];
+  root.innerHTML = `<div class="sorter ${cfg.layout || ''}"><div class="tray" tabindex="0" role="button" aria-label="Cards not placed yet"></div><div class="bins">${cfg.bins.map(b => `<div class="bin" data-bin="${b.id}" tabindex="0" role="button" aria-label="${esc(b.aria || b.label)}"><div class="bin-label">${b.label}</div><div class="bin-drop"></div></div>`).join('')}</div>
+    <div class="btn-row sort-row"><button type="button" class="btn primary sm sort-check" disabled>Check</button><span class="small muted sort-left"></span></div><p class="sort-msg" aria-live="polite"></p></div>`;
+  const tray = $('.tray', root), msg = $('.sort-msg', root), chk = $('.sort-check', root), left = $('.sort-left', root);
+  const binOf = id => cfg.bins.find(b => b.accepts.includes(id));
+  const st = S.tasks[cfg.id + '_place'] || {};
+  const toks = shuffle(cfg.tokens).map(t => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'token' + (t.cls ? ' ' + t.cls : ''); b.dataset.id = t.id; b.innerHTML = t.label;
+    tray.appendChild(b); return b;
+  });
+  let sel = null, dragged = false, finished = false;
+  const status = () => { const n = tray.children.length; chk.disabled = finished || n > 0; left.textContent = finished ? '' : n ? `${n} card${n > 1 ? 's' : ''} left to place` : 'All placed. Press Check.'; };
+  const remember = () => { const m = {}; toks.forEach(t => { const bn = t.closest('.bin'); if (bn) m[t.dataset.id] = bn.dataset.bin; }); S.tasks[cfg.id + '_place'] = m; save(); };
+  const move = (tok, target) => {
+    (target.classList.contains('tray') ? target : $('.bin-drop', target)).appendChild(tok);
+    tok.classList.remove('sel'); tok.classList.toggle('placed', !target.classList.contains('tray'));
+    sel = null; msg.textContent = ''; remember(); status();
+  };
+  const finish = () => {
+    finished = true; toks.forEach(t => { t.classList.add('locked'); t.setAttribute('aria-disabled', 'true'); });
+    msg.innerHTML = `<span style="color:var(--good)">${cfg.doneMsg || 'All correct. Nice work.'}</span>`; status();
+  };
+  if (doneAlready) { toks.forEach(t => move(t, $(`.bin[data-bin="${binOf(t.dataset.id).id}"]`, root))); finish(); return; }
+  toks.forEach(t => { const b = st[t.dataset.id]; const el = b && $(`.bin[data-bin="${b}"]`, root); if (el) move(t, el); });
+  status();
+  chk.addEventListener('click', () => {
+    if (finished || tray.children.length) return;
+    const allRight = toks.every(t => { const bn = t.closest('.bin'); return bn && binOf(t.dataset.id).id === bn.dataset.bin; });
+    if (allRight) { S.tasks[cfg.id] = true; save(); finish(); cfg.onDone && cfg.onDone(); }
+    else { shake($('.bins', root)); msg.innerHTML = '<span style="color:#ffc2cd">Something is in the wrong spot. Look over your sort, move any cards you want to change, and check again.</span>'; }
+  });
+  toks.forEach(tok => {
+    tok.addEventListener('click', e => {
+      e.stopPropagation();
+      if (finished) return;
+      if (dragged) { dragged = false; return; }
+      if (sel === tok) { tok.classList.remove('sel'); sel = null; msg.textContent = ''; return; }
+      if (sel) { const target = tok.closest('.bin') || tray; if (sel.closest('.bin') !== tok.closest('.bin') || target === tray) { move(sel, target); return; } sel.classList.remove('sel'); }
+      sel = tok; tok.classList.add('sel');
+      msg.textContent = tok.closest('.bin') ? 'Tap another box to move it, or tap the card area to take it back.' : 'Now tap where it goes.';
+    });
+    let start = null, ghost = null, over = null;
+    tok.addEventListener('pointerdown', e => {
+      if (finished || e.button > 0) return;
+      start = { x: e.clientX, y: e.clientY }; dragged = false;
+      try { tok.setPointerCapture(e.pointerId); } catch (_) {}
+    });
+    tok.addEventListener('pointermove', e => {
+      if (!start) return;
+      if (!ghost && Math.hypot(e.clientX - start.x, e.clientY - start.y) > 6) {
+        ghost = tok.cloneNode(true); ghost.classList.add('ghost-token'); document.body.appendChild(ghost);
+        tok.style.opacity = '.35'; dragged = true;
+      }
+      if (ghost) {
+        ghost.style.left = e.clientX + 'px'; ghost.style.top = e.clientY + 'px';
+        const t = document.elementFromPoint(e.clientX, e.clientY);
+        const tgt = t && (t.closest('.bin') || t.closest('.tray'));
+        if (over && over !== tgt) over.classList.remove('hover');
+        over = tgt && root.contains(tgt) ? tgt : null;
+        if (over) over.classList.add('hover');
+      }
+    });
+    const end = () => {
+      if (!start) return;
+      start = null;
+      if (ghost) {
+        ghost.remove(); ghost = null; tok.style.opacity = '';
+        if (over) { over.classList.remove('hover'); move(tok, over); over = null; }
+        setTimeout(() => { dragged = false; }, 50);
+      }
+    };
+    tok.addEventListener('pointerup', end);
+    tok.addEventListener('pointercancel', end);
+  });
+  [...$$('.bin', root), tray].forEach(el => {
+    const go = () => { if (sel && !finished) move(sel, el); };
+    el.addEventListener('click', go);
+    el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+  });
+}
+
+/* ion-themed tiles for sections (blue = positive ion, pink = negative ion, gold = full shell / neutral) */
+const ION_T = [null, ['Ne', '', 'neu'], ['Na<sup>+</sup>', '', 'pos'], ['Mg<sup>2+</sup>', '', 'pos'], ['Al<sup>3+</sup>', '', 'pos'], ['O<sup>2−</sup>', '', 'neg'],
+  ['S<sup>2−</sup>', '', 'neg'], ['K<sup>+</sup>', '', 'pos'], ['MgCl₂', '', 'neu'], ['N<sup>3−</sup>', '', 'neg'], ['NaCl', '', 'neu']];
+const ionTile = (n, big) => `<div class="tile ion ${ION_T[n][2]} ${big ? 'big' : ''} ${ION_T[n][0].replace(/<sup>.*?<\/sup>/g, '').length > 3 ? 'long' : ''}" aria-hidden="true"><span class="z">${n}</span><span class="lab">${ION_T[n][0]}</span></div>`;
+/* ---------- Rounds: pick the right choice, repeated practice ---------- */
+function makeRounds(root, cfg) {
+  const st = S.tasks[cfg.id] || (S.tasks[cfg.id] = { n: 0, i: 0 });
+  const R = cfg.rounds, need = cfg.need || R.length;
+  root.innerHTML = `<div class="rounds"><div class="rq" aria-live="polite"></div><div class="rvis"></div><div class="rch"></div><p class="fb-line rfb" aria-live="polite"></p>
+    <div class="btn-row"><div class="progress-pips">${Array.from({ length: need }, () => '<i></i>').join('')}</div><button type="button" class="btn ghost sm rnext hidden">Next</button></div></div>`;
+  const q = $('.rq', root), vis = $('.rvis', root), ch = $('.rch', root), fb = $('.rfb', root), nx = $('.rnext', root);
+  const pips = () => $$('.progress-pips i', root).forEach((p, i) => p.classList.toggle('on', i < st.n));
+  let tries = 0;
+  function show() {
+    const r = R[st.i % R.length]; tries = 0;
+    q.innerHTML = `<p class="place-prompt">${st.n >= need ? '<b>Done. Extra practice:</b> ' : `<b>Round ${st.n + 1} of ${need}.</b> `}${r.q}</p>`;
+    vis.innerHTML = r.vis || '';
+    ch.innerHTML = `<div class="cmp">${(cfg.keepOrder ? r.opts.map((o, k) => k) : shuffle(r.opts.map((o, k) => k))).map(k => `<button type="button" class="choice" data-k="${k}">${r.opts[k]}</button>`).join('')}</div>`;
+    fb.textContent = ''; fb.className = 'fb-line rfb'; nx.classList.add('hidden');
+    $$('.choice', ch).forEach(b => b.addEventListener('click', () => pick(+b.dataset.k, b)));
+    pips();
+  }
+  function pick(k, b) {
+    const r = R[st.i % R.length];
+    if (ch.dataset.locked) return;
+    if (k === r.a) {
+      ch.dataset.locked = '1'; b.classList.add('ok');
+      fb.className = 'fb-line good'; fb.innerHTML = `${tries ? 'Got it.' : 'Correct.'} ${r.why}`;
+      if (st.n < need) st.n++;
+      st.i++; save(); pips();
+      cfg.after && cfg.after(r, vis, k);
+      if (st.n >= need && !S.reqs[cfg.req]) cfg.onDone && cfg.onDone();
+      nx.classList.remove('hidden'); nx.textContent = st.n >= need ? 'More practice' : 'Next';
+    } else {
+      tries++; b.classList.add('no'); shake(b);
+      fb.className = 'fb-line bad'; fb.innerHTML = tries === 1 ? (r.hint || 'Not quite. Think about the trend.') : `${r.hint || ''} ${r.why}`;
+    }
+  }
+  nx.addEventListener('click', () => { delete ch.dataset.locked; show(); });
+  show();
+}
+
+
+/* =========================================================
+   THE MOLE AND DIMENSIONAL ANALYSIS: penny scale, bridge builder
+   ========================================================= */
+const SUPD = { '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9', '⁻': '-' };
+const num = v => { let t = String(v).replace(/,/g, '').replace(/\s/g, '').replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]/g, c => SUPD[c]).replace(/−/g, '-');
+  t = t.replace(/(?:[x×*]10\^?|e)\(?([+-]?\d+)\)?$/i, 'e$1'); const x = /^-?\d*\.?\d+(e[+-]?\d+)?$/i.test(t) ? parseFloat(t) : NaN; return isNaN(x) ? null : x; };
+const sci = (x, d = 3) => { if (x === 0) return '0'; const e = Math.floor(Math.log10(Math.abs(x))); if (e < 6 && e > -4) return String(+x.toFixed(2)); const m = x / Math.pow(10, e); return `${m.toFixed(d - 1)} × 10${String(e).split('').map(c => '⁰¹²³⁴⁵⁶⁷⁸⁹'['0123456789'.indexOf(c)] || '⁻').join('')}`; };
+const fmtN = x => (Math.abs(x) >= 1000 ? Math.round(x).toLocaleString() : String(+x.toFixed(2)));
+const frac = (f, cls = '') => `<span class="frac ${cls}"><span class="ft">${f.t}</span><span class="fb">${f.b}</span></span>`;
+
+/* ---------- 1. penny scale ---------- */
+function makePennies(root, onDone) {
+  const BAGS = [{ m: 250.0, n: 100 }, { m: 1250.0, n: 500 }, { m: 3125.0, n: 1250 }];
+  const st = S.tasks.pen || (S.tasks.pen = { done: [], i: 0 });
+  function show(msg) {
+    const B = BAGS[st.i], solved = st.done.includes(st.i);
+    root.innerHTML = `<div class="tabs">${BAGS.map((x, i) => `<button type="button" class="tab ${st.done.includes(i) ? 'ok' : ''}" aria-selected="${i === st.i}" data-i="${i}">Bag ${i + 1}</button>`).join('')}</div>
+      <div class="pen-wrap"><svg viewBox="0 0 320 210" class="tsvg pen-svg" role="img" aria-label="A bag of pennies on a scale reading ${B.m} grams">
+        <path d="M110 40 Q160 10 210 40 L230 130 Q160 160 90 130 Z" fill="#a16207" opacity=".85"/><path d="M140 34 Q160 20 180 34" fill="none" stroke="#713f12" stroke-width="5"/>
+        ${Array.from({ length: 14 }, (_, k) => `<circle cx="${115 + (k % 7) * 16 + (k > 6 ? 8 : 0)}" cy="${95 + (k > 6 ? 14 : 0)}" r="7" fill="#c2410c" stroke="#7c2d12"/>`).join('')}
+        <rect x="60" y="150" width="200" height="40" rx="8" fill="#475569"/><rect x="110" y="158" width="100" height="24" rx="4" fill="#0b1322"/><text x="160" y="176" font-family="monospace" font-size="17" fill="#4ade80" text-anchor="middle">${B.m.toFixed(1)} g</text></svg>
+        <div class="pen-side"><p>One penny has a mass of <b>2.50 g</b>.</p><p>The bag has a mass of <b>${B.m.toFixed(1)} g</b>.</p><label class="cnt-row"><span class="cnt-el">How many pennies?</span><input id="penIn" inputmode="decimal" ${solved ? `value="${B.n}" disabled` : ''}></label>
+        <div class="btn-row"><button type="button" class="btn primary" id="penCk" ${solved ? 'disabled' : ''}>Check</button></div></div></div>
+      <p class="place-prompt" aria-live="polite">${solved ? `<b>Correct!</b> ${B.m.toFixed(1)} g ÷ 2.50 g per penny = ${B.n} pennies.` : (msg || 'Use the calculator if you need it.')}</p><div class="progress-pips">${'<i></i>'.repeat(2)}</div>`;
+    $$('.progress-pips i', root).forEach((p, i) => p.classList.toggle('on', i < st.done.length));
+    $$('.tabs .tab', root).forEach(b => b.addEventListener('click', () => { st.i = +b.dataset.i; save(); show(); }));
+    const ck = $('#penCk', root); if (ck) ck.addEventListener('click', () => { const v = num($('#penIn', root).value); if (v == null) { show('Type a number first.'); return; }
+      if (Math.abs(v - B.n) > 0.5) { shake($('#penIn', root)); show('Not quite. Each penny is 2.50 g, so how many groups of 2.50 g fit in the total mass?'); return; }
+      if (!st.done.includes(st.i)) { st.done.push(st.i); save(); } show(); if (st.done.length >= 2) onDone();
+      const nx = BAGS.findIndex((x, i) => !st.done.includes(i)); if (nx >= 0) { const was = st.i; setTimeout(() => { if (st.i === was) { st.i = nx; save(); show(); } }, 2000); } });
+  }
+  show(); if (st.done.length >= 2) onDone();
+}
+
+/* ---------- bridge builder (sections 3, 5, 6) ---------- */
+/* item: { start:{v,u}, tray:[{t,b,tv,bv,tu,bu}], target:'unit', slots:1|2, ans:number, tol, hint, why } */
+function makeBridge(root, cfg) {
+  const st = S.tasks[cfg.id] || (S.tasks[cfg.id] = { done: [], i: 0, place: {} });
+  let sel = null;
+  function show(msg) {
+    const it = cfg.items[st.i], solved = st.done.includes(st.i), pl = st.place[st.i] || (st.place[st.i] = Array(it.slots || 1).fill(null));
+    if (solved) it.sol.forEach((k, j) => { pl[j] = k; });
+    // compute unit flow + cancellation
+    let cur = it.start.u, ok = true; const cancelled = [];
+    pl.forEach((k, j) => { if (k == null) { ok = false; return; } const f = it.tray[k]; if (f.bu === cur) { cancelled.push(j); cur = f.tu; } else ok = false; });
+    const chain = `<div class="bridge"><span class="b-start">${it.start.v} <span class="${pl[0] != null && cancelled.includes(0) ? 'cx' : ''}">${it.start.u}</span></span>${pl.map((k, j) => `<span class="b-x">×</span><button type="button" class="b-slot ${k != null ? 'filled' : ''}" data-s="${j}" aria-label="Factor slot ${j + 1}">${k != null ? frac({ t: `${it.tray[k].tv} <span class="${pl[j + 1] != null && cancelled.includes(j + 1) ? 'cx' : ''}">${it.tray[k].tu}</span>`, b: `${it.tray[k].bv} <span class="${cancelled.includes(j) ? 'cx' : ''}">${it.tray[k].bu}</span>` }) : '<span class="b-empty">drop a factor here</span>'}</button>`).join('')}<span class="b-x">=</span><span class="b-ans">${solved ? `<b>${it.ansText || (/^mol|^g /.test(it.target) ? (+it.ans).toFixed(2) : fmtN(it.ans))} ${it.target}</b>` : (ok && cur === it.target ? `<input id="bAns" inputmode="decimal" placeholder="?" aria-label="Answer"> ${it.target}` : '<span class="muted">?</span>')}</span></div>`;
+    const usedK = pl.filter(k => k != null);
+    root.innerHTML = `<div class="tabs">${cfg.items.map((x, i) => `<button type="button" class="tab ${st.done.includes(i) ? 'ok' : ''}" aria-selected="${i === st.i}" data-i="${i}">Problem ${i + 1}</button>`).join('')}</div>
+      <p class="calc-q">${it.q}</p>${chain}
+      <div class="b-tray">${(it.order || it.tray.map((_, k) => k)).map(k => [it.tray[k], k]).map(([f, k]) => usedK.includes(k) ? '' : `<button type="button" class="b-tile ${sel === k ? 'sel' : ''}" data-k="${k}" draggable="true" ${solved ? 'disabled' : ''}>${frac({ t: `${f.tv} ${f.tu}`, b: `${f.bv} ${f.bu}` })}</button>`).join('')}</div>
+      <div class="btn-row"><button type="button" class="btn primary" id="bCk" ${solved || !(ok && cur === it.target) ? 'disabled' : ''}>Check my answer</button><button type="button" class="btn ghost" id="bClr" ${solved ? 'disabled' : ''}>Clear the bridge</button></div>
+      <p class="place-prompt" aria-live="polite">${solved ? `<b>Correct!</b> ${it.why}` : (msg || (pl.some(k => k != null) && !ok ? '<b>Those units don\'t cancel.</b> The unit you are getting rid of must be on the <b>bottom</b> of the factor. Tap the factor to remove it.' : (ok && cur === it.target ? 'The units cancel. Now calculate the answer and type it in.' : 'Tap a factor tile, then tap the empty slot (or drag it). Choose the one that cancels the starting unit.')))}</p>
+      <div class="progress-pips">${'<i></i>'.repeat(cfg.need)}</div>`;
+    $$('.progress-pips i', root).forEach((p, i) => p.classList.toggle('on', i < st.done.length));
+    $$('.tabs .tab', root).forEach(b => b.addEventListener('click', () => { st.i = +b.dataset.i; sel = null; save(); show(); }));
+    $$('.b-tile', root).forEach(b => { b.addEventListener('click', () => { sel = sel === +b.dataset.k ? null : +b.dataset.k; const empty = pl.indexOf(null); if (sel != null && empty >= 0 && pl.length === 1) { pl[empty] = sel; sel = null; save(); } show(); });
+      b.addEventListener('dragstart', e => e.dataTransfer.setData('text/plain', b.dataset.k)); });
+    $$('.b-slot', root).forEach(b => { const j = +b.dataset.s;
+      b.addEventListener('click', () => { if (solved) return; if (sel != null) { pl[j] = sel; sel = null; } else if (pl[j] != null) pl[j] = null; save(); show(); });
+      b.addEventListener('dragover', e => e.preventDefault()); b.addEventListener('drop', e => { e.preventDefault(); if (solved) return; pl[j] = +e.dataTransfer.getData('text/plain'); save(); show(); }); });
+    const clr = $('#bClr', root); if (clr) clr.addEventListener('click', () => { st.place[st.i] = Array(it.slots || 1).fill(null); save(); show(); });
+    const ck = $('#bCk', root); if (ck) ck.addEventListener('click', () => { const v = num(($('#bAns', root) || {}).value);
+      if (v == null) { show('Type your answer first.'); return; }
+      if (Math.abs(v - it.ans) > (it.tol || Math.max(0.02, Math.abs(it.ans) * 0.005))) { shake($('.bridge', root)); show(`The bridge is set up right, but the number is off. ${it.hint}`); return; }
+      if (!st.done.includes(st.i)) { st.done.push(st.i); save(); } show(); if (st.done.length >= cfg.need) cfg.onDone && cfg.onDone();
+      const nx = cfg.items.findIndex((x, i) => !st.done.includes(i)); if (nx >= 0 && st.done.length < cfg.items.length) { const was = st.i; setTimeout(() => { if (st.i === was) { st.i = nx; save(); show(); } }, 2400); } });
+  }
+  show(); if (st.done.length >= cfg.need) cfg.onDone && cfg.onDone();
+}
+const F = (tv, tu, bv, bu) => ({ tv, tu, bv, bu });
+
+/* =========================================================
+   SECTION ICONS
+   ========================================================= */
+
+/* =========================================================
+   GAS PRESSURE: collision box, mercury barometer, unit conversions
+   ========================================================= */
+function makeNums(root, cfg) {
+  const st = S.tasks[cfg.id] || (S.tasks[cfg.id] = { done: [], i: 0 });
+  function show(msg) {
+    const it = cfg.items[st.i], solved = st.done.includes(st.i), pic = it.pic || cfg.pic;
+    root.innerHTML = `<div class="tabs">${cfg.items.map((x, i) => `<button type="button" class="tab ${st.done.includes(i) ? 'ok' : ''}" aria-selected="${i === st.i}" data-i="${i}">${x.tab}</button>`).join('')}</div>
+      ${pic ? `<div class="zoom-fig">${typeof pic === 'function' ? pic() : pic}</div>` : ''}<p class="calc-q">${it.q}</p>
+      <div class="nfields">${it.f.map((f, k) => `<label class="cnt-row"><span class="cnt-el">${f[0]}</span><input data-k="${k}" inputmode="decimal" ${solved ? `value="${f[1]}" disabled` : ''}></label>`).join('')}</div>
+      <div class="btn-row"><button type="button" class="btn primary" id="${cfg.id}Ck" ${solved ? 'disabled' : ''}>Check</button></div>
+      <p class="place-prompt" aria-live="polite">${solved ? `<b>Correct.</b> ${it.why}` : (msg || 'Fill in each box, then press Check.')}</p><div class="progress-pips">${'<i></i>'.repeat(cfg.need)}</div>`;
+    $$('.progress-pips i', root).forEach((p, i) => p.classList.toggle('on', i < st.done.length));
+    $$('.tabs .tab', root).forEach(b => b.addEventListener('click', () => { st.i = +b.dataset.i; save(); show(); }));
+    const ck = $('#' + cfg.id + 'Ck', root); if (ck) ck.addEventListener('click', () => {
+      const v = $$('.nfields input', root).map(x => num(x.value)); if (v.some(x => x == null)) { show('Fill in every box first.'); return; }
+      if (it.f.some((f, k) => Math.abs(v[k] - f[1]) > (f[2] != null ? f[2] : 0.5))) { shake($('.nfields', root)); show(`Not quite. ${it.hint}`); return; }
+      if (!st.done.includes(st.i)) { st.done.push(st.i); save(); } show(); if (st.done.length >= cfg.need) cfg.onDone();
+      const nx = cfg.items.findIndex((x, i) => !st.done.includes(i)); if (nx >= 0) { const was = st.i; setTimeout(() => { if (st.i === was) { st.i = nx; save(); show(); } }, 2000); } });
+  }
+  show(); if (st.done.length >= cfg.need) cfg.onDone();
+}
+const FR = (t, b) => `<span class="frac"><span>${t}</span><span>${b}</span></span>`;
+const BR = (start, factors, ans) => `<div class="bridge demo"><span class="bq">${start}</span>${factors.map(([t, b]) => `<span class="bx">×</span>${FR(t, b)}`).join('')}<span class="bx">=</span><span class="bq ans">${ans}</span></div>`;
+
+/* ---------- collision box: pressure from particle hits ---------- */
+function makeCollide(root, onDone) {
+  const st = S.tasks.col || (S.tasks.col = { n: 12, T: 300, tried: [] });
+  const W = 260, H = 200; let parts = [], hits = 0, hitT = 0, flash = [];
+  root.innerHTML = `<div class="state-wrap"><svg viewBox="0 0 ${W} ${H}" class="tsvg pview" id="colSvg" role="img" aria-label="Gas particles hitting the walls of a box"></svg><div class="tside">
+      <label class="tlabel">Number of particles: <b id="colNv">${st.n}</b><input type="range" id="colN" min="4" max="30" step="1" value="${st.n}" aria-label="Number of particles"></label>
+      <label class="tlabel">Temperature: <b id="colTv">${st.T} K</b><input type="range" id="colT" min="150" max="600" step="10" value="${st.T}" aria-label="Temperature in kelvins"></label>
+      <div class="gauge"><small>Pressure gauge</small><b id="colP"></b></div>
+      <p class="muted small">Try more particles (20 or more), then a hotter temperature (450 K or more).</p></div></div>`;
+  const svg = $('#colSvg', root);
+  const make = () => { parts = []; for (let k = 0; k < st.n; k++) { const a = Math.random() * Math.PI * 2; parts.push({ x: 20 + Math.random() * (W - 40), y: 20 + Math.random() * (H - 40), a }); } };
+  const press = () => (st.n / 12) * (st.T / 300) * 1.00;
+  const upd = () => { $('#colNv', root).textContent = st.n; $('#colTv', root).textContent = st.T + ' K'; $('#colP', root).textContent = press().toFixed(2) + ' atm';
+    if (st.n >= 20 && !st.tried.includes('n')) st.tried.push('n'); if (st.T >= 450 && !st.tried.includes('T')) st.tried.push('T'); save(); if (st.tried.length >= 2) onDone(); };
+  const obj = { last: performance.now(), tick(now) { const dt = Math.min(0.05, (now - obj.last) / 1000); obj.last = now; const v = 150 * Math.sqrt(st.T / 300);
+    for (const p of parts) { p.x += Math.cos(p.a) * v * dt; p.y += Math.sin(p.a) * v * dt;
+      if (p.x < 10 || p.x > W - 10) { p.a = Math.PI - p.a; p.x = Math.max(10, Math.min(W - 10, p.x)); flash.push([p.x < W / 2 ? 4 : W - 4, p.y, now]); }
+      if (p.y < 10 || p.y > H - 10) { p.a = -p.a; p.y = Math.max(10, Math.min(H - 10, p.y)); flash.push([p.x, p.y < H / 2 ? 4 : H - 4, now]); } }
+    flash = flash.filter(f => now - f[2] < 180);
+    svg.innerHTML = `<rect x="2" y="2" width="${W - 4}" height="${H - 4}" rx="8" fill="#0b1322" stroke="#5fe1ff" stroke-width="3"/>${flash.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="7" fill="#f6b93b" opacity=".75"/>`).join('')}${parts.map(p => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="8" fill="#60a5fa"/>`).join('')}`; } };
+  make(); obj.tick(performance.now()); if (!REDUCED) PANIM.push({ svg, obj });
+  $('#colN', root).addEventListener('input', e => { st.n = +e.target.value; make(); upd(); });
+  $('#colT', root).addEventListener('input', e => { st.T = +e.target.value; upd(); });
+  upd();
+}
+const PANIM = [];
+function animLoop(now) { for (const a of PANIM) if (a.svg.isConnected && a.svg.getBoundingClientRect().width > 0) a.obj.tick(now); requestAnimationFrame(animLoop); }
+requestAnimationFrame(animLoop);
+
+/* ---------- mercury barometer ---------- */
+const BPLACES = [['Sea level', 760], ['Denver', 630], ['Mount Everest', 253]];
+function baroSVG(mm) {
+  const top = 30, base = 250, scale = 0.26, h = mm * scale;
+  return `<svg viewBox="0 0 300 290" class="tsvg baro" role="img" aria-label="Mercury barometer reading ${mm} mm">
+    <rect x="40" y="${base - 10}" width="140" height="34" rx="6" fill="#64748b" opacity=".5"/><rect x="42" y="${base}" width="136" height="22" fill="#cbd5e1" opacity=".7"/>
+    <rect x="95" y="${top}" width="30" height="${base + 12 - top}" fill="none" stroke="#e8eef8" stroke-width="3"/>
+    <rect x="98" y="${base + 10 - h}" width="24" height="${h}" fill="#cbd5e1"/><text x="110" y="${top + 16}" font-size="10" text-anchor="middle" fill="#94a3b8">vacuum</text>
+    <path d="M150 ${base + 10}V${base + 10 - h}" stroke="#f6b93b" stroke-width="2"/><path d="M144 ${base + 10 - h}h12M144 ${base + 10}h12" stroke="#f6b93b" stroke-width="2"/>
+    <text x="162" y="${base + 14 - h / 2}" font-size="18" font-weight="800" fill="#f6b93b">${mm} mm</text>
+    ${[0, 1, 2, 3].map(k => `<path d="M${20 + k * 14} ${base - 40 - k * 6}l12 18" stroke="#5fe1ff" stroke-width="2" marker-end="url(#barr)"/>`).join('')}<text x="18" y="${base - 70}" font-size="11" fill="#5fe1ff">air pushes down</text>
+    <defs><marker id="barr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5fe1ff"/></marker></defs></svg>`;
+}
+function makeBaro(root, onDone) {
+  const st = S.tasks.baro || (S.tasks.baro = { i: 0, seen: [] });
+  function draw() { const [n, mm] = BPLACES[st.i];
+    root.innerHTML = `<div class="tabs">${BPLACES.map(([pn], i) => `<button type="button" class="tab ${st.seen.includes(i) ? 'ok' : ''}" aria-selected="${i === st.i}" data-i="${i}">${pn}</button>`).join('')}</div>
+      <div class="state-wrap"><div>${baroSVG(mm)}</div><div class="tside"><div class="gauge"><small>Air pressure at ${n}</small><b>${mm} mmHg</b></div><p class="read-text">${mm === 760 ? 'At sea level the air holds up a column of mercury 760 mm tall. That pressure is called <b>1 atmosphere (atm)</b>.' : `Less air is pushing down here, so the mercury column is only ${mm} mm tall: ${(mm / 760).toFixed(2)} atm.`}</p></div></div>`;
+    $$('.tab', root).forEach(b => b.addEventListener('click', () => { st.i = +b.dataset.i; if (!st.seen.includes(st.i)) st.seen.push(st.i); save(); draw(); if (st.seen.length >= 3) onDone(); }));
+  }
+  if (!st.seen.includes(st.i)) st.seen.push(st.i); draw(); if (st.seen.length >= 3) onDone();
+}
+
+/* =========================================================
+   SECTION ICONS
+   ========================================================= */
+const ICON = {
+  1: `<svg viewBox="0 0 40 40"><rect x="5" y="5" width="30" height="30" rx="4" fill="none" stroke="#5fe1ff" stroke-width="2"/><circle cx="14" cy="15" r="3" fill="#60a5fa"/><circle cx="25" cy="25" r="3" fill="#60a5fa"/><circle cx="33" cy="12" r="3" fill="#f6b93b"/></svg>`,
+  2: `<svg viewBox="0 0 40 40"><rect x="17" y="4" width="6" height="30" fill="none" stroke="#e2e8f0" stroke-width="2"/><rect x="18" y="14" width="4" height="20" fill="#cbd5e1"/><rect x="8" y="30" width="24" height="6" rx="2" fill="#94a3b8"/></svg>`,
+  3: `<svg viewBox="0 0 40 40"><text x="20" y="15" font-size="9" font-weight="800" text-anchor="middle" fill="#5fe1ff">1 atm</text><text x="20" y="26" font-size="7" text-anchor="middle" fill="#e2e8f0">= 760 mmHg</text><text x="20" y="35" font-size="7" text-anchor="middle" fill="#e2e8f0">= 101.3 kPa</text></svg>`,
+  4: `<svg viewBox="0 0 40 40"><path d="M3 30Q20 6 37 30" fill="none" stroke="#f6b93b" stroke-width="2.4"/><path d="M3 30h34" stroke="#e2e8f0" stroke-width="2"/><path d="M12 30V20M20 30V15M28 30V20" stroke="#e2e8f0" stroke-width="1.6"/></svg>`,
+  5: `<svg viewBox="0 0 40 40"><text x="20" y="17" font-size="8" font-weight="800" text-anchor="middle" fill="#5fe1ff">mmHg</text><path d="M12 22h16M24 18l4 4-4 4" fill="none" stroke="#f6b93b" stroke-width="2"/><text x="20" y="35" font-size="8" font-weight="800" text-anchor="middle" fill="#e2e8f0">kPa</text></svg>`,
+  6: `<svg viewBox="0 0 40 40"><rect x="6" y="20" width="8" height="14" fill="#5fe1ff"/><rect x="16" y="10" width="8" height="24" fill="#f6b93b"/><rect x="26" y="16" width="8" height="18" fill="#60a5fa"/></svg>`,
+  7: `<svg viewBox="0 0 40 40"><path d="M10 8h20l3 26H7z" fill="#f6b93b" opacity=".8"/><path d="M10 8q10 -6 20 0" fill="none" stroke="#f6b93b" stroke-width="2"/><path d="M14 18h12M14 24h12" stroke="#0b1322" stroke-width="2"/></svg>`,
+  8: `<svg viewBox="0 0 40 40"><circle cx="17" cy="17" r="10" fill="none" stroke="#e2e8f0" stroke-width="3"/><path d="M25 25l9 9" stroke="#e2e8f0" stroke-width="4" stroke-linecap="round"/><path d="M13 13l8 8M21 13l-8 8" stroke="#f87171" stroke-width="2.6" stroke-linecap="round"/></svg>`,
+  9: `<svg viewBox="0 0 40 40"><rect x="9" y="6" width="22" height="29" rx="3" fill="none" stroke="#cbd5e1" stroke-width="2.4"/><rect x="15" y="3" width="10" height="6" rx="2" fill="#cbd5e1"/><path d="M14 17l3 3 6-6M14 27l3 3 6-6" fill="none" stroke="#4ade80" stroke-width="2.4" stroke-linecap="round"/></svg>`,
+  10: `<svg viewBox="0 0 40 40"><path d="M12 6h16v8a8 8 0 0 1-16 0z" fill="#f6b93b"/><path d="M12 9H6a6 6 0 0 0 6 7M28 9h6a6 6 0 0 1-6 7" fill="none" stroke="#f6b93b" stroke-width="2"/><rect x="17" y="21" width="6" height="7" fill="#f6b93b"/><rect x="12" y="28" width="16" height="5" rx="1.5" fill="#f6b93b"/></svg>`
+};
+const iconTile = (n, big) => `<div class="tile icon ${big ? 'big' : ''}" aria-hidden="true"><span class="z">${n}</span>${ICON[n]}</div>`;
+
+const NSEC = 9, RES = 10;
+const SECS = [null,
+  { title: 'What is gas pressure?', min: 5 }, { title: 'Air pressure and the barometer', min: 4 }, { title: 'Pressure units', min: 4 }, { title: 'Converting with the bridge', min: 5 },
+  { title: 'mmHg, kPa, and atm', min: 5 }, { title: 'Comparing pressures', min: 4 }, { title: 'Real places', min: 4 }, { title: 'Spot the mistake', min: 3 }, { title: 'Final check', min: 6 }];
+const REQS = {
+  1: [['phen', 'Make a prediction about the phenomenon'], ['col', 'Try more particles and a higher temperature'], ['qc1', 'Answer the quick check correctly']],
+  2: [['baro', 'Visit all three places'], ['qc2', 'Answer the quick check correctly']],
+  3: [['sort', 'Sort the pressures'], ['qc3', 'Answer the quick check correctly']],
+  4: [['conv', 'Solve 3 conversions'], ['qc4', 'Answer the quick check correctly']],
+  5: [['conv', 'Solve 3 conversions'], ['qc5', 'Answer the quick check correctly']],
+  6: [['r', 'Answer 3 rounds'], ['qc6', 'Answer the quick check correctly']],
+  7: [['conv', 'Solve 3 real-world conversions'], ['qc7', 'Answer the quick check correctly']],
+  8: [['fix', 'Find the mistake in 3 student examples'], ['qc8', 'Answer the quick check correctly']],
+  9: [['pass', `Score ${PASS_SCORE} or more out of ${FC_LEN} on the final check`]]
+};
+const GOALS = [
+  { t: 'Explain gas pressure with particle collisions', sec: 1 }, { t: 'Explain how a barometer measures air pressure', sec: 2 }, { t: 'Know the equal pressure values', sec: 3 },
+  { t: 'Convert between atm, mmHg, torr, and kPa', sec: 5 }, { t: `Pass the final check (${PASS_SCORE} out of ${FC_LEN})`, sec: 9 }];
+function frame(n, inner) {
+  const s = SECS[n];
+  return `<header class="sec-head">${iconTile(n, true)}<div><p class="sec-meta">Section ${n} of ${NSEC} · about ${s.min} min</p><h2>${s.title}</h2></div></header>
+  ${inner}
+  <section class="card unlock" id="unlock-${n}"><h3>To unlock the next section</h3><ul class="reqs"></ul></section>
+  <nav class="sec-foot"><button class="btn ghost" type="button" data-go="${n - 1}">Back</button><button class="btn primary" type="button" id="next-${n}" data-go="${n + 1}" disabled>${n < NSEC ? 'Next section' : 'See your results'}</button></nav>`;
+}
+const PH_OPTS = ['The air pressure outside the bag drops, so the gas inside pushes the bag outward', 'The chips release gas at high altitude', 'The air inside the bag gets hotter', 'Airplanes add air to the bag'];
+function phenBackHTML() {
+  const pk = (S.tasks.phen || {}).pick;
+  return `${pk != null ? `<p class="small muted">You predicted: “${PH_OPTS[pk]}.” ${pk === 0 ? '<b>You were right.</b>' : 'Here\'s what really happens.'}</p>` : ''}
+    <p>The bag was sealed at about 1 atm (760 mmHg). An airplane cabin is kept at only about <b>0.75 atm (570 mmHg, 76 kPa)</b>. The gas particles inside the bag keep hitting the inside of the bag as hard as before, but fewer air particles hit the outside, so the bag is pushed outward until the pressures balance.</p>`;
+}
+
+/* ---------------- Section 1 ---------------- */
+function build1(el) {
+  el.innerHTML = frame(1,
+    card('phen', 'The puffy chip bag', `<p>A sealed bag of chips looks normal at the airport. Halfway through the flight it is puffed up like a pillow. Nothing was added to the bag. What happened?</p>
+      <div class="opts phen-opts">${PH_OPTS.map((t, k) => `<button type="button" class="opt" data-k="${k}"><span class="L">${'ABCD'[k]}</span><span class="ot">${t}</span></button>`).join('')}</div><p class="fb-line" id="phenMsg" aria-live="polite"></p>`) +
+    card('read', 'Pressure from collisions', `<div class="read-text"><p>${c('Pressure')} is how hard something pushes on an area. Gas particles are always flying around and hitting the walls of their container. Each hit is a tiny push; all the hits together make ${c('gas pressure')}.</p>
+      <p><b>More particles</b> → more hits → more pressure. <b>Higher temperature</b> → faster particles → harder, more frequent hits → more pressure.</p></div>`) +
+    card('try', 'Collision box', '<div id="col"></div>') + card('qc', '', '<div id="qc1"></div>'));
+  const st = S.tasks.phen || (S.tasks.phen = { pick: null });
+  const paint = () => { $$('.phen-opts .opt', el).forEach(b => b.classList.toggle('picked', +b.dataset.k === st.pick)); if (st.pick != null) { $('#phenMsg', el).className = 'fb-line good'; $('#phenMsg', el).innerHTML = 'Prediction saved. You\'ll find out in Section 7.'; } };
+  $$('.phen-opts .opt', el).forEach(b => b.addEventListener('click', () => { st.pick = +b.dataset.k; save(); paint(); done(1, 'phen'); const bk = $('#s7back'); if (bk) bk.innerHTML = phenBackHTML(); }));
+  paint();
+  makeCollide($('#col', el), () => done(1, 'col'));
+  makeQC($('#qc1', el), { id: 'qc1', q: 'What causes gas pressure?', opts: ['Gas particles hitting the walls of the container', 'Gas particles sticking to the walls', 'The weight of the container', 'Gas particles not moving'], ans: 0, explain: 'Every collision is a tiny push.', hint: 'Watch the flashes on the walls.', onCorrect: () => done(1, 'qc1') });
+}
+
+/* ---------------- Section 2 ---------------- */
+function build2(el) {
+  el.innerHTML = frame(2,
+    card('read', 'Measuring air pressure', `<div class="read-text"><p>The air around us is a gas too, and its particles push on everything. A ${c('barometer')} measures air pressure. In a mercury barometer, a glass tube with no air at the top stands in a dish of mercury. Air pushing on the dish holds the mercury up in the tube. More air pressure → a taller column.</p>
+      <p>At sea level, the column is <b>760 mm</b> tall. That's where the units <b>millimeters of mercury (mmHg)</b> and <b>1 atmosphere (atm)</b> come from.</p></div>`) +
+    card('try', 'Visit three places', '<div id="baro"></div>') + card('qc', '', '<div id="qc2"></div>'));
+  makeBaro($('#baro', el), () => done(2, 'baro'));
+  makeQC($('#qc2', el), { id: 'qc2', q: 'Why is the mercury column shorter on Mount Everest?', opts: ['There is less air above, so less air pressure pushes the mercury up', 'Mercury is lighter on mountains', 'It is colder there', 'The tube is shorter'], ans: 0, explain: 'Less air pressure holds up less mercury.', hint: 'What holds the mercury up?', onCorrect: () => done(2, 'qc2') });
+}
+
+/* ---------------- Section 3 ---------------- */
+function build3(el) {
+  el.innerHTML = frame(3,
+    card('read', 'Four units, one pressure', `<div class="read-text"><p>Scientists use several ${c('pressure units')}. These all describe the <b>same</b> pressure (normal air pressure at sea level):</p>
+      <p class="big-eq"><b>1 atm = 760 mmHg = 760 torr = 101.3 kPa</b></p>
+      <p>A <b>torr</b> is the same as 1 mmHg (named for Torricelli, who invented the barometer). A <b>kilopascal (kPa)</b> is the metric unit; weather maps and science labs use it. You may also see <b>psi</b> (pounds per square inch) on tire gauges: 1 atm = 14.7 psi.</p></div>`) +
+    card('try', 'Equal to 1 atm?', '<p class="muted">Sort each pressure. Place every card, then press Check.</p><div id="s3sort"></div>') + card('qc', '', '<div id="qc3"></div>'));
+  makeSorter($('#s3sort', el), { id: 's3sort',
+    tokens: [{ id: 'a', label: '760 mmHg' }, { id: 'b', label: '101.3 kPa' }, { id: 'c', label: '760 torr' }, { id: 'd', label: '14.7 psi' }, { id: 'e', label: '1 kPa' }, { id: 'f', label: '100 mmHg' }, { id: 'g', label: '760 kPa' }, { id: 'h', label: '1 torr' }],
+    bins: [{ id: 'eq', label: 'Equal to 1 atm', accepts: ['a', 'b', 'c', 'd'] }, { id: 'ne', label: 'Not equal to 1 atm', accepts: ['e', 'f', 'g', 'h'] }], onDone: () => done(3, 'sort') });
+  makeQC($('#qc3', el), { id: 'qc3', q: 'How many torr equal 1 mmHg?', opts: ['1', '760', '101.3', '0.1'], ans: 0, explain: '1 torr = 1 mmHg.', hint: 'Both equal 760 for 1 atm.', onCorrect: () => done(3, 'qc3') });
+}
+
+/* ---------------- Section 4 ---------------- */
+function build4(el) {
+  el.innerHTML = frame(4,
+    card('read', 'Equalities make conversion factors', `<div class="read-text"><p>Each equality gives two ${c('conversion factors')}, just like in the mole unit: 1 atm = 760 mmHg gives ${FR('760 mmHg', '1 atm')} and ${FR('1 atm', '760 mmHg')}. Put the unit you <b>have</b> on the bottom so it cancels.</p></div>
+      ${BR('2.00 <s>atm</s>', [['760 mmHg', '1 <s>atm</s>']], '1,520 mmHg')}${BR('380 <s>mmHg</s>', [['1 atm', '760 <s>mmHg</s>']], '0.500 atm')}`) +
+    card('try', 'Convert', '<div id="conv4"></div>') + card('qc', '', '<div id="qc4"></div>'));
+  makeNums($('#conv4', el), { id: 'conv4', need: 3, items: [
+    { tab: 'atm → mmHg', q: 'Convert <b>3.00 atm</b> to mmHg.', f: [['mmHg', 2280, 2]], hint: '× 760 mmHg / 1 atm.', why: '3.00 × 760 = 2,280 mmHg.' },
+    { tab: 'mmHg → atm', q: 'Convert <b>570 mmHg</b> to atm.', f: [['atm', 0.75, 0.005]], hint: '× 1 atm / 760 mmHg.', why: '570 ÷ 760 = 0.750 atm.' },
+    { tab: 'atm → kPa', q: 'Convert <b>2.50 atm</b> to kPa.', f: [['kPa', 253.25, 0.5]], hint: '× 101.3 kPa / 1 atm.', why: '2.50 × 101.3 = 253 kPa.' },
+    { tab: 'kPa → atm', q: 'Convert <b>50.65 kPa</b> to atm.', f: [['atm', 0.5, 0.005]], hint: '× 1 atm / 101.3 kPa.', why: '50.65 ÷ 101.3 = 0.500 atm.' }], onDone: () => done(4, 'conv') });
+  makeQC($('#qc4', el), { id: 'qc4', q: 'Which factor converts mmHg into atm?', opts: [`${FR('1 atm', '760 mmHg')}`, `${FR('760 mmHg', '1 atm')}`, `${FR('101.3 kPa', '1 atm')}`, `${FR('1 mmHg', '1 torr')}`], ans: 0, explain: 'mmHg on the bottom so it cancels.', hint: 'What unit do you have?', onCorrect: () => done(4, 'qc4') });
+}
+
+/* ---------------- Section 5 ---------------- */
+function build5(el) {
+  el.innerHTML = frame(5,
+    card('read', 'Skip the atm', `<div class="read-text"><p>Because 760 mmHg = 101.3 kPa, you can go straight between them: ${FR('101.3 kPa', '760 mmHg')} or ${FR('760 mmHg', '101.3 kPa')}. Torr works exactly like mmHg.</p></div>
+      ${BR('380 <s>mmHg</s>', [['101.3 kPa', '760 <s>mmHg</s>']], '50.7 kPa')}`) +
+    card('try', 'Convert', '<div id="conv5"></div>') + card('qc', '', '<div id="qc5"></div>'));
+  makeNums($('#conv5', el), { id: 'conv5', need: 3, items: [
+    { tab: 'mmHg → kPa', q: 'Convert <b>1,520 mmHg</b> to kPa.', f: [['kPa', 202.6, 0.5]], hint: '× 101.3 kPa / 760 mmHg.', why: '1,520 × 101.3 ÷ 760 = 202.6 kPa.' },
+    { tab: 'kPa → mmHg', q: 'Convert <b>202.6 kPa</b> to mmHg.', f: [['mmHg', 1520, 2]], hint: '× 760 mmHg / 101.3 kPa.', why: '1,520 mmHg.' },
+    { tab: 'torr → atm', q: 'Convert <b>190 torr</b> to atm.', f: [['atm', 0.25, 0.005]], hint: '× 1 atm / 760 torr.', why: '0.250 atm.' },
+    { tab: 'kPa → torr', q: 'Convert <b>25.3 kPa</b> to torr.', f: [['torr', 190, 1]], hint: '× 760 torr / 101.3 kPa.', why: 'About 190 torr.' }], onDone: () => done(5, 'conv') });
+  makeQC($('#qc5', el), { id: 'qc5', q: 'Which is closest to 1 atm?', opts: ['100 kPa', '100 mmHg', '1 kPa', '1,000 torr'], ans: 0, explain: '1 atm = 101.3 kPa.', hint: 'Compare each to 101.3 kPa or 760 mmHg.', onCorrect: () => done(5, 'qc5') });
+}
+
+/* ---------------- Section 6 ---------------- */
+function build6(el) {
+  const R = [
+    { q: 'Which pressure is greatest: 1.2 atm, 800 mmHg, or 110 kPa?', o: ['1.2 atm (912 mmHg)', '800 mmHg', '110 kPa (825 mmHg)', 'They are equal'], a: 0, why: 'Convert to one unit: 912, 800, 825 mmHg.' },
+    { q: 'Which pressure is lowest: 0.5 atm, 400 torr, or 45 kPa?', o: ['45 kPa (about 338 mmHg)', '0.5 atm (380 mmHg)', '400 torr', 'They are equal'], a: 0, why: '338 < 380 < 400 mmHg.' },
+    { q: 'A weather report says 99 kPa. Is that higher or lower than normal sea-level pressure?', o: ['Lower (normal is 101.3 kPa)', 'Higher', 'Exactly normal', 'You can\'t tell'], a: 0, why: '99 < 101.3.' },
+    { q: 'Are 760 torr and 101.3 kPa the same pressure?', o: ['Yes, both equal 1 atm', 'No, 760 torr is bigger', 'No, 101.3 kPa is bigger', 'They can\'t be compared'], a: 0, why: 'Both are 1 atm.' }];
+  el.innerHTML = frame(6,
+    card('read', 'Compare in the same unit', `<div class="read-text"><p>You can't compare 800 mmHg with 110 kPa just by looking at the numbers. Convert everything to <b>one</b> unit first, then compare.</p></div>`) +
+    card('try', 'Which is bigger?', '<div id="s6r"></div>') + card('qc', '', '<div id="qc6"></div>'));
+  makeRounds($('#s6r', el), { id: 's6r', need: 3, req: '6.r', rounds: R.map(r => ({ q: r.q, opts: r.o, a: r.a, hint: 'Convert each to mmHg (or kPa) first.', why: r.why })), onDone: () => done(6, 'r') });
+  makeQC($('#qc6', el), { id: 'qc6', q: 'Why can\'t you compare 800 mmHg and 110 kPa by their numbers?', opts: ['They are in different units', '800 is always bigger', 'kPa can\'t be compared', 'They are both 1 atm'], ans: 0, explain: 'Convert to the same unit first.', hint: 'Look at the units.', onCorrect: () => done(6, 'qc6') });
+}
+
+/* ---------------- Section 7 ---------------- */
+function build7(el) {
+  el.innerHTML = frame(7,
+    card('read', 'Pressure in real places', `<div class="read-text"><p>Air pressure drops as you go up. Use your conversions to describe real places in different units.</p></div>`) +
+    card('try', 'Real-world conversions', '<div id="conv7"></div>') + card('phen', 'Back to the phenomenon', '<div class="read-text" id="s7back"></div>') + card('qc', '', '<div id="qc7"></div>'));
+  $('#s7back', el).innerHTML = phenBackHTML();
+  makeNums($('#conv7', el), { id: 'conv7', need: 3, items: [
+    { tab: 'Denver', q: 'Denver\'s air pressure is <b>630 mmHg</b>. What is that in atm?', f: [['atm', 0.829, 0.005]], hint: '× 1 atm / 760 mmHg.', why: '0.829 atm.' },
+    { tab: 'Airplane', q: 'An airplane cabin is about <b>0.75 atm</b>. What is that in kPa?', f: [['kPa', 75.98, 0.5]], hint: '× 101.3 kPa / 1 atm.', why: 'About 76 kPa.' },
+    { tab: 'Everest', q: 'Mount Everest\'s air pressure is <b>253 mmHg</b>. What is that in kPa?', f: [['kPa', 33.7, 0.3]], hint: '× 101.3 kPa / 760 mmHg.', why: 'About 33.7 kPa.' },
+    { tab: 'Tire', q: 'A bike tire holds <b>3.0 atm</b>. What is that in kPa?', f: [['kPa', 303.9, 0.5]], hint: '× 101.3 kPa / 1 atm.', why: 'About 304 kPa.' }], onDone: () => done(7, 'conv') });
+  makeQC($('#qc7', el), { id: 'qc7', q: 'Why does the sealed chip bag puff up on an airplane?', opts: ['The cabin pressure (about 0.75 atm) is lower than the 1 atm inside the bag', 'The chips release gas', 'The cabin is hotter', 'Air leaks into the bag'], ans: 0, explain: 'Fewer outside collisions, so the bag is pushed outward.', hint: 'Compare inside and outside pressure.', onCorrect: () => done(7, 'qc7') });
+}
+
+/* ---------------- Section 8 ---------------- */
+function build8(el) {
+  const M = [
+    { q: 'A student converts 2.00 atm to mmHg as 2.00 ÷ 760 = 0.00263 mmHg. What is wrong?', o: ['The factor is upside down: multiply by 760 mmHg / 1 atm → 1,520 mmHg', 'Nothing is wrong', 'They should use 101.3', 'They should add 760'], a: 0, why: 'atm must be on the bottom of the factor.' },
+    { q: 'A student says 760 kPa = 1 atm. What is wrong?', o: ['1 atm = 101.3 kPa (760 goes with mmHg or torr)', 'Nothing is wrong', '1 atm = 1 kPa', '1 atm = 14.7 kPa'], a: 0, why: 'Watch the units on 760.' },
+    { q: 'A student says 105 kPa is less than 800 mmHg because 105 is smaller than 800. What is wrong?', o: ['You must convert to the same unit first (105 kPa = 788 mmHg; still less, but for the right reason)', 'Nothing is wrong', 'kPa is always bigger', 'mmHg is not a pressure unit'], a: 0, why: 'Compare in one unit.' },
+    { q: 'A student says a torr is much smaller than a mmHg. What is wrong?', o: ['1 torr = 1 mmHg', 'Nothing is wrong', 'A torr is 760 mmHg', 'A torr is a kPa'], a: 0, why: 'They are the same size.' }];
+  el.innerHTML = frame(8,
+    card('read', 'Check the work', `<div class="read-text"><p>When you check a pressure conversion, ask: Is the unit you started with on the <b>bottom</b> of the factor? Does <b>760</b> go with mmHg or torr, and <b>101.3</b> with kPa? Were the pressures in the <b>same unit</b> before they were compared?</p></div>`) +
+    card('try', 'Spot the mistake', '<p class="muted">Each student example has one mistake. Find it.</p><div id="s8r"></div>') + card('qc', '', '<div id="qc8"></div>'));
+  makeRounds($('#s8r', el), { id: 's8r', need: 3, req: '8.fix', rounds: M.map(r => ({ q: r.q, opts: r.o, a: r.a, hint: 'Check the factor and the units.', why: r.why })), onDone: () => done(8, 'fix') });
+  makeQC($('#qc8', el), { id: 'qc8', q: 'Which statement is correct?', opts: ['1 atm = 760 mmHg = 760 torr = 101.3 kPa', '1 atm = 760 kPa', '1 torr = 760 mmHg', 'Gas pressure comes from particles standing still'], ans: 0, explain: 'All four describe sea-level pressure.', hint: 'Recall the equalities.', onCorrect: () => done(8, 'qc8') });
+}
+
+/* =========================================================
+   SECTION 9: FINAL CHECK
+   ========================================================= */
+const BANK = [
+  { id: 'b1', q: 'Gas pressure is caused by…', o: ['gas particles hitting the walls of the container', 'gas particles standing still', 'the color of the gas', 'the shape of the container'], a: 0, x: 'Each collision is a small push.' },
+  { id: 'b2', q: 'Adding more gas particles to a sealed container makes the pressure…', o: ['increase', 'decrease', 'stay the same', 'drop to zero'], a: 0, x: 'More hits.' },
+  { id: 'b3', q: 'Heating a sealed container of gas makes the pressure…', o: ['increase', 'decrease', 'stay the same', 'drop to zero'], a: 0, x: 'Faster particles hit harder and more often.' },
+  { id: 'b4', q: 'A barometer measures…', o: ['air pressure', 'temperature', 'humidity', 'wind speed'], a: 0, x: 'Air pushes mercury up a tube.' },
+  { id: 'b5', q: 'At sea level, a mercury barometer reads…', o: ['760 mm', '101.3 mm', '1 mm', '14.7 mm'], a: 0, x: '760 mmHg = 1 atm.' },
+  { id: 'b6', q: '1 atm equals…', o: ['101.3 kPa', '760 kPa', '1 kPa', '14.7 kPa'], a: 0, x: '760 goes with mmHg and torr.' },
+  { id: 'b7', q: '1 torr equals…', o: ['1 mmHg', '760 mmHg', '101.3 kPa', '1 atm'], a: 0, x: 'Same size unit.' },
+  { id: 'b8', q: 'Convert 2.00 atm to mmHg.', o: ['1,520 mmHg', '380 mmHg', '0.00263 mmHg', '202.6 mmHg'], a: 0, x: '2.00 × 760.' },
+  { id: 'b9', q: 'Convert 380 mmHg to atm.', o: ['0.500 atm', '2.00 atm', '288,800 atm', '3.75 atm'], a: 0, x: '380 ÷ 760.' },
+  { id: 'b10', q: 'Convert 2.00 atm to kPa.', o: ['202.6 kPa', '1,520 kPa', '50.65 kPa', '101.3 kPa'], a: 0, x: '2.00 × 101.3.' },
+  { id: 'b11', q: 'Convert 1,520 mmHg to kPa.', o: ['202.6 kPa', '101.3 kPa', '15.0 kPa', '760 kPa'], a: 0, x: '1,520 × 101.3 ÷ 760.' },
+  { id: 'b12', q: 'Which factor converts kPa to atm?', o: ['1 atm / 101.3 kPa', '101.3 kPa / 1 atm', '760 mmHg / 1 atm', '1 atm / 760 kPa'], a: 0, x: 'kPa on the bottom.' },
+  { id: 'b13', q: 'Why is air pressure lower on a mountain?', o: ['There is less air above pushing down', 'It is colder', 'Mountains absorb air', 'Gravity is stronger'], a: 0, x: 'Less air above.' },
+  { id: 'b14', q: 'Which pressure is greatest?', o: ['1.2 atm', '800 mmHg', '110 kPa', 'They are equal'], a: 0, x: '912 vs 800 vs 825 mmHg.' },
+  { id: 'b15', q: 'Denver (630 mmHg) is about…', o: ['0.83 atm', '1.2 atm', '0.33 atm', '630 atm'], a: 0, x: '630 ÷ 760.' },
+  { id: 'b16', type: 'tp', q: 'A sealed balloon is carried up a mountain.', A: { q: 'What happens to the outside air pressure?', o: ['It decreases', 'It increases', 'It stays the same', 'It drops to zero'], a: 0 }, B: { q: 'What happens to the balloon?', o: ['It expands', 'It shrinks', 'It stays the same', 'It freezes'], a: 0 }, x: 'Less push from outside.' },
+  { id: 'b17', type: 'tp', q: 'Convert 0.500 atm.', A: { q: 'In mmHg:', o: ['380 mmHg', '1,520 mmHg', '760 mmHg', '50.65 mmHg'], a: 0 }, B: { q: 'In kPa:', o: ['50.65 kPa', '202.6 kPa', '380 kPa', '101.3 kPa'], a: 0 }, x: '× 760 and × 101.3.' },
+  { id: 'b18', type: 'tp', q: 'A box has 10 gas particles at 300 K.', A: { q: 'Double the particles: pressure…', o: ['doubles', 'halves', 'stays the same', 'drops to zero'], a: 0 }, B: { q: 'Why?', o: ['Twice as many collisions with the walls', 'Particles get bigger', 'Particles slow down', 'The box shrinks'], a: 0 }, x: 'More particles, more hits.' },
+  { id: 'b19', type: 'tp', q: 'A weather report gives 98.5 kPa.', A: { q: 'Compared with normal sea-level pressure, this is…', o: ['lower', 'higher', 'equal', 'impossible'], a: 0 }, B: { q: 'In atm, it is about…', o: ['0.97 atm', '1.03 atm', '98.5 atm', '0.75 atm'], a: 0 }, x: '98.5 ÷ 101.3.' },
+  { id: 'b20', type: 'sa', q: 'Which equal 1 atm?', o: ['760 mmHg', '760 torr', '101.3 kPa', '760 kPa', '1 kPa'], a: [0, 1, 2], x: '760 kPa is about 7.5 atm.' },
+  { id: 'b21', type: 'sa', q: 'Which increase the pressure of a sealed gas?', o: ['Adding more gas', 'Heating it', 'Squeezing it into less space', 'Cooling it', 'Removing gas'], a: [0, 1, 2], x: 'More, faster, or closer hits.' },
+  { id: 'b22', type: 'sa', q: 'Which are pressure units?', o: ['atm', 'kPa', 'torr', 'kelvin', 'gram'], a: [0, 1, 2], x: 'K and g are not pressure units.' },
+  { id: 'b23', q: 'A student converts 2.00 atm as 2.00 ÷ 760. What is wrong?', o: ['The factor is upside down; multiply by 760', 'Nothing', 'Use 101.3', 'Add 760'], a: 0, x: 'atm on the bottom.' },
+  { id: 'b24', q: 'A student says 1 atm = 760 kPa. What is wrong?', o: ['1 atm = 101.3 kPa', 'Nothing', '1 atm = 1 kPa', '1 atm = 14.7 kPa'], a: 0, x: '760 goes with mmHg.' },
+  { id: 'b25', q: 'A student compares 105 kPa and 800 mmHg by the numbers. What is wrong?', o: ['Convert to the same unit first', 'Nothing', 'kPa is always larger', 'mmHg is not a pressure unit'], a: 0, x: 'Different units.' },
+  { id: 'b26', q: 'An airplane cabin is about 0.75 atm. In mmHg that is…', o: ['570 mmHg', '760 mmHg', '1,013 mmHg', '75 mmHg'], a: 0, x: '0.75 × 760.' },
+  { id: 'b27', q: 'Convert 50.65 kPa to atm.', o: ['0.500 atm', '2.00 atm', '5,131 atm', '50.65 atm'], a: 0, x: '50.65 ÷ 101.3.' },
+  { id: 'b28', q: 'A tire gauge reads in psi. 1 atm equals about…', o: ['14.7 psi', '760 psi', '101.3 psi', '1 psi'], a: 0, x: 'Pounds per square inch.' }
+];
+
+const QB = Object.fromEntries(BANK.map(q => [q.id, q]));
+const optHTML = (o, small) => Array.isArray(o) ? ionHTML(o[0], o[1]) : typeof o === 'object' ? (small ? `<span style="display:inline-block;width:84px;vertical-align:middle">${bohrSVG(o)}</span>` : bohrSVG(o)) : o;
+
+const REVIEW_HTML = `<div class="review-box"><ul>
+  <li><b>Gas pressure</b> comes from particles hitting the walls. More particles or higher temperature → more pressure.</li>
+  <li>A <b>barometer</b> measures air pressure: 760 mm of mercury at sea level.</li>
+  <li><b>1 atm = 760 mmHg = 760 torr = 101.3 kPa</b> (= 14.7 psi).</li>
+  <li>Convert with a factor that puts the unit you have on the bottom, e.g. × 760 mmHg / 1 atm.</li>
+  <li>Compare pressures only after converting them to the same unit.</li></ul></div>`;
+
+function buildFinal(el) { el.innerHTML = frame(9, '<div id="fc"></div>'); }
+
+function renderFinal() {
+  const box = $('#fc'), F = S.final;
+  if (F.current) return renderFCQ();
+  const fails = F.attempts.filter(a => !a.pass).length;
+  const hist = F.attempts.length ? `<p class="attempts">Attempts so far: ${F.attempts.map((a, i) => `#${i + 1}: ${a.score}/${FC_LEN}`).join(', ')}</p>` : '';
+  const lockNote = LOCK_ON ? '<p class="lock-note">This check opens in full screen. If you leave the page or exit full screen, it locks, and your teacher will need to unlock it.</p>' : '';
+  if (F.passed) {
+    box.innerHTML = card('final', 'You passed the final check', `<div class="score-big pass">${F.best}/${FC_LEN}</div><p>That's your best score. Your results page is unlocked.</p>${hist}
+      <div class="btn-row"><button type="button" class="btn primary" data-go="10">See your results</button><button type="button" class="btn ghost" id="fcStart">Practice with new questions</button></div>`);
+    $('#fcStart').addEventListener('click', startAttempt);
+    return;
+  }
+  if (fails >= 3 && fails % 3 === 0 && F.reviewAt < fails) {
+    box.innerHTML = card('read', 'Quick review before your next try', `<p class="muted">You've tried ${fails} times. Read these key ideas, then start a new check.</p>${REVIEW_HTML}
+      <div class="btn-row"><button type="button" class="btn primary" id="fcReviewed">I reviewed this. Start a new check</button></div>`);
+    $('#fcReviewed').addEventListener('click', () => { F.reviewAt = fails; save(); startAttempt(); });
+    return;
+  }
+  box.innerHTML = card('final', fails ? 'Try again with new questions' : 'Ready for the final check?', `<p>${FC_LEN} questions picked at random from a bigger bank. Score ${PASS_SCORE} or more to pass. Each retake gives you different questions.</p>${lockNote}${hist}
+    <div class="btn-row"><button type="button" class="btn amber" id="fcStart">Start the final check</button></div>`);
+  $('#fcStart').addEventListener('click', startAttempt);
+}
+function startAttempt() {
+  const F = S.final;
+  const last = F.attempts.length ? F.attempts[F.attempts.length - 1].ids : [];
+  let ids = shuffle(BANK.map(q => q.id).filter(id => !last.includes(id)));
+  if (ids.length < FC_LEN) ids = ids.concat(shuffle(last));
+  ids = ids.slice(0, FC_LEN);
+  F.current = { qs: ids.map(id => { const q = QB[id]; return { id, order: q.type === 'tp' ? { A: shuffle([0, 1, 2, 3]), B: shuffle([0, 1, 2, 3]) } : q.type === 'sa' ? shuffle(q.o.map((o, k) => k)) : (q.fixed ? [0, 1, 2, 3] : shuffle([0, 1, 2, 3])) }; }), ans: {}, idx: 0, startedAt: Date.now() };
+  save(); startLockdown(); renderFinal();
+  $('#scr-9').scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });
+}
+/* answered / right for multiple choice, two-part (tp), and select-all (sa) */
+function fcAnswered(x, ans) { const q = QB[x.id], a = ans[x.id]; if (q.type === 'tp') return !!a && a.A != null && a.B != null; if (q.type === 'sa') return Array.isArray(a) && a.length > 0; return a != null; }
+function fcRight(q, a) { if (q.type === 'tp') return !!a && a.A === q.A.a && a.B === q.B.a; if (q.type === 'sa') return Array.isArray(a) && a.slice().sort().join() === q.a.slice().sort().join(); return a === q.a; }
+function fcAnsText(q, a) {
+  if (q.type === 'tp') return `Part A: ${a && a.A != null ? optHTML(q.A.o[a.A], true) : '—'}; Part B: ${a && a.B != null ? optHTML(q.B.o[a.B], true) : '—'}`;
+  if (q.type === 'sa') return (a || []).length ? a.map(k => optHTML(q.o[k], true)).join('; ') : '—';
+  return a != null ? optHTML(q.o[a], true) : '—';
+}
+function fcKeyText(q) { if (q.type === 'tp') return `Part A: ${optHTML(q.A.o[q.A.a], true)}; Part B: ${optHTML(q.B.o[q.B.a], true)}`; if (q.type === 'sa') return q.a.map(k => optHTML(q.o[k], true)).join('; '); return optHTML(q.o[q.a], true); }
+function renderFCQ() {
+  const cur = S.final.current, qd = cur.qs[cur.idx], q = QB[qd.id], box = $('#fc');
+  const allAns = cur.qs.every(x => fcAnswered(x, cur.ans));
+  const unanswered = cur.qs.map((x, i) => fcAnswered(x, cur.ans) ? null : i + 1).filter(Boolean);
+  const mc = (order, opts, pick, keyIdx, part) => `<div class="opts">${order.map((oi, pos) => `<button type="button" class="opt ${pick === oi ? 'picked' : ''}" data-oi="${oi}" ${part ? `data-part="${part}"` : ''} ${oi === keyIdx ? 'data-key="1"' : ''}><span class="L">${'ABCD'[pos]}</span><span class="ot">${optHTML(opts[oi])}</span></button>`).join('')}</div>`;
+  let body = '';
+  if (q.type === 'tp') { const a = cur.ans[qd.id] || {}; body = `<p class="qc-q">${q.q}</p><p class="tp-h"><b>Part A.</b> ${q.A.q}</p>${mc(qd.order.A, q.A.o, a.A, q.A.a, 'A')}<p class="tp-h"><b>Part B.</b> ${q.B.q}</p>${mc(qd.order.B, q.B.o, a.B, q.B.a, 'B')}`; }
+  else if (q.type === 'sa') { const a = cur.ans[qd.id] || []; body = `<p class="qc-q">${q.q} <span class="sa-tag">Select all that apply</span></p><div class="opts">${qd.order.map(oi => `<button type="button" class="opt sa ${a.includes(oi) ? 'picked' : ''}" data-oi="${oi}" ${q.a.includes(oi) ? 'data-key="1"' : ''}><span class="cbx"></span><span class="ot">${optHTML(q.o[oi])}</span></button>`).join('')}</div>`; }
+  else body = `<p class="qc-q">${q.q}</p>${mc(qd.order, q.o, cur.ans[qd.id], q.a)}`;
+  box.innerHTML = `<section class="card k-qc"><span class="tag">Final check</span>
+    <div class="fc-dots">${cur.qs.map((x, i) => `<button type="button" class="${fcAnswered(x, cur.ans) ? 'ans' : ''} ${i === cur.idx ? 'cur' : ''}" data-j="${i}" aria-label="Question ${i + 1}${fcAnswered(x, cur.ans) ? ', answered' : ''}">${i + 1}</button>`).join('')}</div>
+    <p class="sec-meta">Question ${cur.idx + 1} of ${FC_LEN}${q.type === 'tp' ? ' · two-part' : ''}</p>
+    ${q.fig ? `<div class="qc-fig">${typeof q.fig === 'string' ? q.fig : bohrSVG(q.fig)}</div>` : ''}
+    ${body}
+    <div class="btn-row" style="justify-content:space-between;margin-top:18px"><button type="button" class="btn ghost" id="fcPrev" ${cur.idx === 0 ? 'disabled' : ''}>Back</button>
+    ${cur.idx < FC_LEN - 1 ? '<button type="button" class="btn primary" id="fcNext">Next</button>' : `<button type="button" class="btn amber" id="fcSubmit" ${allAns ? '' : 'disabled'}>Submit check</button>`}</div>
+    ${cur.idx === FC_LEN - 1 && !allAns ? `<p class="small muted">Answer every question to submit. Still open: ${unanswered.join(', ')}.</p>` : ''}
+  </section>`;
+  $$('.opt', box).forEach(b => b.addEventListener('click', () => {
+    const oi = +b.dataset.oi;
+    if (q.type === 'tp') { const a = cur.ans[qd.id] || {}; a[b.dataset.part] = oi; cur.ans[qd.id] = a; }
+    else if (q.type === 'sa') { const a = (cur.ans[qd.id] || []).slice(), k = a.indexOf(oi); if (k < 0) a.push(oi); else a.splice(k, 1); cur.ans[qd.id] = a; }
+    else cur.ans[qd.id] = oi;
+    save(); renderFCQ();
+  }));
+  $$('.fc-dots button', box).forEach(b => b.addEventListener('click', () => { cur.idx = +b.dataset.j; save(); renderFCQ(); }));
+  const prev = $('#fcPrev', box), next = $('#fcNext', box), sub = $('#fcSubmit', box);
+  prev && prev.addEventListener('click', () => { cur.idx--; save(); renderFCQ(); });
+  next && next.addEventListener('click', () => { cur.idx++; save(); renderFCQ(); });
+  sub && sub.addEventListener('click', gradeAttempt);
+}
+function gradeAttempt() {
+  const F = S.final, cur = F.current;
+  let score = 0; const missed = [];
+  cur.qs.forEach(x => { const q = QB[x.id]; if (fcRight(q, cur.ans[x.id])) score++; else missed.push(x); });
+  const pass = score >= PASS_SCORE, prevBest = F.best, wasPassed = F.passed;
+  F.attempts.push({ score, pass, at: new Date().toISOString(), ids: cur.qs.map(x => x.id), pts: cur.qs.map(x => fcRight(QB[x.id], cur.ans[x.id]) ? 1 : 0) });
+  F.best = Math.max(F.best, score);
+  const autoSend = pass && (!wasPassed || score > prevBest);
+  if (pass) F.passed = true;
+  F.current = null; save(); endLockdown();
+  if (pass) done(NSEC, 'pass');
+  const box = $('#fc');
+  const review = missed.map(x => { const q = QB[x.id]; return `<div class="review-item"><p style="margin:0 0 4px"><b>${q.q}</b></p><p class="yours" style="margin:0">Your answer: ${fcAnsText(q, cur.ans[x.id])}</p><p class="right" style="margin:0">Correct answer: ${fcKeyText(q)}</p><p class="small muted" style="margin:4px 0 0">${q.x}</p></div>`; }).join('');
+  const failsNow = F.attempts.filter(a => !a.pass).length;
+  box.innerHTML = card('final', pass ? 'You passed' : 'Not yet', `<div class="score-big ${pass ? 'pass' : 'fail'}">${score}/${FC_LEN}</div>
+    <p>${pass ? (missed.length ? 'Nice work. Look over what you missed below.' : 'Perfect score.') : `You need ${PASS_SCORE} to pass. Look over what you missed, then try again with new questions.${failsNow % 3 === 0 ? ' You\'ll see a quick review first.' : ''}`}</p>
+    ${missed.length ? `<h4 style="margin:14px 0 0;font-weight:500;color:var(--muted)">What you missed</h4>${review}` : ''}
+    <div class="btn-row">${pass ? `<button type="button" class="btn primary" data-go="${RES}">See your results</button>` : '<button type="button" class="btn amber" id="fcAgain">Try again</button>'}</div>
+    ${pass ? '<p class="sheetbox sheetStatus" aria-live="polite"></p>' : ''}`);
+  const again = $('#fcAgain'); again && again.addEventListener('click', renderFinal);
+  if (autoSend) sendScores();
+  $('#scr-' + NSEC).scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });
+}
+
+/* =========================================================
+   RESULTS
+   ========================================================= */
+const QC_IDS = ['qc1', 'qc2', 'qc3', 'qc4', 'qc5', 'qc6', 'qc7', 'qc8'];
+function stats() {
+  const F = S.final;
+  return {
+    firstTry: QC_IDS.filter(id => S.qc[id] && S.qc[id].first === true).length,
+    secs: [1, 2, 3, 4, 5, 6, 7, 8, 9].filter(n => S.secDone[n]).length,
+    best: F.best, attempts: F.attempts.length, passed: F.passed
+  };
+}
+function renderResults() {
+  const el = $('#scr-10'), st = S.student || {}, k = stats();
+  el.innerHTML = `<header class="sec-head">${iconTile(10, true)}<div><p class="sec-meta">Results</p><h2>${k.passed ? 'Lesson complete' : 'Your results so far'}</h2></div></header>
+  <section class="card"><span class="tag">Student</span>
+    <div class="who"><div><span>Name</span>${esc((st.first || '') + ' ' + (st.last || ''))}</div><div><span>Period</span>${esc(st.period || '')}</div><div><span>Teacher</span>${esc(st.teacher || '')}</div><div><span>Student ID</span>${esc(st.sid || '')}</div></div>
+    <div class="stats">
+      <div class="stat"><div class="k">Final check (best)</div><div class="v">${k.best}/${FC_LEN}</div></div>
+      <div class="stat"><div class="k">Status</div><div class="v" style="color:${k.passed ? 'var(--good)' : 'var(--amber)'}">${k.passed ? 'Passed' : 'Not yet'}</div></div>
+      <div class="stat"><div class="k">Final check attempts</div><div class="v">${k.attempts}</div></div>
+      <div class="stat"><div class="k">Quick checks right on first try</div><div class="v">${k.firstTry}/8</div></div>
+      <div class="stat"><div class="k">Sections finished</div><div class="v">${k.secs}/9</div></div>
+      <div class="stat"><div class="k">Times locked</div><div class="v">${S.lockouts}</div></div>
+    </div>
+    <p class="small muted">${S.completedAt ? 'Completed ' + new Date(S.completedAt).toLocaleString() : ''}</p>
+  </section>
+  <section class="card"><span class="tag">Your goals</span><ul class="goals" id="goalsResults"></ul></section>
+  <div class="btn-row no-print"><button type="button" class="btn primary" id="sendBtn">Send my scores to my teacher</button><button type="button" class="btn ghost" id="csvBtn">Download CSV</button><button type="button" class="btn ghost" id="printBtn">Print results</button><button type="button" class="btn ghost" data-go="9">Back to the final check</button></div>
+  <p class="sheetbox sheetStatus no-print" aria-live="polite">${S.sentAt ? `Sent to your teacher ${new Date(S.sentAt).toLocaleString()}.` : ''}</p>`;
+  renderGoalsInto($('#goalsResults'));
+  $('#csvBtn').addEventListener('click', downloadCSV);
+  $('#sendBtn').addEventListener('click', sendScores);
+  $('#printBtn').addEventListener('click', () => window.print());
+}
+function downloadCSV() {
+  const st = S.student || {}, k = stats();
+  const H = ['Student ID', 'Last Name', 'First Name', 'Period', 'Teacher', 'Activity', 'Lesson Score (quick checks right on first try)', 'Lesson Total', 'Final Check Score (best)', 'Final Check Total', 'Final Check Passed', 'Final Check Attempts', 'Sections Completed (of 9)', 'Times Locked', 'Date'];
+  const row = [st.sid, st.last, st.first, st.period, st.teacher, LESSON, k.firstTry, 8, k.best, FC_LEN, k.passed ? 'Yes' : 'No', k.attempts, k.secs, S.lockouts, new Date().toLocaleString()];
+  const q = v => { const s = String(v == null ? '' : v); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+  const csv = H.map(q).join(',') + '\r\n' + row.map(q).join(',') + '\r\n';
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `GasPressure_${(st.last || 'student').replace(/\W+/g, '')}_${(st.first || '').replace(/\W+/g, '')}.csv`;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+
+/* =========================================================
+   GOOGLE SHEETS (two rows: the lesson and the final check)
+   ========================================================= */
+function sheetBodies() {
+  const st = S.student || {}, F = S.final;
+  const base = { studentId: st.sid || '', firstName: st.first || '', lastName: st.last || '', period: st.period || '', teacher: st.teacher || '', locks: String(S.lockouts), when: new Date().toString() };
+  const qcPts = QC_IDS.map(id => S.qc[id] && S.qc[id].first === true ? 1 : 0);
+  const lesson = Object.assign({}, base, {
+    activity: `${LESSON}: Lesson`, score: String(sum(qcPts)), total: String(QC_IDS.length),
+    qlabels: QC_IDS.map((_, i) => 'QC' + (i + 1)).join('|'), qpoints: qcPts.join('|'), qmax: QC_IDS.map(() => 1).join('|')
+  });
+  let best = null; F.attempts.forEach(a => { if (!best || a.score >= best.score) best = a; });
+  const fin = Object.assign({}, base, { activity: `${LESSON}: Final Check`, score: String(F.best), total: String(FC_LEN) },
+    best && best.pts ? { qlabels: best.pts.map((_, i) => 'Q' + (i + 1)).join('|'), qpoints: best.pts.join('|'), qmax: best.pts.map(() => 1).join('|') }
+                     : { qlabels: 'Final Check', qpoints: String(F.best), qmax: String(FC_LEN) });
+  return [lesson, fin];
+}
+function sendScores() {
+  const msg = t => $$('.sheetStatus').forEach(e => { e.textContent = t; });
+  if (!S.student) { msg('Sign in on the start page first.'); return; }
+  const url = sheetURL();
+  if (!url) { msg("This lesson isn't connected to your teacher's gradebook sheet yet."); return; }
+  msg('Sending...');
+  Promise.all(sheetBodies().map(b => fetch(url, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(b) })))
+    .then(() => { S.sentAt = new Date().toISOString(); save(); msg('Sent! Your teacher will see your scores.'); })
+    .catch(() => msg("Couldn't send. Check your internet connection and try again."));
+}
+
+/* =========================================================
+   PROGRESS: requirements, sections, goals, nav
+   ========================================================= */
+function renderReqs(n, justId) {
+  const box = $('#unlock-' + n); if (!box) return;
+  $('.reqs', box).innerHTML = REQS[n].map(([id, t]) => `<li class="${S.reqs[n + '.' + id] ? 'ok' : ''} ${id === justId ? 'just-ok' : ''}"><span class="box"></span><span>${t}</span></li>`).join('');
+  box.classList.toggle('all-done', !!S.secDone[n]);
+}
+function updateNext(n) { const b = $('#next-' + n); if (b) b.disabled = !(S.secDone[n] || S.teacherUnlock); }
+function done(n, id) {
+  const k = n + '.' + id;
+  if (S.reqs[k]) return;
+  S.reqs[k] = true; save();
+  renderReqs(n, id);
+  if (REQS[n].every(([r]) => S.reqs[n + '.' + r])) completeSection(n);
+}
+function completeSection(n) {
+  if (S.secDone[n]) return;
+  S.secDone[n] = true;
+  if (n === 9 && !S.completedAt) S.completedAt = new Date().toISOString();
+  save(); renderReqs(n); updateNext(n);
+  renderNav(n + 1);
+  const gi = GOALS.findIndex(g => g.sec === n);
+  renderGoals(gi);
+  setTimeout(() => toast(gi >= 0 ? `Goal reached: ${GOALS[gi].t}` : (n < 9 ? `Section ${n + 1} unlocked` : 'Results unlocked')), 250);
+}
+function accessible(n) {
+  if (n === 0) return true;
+  if (!S.student) return false;
+  if (S.teacherUnlock) return true;
+  if (n === 1) return true;
+  if (n <= 9) return !!S.secDone[n - 1];
+  if (n === 10) return !!S.secDone[9];
+  return false;
+}
+function renderNav(popN) {
+  const nav = $('#navTiles');
+  nav.innerHTML = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => {
+    const title = n <= 9 ? `Section ${n}: ${SECS[n].title}` : 'Results';
+    return `<button type="button" class="tile icon ${S.cur === n ? 'current' : ''} ${(n <= 9 && S.secDone[n]) ? 'done' : ''} ${n === popN && !REDUCED ? 'unlocking' : ''}" data-go="${n}" ${accessible(n) ? '' : 'disabled'} title="${esc(title)}" aria-label="${esc(title)}${accessible(n) ? '' : ' (locked)'}"><span class="z">${n}</span>${ICON[n]}<span class="ck" aria-hidden="true">✓</span></button>`;
+  }).join('');
+}
+function renderGoalsInto(ul, justIdx) {
+  if (!ul) return;
+  ul.innerHTML = GOALS.map((g, i) => `<li class="${S.secDone[g.sec] ? 'ok' : ''} ${i === justIdx ? 'just-ok' : ''}"><span class="box"></span><span>${g.t}</span></li>`).join('');
+}
+function renderGoals(justIdx) {
+  renderGoalsInto($('#goalsStart'), justIdx);
+  renderGoalsInto($('#goalsDrawerList'), justIdx);
+  renderGoalsInto($('#goalsResults'), justIdx);
+  const n = GOALS.filter(g => S.secDone[g.sec]).length;
+  $('#goalsBtn').textContent = `Goals ${n}/${GOALS.length}`;
+}
+
+function go(n) {
+  if (n < 0 || n > 10) return;
+  if (S.final.current && n !== 9) { toast('Submit your final check first.'); return; }
+  if (!accessible(n)) { toast(S.student ? 'Finish the section before this one to unlock it.' : 'Fill in your name and info to start.'); return; }
+  S.cur = n; save();
+  $$('.screen').forEach(s => s.classList.toggle('on', s.id === 'scr-' + n));
+  if (n === 9) renderFinal();
+  if (n === 10) renderResults();
+  if (n === 0) startHero(); else heroRun++;
+  renderNav();
+  window.scrollTo({ top: 0, behavior: 'auto' });
+}
+
+/* =========================================================
+   HERO (start screen)
+   ========================================================= */
+let heroRun = 0;
+function startHero() {
+  const svg = $('#heroSvg'), cap = $('#heroCap');
+  svg.setAttribute('viewBox', '0 0 300 290');
+  svg.innerHTML = baroSVG(760).replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '');
+  cap.textContent = '1 atm = 760 mmHg = 760 torr = 101.3 kPa';
+}
+
+/* =========================================================
+   LOCKDOWN (final check only, when opened from GitHub Pages)
+   ========================================================= */
+let fsExiting = false;
+function reqFS() {
+  const d = document.documentElement, f = d.requestFullscreen || d.webkitRequestFullscreen;
+  if (f && !document.fullscreenElement) { try { const p = f.call(d); if (p && p.catch) p.catch(() => {}); } catch (e) {} }
+}
+function exitFS() {
+  if (!document.fullscreenElement) return;
+  const f = document.exitFullscreen || document.webkitExitFullscreen;
+  fsExiting = true;
+  try { const p = f.call(document); if (p && p.then) p.then(() => { fsExiting = false; }, () => { fsExiting = false; }); else fsExiting = false; } catch (e) { fsExiting = false; }
+}
+function startLockdown() { if (!LOCK_ON) return; S.lockActive = true; S.locked = false; save(); reqFS(); }
+function endLockdown() { S.lockActive = false; S.locked = false; save(); $('#lockOv').hidden = true; exitFS(); }
+function lockNow() { if (!S.lockActive || S.locked) return; S.locked = true; S.lockouts++; save(); showLock(); }
+function showLock() { $('#lockOv').hidden = false; $('#lockCode').value = ''; $('#lockMsg').textContent = ''; setTimeout(() => $('#lockCode').focus(), 60); }
+document.addEventListener('visibilitychange', () => { if (document.hidden) lockNow(); });
+window.addEventListener('blur', () => { setTimeout(() => { if (!document.hasFocus()) lockNow(); }, 150); });
+document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && !fsExiting) lockNow(); });
+function tryUnlock() {
+  const lc = $('#lockCode').value.trim().toLowerCase();
+  if (lc === UNLOCK_CODE || lc === TEACHER_CODE) { S.locked = false; save(); $('#lockOv').hidden = true; reqFS(); toast('Unlocked'); }
+  else { $('#lockMsg').textContent = 'That code is not correct.'; shake($('#lockCode')); }
+}
+$('#lockGo').addEventListener('click', tryUnlock);
+$('#lockCode').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+
+/* =========================================================
+   TEACHER VIEW
+   ========================================================= */
+const tOv = $('#teacherOv');
+function teacherInfo() {
+  const st = S.student;
+  $('#tInfo').textContent = `${st ? `Student: ${st.first} ${st.last}, period ${st.period}. ` : 'No student signed in. '}Final check attempts: ${S.final.attempts.length}. Best: ${S.final.best}/${FC_LEN}. Times locked: ${S.lockouts}.`;
+  $('#tKey').textContent = document.body.classList.contains('show-key') ? 'Hide answer key' : 'Show answer key';
+  $('#tUnlock').textContent = S.teacherUnlock ? 'Every section is unlocked' : 'Unlock every section';
+  $('#tUnlock').disabled = !!S.teacherUnlock;
+  $('#tEndLock').disabled = !S.lockActive;
+}
+$('#teacherBtn').addEventListener('click', () => {
+  tOv.hidden = false; $('#tLogin').classList.remove('hidden'); $('#tPanel').classList.add('hidden');
+  $('#tCode').value = ''; $('#tMsg').textContent = ''; setTimeout(() => $('#tCode').focus(), 50);
+});
+const tLogin = () => {
+  if ($('#tCode').value.trim().toLowerCase() === TEACHER_CODE) { $('#tLogin').classList.add('hidden'); $('#tPanel').classList.remove('hidden'); teacherInfo(); }
+  else { $('#tMsg').textContent = 'That code is not correct.'; shake($('#tCode')); }
+};
+$('#tGo').addEventListener('click', tLogin);
+$('#tCode').addEventListener('keydown', e => { if (e.key === 'Enter') tLogin(); });
+$('#tCancel').addEventListener('click', () => { tOv.hidden = true; });
+$('#tClose').addEventListener('click', () => { tOv.hidden = true; });
+$('#tUnlock').addEventListener('click', () => {
+  if (!S.student) { toast('Have the student sign in first.'); return; }
+  S.teacherUnlock = true; save(); renderNav(); for (let n = 1; n <= 9; n++) updateNext(n); teacherInfo(); toast('Every section is unlocked');
+});
+$('#tKey').addEventListener('click', () => { document.body.classList.toggle('show-key'); teacherInfo(); });
+$('#tSend').addEventListener('click', sendScores);
+$('#tEndLock').addEventListener('click', () => { endLockdown(); teacherInfo(); toast('Lockdown ended for this check'); });
+$('#tReset').addEventListener('click', () => {
+  if (!confirm('Erase all progress for this lesson on this device?')) return;
+  try { localStorage.removeItem(KEY); } catch (e) {}
+  S = DEF(); location.reload();
+});
+
+/* =========================================================
+   GLOBAL EVENTS
+   ========================================================= */
+const pop = $('#pop');
+document.addEventListener('click', e => {
+  const g = e.target.closest('[data-go]');
+  if (g && !g.disabled) { go(+g.dataset.go); return; }
+  const ch = e.target.closest('.chip');
+  if (ch) {
+    const t = ch.dataset.term;
+    $('b', pop).textContent = t; $('p', pop).textContent = GLOSS[t] || '';
+    pop.hidden = false;
+    const r = ch.getBoundingClientRect(), w = Math.min(300, window.innerWidth - 24);
+    pop.style.left = Math.max(12, Math.min(r.left, window.innerWidth - w - 12)) + 'px';
+    const below = r.bottom + 8, ph = pop.offsetHeight;
+    pop.style.top = (below + ph > window.innerHeight - 10 ? Math.max(10, r.top - ph - 8) : below) + 'px';
+    return;
+  }
+  if (!e.target.closest('#pop')) pop.hidden = true;
+  const dr = $('#goalsDrawer');
+  if (!dr.hidden && !e.target.closest('#goalsDrawer') && !e.target.closest('#goalsBtn')) { dr.hidden = true; $('#goalsBtn').setAttribute('aria-expanded', 'false'); }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { pop.hidden = true; $('#goalsDrawer').hidden = true; if (!tOv.hidden) tOv.hidden = true; } });
+window.addEventListener('scroll', () => { pop.hidden = true; }, { passive: true });
+$('#goalsBtn').addEventListener('click', () => { const d = $('#goalsDrawer'); d.hidden = !d.hidden; $('#goalsBtn').setAttribute('aria-expanded', String(!d.hidden)); });
+$('#goalsClose').addEventListener('click', () => { $('#goalsDrawer').hidden = true; $('#goalsBtn').setAttribute('aria-expanded', 'false'); });
+$('.brand').style.cursor = 'pointer';
+$('.brand').addEventListener('click', () => go(0));
+
+/* start form */
+function renderStart() {
+  const wb = $('#welcomeBack'), form = $('#startForm');
+  if (S.student) {
+    wb.classList.remove('hidden'); form.classList.add('hidden');
+    wb.innerHTML = `<p style="margin-top:0">Welcome back, <b>${esc(S.student.first)}</b> (period ${esc(S.student.period)}, ${esc(S.student.teacher)}). Your progress is saved on this device.</p><div class="btn-row"><button type="button" class="btn primary" id="wbGo">Continue</button><button type="button" class="btn ghost" id="wbNew">Not you? Start fresh</button></div>`;
+    $('#wbGo').addEventListener('click', () => {
+      let n = S.cur > 0 && accessible(S.cur) ? S.cur : 1;
+      if (S.cur === 0) { for (let k = 1; k <= 9; k++) if (accessible(k)) n = k; }
+      go(n);
+    });
+    $('#wbNew').addEventListener('click', () => {
+      if (!confirm('Start fresh? This erases the saved progress on this device.')) return;
+      try { localStorage.removeItem(KEY); } catch (e) {}
+      location.reload();
+    });
+  } else { wb.classList.add('hidden'); form.classList.remove('hidden'); }
+}
+$('#fStart').addEventListener('click', () => {
+  const v = id => $(id).value.trim();
+  const st = { first: v('#fFirst'), last: v('#fLast'), period: v('#fPeriod'), teacher: v('#fTeacher'), sid: v('#fSid') };
+  const missing = [['first', 'first name'], ['last', 'last name'], ['period', 'period'], ['teacher', 'teacher'], ['sid', 'student ID']].filter(([k]) => !st[k]).map(([, l]) => l);
+  if (missing.length) { $('#formMsg').textContent = `Add your ${missing.join(', ')}.`; return; }
+  S.student = st; S.startedAt = new Date().toISOString(); save();
+  renderStart(); go(1);
+});
+
+/* =========================================================
+   INIT
+   ========================================================= */
+$('#fTeacher').innerHTML = '<option value="">Choose your teacher</option>' + teacherList().map(t => `<option>${esc(t)}</option>`).join('');
+$('#fPeriod').innerHTML = '<option value="">Choose your period</option>' + periodList().map(p => `<option>${esc(p)}</option>`).join('');
+const BUILD = [null, build1, build2, build3, build4, build5, build6, build7, build8, buildFinal];
+for (let n = 1; n <= 9; n++) {
+  try { BUILD[n]($('#scr-' + n)); } catch (err) { console.error('Section ' + n, err); }
+  renderReqs(n); updateNext(n);
+}
+renderGoals(); renderStart();
+if (S.lockActive && S.final.current) { if (!S.locked) { S.locked = true; S.lockouts++; save(); } }
+let startAt = 0;
+if (S.student) { startAt = S.final.current ? 9 : (accessible(S.cur) ? S.cur : 0); }
+go(startAt);
+if (S.locked && S.lockActive) showLock();
+/* =========================================================
+   SAFEGUARDS: copy/paste and right-click blocked, two-tab check,
+   guest/incognito warning, and teacher preview mode
+   ========================================================= */
+['copy', 'cut', 'paste', 'contextmenu'].forEach(ev => document.addEventListener(ev, e => { if (e.target && e.target.id === 'tCode') return; e.preventDefault(); }));
+let SAVE_OFF = false;
+const realSave = save;
+save = function () { if (!SAVE_OFF) realSave(); };
+function warn(t) { const w = $('#warnBar'); w.innerHTML = t; w.classList.remove('hidden'); }
+try {
+  const bc = new BroadcastChannel('fate-tab-' + KEY), me = Math.random().toString(36).slice(2);
+  bc.onmessage = e => { if (!e.data) return; if (e.data.t === 'hello' && e.data.id !== me) bc.postMessage({ t: 'here', id: me }); if (e.data.t === 'here' && e.data.id !== me && !SAVE_OFF) { SAVE_OFF = true; warn('⚠ This lesson is already open in another tab. Saving is turned off here. Close this tab and keep working in the other one.'); } };
+  bc.postMessage({ t: 'hello', id: me });
+} catch (e) {}
+try { if (navigator.storage && navigator.storage.estimate) navigator.storage.estimate().then(est => { if (est && est.quota && est.quota < 200 * 1024 * 1024) warn('⚠ You seem to be in a guest or incognito window. Your work will be erased when you close it. Sign in to your Chromebook and open the lesson in a normal window.'); }); } catch (e) {}
+$('#tCsv').addEventListener('click', () => downloadCSV());
+$('#tPreview').addEventListener('click', () => {
+  if (!confirm('Preview mode unlocks every section and saves nothing on this device. Use it to look through the lesson. Continue?')) return;
+  SAVE_OFF = true; S.teacherUnlock = true; document.body.classList.add('preview');
+  if (typeof sendScores === 'function') sendScores = function () { toast('Preview mode: nothing is sent.'); };
+  if (!S.student) S.student = { first: 'Preview', last: 'Teacher', period: '-', teacher: 'Preview', sid: '0' };
+  warn('Preview mode: every section is unlocked and nothing is saved or sent. Reload the page to leave preview mode.');
+  renderNav(); for (let n = 1; n <= NSEC; n++) updateNext(n); tOv.hidden = true; go(1);
+});
+})();
+</script>
+<script>
+/* =========================================================
+   CLOUD BACKUP (Saved Student Work sheet)
+   Save code = student ID + last name. Work saves on this Chromebook AND in the cloud,
+   so a student can sign in on any Chromebook and pick up where they left off.
+   ========================================================= */
+(() => {
+  const KEY = 'fate_chem_gas_pressure_v1', LESSON = 'Measuring Gas Pressure';
+  const BACKUP_SAVE_URL = 'https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';
+  const saveURL = () => { try { if (typeof SAVE_WEBHOOK_URL !== 'undefined' && SAVE_WEBHOOK_URL) return SAVE_WEBHOOK_URL; } catch (e) {} return BACKUP_SAVE_URL; };
+  if (!window.localStorage || !window.fetch) return;
+  const realSet = Storage.prototype.setItem;
+  const parse = s => { try { return JSON.parse(s); } catch (e) { return null; } };
+  const who = st => { const s = st && st.student; if (!s) return null; const sid = String(s.sid || s.id || '').trim(), last = String(s.last || '').trim(); return sid && last ? { sid, last, first: s.first || '', period: s.period || '', teacher: s.teacher || '' } : null; };
+  const codeOf = w => (w.sid + '-' + w.last).toLowerCase().replace(/\s+/g, '');
+  const cnt = o => o ? Object.values(o).filter(Boolean).length : 0;
+  /* a number that only grows as the student does more */
+  const prog = st => { if (!st) return 0; let p = 0;
+    p += 100 * cnt(st.secDone) + cnt(st.reqs);
+    if (st.final) p += 10000 * (st.final.passed ? 1 : 0) + 50 * ((st.final.attempts || []).length);
+    if (st.items) p += 10 * Object.values(st.items).filter(x => x && (x.done || x.checked)).length;
+    if (st.ans) p += 5 * Object.keys(st.ans).length;
+    if (st.submittedAt || st.completedAt || st.screen === 'results') p += 1000;
+    return p; };
+  const verKey = KEY + '__cloudver';
+  let pending = null, lastSent = '', restoring = false;
+  /* status chip */
+  const chip = document.createElement('div'); chip.className = 'cloudchip'; chip.setAttribute('aria-live', 'polite');
+  chip.style.cssText = 'position:fixed;left:10px;bottom:10px;z-index:9999;font:600 12px system-ui,sans-serif;padding:5px 10px;border-radius:999px;background:rgba(20,32,52,.85);color:#cfe3ff;pointer-events:none;opacity:0;transition:opacity .3s';
+  const showChip = (t, ms = 2500) => { chip.textContent = t; chip.style.opacity = '1'; clearTimeout(showChip.t); showChip.t = setTimeout(() => { chip.style.opacity = '0'; }, ms); };
+  document.addEventListener('DOMContentLoaded', () => document.body.appendChild(chip)); if (document.body) document.body.appendChild(chip);
+  const body = (raw, st, w) => { const ver = Date.now(); realSet.call(localStorage, verKey, String(ver));
+    return new URLSearchParams({ code: codeOf(w), lesson: LESSON, data: raw, prog: String(prog(st)), ver: String(ver), studentId: w.sid, lastName: w.last, firstName: w.first, period: w.period, teacher: w.teacher,
+      summary: `${prog(st)} progress points` }); };
+  function push(now) {
+    if (restoring) return;
+    const raw = localStorage.getItem(KEY), st = parse(raw), w = who(st);
+    if (!w || raw === lastSent) return;
+    const b = body(raw, st, w); lastSent = raw;
+    if (now && navigator.sendBeacon) { navigator.sendBeacon(saveURL(), b); return; }
+    fetch(saveURL(), { method: 'POST', mode: 'no-cors', body: b }).then(() => showChip('☁ Saved to the cloud')).catch(() => { lastSent = ''; showChip('Saved on this Chromebook (cloud not reached)'); });
+  }
+  function schedule() { clearTimeout(pending); pending = setTimeout(() => push(false), 4000); }
+  async function pull(w, localSt) {
+    try {
+      const r = await fetch(saveURL() + '?code=' + encodeURIComponent(codeOf(w)) + '&lesson=' + encodeURIComponent(LESSON), { cache: 'no-store' });
+      const j = await r.json(); if (!j || !j.found || !j.data) return false;
+      const cloudSt = parse(j.data); if (!cloudSt) return false;
+      if (prog(cloudSt) > prog(localSt)) {
+        restoring = true; clearTimeout(pending);
+        realSet.call(localStorage, KEY, j.data);
+        realSet.call(localStorage, verKey, String(j.ver || Date.now()));
+        sessionStorage.setItem('cloud-restored-' + KEY, '1');
+        showChip('☁ Found your saved work. Loading it…', 4000);
+        setTimeout(() => location.reload(), 700);
+        return true;
+      }
+    } catch (e) { /* offline or blocked: keep working on this Chromebook */ }
+    return false;
+  }
+  /* watch saves to this activity's key */
+  Storage.prototype.setItem = function (k, v) {
+    if (restoring && this === localStorage && k === KEY) return; /* loading cloud work: don't let the page overwrite it */
+    let before = null;
+    if (this === localStorage && k === KEY) before = who(parse(localStorage.getItem(KEY)));
+    realSet.call(this, k, v);
+    if (this !== localStorage || k !== KEY) return;
+    const st = parse(v), w = who(st);
+    if (!w) return;
+    if (!before || codeOf(before) !== codeOf(w)) pull(w, st).then(restored => { if (!restored) schedule(); });
+    else schedule();
+  };
+  window.addEventListener('pagehide', () => push(true));
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') push(true); });
+  /* on open: if the cloud has more progress for this student, load it */
+  const start = () => {
+    if (sessionStorage.getItem('cloud-restored-' + KEY)) { sessionStorage.removeItem('cloud-restored-' + KEY); showChip('☁ Your saved work is loaded'); return; }
+    const st = parse(localStorage.getItem(KEY)), w = who(st);
+    if (w) pull(w, st);
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
+</script>
+<script>
+/* ===== Scientific calculator (floating, with history) ===== */
+(function () {
+  if (window.__sciCalc) return; window.__sciCalc = true;
+  const HKEY = 'sci_calc_history_v1', MKEY = 'sci_calc_mode_v1';
+  const css = `
+  .scalc-btn{display:inline-flex;align-items:center;gap:6px}
+  .scalc{position:fixed;z-index:99990;right:18px;top:70px;width:330px;max-width:calc(100vw - 20px);background:#0f1a2e;color:#e8eef8;border:1.5px solid #35496f;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.45);font:14px/1.3 system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;user-select:none}
+  .scalc[hidden]{display:none}
+  .scalc-head{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;cursor:move;border-bottom:1px solid #26385a;font-weight:700}
+  .scalc-head button{background:none;border:0;color:#a3b4d1;font:700 18px system-ui;cursor:pointer;padding:0 4px}
+  .scalc-hist{max-height:92px;overflow-y:auto;padding:6px 10px 2px;font-size:13px}
+  .scalc-hist .h{display:flex;justify-content:space-between;gap:8px;padding:2px 0;border-bottom:1px dashed #22324f;cursor:pointer}
+  .scalc-hist .h span:first-child{color:#a3b4d1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .scalc-hist .h span:last-child{color:#5fe1ff;font-weight:700;white-space:nowrap}
+  .scalc-hist .empty{color:#6b7c99;font-style:italic;padding:4px 0}
+  .scalc-in{display:flex;flex-direction:column;gap:2px;margin:6px 10px;background:#0b1322;border:1.5px solid #35496f;border-radius:10px;padding:6px 8px}
+  .scalc-in input{flex:1;min-width:0;background:none;border:0;color:#fff;font:600 20px system-ui;outline:none;user-select:text}
+  .scalc-prev{color:#4ade80;font-weight:700;font-size:15px;white-space:nowrap;align-self:flex-end;min-height:19px}
+  .scalc-keys{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;padding:4px 10px 10px}
+  .scalc-keys button{height:36px;border-radius:8px;border:1px solid #2a3d61;background:#17253f;color:#e8eef8;font:600 15px system-ui;cursor:pointer}
+  .scalc-keys button:hover{background:#1e3152}
+  .scalc-keys button.n{background:#22355a}.scalc-keys button.op{color:#f6b93b}.scalc-keys button.eq{background:#f6b93b;color:#241703;grid-column:span 2}
+  .scalc-keys button.fn{font-size:13px;color:#5fe1ff}.scalc-keys button.ac{color:#fca5a5}
+  @media print{.scalc,.scalc-btn{display:none!important}}`;
+  const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
+
+  let hist = []; try { hist = JSON.parse(localStorage.getItem(HKEY) || '[]'); } catch (e) {}
+  let deg = true; try { deg = localStorage.getItem(MKEY) !== 'rad'; } catch (e) {}
+  const saveH = () => { try { localStorage.setItem(HKEY, JSON.stringify(hist.slice(-40))); } catch (e) {} };
+
+  /* ---- safe parser (no eval) ---- */
+  function evaluate(src, ans) {
+    let s = String(src).replace(/\s+/g, '').replace(/([0-9.])[×*]10\^\(?([-−]?[0-9]+)\)?/g, (m, d, e) => d + 'E' + e.replace('−', '-')).replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-').replace(/π/g, 'pi').replace(/√/g, 'sqrt').replace(/²/g, '^2').replace(/³/g, '^3').replace(/\s+/g, '');
+    const toks = []; let i = 0;
+    while (i < s.length) {
+      const c = s[i];
+      if (/[0-9.]/.test(c)) { let j = i; while (j < s.length && /[0-9.]/.test(s[j])) j++; if (s[j] === 'E' && /[-+0-9]/.test(s[j + 1] || '')) { j++; if (/[-+]/.test(s[j])) j++; while (j < s.length && /[0-9]/.test(s[j])) j++; } const t = s.slice(i, j); if ((t.match(/\./g) || []).length > 1) throw 'Too many decimal points'; toks.push({ t: 'n', v: parseFloat(t) }); i = j; continue; }
+      if (/[a-z]/i.test(c)) { let j = i; while (j < s.length && /[a-z]/i.test(s[j])) j++; const w = s.slice(i, j).toLowerCase(); i = j;
+        const known = ['sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'ln', 'log', 'sqrt', 'pi', 'e', 'ans'];
+        if (!known.includes(w)) throw 'Unknown: ' + w; toks.push({ t: ['pi', 'e', 'ans'].includes(w) ? 'c' : 'f', v: w }); continue; }
+      if ('+-*/^()!%'.includes(c)) { toks.push({ t: 'o', v: c }); i++; continue; }
+      throw 'Unexpected "' + c + '"';
+    }
+    let p = 0;
+    const peek = () => toks[p], take = () => toks[p++];
+    const startsValue = t => t && (t.t === 'n' || t.t === 'c' || t.t === 'f' || (t.t === 'o' && t.v === '('));
+    const trig = (f, x) => { const k = deg ? Math.PI / 180 : 1;
+      if (f === 'sin') return Math.sin(x * k); if (f === 'cos') return Math.cos(x * k); if (f === 'tan') return Math.tan(x * k);
+      if (f === 'asin') return Math.asin(x) / k; if (f === 'acos') return Math.acos(x) / k; if (f === 'atan') return Math.atan(x) / k; };
+    function expr() { let v = term(); while (peek() && peek().t === 'o' && '+-'.includes(peek().v)) { const o = take().v, r = term(); v = o === '+' ? v + r : v - r; } return v; }
+    function term() { let v = unary();
+      while (true) { const t = peek(); if (!t) break;
+        if (t.t === 'o' && '*/'.includes(t.v)) { take(); const r = unary(); v = t.v === '*' ? v * r : v / r; }
+        else if (startsValue(t)) { v = v * unary(); }  /* implied multiplication: 2pi, 3(4) */
+        else break; }
+      return v; }
+    function unary() { const t = peek(); if (t && t.t === 'o' && (t.v === '-' || t.v === '+')) { take(); const v = unary(); return t.v === '-' ? -v : v; } return power(); }
+    function power() { let b = post(); const t = peek(); if (t && t.t === 'o' && t.v === '^') { take(); const e = unary(); return Math.pow(b, e); } return b; }
+    function post() { let v = atom(); while (peek() && peek().t === 'o' && (peek().v === '!' || peek().v === '%')) { const o = take().v; if (o === '%') v = v / 100; else { if (v < 0 || v % 1 || v > 170) throw 'Factorial needs a whole number'; let f = 1; for (let k = 2; k <= v; k++) f *= k; v = f; } } return v; }
+    function atom() { const t = take(); if (!t) throw 'Incomplete';
+      if (t.t === 'n') return t.v;
+      if (t.t === 'c') { if (t.v === 'pi') return Math.PI; if (t.v === 'e') return Math.E; if (ans == null) throw 'No answer yet'; return ans; }
+      if (t.t === 'f') { let x; if (peek() && peek().v === '(') { take(); x = expr(); if (!peek() || peek().v !== ')') throw 'Missing )'; take(); } else x = power();
+        if (['sin', 'cos', 'tan', 'asin', 'acos', 'atan'].includes(t.v)) return trig(t.v, x);
+        if (t.v === 'ln') return Math.log(x); if (t.v === 'log') return Math.log10(x); if (t.v === 'sqrt') return Math.sqrt(x); }
+      if (t.t === 'o' && t.v === '(') { const v = expr(); if (peek() && peek().v === ')') take(); return v; }  /* allow missing final ) */
+      throw 'Check your expression'; }
+    if (!toks.length) throw 'Type something first';
+    const v = expr(); if (p < toks.length) throw 'Check your expression';
+    if (!isFinite(v) || isNaN(v)) throw (isNaN(v) ? 'Not a real number' : 'Too big / divide by 0');
+    return v;
+  }
+  const SUP = { '-': '⁻', 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴', 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹' };
+  function fmt(v) {
+    if (v === 0) return '0';
+    const a = Math.abs(v);
+    if (a >= 1e10 || a < 1e-6) { const [m, e] = v.toExponential(6).split('e'); return `${parseFloat(m)} × 10${String(+e).split('').map(c => SUP[c]).join('')}`; }
+    return String(parseFloat(v.toPrecision(10)));
+  }
+
+  /* ---- panel ---- */
+  const box = document.createElement('div'); box.className = 'scalc'; box.hidden = true; box.setAttribute('role', 'dialog'); box.setAttribute('aria-label', 'Scientific calculator');
+  const K = [['sin', 'sin(', 'fn'], ['cos', 'cos(', 'fn'], ['tan', 'tan(', 'fn'], ['DEG', 'mode', 'fn'], ['AC', 'ac', 'ac'],
+    ['ln', 'ln(', 'fn'], ['log', 'log(', 'fn'], ['√', '√(', 'fn'], ['x²', '^2', 'fn'], ['⌫', 'back', 'ac'],
+    ['(', '(', 'op'], [')', ')', 'op'], ['xʸ', '^', 'op'], ['×10ⁿ', '×10^', 'fn'], ['÷', '÷', 'op'],
+    ['7', '7', 'n'], ['8', '8', 'n'], ['9', '9', 'n'], ['π', 'π', 'fn'], ['×', '×', 'op'],
+    ['4', '4', 'n'], ['5', '5', 'n'], ['6', '6', 'n'], ['e', 'e', 'fn'], ['−', '−', 'op'],
+    ['1', '1', 'n'], ['2', '2', 'n'], ['3', '3', 'n'], ['ans', 'ans', 'fn'], ['+', '+', 'op'],
+    ['0', '0', 'n'], ['.', '.', 'n'], ['(−)', '-', 'op'], ['=', 'eq', 'eq']];
+  box.innerHTML = `<div class="scalc-head"><span>🧮 Calculator</span><span><button type="button" class="scalc-clr" aria-label="Clear history" style="font-size:12px">Clear</button><button type="button" class="scalc-x" aria-label="Close calculator">×</button></span></div>
+    <div class="scalc-hist" aria-live="polite"></div>
+    <div class="scalc-in"><input type="text" inputmode="none" autocomplete="off" spellcheck="false" aria-label="Calculator input"><span class="scalc-prev"></span></div>
+    <div class="scalc-keys">${K.map(([l, v, c]) => `<button type="button" class="${c}" data-v="${v}">${l}</button>`).join('')}</div>`;
+  const inp = box.querySelector('input'), histEl = box.querySelector('.scalc-hist'), prev = box.querySelector('.scalc-prev'), modeBtn = box.querySelector('[data-v="mode"]');
+  const lastAns = () => hist.length ? hist[hist.length - 1].v : null;
+  function drawHist() {
+    histEl.innerHTML = hist.length ? hist.slice(-40).map(h => `<div class="h" title="Tap to reuse"><span>${h.e.replace(/</g, '&lt;')}</span><span>= ${h.r}</span></div>`).join('') : '<div class="empty">Your last answers will show here.</div>';
+    histEl.scrollTop = histEl.scrollHeight;
+    histEl.querySelectorAll('.h').forEach((d, k) => d.addEventListener('click', () => { const h = hist.slice(-40)[k]; insert(h.r.includes('×') ? String(h.v) : h.r); }));
+  }
+  function livePreview() { try { const v = evaluate(inp.value, lastAns()); prev.textContent = inp.value.trim() && /[^0-9.]/.test(inp.value) ? '= ' + fmt(v) : ''; } catch (e) { prev.textContent = ''; } }
+  function insert(t) { const a = inp.selectionStart ?? inp.value.length, b = inp.selectionEnd ?? a; inp.value = inp.value.slice(0, a) + t + inp.value.slice(b); const c = a + t.length; inp.setSelectionRange(c, c); livePreview(); }
+  function doEq() {
+    const src = inp.value.trim(); if (!src) return;
+    try { const v = evaluate(src, lastAns()); hist.push({ e: src, r: fmt(v), v }); saveH(); drawHist(); inp.value = ''; prev.textContent = ''; }
+    catch (e) { prev.textContent = typeof e === 'string' ? e : 'Error'; prev.style.color = '#fca5a5'; setTimeout(() => { prev.style.color = ''; livePreview(); }, 1600); }
+  }
+  function setMode() { modeBtn.textContent = deg ? 'DEG' : 'RAD'; try { localStorage.setItem(MKEY, deg ? 'deg' : 'rad'); } catch (e) {} livePreview(); }
+  box.querySelectorAll('.scalc-keys button').forEach(b => b.addEventListener('click', () => {
+    const v = b.dataset.v;
+    if (v === 'eq') doEq(); else if (v === 'ac') { inp.value = ''; prev.textContent = ''; }
+    else if (v === 'back') { const a = inp.selectionStart, e2 = inp.selectionEnd; if (a !== e2) insert(''); else if (a > 0) { inp.value = inp.value.slice(0, a - 1) + inp.value.slice(a); inp.setSelectionRange(a - 1, a - 1); livePreview(); } }
+    else if (v === 'mode') { deg = !deg; setMode(); }
+    else { if (!inp.value && /^[+×÷^]/.test(v) && hist.length) insert('ans'); insert(v); }
+    inp.focus({ preventScroll: true });
+  }));
+  inp.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') { e.preventDefault(); doEq(); } else if (e.key === 'Escape') box.hidden = true;
+    else if (e.key.length === 1 && /[+*/^]/.test(e.key) && !inp.value && hist.length) { e.preventDefault(); insert('ans' + (e.key === '*' ? '×' : e.key === '/' ? '÷' : e.key)); } });
+  inp.addEventListener('input', livePreview);
+  inp.addEventListener('keyup', e => e.stopPropagation()); inp.addEventListener('keypress', e => e.stopPropagation());
+  box.querySelector('.scalc-x').addEventListener('click', () => { box.hidden = true; });
+  box.querySelector('.scalc-clr').addEventListener('click', () => { hist = []; saveH(); drawHist(); inp.focus({ preventScroll: true }); });
+  /* drag */
+  const head = box.querySelector('.scalc-head'); let drag = null;
+  head.addEventListener('pointerdown', e => { if (e.target.closest('button')) return; const r = box.getBoundingClientRect(); drag = { dx: e.clientX - r.left, dy: e.clientY - r.top }; head.setPointerCapture(e.pointerId); });
+  head.addEventListener('pointermove', e => { if (!drag) return; box.style.left = Math.max(0, Math.min(innerWidth - 60, e.clientX - drag.dx)) + 'px'; box.style.top = Math.max(0, Math.min(innerHeight - 40, e.clientY - drag.dy)) + 'px'; box.style.right = 'auto'; });
+  head.addEventListener('pointerup', () => { drag = null; });
+  function toggle() { box.hidden = !box.hidden; if (!box.hidden) { drawHist(); setMode(); inp.focus({ preventScroll: true }); } }
+  function mount() {
+    document.body.appendChild(box);
+    const tb = [...document.querySelectorAll('button, a')].find(b => /^\s*teacher\b/i.test(b.textContent || '') && b.offsetParent !== null) || [...document.querySelectorAll('button, a')].find(b => /^\s*teacher\b/i.test(b.textContent || ''));
+    const btn = document.createElement('button'); btn.type = 'button'; btn.className = ((tb && tb.className) || '') + ' scalc-btn'; btn.innerHTML = '🧮 Calculator'; btn.setAttribute('aria-label', 'Open the scientific calculator');
+    btn.addEventListener('click', e => { e.preventDefault(); toggle(); });
+    const aplus = !tb && [...document.querySelectorAll('button')].find(b => (b.textContent || '').trim() === 'A+');
+    if (tb && tb.parentNode) tb.parentNode.insertBefore(btn, tb);
+    else if (aplus && aplus.parentNode) { btn.className = (aplus.className || '') + ' scalc-btn'; btn.style.width = 'auto'; btn.style.padding = '0 10px'; aplus.parentNode.insertBefore(btn, aplus.nextSibling); }
+    else { btn.style.cssText = 'position:fixed;right:14px;bottom:14px;z-index:99989;padding:8px 14px;border-radius:999px;border:1.5px solid #35496f;background:#0f1a2e;color:#e8eef8;font:600 14px system-ui;cursor:pointer'; document.body.appendChild(btn); }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount); else mount();
+  window.__sciCalcEval = (s, a) => fmt(evaluate(s, a));
+})();
+
+</script>
+<script>
+/* ===== Teacher: print the whole activity ===== */
+(function () {
+  if (window.__tPrint) return; window.__tPrint = true;
+  const css = `@media print{.scalc,.scalc-btn,.tprint-btn,#lockOv,.toast,.cloudchip,#tPanel,.tpanel,[role=dialog].teacher,.navtiles,.topbar nav{display:none!important}
+    body.printing-all .screen.print-on{display:block!important;break-before:page}
+    body.ws-printing #app{display:none!important} body.ws-printing #wsPrintAll{display:block!important}
+    body.printing-all .page{break-inside:auto}
+    body.printing-all *{animation:none!important;transition:none!important}
+    body.printing-all, body.printing-all *:not(svg):not(svg *){background:transparent!important;color:#111!important;box-shadow:none!important;text-shadow:none!important}
+    body.printing-all{background:#fff!important}
+    body.printing-all *:not(svg):not(svg *){border-color:#9aa5b5!important}
+    body.printing-all .btn,body.printing-all .sec-foot,body.printing-all .unlock,body.printing-all .pr-btns,body.printing-all .btn-row .btn,body.printing-all .progress-pips,body.printing-all .pr-levels{display:none!important}
+    body.printing-all svg{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+    body.printing-all .pr-pic,body.printing-all .pic,body.printing-all .tsvg,body.printing-all .bal-pics,body.printing-all .drop-fig,body.printing-all .eq-pics,body.printing-all .scene-wrap,body.printing-all .cnt-pic{background:#0c1424!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+    body.printing-all .pr-pic *:not(svg):not(svg *),body.printing-all .pic *:not(svg):not(svg *),body.printing-all .drop-fig *:not(svg):not(svg *),body.printing-all .bal-pics *:not(svg):not(svg *),body.printing-all .eq-pics *:not(svg):not(svg *),body.printing-all .scene-wrap *:not(svg):not(svg *){color:#fff!important}
+    body.printing-all input,body.printing-all select,body.printing-all textarea{border:1px solid #777!important}}
+    #wsPrintAll{display:none}#wsPrintAll .ws-p{break-inside:avoid;margin-bottom:14px}`;
+  const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
+  function doPrint() {
+    const restore = [];
+    const panel = document.querySelector('#tPanel'); if (panel && !panel.hidden) { panel.hidden = true; restore.push(() => { panel.hidden = false; }); }
+    document.querySelectorAll('.screen').forEach(s => { if (/scr-(0|9|10)$/.test(s.id) || s.classList.contains('on')) return; s.classList.add('on', 'print-on'); restore.push(() => s.classList.remove('on', 'print-on')); });
+    document.querySelectorAll('.page[hidden]').forEach(p => { p.hidden = false; restore.push(() => { p.hidden = true; }); });
+    if (typeof window.__wsPrintHTML === 'function') { const box = document.createElement('div'); box.id = 'wsPrintAll'; try { box.innerHTML = window.__wsPrintHTML(); } catch (e) { box.innerHTML = ''; }
+      document.body.appendChild(box); document.body.classList.add('ws-printing'); restore.push(() => { box.remove(); document.body.classList.remove('ws-printing'); }); }
+    document.body.classList.add('printing-all'); restore.push(() => document.body.classList.remove('printing-all'));
+    const done = () => { window.removeEventListener('afterprint', done); restore.reverse().forEach(f => f()); };
+    window.addEventListener('afterprint', done);
+    setTimeout(() => { window.print(); setTimeout(() => { if (document.body.classList.contains('printing-all')) done(); }, 1500); }, 120);
+  }
+  window.__teacherPrint = doPrint;
+  function mount() {
+    const k = document.querySelector('#tKey') || document.querySelector('#tReset'); if (!k || document.querySelector('.tprint-btn')) return;
+    const b = document.createElement('button'); b.type = 'button'; b.className = (k.className || 'btn').replace(/\bamber\b|\bprimary\b/g, 'ghost') + ' tprint-btn';
+    b.textContent = '🖨 Print this activity'; b.title = 'Prints every section. Turn on the answer key first to print the key.';
+    b.addEventListener('click', doPrint); k.parentNode.insertBefore(b, k.nextSibling);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount); else mount();
+})();
+
+</script>
+</body></html>

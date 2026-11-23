@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Launch Commander | Physics</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1220;--panel:#121c31;--panel2:#18243d;--line:#2b3a58;--text:#e8eefc;--muted:#9fb0cf;--gold:#facc15;--gold2:#fbbf24;--ok:#34d399;--bad:#f87171;--violet:#a78bfa}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 "Atkinson Hyperlegible",Arial,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:#0e172a}
+header .t{font-weight:800;font-size:17px}
+header .s{color:var(--muted);font-size:13px}
+header .sp{flex:1}
+.btn{font:inherit;font-weight:700;border-radius:10px;padding:9px 16px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--gold);color:#1a1300;border-color:var(--gold)}
+.btn:disabled{opacity:.5;cursor:default}
+main{max-width:1000px;margin:0 auto;padding:14px 16px 30px}
+.stage{position:relative;width:100%;aspect-ratio:16/10;background:#050a14;border:1px solid var(--line);border-radius:14px;overflow:hidden;touch-action:none}
+canvas{display:block;width:100%;height:100%}
+.ov{position:absolute;inset:0;display:flex;background:rgba(5,10,20,.78);padding:14px;overflow:auto}
+.ov>.card{margin:auto}
+#teachOv{position:fixed;z-index:60;background:rgba(5,10,20,.94)}
+.ov[hidden]{display:none}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;max-width:640px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.card h2{margin:0 0 6px;font-size:22px}
+.card h3{margin:12px 0 6px;font-size:15px;color:var(--gold)}
+.muted{color:var(--muted)} .small{font-size:13.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chip{font:inherit;font-size:14px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.chip.on{border-color:var(--gold);background:rgba(250,204,21,.16);font-weight:700}
+.qtag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--violet);margin-bottom:4px}
+.qtext{font-size:18px;margin:4px 0 12px}
+.opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:15.5px}
+.opt:hover:not(:disabled){border-color:var(--gold)}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:13px;font-weight:800}
+.opt.pick{border-color:var(--gold)}
+.fb{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:15.5px}
+.fb.ok{background:rgba(52,211,153,.14);border:1px solid rgba(52,211,153,.5)}
+.fb.no{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.45)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:14px;margin:6px 0}
+.keys b{color:var(--gold)}
+.ladder{display:flex;flex-wrap:wrap;gap:6px;font-size:13px;margin-top:6px}
+.ladder span{padding:3px 8px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}
+.touch{display:none;gap:10px;justify-content:space-between;margin-top:10px;user-select:none;-webkit-user-select:none}
+.touch .grp{display:flex;gap:10px}
+.tbtn{width:64px;height:58px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:22px;font-weight:800;touch-action:none}
+.tbtn.fire{width:110px;background:#3b2a07;border-color:var(--gold);color:var(--gold);font-size:17px}
+.tbtn.on{background:#334155}
+@media (pointer:coarse){.touch{display:flex}}
+@media (max-width:480px){.tbtn{width:52px;height:54px;font-size:20px}.tbtn.fire{width:86px}.touch .grp{gap:7px}.touch{gap:6px}}
+@media (max-width:760px),(max-height:560px){.ov{position:fixed;z-index:50;background:rgba(5,10,20,.92)}}
+body.showtouch .touch{display:flex}
+.info{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:14px;color:var(--muted)}
+.tpanel h3{margin-top:14px}
+.tq{margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font-size:14px}
+.tq ol{margin:4px 0 0;padding-left:22px}
+.tq li.right{color:var(--ok);font-weight:700}
+input.code{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0b1220;color:var(--text);width:180px}
+#printView{display:none}
+@media print{
+  body>*:not(#printView){display:none!important}
+  #printView{display:block!important;color:#000;background:#fff;font:12px/1.4 Arial,sans-serif}
+  #printView h1{font-size:18px;margin:0 0 4px} #printView .pq{break-inside:avoid;margin:8px 0}
+  #printView ol{margin:2px 0 0;padding-left:22px} #printView li.right{font-weight:700;text-decoration:underline}
+  html,body{background:#fff}
+}
+
+.refbox{margin-top:12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 14px}.refbox summary{cursor:pointer;font-weight:700;color:var(--gold)}
+.ref{font-size:14px}.ref .eqs{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}.ref .eqs span{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:4px 10px;font-weight:700}.ref ul{margin:4px 0;padding-left:20px}.ref h4{margin:10px 0 2px;color:var(--violet);font-size:14px}
+.ansrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.ansrow input{font:inherit;font-size:20px;font-weight:700;width:170px;padding:8px 10px;border-radius:10px;border:2px solid var(--gold);background:#0b1220;color:var(--text)}
+.ansrow label{font-weight:700}.ansrow #ansUnit{font-weight:700;color:var(--gold);min-width:40px}
+.keypad{display:grid;grid-template-columns:repeat(6,52px);gap:6px}.keypad .tbtn{width:52px;height:46px;font-size:18px}
+@media print{.ref .eqs span{border:1px solid #444}}
+</style>
+</head>
+<body>
+<header>
+  <div><div class="t">Launch Commander</div><div class="s">Physics · Unit 3: 2D Kinematics & Projectile Motion · Review game</div></div>
+  <div class="sp"></div>
+  <button class="btn" id="teachBtn" type="button">Teacher</button>
+</header>
+<main>
+  <div class="stage" id="stage">
+    <canvas id="cv" width="960" height="600" aria-label="Launch Commander game. Type your answer in the box under the game."></canvas>
+    <div class="ov" id="startOv"><div class="card"><h2>Launch Commander</h2><p class="small muted" style="margin:0 0 8px">You command the projectile range. For each mission, calculate the launch setting (speed, height, or vertical velocity) and type it in. Then fire and watch the projectile fly with <b>your</b> number!</p><div class="keys"><b>Type</b><span>your answer in the box under the game, then press Enter or the button</span><b>Esc</b><span>pause</span></div><h3>Choose a mode</h3><div class="chips" id="modes"></div><p class="small" id="modeTip" style="margin:0"></p><p class="small muted">A miss = lose a heart, and you try the same mission again. Every 4 hits = level up and +1 heart.</p><div class="row"><button class="btn primary" id="startBtn" type="button">Start</button><span class="small muted" id="hiTxt"></span></div></div></div>
+    <div class="ov" id="overOv" hidden><div class="card"><h2>Game over</h2><div id="overBody"></div><div class="row"><button class="btn primary" id="againBtn" type="button">Play again</button><button class="btn" id="menuBtn" type="button">Change mode</button></div></div></div>
+    <div class="ov" id="pauseOv" hidden><div class="card" style="max-width:380px;text-align:center"><h2>Paused</h2><p class="muted">Press P (or Esc) or the button to keep playing.</p><button class="btn primary" id="resumeBtn" type="button">Resume</button></div></div>
+  </div>
+  <div class="ansrow" id="ansRow"><label id="ansLab" for="ans">Your answer:</label><input id="ans" type="text" inputmode="decimal" autocomplete="off" disabled><span id="ansUnit"></span><button class="btn primary" id="goBtn" type="button" disabled>Launch!</button></div>
+  <div class="touch" id="touch"><div class="keypad"><button class="tbtn" data-k="key" data-c="7" type="button">7</button><button class="tbtn" data-k="key" data-c="8" type="button">8</button><button class="tbtn" data-k="key" data-c="9" type="button">9</button><button class="tbtn" data-k="key" data-c="." type="button">.</button><button class="tbtn" data-k="key" data-c="-" type="button">-</button><button class="tbtn" data-k="key" data-c="⌫" type="button">⌫</button><button class="tbtn" data-k="key" data-c="4" type="button">4</button><button class="tbtn" data-k="key" data-c="5" type="button">5</button><button class="tbtn" data-k="key" data-c="6" type="button">6</button><button class="tbtn" data-k="key" data-c="1" type="button">1</button><button class="tbtn" data-k="key" data-c="2" type="button">2</button><button class="tbtn" data-k="key" data-c="3" type="button">3</button><button class="tbtn" data-k="key" data-c="0" type="button">0</button><button class="tbtn" data-k="key" data-c="e" type="button">e</button></div><div class="grp"><button class="tbtn" data-k="pause" type="button" aria-label="Pause">II</button><button class="tbtn fire" data-k="go" type="button">GO</button></div></div>
+  <div class="info"><span id="info"></span></div>
+  <details class="refbox" open><summary>Reference sheet</summary><div id="refBox" class="ref"></div></details>
+</main>
+<div class="ov" id="teachOv" hidden>
+  <div class="card tpanel" style="max-width:780px">
+    <h2>Teacher tools</h2>
+    <div id="tLogin"><p class="small muted">Enter the teacher code.</p><div class="row" style="margin-top:4px"><input class="code" id="tCode" type="password" autocomplete="off" aria-label="Teacher code"><button class="btn primary" id="tGo" type="button">Open</button><button class="btn" id="tClose0" type="button">Close</button></div><div class="small" id="tMsg" style="color:var(--bad);margin-top:6px"></div></div>
+    <div id="tBody" hidden>
+      <div class="row"><button class="btn" id="tPrint" type="button">🖨 Print the reference sheet</button><button class="btn" id="tTouch" type="button">Show touch buttons</button><button class="btn" id="tClose" type="button">Close</button></div>
+      <div id="tInfo"></div>
+    </div>
+  </div>
+</div>
+<div id="printView"></div>
+<script>
+const META={"store": "physU3LaunchCommander", "unit": 3};
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const store={ get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+const shuffle=a=>{ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const rnd=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+const R=(a,b,s)=>{ s=s||1; const n=Math.round((b-a)/s); return +(a+s*Math.floor(Math.random()*(n+1))).toFixed(6); };
+const SUP={'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+const sci=(x,s)=>{ s=s||2; if(x===0) return '0'; const e=Math.floor(Math.log10(Math.abs(x))); let m=+(x/10**e).toFixed(s-1); let ee=e; if(Math.abs(m)>=10){ m=+(m/10).toFixed(s-1); ee++; } return `${m.toFixed(s-1)} × 10${String(ee).split('').map(c=>SUP[c]).join('')}`; };
+/* nice number: 3 sig figs, commas, sci notation for very big/small */
+const n=(x,s)=>{ s=s||3; if(!isFinite(x)) return '?'; if(x!==0&&(Math.abs(x)>=1e6||Math.abs(x)<1e-3)) return sci(x,s); const v=Number(x.toPrecision(s)); return v.toLocaleString('en-US',{maximumFractionDigits:6}); };
+const U=(x,u,s)=>n(x,s)+(u?' '+u:'');
+/* build a question with distinct distractors */
+function Q(q,a,bad,hint,calc){ const seen=new Set([a]); const b=[]; bad.forEach(x=>{ if(x!=null&&!seen.has(x)&&!/NaN|Infinity|\?/.test(x)){ seen.add(x); b.push(x); } }); return {q,a,bad:b,hint:hint||'',calc:!!calc}; }
+/* numeric question: right value + candidate wrong values, formatted with units */
+function QN(q,val,wrongs,unit,hint,s){ const a=U(val,unit,s); const extra=[val*2,val/2,val*10,val/10,val*1.5]; return Q(q,a,wrongs.concat(extra).map(w=>U(w,unit,s)),hint,true); }
+/* concept bank: items [question, right, [wrong...], hint] */
+function C(items){ let recent=[]; return ()=>{ let it; let g=0; do{ it=pick(items); g++; }while(recent.includes(it)&&g<30); recent.push(it); if(recent.length>Math.min(6,items.length-1)) recent.shift(); return Q(it[0],it[1],it[2],it[3]); }; }
+function makeG(){
+const g=9.8, GR=550, X0=150;
+const rel=(v,a)=>(v-a)/Math.abs(a);
+function label(c,t,x,y,col,sz){ c.fillStyle=col||'#e2e8f0'; c.font=`bold ${sz||16}px Arial`; c.textAlign='center'; c.textBaseline='middle'; c.fillText(t,x,y); }
+function cannon(c,x,y,ang){ c.save(); c.translate(x,y); c.rotate(-ang); c.fillStyle='#475569'; rr(-6,-9,46,18,6); c.fill(); c.restore(); c.fillStyle='#1f2937'; c.beginPath(); c.arc(x,y+4,13,0,6.3); c.fill(); }
+function target(c,x){ [26,17,8].forEach((r,i)=>{ c.fillStyle=i%2?'#f8fafc':'#ef4444'; c.beginPath(); c.ellipse(x,GR,r,r*0.35,0,0,6.3); c.fill(); }); c.fillStyle='#fde68a'; c.fillRect(x-1,GR-60,3,60); c.fillStyle='#ef4444'; c.beginPath(); c.moveTo(x+2,GR-60); c.lineTo(x+22,GR-52); c.lineTo(x+2,GR-44); c.fill(); }
+function ball(c,x,y){ c.fillStyle='#fbbf24'; c.beginPath(); c.arc(x,y,9,0,6.3); c.fill(); }
+function trail(c,pts){ c.strokeStyle='rgba(251,191,36,.5)'; c.setLineDash([5,6]); c.lineWidth=2; c.beginPath(); pts.forEach((q,i)=>i?c.lineTo(q[0],q[1]):c.moveTo(q[0],q[1])); c.stroke(); c.setLineDash([]); }
+function ground(c){ c.fillStyle='#166534'; c.fillRect(0,GR,W,H-GR); }
+/* horizontal launch from a cliff of height h with speed vx; landing at x */
+function cliffScene(c,h,vx,x,p,hu){ ground(c); const hh=hu!=null?hu:h; const sx=560/Math.max(x,1), hmax=Math.max(h,hh), sy=Math.min(5,(GR-190)/hmax); const ch=hh*sy;
+  c.fillStyle='#78716c'; c.fillRect(X0-90,GR-ch,90,ch); label(c,`${n(hh)} m`,X0-45,GR-ch/2,'#f5f5f4',15); target(c,X0+x*sx); label(c,`${x} m`,X0+x*sx/2,GR+24,'#bbf7d0',15); cannon(c,X0-14,GR-ch-12,0);
+  if(vx!=null){ const T=Math.sqrt(2*hh/g), pts=[]; for(let i=0;i<=40;i++){ const t=T*Math.min(p,i/40); pts.push([X0+vx*t*sx,GR-ch-12+0.5*g*t*t*sy*(ch?(ch+12)/ch:1)]); } trail(c,pts); const q=pts[pts.length-1]; ball(c,Math.min(W+20,q[0]),Math.min(GR,q[1])); } }
+const cliffV=()=>{ const h=pick([4.9,11.025,19.6,44.1,78.4]), T=Math.sqrt(2*h/g), x=pick([10,15,20,24,30,36,40,45,60]), ans=x/T;
+  return {q:`A cannon on a ${n(h)}-m cliff fires a ball horizontally. The target is ${x} m from the base of the cliff. What launch speed hits it?`,ans,unit:'m/s',label:'Launch speed:',verb:'Fire!',dur:2.4,win:'Bullseye!',
+   judge:v=>{ const e=rel(v,ans); return Math.abs(e)<=0.03?{ok:true}:{ok:false,msg:e>0?'Overshot: the ball flew past the target.':'Fell short of the target.'}; },
+   draw:(c,v,p)=>cliffScene(c,h,v,x,p)}; };
+const cliffH=()=>{ const vx=pick([5,8,10,12,15,20]), T=pick([1,1.5,2,2.5,3]), x=vx*T, ans=0.5*g*T*T;
+  return {q:`A ball rolls off a platform at ${vx} m/s. How high must the platform be for the ball to land on a target ${n(x)} m away?`,ans,unit:'m',label:'Platform height:',verb:'Build & roll!',dur:2.4,win:'Bullseye!',
+   judge:hh=>{ const e=rel(hh,ans); return Math.abs(e)<=0.03?{ok:true}:{ok:false,msg:e>0?'Too high: the ball fell longer and overshot the target.':'Too low: the ball landed short of the target.'}; },
+   draw:(c,hh,p)=>{ if(hh==null){ ground(c); target(c,X0+560); label(c,`${n(x)} m`,X0+280,GR+24,'#bbf7d0',15); label(c,'height = ?',X0-45,GR-80,'#f5f5f4',16); return; } cliffScene(c,ans,vx,x,p,hh); } }; };
+function fieldScene(c,vx,vy,x,p,wall){ ground(c); const T=2*vy/g, R=vx*T; const sx=600/Math.max(x||R,1), sy=Math.min(9,(GR-200)/Math.max(vy*vy/(2*g),wall?wall.h:1));
+  cannon(c,X0,GR-14,Math.atan2(vy*sy,vx*sx)); if(x) { target(c,X0+x*sx); label(c,`${x} m`,X0+x*sx/2,GR+24,'#bbf7d0',15); }
+  if(wall){ c.fillStyle='#a8a29e'; c.fillRect(wall.x,GR-wall.h*sy,30,wall.h*sy); label(c,`${wall.h} m`,wall.x+60,GR-wall.h*sy/2,'#f5f5f4',15); c.strokeStyle='#fde68a'; c.setLineDash([6,6]); c.beginPath(); c.moveTo(X0-20,GR-wall.h*sy); c.lineTo(wall.x,GR-wall.h*sy); c.stroke(); c.setLineDash([]); }
+  if(p>0||vx!=null){ const pts=[]; for(let i=0;i<=50;i++){ const t=T*Math.min(p,i/50); pts.push([X0+vx*t*sx,GR-14-(vy*t-0.5*g*t*t)*sy]); } trail(c,pts); const q=pts[pts.length-1]; ball(c,Math.min(W+20,q[0]),q[1]); } }
+const levelVx=()=>{ const vy=pick([4.9,9.8,14.7]), T=2*vy/g, x=pick([10,15,20,30,40,45,60]), ans=x/T;
+  return {q:`A ball is launched from the ground with a vertical velocity of ${vy} m/s. What horizontal velocity makes it land on a target ${x} m away?`,ans,unit:'m/s',label:'Horizontal velocity vₓ:',verb:'Launch!',dur:2.6,win:'Bullseye!',
+   judge:v=>{ const e=rel(v,ans); return Math.abs(e)<=0.03?{ok:true}:{ok:false,msg:e>0?'Overshot: it landed past the target.':'Fell short of the target.'}; },
+   draw:(c,v,p)=>v==null?fieldScene(c,vy,vy,x,0):fieldScene(c,v,vy,x,p)}; };
+const wallVy=()=>{ const Hh=pick([5,7.5,10,12.5,15,20]), ans=Math.sqrt(2*g*Hh);
+  return {q:`A ball is thrown so it just reaches the top of a ${Hh}-m wall at the highest point of its path (vᵧ = 0 there). What vertical launch velocity does it need?`,ans,unit:'m/s',label:'Vertical velocity vᵢᵧ:',verb:'Launch!',dur:2.2,win:'Just kissed the top of the wall!',
+   judge:v=>{ const e=rel(v,ans); return Math.abs(e)<=0.03?{ok:true}:{ok:false,msg:e>0?'Too high: it peaked well above the wall.':'Too low: it peaked below the top of the wall.'}; },
+   draw:(c,v,p)=>{ const vx=6, vy=v==null?10:v, wx=X0+vx*(ans/g)*(600/(vx*2*ans/g)); fieldScene(c,vx,vy,null,v==null?0:Math.min(p,0.5),{x:wx-15,h:Hh}); } }; };
+const hang=()=>{ const T=pick([1,1.5,2,2.5,3,4]), ans=g*T/2;
+  return {q:`A punter wants the football to stay in the air for exactly ${T} s (landing at the height it was kicked). What vertical launch velocity does it need?`,ans,unit:'m/s',label:'Vertical velocity vᵢᵧ:',verb:'Kick!',dur:2.6,win:'Perfect hang time!',
+   judge:v=>{ const e=rel(v,ans); return Math.abs(e)<=0.03?{ok:true}:{ok:false,msg:e>0?'Too long: it stayed up longer than planned.':'Too short: it came down too soon.'}; },
+   draw:(c,v,p)=>{ const vy=v==null?8:v, Tt=2*vy/g; fieldScene(c,8,vy,null,v==null?0:p); label(c,`time in air: ${(v==null?0:p*Tt).toFixed(2)} s (goal ${T} s)`,W/2,190,'#93c5fd',18); } }; };
+return {title:'Launch Commander',unit:3,unitName:'2D Kinematics & Projectile Motion',store:'physU3LaunchCommander',qLabel:'Mission',verb:'Fire!',
+ startMsg:'Calculate the launch setting, then fire!',overTip:'Tip: x and y are independent. Find the time from the vertical motion, then use Δx = vₓt.',
+ wrongRule:'A wrong answer never shows the right one: the launch uses the student’s own number, and the message only says whether it overshot or fell short. The same mission stays until it is solved.',
+ how:'Each mission is a projectile problem. The student calculates the launch setting (speed, height, or vertical velocity) and types it in. The projectile then flies using the student’s number. Answers within ±3% count. Faster correct answers earn a time bonus. Every 4 successes = level up (+1 heart).',
+ modes:{horiz:{label:'Horizontal launches',tip:'Cliffs and platforms: find the launch speed or the height (vᵢᵧ = 0).'},angled:{label:'Launches from the ground',tip:'Find vₓ for a range, vᵢᵧ for a maximum height, or vᵢᵧ for a hang time.'},mix:{label:'Mixed',tip:'Everything from Unit 3.'}},
+ gens:{horiz:[cliffV,cliffH],angled:[levelVx,wallVy,hang]},
+ ref:`<div class="eqs"><span>x: Δx = vₓt</span><span>y: Δy = vᵢᵧt − ½(9.8)t²</span><span>vᵧ = vᵢᵧ − 9.8t</span><span>vᵧ² = vᵢᵧ² − 2(9.8)Δy</span></div><h4>Tips</h4><ul><li>Horizontal launch: vᵢᵧ = 0, so the fall time is t = √(2h ÷ 9.8).</li><li>From the ground: time to the top = vᵢᵧ ÷ 9.8; hang time = 2vᵢᵧ ÷ 9.8; max height = vᵢᵧ² ÷ 19.6.</li><li>Time is the only quantity shared by x and y.</li></ul>`,
+ bg:c=>{ const gr=c.createLinearGradient(0,128,0,550); gr.addColorStop(0,'#1e3a8a'); gr.addColorStop(1,'#7dd3fc'); c.fillStyle=gr; c.fillRect(0,0,W,H); c.fillStyle='rgba(255,255,255,.5)'; [[200,210],[620,180],[820,240]].forEach(([x,y])=>{ c.beginPath(); c.ellipse(x,y,50,16,0,0,6.3); c.ellipse(x+30,y-8,34,14,0,0,6.3); c.fill(); }); }};
+}
+
+const G=makeG();
+const GAME={onPause:()=>{}, onResume:()=>{}};
+/* teacher tools (code teacher007) */
+function tShow(on){ $('#teachOv').hidden=!on; if(on){ GAME.onPause(); $('#tCode').value=''; $('#tMsg').textContent=''; setTimeout(()=>$('#tCode').focus(),30); } }
+$('#teachBtn').addEventListener('click',()=>tShow(true)); $('#tClose0').addEventListener('click',()=>tShow(false));
+$('#tClose').addEventListener('click',()=>{ tShow(false); $('#tBody').hidden=true; $('#tLogin').hidden=false; });
+function tOpen(){ if($('#tCode').value.trim().toLowerCase()!=='teacher007'){ $('#tMsg').textContent='Code not recognized.'; return; } $('#tLogin').hidden=true; $('#tBody').hidden=false; $('#tInfo').innerHTML=teacherHTML(); }
+$('#tGo').addEventListener('click',tOpen); $('#tCode').addEventListener('keydown',e=>{ if(e.key==='Enter') tOpen(); });
+$('#tTouch').addEventListener('click',()=>{ document.body.classList.toggle('showtouch'); $('#tTouch').textContent=document.body.classList.contains('showtouch')?'Hide touch buttons':'Show touch buttons'; });
+$('#tPrint').addEventListener('click',()=>{ $('#printView').innerHTML=`<h1>${G.title}: Reference Sheet</h1><p>Physics · Unit ${G.unit}: ${G.unitName}</p>`+G.ref; setTimeout(()=>window.print(),100); });
+$('#resumeBtn').addEventListener('click',()=>GAME.onResume());
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) GAME.onPause(); });
+$('#refBox').innerHTML=G.ref;
+/* modes */
+let mode=store.get(G.store+'_mode'); if(!G.modes[mode]) mode=Object.keys(G.modes)[0];
+$('#modes').innerHTML=Object.entries(G.modes).map(([k,m])=>`<button type="button" class="chip" data-m="${k}">${m.label}</button>`).join('');
+function drawModes(){ $$('#modes .chip').forEach(b=>b.classList.toggle('on',b.dataset.m===mode)); $('#modeTip').textContent=G.modes[mode].tip; }
+$$('#modes .chip').forEach(b=>b.addEventListener('click',()=>{ mode=b.dataset.m; store.set(G.store+'_mode',mode); drawModes(); })); drawModes();
+function genQ(m){ m=m||mode; const list=m==='mix'?Object.keys(G.gens):[m]; return pick(G.gens[pick(list)])(); }
+const HIKEY=G.store+'_hi'; function hiTxt(){ const h=+store.get(HIKEY)||0; $('#hiTxt').textContent=h?`High score on this Chromebook: ${h}`:''; } hiTxt();
+function saveHi(score){ const hi=+store.get(HIKEY)||0; if(score>hi) store.set(HIKEY,score); hiTxt(); return score>hi; }
+function teacherHTML(){ const ex=Object.keys(G.gens).map(k=>{ const q=genQ(k); return q.a==null?`<div class="tq"><b>${G.modes[k].label}</b> (sample): ${q.q}<br><b style="color:var(--ok)">Answer: ${n(q.ans)} ${q.unit}</b> (accepted within ±${Math.round((q.tol||0.03)*100)}%)</div>`:`<div class="tq"><b>${G.modes[k].label}</b> (sample): ${q.q}<ol>${[q.a].concat(q.bad.slice(0,2)).map((o,i)=>`<li class="${i?'':'right'}">${o}</li>`).join('')}</ol></div>`; }).join('');
+  return `<p class="small muted">This game is practice and is not graded. Questions are generated at random, so every game is different. ${G.wrongRule||'A wrong answer never shows the right one: the same question comes back until it is answered correctly.'}</p><h3>How it works</h3><p class="small">${G.how}</p><h3>Modes</h3><ul class="small">${Object.values(G.modes).map(m=>`<li><b>${m.label}:</b> ${m.tip}</li>`).join('')}</ul><h3>Sample questions (the right answer is bold)</h3>${ex}<h3>Reference sheet (also under the game)</h3><div class="small ref">${G.ref}</div>`; }
+/* canvas helpers */
+const cv=$('#cv'), ctx=cv.getContext('2d'); const W=960,H=600;
+let hudK=1; function fit(){ const r=cv.getBoundingClientRect(); if(r.width) hudK=Math.min(2,Math.max(1,560/r.width)); const d=Math.min(2,window.devicePixelRatio||1); const w=Math.round(r.width*d), h=Math.round(r.height*d); if(w&&h&&(cv.width!==w||cv.height!==h)){ cv.width=w; cv.height=h; } }
+window.addEventListener('resize',fit);
+function rr(x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+function wrap(t,maxW,font){ ctx.font=font; const words=String(t).split(' '); const lines=[]; let cur=''; words.forEach(w=>{ const tr=cur?cur+' '+w:w; if(ctx.measureText(tr).width>maxW&&cur){ lines.push(cur); cur=w; } else cur=tr; }); if(cur) lines.push(cur); return lines; }
+function textBox(t,cx,cy,maxW,maxH,size,color,bold){ let s=size, lines; do{ lines=wrap(t,maxW,`${bold?'bold ':''}${s}px Arial`); s--; }while((lines.length*(s+5)>maxH||lines.some(l=>ctx.measureText(l).width>maxW))&&s>10); s++; ctx.fillStyle=color; ctx.textAlign='center'; ctx.textBaseline='middle'; const lh=s+5; lines.forEach((l,i)=>ctx.fillText(l,cx,cy-(lines.length-1)*lh/2+i*lh)); }
+function qPanel(q,top){ ctx.fillStyle='#0e1a33'; ctx.fillRect(0,0,W,top); ctx.fillStyle='#9fb0cf'; ctx.font='13px Arial'; ctx.textAlign='left'; ctx.textBaseline='top'; ctx.fillText(G.qLabel||'Question',16,10); let s=26*Math.min(hudK,1.25), lines; do{ lines=wrap(q,W-260,`bold ${s}px Arial`); s--; }while(lines.length*(s+7)>top-38&&s>13); s++; ctx.fillStyle='#facc15'; ctx.textBaseline='top'; lines.forEach((l,i)=>ctx.fillText(l,16,32+i*(s+7))); }
+let parts=[]; function boom(x,y,col,k){ for(let i=0;i<k;i++){ const a=rnd(0,6.3),s=rnd(40,170); parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:rnd(.3,.8),col}); } }
+function stepParts(dt){ parts.forEach(p=>{ p.x+=p.vx*dt; p.y+=p.vy*dt; p.life-=dt; }); parts=parts.filter(p=>p.life>0); }
+function drawParts(){ parts.forEach(p=>{ ctx.globalAlpha=Math.max(0,Math.min(1,p.life*1.6)); ctx.fillStyle=p.col; ctx.fillRect(p.x-2,p.y-2,4,4); }); ctx.globalAlpha=1; }
+function hud(score,hearts,level,streak){ const k=hudK; ctx.textAlign='right'; ctx.textBaseline='top'; ctx.fillStyle='#e8eefc'; ctx.font=`bold ${18*k}px Arial`; ctx.fillText('Score '+score,W-14,10); ctx.font=`${20*k}px Arial`; ctx.fillStyle='#f87171'; ctx.fillText('♥'.repeat(Math.max(0,hearts)),W-14,14+20*k); ctx.font=`bold ${13*k}px Arial`; ctx.fillStyle='#93c5fd'; ctx.fillText('Level '+level+(streak>=3?`   Streak ×${streak}`:''),W-14,40+24*k); }
+function banner(m,top){ if(m&&performance.now()<m.until){ const k=Math.min(hudK,1.5); ctx.textAlign='center'; ctx.textBaseline='middle'; let s=19*k, lines; do{ lines=wrap(m.t,W-80,`bold ${s}px Arial`); s--; }while(lines.length>2&&s>11); s++; const lh=s+6, bh=lines.length*lh+14; const y0=top!=null?top+12:H-30-bh; ctx.fillStyle='rgba(5,10,20,.85)'; ctx.fillRect(30,y0,W-60,bh); ctx.fillStyle=m.c||'#fde68a'; lines.forEach((l,i)=>ctx.fillText(l,W/2,y0+7+lh/2+i*lh)); } }
+/* ===================== CALCULATE-AND-LAUNCH ENGINE ===================== */
+const TOP=128, GROUND=540;
+let state='menu', cur, hearts, score, streak, rightN, tries, level, msg, lastT, flash, anim, t0, missed;
+const SUPN={'⁻':'-','⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9'};
+function num(s){ s=String(s).trim().replace(/,/g,'').replace(/[−–]/g,'-').replace(/[⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+/g,m=>'^'+m.split('').map(c=>SUPN[c]).join('')).replace(/\s*[×xX*]\s*10\s*\^\s*/,'e').replace(/\s+/g,''); const m=s.match(/^[-+]?(\d+\.?\d*|\.\d+)(e[-+]?\d+)?/i); return m?parseFloat(m[0]):NaN; }
+function newQ(){ cur=genQ(); missed=0; t0=performance.now(); $('#ansLab').textContent=cur.label||'Your answer:'; $('#ansUnit').textContent=cur.unit; $('#goBtn').textContent=cur.verb||G.verb||'Launch!'; $('#ans').value=''; $('#ans').disabled=false; $('#goBtn').disabled=false; setTimeout(()=>$('#ans').focus(),30); }
+function startGame(){ state='play'; parts=[]; hearts=3; score=0; streak=0; rightN=0; tries=0; level=1; flash=null; anim=null; msg={t:G.startMsg||'Calculate, then type your answer.',until:performance.now()+2200};
+  newQ(); ['#startOv','#overOv','#pauseOv'].forEach(s=>$(s).hidden=true); $('#info').textContent='Mode: '+G.modes[mode].label; fit(); lastT=performance.now(); requestAnimationFrame(loop); }
+function gameOver(){ state='over'; $('#ans').disabled=true; $('#goBtn').disabled=true; const isHi=saveHi(score);
+  $('#overBody').innerHTML=`<p style="font-size:18px;margin:4px 0">Score: <b>${score}</b>${isHi?' <span style="color:var(--gold)">New high score!</span>':''}</p><p class="muted" style="margin:2px 0">Level reached: <b>${level}</b>. Tries that worked: <b>${rightN} of ${tries}</b>${tries?` (${Math.round(100*rightN/tries)}%)`:''}.</p><p class="small muted" style="margin-top:8px">${G.overTip||''}</p>`;
+  $('#overOv').hidden=false; }
+GAME.onPause=()=>{ if(state==='play'||state==='anim'){ GAME.was=state; state='paused'; $('#pauseOv').hidden=false; } };
+GAME.onResume=()=>{ if(state==='paused'){ state=GAME.was||'play'; $('#pauseOv').hidden=true; lastT=performance.now(); requestAnimationFrame(loop); if(state==='play') $('#ans').focus(); } };
+$('#startBtn').addEventListener('click',startGame); $('#againBtn').addEventListener('click',startGame);
+$('#menuBtn').addEventListener('click',()=>{ $('#overOv').hidden=true; $('#startOv').hidden=false; state='menu'; });
+function submit(v){ if(state!=='play') return; const val=num(v); if(!isFinite(val)){ msg={t:'Type a number (like 12.5 or 3e8).',until:performance.now()+1800,c:'#fca5a5'}; return; }
+  if(val<=0&&!cur.allowNeg){ msg={t:'Use a positive number (the size of the quantity).',until:performance.now()+1800,c:'#fca5a5'}; return; }
+  $('#ans').disabled=true; $('#goBtn').disabled=true; tries++; const res=cur.judge?cur.judge(val):judge(val); anim={val,p:0,res,dur:cur.dur||2.4}; state='anim'; }
+function judge(v){ const e=(v-cur.ans)/Math.abs(cur.ans); return Math.abs(e)<=(cur.tol||0.03)?{ok:true}:{ok:false,msg:e>0?cur.hi:cur.lo}; }
+$('#goBtn').addEventListener('click',()=>submit($('#ans').value)); $('#ans').addEventListener('keydown',e=>{ if(e.key==='Enter') submit($('#ans').value); });
+document.addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT'&&e.code!=='Escape') return; if(e.code==='KeyP'||e.code==='Escape'){ (state==='play'||state==='anim')?GAME.onPause():GAME.onResume(); } });
+$$('.tbtn').forEach(b=>b.addEventListener('pointerdown',e=>{ e.preventDefault(); const k=b.dataset.k; if(k==='go') submit($('#ans').value); if(k==='pause') (state==='play'||state==='anim')?GAME.onPause():GAME.onResume(); if(k==='key'){ const el=$('#ans'); if(el.disabled) return; const c=b.dataset.c; el.value=c==='⌫'?el.value.slice(0,-1):el.value+c; } }));
+function loop(t){ if(state!=='play'&&state!=='anim') return; const dt=Math.min(0.05,(t-lastT)/1000); lastT=t; update(dt); draw(); if(state==='play'||state==='anim') requestAnimationFrame(loop); }
+function update(dt){ stepParts(dt); if(state==='anim'){ anim.p=Math.min(1,anim.p+dt/anim.dur); if(anim.p>=1&&!anim.doneAt){ anim.doneAt=performance.now(); finish(); } } }
+function finish(){ const r=anim.res;
+  if(r.ok){ rightN++; streak++; const secs=(performance.now()-t0)/1000; const fast=Math.max(0,Math.round(100-secs*2)); score+=150+Math.min(10,streak)*15+(missed?0:fast); flash={c:'rgba(52,211,153,.18)',until:performance.now()+300}; boom(W/2,TOP+120,'#fde68a',30);
+    if(rightN%4===0){ level++; hearts=Math.min(5,hearts+1); msg={t:`${cur.win||'Success!'} Level ${level}! +1 heart.`,until:performance.now()+2400,c:'#86efac'}; } else msg={t:cur.win||'Success!',until:performance.now()+1800,c:'#86efac'};
+    setTimeout(()=>{ if(state==='anim'){ anim=null; state='play'; newQ(); } },1500); }
+  else { hearts--; streak=0; missed++; flash={c:'rgba(248,113,113,.28)',until:performance.now()+300}; msg={t:(r.msg||'Not quite.')+' Same problem: try again. −1 heart',until:performance.now()+3200,c:'#fca5a5'};
+    if(hearts<=0){ setTimeout(gameOver,1200); return; }
+    setTimeout(()=>{ if(state==='anim'){ anim=null; state='play'; $('#ans').disabled=false; $('#goBtn').disabled=false; $('#ans').select(); } },1700); } }
+function draw(){ const sx=cv.width/W, sy=cv.height/H; ctx.setTransform(sx,0,0,sy,0,0);
+  G.bg(ctx); cur.draw(ctx,anim?anim.val:null,anim?anim.p:0); drawParts();
+  if(flash&&performance.now()<flash.until){ ctx.fillStyle=flash.c; ctx.fillRect(0,TOP,W,H-TOP); }
+  qPanel(cur.q,TOP); hud(score,hearts,level,streak); banner(msg,TOP); }
+(function idle(){ fit(); const sx=cv.width/W, sy=cv.height/H; ctx.setTransform(sx,0,0,sy,0,0); G.bg(ctx); })();
+window.__game={get state(){return state;}, get hearts(){return hearts;}, get score(){return score;}, get level(){return level;}, get rightN(){return rightN;}, get tries(){return tries;}, get q(){return cur;},
+  submit:v=>submit(v), skip:()=>{ if(anim){ anim.p=1; update(0); } }, genQ, num};
+
+</script>
+</body>
+</html>

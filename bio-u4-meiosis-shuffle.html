@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meiosis Shuffle | Biology</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1220;--panel:#121c31;--panel2:#18243d;--line:#2b3a58;--text:#e8eefc;--muted:#9fb0cf;--gold:#facc15;--gold2:#fbbf24;--ok:#34d399;--bad:#f87171;--violet:#a78bfa}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 "Atkinson Hyperlegible",Arial,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:#0e172a}
+header .t{font-weight:800;font-size:17px}
+header .s{color:var(--muted);font-size:13px}
+header .sp{flex:1}
+.btn{font:inherit;font-weight:700;border-radius:10px;padding:9px 16px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--gold);color:#1a1300;border-color:var(--gold)}
+.btn:disabled{opacity:.5;cursor:default}
+main{max-width:1000px;margin:0 auto;padding:14px 16px 30px}
+.stage{position:relative;width:100%;aspect-ratio:16/10;background:#050a14;border:1px solid var(--line);border-radius:14px;overflow:hidden;touch-action:none}
+canvas{display:block;width:100%;height:100%}
+.ov{position:absolute;inset:0;display:flex;background:rgba(5,10,20,.78);padding:14px;overflow:auto}
+.ov>.card{margin:auto}
+#teachOv{position:fixed;z-index:60;background:rgba(5,10,20,.94)}
+.ov[hidden]{display:none}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;max-width:640px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.card h2{margin:0 0 6px;font-size:22px}
+.card h3{margin:12px 0 6px;font-size:15px;color:var(--gold)}
+.muted{color:var(--muted)} .small{font-size:13.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chip{font:inherit;font-size:14px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.chip.on{border-color:var(--gold);background:rgba(250,204,21,.16);font-weight:700}
+.qtag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--violet);margin-bottom:4px}
+.qtext{font-size:18px;margin:4px 0 12px}
+.opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:15.5px}
+.opt:hover:not(:disabled){border-color:var(--gold)}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:13px;font-weight:800}
+.opt.pick{border-color:var(--gold)}
+.fb{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:15.5px}
+.fb.ok{background:rgba(52,211,153,.14);border:1px solid rgba(52,211,153,.5)}
+.fb.no{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.45)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:14px;margin:6px 0}
+.keys b{color:var(--gold)}
+.ladder{display:flex;flex-wrap:wrap;gap:6px;font-size:13px;margin-top:6px}
+.ladder span{padding:3px 8px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}
+.touch{display:none;gap:10px;justify-content:space-between;margin-top:10px;user-select:none;-webkit-user-select:none}
+.touch .grp{display:flex;gap:10px}
+.tbtn{width:64px;height:58px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:22px;font-weight:800;touch-action:none}
+.tbtn.fire{width:110px;background:#3b2a07;border-color:var(--gold);color:var(--gold);font-size:17px}
+.tbtn.on{background:#334155}
+@media (pointer:coarse){.touch{display:flex}}
+@media (max-width:480px){.tbtn{width:52px;height:54px;font-size:20px}.tbtn.fire{width:86px}.touch .grp{gap:7px}.touch{gap:6px}}
+@media (max-width:760px),(max-height:560px){.ov{position:fixed;z-index:50;background:rgba(5,10,20,.92)}}
+body.showtouch .touch{display:flex}
+.info{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:14px;color:var(--muted)}
+.tpanel h3{margin-top:14px}
+.tq{margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font-size:14px}
+.tq ol{margin:4px 0 0;padding-left:22px}
+.tq li.right{color:var(--ok);font-weight:700}
+input.code{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0b1220;color:var(--text);width:180px}
+#printView{display:none}
+@media print{
+  body>*:not(#printView){display:none!important}
+  #printView{display:block!important;color:#000;background:#fff;font:12px/1.4 Arial,sans-serif}
+  #printView h1{font-size:18px;margin:0 0 4px} #printView .pq{break-inside:avoid;margin:8px 0}
+  #printView ol{margin:2px 0 0;padding-left:22px} #printView li.right{font-weight:700;text-decoration:underline}
+  html,body{background:#fff}
+}
+
+.stage{aspect-ratio:auto;min-height:600px;overflow:visible}.stage .ov{position:fixed;z-index:50}.app{padding:12px}.status{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14px;color:var(--muted);margin-bottom:8px}.status b{color:var(--text)}.ocard{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 14px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.grid2{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:12px;align-items:start}@media (max-width:820px){.grid2{grid-template-columns:1fr}}.btns{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin-top:8px}.gbtn{font:inherit;text-align:left;display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:14px;line-height:1.3}.gbtn:hover:not(:disabled){border-color:var(--gold)}.gbtn:disabled{opacity:.45;cursor:not-allowed}.gbtn.on{border-color:var(--gold);background:rgba(250,204,21,.14)}.gbtn .k{flex:none;min-width:22px;height:22px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:12px;font-weight:800;padding:0 4px}.meter{margin:6px 0}.meter .lab{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}.meter .lab b{color:var(--text)}.meter .tr{height:12px;border-radius:6px;background:#1e293b;overflow:hidden}.meter .fl{height:100%;border-radius:6px;transition:width .25s}.chipsrow{display:flex;flex-wrap:wrap;gap:6px}table.ktab{border-collapse:collapse;font-size:13px;width:100%}table.ktab td,table.ktab th{border:1px solid var(--line);padding:4px 6px;text-align:left;vertical-align:top}.log{font-size:13px;max-height:170px;overflow:auto}.log div{padding:3px 0;border-bottom:1px solid var(--line)}.big{font-size:22px;font-weight:800}.btn.sm{padding:5px 11px;font-size:14px}.cellc{display:flex;flex-direction:column;align-items:center;gap:8px;min-height:180px;justify-content:center}.row2{display:flex;gap:6px;align-items:flex-end;flex-wrap:wrap;justify-content:center}.dup{display:inline-flex;gap:0;margin:0 3px}.dup svg+svg{margin-left:-4px}.meta{display:grid;grid-template-columns:1fr 6px 1fr;gap:8px;align-items:center}.meta .side{display:flex;flex-direction:column;align-items:center;gap:6px}.meta .eq{align-self:stretch;border-left:3px dashed #fbbf24}.sl{font-size:12px;color:var(--muted)}.gams{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.gam{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px;border-radius:50%;aspect-ratio:1;justify-content:center;background:#13213d;border:1px solid var(--line)}.gam.bad{border-color:#f87171}.steps{margin:0;padding-left:20px;display:grid;gap:8px}.steps li{color:var(--muted)}.steps li.now{color:var(--text)}.steps li.did{color:#86efac}.steps .chipsrow{margin-top:4px}</style>
+</head>
+<body>
+<header>
+  <div><div class="t">Meiosis Shuffle</div><div class="s">Biology · Unit 4: Genetics · Review game</div></div>
+  <div class="sp"></div>
+  <button class="btn" id="teachBtn" type="button">Teacher</button>
+</header>
+<main>
+  <div class="stage" id="stage">
+    <div class="app" id="app"><p class="muted">Press Start.</p></div>
+    <div class="ov" id="startOv"><div class="card"><h2>Meiosis Shuffle</h2><p class="small muted" style="margin:0 0 8px">You control meiosis in a cell that is about to make sperm. Copy the DNA, decide whether chromosomes cross over, choose how each pair lines up, and split the cell twice. Complete five missions, and collect all 8 kinds of sperm this cell can make.</p><div class="row"><button class="btn primary" id="startBtn" type="button">Start</button><span class="small muted" id="hiTxt"></span></div></div></div>
+    <div class="ov" id="overOv" hidden><div class="card"><h2 id="overTitle"></h2><div id="overBody"></div><div class="row"><button class="btn primary" id="againBtn" type="button">Play again</button></div></div></div>
+
+    <div class="ov" id="pauseOv" hidden><div class="card" style="max-width:380px;text-align:center"><h2>Paused</h2><p class="muted">Press P or the button to keep playing.</p><button class="btn primary" id="resumeBtn" type="button">Resume</button></div></div>
+  </div>
+
+</main>
+<div class="ov" id="teachOv" hidden>
+  <div class="card tpanel" style="max-width:780px">
+    <h2>Teacher tools</h2>
+    <div id="tLogin"><p class="small muted">Enter the teacher code.</p><div class="row" style="margin-top:4px"><input class="code" id="tCode" type="password" autocomplete="off" aria-label="Teacher code"><button class="btn primary" id="tGo" type="button">Open</button><button class="btn" id="tClose0" type="button">Close</button></div><div class="small" id="tMsg" style="color:var(--bad);margin-top:6px"></div></div>
+    <div id="tBody" hidden>
+      <div class="row"><button class="btn" id="tPrint" type="button">🖨 Print the reference sheet</button><button class="btn" id="tTouch" type="button">Show touch buttons</button><button class="btn" id="tClose" type="button">Close</button></div>
+      <div id="tInfo"></div>
+    </div>
+  </div>
+</div>
+<div id="printView"></div>
+<script>
+const META={"store": "bioU4MeiosisShuffle"};
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const store={ get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+const shuffle=a=>{ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const rnd=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const GAME={onPause:()=>{}, onResume:()=>{}, teacherHTML:()=>'', printHTML:()=>''};
+/* teacher tools (code Teacher007) */
+function tShow(on){ $('#teachOv').hidden=!on; if(on){ GAME.onPause(); $('#tCode').value=''; $('#tMsg').textContent=''; setTimeout(()=>$('#tCode').focus(),30); } }
+$('#teachBtn').addEventListener('click',()=>tShow(true)); $('#tClose0').addEventListener('click',()=>tShow(false));
+$('#tClose').addEventListener('click',()=>{ tShow(false); $('#tBody').hidden=true; $('#tLogin').hidden=false; });
+function tOpen(){ if($('#tCode').value.trim().toLowerCase()!=='teacher007'){ $('#tMsg').textContent='Code not recognized.'; return; } $('#tLogin').hidden=true; $('#tBody').hidden=false; $('#tInfo').innerHTML=GAME.teacherHTML(); }
+$('#tGo').addEventListener('click',tOpen); $('#tCode').addEventListener('keydown',e=>{ if(e.key==='Enter') tOpen(); });
+$('#tTouch').addEventListener('click',()=>document.body.classList.toggle('showtouch'));
+$('#tPrint').addEventListener('click',()=>{ $('#printView').innerHTML=GAME.printHTML(); setTimeout(()=>window.print(),100); });
+$('#resumeBtn').addEventListener('click',()=>GAME.onResume());
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) GAME.onPause(); });
+
+const meter=(lab,v,max,col,txt)=>`<div class="meter"><div class="lab"><span>${lab}</span><b>${txt!=null?txt:Math.round(v)}</b></div><div class="tr"><div class="fl" style="width:${Math.max(0,Math.min(100,100*v/max))}%;background:${col}"></div></div></div>`;
+const HIKEY=META.store+'_hi'; function hiTxt(){ const h=+store.get(HIKEY)||0; const e=$('#hiTxt'); if(e) e.textContent=h?`High score on this Chromebook: ${h}`:''; } hiTxt();
+function saveHi(v){ const h=+store.get(HIKEY)||0; if(v>h){ store.set(HIKEY,v); return true; } return false; }
+function over(title,html){ $('#overTitle').textContent=title; $('#overBody').innerHTML=html; $('#overOv').hidden=false; hiTxt(); }
+/* ===================== MEIOSIS SHUFFLE ===================== */
+// long pair: gene E (near centromere) and gene A (tip). short pair: gene B. Mom = red (E, A, B); Dad = blue (e, a, b).
+const MISSIONS=[
+ {t:'Make a sperm cell that carries <b>A</b> and <b>B</b>.',test:g=>g.some(x=>x.ok&&x.A==='A'&&x.B==='B'),why:'Both dominant alleles came from Mom. You lined up both of Mom\'s chromosomes on the same side.'},
+ {t:'Make a sperm cell that carries <b>a</b> and <b>B</b>.',test:g=>g.some(x=>x.ok&&x.A==='a'&&x.B==='B'),why:'This mixes Dad\'s long chromosome with Mom\'s short one. Each pair lines up on its own, so this is <b>independent assortment</b>.'},
+ {t:'Make a sperm cell that carries <b>A</b> and <b>e</b>. (Hint: those two genes start on different chromosomes of the same pair.)',test:g=>g.some(x=>x.ok&&x.A==='A'&&x.E==='e'),why:'A and e started on different chromosomes. Only <b>crossing over</b> can put them on the same chromosome.'},
+ {t:'Make <b>four different</b> sperm cells from one cell.',test:g=>new Set(g.filter(x=>x.ok).map(x=>x.E+x.A+x.B)).size===4,why:'Crossing over made every chromatid different, so all four cells from one meiosis are unique.'},
+ {t:'Something goes wrong: make a sperm cell with an <b>extra</b> chromosome (3 chromosomes instead of 2).',test:g=>g.some(x=>x.n===3),why:'When a pair fails to separate in anaphase I, this is called <b>nondisjunction</b>. A sperm or egg with an extra chromosome can lead to a condition like trisomy 21.'}];
+let mi, step, cross, flip, nondis, gam, score, tries, collected;
+function startGame(){ mi=0; score=0; collected=new Set(); $('#startOv').hidden=true; $('#overOv').hidden=true; reset(); }
+function reset(){ step=0; cross=false; flip={L:false,S:false}; nondis=false; gam=null; tries=tries||0; render(); }
+// chromatid: {own:'m'|'p', E, A} long; short {own, B}
+function chromatids(){ const m=[{own:'m',E:'E',A:'A'},{own:'m',E:'E',A:'A'}], p=[{own:'p',E:'e',A:'a'},{own:'p',E:'e',A:'a'}];
+  if(cross){ const t=m[1].A; m[1]={...m[1],A:p[0].A,x:true}; p[0]={...p[0],A:t,x:true}; } return {m,p,sm:[{own:'m',B:'B'},{own:'m',B:'B'}],sp:[{own:'p',B:'b'},{own:'p',B:'b'}]}; }
+function divide(){ const c=chromatids(); const left={L:[],S:[]}, right={L:[],S:[]};
+  const Lm=flip.L?right:left, Lp=flip.L?left:right, Sm=flip.S?right:left, Sp=flip.S?left:right;
+  if(nondis){ Lm.L.push(...c.m); Lm.L.push(...c.p); } else { Lm.L.push(...c.m); Lp.L.push(...c.p); }
+  Sm.S.push(...c.sm); Sp.S.push(...c.sp);
+  const out=[]; [left,right].forEach(cell=>{ for(let k=0;k<2;k++){ const L=[], S=[]; // meiosis II: sister chromatids split; with nondisjunction both homologs go together
+      if(cell.L.length===4){ L.push(cell.L[k],cell.L[k+2]); } else if(cell.L.length===2) L.push(cell.L[k]);
+      S.push(cell.S[k]); const g={L,S,n:L.length+S.length}; g.ok=g.n===2; if(g.ok){ g.E=L[0].E; g.A=L[0].A; g.B=S[0].B; } out.push(g); } });
+  return out; }
+const COL={m:'#ef4444',p:'#3b82f6'};
+function chrSVG(ch,long,w){ w=w||14; const H=long?96:56; const c=long?28:20; const col=COL[ch.own], col2=ch.x?COL[ch.own==='m'?'p':'m']:col;
+  return `<svg width="${w+6}" height="${H+6}" viewBox="0 0 ${w+6} ${H+6}" aria-hidden="true"><rect x="3" y="3" width="${w}" height="${long?H-26:H}" rx="${w/2}" fill="${col}"/>${long?`<rect x="3" y="${H-28}" width="${w}" height="26" rx="${w/2}" fill="${col2}"/>`:''}<rect x="1" y="${c}" width="${w+4}" height="4" fill="#0b1220" opacity=".55"/>
+   <text x="${w/2+3}" y="${long?20:40}" font-size="11" font-weight="800" fill="#fff" text-anchor="middle">${long?ch.E:ch.B}</text>${long?`<text x="${w/2+3}" y="${H-10}" font-size="11" font-weight="800" fill="#fff" text-anchor="middle">${ch.A}</text>`:''}</svg>`; }
+function dup(ch,long){ return `<span class="dup">${chrSVG(ch[0],long)}${chrSVG(ch[1],long)}</span>`; }
+function cellView(){ const c=chromatids();
+  if(step===0) return `<div class="cellc"><div class="row2">${chrSVG({own:'m',E:'E',A:'A'},true)}${chrSVG({own:'p',E:'e',A:'a'},true)}${chrSVG({own:'m',B:'B'},false)}${chrSVG({own:'p',B:'b'},false)}</div><p class="small muted">One cell with 2 pairs of chromosomes (red from Mom, blue from Dad). It is <b>diploid</b> (2n = 4).</p></div>`;
+  if(step===1) return `<div class="cellc"><div class="row2">${dup(c.m,true)}${dup(c.p,true)}<span style="width:14px"></span>${dup(c.sm,false)}${dup(c.sp,false)}</div><p class="small muted">Each chromosome copied itself: two identical <b>sister chromatids</b>. Homologous pairs now line up side by side.</p></div>`;
+  if(step===2){ const Lm=dup(c.m,true), Lp=dup(c.p,true), Sm=dup(c.sm,false), Sp=dup(c.sp,false);
+    return `<div class="cellc meta"><div class="side"><span class="sl">to cell 1</span>${flip.L?Lp:Lm}${flip.S?Sp:Sm}</div><div class="eq"></div><div class="side"><span class="sl">to cell 2</span>${flip.L?Lm:Lp}${flip.S?Sm:Sp}</div><p class="small muted" style="grid-column:1/-1">Metaphase I: pairs line up in the middle. Which side each chromosome faces is random for each pair.</p></div>`; }
+  return `<div class="gams">${gam.map((g,i)=>`<div class="gam${g.ok?'':' bad'}"><div class="row2">${g.L.map(x=>chrSVG(x,true,12)).join('')}${g.S.map(x=>chrSVG(x,false,12)).join('')}</div><b>${g.ok?g.E+' '+g.A+' '+g.B:g.n+' chromosomes'}</b><span class="small muted">cell ${i+1}</span></div>`).join('')}</div><p class="small muted">Four <b>haploid</b> cells (n = 2), each with one chromosome from each pair${nondis?' (except where the pair did not separate)':''}.</p>`; }
+function render(){ const M=MISSIONS[mi];
+  $('#app').innerHTML=`<div class="status"><span>Mission <b>${mi+1} of ${MISSIONS.length}</b></span><span>Score <b>${score}</b></span><span>Different sperm types collected <b>${collected.size} of 8</b> <span class="small">(+10 each)</span></span></div>
+   <div class="ocard"><b>Mission:</b> ${M.t}</div>
+   <div class="grid2" style="margin-top:8px"><div class="panel">${cellView()}</div>
+   <div><ol class="steps">
+    <li class="${step===0?'now':step>0?'did':''}"><b>Interphase:</b> copy the DNA. ${step===0?'<button type="button" class="btn sm" id="s0">Copy DNA</button>':''}</li>
+    <li class="${step===1?'now':step>1?'did':''}"><b>Prophase I:</b> crossing over? ${step===1?`<div class="chipsrow"><button type="button" class="btn sm" id="cxY">Swap the tips</button><button type="button" class="btn sm" id="cxN">No crossing over</button></div>`:step>1?(cross?'swapped tips':'none'):''}</li>
+    <li class="${step===2?'now':step>2?'did':''}"><b>Metaphase I:</b> line up the pairs. ${step===2?`<div class="chipsrow"><button type="button" class="btn sm" id="fL">Flip the long pair</button><button type="button" class="btn sm" id="fS">Flip the short pair</button></div>`:''}</li>
+    <li class="${step===2?'now':step>2?'did':''}"><b>Anaphase I:</b> pull pairs apart. ${step===2?`<label class="small"><input type="checkbox" id="nd" ${nondis?'checked':''}> the long pair fails to separate</label>`:''}</li>
+    <li class="${step===2?'now':step>2?'did':''}"><b>Meiosis II:</b> split the sister chromatids. ${step===2?'<button type="button" class="btn sm primary" id="go">Finish meiosis</button>':''}</li></ol>
+    ${step===3?`<div class="row"><button type="button" class="btn primary" id="chk">Check mission</button><button type="button" class="btn" id="again">Run meiosis again</button></div>`:''}<div id="mfb"></div></div></div>`;
+  const on=(id,f)=>{ const e=$(id); if(e) e.addEventListener('click',f); };
+  on('#s0',()=>{ step=1; render(); }); on('#cxY',()=>{ cross=true; step=2; render(); }); on('#cxN',()=>{ cross=false; step=2; render(); });
+  on('#fL',()=>{ flip.L=!flip.L; render(); }); on('#fS',()=>{ flip.S=!flip.S; render(); }); const nd=$('#nd'); if(nd) nd.addEventListener('change',()=>{ nondis=nd.checked; });
+  on('#go',()=>{ gam=divide(); step=3; collect(); render(); });
+  on('#chk',check); on('#again',()=>reset()); }
+function collect(){ gam.forEach(g=>{ if(g.ok){ const k=g.E+g.A+g.B; if(!collected.has(k)){ collected.add(k); score+=10; } } }); }
+function check(){ const M=MISSIONS[mi]; tries++;
+  if(M.test(gam)){ const p=tries===1?100:50; score+=p; $('#mfb').innerHTML=`<div class="fb ok"><b>Mission complete! +${p}</b> ${M.why}</div><div class="row"><button type="button" class="btn primary" id="nm">${mi+1<MISSIONS.length?'Next mission':'See results'}</button></div>`; $('#chk').disabled=true; $('#again').disabled=true;
+    $('#nm').addEventListener('click',()=>{ mi++; tries=0; if(mi>=MISSIONS.length) finish(); else reset(); }); }
+  else if(tries>=2){ $('#mfb').innerHTML=`<div class="fb no">Not this time. ${M.why}</div><div class="row"><button type="button" class="btn primary" id="nm">${mi+1<MISSIONS.length?'Next mission':'See results'}</button></div>`; $('#chk').disabled=true; $('#again').disabled=true; $('#nm').addEventListener('click',()=>{ mi++; tries=0; if(mi>=MISSIONS.length) finish(); else reset(); }); }
+  else $('#mfb').innerHTML='<div class="fb no">None of these four cells completes the mission. Run meiosis again and change a choice. One more check.</div>'; }
+function finish(){ const nh=saveHi(score); over('Meiosis mastered!',`<p style="font-size:18px;margin:4px 0">Score: <b>${score}</b> · sperm types collected: ${collected.size} of 8${nh?' <span style="color:var(--gold)">New high score!</span>':''}</p><p class="small"><b>Meiosis</b> turns one diploid cell into four haploid cells (sperm or eggs). Two things make each one different: <b>crossing over</b> (pieces swap between homologous chromosomes in prophase I) and <b>independent assortment</b> (each pair lines up randomly in metaphase I). With just 2 pairs and one crossover you found up to 8 kinds. Humans have 23 pairs, so one person can make over 8 million combinations before crossing over is even counted.</p>`); }
+$('#startBtn').addEventListener('click',startGame); $('#againBtn').addEventListener('click',startGame);
+GAME.onPause=()=>{}; GAME.onResume=()=>{};
+GAME.teacherHTML=()=>`<p class="small muted">Practice game, not graded.</p><h3>How it works</h3><p class="small">A diploid cell (2n = 4) with a long pair (gene E near the centromere, gene A at the tip) and a short pair (gene B). Mom's chromosomes are red (E, A, B); Dad's are blue (e, a, b). Students copy DNA, choose whether the tips cross over, flip the orientation of each pair in metaphase I, and can force nondisjunction of the long pair. Five missions (two checks each): independent assortment twice, crossing over, four unique gametes from one cell, and nondisjunction. Students also collect the 8 possible normal sperm types (+10 each).</p>`;
+GAME.printHTML=()=>`<h1>Meiosis Shuffle notes</h1><table border="1" cellpadding="6" style="border-collapse:collapse;font-size:13px;width:100%"><tr><th>Mission</th><th>Crossing over? (yes/no)</th><th>Pairs flipped</th><th>Sperm cells made</th></tr>${MISSIONS.map((m,i)=>`<tr><td>${i+1}</td><td></td><td></td><td></td></tr>`).join('')}</table><p>Explain two ways meiosis makes every sperm or egg different.</p>`;
+window.__mei={go:(c,fl,fs,nd)=>{ step=2; cross=c; flip={L:fl,S:fs}; nondis=!!nd; gam=divide(); step=3; collect(); render(); },check,get mi(){return mi;},get collected(){return collected;},get score(){return score;}};
+
+</script>
+
+
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

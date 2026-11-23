@@ -243,6 +243,7 @@ body.key .keyonly{display:block!important}
 @media print{.top,#calc{display:none}}
 .phbox{width:100%;min-height:60px;border:1px solid var(--line2);border-radius:8px;padding:8px;background:var(--bg2);color:var(--ink);font-family:inherit;font-size:.92rem;resize:vertical;margin-top:3px}
 </style>
+<style id="nolock">#tEndLock,#endLockBtn,#unlockInfo{display:none!important}</style>
 </head>
 <body>
 <div class="preview-bar" id="previewBar" hidden>Preview mode: nothing is saved or sent. Reload the page to leave preview mode.</div>
@@ -391,6 +392,7 @@ body.key .keyonly{display:block!important}
    ========================================================= */
 const LESSON = "Orbits, Satellites, and Kepler’s Laws";
 const LESSON_ID = 'phys-u5-orbits-satellites-kepler';
+function __ord(seed, arr) { let h = 2166136261; for (const ch of String(seed)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } const idx = arr.map((_, i) => i); for (let i = idx.length - 1; i > 0; i--) { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; const j = (h >>> 0) % (i + 1); [idx[i], idx[j]] = [idx[j], idx[i]]; } return idx; }
 const KEY = 'fate_phys_u5_orbits_satellites_kepler_v1';
 const RECS = KEY + '_records';
 const UNLOCK_CODE = 'laws';           // last word of the lesson title: unlocks the lockdown screen only
@@ -412,7 +414,7 @@ function saveURL() {
   return SAVE_URL_BUILTIN;
 }
 const CLOUD = () => !!saveURL() && /^https?:/.test(location.protocol);
-const LOCK_ON = /github\.io$/i.test(location.hostname) || new URLSearchParams(location.search).has('lockdown');
+const LOCK_ON = false; // lockdown is used on tests only
 const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* =========================================================
@@ -443,7 +445,7 @@ const subs = s => String(s).replace(/\b([vDa])_(ix|iy|fy|fx|x|y)\b/g, (m, b, s2)
 function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toast.T); toast.T = setTimeout(() => el.classList.remove('show'), 2600); }
 function parseNum(s) {
   s = String(s || '').trim().replace(/[−–—]/g, '-').replace(/,/g, '');
-  s = s.replace(/\s*[x×*·]\s*10\s*\^\s*\(?\s*([+-]?\d+)\s*\)?/i, 'e$1');
+  s = s.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺]+/g, m => '^' + [...m].map(ch => ch === '⁻' ? '-' : ch === '⁺' ? '+' : '⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(ch)).join('')).replace(/\s*[x×*·]\s*10\s*\^\s*\(?\s*([+-]?\d+)\s*\)?/i, 'e$1');
   const m = s.match(/-?\d*\.?\d+(e[+-]?\d+)?/i); if (!m) return NaN; return parseFloat(m[0]);
 }
 function close(ans, v, tol) { if (!isFinite(v)) return false; const t = tol != null ? tol : Math.max(0.051, Math.abs(ans) * 0.02); return Math.abs(v - ans) <= t + 1e-9; }
@@ -710,8 +712,8 @@ const QC = {};
 function qcHTML(n, k, q) {
   const id = `s${n}${k}`; QC[id] = Object.assign({ n, k }, q);
   return `<div class="qcwrap" id="qc-${id}"><p><b>${q.label || 'Quick check ' + (k === 'q1' ? 1 : 2)}.</b> ${q.q}</p>${q.fig || ''}
-    <div class="opts">${q.opts.map((o, i) => `<button type="button" class="opt" data-qc="${id}" data-i="${i}"><span class="L">${LET[i]}</span><span>${o}</span></button>`).join('')}</div>
-    <p class="fb" data-fb></p><div class="keyonly keytag">Answer: ${LET[q.a]}</div></div>`;
+    <div class="opts">${__ord(LESSON_ID + id, q.opts).map((i, pos) => `<button type="button" class="opt" data-qc="${id}" data-i="${i}"><span class="L">${LET[pos]}</span><span>${q.opts[i]}</span></button>`).join('')}</div>
+    <p class="fb" data-fb></p><div class="keyonly keytag">Answer: ${LET[__ord(LESSON_ID + id, q.opts).indexOf(q.a)]}</div></div>`;
 }
 function qcCard(n, a, b) { return `<div class="card"><span class="chip qc">Quick check</span>${qcHTML(n, 'q1', a)}${qcHTML(n, 'q2', b)}</div>`; }
 function paintQC(id) {
@@ -872,13 +874,13 @@ function build2() {
   $('#page2').innerHTML = secHead(2) + `
   <div class="card"><span class="chip read">Read</span><h3>Gravity supplies the centripetal force</h3>
     <div class="cols"><div><p>For a circular orbit, gravity supplies the centripetal force: GMm ÷ r² = mv² ÷ r. Solve for v: <b>v = √(GM ÷ r)</b>. The satellite’s mass cancels! Then the period is <b>T = 2πr ÷ v</b>.</p><p>Lower orbits are <b>faster</b> with shorter periods; higher orbits are slower with longer periods.</p>
-      <div class="callout"><b>Example.</b> The space station orbits at r = 6.8 × 10⁶ m around Earth (GM = 4.0 × 10¹⁴). ${work('', [['Speed', `v = √(4.0 × 10¹⁴ ÷ 6.8 × 10⁶) = <b>7,670 m/s</b>`], ['Period', `T = 2π(6.8 × 10⁶) ÷ 7,670 = 5,570 s`], ['In minutes', `T ≈ <b>93 min</b> per orbit`]])}</div>
+      <div class="callout"><b>Example.</b> The space station orbits at r = 6.8 × 10⁶ m around Earth (GM = 4.0 × 10¹⁴). <div class='fig' style='margin:10px 0'><svg viewBox='0 0 320 230' role='img' aria-label='Diagram'><defs><marker id='pm226cb8ff' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='6' markerHeight='6' orient='auto'><path d='M0 0L10 5L0 10z' fill='#6cb8ff'/></marker></defs><circle cx='140.0' cy='120.0' r='34.0' fill='#2f6db0' stroke='#9fd0ff' stroke-width='1.5'/><text x='140' y='124' font-size='11' fill='#e9eefb' text-anchor='middle' font-family='Lexend, sans-serif' font-weight="700">Earth</text><circle cx='140' cy='120' r='88' fill='none' stroke='#34476f' stroke-width='1.6' stroke-dasharray='5 5'/><rect x='193.0' y='52.0' width='18.0' height='12.0' rx='2' fill='#cdd6ea' stroke='#e9eefb' stroke-width='1.5' opacity='1'/><line x1='182.0' y1='58.0' x2='222.0' y2='58.0' stroke='#6cb8ff' stroke-width='3'/><line x1='140.0' y1='120.0' x2='202.0' y2='58.0' stroke='#ffcf5a' stroke-width='1.2' stroke-dasharray="4 3"/><text x='166' y='80' font-size='12' fill='#ffcf5a' text-anchor='end' font-family='Lexend, sans-serif'>r</text><line x1='202.0' y1='58.0' x2='250.0' y2='106.0' stroke='#6cb8ff' stroke-width='2.6' marker-end='url(#pm226cb8ff)'/><text x='254' y='118' font-size='12' fill='#6cb8ff' text-anchor='start' font-family='Lexend, sans-serif'>v</text><text x='202' y='44' font-size='10' fill='#a3b2d2' text-anchor='middle' font-family='Lexend, sans-serif'>station</text><text x='10' y='18' font-size='12' fill='#a3b2d2' text-anchor='start' font-family='Lexend, sans-serif'>Falling around Earth together</text></svg></div>${work('', [['Speed', `v = √(4.0 × 10¹⁴ ÷ 6.8 × 10⁶) = <b>7,670 m/s</b>`], ['Period', `T = 2π(6.8 × 10⁶) ÷ 7,670 = 5,570 s`], ['In minutes', `T ≈ <b>93 min</b> per orbit`]])}</div>
     </div><div><div class="eqbox"><div class="eq" style="font-size:1.15rem">v = √(GM ÷ r)</div><div class="eq">T = 2πr ÷ v</div><div class="eq">Earth: GM = 4.0 × 10¹⁴ m³/s²</div></div></div></div></div>
   <div class="card"><span class="chip try">Try it</span><h3>Satellite finder</h3><p>Pick an orbit. Compare the speeds and periods. Complete all three missions.</p><div class="fig" id="g2fig"></div>
     <div class="ctrls">${[{"id": "k", "label": "Orbit", "min": 0, "max": 3, "step": 1, "val": 0, "unit": "", "labels": ["Space station (6.8 × 10⁶ m)", "GPS (2.66 × 10⁷ m)", "Geostationary (4.22 × 10⁷ m)", "The Moon (3.84 × 10⁸ m)"]}].map(s => `<div class="ctrl"><label for="g2${s.id}"><span>${s.label}</span> <b id="g2${s.id}v"></b></label><input type="range" id="g2${s.id}" min="${s.min}" max="${s.max}" step="${s.step}" value="${s.val}"></div>`).join('')}</div>
     <div class="readouts" id="g2ro"></div><div class="row"><button class="btn primary" type="button" id="g2chk">Check against the missions</button></div>
     ${missionsHTML(2, ["Find the orbit whose period is about one day (it stays over the same spot on Earth).", "Find the fastest orbit.", "Find the orbit with the longest period."])}</div>
-  ${pracCard(2, 'Practice (you solve it)', "A little different from the example: a higher orbit.", [{ id: 'p2x', q: "A GPS satellite orbits at r = 2.66 × 10⁷ m. Using GM = 4.0 × 10¹⁴ m³/s², find its orbital speed. (Type powers of ten like 4.0e14.)", ans: 3878, show: "3,880", unit: "m/s", tol: 20, hint: "v = √(GM ÷ r).", sol: "v = √(4.0e14 ÷ 2.66e7) = √(1.50e7) = 3,880 m/s" }])}
+  ${pracCard(2, 'Practice (you solve it)', "A little different from the example: a higher orbit.", [{ id: 'p2x', q: "A GPS satellite orbits at r = 2.66 × 10⁷ m. Using GM = 4.0 × 10¹⁴ m³/s², find its orbital speed. (Type powers of ten like 4.0e14.)" + `<div class='fig' style='margin:10px 0'><svg viewBox='0 0 320 230' role='img' aria-label='Diagram'><defs><marker id='pm236cb8ff' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='6' markerHeight='6' orient='auto'><path d='M0 0L10 5L0 10z' fill='#6cb8ff'/></marker></defs><circle cx='140.0' cy='120.0' r='34.0' fill='#2f6db0' stroke='#9fd0ff' stroke-width='1.5'/><text x='140' y='124' font-size='11' fill='#e9eefb' text-anchor='middle' font-family='Lexend, sans-serif' font-weight="700">Earth</text><circle cx='140' cy='120' r='88' fill='none' stroke='#34476f' stroke-width='1.6' stroke-dasharray='5 5'/><rect x='193.0' y='52.0' width='18.0' height='12.0' rx='2' fill='#cdd6ea' stroke='#e9eefb' stroke-width='1.5' opacity='1'/><line x1='182.0' y1='58.0' x2='222.0' y2='58.0' stroke='#6cb8ff' stroke-width='3'/><line x1='140.0' y1='120.0' x2='202.0' y2='58.0' stroke='#ffcf5a' stroke-width='1.2' stroke-dasharray="4 3"/><text x='166' y='80' font-size='12' fill='#ffcf5a' text-anchor='end' font-family='Lexend, sans-serif'>2.66 × 10⁷ m</text><line x1='202.0' y1='58.0' x2='250.0' y2='106.0' stroke='#6cb8ff' stroke-width='2.6' marker-end='url(#pm236cb8ff)'/><text x='254' y='118' font-size='12' fill='#6cb8ff' text-anchor='start' font-family='Lexend, sans-serif'>v ?</text><text x='202' y='44' font-size='10' fill='#a3b2d2' text-anchor='middle' font-family='Lexend, sans-serif'>GPS satellite</text></svg></div>`, ans: 3878, show: "3,880", unit: "m/s", tol: 20, hint: "v = √(GM ÷ r).", sol: "v = √(4.0e14 ÷ 2.66e7) = √(1.50e7) = 3,880 m/s" }])}
   <div class="card"><span class="chip qc">Quick check</span>${qcHTML(2, 'q1', Object.assign({"q": "Compared with a low satellite, a high satellite has…", "opts": ["a faster speed and shorter period", "a slower speed and longer period", "the same speed", "no gravity on it"], "a": 1, "why": "v = √(GM ÷ r): bigger r → slower, and it has farther to go.", "hint": "r is on the bottom."}, { label: 'Quick check' }))}</div>
   
   ${unlockBox(2)}`;
@@ -1238,6 +1240,14 @@ heroFig(); buildAll(); renderStart(); showNote();
 go(0);
 if (S.student && S.locked && lockLive()) showLock();
 })();
+</script>
+<script>/* sandbox-safe sign-in: works even where form submissions are blocked (e.g., previews) */
+(function () { document.querySelectorAll('#startForm, #signForm').forEach(f => {
+  const go = () => f.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+  f.requestSubmit = go;
+  f.querySelectorAll('button[type="submit"]').forEach(b => { b.type = 'button'; b.addEventListener('click', go); });
+  f.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName === 'INPUT') { e.preventDefault(); go(); } });
+}); })();
 </script>
 </body>
 </html>

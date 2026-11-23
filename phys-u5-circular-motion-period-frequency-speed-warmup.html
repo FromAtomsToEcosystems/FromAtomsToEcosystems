@@ -120,6 +120,7 @@ body.key .keyonly{display:block!important}.keyonly{display:none;color:var(--teal
 .drop.over{border-color:var(--sky);background:rgba(108,184,255,.12)}
 .drop.right{border-color:var(--teal);background:rgba(63,214,160,.12)} .drop.wrong{border-color:var(--red);background:rgba(255,127,134,.1)}
 </style>
+<style id="nolock">#tEndLock,#endLockBtn,#unlockInfo{display:none!important}</style>
 </head>
 <body>
 <div class="previewbar" id="previewBar" hidden>Preview mode: nothing is saved or sent. Reload to leave preview mode.</div>
@@ -169,7 +170,6 @@ body.key .keyonly{display:block!important}.keyonly{display:none;color:var(--teal
   <div class="disp"><div class="expr" id="cExpr"></div><div class="res" id="cRes">0</div></div><div class="keys" id="cKeys"></div></div>
 <div id="toast" role="status" aria-live="polite"></div>
 <script src="sheets-config.js"></script>
-<script src="exit-ticket-config.js"></script>
 <script>
 (() => {
 'use strict';
@@ -200,6 +200,7 @@ function fbdD(arrows, o = {}) {
 const C = { amber: '#ffcf5a', sky: '#6cb8ff', teal: '#3fd6a0', violet: '#b19bff', red: '#ff7f86', muted: '#a3b2d2', ink: '#e9eefb', line: '#5d6f96' };
 
 const LESSON_ID = 'phys-u5-circular-motion-period-frequency-speed-warmup';
+function __ord(seed, arr) { let h = 2166136261; for (const ch of String(seed)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } const idx = arr.map((_, i) => i); for (let i = idx.length - 1; i > 0; i--) { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; const j = (h >>> 0) % (i + 1); [idx[i], idx[j]] = [idx[j], idx[i]]; } return idx; }
 const KEY = 'fate_phys_u5_circspeed_warmup_v1', RECS = KEY + '_records';
 const ACTIVITY = 'Circular Motion: Period, Frequency, and Speed: Warm-Up';
 const FILE_TAG = 'CircularSpeedWarmUp';
@@ -234,7 +235,7 @@ function saveURL() {
   return SAVE_URL_BUILTIN;
 }
 const CLOUD = () => /^https?:/.test(location.protocol);
-const LOCK_ON = /github\.io$/i.test(location.hostname) || new URLSearchParams(location.search).has('lockdown');
+const LOCK_ON = false; // lockdown is used on tests only
 const $ = s => document.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const LET = 'ABCDEFG';
@@ -301,14 +302,14 @@ function scoreQ(q) {
   if (q.type === 'nums') { const per = q.blanks.map(b => numOK(b, a[b.id]) ? 1 : 0); const pts = Math.round(per.reduce((x, y) => x + y, 0) / q.blanks.length * q.pts * 2) / 2; return { pts, max: q.pts, per }; }
   return { pts: 0, max: 0, per: [] };
 }
-function numVal(s) { s = String(s || '').replace(/[−–—]/g, '-').replace(/,/g, '').replace(/\s*[x×*·]\s*10\s*\^\s*\(?\s*([+-]?\d+)\s*\)?/i, 'e$1'); const m = s.match(/-?\d*\.?\d+(e[+-]?\d+)?/i); return m ? parseFloat(m[0]) : NaN; }
+function numVal(s) { s = String(s || '').replace(/[−–—]/g, '-').replace(/,/g, '').replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺]+/g, m => '^' + [...m].map(ch => ch === '⁻' ? '-' : ch === '⁺' ? '+' : '⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(ch)).join('')).replace(/\s*[x×*·]\s*10\s*\^\s*\(?\s*([+-]?\d+)\s*\)?/i, 'e$1'); const m = s.match(/-?\d*\.?\d+(e[+-]?\d+)?/i); return m ? parseFloat(m[0]) : NaN; }
 function numOK(b, s) { const v = numVal(s); if (!isFinite(v)) return false; const tol = b.tol != null ? b.tol : Math.max(0.051, Math.abs(b.ans) * 0.02); return Math.abs(v - b.ans) <= tol + 1e-9; }
 
 /* ---------- questions ---------- */
 let picked = null;
 function optBtns(name, opts, cur, correct, locked) {
   const key = document.body.classList.contains('key');
-  return `<div class="opts">${opts.map((o, i) => { const cls = locked ? (i === correct ? 'right' : (i === cur ? 'wrong' : '')) : (cur === i ? 'sel' : ''); return `<button type="button" class="opt ${cls} ${key && i === correct && !locked ? 'right' : ''}" data-opt="${name}" data-i="${i}" ${locked ? 'disabled' : ''}><span class="L">${LET[i]}</span><span>${o}</span></button>`; }).join('')}</div>`;
+  return `<div class="opts">${__ord(LESSON_ID + name, opts).map((i, pos) => { const o = opts[i]; const cls = locked ? (i === correct ? 'right' : (i === cur ? 'wrong' : '')) : (cur === i ? 'sel' : ''); return `<button type="button" class="opt ${cls} ${key && i === correct && !locked ? 'right' : ''}" data-opt="${name}" data-i="${i}" ${locked ? 'disabled' : ''}><span class="L">${LET[pos]}</span><span>${o}</span></button>`; }).join('')}</div>`;
 }
 function renderQ() {
   const i = S.cur, q = QS[i], a = S.ans[q.id], locked = S.done, key = document.body.classList.contains('key');
@@ -494,6 +495,14 @@ document.addEventListener('keydown', e => {
 /* ---------- start ---------- */
 if (S.student) { showSign(); if (S.locked && live()) showLock(); } else showSign();
 })();
+</script>
+<script>/* sandbox-safe sign-in: works even where form submissions are blocked (e.g., previews) */
+(function () { document.querySelectorAll('#startForm, #signForm').forEach(f => {
+  const go = () => f.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+  f.requestSubmit = go;
+  f.querySelectorAll('button[type="submit"]').forEach(b => { b.type = 'button'; b.addEventListener('click', go); });
+  f.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName === 'INPUT') { e.preventDefault(); go(); } });
+}); })();
 </script>
 </body>
 </html>

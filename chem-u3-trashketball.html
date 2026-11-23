@@ -1,0 +1,92 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unit 3 Trashketball | Chemistry Unit 3</title>
+<style>
+:root{--bg:#0b1322;--panel:#13203a;--ink:#e8eef8;--mut:#94a3b8;--acc:#f97316;--ok:#4ade80;--bad:#f87171;--gold:#f6b93b}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+header{display:flex;align-items:center;gap:14px;padding:12px 20px;background:#0f1a2e;border-bottom:1px solid #1e2c4a}header h1{margin:0;font-size:22px;flex:1}header .sub{color:var(--mut);font-size:14px}
+button{font:inherit;cursor:pointer;border-radius:12px;border:1px solid #2b3b5c;background:#1b2a48;color:var(--ink);padding:10px 16px;font-size:17px}button:hover{filter:brightness(1.15)}button.pri{background:var(--acc);border-color:var(--acc);color:#111;font-weight:800}button:disabled{opacity:.4;cursor:default}
+.wrap{max-width:1300px;margin:0 auto;padding:18px;display:grid;grid-template-columns:1fr 320px;gap:18px}
+.card{background:var(--panel);border:1px solid #1e2c4a;border-radius:18px;padding:22px}
+.turn{font-size:18px;color:var(--mut)}.turn b{color:var(--gold);font-size:24px}
+.topic{display:inline-block;background:#1e2c4a;border-radius:999px;padding:3px 12px;font-size:14px;color:var(--mut);margin:6px 0}
+.q{font-size:32px;font-weight:700;line-height:1.3;margin:10px 0 18px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}.opt{font-size:24px;text-align:left;padding:16px;border-radius:14px;background:#0f1a2e;border:2px solid #2b3b5c}.opt b{color:var(--gold);margin-right:8px}
+.opt.right{border-color:var(--ok);background:#12301f}.why{margin-top:14px;font-size:20px;color:var(--ok);min-height:28px}
+.row{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;align-items:center}
+.timer{font-size:44px;font-weight:800;font-variant-numeric:tabular-nums;min-width:110px;text-align:center}.timer.low{color:var(--bad)}
+.shot{margin-top:16px;padding:16px;border:2px dashed var(--acc);border-radius:14px}.shot h3{margin:0 0 8px;font-size:22px}
+.board h2{margin:0 0 10px;font-size:20px}.team{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;margin-bottom:6px;background:#0f1a2e}.team.now{outline:3px solid var(--gold)}
+.team .nm{flex:1;font-size:18px;font-weight:700}.team .pts{font-size:26px;font-weight:800;color:var(--gold);min-width:44px;text-align:right}.team .adj{padding:2px 9px;font-size:15px;border-radius:8px}
+.bar{height:6px;background:#1e2c4a;border-radius:4px;margin-top:3px}.bar i{display:block;height:100%;background:var(--acc);border-radius:4px}
+.setup{max-width:760px;margin:40px auto}.setup label{display:block;margin:10px 0 4px;color:var(--mut)}.setup input{font:inherit;font-size:18px;padding:8px 10px;border-radius:10px;border:1px solid #2b3b5c;background:#0f1a2e;color:var(--ink);width:100%}
+.names{display:grid;grid-template-columns:1fr 1fr;gap:8px}.rules{color:var(--mut);font-size:16px;line-height:1.5}
+.court{display:flex;gap:10px;justify-content:center;margin:6px 0 2px}.court span{padding:6px 14px;border-radius:999px;background:#1e2c4a;font-weight:700}
+.win{font-size:42px;font-weight:800;color:var(--gold);text-align:center;margin:20px 0}
+@media (max-width:900px){.wrap{grid-template-columns:1fr}.q{font-size:24px}.opt{font-size:19px}}
+</style></head><body>
+<header><h1>🏀 Unit 3 Trashketball</h1><span class="sub">Counting Atoms and Balanced Equations</span><button id="bNew">New game</button></header>
+<div id="app"></div>
+<script>
+const Q = [{"t": "Counting Atoms", "q": "How many oxygen atoms are in one molecule of CO₂?", "o": ["2", "1", "3", "4"], "why": "The subscript 2 belongs to O."}, {"t": "Counting Atoms", "q": "How many hydrogen atoms are in 3H₂O?", "o": ["6", "2", "3", "5"], "why": "3 × 2 = 6."}, {"t": "Counting Atoms", "q": "How many atoms in total are in C₆H₁₂O₆?", "o": ["24", "18", "3", "12"], "why": "6 + 12 + 6 = 24."}, {"t": "Counting Atoms", "q": "How many oxygen atoms are in Ca(OH)₂?", "o": ["2", "1", "3", "4"], "why": "The 2 outside the parentheses doubles the O inside."}, {"t": "Counting Atoms", "q": "How many oxygen atoms are in 2Al₂(SO₄)₃?", "o": ["24", "12", "8", "7"], "why": "One unit has 4 × 3 = 12 O; times 2 = 24."}, {"t": "Counting Atoms", "q": "A particle diagram shows 3 separate clusters, each made of 2 H atoms and 1 O atom. Which formula matches?", "o": ["3H₂O", "H₆O₃", "3HO₂", "H₂O₃"], "why": "Separate clusters = coefficient; atoms in a cluster = subscripts."}, {"t": "Counting Atoms", "q": "In 4NH₃, what does the 4 tell you?", "o": ["There are 4 molecules of NH₃", "There are 4 nitrogen atoms in each molecule", "There are 4 hydrogen atoms", "The charge is 4"], "why": "A coefficient counts molecules."}, {"t": "Counting Atoms", "q": "How many nitrogen atoms are in 3Mg(NO₃)₂?", "o": ["6", "3", "2", "9"], "why": "One unit has 2 N; times 3 = 6."}, {"t": "Types of Reactions", "q": "2Mg + O₂ → 2MgO is which type of reaction?", "o": ["Synthesis", "Decomposition", "Single replacement", "Combustion"], "why": "Two reactants make one product."}, {"t": "Types of Reactions", "q": "CaCO₃ → CaO + CO₂ is which type of reaction?", "o": ["Decomposition", "Synthesis", "Double replacement", "Combustion"], "why": "One reactant breaks into two products."}, {"t": "Types of Reactions", "q": "Zn + CuSO₄ → ZnSO₄ + Cu is which type of reaction?", "o": ["Single replacement", "Double replacement", "Synthesis", "Decomposition"], "why": "A lone element replaces another in a compound."}, {"t": "Types of Reactions", "q": "AgNO₃ + NaCl → AgCl + NaNO₃ is which type of reaction?", "o": ["Double replacement", "Single replacement", "Combustion", "Synthesis"], "why": "Two compounds trade partners."}, {"t": "Types of Reactions", "q": "C₃H₈ + 5O₂ → 3CO₂ + 4H₂O is which type of reaction?", "o": ["Combustion", "Synthesis", "Decomposition", "Single replacement"], "why": "A fuel burns in oxygen to make CO₂ and H₂O."}, {"t": "Types of Reactions", "q": "Predict the products: Mg + 2HCl →", "o": ["MgCl₂ + H₂", "MgH₂ + Cl₂", "MgCl + H", "No reaction"], "why": "Magnesium replaces hydrogen."}, {"t": "Types of Reactions", "q": "Predict the products: BaCl₂ + Na₂SO₄ →", "o": ["BaSO₄ + 2NaCl", "BaNa₂ + Cl₂SO₄", "Ba + Na₂SO₄Cl₂", "BaCl₂Na₂ + SO₄"], "why": "Ba pairs with SO₄; Na pairs with Cl."}, {"t": "Types of Reactions", "q": "Two clear solutions are mixed and a cloudy solid forms. The solid is called a…", "o": ["precipitate", "catalyst", "reactant", "fuel"], "why": "A precipitate is a solid formed from two solutions."}, {"t": "Balancing Equations and Conservation of Mass", "q": "Why must chemical equations be balanced?", "o": ["Atoms are not created or destroyed in a reaction", "It makes the equation easier to read", "Products always have more atoms", "The arrow means \"equals\""], "why": "Law of conservation of mass."}, {"t": "Balancing Equations and Conservation of Mass", "q": "When balancing an equation, you may change only the…", "o": ["coefficients", "subscripts", "both coefficients and subscripts", "arrow"], "why": "Changing subscripts makes a different substance."}, {"t": "Balancing Equations and Conservation of Mass", "q": "Balance: __H₂ + __O₂ → __H₂O", "o": ["2, 1, 2", "1, 1, 1", "1, 2, 2", "2, 2, 1"], "why": "2H₂ + O₂ → 2H₂O."}, {"t": "Balancing Equations and Conservation of Mass", "q": "Balance: __N₂ + __H₂ → __NH₃", "o": ["1, 3, 2", "1, 1, 2", "2, 3, 1", "1, 3, 3"], "why": "N₂ + 3H₂ → 2NH₃."}, {"t": "Balancing Equations and Conservation of Mass", "q": "Balance: __Al + __O₂ → __Al₂O₃", "o": ["4, 3, 2", "2, 3, 1", "2, 1, 1", "4, 6, 2"], "why": "4Al + 3O₂ → 2Al₂O₃."}, {"t": "Balancing Equations and Conservation of Mass", "q": "Balance: __CH₄ + __O₂ → __CO₂ + __H₂O", "o": ["1, 2, 1, 2", "1, 1, 1, 1", "2, 1, 2, 1", "1, 2, 2, 1"], "why": "CH₄ + 2O₂ → CO₂ + 2H₂O."}, {"t": "Balancing Equations and Conservation of Mass", "q": "Which equation is balanced AND in lowest terms?", "o": ["2Na + Cl₂ → 2NaCl", "4Na + 2Cl₂ → 4NaCl", "Na + Cl₂ → NaCl", "2Na + 2Cl₂ → 2NaCl"], "why": "2, 1, 2 cannot be reduced."}, {"t": "Balancing Equations and Conservation of Mass", "q": "Baking soda and vinegar react in an OPEN cup, and the mass goes down. Why?", "o": ["Carbon dioxide gas escaped into the air", "Atoms were destroyed", "The vinegar evaporated instantly", "The scale was broken"], "why": "In an open system, gas can leave."}, {"t": "Molar Mass", "q": "How many particles are in 1 mole of anything?", "o": ["6.02 × 10²³", "12", "100", "1"], "why": "Avogadro’s number."}, {"t": "Molar Mass", "q": "A tile shows 11, Na, 22.99. What is the molar mass of sodium?", "o": ["22.99 g/mol", "11 g/mol", "33.99 g/mol", "6.02 g/mol"], "why": "Use the atomic mass, not the atomic number."}, {"t": "Molar Mass", "q": "What is the molar mass of H₂O? (H = 1.01, O = 16.00)", "o": ["18.02 g/mol", "17.01 g/mol", "34.02 g/mol", "16.00 g/mol"], "why": "2(1.01) + 16.00."}, {"t": "Molar Mass", "q": "What is the molar mass of CO₂? (C = 12.01, O = 16.00)", "o": ["44.01 g/mol", "28.01 g/mol", "40.02 g/mol", "32.00 g/mol"], "why": "12.01 + 2(16.00)."}, {"t": "Molar Mass", "q": "How many moles are in 36.04 g of H₂O (18.02 g/mol)?", "o": ["2.00 mol", "0.50 mol", "649 mol", "18.02 mol"], "why": "Divide grams by molar mass."}, {"t": "Molar Mass", "q": "What is the mass of 0.500 mol of NaCl (58.44 g/mol)?", "o": ["29.22 g", "116.88 g", "0.0086 g", "58.44 g"], "why": "Multiply moles by molar mass."}, {"t": "Molar Mass", "q": "1 mol of iron (55.85 g) and 1 mol of aluminum (26.98 g) have…", "o": ["the same number of atoms but different masses", "the same mass", "the same number of protons per atom", "nothing in common"], "why": "A mole fixes the count, not the mass."}, {"t": "Molar Mass", "q": "In 2H₂ + O₂ → 2H₂O, the reactants have a mass of 36.04 g. What is the mass of the products?", "o": ["36.04 g", "18.02 g", "72.08 g", "4.04 g"], "why": "Mass is conserved."}];
+const KEY = 'fate_chem_u3_trashketball_v1';
+let S = load() || null, tick = null;
+function load() { try { return JSON.parse(localStorage.getItem(KEY)); } catch (e) { return null; } }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+const $ = s => document.querySelector(s);
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function setup() {
+  clearInterval(tick);
+  $('#app').innerHTML = `<div class="setup card"><h2>Set up the game</h2>
+    <p class="rules"><b>How to play:</b> Teams take turns. Read the question aloud and start the timer. If the team answers correctly, they earn <b>1 point</b> and one shot at the trash can: tape lines on the floor for <b>1, 2, and 3 points</b>. A wrong answer passes the turn. Highest score wins.</p>
+    <label>How many teams?</label><input id="nT" type="number" min="2" max="8" value="8">
+    <label>Seconds per question</label><input id="nS" type="number" min="10" max="180" value="45">
+    <label>Team names (optional)</label><div class="names" id="names"></div>
+    <div class="row"><button class="pri" id="go">Start game</button></div></div>`;
+  const names = () => { const n = Math.max(2, Math.min(8, +$('#nT').value || 8)); $('#names').innerHTML = Array.from({ length: n }, (_, i) => `<input data-i="${i}" placeholder="Group ${i + 1}">`).join(''); };
+  names(); $('#nT').addEventListener('input', names);
+  $('#go').addEventListener('click', () => {
+    const n = Math.max(2, Math.min(8, +$('#nT').value || 8));
+    const teams = Array.from({ length: n }, (_, i) => ({ name: (document.querySelector(`#names input[data-i="${i}"]`).value || '').trim() || `Group ${i + 1}`, pts: 0 }));
+    S = { teams, turn: 0, order: shuffle(Q.map((_, i) => i)), qi: 0, phase: 'ask', secs: Math.max(10, +$('#nS').value || 45), left: null, asked: 0 };
+    save(); play();
+  });
+}
+function cur() { return Q[S.order[S.qi % S.order.length]]; }
+function play() {
+  clearInterval(tick);
+  const q = cur(), t = S.teams[S.turn], shown = S.phase !== 'ask', max = Math.max(1, ...S.teams.map(x => x.pts));
+  $('#app').innerHTML = `<div class="wrap"><div class="card">
+    <div class="turn">Up now: <b>${t.name}</b> · Question ${S.asked + 1}</div><span class="topic">${q.t}</span>
+    <div class="q">${q.q}</div>
+    <div class="opts">${q.o.map((o, k) => `<div class="opt ${shown && k === 0 ? 'right' : ''}"><b>${'ABCD'[k]}</b>${o}</div>`).join('')}</div>
+    <div class="why">${shown ? '✓ ' + q.o[0] + ' · ' + q.why : ''}</div>
+    <div class="row"><span class="timer" id="tm">${S.left ?? S.secs}</span><button id="tGo">Start timer</button><button id="show" ${shown ? 'disabled' : ''}>Show answer</button>
+      ${S.phase === 'shown' ? `<button class="pri" id="ok">✓ Correct (+1)</button><button id="no">✗ Wrong (pass)</button>` : ''}</div>
+    ${S.phase === 'shoot' ? `<div class="shot"><h3>🏀 ${t.name} takes a shot!</h3><div class="court"><span>1-pt line</span><span>2-pt line</span><span>3-pt line</span></div>
+      <div class="row"><button data-s="0">Missed</button><button class="pri" data-s="1">Made 1-pt</button><button class="pri" data-s="2">Made 2-pt</button><button class="pri" data-s="3">Made 3-pt</button></div></div>` : ''}
+    </div>
+    <div class="card board"><h2>Scoreboard</h2>${S.teams.map((x, i) => `<div class="team ${i === S.turn ? 'now' : ''}"><div style="flex:1"><div class="nm">${x.name}</div><div class="bar"><i style="width:${x.pts / max * 100}%"></i></div></div><button class="adj" data-a="${i}" data-d="-1">−</button><button class="adj" data-a="${i}" data-d="1">+</button><span class="pts">${x.pts}</span></div>`).join('')}
+      <div class="row"><button id="skip">Skip question</button><button id="end">End game</button></div></div></div>`;
+  // ---- order the options so the correct one is not always A: shuffle positions per question but keep the "right" index
+  const optEls = [...document.querySelectorAll('.opt')], perm = permFor(S.order[S.qi % S.order.length]);
+  const box = document.querySelector('.opts'); perm.forEach((k, pos) => { const el = optEls[k]; el.querySelector('b').textContent = 'ABCD'[pos]; box.appendChild(el); });
+  if (shown) $('.why').textContent = '✓ ' + 'ABCD'[perm.indexOf(0)] + '. ' + q.o[0] + ' · ' + q.why;
+  $('#tGo').addEventListener('click', () => { clearInterval(tick); if (S.left == null || S.left <= 0) S.left = S.secs; tick = setInterval(() => { S.left--; const e = $('#tm'); if (!e) return clearInterval(tick); e.textContent = Math.max(0, S.left); e.classList.toggle('low', S.left <= 10); if (S.left <= 0) clearInterval(tick); }, 1000); });
+  $('#show').addEventListener('click', () => { clearInterval(tick); S.phase = 'shown'; save(); play(); });
+  const okb = $('#ok'); if (okb) okb.addEventListener('click', () => { t.pts += 1; S.phase = 'shoot'; save(); play(); });
+  const nob = $('#no'); if (nob) nob.addEventListener('click', () => next());
+  document.querySelectorAll('[data-s]').forEach(b => b.addEventListener('click', () => { t.pts += +b.dataset.s; next(); }));
+  document.querySelectorAll('[data-a]').forEach(b => b.addEventListener('click', () => { const x = S.teams[+b.dataset.a]; x.pts = Math.max(0, x.pts + +b.dataset.d); save(); play(); }));
+  $('#skip').addEventListener('click', () => { S.qi++; S.phase = 'ask'; S.left = null; save(); play(); });
+  $('#end').addEventListener('click', () => { if (confirm('End the game and show the winner?')) finish(); });
+}
+function permFor(i) { const p = [0, 1, 2, 3].slice(0, Q[i].o.length); let r = (i * 7 + 3) % p.length; const a = p.slice(1); a.splice(r, 0, 0); return a; }
+function next() { S.turn = (S.turn + 1) % S.teams.length; S.qi++; S.asked++; S.phase = 'ask'; S.left = null; save(); play(); }
+function finish() {
+  clearInterval(tick); const rank = S.teams.slice().sort((a, b) => b.pts - a.pts), top = rank[0].pts, winners = rank.filter(x => x.pts === top).map(x => x.name);
+  $('#app').innerHTML = `<div class="setup card"><div class="win">🏆 ${winners.join(' & ')} ${winners.length > 1 ? 'tie' : 'wins'}!</div>${rank.map((x, i) => `<div class="team"><span class="nm">${i + 1}. ${x.name}</span><span class="pts">${x.pts}</span></div>`).join('')}<div class="row"><button class="pri" id="again">New game</button><button id="back">Back to the game</button></div></div>`;
+  $('#again').addEventListener('click', () => { S = null; save(); setup(); }); $('#back').addEventListener('click', play);
+}
+document.getElementById('bNew').addEventListener('click', () => { if (!S || confirm('Start a new game? The current scores will be cleared.')) { S = null; localStorage.removeItem(KEY); setup(); } });
+S ? play() : setup();
+</script></body></html>

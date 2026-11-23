@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Floating Leaf Discs (simulation) | Biology Unit 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1626; --panel:#142136; --panel2:#1a2a44; --line:#2a3d5f; --line2:#3a5580;
+  --text:#e8eef8; --muted:#a3b4cf; --dim:#7488a9;
+  --leaf:#5fe3a9; --sun:#ffd35c; --r:#ffd35c; --sky:#45c8f0; --ok:#4ade80; --bad:#fb7185; --pink:#f472b6;
+  --font:'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+*{box-sizing:border-box} [hidden]{display:none !important}
+html,body{margin:0}
+body{background-color:var(--bg); background-image:linear-gradient(rgba(110,150,210,.065) 1px,transparent 1px),linear-gradient(90deg,rgba(110,150,210,.065) 1px,transparent 1px); background-size:32px 32px;
+  color:var(--text); font-family:var(--font); font-size:17px; line-height:1.55; -webkit-user-select:none; user-select:none}
+input,textarea{-webkit-user-select:text; user-select:text}
+h1,h2,h3,h4{margin:0 0 .45em; line-height:1.2; font-weight:600}
+h1{font-size:clamp(28px,4.4vw,40px); font-weight:700} h2{font-size:24px} h3{font-size:19px}
+p{margin:0 0 .75em} .muted{color:var(--muted)} .small{font-size:14px}
+sub,sup{font-size:.72em}
+:focus-visible{outline:3px solid var(--r); outline-offset:2px}
+.top{position:sticky; top:0; z-index:20; background:rgba(13,22,38,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+.top-in{max-width:1100px; margin:0 auto; padding:8px 16px; display:flex; gap:12px; align-items:center}
+.brand{font-weight:600; font-size:15px; white-space:nowrap} .brand span{display:block; font-weight:400; font-size:12px; color:var(--muted)}
+.nav{display:flex; gap:6px; flex:1; overflow-x:auto; padding:3px 2px}
+.ntile{flex:0 0 auto; width:54px; height:54px; border-radius:7px; border:1.5px solid var(--line2); background:var(--panel); color:var(--text); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer; position:relative; font:inherit; padding:0}
+.ntile .ic{color:var(--leaf); line-height:0} .ntile .nm{font-size:8.5px; color:var(--muted)}
+.ntile.cur{border-color:var(--r); background:rgba(255,211,92,.14)}
+.ntile.cur .nm{color:var(--r)}
+.secnav{display:flex; justify-content:space-between; gap:10px; margin-top:4px}
+.ntile.done::after{content:'✓'; position:absolute; top:1px; right:4px; font-size:10px; font-weight:700; color:var(--ok)}
+.scorepill{font-size:13px; padding:4px 10px; border-radius:999px; background:var(--panel2); white-space:nowrap}
+.savenote{font-size:12.5px; color:var(--ok); white-space:nowrap} @media (max-width:1300px){ .savenote{display:none} } @media (max-width:900px){ .scorepill{display:none} }
+main{max-width:1000px; margin:0 auto; padding:20px 16px 80px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin:0 0 18px}
+.sec{scroll-margin-top:80px}
+.sechead{display:flex; gap:14px; align-items:center; margin:28px 0 10px}
+.badge{width:66px; height:66px; border-radius:10px; border:2px solid var(--leaf); background:var(--panel); display:flex; align-items:center; justify-content:center; position:relative; flex:0 0 auto; color:var(--leaf)}
+.badge .z{position:absolute; top:3px; left:6px; font-size:11px; color:var(--muted)}
+.meta{color:var(--muted); font-size:14px}
+.btn{font:inherit; font-weight:600; font-size:15px; border-radius:10px; padding:10px 18px; cursor:pointer; border:1.5px solid transparent}
+.btn.primary{background:var(--r); color:#231a00} .btn.ghost{background:transparent; border-color:var(--line2); color:var(--text)}
+.btn.small{padding:6px 12px; font-size:14px} .btn:disabled{opacity:.45; cursor:not-allowed}
+.btnrow{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:12px}
+.field{display:flex; flex-direction:column; gap:4px; font-size:14px; color:var(--muted)}
+.field input,.field select{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px}
+.formgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin:10px 0}
+.fb{margin-top:10px; padding:10px 14px; border-radius:10px; font-size:15px}
+.fb.ok{background:rgba(74,222,128,.12); color:#c9f7d8} .fb.no{background:rgba(251,113,133,.12); color:#ffd3db} .fb.info{background:var(--panel2)}
+.prob{border-top:1px solid var(--line); padding-top:16px; margin-top:16px}
+.prob:first-of-type{border-top:none; padding-top:0; margin-top:0}
+.pq{font-weight:500; margin-bottom:8px}
+.pnum{display:inline-block; min-width:30px; font-weight:700; color:var(--leaf)}
+.pts{font-size:13px; color:var(--muted); font-weight:400}
+.hintbox{background:rgba(255,211,92,.08); border-left:3px solid var(--r); border-radius:8px; padding:8px 12px; margin-top:8px; font-size:15px}
+/* drag and drop */
+.figwrap{position:relative; width:100%}
+.figwrap svg{width:100%; height:auto; display:block; background:#0a1322; border:1px solid var(--line); border-radius:12px}
+.figwrap svg text{font-family:var(--font)}
+.zone{position:absolute; transform:translate(-50%,-50%); min-height:32px; border:2px dashed #8fb3e6; border-radius:9px; background:rgba(13,22,38,.92); color:var(--text); font:inherit; font-size:14px; font-weight:600; display:flex; align-items:center; justify-content:center; padding:2px 6px; cursor:pointer; text-align:center; line-height:1.15}
+.zone.empty{color:var(--dim); font-weight:400; font-size:12.5px}
+.zone.filled{border-style:solid; border-color:var(--r); background:#2b2410}
+.zone.hot{box-shadow:0 0 0 3px rgba(255,211,92,.5)}
+.zone.locked{opacity:.9}
+.zone.ok{border-color:var(--ok); background:#0f2e1d} .zone.no{border-color:var(--bad); background:#3a0f1a}
+.pool{display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 4px; padding:10px; border:1px dashed var(--line2); border-radius:10px; min-height:52px}
+.pool .lbl{width:100%; font-size:12.5px; color:var(--muted)}
+.chip{font:inherit; font-size:15px; font-weight:600; padding:6px 14px; border-radius:999px; border:1.5px solid var(--line2); background:var(--panel2); color:var(--text); cursor:grab; touch-action:none}
+.chip.sel{border-color:var(--r); background:rgba(255,211,92,.16); box-shadow:0 0 0 3px rgba(255,211,92,.35)}
+.bins{display:grid; gap:10px; margin-top:6px}
+.bin{border:2px dashed var(--line2); border-radius:12px; padding:10px; min-height:96px; cursor:pointer; background:rgba(13,22,38,.5)}
+.bin h4{margin:0 0 8px; font-size:15px; color:var(--leaf)} .bin.hot{border-color:var(--r)}
+.bin .chip{cursor:pointer; margin:3px} .bin .chip.ok{border-color:var(--ok); background:#0f2e1d} .bin .chip.no{border-color:var(--bad); background:#3a0f1a}
+.phenbox{background:rgba(244,114,182,.1); border-left:4px solid #f472b6; border-radius:8px; padding:10px 14px; margin-bottom:14px}
+.fixnote{font-size:12px; color:#ffd3db; font-weight:400}
+/* equation */
+.eq{display:flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:20px; font-weight:600; margin:10px 0}
+.eq .zone{position:static; transform:none; min-width:120px; min-height:40px}
+/* choices */
+.opts{display:grid; gap:8px; margin:6px 0}
+.opt{display:flex; gap:12px; align-items:center; text-align:left; background:var(--panel2); border:1.5px solid var(--line); color:var(--text); border-radius:10px; padding:9px 14px; font:inherit; font-size:16px; cursor:pointer}
+.opt .L{flex:0 0 26px; height:26px; border-radius:50%; display:grid; place-items:center; background:var(--bg); font-weight:600; font-size:13px}
+.opt.multi .L{border-radius:6px}
+.opt.sel{border-color:var(--r); background:rgba(255,211,92,.08)} .opt.sel .L{background:var(--r); color:#231a00}
+.opt.ok{border-color:var(--ok); background:rgba(74,222,128,.1)} .opt.no{border-color:var(--bad); background:rgba(251,113,133,.1)}
+.opt:disabled{cursor:default}
+input.blank{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:7px 10px; font:inherit; font-size:16px; width:170px}
+input.blank.ok{border-color:var(--ok)} input.blank.no{border-color:var(--bad)}
+.brow{margin:8px 0}
+/* answer key (teacher) */
+body.keyon .zone[data-key]::after{content:'key: ' attr(data-key); position:absolute; top:100%; left:50%; transform:translateX(-50%); font-size:11px; color:var(--r); white-space:nowrap; margin-top:2px}
+body.keyon .chip[data-key]::after{content:' → ' attr(data-key); font-size:11px; color:var(--r)}
+body.keyon .opt[data-key]{outline:2px dashed var(--r); outline-offset:2px}
+body.keyon input.blank[data-key]+.keytxt{display:inline}
+.vbench{background:rgba(255,255,255,.04); border:1px solid #2a3d5f; border-radius:14px; padding:12px; margin-bottom:12px}
+#benchPic svg{width:100%; height:auto; display:block}
+.datatab select.ocell{font:inherit; padding:4px 6px; border-radius:8px; max-width:100%}
+.datatab input.dcell{width:72px; font:inherit; padding:4px 6px; border-radius:8px; text-align:center}
+.datachart svg{width:100%; height:auto; display:block; margin-top:10px}
+ol.proc li{margin:4px 0}
+.off{opacity:.35; pointer-events:none}
+.btbkey{display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; margin:6px 0 10px}.btbkey span{display:inline-block; width:16px; height:16px; border-radius:50%; vertical-align:middle; border:1px solid rgba(255,255,255,.4)}
+.simwrap{display:grid; grid-template-columns:minmax(150px,220px) 1fr; gap:18px; align-items:start; background:rgba(255,255,255,.04); border:1px solid var(--line,#2a3d5f); border-radius:14px; padding:14px}
+.simwrap.off{opacity:.35; pointer-events:none}
+.bigtube svg{width:100%; height:auto; display:block}.clock{text-align:center; font-weight:700; font-size:20px; margin-top:6px}
+.tg{display:block; margin:4px 0; font-size:17px}.tg input{transform:scale(1.3); margin-right:8px}
+.sensor{margin:10px 0; font-size:18px}.sensor b{font-size:24px; color:#ffd35c}
+.btn.on{outline:2px solid #ffd35c}
+.dot{display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:6px; vertical-align:middle}
+.predtab select{font:inherit; padding:4px 6px; border-radius:8px}
+#sChart svg{width:100%; height:auto; display:block}
+@media (max-width:700px){ .simwrap{grid-template-columns:1fr} .bigtube{max-width:180px; margin:0 auto} }
+.wbank2{margin-top:8px; padding:8px 10px; border:1px dashed rgba(163,180,207,.5); border-radius:10px; font-size:14px; line-height:2}
+.wchip{font:inherit; font-size:14px; margin:2px 4px 2px 0; padding:2px 10px; border-radius:999px; border:1px solid rgba(163,180,207,.6); background:rgba(255,255,255,.06); color:inherit; cursor:pointer}
+.wchip:hover{border-color:#ffd35c}
+.wtext{width:100%; min-height:110px; font:inherit; padding:10px; border-radius:10px; border:1.5px solid var(--line,#2a3d5f); background:rgba(255,255,255,.04); color:inherit; resize:vertical}
+.wkey{display:none; margin-top:6px; font-size:14px; color:var(--r,#ffd35c)}
+body.keyon .wkey{display:block}
+.keytxt{display:none; font-size:12px; color:var(--r); margin-left:6px}
+.big{font-size:52px; font-weight:700; color:var(--r); line-height:1}
+table.res{border-collapse:collapse; width:100%} table.res th,table.res td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line)} table.res th{color:var(--muted); font-weight:400}
+.card.nostore{border:2px solid var(--bad); background:rgba(251,113,133,.08)}
+.overlay{position:fixed; inset:0; background:rgba(4,9,18,.94); z-index:100; display:none; align-items:center; justify-content:center; padding:20px}
+.overlay.show{display:flex}
+.modal{background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:24px; max-width:900px; width:100%; max-height:92vh; overflow:auto}
+input.code{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px; width:200px}
+table.nb{border-collapse:collapse; width:100%; font-size:14px} table.nb th,table.nb td{border:1px solid var(--line2); padding:6px 8px} table.nb th{background:var(--panel2)}
+.wide{overflow-x:auto}
+@media (max-width:700px){ .zone{font-size:11px; min-height:26px} .chip{font-size:13px; padding:5px 10px} }
+@media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important} }
+.prob + p,.prob + .phenbox,.prob + .figwrap{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+
+.vbench{background:rgba(255,255,255,.04); border:1px solid #2a3d5f; border-radius:14px; padding:12px; margin-bottom:12px}
+.vbench.off{opacity:.45; pointer-events:none}
+.isstat{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; font-weight:600; margin-bottom:6px}
+.isclock{font-variant-numeric:tabular-nums; font-size:22px; color:var(--r); background:var(--bg); border:1px solid var(--line2); border-radius:8px; padding:2px 12px}
+.vbpic svg{width:100%; height:auto; display:block; border-radius:12px}
+.vbm.on,.vbl.on{background:var(--r); color:#231a00; border-color:var(--r)}
+.vbzoom{margin-top:10px} .vbzoom svg{width:100%; max-width:640px; height:auto; display:block; border-radius:12px; border:1px solid var(--line)}
+.datatab input.dcell{background:var(--bg); color:var(--text); border:1.5px solid var(--line2)}
+.datatab input.dcell:disabled,.datatab select.ocell:disabled{opacity:1; color:var(--text); border-color:var(--line); background:var(--panel2)}
+.datatab select.ocell,.predtab select{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); max-width:100%}
+.datachart svg,.anachart svg{width:100%; height:auto; display:block; margin-top:10px}
+.proc ul{margin:6px 0 4px; padding-left:20px}
+.ordwrap .eq{display:grid; grid-template-columns:auto minmax(0,1fr); gap:8px 12px; font-size:16px; align-items:center}
+.ordwrap .eq .zone{width:100%; min-height:42px; font-size:15px; justify-content:flex-start; text-align:left; padding:4px 10px}
+.ordwrap .chip{font-size:14px; text-align:left; border-radius:12px}
+@media (max-width:620px){ .ordwrap .eq{grid-template-columns:1fr} .ordwrap .eq .zone{font-size:13px} .predtab td,.predtab th{padding:5px} }
+
+</style>
+</head>
+<body>
+<header class="top" id="top" hidden>
+  <div class="top-in">
+    <div class="brand">Leaf disc lab (simulation)<span id="whoami"></span></div>
+    <nav class="nav" id="nav" aria-label="Worksheet parts"></nav>
+    <span class="scorepill" id="scorePill"></span>
+    <span class="savenote" id="saveNote" aria-live="polite"></span>
+    <button class="btn ghost small" id="teachBtn" type="button">Teacher</button>
+  </div>
+</header>
+
+<main>
+  <section id="start">
+    <div class="muted" style="margin-top:8px">Biology · Unit 2: Cell Transport, Photosynthesis, and Cellular Respiration · Lab simulation for students who missed the lab · about 45 minutes</div>
+    <h1>Floating Leaf Discs (simulation)</h1>
+    <p class="muted" style="font-size:18px;max-width:42em">Sink spinach leaf discs, put them under a lamp at two distances, and count how many float each minute as photosynthesis makes oxygen.<span style="display:block;font-size:14px;margin-top:8px">Standard: NGSS HS-LS1-5: photosynthesis changes light energy into stored chemical energy.</span></p>
+    <div class="card"><h3>How it works</h3>
+      <p style="margin:0">Each problem gets <b>two tries</b>. Right on either try earns full credit. If your first try is wrong, you'll be told it isn't right yet (but not the answer), so look again and try once more. Wrong twice and the problem is marked wrong and locks. Stuck? Tap <b>Hint</b> before you check.</p></div>
+    <div class="card nostore" id="noStore" hidden><h3>This browser can't save your work</h3><p style="margin:0">You may be in guest or incognito mode. Sign in to your school account and open the worksheet again.</p></div>
+    <div class="card">
+      <h3 id="signinTitle">Sign in to start</h3>
+      <div id="resumeBox" hidden><p id="resumeText"></p>
+        <div class="btnrow"><button class="btn primary" id="resumeBtn" type="button">Continue my lab</button><button class="btn ghost small" id="notMeBtn" type="button">Not you? Sign in as a different student</button></div>
+        <div class="fb no" id="resumeErr" hidden></div></div>
+      <div id="startForm">
+        <div class="formgrid">
+          <label class="field">First name<input id="fFirst" autocomplete="off"></label><label class="field">Last name<input id="fLast" autocomplete="off"></label>
+          <label class="field">Student ID<input id="fId" inputmode="numeric" autocomplete="off"></label>
+          <label class="field">Period<select id="fPeriod"></select></label><label class="field">Teacher<select id="fTeacher"></select></label>
+        </div>
+        <p class="small muted">Your work saves as you go. On any Chromebook, sign in with the same student ID and last name to pick up where you left off.</p>
+        <div class="fb no" id="formErr" hidden></div>
+        <div class="btnrow"><button class="btn primary" type="button" id="startBtn">Start the lab</button></div>
+      </div>
+    </div>
+    <p style="text-align:center"><button class="btn ghost" id="teacherLink" type="button">Teacher: enter unlock code</button></p>
+  </section>
+  <div id="ws" hidden></div>
+</main>
+
+<div class="overlay" id="teachOv" role="dialog" aria-modal="true" aria-labelledby="tTitle">
+  <div class="modal"><div id="teachLogin"><h2 id="tTitle">Teacher</h2>
+    <div class="btnrow"><input class="code" id="teachCode" type="password" placeholder="Teacher code" autocomplete="off"><button class="btn primary" id="teachGo" type="button">Open</button><button class="btn ghost" id="teachCancel" type="button">Close</button></div>
+    <div class="fb no" id="teachErr" hidden>That code didn't work.</div></div><div id="teachPanel" hidden></div></div>
+</div>
+<div class="overlay" id="tabOv" role="dialog" aria-modal="true"><div class="modal" style="max-width:520px"><h2>This lab is open in another tab</h2><p>To keep your newest work safe, this copy stopped saving. Close the extra tab, then reload this one.</p><div class="btnrow"><button class="btn primary" type="button" onclick="location.reload()">Reload with my newest work</button></div></div></div>
+
+<script src="sheets-config.js"></script>
+<script>
+(function(){
+'use strict';
+/* ============================== SETTINGS ============================== */
+const LESSON_TITLE='Photosynthesis';           // unlock code = last word of this title
+const UNLOCK_CODE=LESSON_TITLE.trim().split(/\s+/).pop();
+const TEACHER_CODE='Teacher007';   // universal teacher-tools code
+const codeIs=(v,c)=>String(v||'').trim().toLowerCase()===String(c).toLowerCase();
+const WS_ID='bio-u2-leaf-disc-lab-sim', ACTIVITY='Floating Leaf Discs Lab (simulation)';
+const BACKUP_URL='https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const SAVE_URL_BUILTIN='https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';
+const BACKUP_TEACHERS=['Austin','Mueller','McCue','Arce','Trimm','Garcia','Trimm/Callanan','Callanan'], BACKUP_PERIODS=['1','2','3','4','5','6','7','8'];
+const STORE='leafDiscLabSim_v1', RECS='leafDiscLabSim_records_v1';
+/* ===================================================================== */
+const teacherList=()=>{ try{ if(typeof TEACHERS!=='undefined'&&Array.isArray(TEACHERS)&&TEACHERS.length) return TEACHERS.map(String); }catch(e){} return BACKUP_TEACHERS; };
+const periodList=()=>{ try{ if(typeof PERIODS!=='undefined'&&Array.isArray(PERIODS)&&PERIODS.length) return PERIODS.map(String); }catch(e){} return BACKUP_PERIODS; };
+const sheetURL=()=>{ try{ if(typeof SHEETS_WEBHOOK_URL!=='undefined'&&SHEETS_WEBHOOK_URL&&String(SHEETS_WEBHOOK_URL).indexOf('PASTE')<0) return String(SHEETS_WEBHOOK_URL); }catch(e){} return BACKUP_URL; };
+const saveURL=()=>{ try{ if(typeof SAVE_WEBHOOK_URL!=='undefined'&&SAVE_WEBHOOK_URL&&String(SAVE_WEBHOOK_URL).indexOf('PASTE')<0) return String(SAVE_WEBHOOK_URL); }catch(e){} return SAVE_URL_BUILTIN; };
+const LOCKDOWN=false;   // worksheets never lock down
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const strip=s=>String(s).replace(/<[^>]+>/g,'');
+function h(tag,attrs,html){ const e=document.createElement(tag); if(attrs) for(const k in attrs){ if(attrs[k]===false||attrs[k]==null) continue; if(k==='class') e.className=attrs[k]; else if(k==='hidden') e.hidden=!!attrs[k]; else e.setAttribute(k,attrs[k]); } if(html!=null) e.innerHTML=html; return e; }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* ---------- state + saving ---------- */
+function fresh(){ return {ws:WS_ID, student:null, p:{}, ord:{}, locks:0, locked:false, lockOff:false, submittedAt:null, sentAt:null}; }
+let S; try{ S=JSON.parse(localStorage.getItem(STORE)); }catch(e){} if(!S||S.ws!==WS_ID) S=fresh();
+let STORAGE_OK=true, saveBlocked=false;
+try{ localStorage.setItem('__ps_t','1'); STORAGE_OK=localStorage.getItem('__ps_t')==='1'; localStorage.removeItem('__ps_t'); }catch(e){ STORAGE_OK=false; }
+function save(){
+  if(saveBlocked) return;
+  if(S.preview){ note('Preview: nothing is saved'); return; }
+  try{ const raw=localStorage.getItem(STORE); if(raw){ const st=JSON.parse(raw); if(st&&st.ws===WS_ID&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); return; } }
+    S.rev=(S.rev||0)+1; S.updatedAt=Date.now(); localStorage.setItem(STORE,JSON.stringify(S)); note(); cloudSave(false); }catch(e){}
+}
+window.addEventListener('storage',e=>{ if(e.key!==STORE||!e.newValue) return; try{ const st=JSON.parse(e.newValue); if(st&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); } }catch(_){} });
+const saveKey=st=>(String(st.id||'').replace(/\s+/g,'')+'-'+String(st.last||'').toLowerCase().replace(/[^a-z]/g,'')).toLowerCase();
+const checkedCount=st=>Object.values((st||S).p).filter(x=>x&&x.checked).length;
+let cloudTimer=null, cloudDirty=false, cloudBusy=false, cloudAt=null, cloudErr=false;
+const cloudOK=()=>!!saveURL()&&S.student&&!saveBlocked&&!S.preview;
+function cloudBody(){ const st=S.student||{}, sc=scoreAll();
+  return new URLSearchParams({code:saveKey(st), lesson:WS_ID, ver:String(S.updatedAt||Date.now()), prog:String((S.submittedAt?100000:0)+checkedCount(S)), studentId:st.id||'', lastName:st.last||'', firstName:st.first||'', period:st.period||'', teacher:st.teacher||'',
+    summary:S.submittedAt?`Turned in · ${sc.total}/${sc.max}`:`${checkedCount(S)} of ${PROBS.length} problems checked`, data:JSON.stringify(S)}); }
+function cloudSave(soon){ if(!cloudOK()) return; cloudDirty=true; if(soon){ clearTimeout(cloudTimer); cloudTimer=setTimeout(cloudFlush,1200); } else if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); }
+async function cloudFlush(){ cloudTimer=null; if(!cloudOK()||!cloudDirty) return; if(cloudBusy){ cloudTimer=setTimeout(cloudFlush,4000); return; } cloudBusy=true; cloudDirty=false;
+  try{ await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); cloudAt=new Date(); cloudErr=false; }catch(e){ cloudDirty=true; cloudErr=true; if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); } finally{ cloudBusy=false; note(); } }
+function cloudBeacon(){ if(!cloudOK()||!cloudDirty) return; try{ if(navigator.sendBeacon&&navigator.sendBeacon(saveURL(),cloudBody())) cloudDirty=false; }catch(e){} }
+async function cloudLoad(st){ const ctrl=new AbortController(), t=setTimeout(()=>ctrl.abort(),5000);
+  try{ const r=await fetch(saveURL()+'?'+new URLSearchParams({code:saveKey(st),lesson:WS_ID}),{signal:ctrl.signal}); const j=await r.json(); if(j&&j.found&&j.data){ const d=JSON.parse(j.data); if(d&&d.ws===WS_ID) return {status:'found',data:d}; } return {status:'none'}; }
+  catch(e){ return {status:'error'}; } finally{ clearTimeout(t); } }
+function adopt(ns){ let sr=0; try{ const raw=localStorage.getItem(STORE); if(raw) sr=JSON.parse(raw).rev||0; }catch(e){} ns.rev=Math.max(ns.rev||0,sr); S=ns; saveBlocked=false; save(); }
+function note(msg){ const n=$('#saveNote'); if(!n) return; const tm=d=>d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}); n.textContent=msg||(cloudErr?'✓ Saved on this Chromebook':'✓ Saved '+tm(new Date())+(cloudAt?' · backed up '+tm(cloudAt):'')); }
+document.addEventListener('visibilitychange',()=>{ if(document.hidden){ save(); cloudBeacon(); } });
+window.addEventListener('pagehide',()=>{ save(); cloudBeacon(); });
+
+/* ============================== DIAGRAMS ============================== */
+/* ============================== PROBLEMS ============================== */
+const PARTS=[
+ {k:'P1', label:'Setup', title:'Purpose and setup', min:8, icon:'<path d="M9 2.5h6M10 2.5v6.5L5 18.5A2 2 0 0 0 6.8 21.5h10.4a2 2 0 0 0 1.8-3L14 9V2.5"/><path d="M7.5 15h9"/>'},
+ {k:'P2', label:'Predict', title:'Predict', min:5, icon:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z"/>'},
+ {k:'P3', label:'Experiment', title:'Experiment and data', min:15, icon:'<path d="M8 2.5v15a3 3 0 0 0 6 0v-15"/><path d="M7 2.5h8"/><path d="M8 11h6"/><path d="M18 6v12M17 8h2M17 12h2M17 16h2"/>'},
+ {k:'P4', label:'Analysis', title:'Analysis', min:15, icon:'<path d="M3 21h18"/><rect x="5" y="12" width="3" height="7"/><rect x="10.5" y="7" width="3" height="12"/><rect x="16" y="14" width="3" height="5"/>'},
+ {k:'P5', label:'Conclusion', title:'Conclusion (CER)', min:8, icon:'<path d="M4 4h12l4 4v12H4z"/><path d="M8 11h8M8 15h6"/>'},
+ {k:'P6', label:'Grade', title:'Your grade', min:1, icon:'<rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4V2.5h6V4"/><path d="M8.5 13l2.5 2.5 4.5-5"/>'}
+];
+const ico=(i,s)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PARTS[i].icon}</svg>`;
+const PROBS=[];   // every problem: {id, part, max, score(), key()}
+
+function probShell(parent, part, num, q, pts){
+  const box=h('div',{class:'prob'}); parent.appendChild(box);
+  box.innerHTML=`<div class="pq"><span class="pnum">${num}.</span> ${q} <span class="pts">(${pts} pt${pts>1?'s':''})</span></div>`;
+  return box;
+}
+function actions(box, o){ // Hint + Check buttons + feedback
+  const row=h('div',{class:'btnrow'}); const hb=h('button',{class:'btn ghost small',type:'button'},'Hint'); const cb=h('button',{class:'btn primary small',type:'button'},'Check');
+  row.append(hb,cb); box.appendChild(row);
+  const hint=h('div',{class:'hintbox',hidden:true},'💡 '+o.hint); box.appendChild(hint);
+  const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'}); box.appendChild(fb);
+  hb.addEventListener('click',()=>{ hint.hidden=!hint.hidden; });
+  return {row,hb,cb,hint,fb};
+}
+const st=id=>S.p[id]||(S.p[id]={});
+/* Two tries per problem. Right on try 1 or 2 = full credit. Wrong twice = marked wrong (credit for parts right on try 2).
+   The correct answer is never shown. */
+function gradeTry(P,res,max){ const n=res.filter(Boolean).length; P.tries=(P.tries||0)+1;
+  if(n===max){ P.first=max; P.checked=true; P.right=true; }
+  else if(P.tries>=2){ P.first=n; P.checked=true; P.right=false; }
+  return n===max; }
+function showTry(ui,P,max,doneText){
+  if(P.checked&&P.right){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML=`<b>Correct!</b> ${doneText||''}`; }
+  else if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`<b>Marked wrong.</b> You earned ${P.first} of ${max} point${max>1?'s':''}. Ask your teacher if you'd like to try it again.`; }
+  else if(P.tries===1){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=max>1?'<b>Not quite.</b> Something isn\'t right yet. You have <b>one more try</b>.':'<b>Not quite.</b> You have <b>one more try</b>.'; }
+  else ui.fb.hidden=true;
+  if(ui.cb) ui.cb.textContent=P.checked?'Checked':(P.tries===1?'Check (last try)':'Check'); }
+
+/* ---------- drag onto a diagram (or into equation slots) ---------- */
+function dragProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.zones.length);
+  let fig;
+  if(o.equation){ fig=h('div',{class:'eq'}); box.appendChild(fig); }
+  else { fig=h('div',{class:'figwrap'}); fig.innerHTML=o.svg; box.appendChild(fig); }
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.chips.map((_,i)=>i)));
+  const zoneEls={};
+  const groupAns=g=>o.zones.filter(z=>z.group===g).map(z=>z.ans);
+  if(o.equation){ o.layout.forEach(item=>{ if(typeof item==='string'){ fig.appendChild(h('span',null,item)); } else { const z=o.zones[item]; const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans}); fig.appendChild(b); zoneEls[z.id]=b; } }); }
+  else o.zones.forEach(z=>{ const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans});
+    b.style.left=(z.x/o.vb[0]*100)+'%'; b.style.top=(z.y/o.vb[1]*100)+'%'; b.style.width=((z.w||130)/o.vb[0]*100)+'%'; fig.appendChild(b); zoneEls[z.id]=b; });
+  function placedChips(){ return new Set(Object.values(P.place)); }
+  function render(){
+    const used=placedChips();
+    pool.innerHTML='<div class="lbl">Tap a label, then tap a box (or drag it). Tap a filled box to take its label back.</div>';
+    order.forEach(ci=>{ if(used.has(ci)) return; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true'},o.chips[ci]); c.disabled=!!P.checked;
+      c.addEventListener('click',()=>{ sel=sel===ci?null:ci; render(); });
+      c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+      pool.appendChild(c); });
+    if(P.checked&&!pool.querySelector('.chip')) pool.hidden=true;
+    o.zones.forEach(z=>{ const b=zoneEls[z.id]; const ci=P.place[z.id];
+      b.className='zone'+(ci==null?' empty':' filled')+(P.checked?' locked':'');
+      if(ci==null) b.innerHTML=z.ph||'drop here';
+      else b.innerHTML=o.chips[ci];
+      b.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; ui.hb.disabled=!!P.checked&&false;
+    showTry(ui,P,o.zones.length,o.done);
+  }
+  o.zones.forEach(z=>{ const b=zoneEls[z.id];
+    const drop=ci=>{ if(P.checked) return; if(ci==null){ if(P.place[z.id]!=null){ delete P.place[z.id]; save(); render(); } return; }
+      for(const k in P.place) if(P.place[k]===ci) delete P.place[k];
+      P.place[z.id]=ci; sel=null; save(); render(); };
+    b.addEventListener('click',()=>drop(sel));
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  ui.cb.addEventListener('click',()=>{
+    if(P.checked) return;
+    const empty=o.zones.filter(z=>P.place[z.id]==null).length;
+    if(empty){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill every box before you check. ${empty} still empty.`; return; }
+    const res={}; const usedInGroup={};
+    o.zones.forEach(z=>{ const t=o.chips[P.place[z.id]];
+      if(z.group){ const ans=groupAns(z.group); usedInGroup[z.group]=usedInGroup[z.group]||[]; const ok=ans.includes(t)&&!usedInGroup[z.group].includes(t); if(ok) usedInGroup[z.group].push(t); res[z.id]=ok; }
+      else res[z.id]=t===z.ans; });
+    gradeTry(P,Object.values(res),o.zones.length); save(); cloudSave(true); render(); refresh();
+  });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.zones.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- sort into bins ---------- */
+function binProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.items.length);
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const bins=h('div',{class:'bins',style:`grid-template-columns:repeat(${o.bins.length},minmax(0,1fr))`}); box.appendChild(bins);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.items.map((_,i)=>i)));
+  const binEls={};
+  o.bins.forEach(bn=>{ const b=h('div',{class:'bin',role:'button',tabindex:'0'},`<h4>${bn.label}</h4><div class="bchips"></div>`); bins.appendChild(b); binEls[bn.k]=b;
+    const drop=ci=>{ if(P.checked||ci==null) return; P.place[ci]=bn.k; sel=null; save(); render(); };
+    b.addEventListener('click',e=>{ if(e.target.closest('.chip')) return; drop(sel); });
+    b.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); drop(sel); } });
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  const binLabel=k=>(o.bins.find(b=>b.k===k)||{}).label;
+  function chipEl(ci,inBin){ const it=o.items[ci]; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true','data-key':binLabel(it.k)},it.t);
+    
+    c.disabled=!!P.checked;
+    c.addEventListener('click',e=>{ if(P.checked) return; if(inBin){ e.stopPropagation(); if(sel!=null&&sel!==ci){ P.place[sel]=P.place[ci]; sel=null; save(); render(); return; } delete P.place[ci]; save(); render(); return; } sel=sel===ci?null:ci; render(); });
+    c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+    return c; }
+  function render(){
+    pool.innerHTML='<div class="lbl">Tap an item, then tap the box it belongs in (or drag it). Tap a sorted item to take it back.</div>';
+    order.forEach(ci=>{ if(P.place[ci]==null) pool.appendChild(chipEl(ci,false)); });
+    pool.hidden=!!P.checked;
+    o.bins.forEach(bn=>{ const holder=$('.bchips',binEls[bn.k]); holder.innerHTML=''; order.forEach(ci=>{ if(P.place[ci]===bn.k) holder.appendChild(chipEl(ci,true)); }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,o.items.length,o.done);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const left=o.items.filter((_,i)=>P.place[i]==null).length;
+    if(left){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Sort every item before you check. ${left} still left.`; return; }
+    const res=o.items.map((it,i)=>P.place[i]===it.k); gradeTry(P,res,o.items.length); save(); cloudSave(true); render(); refresh(); });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.items.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- choice problems: one, two-part, or select-all ---------- */
+function choiceProblem(parent, o){   // o.parts: [{q, opts, ans (index or array for select-all)}]
+  const P=st(o.id); P.pick=P.pick||{};
+  const max=o.parts.length;
+  const box=probShell(parent,o.part,o.num,o.q,max);
+  const groups=[];
+  o.parts.forEach((pt,pi)=>{
+    const multi=Array.isArray(pt.ans);
+    if(pt.q) box.insertAdjacentHTML('beforeend',`<div style="margin:10px 0 4px">${pt.q}${multi?' <span class="small muted">(Select all that apply.)</span>':''}</div>`);
+    const ordKey=o.id+'_'+pi; const order=S.ord[ordKey]||(S.ord[ordKey]=shuffle(pt.opts.map((_,i)=>i)));
+    const wrap=h('div',{class:'opts'}); box.appendChild(wrap);
+    const btns={};
+    order.forEach((oi,pos)=>{ const correct=multi?pt.ans.includes(oi):oi===pt.ans;
+      const b=h('button',{class:'opt'+(multi?' multi':''),type:'button'},`<span class="L">${'ABCDEF'[pos]}</span><span>${pt.opts[oi]}</span>`); if(correct) b.dataset.key='1';
+      b.addEventListener('click',()=>{ if(P.checked) return; if(multi){ const s=new Set(P.pick[pi]||[]); s.has(oi)?s.delete(oi):s.add(oi); P.pick[pi]=[...s]; } else P.pick[pi]=oi; save(); paint(); });
+      wrap.appendChild(b); btns[oi]=b; });
+    groups.push({pt,multi,btns});
+  });
+  const ui=actions(box,o);
+  function gradePart(g,pi){ const pk=P.pick[pi]; if(g.multi){ const s=new Set(pk||[]); return g.pt.ans.length===s.size&&g.pt.ans.every(a=>s.has(a)); } const ans=g.pt.ansFn?g.pt.ansFn():g.pt.ans; return pk===ans; }
+  function paint(){
+    groups.forEach((g,pi)=>{ const pk=P.pick[pi];
+      Object.entries(g.btns).forEach(([oi,b])=>{ oi=+oi; const picked=g.multi?(pk||[]).includes(oi):pk===oi; const correct=g.multi?g.pt.ans.includes(oi):oi===g.pt.ans;
+        b.className='opt'+(g.multi?' multi':'')+(picked?' sel':'')+(P.checked&&P.right&&picked?' ok':''); b.disabled=!!P.checked; }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,max,o.why);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const blank=groups.some((g,pi)=>g.multi?!(P.pick[pi]||[]).length:P.pick[pi]==null);
+    if(blank){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Answer every part before you check.'; return; }
+    gradeTry(P,groups.map((g,pi)=>gradePart(g,pi)),max); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- typed blanks (two tries, like every problem) ---------- */
+function typedProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.blanks.length);
+  const inputs=o.blanks.map((bl,i)=>{ const row=h('div',{class:'brow'}); row.innerHTML=`${bl.before} <input class="blank" type="text" aria-label="${esc(strip(bl.before))}" data-key="${esc(bl.show)}"><span class="keytxt">${bl.show}</span> ${bl.after||''}`; box.appendChild(row);
+    const inp=$('input',row); inp.value=P.val[i]||''; inp.addEventListener('input',()=>{ P.val[i]=inp.value; save(); }); return inp; });
+  const ui=actions(box,o);
+  const ok=(bl,v)=>{ v=String(v||'').trim().toLowerCase(); if(bl.calc){ const n=parseFloat(v.replace(/[\u2212\u2013\u2014]/g,'-').replace(/[^0-9.\-]/g,'')); const t=bl.calc(); return !isNaN(n)&&t!=null&&!isNaN(t)&&Math.abs(n-t)<=(bl.tol==null?0.15:bl.tol); } if(bl.num){ const n=parseFloat(v.replace(/[\u2212\u2013\u2014]/g,'-').replace(/[^0-9.\-]/g,'')); return !isNaN(n)&&n>=bl.num[0]&&n<=bl.num[1]; } return bl.accept.some(a=>v.replace(/\s+/g,' ')===a); };
+  function paint(){ inputs.forEach(inp=>{ inp.classList.remove('ok','no'); if(P.checked&&P.right) inp.classList.add('ok'); inp.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; showTry(ui,P,o.blanks.length,''); }
+  ui.cb.addEventListener('click',()=>{
+    if(inputs.some(inp=>!inp.value.trim())){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Fill in every blank before you check.'; return; }
+    if(P.checked) return;
+    const res=o.blanks.map((bl,i)=>ok(bl,inputs[i].value));
+    gradeTry(P,res,o.blanks.length); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.blanks.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- written answer, scored by key ideas (two tries, like every problem) ---------- */
+function writtenProblem(parent, o){
+  const P=st(o.id); if(P.val==null) P.val='';
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const ta=h('textarea',{class:'wtext',rows:'5','aria-label':'Your answer','data-key':o.model}); ta.value=P.val; box.appendChild(ta);
+  box.appendChild(h('div',{class:'wkey'},'<b>Key:</b> '+o.model));
+  if(o.bank){ const wb=h('div',{class:'wbank2'}); wb.innerHTML='<b>Word bank</b> <span class="small muted">(tap a word to add it)</span><br>'+o.bank.map(w=>`<button type="button" class="wchip">${w}</button>`).join('');
+    box.appendChild(wb);
+    wb.querySelectorAll('.wchip').forEach(c=>c.addEventListener('click',()=>{ if(ta.disabled) return; const w=c.textContent; const a=ta.selectionStart??ta.value.length, b=ta.selectionEnd??ta.value.length;
+      const before=ta.value.slice(0,a), after=ta.value.slice(b); const pre=(before&&!/\s$/.test(before))?' ':''; const ins=pre+w+' ';
+      ta.value=before+ins+after; ta.focus(); const p=a+ins.length; ta.setSelectionRange(p,p); ta.dispatchEvent(new Event('input',{bubbles:true})); })); }
+  ta.addEventListener('input',()=>{ P.val=ta.value; save(); });
+  const ui=actions(box,o);
+  const grade=()=>{ const t=ta.value.toLowerCase(); const hits=o.groups.filter(g=>g[1].test(t)).length; const n=Math.min(o.pts,hits); return Array.from({length:o.pts},(_,i)=>i<n); };
+  function paint(){ ta.disabled=!!P.checked; ui.cb.disabled=!!P.checked; showTry(ui,P,o.pts,o.why); }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(ta.value.trim().split(/\s+/).length<5){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Write a full answer (at least one complete sentence) before you check.'; return; }
+    gradeTry(P,grade(),o.pts); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- predictions: saved once, completion credit, never marked wrong ---------- */
+function predictProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.rows.length);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb predtab"><tr><th>${o.rowsLabel||'Tube'}</th><th>Setup</th><th>My prediction</th></tr>${o.rows.map((r,i)=>`<tr><td><b>${r.id}</b></td><td>${r.desc}</td><td><select data-i="${i}" aria-label="Prediction for ${r.id}"><option value="">choose…</option>${o.choices.map(c=>`<option>${c}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select')];
+  sels.forEach((sl,i)=>{ sl.value=P.val[i]||''; sl.addEventListener('change',()=>{ P.val[i]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Lock in my predictions';
+  function paint(){ sels.forEach(sl=>sl.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Predictions saved.</b> You\'ll compare them with your results later. Your observation table on page 3 is now unlocked.'; ui.cb.textContent='Predictions locked'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(sels.some(sl=>!sl.value)){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Choose a prediction for every tube first.'; return; }
+    if(!confirm('Lock in your predictions? You can\'t change them after this.')) return;
+    P.first=o.rows.length; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.rows.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- lab data table: groups type their own measurements; graph builds from them ---------- */
+function dataTableProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const cells=o.rows.length*o.cols.length;
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb datatab"><tr><th>${o.corner}</th>${o.cols.map(c=>`<th>${c}</th>`).join('')}</tr>${o.rows.map((r,i)=>`<tr><td><b>${r}</b></td>${o.cols.map((c,j)=>`<td><input class="dcell" inputmode="decimal" data-r="${i}" data-c="${j}" aria-label="${r}, ${c}"></td>`).join('')}</tr>`).join('')}</table>`;
+  const ins=[...wrap.querySelectorAll('input.dcell')];
+  const chart=h('div',{class:'datachart'}); box.appendChild(chart);
+  ins.forEach(inp=>{ const k=inp.dataset.r+'_'+inp.dataset.c; inp.value=P.val[k]??''; inp.addEventListener('input',()=>{ P.val[k]=inp.value; save(); draw(); }); });
+  function draw(){ chart.innerHTML=o.chart(P.val); }
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Save my data';
+  function paint(){ ins.forEach(i=>i.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Data saved.</b> Your analysis questions use these numbers.'; ui.cb.textContent='Data saved'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const bad=ins.filter(i=>i.value.trim()===''||isNaN(parseFloat(i.value)));
+    if(bad.length){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill in every box with a number first (${bad.length} still empty).`; bad[0].focus(); return; }
+    if(!confirm('Save your data? You can\'t change it after this, and your analysis will use these numbers.')) return;
+    P.first=o.pts; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  draw(); paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- observation table: each row has its own menu; completion credit when saved ---------- */
+function obsTableProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb datatab"><tr><th>Observation</th><th>What you saw</th></tr>${o.rows.map((r,i)=>`<tr><td>${r.q}</td><td><select class="ocell" data-r="${i}" aria-label="${r.q.replace(/<[^>]+>/g,'')}"><option value="">choose…</option>${r.opts.map(x=>`<option>${x}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select.ocell')];
+  sels.forEach(sl=>{ const k=sl.dataset.r; sl.value=P.val[k]||''; sl.addEventListener('change',()=>{ P.val[k]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Save my observations';
+  function paint(){ sels.forEach(s=>s.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Observations saved.</b> Your analysis questions use them.'; ui.cb.textContent='Observations saved'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const bad=sels.filter(s=>!s.value); if(bad.length){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Choose an answer in every row first (${bad.length} still empty).`; return; }
+    if(!confirm('Save your observations? You can\'t change them after this, and your analysis will use them.')) return;
+    P.first=o.pts; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ============================== WORKSHEET CONTENT ============================== */
+/* ===== shared helpers for the Unit 2 lab simulations (osmosis, leaf discs, dialysis) ===== */
+const f1=v=>(+v).toFixed(1), f2=v=>(+v).toFixed(2);
+let UIDN=0; const uid=p=>p+'_'+(++UIDN);
+const tx=(x,y,t,fs,col,anchor,bold)=>`<text x="${x}" y="${y}" text-anchor="${anchor||'middle'}" font-size="${fs||14}" fill="${col||'#e8eef8'}"${bold?' font-weight="700"':''}>${t}</text>`;
+function rng(seed){ let s=seed%233280; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
+function hashStr(s){ let x=2166136261; for(const ch of String(s)){ x^=ch.charCodeAt(0); x=Math.imul(x,16777619); } return x>>>0; }
+function mulberry(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const easeOut=t=>1-Math.pow(1-clamp(t,0,1),2.4);
+const fmtClock=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
+function arw(x1,y1,x2,y2,col,w){ w=w||2.4; const a=Math.atan2(y2-y1,x2-x1), L=w*3+6, bx=x2-Math.cos(a)*L, by=y2-Math.sin(a)*L;
+  return `<line x1="${f1(x1)}" y1="${f1(y1)}" x2="${f1(bx)}" y2="${f1(by)}" stroke="${col}" stroke-width="${w}"/><path d="M${f1(x2)},${f1(y2)} L${f1(bx+Math.sin(a)*L*0.55)},${f1(by-Math.cos(a)*L*0.55)} L${f1(bx-Math.sin(a)*L*0.55)},${f1(by+Math.cos(a)*L*0.55)}Z" fill="${col}"/>`; }
+const mkr=(x,y,n,r)=>{ r=r||14; return `<circle cx="${f1(x)}" cy="${f1(y)}" r="${r}" fill="#ffd35c" stroke="#16213a" stroke-width="2"/>`+tx(f1(x),f1(y+r*0.4),n,r*1.15,'#16213a',null,true); };
+
+/* ---------- equipment ---------- */
+function beakerG(x,yb,o){ const w=o.w||64, hh=o.h||82, L=x-w/2, R=x+w/2, T=yb-hh, lv=yb-hh*(o.lvl==null?.6:o.lvl), cid=uid('bk'), gid=uid('bg');
+  const inner=`M${L+2},${T+4} L${L+2},${yb-7} Q${L+2},${yb-2} ${L+7},${yb-2} L${R-7},${yb-2} Q${R-2},${yb-2} ${R-2},${yb-7} L${R-2},${T+4} Z`;
+  let g=`<defs><clipPath id="${cid}"><path d="${inner}"/></clipPath><linearGradient id="${gid}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffffff" stop-opacity=".5"/><stop offset=".25" stop-color="#ffffff" stop-opacity="0"/><stop offset=".8" stop-color="#ffffff" stop-opacity="0"/><stop offset="1" stop-color="#94a3b8" stop-opacity=".25"/></linearGradient></defs>`;
+  g+=`<ellipse cx="${x}" cy="${yb+2}" rx="${w/2+4}" ry="4" fill="#000" opacity=".12"/>`;
+  g+=`<g clip-path="url(#${cid})"><rect x="${L}" y="${f1(lv)}" width="${w}" height="${f1(yb-lv)}" fill="${o.liq||'#cfe8fb'}" opacity="${o.op||.75}"/><path d="M${L},${f1(lv)} L${R},${f1(lv)}" stroke="${o.edge||'#93c5fd'}" stroke-width="1.5" opacity=".9"/>${o.inner?o.inner(L,R,lv,yb):''}</g>`;
+  g+=`<path d="M${L-3},${T} Q${L},${T+1} ${L},${T+6} L${L},${yb-6} Q${L},${yb} ${L+6},${yb} L${R-6},${yb} Q${R},${yb} ${R},${yb-6} L${R},${T+2}" fill="url(#${gid})" stroke="#64748b" stroke-width="1.8" stroke-linejoin="round"/>`;
+  if(o.grad!==false) for(let i=1;i<=3;i++){ const yy=yb-hh*0.22*i; g+=`<line x1="${R-12}" y1="${f1(yy)}" x2="${R-4}" y2="${f1(yy)}" stroke="#64748b" stroke-width="1"/>`; }
+  return g; }
+function balanceG(x,yb,reading,o){ o=o||{}; const w=o.w||150; return `<rect x="${x-w/2}" y="${yb-46}" width="${w}" height="46" rx="8" fill="#e5e7eb" stroke="#475569" stroke-width="1.6"/><rect x="${x-w*0.4}" y="${yb-58}" width="${w*0.8}" height="10" rx="4" fill="#cbd5e1" stroke="#475569"/>
+  <rect x="${x-46}" y="${yb-36}" width="92" height="26" rx="4" fill="#0f172a"/><text x="${x+40}" y="${yb-17}" font-family="Consolas,monospace" font-size="17" fill="#86efac" text-anchor="end">${reading}</text><circle cx="${x+w/2-14}" cy="${yb-23}" r="5" fill="#64748b"/>`; }
+function rulerH(x,y,len,mm,o){ o=o||{}; const hgt=o.h||30; let g=`<rect x="${x-6}" y="${y}" width="${len*mm+12}" height="${hgt}" rx="3" fill="#fde68a" stroke="#b45309" stroke-width="1.2"/>`;
+  for(let i=0;i<=len;i++){ const xx=x+i*mm, L=i%10===0?hgt*0.55:i%5===0?hgt*0.4:hgt*0.25;
+    g+=`<line x1="${f1(xx)}" y1="${y}" x2="${f1(xx)}" y2="${f1(y+L)}" stroke="#422006" stroke-width="${i%10===0?1.4:.8}"/>`;
+    if(i%10===0) g+=`<text x="${f1(xx)}" y="${f1(y+hgt-4)}" text-anchor="middle" font-size="${o.fs||11}" fill="#422006">${i}</text>`; }
+  return g+`<text x="${f1(x+len*mm+12)}" y="${f1(y+hgt/2+5)}" text-anchor="start" font-size="${o.fs||11}" fill="#422006" font-weight="700">mm</text>`; }
+function clockG(x,y,r,frac,label){ const a=frac*2*Math.PI*24, b=frac*2*Math.PI*2; return `<circle cx="${x}" cy="${y}" r="${r}" fill="#f8fafc" stroke="#334155" stroke-width="2.5"/>${[...Array(12)].map((_,i)=>{ const t=i/12*2*Math.PI; return `<line x1="${f1(x+Math.sin(t)*r*.8)}" y1="${f1(y-Math.cos(t)*r*.8)}" x2="${f1(x+Math.sin(t)*r*.92)}" y2="${f1(y-Math.cos(t)*r*.92)}" stroke="#334155" stroke-width="1.5"/>`; }).join('')}
+  <line x1="${x}" y1="${y}" x2="${f1(x+Math.sin(a)*r*.75)}" y2="${f1(y-Math.cos(a)*r*.75)}" stroke="#0f172a" stroke-width="2"/><line x1="${x}" y1="${y}" x2="${f1(x+Math.sin(b)*r*.5)}" y2="${f1(y-Math.cos(b)*r*.5)}" stroke="#0f172a" stroke-width="3"/><circle cx="${x}" cy="${y}" r="3" fill="#0f172a"/>${label?tx(x,y+r+16,label,12.5,'#334155',null,true):''}`; }
+
+/* ---------- reading the student's tables ---------- */
+const cellv=(v,r,c)=>{ const x=parseFloat((v||{})[r+'_'+c]); return isNaN(x)?null:x; };
+
+/* ---------- charts drawn only from numbers the student typed ---------- */
+const CCOL=['#93c5fd','#5fe3a9','#fb923c','#f87171','#c4b5fd'];
+const niceStep=span=>span<=2?0.5:span<=5?1:span<=12?2:span<=30?5:span<=60?10:span<=150?20:span<=300?50:100;
+function barChart(groups,o){ o=o||{}; const W=680,H=340,X0=78,X1=660,Y0=272,Y1=56; const vals=groups.flatMap(g=>g.vals.filter(v=>v!=null));
+  let mx=Math.max(o.min0===false?0:1,...vals,0), mn=Math.min(0,...vals); const step=niceStep(mx-mn); mx=Math.ceil(mx/step)*step||step; mn=Math.floor(mn/step)*step;
+  const y=v=>Y0-(Y0-Y1)*(v-mn)/(mx-mn), gw=(X1-X0)/groups.length, nb=groups[0].vals.length, bw=gw*0.7/nb;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${o.aria||'Bar graph from your data table.'}"><rect width="${W}" height="${H}" rx="12" fill="#0f1b2e"/>`+tx(W/2,28,o.title||'',14.5,'#ffd35c',null,true);
+  for(let k=mn;k<=mx+1e-9;k+=step) s+=`<line x1="${X0}" y1="${f1(y(k))}" x2="${X1}" y2="${f1(y(k))}" stroke="${Math.abs(k)<1e-9?'#a3b4cf':'#2a3d5f'}" stroke-width="${Math.abs(k)<1e-9?1.6:1}"/>`+tx(X0-8,f1(y(k)+4),+k.toFixed(2),12,'#a3b4cf','end');
+  s+=`<text x="22" y="${(Y0+Y1)/2}" font-size="13" fill="#a3b4cf" transform="rotate(-90 22 ${(Y0+Y1)/2})" text-anchor="middle">${o.ylab||''}</text>`;
+  groups.forEach((g,gi)=>{ const cx=X0+gw*gi+gw/2; s+=tx(f1(cx),Y0+22,g.label,13,'#e8eef8');
+    g.vals.forEach((v,j)=>{ if(v==null) return; const x=cx-nb*bw/2+j*bw, top=y(Math.max(v,0)), bot=y(Math.min(v,0)), col=(o.cols||CCOL)[nb>1?j:gi%5];
+      s+=`<rect class="abar" x="${f1(x+2)}" y="${f1(top)}" width="${f1(bw-4)}" height="${f1(Math.max(1,bot-top))}" rx="3" fill="${col}" opacity=".8"/>`+tx(f1(x+bw/2),f1(v>=0?top-6:bot+15),+v.toFixed(o.dec==null?1:o.dec),11.5,'#e8eef8',null,true); }); });
+  if(o.legend) s+=o.legend.map((l,j)=>`<rect x="${X0+60+j*170}" y="${H-24}" width="14" height="14" rx="3" fill="${(o.cols||CCOL)[j]}"/>`+tx(X0+80+j*170,H-12,l,12.5,'#a3b4cf','start')).join('');
+  return s+'</svg>'; }
+function lineChart(series,o){ const W=680,H=340,X0=70,X1=650,Y0=270,Y1=50; const xm=o.xmax, ym=o.ymax, X=v=>X0+(X1-X0)*v/xm, Y=v=>Y0-(Y0-Y1)*v/ym;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${o.aria||'Line graph from your data table.'}"><rect width="${W}" height="${H}" rx="12" fill="#0f1b2e"/>`+tx(W/2,28,o.title||'',14.5,'#ffd35c',null,true);
+  for(let k=0;k<=ym;k+=o.ystep) s+=`<line x1="${X0}" y1="${f1(Y(k))}" x2="${X1}" y2="${f1(Y(k))}" stroke="#2a3d5f"/>`+tx(X0-8,f1(Y(k)+4),k,12,'#a3b4cf','end');
+  for(let k=0;k<=xm;k+=o.xstep) s+=tx(f1(X(k)),Y0+20,k,12,'#a3b4cf');
+  if(o.hline!=null) s+=`<line x1="${X0}" y1="${f1(Y(o.hline))}" x2="${X1}" y2="${f1(Y(o.hline))}" stroke="#ffd35c" stroke-dasharray="6 4" stroke-width="1.5"/>`+tx(X1,f1(Y(o.hline)-6),o.hlab||'',12,'#ffd35c','end');
+  s+=tx((X0+X1)/2,H-14,o.xlab,13,'#a3b4cf')+`<text x="20" y="${(Y0+Y1)/2}" font-size="13" fill="#a3b4cf" transform="rotate(-90 20 ${(Y0+Y1)/2})" text-anchor="middle">${o.ylab}</text>`;
+  series.forEach((S,i)=>{ const pts=S.pts.filter(p=>p[1]!=null); if(pts.length>1) s+=`<polyline points="${pts.map(p=>f1(X(p[0]))+','+f1(Y(p[1]))).join(' ')}" fill="none" stroke="${S.col}" stroke-width="2.5"/>`;
+    pts.forEach(p=>s+=`<circle class="tdot" cx="${f1(X(p[0]))}" cy="${f1(Y(p[1]))}" r="5" fill="${S.col}" stroke="#0f1b2e" stroke-width="1.5"/>`);
+    s+=`<rect x="${X0+20+i*200}" y="${Y1-26}" width="14" height="4" fill="${S.col}"/>`+tx(X0+40+i*200,Y1-20,S.name,12.5,'#e8eef8','start'); });
+  return s+`<line x1="${X0}" y1="${Y0}" x2="${X1}" y2="${Y0}" stroke="#a3b4cf" stroke-width="1.5"/></svg>`; }
+
+/* ---------- answer keys that follow the student's own data ---------- */
+const LIVE=[];
+function liveChoice(parent,o){ choiceProblem(parent,o); LIVE.push({box:parent.lastElementChild, parts:o.parts}); }
+function liveKeys(){ LIVE.forEach(({box,parts})=>{ const wraps=box.querySelectorAll('.opts');
+  parts.forEach((pt,pi)=>{ if(!pt.ansFn) return; const want=pt.opts[pt.ansFn()]; wraps[pi].querySelectorAll('.opt').forEach(b=>{ const t=b.children[1]?b.children[1].innerHTML:''; if(t===want) b.dataset.key='1'; else delete b.dataset.key; }); }); }); }
+window.__TY={};
+function calcProblem(parent,o){ typedProblem(parent,o); parent.lastElementChild.dataset.pid=o.id; window.__TY[o.id]=()=>o.blanks.map(b=>b.calc()); }
+function teacherNote(html){ const tp=document.getElementById('teachPanel'); if(!tp||!window.MutationObserver||tp.dataset.ln) return; tp.dataset.ln='1';
+  new MutationObserver(()=>{ if(tp.firstElementChild&&!tp.querySelector('.labnote')){ const d=document.createElement('div'); d.className='labnote'; d.innerHTML=html; tp.appendChild(d); } }).observe(tp,{childList:true}); }
+const simSeed=V=>{ if(V.seed==null){ const stu=S.student||{}; V.seed=hashStr((stu.id||'')+'|'+(stu.last||'').toLowerCase()+'|'+WS_ID); } return V.seed; };
+
+/* ---------- generic virtual bench: steps, animation, measuring views, look again ----------
+   cfg: steps [{name, btn, text(ran), dur, total(sec shown on clock)}], scene(i,prog)->svg, onRun(i) (makes the numbers), measures(i)->[{label, html}] */
+function makeBench(s,cfg){
+  const V=st('vsim'); if(V.k==null){ V.k=0; V.ran=false; }
+  const bench=h('div',{class:'vbench'}); s.appendChild(bench);
+  bench.innerHTML=`<h3 style="margin:0 0 6px">Virtual lab bench</h3><div class="isstat"><span id="vbStep"></span><span class="isclock" id="vbClock">0:00</span></div>
+    <div class="vbpic" id="vbPic"></div><p id="vbTxt" style="margin:8px 0"></p>
+    <div class="btnrow"><button class="btn primary" id="vbRun" type="button"></button><button class="btn primary" id="vbNext" type="button"></button><button class="btn ghost" id="vbBack" type="button">Back to the current step</button><label class="small muted" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="vbFast"> Fast animation</label></div>
+    <div id="vbMeas"></div><div id="vbLook"></div>`;
+  const bq=q=>bench.querySelector(q); let anim=false, timer=null, view=null, sel=null; const N=cfg.steps.length;
+  const cur=()=>V.k, vIdx=()=>view!=null?view:Math.min(cur(),N-1), hasRun=i=>i<cur()||(i===cur()&&V.ran);
+  function paint(prog){ const i=vIdx(), g=cfg.steps[i], live=view==null||view===cur();
+    bq('#vbPic').innerHTML=cfg.scene(i,prog!=null?prog:(hasRun(i)?1:0));
+    bq('#vbStep').textContent=cur()>=N&&view==null?'Procedure complete':`Step ${i+1} of ${N}${live?'':' (looking again)'}`;
+    bq('#vbTxt').innerHTML=cur()>=N&&view==null?'Procedure complete. Fill in the tables below. Use <b>Look again</b> to see any step and measure again.':live?g.text(hasRun(i)):`You are looking again at <b>${g.name}</b>.`;
+    if(!anim) bq('#vbClock').textContent=hasRun(i)?(g.clock||fmtClock(g.total||0)):'0:00';
+    const k=cur(), pre=!st('pred').checked, atCur=view==null&&k<N, runB=bq('#vbRun'), nxB=bq('#vbNext');
+    runB.hidden=!(atCur&&!V.ran); runB.disabled=anim||pre; runB.textContent=atCur?cfg.steps[k].btn:'';
+    nxB.hidden=!(atCur&&V.ran); nxB.disabled=anim; nxB.textContent=k+1>=N?'Finish the procedure':'Next: '+cfg.steps[k+1].name;
+    bq('#vbBack').hidden=view==null;
+    const ms=(!anim&&hasRun(i)&&cfg.measures)?cfg.measures(i):[];
+    bq('#vbMeas').innerHTML=ms.length?`<div class="small" style="font-weight:600;margin:12px 0 6px">${cfg.measLabel||'Measure:'}</div><div class="btnrow" style="margin-top:0">${ms.map((m,j)=>`<button class="btn ghost small vbm${sel===j?' on':''}" data-j="${j}" type="button">${m.label}</button>`).join('')}</div>${sel!=null&&ms[sel]?`<div class="vbzoom">${ms[sel].html}</div>`:''}`:'';
+    const done=cfg.steps.map((_,j)=>j).filter(j=>hasRun(j)&&cfg.measures&&cfg.measures(j).length);
+    bq('#vbLook').innerHTML=!anim&&done.length?`<div class="small" style="font-weight:600;margin:14px 0 6px">Look again:</div><div class="btnrow" style="margin-top:0">${done.map(j=>`<button class="btn ghost small vbl${vIdx()===j?' on':''}" data-i="${j}" type="button">${cfg.steps[j].name}</button>`).join('')}</div>`:'';
+    bench.querySelectorAll('.vbm').forEach(b=>b.addEventListener('click',()=>{ sel=+b.dataset.j; paint(); }));
+    bench.querySelectorAll('.vbl').forEach(b=>b.addEventListener('click',()=>{ const ii=+b.dataset.i; view=(ii===cur()&&cur()<N)?null:ii; sel=null; paint(); })); }
+  bq('#vbRun').addEventListener('click',()=>{ if(anim||!st('pred').checked||cur()>=N||V.ran) return; view=null; sel=null; const i=cur(), g=cfg.steps[i]; simSeed(V); cfg.onRun(i); V.ran=true; save(); cloudSave(true);
+    const fast=bq('#vbFast').checked, dur=fast?Math.min(800,g.dur||1500):(g.dur||1500); anim=true; const t0=performance.now(); clearInterval(timer);
+    timer=setInterval(()=>{ const p=Math.min(1,(performance.now()-t0)/dur); bq('#vbPic').innerHTML=cfg.scene(i,Math.max(p,0.0001)); if(g.total) bq('#vbClock').textContent=g.clockFn?g.clockFn(p):fmtClock(g.total*p);
+      if(p>=1){ clearInterval(timer); anim=false; paint(); if(window.dataRefresh) dataRefresh(); } },45); paint(0.0001); });
+  bq('#vbNext').addEventListener('click',()=>{ if(anim||!V.ran) return; V.k++; V.ran=false; sel=null; view=null; if(V.k>=N) V.done=true; save(); cloudSave(true); paint(); if(window.dataRefresh) dataRefresh(); });
+  bq('#vbBack').addEventListener('click',()=>{ view=null; sel=null; paint(); });
+  paint(); return {bench,V,repaint:()=>{ if(!anim) paint(); }};
+}
+const BENCH_CSS=`
+.vbench{background:rgba(255,255,255,.04); border:1px solid #2a3d5f; border-radius:14px; padding:12px; margin-bottom:12px}
+.vbench.off{opacity:.45; pointer-events:none}
+.isstat{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; font-weight:600; margin-bottom:6px}
+.isclock{font-variant-numeric:tabular-nums; font-size:22px; color:var(--r); background:var(--bg); border:1px solid var(--line2); border-radius:8px; padding:2px 12px}
+.vbpic svg{width:100%; height:auto; display:block; border-radius:12px}
+.vbm.on,.vbl.on{background:var(--r); color:#231a00; border-color:var(--r)}
+.vbzoom{margin-top:10px} .vbzoom svg{width:100%; max-width:640px; height:auto; display:block; border-radius:12px; border:1px solid var(--line)}
+.datatab input.dcell{background:var(--bg); color:var(--text); border:1.5px solid var(--line2)}
+.datatab input.dcell:disabled,.datatab select.ocell:disabled{opacity:1; color:var(--text); border-color:var(--line); background:var(--panel2)}
+.datatab select.ocell,.predtab select{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); max-width:100%}
+.datachart svg,.anachart svg{width:100%; height:auto; display:block; margin-top:10px}
+.proc ul{margin:6px 0 4px; padding-left:20px}
+.ordwrap .eq{display:grid; grid-template-columns:auto minmax(0,1fr); gap:8px 12px; font-size:16px; align-items:center}
+.ordwrap .eq .zone{width:100%; min-height:42px; font-size:15px; justify-content:flex-start; text-align:left; padding:4px 10px}
+.ordwrap .chip{font-size:14px; text-align:left; border-radius:12px}
+@media (max-width:620px){ .ordwrap .eq{grid-template-columns:1fr} .ordwrap .eq .zone{font-size:13px} .predtab td,.predtab th{padding:5px} }
+`;
+if(!window.__anaClick){ window.__anaClick=true; document.addEventListener('click',e=>{ if(e.target.closest&&e.target.closest('#part3 .btn.primary')) setTimeout(()=>{ if(window.anaRefresh) anaRefresh(); },0); }); }
+
+/* ===== Floating Leaf Discs: simulation ===== */
+const CUPS=[{k:'A',row:'Cup A: baking soda water, lamp 10 cm away',short:'A: lamp 10 cm',lamp:10,bs:true},{k:'B',row:'Cup B: baking soda water, lamp 30 cm away',short:'B: lamp 30 cm',lamp:30,bs:true},
+ {k:'C',row:'Cup C: baking soda water, wrapped in foil (dark)',short:'C: dark',lamp:10,bs:true,dark:true},{k:'D',row:'Cup D: plain water (no baking soda), lamp 10 cm away',short:'D: no baking soda',lamp:10,bs:false}];
+const MINS=[0,2,4,6,8,10,12,14,16], NDISC=10;
+const OBS_ROWS=[
+ {q:'<b>Cup C</b> (dark): after 16 minutes, how many discs floated?',opts:['None of them','Some of them','All of them']},
+ {q:'<b>Cup D</b> (no baking soda): after 16 minutes, how many discs floated?',opts:['None of them','Some of them','All of them']},
+ {q:'Up close, what did you see on the discs in cup A before they floated?',opts:['Tiny bubbles on the surface of the disc','The disc changed color','The disc got bigger','Nothing at all']},
+ {q:'Which cup had the first disc float?',opts:['Cup A (lamp 10 cm)','Cup B (lamp 30 cm)','Cup C (dark)','Cup D (no baking soda)']}];
+const SETUP_HTML=`<div class="phenbox" style="border-left-color:#7c3aed;background:rgba(124,58,237,.12)"><b>Missed the lab?</b> You'll do the same experiment on a virtual lab bench. Your spinach leaf is different from everyone else's, so your numbers are your own. You must <b>count</b> the floating discs yourself.</div>
+ <p><b>In the real lab:</b> each group used fresh spinach, a plastic straw to punch discs, a 10 mL syringe, baking soda solution (0.2%) with a drop of dish soap, four clear cups, a desk lamp, a meter stick, and aluminum foil.</p>
+ <p><b>Procedure (virtual):</b></p><ol class="proc"><li>Answer the questions below. On page 2, make your predictions and lock them in.</li>
+ <li>On page 3, punch 40 leaf discs. Use the syringe to pull the air out of the discs so they <b>sink</b>.</li>
+ <li>Put 10 discs in each of four cups (A, B, C, D) and set up the lamp.</li>
+ <li>Turn on the lamp and watch for 16 minutes.</li><li>Use the minute buttons to look at the cups every 2 minutes and <b>count</b> the floating discs in cups A and B. Record the counts.</li></ol>`;
+const TEACH_HTML=`<h3 style="margin-top:16px">About this simulation</h3><p class="small">Each student gets a different virtual leaf (a seed from the student's ID and name), so reloading keeps the results. Each disc in cups A and B floats at its own time, spread around a center time: about 5.5 to 8 minutes for the lamp at 10 cm and 9 to 12 minutes at 30 cm, so half the discs (ET50) float in about 6 to 8 and 10 to 13 minutes. Cup C (dark) and cup D (no baking soda, so no carbon dioxide) do not float. Students count floating discs from pictures at each 2-minute mark. If a typed count does not match the picture, a note asks them to count again (it never shows the right number).</p>`;
+function floatTimes(seed,k){ const r=mulberry(hashStr(seed+'|'+k)); const base=k==='A'?5.5+r()*2.5:9+r()*3; return [...Array(NDISC)].map(()=>{ const z=(r()+r()+r()+r()-2)*1.7; return Math.max(1.2,base+z*1.4); }); }
+const countAt=(T,m)=>T.filter(t=>t<=m).length;
+function discG(x,y,float,r){ r=r||9; return `<ellipse cx="${f1(x)}" cy="${f1(y)}" rx="${r}" ry="${f1(r*(float?.36:.4))}" fill="${float?'#3f9142':'#2f6e31'}" stroke="${float?'#1d4d1f':'#163816'}" stroke-width="1"/>`; }
+function cupG(x,yb,cup,nFloat,lit,o){ o=o||{}; const w=o.w||150,hh=o.h||150, r=o.r||6.5;
+  const inner=(L,R,lv,yb2)=>{ let g=''; const gap=(w-16-2*r)/(NDISC-1); for(let i=0;i<NDISC;i++){ const fl=i<nFloat; let cx,cy;
+      if(fl){ cx=L+8+r+i*gap; cy=lv+3; } else { const k=i-nFloat; cx=L+10+r+((k*37+i*11)%(w-20-2*r)); cy=yb2-6-(k%3)*(r*.8); }
+      g+=discG(cx,cy,fl,r); if(!fl&&o.bub&&lit) g+=`<circle cx="${f1(cx+r*.6)}" cy="${f1(cy-r*.5)}" r="1.6" fill="#fff" opacity=".9"/><circle cx="${f1(cx-r*.4)}" cy="${f1(cy-r*.6)}" r="1.2" fill="#fff" opacity=".8"/>`; } return g; };
+  let g=beakerG(x,yb,{w,h:hh,lvl:.72,liq:cup.bs?'#e0f2fe':'#eef6ff',edge:'#93c5fd',op:.75,inner});
+  if(cup.dark) g+=`<path d="M${x-w/2-4},${yb-hh-6} L${x+w/2+4},${yb-hh-6} L${x+w/2+4},${yb+2} L${x-w/2-4},${yb+2} Z" fill="#cbd5e1" stroke="#94a3b8" stroke-width="2"/>${[...Array(7)].map((_,i)=>`<path d="M${x-w/2+i*24},${yb-hh} l14,${hh-10}" stroke="#e2e8f0" stroke-width="3" opacity=".7"/>`).join('')}`+tx(x,yb-hh/2,'foil',13,'#475569',null,true);
+  return g; }
+function lampG(x,y,on){ return `<g>${on?`<path d="M${x-30},${y+28} L${x-150},${y+250} L${x+150},${y+250} L${x+30},${y+28} Z" fill="#fef9c3" opacity=".35"/>`:''}<rect x="${x-4}" y="${y-60}" width="8" height="60" fill="#475569"/><path d="M${x-38},${y+28} L${x-24},${y} L${x+24},${y} L${x+38},${y+28} Z" fill="#334155" stroke="#0f172a"/><ellipse cx="${x}" cy="${y+28}" rx="26" ry="6" fill="${on?'#fde047':'#94a3b8'}"/></g>`; }
+function buildData(s,num){
+  teacherNote(TEACH_HTML);
+  const lock=h('div',{class:'fb info'}); lock.innerHTML='<b>Locked.</b> Lock in your predictions on page 2 first.'; s.appendChild(lock);
+  const W=780,H=430,B=380, XS=[110,290,470,650];
+  const STEPS=[{name:'Make the discs',btn:'Punch 40 discs and pull out the air',dur:2200,total:0,clock:'ready',text:r=>r?'The syringe pulled the air out of the leaf discs, and baking soda solution took its place. The discs are heavier than water now, so they <b>sink</b>.':'Use the straw to punch 40 discs from the spinach leaf, avoiding the big veins. Put them in the syringe with solution, cover the tip, and pull back on the plunger to suck the air out of the discs.'},
+    {name:'Set up the cups',btn:'Put 10 discs in each cup',dur:1400,total:0,clock:'0:00',text:r=>r?'Every cup has 10 sunken discs. The lamp is 10 cm from cups A, C, and D, and 30 cm from cup B. Cup C is wrapped in foil, and cup D has plain water with no baking soda.':'Put 10 discs in each cup. Cups A, B, and C have baking soda water; cup D has plain water.'},
+    {name:'Lamp on for 16 minutes',btn:'Turn on the lamp and start the timer',dur:9000,total:960,clock:'16:00',text:r=>r?'16 minutes are up. Use the <b>minute buttons</b> below to look at the cups at each 2-minute mark and <b>count</b> how many discs are floating in cups A and B.':'Turn on the lamp. Watch the discs for 16 minutes.'}];
+  const cnt=(k,m)=>{ const V=st('vsim'); if(!V.T||k==='C'||k==='D') return 0; return countAt(V.T[k],m); };
+  function scene(i,p,mOver){ const V=st('vsim'), m=mOver!=null?mOver:(i===2?16*p:0), lit=i===2&&p>0;
+    let o=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Four cups of leaf discs${i===2?' under a lamp, at minute '+Math.floor(m):''}"><rect width="${W}" height="${H}" rx="14" fill="${lit?'#eef2f7':'#e2e8f0'}"/><rect x="0" y="${B}" width="${W}" height="${H-B}" fill="#cbd5e1"/><rect x="0" y="${B}" width="${W}" height="5" fill="#94a3b8"/>`;
+    if(i===0){ o+=`<g transform="translate(250 230)"><path d="M0,-90 C70,-80 110,-10 90,60 C60,110 -40,110 -80,50 C-110,0 -70,-80 0,-90Z" fill="#3f9142" stroke="#1d4d1f" stroke-width="2"/><path d="M-60,70 C-20,20 20,-30 60,-70" stroke="#a7d3a0" stroke-width="3" fill="none"/>${[[-30,-30],[10,-50],[40,10],[-10,20],[30,50]].map(([a,b])=>`<circle cx="${a}" cy="${b}" r="10" fill="#e2e8f0" stroke="#94a3b8"/>`).slice(0,Math.ceil(5*Math.min(1,p*2))).join('')}</g>`;
+      const pl=p>0.5?(p-0.5)*2:0; o+=`<g transform="translate(560 220) rotate(-90)"><rect x="-20" y="-70" width="40" height="150" rx="6" fill="#f1f5f9" stroke="#64748b" stroke-width="2" opacity=".9"/><rect x="-18" y="${f1(-20+pl*40)}" width="36" height="100" fill="#e0f2fe" opacity=".8"/>${[...Array(6)].map((_,k)=>`<ellipse cx="${-8+(k%3)*8}" cy="${50-k*6+(p>0.5?20:0)}" rx="7" ry="3" fill="#3f9142"/>`).join('')}<rect x="-24" y="${f1(-80+pl*40)}" width="48" height="10" rx="3" fill="#475569"/><rect x="-5" y="${f1(-150+pl*40)}" width="10" height="72" fill="#94a3b8"/></g>`+tx(560,330,'syringe',13,'#334155',null,true)+tx(250,350,'spinach leaf',13,'#334155',null,true);
+      if(pl>0) [...Array(5)].forEach((_,k)=>o+=`<circle cx="${560+(k-2)*14}" cy="${f1(140-pl*30-k*6)}" r="3" fill="#fff" stroke="#94a3b8"/>`); return o+'</svg>'; }
+    o+=lampG(XS[0]+90,60,lit);
+    CUPS.forEach((c,j)=>{ const n=i<1?0:cnt(c.k,m), sh=i===1&&p<1?Math.round(NDISC*p):NDISC; o+=cupG(XS[j],B-6,c,Math.min(n,sh),lit,{bub:m>2});
+      o+=tx(XS[j],B+28,'Cup '+c.k,15,'#334155',null,true)+tx(XS[j],B+46,c.dark?'dark':!c.bs?'no baking soda':'lamp '+c.lamp+' cm',12,'#475569'); });
+    return o+'</svg>'; }
+  const B1=makeBench(s,{steps:STEPS,scene:(i,p)=>scene(i,p),measLabel:'Look at the cups at:',onRun:i=>{ const V=st('vsim'); if(i===2) V.T={A:floatTimes(V.seed,'A'),B:floatTimes(V.seed,'B')}; },
+    measures:i=>i!==2?[]:MINS.map(m=>({label:'Minute '+m,html:closeUp(m)}))});
+  function closeUp(m){ let o=`<svg viewBox="0 0 640 330" role="img" aria-label="Close-up of cups A and B at minute ${m}. Count the discs floating at the top."><rect width="640" height="330" rx="12" fill="#eef2f7"/><rect x="0" y="290" width="640" height="40" fill="#cbd5e1"/>`;
+    ['A','B'].forEach((k,j)=>{ o+=cupG(170+j*300,284,CUPS[j],cnt(k,m),true,{w:250,h:230,r:10,bub:m>2})+tx(170+j*300,312,'Cup '+k+(j?' (30 cm)':' (10 cm)'),15,'#334155',null,true); });
+    return o+tx(320,24,'Minute '+m,16,'#334155',null,true)+'</svg>'+`<p class="small" style="margin:6px 0 0"><b>Minute ${m}.</b> Count the discs floating at the top of cups A and B. Discs on the bottom have not floated yet.</p>`; }
+  const dlock=h('div',{class:'fb info'}); dlock.innerHTML='<b>Tables locked.</b> Finish the virtual procedure first (all 3 steps).'; s.appendChild(dlock);
+  const dwrap=h('div',{}); s.appendChild(dwrap);
+  dwrap.insertAdjacentHTML('beforeend','<p>Record the number of floating discs (out of 10) in cups A and B at each time. The graph draws as you type.</p>');
+  const check=v=>{ const V=st('vsim'); if(!V.done) return ''; const bad=[]; ['A','B'].forEach((k,r)=>MINS.forEach((m,c)=>{ const x=cellv(v,r,c); if(x!=null&&x!==countAt(V.T[k],m)) bad.push(`Cup ${k}, minute ${m}`); }));
+    return bad.length?`<div class="fb no small vbwarn">Count again: ${bad.join('; ')}. ${bad.length>1?'These counts do':'This count does'} not match the picture. Use the minute buttons above.</div>`:''; };
+  dataTableProblem(dwrap,{id:'ddat', part:'P3', num:num(), q:'<b>Floating discs</b> (out of 10).', pts:6, corner:'Cup', cols:MINS.map(m=>m+' min'), rows:['A: lamp 10 cm','B: lamp 30 cm'],
+    chart:v=>lineChart(['A','B'].map((k,r)=>({name:'Cup '+k+' (lamp '+(r?30:10)+' cm)',col:r?'#fb923c':'#5fe3a9',pts:MINS.map((m,c)=>[m,cellv(v,r,c)])})),{title:'Floating discs over time',xlab:'Time (minutes)',ylab:'Floating discs',xmax:16,xstep:2,ymax:10,ystep:2,hline:5,hlab:'half the discs (ET50)'})+check(v)});
+  obsTableProblem(dwrap,{id:'obs', part:'P3', num:num(), q:'Record what you observed.', pts:4, rows:OBS_ROWS});
+  window.dataRefresh=()=>{ const ok=!!st('pred').checked, ran=!!st('vsim').done; lock.hidden=ok; B1.bench.classList.toggle('off',!ok); dlock.hidden=!ok||ran; dwrap.classList.toggle('off',!(ok&&ran)); B1.repaint(); if(window.anaRefresh) anaRefresh(); };
+}
+const et50=r=>{ const v=st('ddat').val||{}; for(let c=0;c<MINS.length;c++){ const x=cellv(v,r,c); if(x!=null&&x>=5) return MINS[c]; } return null; };
+function buildContent(sec){
+  let n=0; const num=()=>++n; const say=(s,html)=>s.insertAdjacentHTML('beforeend',html); LIVE.length=0;
+  say(sec[0],`<div class="phenbox"><b>Phenomenon:</b> Spinach leaf discs that sink to the bottom of a cup slowly rise to the top when a lamp shines on them. In the dark, they stay on the bottom. What is lifting them?</div>
+   <p><b>Lab question:</b> How does light intensity affect the rate of photosynthesis?</p>
+   <p><b>Background.</b> In <b>photosynthesis</b>, chloroplasts use light energy to turn carbon dioxide and water into glucose and oxygen:</p>
+   <p style="text-align:center;font-size:19px;font-weight:600">6 CO₂ + 6 H₂O → C₆H₁₂O₆ + 6 O₂ <span class="small muted">(light energy)</span></p>
+   <p>A leaf normally has air spaces inside it, so it floats. In this lab you pull that air out with a syringe, so the discs sink. <b>Baking soda</b> in the water gives the discs carbon dioxide. When the discs do photosynthesis, the <b>oxygen</b> they make fills the air spaces again, and the discs float. The faster photosynthesis happens, the sooner they float. Scientists compare cups using the <b>ET50</b>: the time when half the discs (5 of 10) are floating.</p>${SETUP_HTML}`);
+  choiceProblem(sec[0],{id:'q1', part:'P1', num:num(), q:'Check your understanding.',
+    parts:[{q:'<b>Part A:</b> What gas makes the discs float again?',opts:['Oxygen made by photosynthesis','Carbon dioxide from the baking soda','Air from the room','Steam from the lamp'],ans:0},
+           {q:'<b>Part B:</b> Why is baking soda added to the water?',opts:['It gives the discs carbon dioxide to use in photosynthesis','It makes the water sweet','It kills bacteria','It makes the discs green'],ans:0},
+           {q:'<b>Part C:</b> Why do you pull the air out of the discs first?',opts:['So the discs sink, and any floating later is caused by new oxygen','So the discs float faster','So the discs dry out','To remove the chloroplasts'],ans:0},
+           {q:'<b>Part D:</b> A shorter ET50 means photosynthesis is…',opts:['faster','slower','stopped','the same'],ans:0}],
+    hint:'Re-read the background.', why:'New oxygen from photosynthesis lifts the discs; the sooner half float, the faster photosynthesis is happening.'});
+  dragProblem(sec[0],{id:'q2', part:'P1', num:num(), q:'Complete the equation for photosynthesis.', equation:true, layout:['6',0,'+ 6',1,'<span class="eqarr">light<b>→</b></span>',2,'+ 6',3],
+    zones:[{id:'a',ans:'CO₂',ph:'reactant'},{id:'b',ans:'H₂O',ph:'reactant'},{id:'c',ans:'C₆H₁₂O₆',ph:'product'},{id:'d',ans:'O₂',ph:'product'}], chips:['CO₂','H₂O','C₆H₁₂O₆','O₂','N₂'],
+    hint:'Carbon dioxide and water go in. Glucose and oxygen come out.', done:'6 CO₂ + 6 H₂O → C₆H₁₂O₆ + 6 O₂'});
+  say(sec[1],`<p>Predict what will happen in each cup. You get full credit for predicting, but you <b>can't change</b> your predictions after you lock them in.</p>`);
+  predictProblem(sec[1],{id:'pred', part:'P2', num:num(), q:'Make your predictions.', rowsLabel:'Cup', rows:CUPS.map(c=>({id:'Cup '+c.k,desc:c.row.replace(/^Cup .: /,'')})), choices:['Discs float fast','Discs float slowly','No discs float']});
+  writtenProblem(sec[1],{id:'hyp', part:'P2', num:num(), q:'Write a hypothesis about how the <b>distance from the lamp</b> will affect the discs, in the form <b>"If… then… because…"</b>.', pts:3, bank:['If','then','because','closer','lamp','more light','faster','photosynthesis','oxygen','float'],
+    groups:[['If… then… form',/\bif\b[\s\S]*\bthen\b/],['says closer or farther changes the floating',/clos|near|far|distance|brighter|more light|less light/],['a reason about light, photosynthesis, or oxygen',/because|since|photosynth|oxygen|energy|light/]],
+    model:'If the lamp is closer to the cup, then the discs will float sooner, because more light energy means faster photosynthesis, which makes oxygen faster.',
+    hint:'Say what you will change, what will happen, and why.', why:'A testable hypothesis names the change, the predicted result, and the reason.'});
+  buildData(sec[2],num);
+  const alock=h('div',{class:'fb info'}); alock.innerHTML='<b>Locked.</b> Save your data table and observations on page 3 first.'; sec[3].appendChild(alock);
+  const aw=h('div',{}); sec[3].appendChild(aw);
+  window.anaRefresh=()=>{ const ok=['ddat','obs'].every(k=>!!st(k).checked); alock.hidden=ok; aw.hidden=!ok; if(ok){ liveKeys(); const c=$('.anachart',aw); if(c){ const v=st('ddat').val; c.innerHTML=lineChart(['A','B'].map((k,r)=>({name:'Cup '+k+' (lamp '+(r?30:10)+' cm)',col:r?'#fb923c':'#5fe3a9',pts:MINS.map((m,cc)=>[m,cellv(v,r,cc)])})),{title:'Your data: floating discs over time',xlab:'Time (minutes)',ylab:'Floating discs',xmax:16,xstep:2,ymax:10,ystep:2,hline:5,hlab:'half the discs (ET50)'}); } } };
+  say(aw,`<p>Use <b>your data</b> from page 3.</p><div class="prob"><div class="pq">Your graph</div><div class="anachart"></div></div>`);
+  calcProblem(aw,{id:'a1', part:'P4', num:num(), q:'Find the <b>ET50</b> for cups A and B: the first time in your table when <b>5 or more</b> discs were floating.',
+    blanks:[{before:'<b>Part A:</b> Cup A (lamp 10 cm): ET50 =',calc:()=>et50(0),tol:0,after:'minutes',show:'first time with 5 or more floating'},{before:'<b>Part B:</b> Cup B (lamp 30 cm): ET50 =',calc:()=>et50(1),tol:0,after:'minutes',show:'first time with 5 or more floating'}],
+    hint:'Read across each row of your table. Find the first column where the count is 5 or more.'});
+  calcProblem(aw,{id:'a2', part:'P4', num:num(), q:'Compare the two cups.', blanks:[{before:'<b>Part A:</b> ET50 of cup B − ET50 of cup A =',calc:()=>et50(1)-et50(0),tol:0,after:'minutes',show:'cup B ET50 − cup A ET50'},
+      {before:'<b>Part B:</b> At 10 minutes, how many more discs were floating in cup A than in cup B?',calc:()=>{ const v=st('ddat').val||{}; return (cellv(v,0,5)||0)-(cellv(v,1,5)||0); },tol:0,after:'discs',show:'cup A at 10 min − cup B at 10 min'}],
+    hint:'Use your ET50 answers and the 10-minute column of your table.'});
+  liveChoice(aw,{id:'a3', part:'P4', num:num(), q:'Read your results.',
+    parts:[{q:'<b>Part A:</b> Which cup did photosynthesis faster?',opts:['Cup A (lamp 10 cm)','Cup B (lamp 30 cm)','They were the same'],ans:-1,ansFn:()=>{ const a=et50(0), b=et50(1); return a<b?0:a>b?1:2; }},
+           {q:'<b>Part B:</b> Did your prediction for cup C (dark) match what happened?',opts:['Yes','No'],ans:-1,ansFn:()=>((st('pred').val||{})[2]==='No discs float')?0:1}],
+    hint:'A shorter ET50 means faster photosynthesis.', why:'Your answers match your own data.'});
+  choiceProblem(aw,{id:'a4', part:'P4', num:num(), q:'Explain the control cups.',
+    parts:[{q:'<b>Part A:</b> Why didn\'t the discs in cup C (dark) float?',opts:['Without light, there is no photosynthesis, so no oxygen was made','The foil made the water too cold','The discs were too heavy','There was no water'],ans:0},
+           {q:'<b>Part B:</b> Why didn\'t the discs in cup D (no baking soda) float?',opts:['With no carbon dioxide, the discs could not do photosynthesis','Plain water is too heavy','The lamp was too far away','Baking soda is what floats'],ans:0},
+           {q:'<b>Part C:</b> What do cups C and D show together?',opts:['Photosynthesis needs both light and carbon dioxide','Leaves only need water','Oxygen comes from baking soda','Light alone makes discs float'],ans:0}],
+    hint:'Each control removes one thing photosynthesis needs.', why:'Light and carbon dioxide are both reactants or requirements for photosynthesis.'});
+  binProblem(aw,{id:'a5', part:'P4', num:num(), q:'Sort the variables for the cup A vs. cup B test.',
+    bins:[{k:'i',label:'Independent (you change it)'},{k:'d',label:'Dependent (you measure it)'},{k:'c',label:'Controlled (kept the same)'}],
+    items:[{t:'Distance from the lamp',k:'i'},{t:'Number of floating discs over time',k:'d'},{t:'Amount of baking soda in the water',k:'c'},{t:'Number of discs per cup (10)',k:'c'},{t:'Type of leaf (spinach)',k:'c'},{t:'Volume of solution in the cup',k:'c'}],
+    hint:'Only the lamp distance was different between cups A and B.', done:'Changing only the distance makes it a fair test of light intensity.'});
+  binProblem(aw,{id:'a6', part:'P4', num:num(), q:'Predict: would each change make the discs float <b>faster</b> or <b>slower</b> than in cup A?',
+    bins:[{k:'f',label:'Faster'},{k:'s',label:'Slower'}],
+    items:[{t:'Use a brighter bulb at the same distance',k:'f'},{t:'Move the lamp to 50 cm',k:'s'},{t:'Use water with no baking soda',k:'s'},{t:'Cover the cup with a dark cloth',k:'s'},{t:'Add a little more baking soda',k:'f'}],
+    hint:'More light or more carbon dioxide speeds photosynthesis, up to a limit. Less of either slows it.', done:'Light and carbon dioxide both limit the rate of photosynthesis.'});
+  writtenProblem(aw,{id:'a7', part:'P4', num:num(), q:'Explain <b>why</b> the discs in cup A floated sooner than the discs in cup B. Use the words <b>light energy</b>, <b>photosynthesis</b>, and <b>oxygen</b>.', pts:3, bank:['cup A','closer','more light energy','photosynthesis','faster','oxygen','air spaces','float'],
+    groups:[['cup A got more light',/clos|near|more light|brighter|10 cm|stronger/],['photosynthesis was faster',/photosynth/],['oxygen filled the disc and made it float',/oxygen|o2|o₂/]],
+    model:'Cup A was closer to the lamp, so its discs got more light energy. More light energy made photosynthesis faster, so the discs made oxygen faster, which filled their air spaces and made them float sooner.',
+    hint:'Connect distance → light energy → speed of photosynthesis → oxygen → floating.', why:'More light energy speeds up photosynthesis, which makes oxygen faster.'});
+  say(sec[4],'<p>Write a <b>claim, evidence, and reasoning</b> conclusion that answers: <i>How does light intensity affect the rate of photosynthesis?</i></p>');
+  writtenProblem(sec[4],{id:'k1', part:'P5', num:num(), q:'<b>Claim:</b> answer the question in one sentence.', pts:2, bank:['More light','faster','photosynthesis','less light','slower'],
+    groups:[['more light means faster',/(more|brighter|clos|stronger|higher)[\s\S]{0,60}(fast|quick|sooner|increas|higher rate)/],['names photosynthesis',/photosynth/]],
+    model:'More light (a closer lamp) makes photosynthesis happen faster.', hint:'Answer the lab question directly.', why:'The claim answers the question.'});
+  writtenProblem(sec[4],{id:'k2', part:'P5', num:num(), q:'<b>Evidence:</b> use your ET50s and your control cups.', pts:3, bank:['ET50','minutes','cup A','cup B','cup C','dark','no baking soda','none floated'],
+    groups:[['ET50 or times for both cups',/(a|10)[\s\S]*(b|30)/],['uses numbers',/\d/],['mentions a control cup',/cup c|cup d|dark|foil|baking soda|no light/]],
+    model:'Cup A (10 cm) had an ET50 of 8 minutes, but cup B (30 cm) had an ET50 of 12 minutes. In the dark cup C and in cup D with no baking soda, no discs floated.',
+    hint:'Use your answers to problems 1 and 2 of the Analysis, plus cups C and D.', why:'Good evidence uses specific numbers and the controls.'});
+  writtenProblem(sec[4],{id:'k3', part:'P5', num:num(), q:'<b>Reasoning:</b> explain why light changed the rate. What does this tell you about where a plant\'s energy comes from?', pts:3, bank:['light energy','chloroplasts','photosynthesis','oxygen','carbon dioxide','glucose','stored','chemical energy'],
+    groups:[['light energy drives photosynthesis',/light energy|energy from light|light[\s\S]{0,30}(power|drive|needed|need|use)/],['oxygen is made (floating)',/oxygen|o2|o₂/],['energy stored in glucose or sugar',/glucose|sugar|chemical energy|stored/]],
+    model:'Photosynthesis uses light energy in the chloroplasts to turn carbon dioxide and water into glucose and oxygen. More light energy means the reaction runs faster, so more oxygen is made and the discs float sooner. The energy a plant stores in glucose comes from light.',
+    hint:'Explain the role of light energy, oxygen, and glucose.', why:'Light energy is converted to chemical energy stored in glucose.'});
+  dataRefresh();
+}
+window.__truth=()=>{ const V=st('vsim'); return {ddat:{first:'A: lamp 10 cm',vals:['A','B'].map(k=>MINS.map(m=>countAt(V.T[k],m)))}}; };
+
+/* ============================== BUILD / SCORE ============================== */
+function scoreAll(){ const parts=PARTS.slice(0,-1).map(p=>({k:p.k,label:p.label,got:0,max:0})); PROBS.forEach(pr=>{ const pt=parts.find(x=>x.k===pr.part); pt.got+=pr.score(); pt.max+=pr.max; });
+  return {parts, total:parts.reduce((a,b)=>a+b.got,0), max:parts.reduce((a,b)=>a+b.max,0)}; }
+function build(){
+  PROBS.length=0; const ws=$('#ws'); ws.innerHTML='';
+  $('#nav').innerHTML=PARTS.map((pt,i)=>`<button class="ntile" type="button" data-i="${i}" aria-label="${pt.title}"><span class="ic">${ico(i,22)}</span><span class="nm">${pt.label}</span></button>`).join('');
+  $$('#nav .ntile').forEach(b=>b.addEventListener('click',()=>showPart(+b.dataset.i)));
+  const secs=PARTS.map((pt,i)=>{ const el=h('section',{class:'sec',id:'part'+i}); const last=i===PARTS.length-1;
+    el.innerHTML=`<div class="sechead"><div class="badge"><span class="z">${i+1}</span>${ico(i,34)}</div><div><div class="meta">${last?'Grade':`Section ${i+1} of ${PARTS.length-1} · about ${pt.min} min`}</div><h2>${pt.title}</h2></div></div>`;
+    const c=h('div',{class:'card'}); el.appendChild(c);
+    const nav=h('div',{class:'secnav'});
+    const back=h('button',{class:'btn ghost',type:'button'},i===0?'':'← Back'); if(i===0) back.style.visibility='hidden'; back.addEventListener('click',()=>showPart(i-1));
+    nav.appendChild(back);
+    if(!last){ const nx=h('button',{class:'btn primary',type:'button'},i===PARTS.length-2?'See my grade →':`Next: ${PARTS[i+1].title} →`); nx.addEventListener('click',()=>showPart(i+1)); nav.appendChild(nx); }
+    el.appendChild(nav); ws.appendChild(el); return c; });
+  buildContent(secs);
+  secs[PARTS.length-1].id='turnin';
+  showPart(Math.min(S.cur||0,PARTS.length-1),true);
+  $('#whoami').textContent=S.student?`${S.student.first} ${S.student.last}`:''; refresh();
+}
+function showPart(i,noScroll){
+  S.cur=i; $$('#ws .sec').forEach((el,j)=>el.hidden=j!==i);
+  $$('#nav .ntile').forEach((t,j)=>t.classList.toggle('cur',j===i));
+  if(!noScroll){ save(); window.scrollTo(0,0); }
+}
+function refresh(){
+  const sc=scoreAll(), done=PROBS.filter(p=>p.checked()).length;
+  $('#scorePill').textContent=`${done}/${PROBS.length} checked · ${sc.total}/${sc.max} pts`;
+  PARTS.slice(0,-1).forEach((pt,i)=>{ const t=$(`#nav .ntile[data-i="${i}"]`); if(t) t.classList.toggle('done',PROBS.filter(p=>p.part===pt.k).every(p=>p.checked())); });
+  const t7=$(`#nav .ntile[data-i="${PARTS.length-1}"]`); if(t7) t7.classList.toggle('done',!!S.submittedAt);
+  const c=$('#turnin'); if(!c) return;
+  const rows=sc.parts.map(p=>`<tr><th>${p.label}</th><td>${p.got} / ${p.max}</td></tr>`).join('');
+  c.innerHTML=`<div style="display:flex;gap:22px;align-items:center;flex-wrap:wrap"><div class="big">${sc.total}/${sc.max}</div><div><h3 style="margin:0">${esc(S.student?S.student.first+' '+S.student.last:'')}</h3><p class="muted" style="margin:0">${done} of ${PROBS.length} problems checked</p></div></div>
+    <table class="res" style="margin-top:12px">${rows}</table>
+    <p class="small muted" style="margin-top:10px">Problems you haven't checked count as 0. You can turn in again later; your teacher sees the newest one.</p>
+    <div class="btnrow"><button class="btn primary" id="subBtn" type="button">${S.submittedAt?'Turn in again':'Turn in my lab'}</button><button class="btn ghost" id="csvBtn" type="button">Download CSV</button></div>
+    <p class="fb info sheetStatus" aria-live="polite">${S.sentAt?`Sent to your teacher ${new Date(S.sentAt).toLocaleString()}.`:'Not turned in yet.'}</p>`;
+  $('#subBtn').addEventListener('click',turnIn);
+  $('#csvBtn').addEventListener('click',()=>downloadCSV([recordRow()],`LeafDiscLabSim_${(S.student&&S.student.last||'student').replace(/\W+/g,'')}.csv`));
+}
+const CSV_HEAD=['Student ID','Last Name','First Name','Period','Teacher','Activity','Score','Total','Percent',...PARTS.slice(0,-1).map(p=>p.label),'Date'];
+function recordRow(){ const st=S.student||{}, sc=scoreAll(); return [st.id||'',st.last||'',st.first||'',st.period||'',st.teacher||'',ACTIVITY,sc.total,sc.max,Math.round(100*sc.total/sc.max)+'%',...sc.parts.map(p=>p.got),new Date(S.submittedAt||Date.now()).toLocaleString()]; }
+function csvText(rows){ const q=v=>{ v=String(v==null?'':v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }; return [CSV_HEAD,...rows].map(r=>r.map(q).join(',')).join('\r\n')+'\r\n'; }
+function downloadCSV(rows,name){ const b=new Blob([csvText(rows)],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500); }
+const loadRecs=()=>{ try{ return (JSON.parse(localStorage.getItem(RECS))||[]).filter(r=>r.length===CSV_HEAD.length); }catch(e){ return []; } };
+function saveRecord(){ if(S.preview) return; const recs=loadRecs(), row=recordRow(); const i=recs.findIndex(r=>r[0]===row[0]&&r[1]===row[1]); if(i>=0) recs[i]=row; else recs.push(row); try{ localStorage.setItem(RECS,JSON.stringify(recs)); }catch(e){} }
+function turnIn(){
+  const left=PROBS.filter(p=>!p.checked()).length;
+  if(left&&!confirm(`${left} problem${left>1?'s':''} not checked yet (they count as 0). Turn in anyway?`)) return;
+  S.submittedAt=Date.now(); save(); saveRecord(); cloudSave(true); disarm(); refresh();
+  const msg=t=>$$('.sheetStatus').forEach(e=>e.textContent=t);
+  if(S.preview){ msg('Preview mode: nothing is sent.'); return; }
+  const st=S.student, sc=scoreAll();
+  const body={studentId:st.id||'',firstName:st.first||'',lastName:st.last||'',period:st.period||'',teacher:st.teacher||'',locks:'0',when:new Date().toString(),activity:ACTIVITY,score:String(sc.total),total:String(sc.max),
+    qlabels:sc.parts.map((p,i)=>'P'+(i+1)+' '+PARTS[i].label).join('|'),qpoints:sc.parts.map(p=>p.got).join('|'),qmax:sc.parts.map(p=>p.max).join('|')};
+  msg('Sending...');
+  fetch(sheetURL(),{method:'POST',mode:'no-cors',body:new URLSearchParams(body)}).then(()=>{ S.sentAt=new Date().toISOString(); save(); msg('Sent! Your teacher will see your score.'); }).catch(()=>msg("Couldn't send. Check the Wi-Fi and try again, or download the CSV."));
+}
+
+/* ============================== NO LOCKDOWN ON WORKSHEETS ============================== */
+let teacherOpen=false;
+function arm(){} function disarm(){} function showLock(){} function enterFS(){}
+['copy','cut','paste','contextmenu'].forEach(ev=>document.addEventListener(ev,e=>{ if(teacherOpen||S.preview) return; e.preventDefault(); }));
+
+/* ============================== SIGN IN ============================== */
+function showWS(){ $('#start').hidden=true; $('#top').hidden=false; $('#ws').hidden=false; build(); window.scrollTo(0,0); if(S.locked&&LOCKDOWN&&!S.lockOff) showLock(); else arm(); }
+function renderStart(){ const has=!!S.student; $('#resumeBox').hidden=!has; $('#startForm').hidden=has; $('#signinTitle').textContent=has?'Welcome back':'Sign in to start';
+  if(has) $('#resumeText').innerHTML=`Signed in as <b>${esc(S.student.first)} ${esc(S.student.last)}</b>, period ${esc(S.student.period)}.`; }
+$('#fPeriod').innerHTML='<option value="">Choose your period</option>'+periodList().map(p=>`<option>${esc(p)}</option>`).join('');
+$('#fTeacher').innerHTML='<option value="">Choose your teacher</option>'+teacherList().map(t=>`<option>${esc(t)}</option>`).join('');
+let starting=false;
+async function start(){
+  if(starting) return; starting=true;
+  try{
+    const v={first:$('#fFirst').value.trim(),last:$('#fLast').value.trim(),id:$('#fId').value.trim(),period:$('#fPeriod').value,teacher:$('#fTeacher').value};
+    const miss=[]; if(!v.first) miss.push('first name'); if(!v.last) miss.push('last name'); if(!v.id) miss.push('student ID'); if(!v.period) miss.push('period'); if(!v.teacher) miss.push('teacher');
+    const err=$('#formErr'); if(miss.length){ err.className='fb no'; err.textContent='Fill in your '+miss.join(', ')+'.'; err.hidden=false; return; }
+    if(LOCKDOWN) enterFS();
+    err.className='fb info'; err.textContent='Checking for your saved work...'; err.hidden=false;
+    const res=await cloudLoad(v); err.hidden=true;
+    if(res.status==='found'){ const d=res.data; d.student=Object.assign({},d.student||{},{first:v.first,period:v.period,teacher:v.teacher}); adopt(d); showWS(); note('✓ Your saved work was loaded'); return; }
+    const ns=fresh(); ns.student=v; adopt(ns); showWS(); cloudSave(true);
+  } catch(ex){ const er=$('#formErr'); er.className='fb no'; er.textContent='Something went wrong starting ('+(ex&&ex.message||ex)+'). Reload and try again.'; er.hidden=false; }
+  finally{ starting=false; }
+}
+$('#startBtn').addEventListener('click',start);
+$('#startForm').addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.tagName==='INPUT'){ e.preventDefault(); start(); } });
+$('#resumeBtn').addEventListener('click',async()=>{ const b=$('#resumeBtn'); b.disabled=true; b.textContent='Loading your work...'; if(LOCKDOWN&&!S.locked) enterFS();
+  const res=await cloudLoad(S.student); b.disabled=false; b.textContent='Continue my lab';
+  if(res.status==='found'&&(res.data.updatedAt||0)>(S.updatedAt||0)&&checkedCount(res.data)>=checkedCount(S)){ const d=res.data; d.student=S.student; adopt(d); note('✓ Your newest saved work was loaded'); } showWS(); });
+$('#notMeBtn').addEventListener('click',async()=>{ const b=$('#notMeBtn'); b.disabled=true;
+  try{ if(cloudOK()) await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); }catch(e){ b.disabled=false; $('#resumeErr').textContent="Can't back up the last student's work right now. Check the Wi-Fi, or ask your teacher."; $('#resumeErr').hidden=false; return; }
+  b.disabled=false; adopt(fresh()); ['#fFirst','#fLast','#fId','#fPeriod','#fTeacher'].forEach(s=>$(s).value=''); renderStart(); });
+
+/* ============================== TEACHER ============================== */
+function openTeacher(){ teacherOpen=true; $('#teachLogin').hidden=false; $('#teachPanel').hidden=true; $('#teachErr').hidden=true; $('#teachCode').value=''; $('#teachOv').classList.add('show'); setTimeout(()=>$('#teachCode').focus(),50); }
+function closeTeacher(){ $('#teachOv').classList.remove('show'); teacherOpen=false; }
+$('#teacherLink').addEventListener('click',openTeacher); $('#teachBtn').addEventListener('click',openTeacher);
+$('#teachCancel').addEventListener('click',closeTeacher);
+$('#teachCode').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#teachGo').click(); });
+$('#teachGo').addEventListener('click',()=>{ if(!codeIs($('#teachCode').value,TEACHER_CODE)){ $('#teachErr').hidden=false; return; } $('#teachLogin').hidden=true; $('#teachPanel').hidden=false; renderTeacher(); });
+function renderTeacher(){
+  const recs=loadRecs(), p=$('#teachPanel'), keyOn=document.body.classList.contains('keyon');
+  p.innerHTML=`<h2>Teacher tools</h2>
+    <div class="btnrow"><button class="btn ghost" id="tKey" type="button">${keyOn?'Hide answer key':'Answer key'}</button>
+      <button class="btn ghost" id="tPrev" type="button">${S.preview?'End preview':'Preview (saves nothing)'}</button>
+      <button class="btn ghost" id="tResetWrong" type="button">Reset all wrong answers</button>
+      <button class="btn ghost" id="tReset" type="button">Reset this Chromebook</button><button class="btn ghost" id="tClose" type="button">Close</button></div>
+    <h3 style="margin-top:16px">Scores saved on this Chromebook (${recs.length})</h3>
+    <div class="wide">${recs.length?`<table class="nb"><tr><th>Student</th><th>ID</th><th>Period</th><th>Score</th><th>Date</th></tr>${recs.map(r=>`<tr><td>${esc(r[1])}, ${esc(r[2])}</td><td>${esc(r[0])}</td><td>${esc(r[3])}</td><td>${r[6]}/${r[7]}</td><td>${esc(r[r.length-1])}</td></tr>`).join('')}</table>`:'<p class="muted">None yet.</p>'}</div>
+    <div class="btnrow"><button class="btn primary" id="tCsv" type="button" ${recs.length?'':'disabled'}>Download scores (CSV)</button></div>
+    <h3 style="margin-top:16px">Load a student's saved work</h3>
+    <div class="btnrow"><input class="code" id="tId" placeholder="Student ID" style="width:150px"><input class="code" id="tLast" placeholder="Last name" style="width:170px"><button class="btn ghost" id="tLoad" type="button">Load work</button></div>
+    <p class="fb info" id="tMsg" style="min-height:1em"></p>`;
+  const msg=t=>$('#tMsg').textContent=t;
+  $('#tKey').addEventListener('click',()=>{ document.body.classList.toggle('keyon'); renderTeacher(); msg(document.body.classList.contains('keyon')?'Answer key on: each box shows its answer, sort chips show their box, and correct choices have a dashed gold outline.':'Answer key off.'); });
+  $('#tPrev').addEventListener('click',()=>{ if(S.preview){ location.reload(); return; } const ns=fresh(); ns.preview=true; ns.student={first:'Teacher',last:'Preview',id:'0',period:'-',teacher:teacherList()[0]}; S=ns; closeTeacher(); showWS(); note('Preview: nothing is saved'); });
+  $('#tReset').addEventListener('click',()=>{ if(confirm('Erase this lab on this Chromebook? Work backed up to the Saved Student Work sheet is not deleted.')){ try{ localStorage.removeItem(STORE); }catch(e){} location.reload(); } });
+  $('#tResetWrong').addEventListener('click',()=>{
+    const wrong=PROBS.filter(pr=>{ const P=S.p[pr.id]||{}; return (P.tries||0)>0 && !P.right; });
+    if(!wrong.length){ msg('Nothing to reset: this student has no wrong answers.'); return; }
+    if(!confirm(`Reset ${wrong.length} problem${wrong.length>1?'s':''} that ${wrong.length>1?'are':'is'} wrong or on a second try for ${(S.student&&S.student.first)||'this student'}? Correct answers stay.`)) return;
+    wrong.forEach(pr=>{ delete S.p[pr.id]; });
+    save(); cloudSave(true); msg(`Reset ${wrong.length} problem${wrong.length>1?'s':''}. Reloading…`); setTimeout(()=>location.reload(),700); });
+  $('#tClose').addEventListener('click',closeTeacher);
+  $('#tCsv').addEventListener('click',()=>downloadCSV(recs,`LeafDiscLabSim_scores_${new Date().toISOString().slice(0,10)}.csv`));
+  $('#tLoad').addEventListener('click',async()=>{ const s={id:$('#tId').value.trim(),last:$('#tLast').value.trim()}; if(!s.id||!s.last){ msg('Type the student ID and last name.'); return; } msg('Looking up saved work...');
+    const r=await cloudLoad(s); if(r.status==='found'){ adopt(r.data); closeTeacher(); renderStart(); $('#start').hidden=false; $('#ws').hidden=true; $('#top').hidden=true; } else msg(r.status==='none'?'No saved work found for that student.':"Couldn't reach the saved-work sheet."); });
+}
+
+if(!STORAGE_OK) $('#noStore').hidden=false;
+renderStart();
+})();
+</script>
+
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab Dash | Physics</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1220;--panel:#121c31;--panel2:#18243d;--line:#2b3a58;--text:#e8eefc;--muted:#9fb0cf;--gold:#facc15;--gold2:#fbbf24;--ok:#34d399;--bad:#f87171;--violet:#a78bfa}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 "Atkinson Hyperlegible",Arial,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:#0e172a}
+header .t{font-weight:800;font-size:17px}
+header .s{color:var(--muted);font-size:13px}
+header .sp{flex:1}
+.btn{font:inherit;font-weight:700;border-radius:10px;padding:9px 16px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--gold);color:#1a1300;border-color:var(--gold)}
+.btn:disabled{opacity:.5;cursor:default}
+main{max-width:1000px;margin:0 auto;padding:14px 16px 30px}
+.stage{position:relative;width:100%;aspect-ratio:16/10;background:#050a14;border:1px solid var(--line);border-radius:14px;overflow:hidden;touch-action:none}
+canvas{display:block;width:100%;height:100%}
+.ov{position:absolute;inset:0;display:flex;background:rgba(5,10,20,.78);padding:14px;overflow:auto}
+.ov>.card{margin:auto}
+#teachOv{position:fixed;z-index:60;background:rgba(5,10,20,.94)}
+.ov[hidden]{display:none}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;max-width:640px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.card h2{margin:0 0 6px;font-size:22px}
+.card h3{margin:12px 0 6px;font-size:15px;color:var(--gold)}
+.muted{color:var(--muted)} .small{font-size:13.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chip{font:inherit;font-size:14px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.chip.on{border-color:var(--gold);background:rgba(250,204,21,.16);font-weight:700}
+.qtag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--violet);margin-bottom:4px}
+.qtext{font-size:18px;margin:4px 0 12px}
+.opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:15.5px}
+.opt:hover:not(:disabled){border-color:var(--gold)}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:13px;font-weight:800}
+.opt.pick{border-color:var(--gold)}
+.fb{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:15.5px}
+.fb.ok{background:rgba(52,211,153,.14);border:1px solid rgba(52,211,153,.5)}
+.fb.no{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.45)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:14px;margin:6px 0}
+.keys b{color:var(--gold)}
+.ladder{display:flex;flex-wrap:wrap;gap:6px;font-size:13px;margin-top:6px}
+.ladder span{padding:3px 8px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}
+.touch{display:none;gap:10px;justify-content:space-between;margin-top:10px;user-select:none;-webkit-user-select:none}
+.touch .grp{display:flex;gap:10px}
+.tbtn{width:64px;height:58px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:22px;font-weight:800;touch-action:none}
+.tbtn.fire{width:110px;background:#3b2a07;border-color:var(--gold);color:var(--gold);font-size:17px}
+.tbtn.on{background:#334155}
+@media (pointer:coarse){.touch{display:flex}}
+@media (max-width:480px){.tbtn{width:52px;height:54px;font-size:20px}.tbtn.fire{width:86px}.touch .grp{gap:7px}.touch{gap:6px}}
+@media (max-width:760px),(max-height:560px){.ov{position:fixed;z-index:50;background:rgba(5,10,20,.92)}}
+body.showtouch .touch{display:flex}
+.info{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:14px;color:var(--muted)}
+.tpanel h3{margin-top:14px}
+.tq{margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font-size:14px}
+.tq ol{margin:4px 0 0;padding-left:22px}
+.tq li.right{color:var(--ok);font-weight:700}
+input.code{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0b1220;color:var(--text);width:180px}
+#printView{display:none}
+@media print{
+  body>*:not(#printView){display:none!important}
+  #printView{display:block!important;color:#000;background:#fff;font:12px/1.4 Arial,sans-serif}
+  #printView h1{font-size:18px;margin:0 0 4px} #printView .pq{break-inside:avoid;margin:8px 0}
+  #printView ol{margin:2px 0 0;padding-left:22px} #printView li.right{font-weight:700;text-decoration:underline}
+  html,body{background:#fff}
+}
+
+.refbox{margin-top:12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 14px}.refbox summary{cursor:pointer;font-weight:700;color:var(--gold)}
+.ref{font-size:14px}.ref .eqs{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}.ref .eqs span{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:4px 10px;font-weight:700}.ref ul{margin:4px 0;padding-left:20px}.ref h4{margin:10px 0 2px;color:var(--violet);font-size:14px}
+.ansrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.ansrow input{font:inherit;font-size:20px;font-weight:700;width:170px;padding:8px 10px;border-radius:10px;border:2px solid var(--gold);background:#0b1220;color:var(--text)}
+.ansrow label{font-weight:700}.ansrow #ansUnit{font-weight:700;color:var(--gold);min-width:40px}
+.keypad{display:grid;grid-template-columns:repeat(6,52px);gap:6px}.keypad .tbtn{width:52px;height:46px;font-size:18px}
+@media print{.ref .eqs span{border:1px solid #444}}
+</style>
+</head>
+<body>
+<header>
+  <div><div class="t">Lab Dash</div><div class="s">Physics · Unit 1: Introduction to Physics & Measurement · Review game</div></div>
+  <div class="sp"></div>
+  <button class="btn" id="teachBtn" type="button">Teacher</button>
+</header>
+<main>
+  <div class="stage" id="stage">
+    <canvas id="cv" width="960" height="600" aria-label="Lab Dash game. Use the up and down arrows to change lanes."></canvas>
+    <div class="ov" id="startOv"><div class="card"><h2>Lab Dash</h2><p class="small muted" style="margin:0 0 8px">You are racing through the physics lab to finish your experiment before the bell. Each question appears at the top, and three answer gates come toward you, one in each lane. Steer into the right answer. Dodge the <b style="color:#a3e635">spills</b>!</p><div class="keys"><b>↑ ↓</b><span>change lanes (or W and S, or 1 2 3, or tap a lane)</span><b>P</b><span>pause</span></div><h3>Choose a mode</h3><div class="chips" id="modes"></div><p class="small" id="modeTip" style="margin:0"></p><p class="small muted">Wrong gate or spill = lose a heart. Every 5 right answers = level up and +1 heart.</p><div class="row"><button class="btn primary" id="startBtn" type="button">Start</button><span class="small muted" id="hiTxt"></span></div></div></div>
+    <div class="ov" id="overOv" hidden><div class="card"><h2>Game over</h2><div id="overBody"></div><div class="row"><button class="btn primary" id="againBtn" type="button">Play again</button><button class="btn" id="menuBtn" type="button">Change mode</button></div></div></div>
+    <div class="ov" id="pauseOv" hidden><div class="card" style="max-width:380px;text-align:center"><h2>Paused</h2><p class="muted">Press P (or Esc) or the button to keep playing.</p><button class="btn primary" id="resumeBtn" type="button">Resume</button></div></div>
+  </div>
+  
+  <div class="touch" id="touch"><div class="grp"><button class="tbtn" data-k="up" type="button" aria-label="Lane up">▲</button><button class="tbtn" data-k="down" type="button" aria-label="Lane down">▼</button><button class="tbtn" data-k="pause" type="button" aria-label="Pause">II</button></div></div>
+  <div class="info"><span id="info"></span></div>
+  <details class="refbox" open><summary>Reference sheet</summary><div id="refBox" class="ref"></div></details>
+</main>
+<div class="ov" id="teachOv" hidden>
+  <div class="card tpanel" style="max-width:780px">
+    <h2>Teacher tools</h2>
+    <div id="tLogin"><p class="small muted">Enter the teacher code.</p><div class="row" style="margin-top:4px"><input class="code" id="tCode" type="password" autocomplete="off" aria-label="Teacher code"><button class="btn primary" id="tGo" type="button">Open</button><button class="btn" id="tClose0" type="button">Close</button></div><div class="small" id="tMsg" style="color:var(--bad);margin-top:6px"></div></div>
+    <div id="tBody" hidden>
+      <div class="row"><button class="btn" id="tPrint" type="button">🖨 Print the reference sheet</button><button class="btn" id="tTouch" type="button">Show touch buttons</button><button class="btn" id="tClose" type="button">Close</button></div>
+      <div id="tInfo"></div>
+    </div>
+  </div>
+</div>
+<div id="printView"></div>
+<script>
+const META={"store": "physU1LabDash", "unit": 1};
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const store={ get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+const shuffle=a=>{ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const rnd=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+const R=(a,b,s)=>{ s=s||1; const n=Math.round((b-a)/s); return +(a+s*Math.floor(Math.random()*(n+1))).toFixed(6); };
+const SUP={'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+const sci=(x,s)=>{ s=s||2; if(x===0) return '0'; const e=Math.floor(Math.log10(Math.abs(x))); let m=+(x/10**e).toFixed(s-1); let ee=e; if(Math.abs(m)>=10){ m=+(m/10).toFixed(s-1); ee++; } return `${m.toFixed(s-1)} × 10${String(ee).split('').map(c=>SUP[c]).join('')}`; };
+/* nice number: 3 sig figs, commas, sci notation for very big/small */
+const n=(x,s)=>{ s=s||3; if(!isFinite(x)) return '?'; if(x!==0&&(Math.abs(x)>=1e6||Math.abs(x)<1e-3)) return sci(x,s); const v=Number(x.toPrecision(s)); return v.toLocaleString('en-US',{maximumFractionDigits:6}); };
+const U=(x,u,s)=>n(x,s)+(u?' '+u:'');
+/* build a question with distinct distractors */
+function Q(q,a,bad,hint,calc){ const seen=new Set([a]); const b=[]; bad.forEach(x=>{ if(x!=null&&!seen.has(x)&&!/NaN|Infinity|\?/.test(x)){ seen.add(x); b.push(x); } }); return {q,a,bad:b,hint:hint||'',calc:!!calc}; }
+/* numeric question: right value + candidate wrong values, formatted with units */
+function QN(q,val,wrongs,unit,hint,s){ const a=U(val,unit,s); const extra=[val*2,val/2,val*10,val/10,val*1.5]; return Q(q,a,wrongs.concat(extra).map(w=>U(w,unit,s)),hint,true); }
+/* concept bank: items [question, right, [wrong...], hint] */
+function C(items){ let recent=[]; return ()=>{ let it; let g=0; do{ it=pick(items); g++; }while(recent.includes(it)&&g<30); recent.push(it); if(recent.length>Math.min(6,items.length-1)) recent.shift(); return Q(it[0],it[1],it[2],it[3]); }; }
+function makeG(){
+const SF=[['0.00450',3],['1,200',2],['1,200.',4],['120.0',4],['3.050',4],['0.0302',3],['45,000',2],['7.00',3],['100.5',4],['0.8',1],['2.40 × 10³',3],['6.022 × 10²³',4],['0.000 9',1],['5,006',4],['80.',2],['0.0100',3]];
+const sfQ=()=>{ const [x,k]=pick(SF); return Q(`How many significant figures are in ${x}?`,String(k),['1','2','3','4','5'].filter(v=>v!==String(k)),'Leading zeros never count; trailing zeros count only with a decimal point.'); };
+const stdForm=(m,e)=>Number((m*10**e).toPrecision(2)).toLocaleString('en-US',{maximumFractionDigits:12});
+const sciQ=()=>{ const m=R(1.1,9.9,0.1), e=pick([-5,-4,-3,-2,3,4,5,6,7]); const a=sci(m*10**e,2);
+  return Q(`Write ${stdForm(m,e)} in scientific notation.`,a,[sci(m*10**(e+1),2),sci(m*10**(e-1),2),sci(m*10**(-e),2)],'Count how many places the decimal point moves. Big numbers: positive exponent; small numbers: negative.'); };
+const mulQ=()=>{ let a,b,p,r2; do{ a=R(1.1,9.9,0.1); b=R(1.11,9.99,0.01); p=a*b; r2=Number(p.toPrecision(2)); }while(p<11||p>=99||r2%10===0||Math.abs(+p.toFixed(1)-r2)<0.05);
+  return Q(`A rectangle is ${a.toFixed(1)} cm × ${b.toFixed(2)} cm. What is its area, with correct significant figures?`,`${r2} cm²`,[`${+p.toFixed(3)} cm²`,`${Number(p.toPrecision(3))} cm²`,`${Number(p.toPrecision(1))} cm²`],'Multiplying: keep the fewest significant figures of the numbers you used.',true); };
+const addQ=()=>{ const a=R(10.1,49.9,0.1), b=R(1.111,9.999,0.001), s=a+b; return Q(`Add ${a.toFixed(1)} m + ${b.toFixed(3)} m, with correct significant figures.`,`${s.toFixed(1)} m`,[`${s.toFixed(3)} m`,`${s.toFixed(2)} m`,`${Math.round(s)} m`],'Adding: round to the fewest decimal places.',true); };
+const PRE=[['k','kilo',1e3],['c','centi',1e-2],['m','milli',1e-3],['μ','micro',1e-6],['M','mega',1e6]];
+const fmtN=x=>(x!==0&&(Math.abs(x)>=1e6||Math.abs(x)<1e-3))?sci(x,2):Number(x.toPrecision(3)).toLocaleString('en-US',{maximumFractionDigits:8});
+const convQ=()=>{ const [p,name,f]=pick(PRE), base=pick([['m','meters'],['g','grams'],['s','seconds']]), v=pick([2.5,4.5,7.2,12,350,0.6,85]); const ans=v*f;
+  return Q(`Convert ${v} ${p}${base[0]} to ${base[1]} (${base[0]}).`,`${fmtN(ans)} ${base[0]}`,[`${fmtN(ans*10)} ${base[0]}`,`${fmtN(ans/10)} ${base[0]}`,`${fmtN(v/f)} ${base[0]}`,`${fmtN(ans*100)} ${base[0]}`],`${name}- means × ${sci(f,1).replace('1.0 × ','')}.`,true); };
+const kmhQ=()=>{ const v=pick([18,36,54,72,90,108]); return Q(`A car goes ${v} km/h. What is that in m/s?`,`${n(v/3.6)} m/s`,[`${n(v*3.6)} m/s`,`${n(v/60)} m/s`,`${n(v*1000/60)} m/s`],'Multiply by 1,000 m/km, then divide by 3,600 s/h.',true); };
+const baseQ=C([['What is the SI base unit of mass?','kilogram',['gram','pound','newton'],'The kilogram is the only base unit with a prefix.'],['What is the SI base unit of length?','meter',['centimeter','foot','kilometer'],'Length: the meter.'],['What is the SI base unit of time?','second',['minute','hour','millisecond'],'Time: the second.'],['What is the SI base unit of temperature?','kelvin',['degree Celsius','degree Fahrenheit','joule'],'Temperature: the kelvin.'],['What is the SI base unit of electric current?','ampere',['volt','ohm','coulomb'],'Current: the ampere.'],['Which prefix means one-thousandth (10⁻³)?','milli-',['centi-','kilo-','micro-'],'milli = 0.001.'],['Which prefix means one million (10⁶)?','mega-',['kilo-','giga-','micro-'],'mega = 1,000,000.'],['Which prefix means one-millionth (10⁻⁶)?','micro- (μ)',['milli-','nano-','centi-'],'micro = 0.000 001.']]);
+const ACC=[['g',9.8,'m/s²','the acceleration due to gravity'],['v',343,'m/s','the speed of sound'],['ρ',1.00,'g/cm³','the density of water'],['c',3.00e8,'m/s','the speed of light']];
+const pctQ=()=>{ const [s,acc,u,name]=pick(ACC); const meas=+(acc*(1+pick([-1,1])*R(0.02,0.12,0.01))).toPrecision(3); const e=Math.abs(meas-acc)/acc*100;
+  return Q(`A student measures ${name} as ${n(meas)} ${u}. The accepted value is ${n(acc)} ${u}. What is the percent error?`,`${e.toFixed(1)}%`,[`${(Math.abs(meas-acc)/meas*100).toFixed(1)}%`,`${(e*10).toFixed(1)}%`,`${(e/10).toFixed(2)}%`,`${(100-e).toFixed(1)}%`],'% error = |measured − accepted| ÷ accepted × 100.',true); };
+const avgQ=()=>{ const t=[R(2.0,2.6,0.01),R(2.0,2.6,0.01),R(2.0,2.6,0.01)], m=(t[0]+t[1]+t[2])/3;
+  return Q(`Three stopwatch times: ${t.map(x=>x.toFixed(2)).join(' s, ')} s. What is the average?`,`${m.toFixed(2)} s`,[`${(t[0]+t[1]+t[2]).toFixed(2)} s`,`${((Math.max(...t)-Math.min(...t))/2).toFixed(2)} s`,`${(m+0.1).toFixed(2)} s`],'Add the trials, then divide by the number of trials.',true); };
+const slopeQ=()=>{ const k=pick([2,4,5,8,12,15,20]), x=pick([2,3,4,5]), y=k*x; return Q(`A best-fit line on a force (N, y-axis) vs. stretch (m, x-axis) graph goes through (0, 0) and (${x} m, ${y} N). What is the slope?`,`${k} N/m`,[`${n(x/y)} N/m`,`${y} N/m`,`${y-x} N/m`],'Slope = rise ÷ run = Δy ÷ Δx.',true); };
+const dataC=C([['Darts all land close together but far from the bullseye. They are…','precise but not accurate',['accurate but not precise','accurate and precise','neither'],'Precise = close to each other. Accurate = close to the true value.'],['Darts are spread out, but their average is the bullseye. They are…','accurate but not precise',['precise but not accurate','accurate and precise','neither'],'The average is right, but the throws are spread out.'],['In an experiment, the variable YOU change on purpose is the…','independent variable',['dependent variable','control variable','constant'],'You change the independent variable.'],['In an experiment, the variable you MEASURE is the…','dependent variable',['independent variable','control variable','hypothesis'],'It depends on what you changed.'],['Testing how ramp height affects a car’s speed, the car’s mass should be…','kept the same (controlled)',['changed each trial','the dependent variable','ignored'],'Change only one variable at a time.'],['On a graph, the independent variable goes on the…','x-axis',['y-axis','title','legend'],'Independent: x (horizontal).'],['A ruler is marked every 1 mm. You should record lengths to the nearest…','0.1 mm (one estimated digit)',['1 cm','1 mm exactly','0.01 mm'],'Read to the smallest mark, then estimate one more digit.'],['A reading of 12.4 ± 0.1 cm means the true value is likely between…','12.3 and 12.5 cm',['12.0 and 13.0 cm','12.4 and 12.5 cm','11.4 and 13.4 cm'],'± tells the range of uncertainty.'],['Why do scientists repeat trials and average them?','to reduce the effect of random errors',['to get a bigger number','to change the independent variable','to make the graph steeper'],'Averaging smooths out random scatter.']]);
+return {title:'Lab Dash',unit:1,unitName:'Introduction to Physics & Measurement',store:'physU1LabDash',qLabel:'Question',hazMsg:'You slipped in a spill!',
+ startMsg:'Run through the lab! Steer into the right answer.',overTip:'Tip: check significant figures and units before you pick. Every answer lane is a common mistake.',
+ how:'The student is a runner dashing through a science lab. Each question appears at the top; three answer gates slide in, one per lane. Steer into the right one. Every 5 right answers = level up (+1 heart, faster). After level 2, chemical spills appear and must be dodged. Calculation questions slide in more slowly so there is time to work them out.',
+ modes:{sig:{label:'Sig figs & sci notation',tip:'Count significant figures, round answers, and write numbers in scientific notation.'},units:{label:'Units & conversions',tip:'SI base units, metric prefixes, and unit conversions.'},data:{label:'Accuracy, error & data',tip:'Precision vs. accuracy, percent error, averages, variables, and graph slopes.'},mix:{label:'Mixed',tip:'Everything from Unit 1.'}},
+ gens:{sig:[sfQ,sfQ,sciQ,mulQ,addQ],units:[convQ,convQ,kmhQ,baseQ],data:[pctQ,avgQ,slopeQ,dataC,dataC]},
+ ref:`<div class="eqs"><span>% error = |measured − accepted| ÷ accepted × 100</span><span>average = sum ÷ number of trials</span><span>slope = Δy ÷ Δx</span></div><h4>Significant figures</h4><ul><li>Nonzero digits count. Zeros between nonzero digits count.</li><li>Leading zeros (0.004) never count. Trailing zeros count only if there is a decimal point.</li><li>× and ÷: fewest sig figs. + and −: fewest decimal places.</li></ul><h4>Prefixes</h4><ul><li>mega (M) 10⁶ · kilo (k) 10³ · centi (c) 10⁻² · milli (m) 10⁻³ · micro (μ) 10⁻⁶</li><li>1 km/h ÷ 3.6 = m/s</li></ul><h4>Data</h4><ul><li>Precise: close together. Accurate: close to the true value.</li><li>Independent variable: what you change (x-axis). Dependent: what you measure (y-axis).</li></ul>`,
+ bg:(c,d)=>{ c.fillStyle='#0b1526'; c.fillRect(0,0,W,H); const off=d%160; c.strokeStyle='rgba(148,163,184,.12)'; c.lineWidth=1; for(let x=-off;x<W;x+=160){ c.strokeRect(x+10,190,120,60); c.beginPath(); c.moveTo(x+40,190); c.lineTo(x+40,250); c.stroke(); } c.fillStyle='#16233b'; c.fillRect(0,566,W,34); for(let x=-(d%80);x<W;x+=80){ c.fillStyle='#1f2f4d'; c.fillRect(x,566,40,34); } },
+ player:(c,x,y,d)=>{ const s=Math.sin(d/18); c.save(); c.translate(x,y); c.strokeStyle='#e2e8f0'; c.lineWidth=5; c.lineCap='round'; c.beginPath(); c.moveTo(0,10); c.lineTo(-14*s,36); c.moveTo(0,10); c.lineTo(14*s,36); c.stroke(); c.fillStyle='#f8fafc'; rr(-13,-24,26,38,8); c.fill(); c.fillStyle='#60a5fa'; c.fillRect(-13,-6,26,4); c.beginPath(); c.arc(0,-34,11,0,6.3); c.fillStyle='#fcd34d'; c.fill(); c.fillStyle='#0f172a'; c.fillRect(-9,-38,18,6); c.strokeStyle='#38bdf8'; c.lineWidth=2; c.strokeRect(-9,-38,18,6); c.beginPath(); c.moveTo(12,-10); c.lineTo(24,-2+6*s); c.stroke(); c.fillStyle='#34d399'; c.beginPath(); c.moveTo(22,-8+6*s); c.lineTo(32,-8+6*s); c.lineTo(35,6+6*s); c.lineTo(19,6+6*s); c.closePath(); c.fill(); c.restore(); },
+ hazard:(c,x,y)=>{ c.save(); c.translate(x,y+26); c.fillStyle='rgba(132,204,22,.75)'; c.beginPath(); c.ellipse(0,0,34,12,0,0,6.3); c.fill(); c.fillStyle='#ecfccb'; c.font='bold 12px Arial'; c.textAlign='center'; c.fillText('SPILL',0,4); c.restore(); }};
+}
+
+const G=makeG();
+const GAME={onPause:()=>{}, onResume:()=>{}};
+/* teacher tools (code teacher007) */
+function tShow(on){ $('#teachOv').hidden=!on; if(on){ GAME.onPause(); $('#tCode').value=''; $('#tMsg').textContent=''; setTimeout(()=>$('#tCode').focus(),30); } }
+$('#teachBtn').addEventListener('click',()=>tShow(true)); $('#tClose0').addEventListener('click',()=>tShow(false));
+$('#tClose').addEventListener('click',()=>{ tShow(false); $('#tBody').hidden=true; $('#tLogin').hidden=false; });
+function tOpen(){ if($('#tCode').value.trim().toLowerCase()!=='teacher007'){ $('#tMsg').textContent='Code not recognized.'; return; } $('#tLogin').hidden=true; $('#tBody').hidden=false; $('#tInfo').innerHTML=teacherHTML(); }
+$('#tGo').addEventListener('click',tOpen); $('#tCode').addEventListener('keydown',e=>{ if(e.key==='Enter') tOpen(); });
+$('#tTouch').addEventListener('click',()=>{ document.body.classList.toggle('showtouch'); $('#tTouch').textContent=document.body.classList.contains('showtouch')?'Hide touch buttons':'Show touch buttons'; });
+$('#tPrint').addEventListener('click',()=>{ $('#printView').innerHTML=`<h1>${G.title}: Reference Sheet</h1><p>Physics · Unit ${G.unit}: ${G.unitName}</p>`+G.ref; setTimeout(()=>window.print(),100); });
+$('#resumeBtn').addEventListener('click',()=>GAME.onResume());
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) GAME.onPause(); });
+$('#refBox').innerHTML=G.ref;
+/* modes */
+let mode=store.get(G.store+'_mode'); if(!G.modes[mode]) mode=Object.keys(G.modes)[0];
+$('#modes').innerHTML=Object.entries(G.modes).map(([k,m])=>`<button type="button" class="chip" data-m="${k}">${m.label}</button>`).join('');
+function drawModes(){ $$('#modes .chip').forEach(b=>b.classList.toggle('on',b.dataset.m===mode)); $('#modeTip').textContent=G.modes[mode].tip; }
+$$('#modes .chip').forEach(b=>b.addEventListener('click',()=>{ mode=b.dataset.m; store.set(G.store+'_mode',mode); drawModes(); })); drawModes();
+function genQ(m){ m=m||mode; const list=m==='mix'?Object.keys(G.gens):[m]; return pick(G.gens[pick(list)])(); }
+const HIKEY=G.store+'_hi'; function hiTxt(){ const h=+store.get(HIKEY)||0; $('#hiTxt').textContent=h?`High score on this Chromebook: ${h}`:''; } hiTxt();
+function saveHi(score){ const hi=+store.get(HIKEY)||0; if(score>hi) store.set(HIKEY,score); hiTxt(); return score>hi; }
+function teacherHTML(){ const ex=Object.keys(G.gens).map(k=>{ const q=genQ(k); return q.a==null?`<div class="tq"><b>${G.modes[k].label}</b> (sample): ${q.q}<br><b style="color:var(--ok)">Answer: ${n(q.ans)} ${q.unit}</b> (accepted within ±${Math.round((q.tol||0.03)*100)}%)</div>`:`<div class="tq"><b>${G.modes[k].label}</b> (sample): ${q.q}<ol>${[q.a].concat(q.bad.slice(0,2)).map((o,i)=>`<li class="${i?'':'right'}">${o}</li>`).join('')}</ol></div>`; }).join('');
+  return `<p class="small muted">This game is practice and is not graded. Questions are generated at random, so every game is different. ${G.wrongRule||'A wrong answer never shows the right one: the same question comes back until it is answered correctly.'}</p><h3>How it works</h3><p class="small">${G.how}</p><h3>Modes</h3><ul class="small">${Object.values(G.modes).map(m=>`<li><b>${m.label}:</b> ${m.tip}</li>`).join('')}</ul><h3>Sample questions (the right answer is bold)</h3>${ex}<h3>Reference sheet (also under the game)</h3><div class="small ref">${G.ref}</div>`; }
+/* canvas helpers */
+const cv=$('#cv'), ctx=cv.getContext('2d'); const W=960,H=600;
+let hudK=1; function fit(){ const r=cv.getBoundingClientRect(); if(r.width) hudK=Math.min(2,Math.max(1,560/r.width)); const d=Math.min(2,window.devicePixelRatio||1); const w=Math.round(r.width*d), h=Math.round(r.height*d); if(w&&h&&(cv.width!==w||cv.height!==h)){ cv.width=w; cv.height=h; } }
+window.addEventListener('resize',fit);
+function rr(x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+function wrap(t,maxW,font){ ctx.font=font; const words=String(t).split(' '); const lines=[]; let cur=''; words.forEach(w=>{ const tr=cur?cur+' '+w:w; if(ctx.measureText(tr).width>maxW&&cur){ lines.push(cur); cur=w; } else cur=tr; }); if(cur) lines.push(cur); return lines; }
+function textBox(t,cx,cy,maxW,maxH,size,color,bold){ let s=size, lines; do{ lines=wrap(t,maxW,`${bold?'bold ':''}${s}px Arial`); s--; }while((lines.length*(s+5)>maxH||lines.some(l=>ctx.measureText(l).width>maxW))&&s>10); s++; ctx.fillStyle=color; ctx.textAlign='center'; ctx.textBaseline='middle'; const lh=s+5; lines.forEach((l,i)=>ctx.fillText(l,cx,cy-(lines.length-1)*lh/2+i*lh)); }
+function qPanel(q,top){ ctx.fillStyle='#0e1a33'; ctx.fillRect(0,0,W,top); ctx.fillStyle='#9fb0cf'; ctx.font='13px Arial'; ctx.textAlign='left'; ctx.textBaseline='top'; ctx.fillText(G.qLabel||'Question',16,10); let s=26*Math.min(hudK,1.25), lines; do{ lines=wrap(q,W-260,`bold ${s}px Arial`); s--; }while(lines.length*(s+7)>top-38&&s>13); s++; ctx.fillStyle='#facc15'; ctx.textBaseline='top'; lines.forEach((l,i)=>ctx.fillText(l,16,32+i*(s+7))); }
+let parts=[]; function boom(x,y,col,k){ for(let i=0;i<k;i++){ const a=rnd(0,6.3),s=rnd(40,170); parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:rnd(.3,.8),col}); } }
+function stepParts(dt){ parts.forEach(p=>{ p.x+=p.vx*dt; p.y+=p.vy*dt; p.life-=dt; }); parts=parts.filter(p=>p.life>0); }
+function drawParts(){ parts.forEach(p=>{ ctx.globalAlpha=Math.max(0,Math.min(1,p.life*1.6)); ctx.fillStyle=p.col; ctx.fillRect(p.x-2,p.y-2,4,4); }); ctx.globalAlpha=1; }
+function hud(score,hearts,level,streak){ const k=hudK; ctx.textAlign='right'; ctx.textBaseline='top'; ctx.fillStyle='#e8eefc'; ctx.font=`bold ${18*k}px Arial`; ctx.fillText('Score '+score,W-14,10); ctx.font=`${20*k}px Arial`; ctx.fillStyle='#f87171'; ctx.fillText('♥'.repeat(Math.max(0,hearts)),W-14,14+20*k); ctx.font=`bold ${13*k}px Arial`; ctx.fillStyle='#93c5fd'; ctx.fillText('Level '+level+(streak>=3?`   Streak ×${streak}`:''),W-14,40+24*k); }
+function banner(m,top){ if(m&&performance.now()<m.until){ const k=Math.min(hudK,1.5); ctx.textAlign='center'; ctx.textBaseline='middle'; let s=19*k, lines; do{ lines=wrap(m.t,W-80,`bold ${s}px Arial`); s--; }while(lines.length>2&&s>11); s++; const lh=s+6, bh=lines.length*lh+14; const y0=top!=null?top+12:H-30-bh; ctx.fillStyle='rgba(5,10,20,.85)'; ctx.fillRect(30,y0,W-60,bh); ctx.fillStyle=m.c||'#fde68a'; lines.forEach((l,i)=>ctx.fillText(l,W/2,y0+7+lh/2+i*lh)); } }
+/* ===================== LANE RUNNER ENGINE ===================== */
+const LANES=[268,388,508], PX=150, TOP=172;
+let state='menu', lane, laneY, cur, col, haz, hearts, score, streak, speed, spawnT, rightN, tries, level, msg, lastT, flash, dist, missed;
+function newQ(){ cur=genQ(); missed=0; }
+function makeCol(){ const opts=shuffle([{t:cur.a,ok:true}].concat(shuffle(cur.bad.slice()).slice(0,2).map(t=>({t,ok:false})))); col={x:W+130,opts,done:false}; }
+function startGame(){ state='play'; lane=1; laneY=LANES[1]; col=null; haz=[]; parts=[]; hearts=3; score=0; streak=0; speed=140; rightN=0; tries=0; level=1; flash=null; dist=0; msg={t:G.startMsg||'Steer into the right answer!',until:performance.now()+2000};
+  newQ(); spawnT=1.2; ['#startOv','#overOv','#pauseOv'].forEach(s=>$(s).hidden=true); $('#info').textContent='Mode: '+G.modes[mode].label; fit(); lastT=performance.now(); requestAnimationFrame(loop); }
+function gameOver(){ state='over'; const isHi=saveHi(score);
+  $('#overBody').innerHTML=`<p style="font-size:18px;margin:4px 0">Score: <b>${score}</b>${isHi?' <span style="color:var(--gold)">New high score!</span>':''}</p><p class="muted" style="margin:2px 0">Level reached: <b>${level}</b>. Answers right: <b>${rightN} of ${tries}</b>${tries?` (${Math.round(100*rightN/tries)}%)`:''}.</p><p class="small muted" style="margin-top:8px">${G.overTip||''}</p>`;
+  $('#overOv').hidden=false; }
+GAME.onPause=()=>{ if(state==='play'){ state='paused'; $('#pauseOv').hidden=false; } };
+GAME.onResume=()=>{ if(state==='paused'){ state='play'; $('#pauseOv').hidden=true; lastT=performance.now(); requestAnimationFrame(loop); } };
+$('#startBtn').addEventListener('click',startGame); $('#againBtn').addEventListener('click',startGame);
+$('#menuBtn').addEventListener('click',()=>{ $('#overOv').hidden=true; $('#startOv').hidden=false; state='menu'; });
+const move=d=>{ if(state==='play') lane=Math.max(0,Math.min(2,lane+d)); };
+document.addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT') return;
+  if(e.code==='KeyP'||e.code==='Escape'){ state==='play'?GAME.onPause():GAME.onResume(); return; }
+  if(state!=='play') return;
+  if(e.code==='ArrowUp'||e.code==='KeyW'){ move(-1); e.preventDefault(); } if(e.code==='ArrowDown'||e.code==='KeyS'){ move(1); e.preventDefault(); }
+  if(e.key==='1'||e.key==='2'||e.key==='3') lane=+e.key-1; });
+cv.addEventListener('pointerdown',e=>{ if(state!=='play') return; const r=cv.getBoundingClientRect(); const y=(e.clientY-r.top)/r.height*H; if(y<TOP) return; let best=0; LANES.forEach((ly,i)=>{ if(Math.abs(y-ly)<Math.abs(y-LANES[best])) best=i; }); lane=best; });
+$$('.tbtn').forEach(b=>b.addEventListener('pointerdown',e=>{ e.preventDefault(); const k=b.dataset.k; if(k==='up') move(-1); if(k==='down') move(1); if(k==='pause') state==='play'?GAME.onPause():GAME.onResume(); }));
+function loop(t){ if(state!=='play') return; const dt=Math.min(0.05,(t-lastT)/1000); lastT=t; update(dt); draw(); if(state==='play') requestAnimationFrame(loop); }
+function colSpeed(){ return speed*(cur.calc?0.55:1); }
+function update(dt){ laneY+=(LANES[lane]-laneY)*Math.min(1,dt*14); dist+=speed*dt;
+  if(!col){ spawnT-=dt; if(spawnT<=0) makeCol(); }
+  else { col.x-=colSpeed()*dt; if(!col.done&&col.x<=PX){ col.done=true; col.picked=lane; col.at=performance.now(); resolve(); } if(col&&col.done&&performance.now()-col.at>450) col=null; }
+  if(level>=2&&Math.random()<dt*0.22&&!haz.some(h=>h.x>W-260)&&(!col||col.done||col.x>W-60||col.x<PX+300)){ haz.push({x:W+40,lane:Math.floor(Math.random()*3),hit:false}); }
+  haz.forEach(h=>{ h.x-=speed*1.15*dt; if(!h.hit&&Math.abs(h.x-PX)<28&&h.lane===lane){ h.hit=true; hearts--; streak=0; flash={c:'rgba(248,113,113,.3)',until:performance.now()+300}; boom(PX,laneY,'#fca5a5',18); msg={t:G.hazMsg+' −1 heart',until:performance.now()+1500}; if(hearts<=0) gameOver(); } });
+  haz=haz.filter(h=>h.x>-60); stepParts(dt); }
+function resolve(){ const o=col.opts[lane]; tries++;
+  if(o.ok){ rightN++; streak++; score+=(cur.calc?150:100)+Math.min(10,streak)*10; boom(PX,laneY,'#fde68a',16); flash={c:'rgba(52,211,153,.18)',until:performance.now()+200};
+    if(rightN%5===0){ level++; speed+=20; hearts=Math.min(5,hearts+1); msg={t:`Level ${level}! +1 heart. Faster now.`,until:performance.now()+2000}; } else msg={t:pick(['Correct!','Nice!','Yes!','Right!']),until:performance.now()+900,c:'#86efac'};
+    newQ(); spawnT=1.1; }
+  else { hearts--; streak=0; missed++; flash={c:'rgba(248,113,113,.28)',until:performance.now()+300}; boom(PX,laneY,'#f87171',14);
+    msg={t:`Not "${o.t}". ${cur.hint||'Try the same question again.'}`,until:performance.now()+2600}; spawnT=1.4; if(hearts<=0) gameOver(); } }
+function gate(x,y,o,alpha){ ctx.globalAlpha=alpha==null?1:alpha; rr(x-115,y-40,230,80,14); ctx.fillStyle=G.gateFill||'#1e293b'; ctx.fill(); ctx.lineWidth=3; ctx.strokeStyle=G.gateStroke||'#facc15'; ctx.stroke(); textBox(o.t,x,y,208,70,20,'#f8fafc',true); ctx.globalAlpha=1; }
+function draw(){ const sx=cv.width/W, sy=cv.height/H; ctx.setTransform(sx,0,0,sy,0,0);
+  G.bg(ctx,dist); for(let i=0;i<3;i++){ ctx.fillStyle=i===lane?'rgba(250,204,21,.07)':'rgba(148,163,184,.03)'; ctx.fillRect(0,LANES[i]-58,W,116); }
+  ctx.strokeStyle='rgba(148,163,184,.2)'; ctx.setLineDash([10,12]); [328,448].forEach(y=>{ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }); ctx.setLineDash([]);
+  if(col){ if(col.done){ const a=Math.max(0,1-(performance.now()-col.at)/450); gate(PX+60,LANES[col.picked],col.opts[col.picked],a); } else col.opts.forEach((o,i)=>gate(col.x,LANES[i],o)); }
+  haz.forEach(h=>G.hazard(ctx,h.x,LANES[h.lane]));
+  G.player(ctx,PX,laneY,dist); drawParts();
+  if(flash&&performance.now()<flash.until){ ctx.fillStyle=flash.c; ctx.fillRect(0,TOP,W,H-TOP); }
+  qPanel(cur.q,TOP); hud(score,hearts,level,streak); banner(msg); }
+(function idle(){ fit(); const sx=cv.width/W, sy=cv.height/H; ctx.setTransform(sx,0,0,sy,0,0); G.bg(ctx,0); G.player(ctx,PX,LANES[1],0); })();
+window.__game={get state(){return state;}, get hearts(){return hearts;}, get score(){return score;}, get level(){return level;}, get rightN(){return rightN;}, get tries(){return tries;}, get q(){return cur;},
+  col:()=>col, rightLane:()=>col?col.opts.findIndex(o=>o.ok):-1, setLane:i=>{ lane=i; laneY=LANES[i]; }, spawn:()=>{ if(!col||col.done){ col=null; spawnT=0; update(0.016); } }, fast:()=>{ if(col&&!col.done) col.x=Math.min(col.x,PX+3); }, genQ};
+
+</script>
+</body>
+</html>

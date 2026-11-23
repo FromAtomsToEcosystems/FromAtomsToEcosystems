@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Codon Runner | Biology</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1220;--panel:#121c31;--panel2:#18243d;--line:#2b3a58;--text:#e8eefc;--muted:#9fb0cf;--gold:#facc15;--gold2:#fbbf24;--ok:#34d399;--bad:#f87171;--violet:#a78bfa}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 "Atkinson Hyperlegible",Arial,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:#0e172a}
+header .t{font-weight:800;font-size:17px}
+header .s{color:var(--muted);font-size:13px}
+header .sp{flex:1}
+.btn{font:inherit;font-weight:700;border-radius:10px;padding:9px 16px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--gold);color:#1a1300;border-color:var(--gold)}
+.btn:disabled{opacity:.5;cursor:default}
+main{max-width:1000px;margin:0 auto;padding:14px 16px 30px}
+.stage{position:relative;width:100%;aspect-ratio:16/10;background:#050a14;border:1px solid var(--line);border-radius:14px;overflow:hidden;touch-action:none}
+canvas{display:block;width:100%;height:100%}
+.ov{position:absolute;inset:0;display:flex;background:rgba(5,10,20,.78);padding:14px;overflow:auto}
+.ov>.card{margin:auto}
+#teachOv{position:fixed;z-index:60;background:rgba(5,10,20,.94)}
+.ov[hidden]{display:none}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;max-width:640px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.card h2{margin:0 0 6px;font-size:22px}
+.card h3{margin:12px 0 6px;font-size:15px;color:var(--gold)}
+.muted{color:var(--muted)} .small{font-size:13.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chip{font:inherit;font-size:14px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.chip.on{border-color:var(--gold);background:rgba(250,204,21,.16);font-weight:700}
+.qtag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--violet);margin-bottom:4px}
+.qtext{font-size:18px;margin:4px 0 12px}
+.opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:15.5px}
+.opt:hover:not(:disabled){border-color:var(--gold)}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:13px;font-weight:800}
+.opt.pick{border-color:var(--gold)}
+.fb{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:15.5px}
+.fb.ok{background:rgba(52,211,153,.14);border:1px solid rgba(52,211,153,.5)}
+.fb.no{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.45)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:14px;margin:6px 0}
+.keys b{color:var(--gold)}
+.ladder{display:flex;flex-wrap:wrap;gap:6px;font-size:13px;margin-top:6px}
+.ladder span{padding:3px 8px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}
+.touch{display:none;gap:10px;justify-content:space-between;margin-top:10px;user-select:none;-webkit-user-select:none}
+.touch .grp{display:flex;gap:10px}
+.tbtn{width:64px;height:58px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:22px;font-weight:800;touch-action:none}
+.tbtn.fire{width:110px;background:#3b2a07;border-color:var(--gold);color:var(--gold);font-size:17px}
+.tbtn.on{background:#334155}
+@media (pointer:coarse){.touch{display:flex}}
+@media (max-width:480px){.tbtn{width:52px;height:54px;font-size:20px}.tbtn.fire{width:86px}.touch .grp{gap:7px}.touch{gap:6px}}
+@media (max-width:760px),(max-height:560px){.ov{position:fixed;z-index:50;background:rgba(5,10,20,.92)}}
+body.showtouch .touch{display:flex}
+.info{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:14px;color:var(--muted)}
+.tpanel h3{margin-top:14px}
+.tq{margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font-size:14px}
+.tq ol{margin:4px 0 0;padding-left:22px}
+.tq li.right{color:var(--ok);font-weight:700}
+input.code{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0b1220;color:var(--text);width:180px}
+#printView{display:none}
+@media print{
+  body>*:not(#printView){display:none!important}
+  #printView{display:block!important;color:#000;background:#fff;font:12px/1.4 Arial,sans-serif}
+  #printView h1{font-size:18px;margin:0 0 4px} #printView .pq{break-inside:avoid;margin:8px 0}
+  #printView ol{margin:2px 0 0;padding-left:22px} #printView li.right{font-weight:700;text-decoration:underline}
+  html,body{background:#fff}
+}
+
+.chartbox{margin-top:12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 12px}.chartbox summary{cursor:pointer;font-weight:700;color:var(--gold)}.wide{overflow-x:auto}table.cc{border-collapse:collapse;margin-top:8px;font-size:13px;min-width:560px;width:100%}table.cc th{color:var(--gold);padding:4px 6px}table.cc td{border:1px solid var(--line);padding:4px 6px;vertical-align:top;line-height:1.35}table.cc .cd{font-family:Consolas,monospace;color:var(--muted)}@media print{table.cc{font-size:11px;min-width:0} table.cc td,table.cc th{border:1px solid #444;color:#000} table.cc .cd{color:#333}}</style>
+</head>
+<body>
+<header>
+  <div><div class="t">Codon Runner</div><div class="s">Biology · Unit 3: DNA and Protein Synthesis · Review game</div></div>
+  <div class="sp"></div>
+  <button class="btn" id="teachBtn" type="button">Teacher</button>
+</header>
+<main>
+  <div class="stage" id="stage">
+    <canvas id="cv" width="960" height="600" aria-label="Codon Runner game. Use the up and down arrows to change lanes."></canvas>
+    <div class="ov" id="startOv"><div class="card"><h2>Codon Runner</h2><p class="small muted" style="margin:0 0 8px">You are a <b>ribosome</b> reading an mRNA. For each codon, three tRNAs come toward you, one in each lane. Steer into the right one to add its amino acid to the protein. A <b>stop codon</b> finishes the protein. Dodge the <b style="color:#c084fc">UV light</b>: it is a mutagen.</p><div class="keys"><b>↑ ↓</b><span>change lanes (or W and S, or 1 2 3, or tap a lane)</span><b>P</b><span>pause</span></div><h3>Choose a mode</h3><div class="chips" id="modes"></div><p class="small" id="modeTip" style="margin:0"></p><p class="small muted">Use the codon chart under the game. Wrong tRNA = lose a heart. Finish a protein = +1 heart.</p><div class="row"><button class="btn primary" id="startBtn" type="button">Start</button><span class="small muted" id="hiTxt"></span></div></div></div>
+    <div class="ov" id="overOv" hidden><div class="card"><h2>Game over</h2><div id="overBody"></div><div class="row"><button class="btn primary" id="againBtn" type="button">Play again</button><button class="btn" id="menuBtn" type="button">Change mode</button></div></div></div>
+
+    <div class="ov" id="pauseOv" hidden><div class="card" style="max-width:380px;text-align:center"><h2>Paused</h2><p class="muted">Press P or the button to keep playing.</p><button class="btn primary" id="resumeBtn" type="button">Resume</button></div></div>
+  </div>
+  <div class="touch" id="touch"><div class="grp"><button class="tbtn" data-k="up" type="button" aria-label="Lane up">▲</button><button class="tbtn" data-k="down" type="button" aria-label="Lane down">▼</button><button class="tbtn" data-k="pause" type="button" aria-label="Pause">II</button></div></div>
+  <div class="info"><span id="info"></span></div>
+  <details class="chartbox" open><summary>Codon chart (mRNA)</summary><div id="chart" class="wide"></div></details>
+
+</main>
+<div class="ov" id="teachOv" hidden>
+  <div class="card tpanel" style="max-width:780px">
+    <h2>Teacher tools</h2>
+    <div id="tLogin"><p class="small muted">Enter the teacher code.</p><div class="row" style="margin-top:4px"><input class="code" id="tCode" type="password" autocomplete="off" aria-label="Teacher code"><button class="btn primary" id="tGo" type="button">Open</button><button class="btn" id="tClose0" type="button">Close</button></div><div class="small" id="tMsg" style="color:var(--bad);margin-top:6px"></div></div>
+    <div id="tBody" hidden>
+      <div class="row"><button class="btn" id="tPrint" type="button">🖨 Print the reference sheet</button><button class="btn" id="tTouch" type="button">Show touch buttons</button><button class="btn" id="tClose" type="button">Close</button></div>
+      <div id="tInfo"></div>
+    </div>
+  </div>
+</div>
+<div id="printView"></div>
+<script>
+const META={"store": "bioU3CodonRunner", "unit": 3};
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const store={ get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+const shuffle=a=>{ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const rnd=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const GAME={onPause:()=>{}, onResume:()=>{}, teacherHTML:()=>'', printHTML:()=>''};
+/* teacher tools (code Teacher007) */
+function tShow(on){ $('#teachOv').hidden=!on; if(on){ GAME.onPause(); $('#tCode').value=''; $('#tMsg').textContent=''; setTimeout(()=>$('#tCode').focus(),30); } }
+$('#teachBtn').addEventListener('click',()=>tShow(true)); $('#tClose0').addEventListener('click',()=>tShow(false));
+$('#tClose').addEventListener('click',()=>{ tShow(false); $('#tBody').hidden=true; $('#tLogin').hidden=false; });
+function tOpen(){ if($('#tCode').value.trim().toLowerCase()!=='teacher007'){ $('#tMsg').textContent='Code not recognized.'; return; } $('#tLogin').hidden=true; $('#tBody').hidden=false; $('#tInfo').innerHTML=GAME.teacherHTML(); }
+$('#tGo').addEventListener('click',tOpen); $('#tCode').addEventListener('keydown',e=>{ if(e.key==='Enter') tOpen(); });
+$('#tTouch').addEventListener('click',()=>document.body.classList.toggle('showtouch'));
+$('#tPrint').addEventListener('click',()=>{ $('#printView').innerHTML=GAME.printHTML(); setTimeout(()=>window.print(),100); });
+$('#resumeBtn').addEventListener('click',()=>GAME.onResume());
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) GAME.onPause(); });
+/* ===================== CODON RUNNER ===================== */
+const cv=$('#cv'), ctx=cv.getContext('2d'); const W=960,H=600;
+const B='UCAG', AA1='FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG';
+const N3={F:'Phe',L:'Leu',S:'Ser',Y:'Tyr',C:'Cys',W:'Trp',P:'Pro',H:'His',Q:'Gln',R:'Arg',I:'Ile',M:'Met',T:'Thr',N:'Asn',K:'Lys',V:'Val',A:'Ala',D:'Asp',E:'Glu',G:'Gly','*':'STOP'};
+const CODE={}; let k=0; for(const a of B) for(const b of B) for(const c of B) CODE[a+b+c]=N3[AA1[k++]];
+const SYN={}; Object.entries(CODE).forEach(([c,a])=>(SYN[a]=SYN[a]||[]).push(c));
+const PAIR={A:'U',U:'A',C:'G',G:'C'}, DPAIR={A:'T',U:'A',C:'G',G:'C'};
+const anti=c=>c.split('').map(x=>PAIR[x]).join('');            // tRNA anticodon (written 3' to 5' under the codon)
+const tmpl=c=>c.split('').map(x=>DPAIR[x]).join('');           // DNA template triplet
+const PROTEINS=[
+ {name:'hemoglobin', seq:'MVHLTPEEKSAV', about:'Hemoglobin carries oxygen in red blood cells. In sickle cell disease, amino acid 7 here (Glu) is changed to Val.'},
+ {name:'insulin', seq:'MALWMRLLPLLA', about:'Insulin is the hormone that lowers blood sugar (Unit 1 feedback loop).'},
+ {name:'green fluorescent protein (GFP)', seq:'MSKGEELFTGVV', about:'GFP makes jellyfish glow. Scientists add its gene to other living things to make cells glow.'}
+];
+const MODES={mrna:{label:'mRNA codon → amino acid', tip:'Read the mRNA codon. Use the codon chart. Steer into the amino acid it codes for.'},
+             trna:{label:'mRNA codon → tRNA anticodon', tip:'Find the tRNA whose anticodon pairs with the codon (A with U, C with G).'},
+             dna:{label:'DNA template → amino acid', tip:'Transcribe the DNA template into an mRNA codon first (A→U, T→A, C→G, G→C), then use the chart.'}};
+let mode=store.get(META.store+'_mode'); if(!MODES[mode]) mode='mrna';
+$('#modes').innerHTML=Object.entries(MODES).map(([k,m])=>`<button type="button" class="chip" data-m="${k}">${m.label}</button>`).join('');
+function drawModes(){ $$('#modes .chip').forEach(b=>b.classList.toggle('on',b.dataset.m===mode)); $('#modeTip').textContent=MODES[mode].tip; }
+$$('#modes .chip').forEach(b=>b.addEventListener('click',()=>{ mode=b.dataset.m; store.set(META.store+'_mode',mode); drawModes(); })); drawModes();
+const HIKEY=META.store+'_hi'; function hiTxt(){ const h=+store.get(HIKEY)||0; $('#hiTxt').textContent=h?`High score on this Chromebook: ${h}`:''; } hiTxt();
+/* codon chart beside the game */
+function chartHTML(){ let h='<table class="cc"><tr><th></th>'+[...B].map(b=>`<th>${b}</th>`).join('')+'<th></th></tr>';
+  for(const a of B){ h+=`<tr><th>${a}</th>`; for(const b of B){ h+='<td>'+[...B].map(c=>{ const cd=a+b+c; return `<div><span class="cd">${cd}</span> ${CODE[cd]==='Met'?'<b>Met (start)</b>':CODE[cd]==='STOP'?'<b>STOP</b>':CODE[cd]}</div>`; }).join('')+'</td>'; } h+=`<th>${'UCAG'.split('').join('<br>')}</th></tr>`; }
+  return h+'</table><div class="small muted" style="margin-top:4px">First base: left side. Second base: top. Third base: inside each box.</div>'; }
+$('#chart').innerHTML=chartHTML();
+/* ---------- state ---------- */
+let state='menu', lane, laneY, cols, obstacles, chain, prot, pIdx, codons, ci, hearts, score, streak, speed, spawnT, rightN, tries, built, msg, lastT, flash, parts;
+const LANES=[230,350,470], PX=170;
+function rnaFor(seq){ return seq.split('').map(a=>pick(SYN[N3[a]])).concat([pick(SYN.STOP)]); }
+function nextProtein(){ if(pIdx<PROTEINS.length){ prot=PROTEINS[pIdx]; } else { const pool='ACDEFGHIKLMNPQRSTVWY'; let s='M'; for(let i=0;i<11;i++) s+=pick(pool.split('')); prot={name:'mystery protein '+(pIdx-PROTEINS.length+1), seq:s, about:'A random protein. Real proteins are often hundreds of amino acids long.'}; }
+  codons=rnaFor(prot.seq); ci=0; chain=[]; msg={t:`Build the start of ${prot.name}!`,until:performance.now()+2200}; }
+function codonPrompt(){ const c=codons[ci]; return mode==='dna'?tmpl(c):c; }
+function variants(c){ const out=[]; for(let i=0;i<3;i++) for(const b of B){ if(b===c[i]) continue; out.push(c.slice(0,i)+b+c.slice(i+1)); } return out; }
+function makeColumn(){ const c=codons[ci], right=CODE[c]; let opts;
+  if(mode==='trna'){ const good=right==='STOP'?'STOP: no tRNA':anti(c); const bad=new Set(); const v=shuffle(variants(c));
+    if(right!=='STOP') bad.add(c); for(const x of v){ if(bad.size>=2) break; if(CODE[x]==='STOP') continue; const a=anti(x); if(a!==good) bad.add(a); }
+    opts=[{t:good,ok:true,kind:'trna'}].concat([...bad].slice(0,2).map(t=>({t,ok:false,kind:'trna'}))); }
+  else { const bad=new Set(); const v=shuffle(variants(c)); for(const x of v){ if(bad.size>=2) break; const a=CODE[x]; if(a!==right&&!(a==='STOP'&&right!=='STOP'&&ci<codons.length-1&&Math.random()<.7)) bad.add(a); }
+    while(bad.size<2){ const a=pick(Object.values(N3)); if(a!==right) bad.add(a); }
+    opts=[{t:right,ok:true,kind:'aa'}].concat([...bad].slice(0,2).map(t=>({t,ok:false,kind:'aa'}))); }
+  shuffle(opts); cols.push({x:W+70,opts,done:false}); }
+function startGame(){ state='play'; lane=1; laneY=LANES[1]; cols=[]; obstacles=[]; parts=[]; hearts=3; score=0; streak=0; speed=175; rightN=0; tries=0; built=[]; pIdx=0; flash=null;
+  nextProtein(); spawnT=0.4; ['#startOv','#overOv','#pauseOv'].forEach(s=>$(s).hidden=true); $('#info').textContent='Mode: '+MODES[mode].label; fit(); lastT=performance.now(); requestAnimationFrame(loop); }
+function gameOver(){ state='over'; const hi=+store.get(HIKEY)||0; if(score>hi) store.set(HIKEY,score);
+  $('#overBody').innerHTML=`<p style="font-size:18px;margin:4px 0">Score: <b>${score}</b>${score>hi?' <span style="color:var(--gold)">New high score!</span>':''}</p>
+   <p class="muted" style="margin:2px 0">Proteins finished: <b>${built.length}</b>. Codons right: <b>${rightN} of ${tries}</b>${tries?` (${Math.round(100*rightN/tries)}%)`:''}.</p>`+
+   (built.length?`<h3>Proteins you built</h3>`+built.map(b=>`<p class="small" style="margin:2px 0"><b>${b.name}:</b> ${b.chain.join('–')}</p>`).join(''):'')+
+   `<p class="small muted" style="margin-top:8px">${prot.about}</p>`;
+  $('#overOv').hidden=false; hiTxt(); }
+GAME.onPause=()=>{ if(state==='play'){ state='paused'; $('#pauseOv').hidden=false; } };
+GAME.onResume=()=>{ if(state==='paused'){ state='play'; $('#pauseOv').hidden=true; lastT=performance.now(); requestAnimationFrame(loop); } };
+$('#startBtn').addEventListener('click',startGame); $('#againBtn').addEventListener('click',startGame);
+$('#menuBtn').addEventListener('click',()=>{ $('#overOv').hidden=true; $('#startOv').hidden=false; state='menu'; });
+/* ---------- input ---------- */
+const move=d=>{ if(state==='play') lane=Math.max(0,Math.min(2,lane+d)); };
+document.addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT') return;
+  if(e.code==='KeyP'||e.code==='Escape'){ state==='play'?GAME.onPause():GAME.onResume(); return; }
+  if(state!=='play') return;
+  if(e.code==='ArrowUp'||e.code==='KeyW'){ move(-1); e.preventDefault(); } if(e.code==='ArrowDown'||e.code==='KeyS'){ move(1); e.preventDefault(); }
+  if(e.key==='1'||e.key==='2'||e.key==='3'){ lane=+e.key-1; } });
+cv.addEventListener('pointerdown',e=>{ if(state!=='play') return; const r=cv.getBoundingClientRect(); const y=(e.clientY-r.top)/r.height*H; let best=0; LANES.forEach((ly,i)=>{ if(Math.abs(y-ly)<Math.abs(y-LANES[best])) best=i; }); lane=best; });
+$$('.tbtn').forEach(b=>b.addEventListener('pointerdown',e=>{ e.preventDefault(); const k=b.dataset.k; if(k==='up') move(-1); if(k==='down') move(1); if(k==='pause') state==='play'?GAME.onPause():GAME.onResume(); }));
+let hudK=1; function fit(){ const r=cv.getBoundingClientRect(); if(r.width) hudK=Math.min(2,Math.max(1,560/r.width)); const d=Math.min(2,window.devicePixelRatio||1); const w=Math.round(r.width*d), h=Math.round(r.height*d); if(w&&h&&(cv.width!==w||cv.height!==h)){ cv.width=w; cv.height=h; } }
+window.addEventListener('resize',fit);
+/* ---------- loop ---------- */
+function loop(t){ if(state!=='play') return; const dt=Math.min(0.05,(t-lastT)/1000); lastT=t; update(dt); draw(); if(state==='play') requestAnimationFrame(loop); }
+function boom(x,y,col,n){ for(let i=0;i<n;i++){ const a=rnd(0,6.3),s=rnd(40,170); parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:rnd(.3,.8),col}); } }
+function update(dt){
+  laneY+=(LANES[lane]-laneY)*Math.min(1,dt*14);
+  const gap=Math.max(1.55,3.0-pIdx*0.35-ci*0.02);
+  spawnT-=dt; if(spawnT<=0 && !cols.some(c=>!c.done)){ makeColumn(); spawnT=gap; }
+  cols.forEach(c=>{ c.x-=speed*dt; if(!c.done&&c.x<=PX){ c.done=true; c.picked=lane; c.at=performance.now(); resolve(c); } }); cols=cols.filter(c=>!c.done||performance.now()-c.at<500);
+  if(pIdx>=1&&Math.random()<dt*0.18&&!obstacles.some(o=>o.x>W-200)){ const nc=cols.find(c=>!c.done); if(!nc||nc.x<W-160) obstacles.push({x:W+40,lane:Math.floor(Math.random()*3),hit:false}); }
+  obstacles.forEach(o=>{ o.x-=speed*1.05*dt; if(!o.hit&&Math.abs(o.x-PX)<26&&o.lane===lane){ o.hit=true; hearts--; streak=0; flash={c:'rgba(167,139,250,.35)',until:performance.now()+300}; boom(PX,laneY,'#c4b5fd',18); msg={t:'Hit by UV light (a mutagen)! −1 heart',until:performance.now()+1500}; if(hearts<=0) gameOver(); } });
+  obstacles=obstacles.filter(o=>o.x>-60);
+  parts.forEach(p=>{ p.x+=p.vx*dt; p.y+=p.vy*dt; p.life-=dt; }); parts=parts.filter(p=>p.life>0);
+}
+function resolve(c){ const o=c.opts[lane]; tries++; const codon=codons[ci];
+  if(o.ok){ rightN++; streak++; score+=100+Math.min(10,streak)*10; boom(PX,laneY,'#fde68a',14); flash={c:'rgba(52,211,153,.18)',until:performance.now()+200};
+    if(CODE[codon]==='STOP'){ score+=500; built.push({name:prot.name,chain:chain.slice()}); hearts=Math.min(5,hearts+1); msg={t:`Stop codon! You finished ${prot.name}. +500 and +1 heart`,until:performance.now()+2600}; pIdx++; speed=175+pIdx*28; nextProtein(); spawnT=2.2; }
+    else { chain.push(CODE[codon]); ci++; } }
+  else { hearts--; streak=0; flash={c:'rgba(248,113,113,.28)',until:performance.now()+300}; boom(PX,laneY,'#f87171',14);
+    msg={t:o.kind==='trna'?'Not that tRNA. Check the base pairs and try the next set.':`Not ${o.t}. Check the codon chart and try the next set.`,until:performance.now()+1800}; if(hearts<=0) gameOver(); } }
+/* ---------- drawing ---------- */
+const AAC={}; Object.values(N3).forEach((a,i)=>AAC[a]=`hsl(${(i*47)%360} 70% 62%)`); AAC.STOP='#f87171';
+function rr(x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+function tRNA(x,y,o){ // cloverleaf tRNA: amino acid on the top stem, three loops, anticodon at the bottom
+  ctx.save(); ctx.translate(x,y); ctx.lineWidth=2; ctx.strokeStyle='#1e3a8a'; ctx.fillStyle='#93c5fd';
+  ctx.fillRect(-5,-30,10,24); ctx.strokeRect(-5,-30,10,24);                       // acceptor stem
+  [[-20,0,11],[20,0,11]].forEach(([lx,ly,r])=>{ ctx.beginPath(); ctx.arc(lx,ly,r,0,6.3); ctx.fill(); ctx.stroke(); });  // side loops
+  ctx.beginPath(); ctx.arc(0,0,12,0,6.3); ctx.fill(); ctx.stroke();                // center
+  ctx.fillRect(-5,10,10,10); ctx.strokeRect(-5,10,10,10);                          // anticodon stem
+  const showAA=o.kind==='aa';
+  ctx.beginPath(); ctx.arc(0,-46,showAA?23:15,0,6.3); ctx.fillStyle=showAA?AAC[o.t]:'#334155'; ctx.fill(); ctx.strokeStyle='#0b1220'; ctx.stroke();
+  ctx.fillStyle=showAA?'#0b1220':'#cbd5e1'; ctx.font=`bold ${showAA?(o.t.length>4?12:15):15}px Arial`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(showAA?o.t:'?',0,-45);
+  rr(-32,20,64,26,8); ctx.fillStyle=o.kind==='trna'?'#fde68a':'#1e293b'; ctx.fill(); ctx.strokeStyle='#0b1220'; ctx.stroke();
+  ctx.fillStyle=o.kind==='trna'?'#1a1300':'#64748b'; ctx.font=`bold ${o.t.length>6?10:16}px ${o.kind==='trna'?'Consolas, monospace':'Arial'}`; ctx.fillText(o.kind==='trna'?o.t:'···',0,34);
+  ctx.restore(); }
+function ribosome(x,y){ ctx.save(); ctx.translate(x,y);
+  ctx.beginPath(); ctx.ellipse(0,-14,44,30,0,0,6.3); ctx.fillStyle='#f59e0b'; ctx.fill(); ctx.strokeStyle='#78350f'; ctx.lineWidth=2.5; ctx.stroke();
+  ctx.beginPath(); ctx.ellipse(0,22,36,17,0,0,6.3); ctx.fillStyle='#fbbf24'; ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#78350f'; ctx.font='bold 12px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('ribosome',0,-14); ctx.restore(); }
+function draw(){ const sx=cv.width/W, sy=cv.height/H; ctx.setTransform(sx,0,0,sy,0,0); const k=hudK;
+  ctx.fillStyle='#0a1426'; ctx.fillRect(0,0,W,H);
+  // cytoplasm texture + lanes
+  for(let i=0;i<3;i++){ ctx.fillStyle=i===lane?'rgba(250,204,21,.07)':'rgba(148,163,184,.04)'; ctx.fillRect(0,LANES[i]-56,W,112); }
+  ctx.strokeStyle='rgba(148,163,184,.18)'; ctx.setLineDash([10,12]); [290,410].forEach(y=>{ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }); ctx.setLineDash([]);
+  // the mRNA strand the ribosome reads (top panel)
+  ctx.fillStyle='#0e1a33'; ctx.fillRect(0,0,W,150);
+  ctx.fillStyle='#9fb0cf'; ctx.font=`${13*Math.min(k,1.4)}px Arial`; ctx.textAlign='left'; ctx.textBaseline='top'; ctx.fillText(mode==='dna'?'DNA template (transcribe it first):':'mRNA codon to read:',16,10);
+  const cx=16; ctx.font=`bold ${40*Math.min(k,1.3)}px Consolas, monospace`; ctx.fillStyle='#facc15'; ctx.fillText(codonPrompt(),cx,30);
+  ctx.font=`${18*Math.min(k,1.3)}px Consolas, monospace`; ctx.fillStyle='rgba(226,232,240,.45)';
+  ctx.fillText('next: '+codons.slice(ci+1,ci+4).map(c=>mode==='dna'?tmpl(c):c).join(' ')+(ci+4<codons.length?' …':''),cx+130*Math.min(k,1.3)+20,44);
+  // protein chain
+  ctx.font=`${13*Math.min(k,1.4)}px Arial`; ctx.fillStyle='#9fb0cf'; ctx.fillText(`Protein: ${prot.name} (${chain.length} of ${prot.seq.length} amino acids)`,16,92);
+  chain.forEach((a,i)=>{ const x=26+i*44, y=128; if(i) { ctx.strokeStyle='#e2e8f0'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(x-30,y); ctx.lineTo(x-14,y); ctx.stroke(); }
+    ctx.beginPath(); ctx.arc(x,y,14,0,6.3); ctx.fillStyle=AAC[a]; ctx.fill(); ctx.fillStyle='#0b1220'; ctx.font='bold 10px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(a,x,y+1); ctx.textAlign='left'; ctx.textBaseline='top'; });
+  // columns of tRNAs, obstacles, ribosome
+  cols.forEach(c=>{ if(c.done){ const a=Math.max(0,1-(performance.now()-c.at)/450); if(a<=0) return; ctx.globalAlpha=a; tRNA(PX+40,LANES[c.picked]+4,c.opts[c.picked]); ctx.globalAlpha=1; } else c.opts.forEach((o,i)=>tRNA(c.x,LANES[i]+4,o)); });
+  obstacles.forEach(o=>{ const y=LANES[o.lane]; ctx.save(); ctx.translate(o.x,y); ctx.strokeStyle='#c084fc'; ctx.lineWidth=5; ctx.beginPath(); for(let i=-3;i<=3;i++){ ctx.lineTo(i*7,(i%2?-1:1)*22); } ctx.stroke(); ctx.fillStyle='#e9d5ff'; ctx.font='bold 13px Arial'; ctx.textAlign='center'; ctx.fillText('UV',0,40); ctx.restore(); });
+  ribosome(PX,laneY);
+  parts.forEach(p=>{ ctx.globalAlpha=Math.max(0,Math.min(1,p.life*1.6)); ctx.fillStyle=p.col; ctx.fillRect(p.x-2,p.y-2,4,4); }); ctx.globalAlpha=1;
+  if(flash&&performance.now()<flash.until){ ctx.fillStyle=flash.c; ctx.fillRect(0,150,W,H-150); }
+  // HUD
+  ctx.textAlign='right'; ctx.textBaseline='top'; ctx.fillStyle='#e8eefc'; ctx.font=`bold ${18*k}px Arial`; ctx.fillText('Score '+score,W-14,10);
+  ctx.font=`${20*k}px Arial`; ctx.fillStyle='#f87171'; ctx.fillText('♥'.repeat(Math.max(0,hearts)),W-14,14+20*k);
+  if(streak>=3){ ctx.font=`bold ${13*k}px Arial`; ctx.fillStyle='#facc15'; ctx.fillText(`Streak ×${streak}`,W-14,40+24*k); }
+  if(msg&&performance.now()<msg.until){ ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.font=`bold ${19*Math.min(k,1.5)}px Arial`; const tw=ctx.measureText(msg.t).width; ctx.fillStyle='rgba(5,10,20,.8)'; ctx.fillRect(W/2-tw/2-12,H-48-18*Math.min(k,1.5),tw+24,36*Math.min(k,1.5)); ctx.fillStyle='#fde68a'; ctx.fillText(msg.t,W/2,H-48); }
+}
+(function idle(){ fit(); const sx=cv.width/W, sy=cv.height/H; ctx.setTransform(sx,0,0,sy,0,0); ctx.fillStyle='#0a1426'; ctx.fillRect(0,0,W,H); })();
+/* ---------- teacher ---------- */
+GAME.teacherHTML=()=>`<p class="small muted">This game is practice and is not graded. A wrong pick never shows the right answer; the same codon stays until it is answered correctly.</p>
+ <h3>How it works</h3><p class="small">The ribosome moves along an mRNA. For each codon, three tRNAs come in, one per lane. Students steer into the right one. Stop codons finish a protein (+1 heart). After the first protein, UV light (a mutagen) appears and must be dodged.</p>
+ <h3>Modes</h3><ul class="small">${Object.values(MODES).map(m=>`<li><b>${m.label}:</b> ${m.tip}</li>`).join('')}</ul>
+ <h3>Proteins (real amino acid sequences; codons are picked at random from the ones that code for each amino acid)</h3>
+ ${PROTEINS.map(p=>`<p class="small"><b>${p.name}:</b> ${p.seq.split('').map(a=>N3[a]).join('–')}–STOP<br><span class="muted">${p.about}</span></p>`).join('')}
+ <p class="small muted">After these three, students get random "mystery proteins" at a faster speed.</p>`;
+GAME.printHTML=()=>`<h1>Codon Chart (mRNA)</h1>${chartHTML()}<p>RNA base pairing: A–U, U–A, C–G, G–C. DNA template to mRNA: A→U, T→A, C→G, G→C. Start codon: AUG (Met). Stop codons: UAA, UAG, UGA.</p>`;
+window.__codon={get state(){return state;}, get hearts(){return hearts;}, get score(){return score;}, get lane(){return lane;}, get ci(){return ci;}, get built(){return built.length;}, get rightN(){return rightN;}, get tries(){return tries;},
+  nextCol:()=>cols.find(c=>!c.done), codon:()=>codons[ci], CODE, anti, tmpl, setLane:i=>{ lane=i; laneY=LANES[i]; }, fast:()=>{ cols.forEach(c=>c.x=Math.min(c.x,PX+5)); spawnT=0; }};
+
+</script>
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

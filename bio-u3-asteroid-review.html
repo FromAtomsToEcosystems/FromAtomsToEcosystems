@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unit 3 Asteroid Review | Biology</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1220;--panel:#121c31;--panel2:#18243d;--line:#2b3a58;--text:#e8eefc;--muted:#9fb0cf;--gold:#facc15;--gold2:#fbbf24;--ok:#34d399;--bad:#f87171;--violet:#a78bfa}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 "Atkinson Hyperlegible",Arial,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:#0e172a}
+header .t{font-weight:800;font-size:17px}
+header .s{color:var(--muted);font-size:13px}
+header .sp{flex:1}
+.btn{font:inherit;font-weight:700;border-radius:10px;padding:9px 16px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--gold);color:#1a1300;border-color:var(--gold)}
+.btn:disabled{opacity:.5;cursor:default}
+main{max-width:1000px;margin:0 auto;padding:14px 16px 30px}
+.stage{position:relative;width:100%;aspect-ratio:16/10;background:#050a14;border:1px solid var(--line);border-radius:14px;overflow:hidden;touch-action:none}
+canvas{display:block;width:100%;height:100%}
+.ov{position:absolute;inset:0;display:flex;background:rgba(5,10,20,.78);padding:14px;overflow:auto}
+.ov>.card{margin:auto}
+#teachOv{position:fixed;z-index:60;background:rgba(5,10,20,.94)}
+.ov[hidden]{display:none}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;max-width:640px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.card h2{margin:0 0 6px;font-size:22px}
+.card h3{margin:12px 0 6px;font-size:15px;color:var(--gold)}
+.muted{color:var(--muted)} .small{font-size:13.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chip{font:inherit;font-size:14px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.chip.on{border-color:var(--gold);background:rgba(250,204,21,.16);font-weight:700}
+.qtag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--violet);margin-bottom:4px}
+.qtext{font-size:18px;margin:4px 0 12px}
+.opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:15.5px}
+.opt:hover:not(:disabled){border-color:var(--gold)}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:13px;font-weight:800}
+.opt.pick{border-color:var(--gold)}
+.fb{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:15.5px}
+.fb.ok{background:rgba(52,211,153,.14);border:1px solid rgba(52,211,153,.5)}
+.fb.no{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.45)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:14px;margin:6px 0}
+.keys b{color:var(--gold)}
+.ladder{display:flex;flex-wrap:wrap;gap:6px;font-size:13px;margin-top:6px}
+.ladder span{padding:3px 8px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}
+.touch{display:none;gap:10px;justify-content:space-between;margin-top:10px;user-select:none;-webkit-user-select:none}
+.touch .grp{display:flex;gap:10px}
+.tbtn{width:64px;height:58px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:22px;font-weight:800;touch-action:none}
+.tbtn.fire{width:110px;background:#3b2a07;border-color:var(--gold);color:var(--gold);font-size:17px}
+.tbtn.on{background:#334155}
+@media (pointer:coarse){.touch{display:flex}}
+@media (max-width:480px){.tbtn{width:52px;height:54px;font-size:20px}.tbtn.fire{width:86px}.touch .grp{gap:7px}.touch{gap:6px}}
+@media (max-width:760px),(max-height:560px){.ov{position:fixed;z-index:50;background:rgba(5,10,20,.92)}}
+body.showtouch .touch{display:flex}
+.info{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:14px;color:var(--muted)}
+.tpanel h3{margin-top:14px}
+.tq{margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font-size:14px}
+.tq ol{margin:4px 0 0;padding-left:22px}
+.tq li.right{color:var(--ok);font-weight:700}
+input.code{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0b1220;color:var(--text);width:180px}
+#printView{display:none}
+@media print{
+  body>*:not(#printView){display:none!important}
+  #printView{display:block!important;color:#000;background:#fff;font:12px/1.4 Arial,sans-serif}
+  #printView h1{font-size:18px;margin:0 0 4px} #printView .pq{break-inside:avoid;margin:8px 0}
+  #printView ol{margin:2px 0 0;padding-left:22px} #printView li.right{font-weight:700;text-decoration:underline}
+  html,body{background:#fff}
+}
+</style>
+</head>
+<body>
+<header>
+  <div><div class="t">Unit 3 Asteroid Review</div><div class="s">Biology · Unit 3: DNA and Protein Synthesis · Review game</div></div>
+  <div class="sp"></div>
+  <button class="btn" id="teachBtn" type="button">Teacher</button>
+</header>
+<main>
+  <div class="stage" id="stage">
+    <canvas id="cv" width="960" height="600" aria-label="Asteroids game. Use the arrow keys to turn and move, and the space bar to shoot."></canvas>
+    <div class="ov" id="startOv">
+      <div class="card">
+        <h2>Asteroid Review</h2>
+        <p class="small muted" style="margin:0 0 8px">Fly around a big space map (9 screens) full of planets and space-station walls. Blast every asteroid to finish a wave. A glowing <b style="color:var(--violet)">question crystal</b> appears somewhere on the map: follow the purple arrow (or the mini-map), then shoot it or fly into it to get a review question. Answer it right to <b>power up</b> your ship.</p>
+        <div class="keys"><b>← →</b><span>turn (or A and D)</span><b>↑</b><span>thrust (or W)</span><b>Space</b><span>shoot</span><b>P</b><span>pause</span><b>1 to 4</b><span>answer a question</span></div>
+        <h3>Power-up ladder</h3>
+        <div class="ladder" id="ladder"></div>
+        <h3>Choose your topics</h3>
+        <div class="chips" id="topics"></div>
+        <div class="row"><button class="btn primary" id="startBtn" type="button">Start game</button><span class="small muted" id="hiTxt"></span></div>
+      </div>
+    </div>
+    <div class="ov" id="qOv" hidden>
+      <div class="card" role="dialog" aria-modal="true" aria-labelledby="qText">
+        <div class="qtag" id="qTag">Power-up question</div>
+        <div class="qtext" id="qText"></div>
+        <div class="opts" id="qOpts"></div>
+        <div class="fb" id="qFb" hidden></div>
+        <div class="row"><button class="btn primary" id="qGo" type="button" hidden>Back to the game (Enter)</button></div>
+      </div>
+    </div>
+    <div class="ov" id="pauseOv" hidden><div class="card" style="max-width:380px;text-align:center"><h2>Paused</h2><p class="muted">Press P or the button to keep playing.</p><button class="btn primary" id="resumeBtn" type="button">Resume</button></div></div>
+    <div class="ov" id="overOv" hidden>
+      <div class="card">
+        <h2>Game over</h2>
+        <div id="overBody"></div>
+        <div class="row"><button class="btn primary" id="againBtn" type="button">Play again</button><button class="btn" id="menuBtn" type="button">Change questions</button></div>
+      </div>
+    </div>
+    <div class="ov" id="teachOv" hidden>
+      <div class="card tpanel" style="max-width:760px">
+        <h2>Teacher tools</h2>
+        <div id="tLogin"><p class="small muted">Enter the teacher code.</p><div class="row" style="margin-top:4px"><input class="code" id="tCode" type="password" autocomplete="off" aria-label="Teacher code"><button class="btn primary" id="tGo" type="button">Open</button><button class="btn" id="tClose0" type="button">Close</button></div><div class="small" id="tMsg" style="color:var(--bad);margin-top:6px"></div></div>
+        <div id="tBody" hidden>
+          <p class="small muted">This game is practice and is not graded. Students never see the right answer: a missed question comes back later in the same game. The question bank below comes from this unit's lesson final checks and vocabulary list.</p>
+          <div class="row"><button class="btn" id="tPrintQ" type="button">🖨 Print questions</button><button class="btn" id="tPrintK" type="button">🖨 Print answer key</button><button class="btn" id="tTouch" type="button">Show touch buttons</button><button class="btn" id="tClose" type="button">Close</button></div>
+          <h3 id="tCount"></h3><div id="tList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="touch" id="touch">
+    <div class="grp"><button class="tbtn" data-k="left" type="button" aria-label="Turn left">◀</button><button class="tbtn" data-k="right" type="button" aria-label="Turn right">▶</button><button class="tbtn" data-k="up" type="button" aria-label="Thrust">▲</button></div>
+    <div class="grp"><button class="tbtn" data-k="pause" type="button" aria-label="Pause">II</button><button class="tbtn fire" data-k="fire" type="button">FIRE</button></div>
+  </div>
+  <div class="info"><span id="infoTopic"></span><span id="infoQ"></span></div>
+</main>
+<div id="printView"></div>
+<script>
+const BANK=[{"q": "What are the three parts of a nucleotide?", "opts": ["An amino acid, a sugar, and a fat", "A phosphate, a sugar, and a nitrogen base", "A phosphate, a protein, and a lipid", "Glucose, oxygen, and water"], "ans": 1, "topic": "DNA Structure and Replication"}, {"q": "In DNA, adenine (A) always pairs with...", "opts": ["guanine (G)", "uracil (U)", "cytosine (C)", "thymine (T)"], "ans": 3, "topic": "DNA Structure and Replication"}, {"q": "In DNA, cytosine (C) always pairs with...", "opts": ["guanine (G)", "thymine (T)", "adenine (A)", "uracil (U)"], "ans": 0, "topic": "DNA Structure and Replication"}, {"q": "What is the shape of DNA?", "opts": ["A ring", "A ball", "A single straight strand", "A double helix, like a twisted ladder"], "ans": 3, "topic": "DNA Structure and Replication"}, {"q": "A DNA strand reads A T G C. What is the matching strand?", "opts": ["G C A T", "U A C G", "T A C G", "A T G C"], "ans": 2, "topic": "DNA Structure and Replication"}, {"q": "Which enzyme unzips DNA during replication?", "opts": ["DNA polymerase", "RNA polymerase", "Amylase", "Helicase"], "ans": 3, "topic": "DNA Structure and Replication"}, {"q": "Which enzyme adds new nucleotides and checks for mistakes?", "opts": ["DNA polymerase", "RNA polymerase", "Lactase", "Helicase"], "ans": 0, "topic": "DNA Structure and Replication"}, {"q": "Why is replication called semi-conservative?", "opts": ["Each new DNA has one old strand and one new strand", "The old strands stay together", "Only half of the DNA is copied", "Half of the DNA is thrown away"], "ans": 0, "topic": "DNA Structure and Replication"}, {"q": "When does a cell copy its DNA?", "opts": ["After the cell dies", "Only at night", "Before the cell divides", "Never"], "ans": 2, "topic": "DNA Structure and Replication"}, {"q": "A DNA sample is 30% A. What percent is T?", "opts": ["70%", "40%", "20%", "30%"], "ans": 3, "topic": "DNA Structure and Replication"}, {"q": "What is transcription?", "opts": ["Copying one gene from DNA into mRNA", "Breaking down glucose", "Building a protein at a ribosome", "Copying all of the DNA before division"], "ans": 0, "topic": "Transcription"}, {"q": "Where does transcription happen?", "opts": ["In the nucleus", "At the ribosome", "In the mitochondria only", "In the cell membrane"], "ans": 0, "topic": "Transcription"}, {"q": "Which enzyme builds the mRNA?", "opts": ["RNA polymerase", "Amylase", "Helicase", "DNA polymerase"], "ans": 0, "topic": "Transcription"}, {"q": "In RNA, which base takes the place of thymine (T)?", "opts": ["Uracil (U)", "Guanine (G)", "Cytosine (C)", "Adenine (A)"], "ans": 0, "topic": "Transcription"}, {"q": "A DNA template has the base A. Which base goes in the mRNA across from it?", "opts": ["G", "C", "T", "U"], "ans": 3, "topic": "Transcription"}, {"q": "A DNA template strand reads <b>C G A T</b>. What is the mRNA?", "opts": ["G C U A", "C G A T", "G C A U", "G C T A"], "ans": 0, "topic": "Transcription"}, {"q": "How is RNA different from DNA?", "opts": ["RNA never leaves the nucleus", "RNA has thymine", "RNA has two strands", "RNA is single-stranded"], "ans": 3, "topic": "Transcription"}, {"q": "How does mRNA get out of the nucleus?", "opts": ["By breaking the nucleus open", "By turning into DNA", "It never leaves", "Through a nuclear pore"], "ans": 3, "topic": "Transcription"}, {"q": "What happens to the DNA after transcription?", "opts": ["It becomes mRNA", "It zips back up, unchanged", "It leaves the nucleus", "It is destroyed"], "ans": 1, "topic": "Transcription"}, {"q": "Where does the mRNA go after it leaves the nucleus?", "opts": ["To the mitochondria to make ATP", "Back into the DNA", "To the cell membrane to be stored", "To a ribosome in the cytoplasm"], "ans": 3, "topic": "Transcription"}, {"q": "What is translation?", "opts": ["Breaking down a protein", "Copying DNA into mRNA", "Building a protein from the mRNA message", "Copying all of the DNA"], "ans": 2, "topic": "Translation"}, {"q": "Where does translation happen?", "opts": ["At a ribosome", "In the cell membrane", "In the nucleus", "In a chloroplast"], "ans": 0, "topic": "Translation"}, {"q": "How many mRNA bases make one codon?", "opts": ["1", "3", "4", "2"], "ans": 1, "topic": "Translation"}, {"q": "Which codon starts translation?", "opts": ["UGA", "AUG", "GGG", "UAA"], "ans": 1, "topic": "Translation"}, {"q": "What does a stop codon do?", "opts": ["Ends translation; no amino acid is added", "Starts translation", "Unzips the DNA", "Adds the amino acid Met"], "ans": 0, "topic": "Translation"}, {"q": "Which molecule carries amino acids to the ribosome?", "opts": ["mRNA", "Helicase", "DNA", "tRNA"], "ans": 3, "topic": "Translation"}, {"q": "An mRNA codon is GAA. What is the tRNA anticodon?", "opts": ["CAA", "CUU", "GAA", "CTT"], "ans": 1, "topic": "Translation"}, {"q": "What bond joins amino acids together in a protein?", "opts": ["An ionic bond", "A peptide bond", "A phosphate bond", "A hydrogen bond between bases"], "ans": 1, "topic": "Translation"}, {"q": "What decides the order of amino acids in a protein?", "opts": ["The temperature of the cell", "The size of the ribosome", "The number of tRNAs in the cell", "The order of codons in the mRNA"], "ans": 3, "topic": "Translation"}, {"q": "What are proteins made of?", "opts": ["Fatty acids and glycerol", "Chains of glucose", "Chains of nucleotides", "Chains of amino acids"], "ans": 3, "topic": "Translation"}, {"q": "What is a mutation?", "opts": ["A protein that speeds up reactions", "A type of cell division", "A change in the base sequence of DNA", "The process of copying DNA"], "ans": 2, "topic": "Mutations"}, {"q": "Which of these is a mutagen that can cause mutations?", "opts": ["Sleep", "Exercise", "Drinking water", "UV light from the sun"], "ans": 3, "topic": "Mutations"}, {"q": "In a substitution mutation…", "opts": ["the whole gene is copied twice", "one base is swapped for a different base", "an extra base is added", "one base is removed"], "ans": 1, "topic": "Mutations"}, {"q": "An mRNA codon changes from <b>CUU</b> to <b>CUC</b>. Both code for Leu. This mutation is…", "opts": ["silent: same amino acid", "a frameshift", "an early stop", "a deletion"], "ans": 0, "topic": "Mutations"}, {"q": "Why can a deletion change every amino acid after it?", "opts": ["Deletions remove the whole gene", "Deletions only change one codon", "Codons are read 3 bases at a time, so removing one shifts every group after it", "The ribosome skips the rest of the gene"], "ans": 2, "topic": "Mutations"}, {"q": "Which mutation could be passed on to a person's children?", "opts": ["A mutation in a skin cell from sunburn", "A mutation in an egg or sperm cell", "A mutation in a muscle cell", "A mutation in a lung cell from smoking"], "ans": 1, "topic": "Mutations"}, {"q": "In sickle cell disease, the codon GAG becomes GUG. What changes in the protein?", "opts": ["Every amino acid changes", "Glutamic acid (Glu) is replaced by valine (Val)", "The protein is cut short", "Nothing changes"], "ans": 1, "topic": "Mutations"}, {"q": "Why does a protein's shape matter?", "opts": ["Shape decides where DNA is stored", "A protein's shape determines its job", "Shape only matters for DNA", "All proteins have the same shape"], "ans": 1, "topic": "Mutations"}, {"q": "A codon changes from <b>AAA</b> (Lys) to <b>UAA</b>. What is the result?", "opts": ["An extra amino acid", "A silent mutation", "A frameshift", "An early STOP, so the protein is cut short"], "ans": 3, "topic": "Mutations"}, {"q": "What usually fixes copying mistakes during DNA replication?", "opts": ["DNA polymerase checks and fixes them", "RNA polymerase", "Nothing ever fixes them", "The ribosome"], "ans": 0, "topic": "Mutations"}, {"q": "Which vocabulary word matches this definition?<br><i>The molecule that stores the instructions, kept safe inside the nucleus.</i>", "opts": ["DNA", "semi-conservative", "nucleotide", "helicase"], "ans": 0, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>The monomer of DNA and RNA. It has three parts: a phosphate, a sugar, and a base.</i>", "opts": ["nucleotide", "DNA polymerase", "base pairing", "helicase"], "ans": 0, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>The part of a nucleotide that pairs up in the middle of DNA: A, T, G, or C.</i>", "opts": ["semi-conservative", "DNA replication", "nucleotide", "nitrogen base"], "ans": 3, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>The shape of DNA: two strands twisted around each other, like a twisted ladder.</i>", "opts": ["nitrogen base", "double helix", "helicase", "nucleotide"], "ans": 1, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>The rule for how ____ match: A always pairs with T, and C always pairs with G.</i>", "opts": ["base pairing", "nucleotide", "nitrogen base", "double helix"], "ans": 0, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>Copying ____ to make two identical ____ molecules. It happens before a cell divides.</i>", "opts": ["DNA polymerase", "nucleotide", "nitrogen base", "DNA replication"], "ans": 3, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>The enzyme that unzips DNA by breaking the bonds between the base pairs.</i>", "opts": ["DNA", "DNA replication", "semi-conservative", "helicase"], "ans": 3, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>The enzyme that adds new matching nucleotides to each old strand and checks for mistakes.</i>", "opts": ["DNA polymerase", "helicase", "semi-conservative", "DNA"], "ans": 0, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>Each new DNA molecule has one old strand and one new strand.</i>", "opts": ["DNA polymerase", "nucleotide", "semi-conservative", "DNA replication"], "ans": 2, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>A section of DNA with the instructions for one protein.</i>", "opts": ["transcription", "uracil", "mRNA", "gene"], "ans": 3, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>Ribonucleic acid: a single-stranded copy-molecule made from DNA. It uses U (uracil) instead of T.</i>", "opts": ["transcription", "RNA polymerase", "uracil", "RNA"], "ans": 3, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>The RNA base that takes the place of thymine (T). U pairs with A.</i>", "opts": ["mRNA", "transcription", "uracil", "RNA polymerase"], "ans": 2, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>Copying one gene from DNA into mRNA, inside the nucleus.</i>", "opts": ["transcription", "nuclear pore", "mRNA", "template strand"], "ans": 0, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>The enzyme that unzips a gene and builds an mRNA copy of it.</i>", "opts": ["template strand", "RNA", "mRNA", "RNA polymerase"], "ans": 3, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>The DNA ____ that RNA polymerase reads to build the mRNA.</i>", "opts": ["mRNA", "template strand", "nuclear pore", "RNA"], "ans": 1, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>Messenger RNA: a copy of one gene that carries the instructions out of the nucleus to a ribosome.</i>", "opts": ["mRNA", "gene", "nuclear pore", "transcription"], "ans": 0, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>A small opening in the ____ membrane that lets mRNA out.</i>", "opts": ["RNA polymerase", "nuclear pore", "uracil", "RNA"], "ans": 1, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>Building a protein from mRNA. It happens at a ribosome.</i>", "opts": ["translation", "peptide bond", "tRNA", "stop codon"], "ans": 0, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>The cell part in the cytoplasm that reads mRNA and builds a protein.</i>", "opts": ["peptide bond", "stop codon", "start codon", "ribosome"], "ans": 3, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>Three mRNA bases that code for one amino acid.</i>", "opts": ["translation", "codon", "ribosome", "anticodon"], "ans": 1, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>The 3 bases on a tRNA that match a codon.</i>", "opts": ["ribosome", "anticodon", "stop codon", "codon"], "ans": 1, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>Transfer RNA: it carries amino acids to the ribosome in the correct order.</i>", "opts": ["translation", "ribosome", "tRNA", "stop codon"], "ans": 2, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>A building block of proteins. The order of ____ ____ sets a protein's shape.</i>", "opts": ["amino acid", "ribosome", "codon", "peptide bond"], "ans": 0, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>The ____ that joins amino acids together in a protein.</i>", "opts": ["peptide bond", "start codon", "anticodon", "tRNA"], "ans": 0, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>AUG: the ____ that tells the ribosome where to begin. It codes for Met.</i>", "opts": ["tRNA", "codon", "start codon", "amino acid"], "ans": 2, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>UAA, UAG, or UGA: a ____ that ends translation. No amino acid is added.</i>", "opts": ["codon", "amino acid", "anticodon", "stop codon"], "ans": 3, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>A change in the base sequence of DNA.</i>", "opts": ["mutation", "deletion", "substitution", "body cells"], "ans": 0, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>Something that can cause mutations, like UV light, X-rays, or chemicals in cigarette smoke.</i>", "opts": ["mutagen", "frameshift", "sex cells", "body cells"], "ans": 0, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>A mutation where one base is swapped for a different base.</i>", "opts": ["substitution", "mutation", "frameshift", "insertion"], "ans": 0, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>A mutation where an extra base is added to the DNA.</i>", "opts": ["mutation", "mutagen", "deletion", "insertion"], "ans": 3, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>A mutation where a base is removed from the DNA.</i>", "opts": ["insertion", "mutation", "sex cells", "deletion"], "ans": 3, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>When an insertion or deletion shifts how the bases are grouped into codons, changing every codon after it.</i>", "opts": ["frameshift", "substitution", "sex cells", "deletion"], "ans": 0, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>Egg and sperm ____. A mutation here can be passed on to children.</i>", "opts": ["sex cells", "deletion", "body cells", "insertion"], "ans": 0, "topic": "Vocabulary"}, {"q": "Which vocabulary word matches this definition?<br><i>All the other ____ (skin, lung, muscle). A mutation here is not passed on to children.</i>", "opts": ["body cells", "sex cells", "deletion", "substitution"], "ans": 0, "topic": "Vocabulary"}];
+const META={"title": "Unit 3 Asteroid Review", "unit": 3, "store": "bioU3Asteroids"};
+(function(){
+'use strict';
+const $=s=>document.querySelector(s);
+const cv=$('#cv'), ctx=cv.getContext('2d'); const W=960,H=600;
+const store={ get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+const HIKEY=META.store+'_hi';
+const POW=[{n:'Single shot'},{n:'Double shot'},{n:'Triple spread'},{n:'Rapid triple'},{n:'Five-way blaster'}];
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+let hudK=1;
+function fitCanvas(){ const r=cv.getBoundingClientRect(); if(r.width) hudK=Math.min(2.2,Math.max(1,560/r.width)); const d=Math.min(2,window.devicePixelRatio||1); const w=Math.round(r.width*d), h=Math.round(r.height*d); if(w&&h&&(cv.width!==w||cv.height!==h)){ cv.width=w; cv.height=h; } }
+window.addEventListener('resize',fitCanvas);
+$('#ladder').innerHTML=POW.map((p,i)=>`<span>${i+1}. ${p.n}</span>`).join('')+'<span>then: shield or extra life</span>';
+/* ---------- topics ---------- */
+const TOPICS=['All topics'].concat([...new Set(BANK.map(q=>q.topic))]);
+let picked=new Set(); try{ JSON.parse(store.get(META.store+'_topics')||'[]').forEach(t=>{ if(TOPICS.includes(t)&&t!=='All topics') picked.add(t); }); }catch(e){}
+const allOn=()=>picked.size===0||picked.size===TOPICS.length-1;
+const topicLabel=()=>allOn()?'All topics':[...picked].join(', ');
+function drawTopics(){ const n=t=>t==='All topics'?BANK.length:BANK.filter(q=>q.topic===t).length; const on=t=>t==='All topics'?allOn():(!allOn()&&picked.has(t));
+  $('#topics').innerHTML=TOPICS.map(t=>`<button type="button" class="chip${on(t)?' on':''}" data-t="${t}" aria-pressed="${on(t)}">${on(t)&&t!=='All topics'?'✓ ':''}${t} <span class="muted small">(${n(t)})</span></button>`).join('')
+    +`<div class="small muted" style="flex-basis:100%;margin-top:2px">Tap as many topics as you want. ${allOn()?'Playing with all '+BANK.length+' questions.':'Playing with '+BANK.filter(q=>picked.has(q.topic)).length+' questions.'}</div>`;
+  document.querySelectorAll('#topics .chip').forEach(b=>b.addEventListener('click',()=>{ const t=b.dataset.t; if(t==='All topics') picked.clear(); else { if(allOn()) picked.clear(); picked.has(t)?picked.delete(t):picked.add(t); if(picked.size===TOPICS.length-1) picked.clear(); } store.set(META.store+'_topics',JSON.stringify([...picked])); drawTopics(); })); }
+drawTopics();
+function hiTxt(){ const h=+store.get(HIKEY)||0; $('#hiTxt').textContent=h?`High score on this Chromebook: ${h}`:''; }
+hiTxt();
+/* ---------- question deck: random order, missed questions come back later ---------- */
+let curQ=null, deck=[], asked=0, right=0, missedTopics={};
+const shuffle=a=>{ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+function buildDeck(){ deck=shuffle(BANK.filter(q=>allOn()||picked.has(q.topic)).slice()); }
+function nextQ(){ if(!deck.length) buildDeck(); return deck.shift(); }
+/* ---------- input ---------- */
+const keys={left:false,right:false,up:false,fire:false};
+const KMAP={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',ArrowUp:'up',KeyW:'up',Space:'fire'};
+document.addEventListener('keydown',e=>{
+  if(!$('#qOv').hidden){ const n=+e.key; if(n>=1&&n<=4){ const b=document.querySelectorAll('#qOpts .opt')[n-1]; if(b&&!b.disabled) b.click(); e.preventDefault(); } else if(e.key==='Enter'&&!$('#qGo').hidden){ e.preventDefault(); $('#qGo').click(); } return; }
+  if(e.target&&e.target.tagName==='INPUT') return;
+  if(e.code==='KeyP'||e.code==='Escape'){ if(state==='play') pause(true); else if(state==='paused') pause(false); return; }
+  const k=KMAP[e.code]; if(k&&state==='play'){ keys[k]=true; e.preventDefault(); } });
+document.addEventListener('keyup',e=>{ const k=KMAP[e.code]; if(k) keys[k]=false; });
+document.querySelectorAll('.tbtn').forEach(b=>{ const k=b.dataset.k;
+  const on=e=>{ e.preventDefault(); if(k==='pause'){ if(state==='play') pause(true); else if(state==='paused') pause(false); return; } keys[k]=true; b.classList.add('on'); };
+  const off=e=>{ if(k!=='pause'){ keys[k]=false; b.classList.remove('on'); } };
+  b.addEventListener('pointerdown',on); b.addEventListener('pointerup',off); b.addEventListener('pointerleave',off); b.addEventListener('pointercancel',off); });
+/* ---------- game state: a big world (3 × 3 screens) with obstacles to fly around ---------- */
+const WW=W*3, WH=H*3;
+let state='menu', ship, rocks, shots, crystal, parts, score, lives, wave, power, shield, lastT=0, crystalT, fireCD, waveT, stars, powerUps, msg, obs=[], cam={x:0,y:0};
+const rnd=(a,b)=>a+Math.random()*(b-a);
+/* obstacles: planetoids (circles) and space-station walls (rectangles). Fixed layout so the map is the same every game. */
+function makeObstacles(){
+  let seed=META.unit*7919+17; const R=()=>{ seed=(seed*16807)%2147483647; return seed/2147483647; };
+  const list=[]; const cx=WW/2, cy=WH/2;
+  const clear=(o,pad)=>{ if(Math.hypot(o.x-cx,o.y-cy)<260+(o.r||Math.max(o.w,o.h)/2)) return false;
+    return list.every(p=>{ const ra=o.r||Math.hypot(o.w,o.h)/2, rb=p.r||Math.hypot(p.w,p.h)/2; return Math.hypot(o.x-p.x,o.y-p.y)>ra+rb+pad; }); };
+  let g=0; while(list.filter(o=>o.k==='p').length<9&&g++<4000){ const o={k:'p',x:120+R()*(WW-240),y:120+R()*(WH-240),r:55+R()*85}; if(clear(o,120)) { o.tone=Math.floor(R()*3); o.cr=Array.from({length:6},()=>[R()*1.2-.6,R()*1.2-.6,.1+R()*.16]); list.push(o); } }
+  g=0; while(list.filter(o=>o.k==='w').length<8&&g++<4000){ const hz=R()<.5, L=220+R()*320; const o={k:'w',x:120+R()*(WW-240),y:120+R()*(WH-240),w:hz?L:38,h:hz?38:L}; if(clear(o,110)) list.push(o); }
+  return list; }
+function inObs(x,y,pad){ return obs.some(o=>o.k==='p'?Math.hypot(x-o.x,y-o.y)<o.r+pad:Math.abs(x-o.x)<o.w/2+pad&&Math.abs(y-o.y)<o.h/2+pad); }
+/* push a moving circle out of any obstacle; bounce = how much speed is kept */
+function collideObs(b,rad,bounce){ let hit=false;
+  for(const o of obs){ let nx,ny,d,pen;
+    if(o.k==='p'){ const dx=b.x-o.x, dy=b.y-o.y; d=Math.hypot(dx,dy)||1; pen=o.r+rad-d; if(pen<=0) continue; nx=dx/d; ny=dy/d; }
+    else { const px=Math.max(o.x-o.w/2,Math.min(b.x,o.x+o.w/2)), py=Math.max(o.y-o.h/2,Math.min(b.y,o.y+o.h/2)); const dx=b.x-px, dy=b.y-py; d=Math.hypot(dx,dy);
+      if(d>=rad) continue; if(d<0.001){ const l=b.x-(o.x-o.w/2), r=(o.x+o.w/2)-b.x, t=b.y-(o.y-o.h/2), bt=(o.y+o.h/2)-b.y, m=Math.min(l,r,t,bt); nx=m===l?-1:m===r?1:0; ny=m===t?-1:m===bt?1:0; pen=rad+m; } else { nx=dx/d; ny=dy/d; pen=rad-d; } }
+    b.x+=nx*pen; b.y+=ny*pen; const vn=b.vx*nx+b.vy*ny; if(vn<0){ b.vx-=(1+bounce)*vn*nx; b.vy-=(1+bounce)*vn*ny; } hit=true; }
+  return hit; }
+function bounds(b,rad,bounce){ let hit=false;
+  if(b.x<rad){ b.x=rad; b.vx=Math.abs(b.vx)*bounce; hit=true; } if(b.x>WW-rad){ b.x=WW-rad; b.vx=-Math.abs(b.vx)*bounce; hit=true; }
+  if(b.y<rad){ b.y=rad; b.vy=Math.abs(b.vy)*bounce; hit=true; } if(b.y>WH-rad){ b.y=WH-rad; b.vy=-Math.abs(b.vy)*bounce; hit=true; } return hit; }
+function makeRock(x,y,size){ const r=[0,15,27,46][size]; const n=10+size*2; const verts=[]; for(let i=0;i<n;i++){ const a=i/n*Math.PI*2; verts.push([Math.cos(a)*r*rnd(.72,1.08),Math.sin(a)*r*rnd(.72,1.08)]); }
+  const sp=rnd(30,55)*(1+wave*0.08)*(1.25-size*0.12), a=rnd(0,Math.PI*2);
+  const craters=[]; for(let i=0;i<size+1;i++) craters.push([rnd(-r*.45,r*.45),rnd(-r*.45,r*.45),rnd(r*.12,r*.24)]);
+  return {x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,r,size,verts,craters,rot:rnd(0,6.3),vr:rnd(-.8,.8),tone:Math.floor(rnd(0,3))}; }
+function freeSpot(minShip,pad){ let x,y,g=0; do{ x=rnd(60,WW-60); y=rnd(60,WH-60); }while((inObs(x,y,pad)||Math.hypot(x-ship.x,y-ship.y)<minShip)&&g++<500); return [x,y]; }
+function spawnWave(){ const n=6+wave*2; for(let i=0;i<n;i++){ let x,y,g=0; if(i<3){ do{ const a=rnd(0,6.3), d=rnd(340,560); x=ship.x+Math.cos(a)*d; y=ship.y+Math.sin(a)*d; }while((inObs(x,y,60)||x<60||y<60||x>WW-60||y>WH-60)&&g++<200); } else [x,y]=freeSpot(320,60); rocks.push(makeRock(x,y,3)); } msg={t:`Wave ${wave}: ${n} big asteroids`,until:performance.now()+1800}; }
+function newShip(){ return {x:WW/2,y:WH/2,a:-Math.PI/2,vx:0,vy:0,inv:2.2,thrust:false}; }
+function startGame(){ score=0; lives=3; wave=1; power=0; shield=0; asked=0; right=0; missedTopics={}; powerUps=0;
+  obs=makeObstacles(); ship=newShip(); rocks=[]; shots=[]; parts=[]; crystal=null; crystalT=5; fireCD=0; buildDeck();
+  stars=Array.from({length:520},()=>[rnd(0,WW),rnd(0,WH),rnd(.4,1.7)]);
+  spawnWave(); state='play'; ['#startOv','#overOv','#pauseOv'].forEach(s=>$(s).hidden=true);
+  $('#infoTopic').textContent='Questions: '+topicLabel(); updInfo(); fitCanvas(); lastT=performance.now(); requestAnimationFrame(loop); }
+function updInfo(){ $('#infoQ').textContent=`Questions right: ${right} of ${asked}`; }
+function pause(p){ if(p){ state='paused'; $('#pauseOv').hidden=false; } else { state='play'; $('#pauseOv').hidden=true; lastT=performance.now(); requestAnimationFrame(loop); } }
+document.addEventListener('visibilitychange',()=>{ if(document.hidden&&state==='play') pause(true); });
+$('#resumeBtn').addEventListener('click',()=>pause(false));
+$('#startBtn').addEventListener('click',startGame);
+$('#againBtn').addEventListener('click',startGame);
+$('#menuBtn').addEventListener('click',()=>{ $('#overOv').hidden=true; $('#startOv').hidden=false; state='menu'; hiTxt(); });
+/* ---------- shooting ---------- */
+function fire(){ const lv=power; const rate=lv>=3?0.12:0.24; if(fireCD>0) return; fireCD=rate;
+  const spd=600, mk=(ang,off)=>{ const ox=Math.cos(ship.a+Math.PI/2)*off, oy=Math.sin(ship.a+Math.PI/2)*off; shots.push({x:ship.x+Math.cos(ship.a)*16+ox,y:ship.y+Math.sin(ship.a)*16+oy,vx:Math.cos(ang)*spd+ship.vx,vy:Math.sin(ang)*spd+ship.vy,life:1.0}); };
+  if(lv===0) mk(ship.a,0); else if(lv===1){ mk(ship.a,-6); mk(ship.a,6); }
+  else if(lv<=3){ mk(ship.a,0); mk(ship.a-0.18,0); mk(ship.a+0.18,0); }
+  else { [-0.36,-0.18,0,0.18,0.36].forEach(d=>mk(ship.a+d,0)); } }
+function boom(x,y,n,col){ for(let i=0;i<n;i++){ const a=rnd(0,6.3),s=rnd(40,180); parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:rnd(.4,.9),col}); } }
+function hitShip(){ if(ship.inv>0) return; if(shield>0){ shield--; ship.inv=1.5; boom(ship.x,ship.y,16,'#7dd3fc'); msg={t:'Shield saved you!',until:performance.now()+1300}; return; }
+  boom(ship.x,ship.y,40,'#fbbf24'); lives--; const lost=power>0; power=Math.max(0,power-1);
+  if(lives<=0){ gameOver(); return; }
+  ship=newShip(); rocks.forEach(r=>{ if(Math.hypot(r.x-ship.x,r.y-ship.y)<200){ const [x,y]=freeSpot(400,60); r.x=x; r.y=y; } });
+  msg={t:lost?'Ship lost: power drops one level':'Ship lost',until:performance.now()+1600}; }
+/* ---------- question crystal: appears somewhere in the world; the arrow and the map show where ---------- */
+function spawnCrystal(){ const [x,y]=freeSpot(450,70); const a=rnd(0,6.3); crystal={x,y,vx:Math.cos(a)*25,vy:Math.sin(a)*25,t:30,ph:0}; msg={t:'A question crystal appeared! Follow the purple arrow.',until:performance.now()+2200}; }
+function askQuestion(){ state='question'; Object.keys(keys).forEach(k=>keys[k]=false); document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('on'));
+  const q=nextQ(); curQ=q; const order=shuffle(q.opts.map((_,i)=>i));
+  $('#qTag').textContent='Power-up question · '+q.topic; $('#qText').innerHTML=q.q; $('#qFb').hidden=true; $('#qGo').hidden=true;
+  $('#qOpts').innerHTML=order.map((oi,k)=>`<button type="button" class="opt" data-i="${oi}"><span class="k">${k+1}</span><span>${q.opts[oi]}</span></button>`).join('');
+  document.querySelectorAll('#qOpts .opt').forEach(b=>b.addEventListener('click',()=>answer(q,+b.dataset.i,b)));
+  $('#qOv').hidden=false; setTimeout(()=>{ const f=document.querySelector('#qOpts .opt'); if(f) f.focus(); },30); }
+function answer(q,i,b){ document.querySelectorAll('#qOpts .opt').forEach(x=>x.disabled=true); b.classList.add('pick'); asked++;
+  const fb=$('#qFb'); fb.hidden=false;
+  if(i===q.ans){ right++; powerUps++; let what;
+    if(power<POW.length-1){ power++; what=`Power-up: <b>${POW[power].n}</b>!`; }
+    else if(shield<2&&(powerUps%2===1)){ shield++; what='Bonus: <b>shield</b> (blocks one hit).'; }
+    else { lives=Math.min(5,lives+1); what='Bonus: <b>extra life</b>!'; }
+    score+=250; fb.className='fb ok'; fb.innerHTML=`<b>Correct!</b> ${what} +250 points.`; }
+  else { missedTopics[q.topic]=(missedTopics[q.topic]||0)+1; deck.splice(Math.min(deck.length,4),0,q);
+    fb.className='fb no'; fb.innerHTML='<b>Not quite.</b> No power-up this time. This question will come back later, so check your notes on it.'; }
+  updInfo(); $('#qGo').hidden=false; $('#qGo').focus(); }
+$('#qGo').addEventListener('click',()=>{ $('#qOv').hidden=true; state='play'; ship.inv=Math.max(ship.inv,1); lastT=performance.now(); requestAnimationFrame(loop); });
+function gameOver(){ state='over'; const hi=+store.get(HIKEY)||0; if(score>hi) store.set(HIKEY,score);
+  const miss=Object.entries(missedTopics).sort((a,b)=>b[1]-a[1]);
+  $('#overBody').innerHTML=`<p style="font-size:18px;margin:4px 0">Score: <b>${score}</b>${score>hi?' <span style="color:var(--gold)">New high score!</span>':''}</p><p class="muted" style="margin:2px 0">You reached wave ${wave}. Questions right: <b>${right} of ${asked}</b>.</p>`+
+    (miss.length?`<h3>Topics to review</h3><p class="small" style="margin:0">${miss.map(([t,n])=>`${t} (${n} missed)`).join(' · ')}</p>`:(asked?'<h3>Nice work</h3><p class="small" style="margin:0">You answered every question right.</p>':'<p class="small muted">Tip: shoot the glowing question crystals to power up.</p>'));
+  $('#overOv').hidden=false; }
+/* ---------- loop ---------- */
+function loop(t){ if(state!=='play') return; const dt=Math.min(0.05,(t-lastT)/1000); lastT=t; update(dt); draw(); if(state==='play') requestAnimationFrame(loop); }
+function update(dt){
+  if(keys.left) ship.a-=4.2*dt; if(keys.right) ship.a+=4.2*dt;
+  ship.thrust=keys.up; if(keys.up){ ship.vx+=Math.cos(ship.a)*320*dt; ship.vy+=Math.sin(ship.a)*320*dt; }
+  ship.vx*=Math.pow(0.55,dt); ship.vy*=Math.pow(0.55,dt); const sp=Math.hypot(ship.vx,ship.vy); if(sp>400){ ship.vx*=400/sp; ship.vy*=400/sp; }
+  ship.x+=ship.vx*dt; ship.y+=ship.vy*dt; bounds(ship,12,0.4); collideObs(ship,12,0.4); ship.inv=Math.max(0,ship.inv-dt);
+  fireCD-=dt; if(keys.fire) fire();
+  shots.forEach(s=>{ s.x+=s.vx*dt; s.y+=s.vy*dt; s.life-=dt; if(s.x<0||s.y<0||s.x>WW||s.y>WH||inObs(s.x,s.y,0)){ if(s.life>0) boom(s.x,s.y,3,'#fde68a'); s.life=0; } }); shots=shots.filter(s=>s.life>0);
+  rocks.forEach(r=>{ r.x+=r.vx*dt; r.y+=r.vy*dt; r.rot+=r.vr*dt; bounds(r,r.r,1); collideObs(r,r.r*0.9,1); });
+  parts.forEach(p=>{ p.x+=p.vx*dt; p.y+=p.vy*dt; p.life-=dt; }); parts=parts.filter(p=>p.life>0);
+  if(crystal){ crystal.x+=crystal.vx*dt; crystal.y+=crystal.vy*dt; bounds(crystal,30,1); collideObs(crystal,30,1); crystal.t-=dt; crystal.ph+=dt; if(crystal.t<=0){ crystal=null; crystalT=rnd(6,10); } }
+  else { crystalT-=dt; if(crystalT<=0) spawnCrystal(); }
+  for(const s of shots){
+    if(crystal&&Math.hypot(s.x-crystal.x,s.y-crystal.y)<24){ s.life=0; boom(crystal.x,crystal.y,24,'#c4b5fd'); crystal=null; crystalT=rnd(10,15); askQuestion(); return; }
+    for(const r of rocks){ if(r.dead) continue; if(Math.hypot(s.x-r.x,s.y-r.y)<r.r){ s.life=0; r.dead=true; score+=[0,100,50,20][r.size]; boom(r.x,r.y,8+r.size*5,'#c8b8a6');
+        if(r.size>1) for(let k=0;k<2;k++){ const c=makeRock(r.x,r.y,r.size-1); rocks.push(c); } break; } } }
+  rocks=rocks.filter(r=>!r.dead); shots=shots.filter(s=>s.life>0);
+  if(crystal&&Math.hypot(ship.x-crystal.x,ship.y-crystal.y)<34){ boom(crystal.x,crystal.y,24,'#c4b5fd'); crystal=null; crystalT=rnd(10,15); askQuestion(); return; }
+  for(const r of rocks){ if(Math.hypot(ship.x-r.x,ship.y-r.y)<r.r+11){ hitShip(); if(state!=='play') return; break; } }
+  if(!rocks.length){ wave++; score+=500; spawnWave(); }
+  cam.x=Math.max(0,Math.min(WW-W,ship.x-W/2)); cam.y=Math.max(0,Math.min(WH-H,ship.y-H/2));
+}
+const ROCK=[['#7a6a5c','#5a4d42','#a89684'],['#6d6560','#4a4440','#9b928b'],['#806650','#5b4636','#b09378']];
+const PLAN=[['#5b6b7f','#2f3a48','#93a3b8'],['#7a5a4a','#3f2c22','#b08a72'],['#4f6b5a','#26382d','#8aa996']];
+const vis=(x,y,r)=>x+r>cam.x&&x-r<cam.x+W&&y+r>cam.y&&y-r<cam.y+H;
+function draw(){ const sx=cv.width/W, sy=cv.height/H; ctx.setTransform(sx,0,0,sy,0,0);
+  ctx.fillStyle='#050a14'; ctx.fillRect(0,0,W,H);
+  stars.forEach(([x,y,s])=>{ const px=x-cam.x*0.6, py=y-cam.y*0.6; const X=((px%WW)+WW)%WW, Y=((py%WH)+WH)%WH; if(X<W&&Y<H){ ctx.fillStyle=`rgba(226,232,240,${0.25+s*0.3})`; ctx.fillRect(X,Y,s,s); } });
+  ctx.save(); ctx.translate(-cam.x,-cam.y);
+  // world border
+  ctx.strokeStyle='rgba(56,189,248,.55)'; ctx.lineWidth=4; ctx.setLineDash([16,10]); ctx.strokeRect(2,2,WW-4,WH-4); ctx.setLineDash([]);
+  // obstacles
+  obs.forEach(o=>{ if(o.k==='p'){ if(!vis(o.x,o.y,o.r)) return; const c=PLAN[o.tone];
+      const g=ctx.createRadialGradient(o.x-o.r*.35,o.y-o.r*.4,o.r*.1,o.x,o.y,o.r); g.addColorStop(0,c[2]); g.addColorStop(.6,c[0]); g.addColorStop(1,c[1]);
+      ctx.beginPath(); ctx.arc(o.x,o.y,o.r,0,6.3); ctx.fillStyle=g; ctx.fill(); ctx.strokeStyle='rgba(0,0,0,.5)'; ctx.lineWidth=2; ctx.stroke();
+      o.cr.forEach(([a,b,s])=>{ ctx.beginPath(); ctx.arc(o.x+a*o.r,o.y+b*o.r,s*o.r,0,6.3); ctx.fillStyle='rgba(0,0,0,.18)'; ctx.fill(); ctx.strokeStyle='rgba(255,255,255,.08)'; ctx.lineWidth=1.5; ctx.stroke(); }); }
+    else { if(!vis(o.x,o.y,Math.max(o.w,o.h))) return; const x=o.x-o.w/2, y=o.y-o.h/2;
+      const g=ctx.createLinearGradient(x,y,x+(o.w<o.h?o.w:0),y+(o.w<o.h?0:o.h)); g.addColorStop(0,'#94a3b8'); g.addColorStop(.5,'#475569'); g.addColorStop(1,'#1e293b');
+      ctx.fillStyle=g; ctx.fillRect(x,y,o.w,o.h); ctx.strokeStyle='#cbd5e1'; ctx.lineWidth=1.5; ctx.strokeRect(x,y,o.w,o.h);
+      ctx.fillStyle='rgba(250,204,21,.85)'; const L=Math.max(o.w,o.h); for(let s=20;s<L-10;s+=46){ if(o.w>o.h) ctx.fillRect(x+s,o.y-3,18,6); else ctx.fillRect(o.x-3,y+s,6,18); } } });
+  // rocks
+  rocks.forEach(r=>{ if(!vis(r.x,r.y,r.r)) return; const c=ROCK[r.tone]; ctx.save(); ctx.translate(r.x,r.y); ctx.rotate(r.rot);
+    const g=ctx.createRadialGradient(-r.r*.35,-r.r*.35,r.r*.1,0,0,r.r*1.1); g.addColorStop(0,c[2]); g.addColorStop(.55,c[0]); g.addColorStop(1,c[1]);
+    ctx.beginPath(); r.verts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y)); ctx.closePath(); ctx.fillStyle=g; ctx.fill(); ctx.strokeStyle='rgba(0,0,0,.45)'; ctx.lineWidth=1.5; ctx.stroke();
+    r.craters.forEach(([x,y,cr])=>{ ctx.beginPath(); ctx.arc(x,y,cr,0,6.3); ctx.fillStyle='rgba(30,22,16,.35)'; ctx.fill(); ctx.beginPath(); ctx.arc(x-cr*.25,y-cr*.25,cr*.8,0,6.3); ctx.strokeStyle='rgba(255,240,220,.12)'; ctx.lineWidth=1; ctx.stroke(); });
+    ctx.restore(); });
+  // crystal
+  if(crystal){ const p=1+Math.sin(crystal.ph*5)*0.12; ctx.save(); ctx.translate(crystal.x,crystal.y); ctx.scale(p,p);
+    const g=ctx.createRadialGradient(0,0,2,0,0,34); g.addColorStop(0,'rgba(196,181,253,.6)'); g.addColorStop(1,'rgba(167,139,250,0)'); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(0,0,34,0,6.3); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(0,-20); ctx.lineTo(13,0); ctx.lineTo(0,20); ctx.lineTo(-13,0); ctx.closePath(); ctx.fillStyle='#8b5cf6'; ctx.fill(); ctx.strokeStyle='#ede9fe'; ctx.lineWidth=2; ctx.stroke();
+    ctx.fillStyle='#fff'; ctx.font='bold 16px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('?',0,1); ctx.restore(); }
+  ctx.fillStyle='#fde68a'; shots.forEach(s=>{ ctx.beginPath(); ctx.arc(s.x,s.y,2.6,0,6.3); ctx.fill(); });
+  parts.forEach(p=>{ ctx.globalAlpha=Math.max(0,Math.min(1,p.life*1.6)); ctx.fillStyle=p.col; ctx.fillRect(p.x-1.5,p.y-1.5,3,3); }); ctx.globalAlpha=1;
+  if(!(ship.inv>0&&!reduce&&Math.floor(ship.inv*10)%2)){ ctx.save(); ctx.translate(ship.x,ship.y); ctx.rotate(ship.a);
+    if(ship.thrust){ ctx.beginPath(); ctx.moveTo(-10,-5); ctx.lineTo(-19-Math.random()*8,0); ctx.lineTo(-10,5); ctx.fillStyle='#fb923c'; ctx.fill(); }
+    ctx.beginPath(); ctx.moveTo(16,0); ctx.lineTo(-11,-10); ctx.lineTo(-6,0); ctx.lineTo(-11,10); ctx.closePath(); ctx.fillStyle='#e2e8f0'; ctx.fill(); ctx.strokeStyle='#facc15'; ctx.lineWidth=2; ctx.stroke();
+    ctx.beginPath(); ctx.arc(3,0,3.2,0,6.3); ctx.fillStyle='#38bdf8'; ctx.fill();
+    if(shield>0){ ctx.beginPath(); ctx.arc(0,0,22,0,6.3); ctx.strokeStyle='rgba(125,211,252,.8)'; ctx.lineWidth=2; ctx.stroke(); }
+    ctx.restore(); }
+  ctx.restore();
+  const k=hudK;
+  // arrow to an off-screen crystal
+  if(crystal&&!vis(crystal.x,crystal.y,0)){ const sx2=ship.x-cam.x, sy2=ship.y-cam.y, a=Math.atan2(crystal.y-ship.y,crystal.x-ship.x);
+    const m=34*k; let ex=W/2+Math.cos(a)*1000, ey=H/2+Math.sin(a)*1000; const t=Math.min((W/2-m)/Math.abs(Math.cos(a)||1e-6),(H/2-m)/Math.abs(Math.sin(a)||1e-6)); ex=W/2+Math.cos(a)*t; ey=H/2+Math.sin(a)*t;
+    ctx.save(); ctx.translate(ex,ey); ctx.rotate(a); ctx.scale(k,k); ctx.beginPath(); ctx.moveTo(16,0); ctx.lineTo(-8,-11); ctx.lineTo(-3,0); ctx.lineTo(-8,11); ctx.closePath(); ctx.fillStyle='#a78bfa'; ctx.fill(); ctx.strokeStyle='#ede9fe'; ctx.lineWidth=2; ctx.stroke(); ctx.restore(); }
+  // mini-map
+  const mw=150*Math.min(k,1.5), mh=mw*WH/WW, mx=W-mw-12, my=H-mh-12, f=mw/WW;
+  ctx.fillStyle='rgba(8,15,30,.78)'; ctx.fillRect(mx,my,mw,mh); ctx.strokeStyle='rgba(148,163,184,.7)'; ctx.lineWidth=1; ctx.strokeRect(mx,my,mw,mh);
+  ctx.strokeStyle='rgba(250,204,21,.6)'; ctx.strokeRect(mx+cam.x*f,my+cam.y*f,W*f,H*f);
+  ctx.fillStyle='#64748b'; obs.forEach(o=>{ if(o.k==='p'){ ctx.beginPath(); ctx.arc(mx+o.x*f,my+o.y*f,Math.max(2,o.r*f),0,6.3); ctx.fill(); } else ctx.fillRect(mx+(o.x-o.w/2)*f,my+(o.y-o.h/2)*f,Math.max(2,o.w*f),Math.max(2,o.h*f)); });
+  ctx.fillStyle='#c8b8a6'; rocks.forEach(r=>ctx.fillRect(mx+r.x*f-1,my+r.y*f-1,r.size>2?3:2,r.size>2?3:2));
+  if(crystal){ ctx.fillStyle='#a78bfa'; ctx.beginPath(); ctx.arc(mx+crystal.x*f,my+crystal.y*f,4,0,6.3); ctx.fill(); }
+  ctx.fillStyle='#facc15'; ctx.beginPath(); ctx.arc(mx+ship.x*f,my+ship.y*f,3,0,6.3); ctx.fill();
+  // HUD (on dark panels so it stays readable over walls and planets)
+  ctx.fillStyle='rgba(5,10,20,.62)'; ctx.fillRect(6,6,250*k,(14+20*k)+16*k+6); ctx.fillRect(W-230*k-6,6,230*k,44*k+18*k);
+  ctx.fillStyle='#e8eefc'; ctx.font=`bold ${18*k}px Arial`; ctx.textAlign='left'; ctx.textBaseline='top'; ctx.fillText('Score '+score,16,12);
+  ctx.font=`${14*k}px Arial`; ctx.fillStyle='#9fb0cf'; ctx.fillText(`Wave ${wave} · ${rocks.length} asteroids left`,16,14+20*k);
+  for(let i=0;i<lives;i++){ ctx.save(); ctx.translate(W-24*k-i*24*k,24*k); ctx.scale(k,k); ctx.rotate(-Math.PI/2); ctx.beginPath(); ctx.moveTo(9,0); ctx.lineTo(-6,-6); ctx.lineTo(-3,0); ctx.lineTo(-6,6); ctx.closePath(); ctx.fillStyle='#e2e8f0'; ctx.fill(); ctx.restore(); }
+  ctx.textAlign='right'; ctx.fillStyle='#facc15'; ctx.font=`bold ${14*k}px Arial`; ctx.fillText('⚡ '+POW[power].n+(shield?'  +  shield ×'+shield:''),W-14,44*k);
+  if(msg&&performance.now()<msg.until){ ctx.textAlign='center'; ctx.font=`bold ${22*Math.min(k,1.6)}px Arial`; ctx.fillStyle='rgba(250,204,21,.95)'; ctx.fillText(msg.t,W/2,H*0.16); }
+}
+/* idle menu background */
+(function idle(){ fitCanvas(); const sx=cv.width/W, sy=cv.height/H; ctx.setTransform(sx,0,0,sy,0,0); ctx.fillStyle='#050a14'; ctx.fillRect(0,0,W,H); for(let i=0;i<140;i++){ ctx.fillStyle='rgba(226,232,240,.5)'; ctx.fillRect((i*137)%W,(i*271)%H,1.4,1.4); } })();
+/* ---------- teacher tools (code Teacher007) ---------- */
+function tShow(on){ $('#teachOv').hidden=!on; if(on){ if(state==='play') pause(true); $('#tCode').value=''; $('#tMsg').textContent=''; setTimeout(()=>$('#tCode').focus(),30); } }
+$('#teachBtn').addEventListener('click',()=>tShow(true)); $('#tClose0').addEventListener('click',()=>tShow(false));
+$('#tClose').addEventListener('click',()=>{ tShow(false); $('#tBody').hidden=true; $('#tLogin').hidden=false; });
+function tOpen(){ if($('#tCode').value.trim().toLowerCase()!=='teacher007'){ $('#tMsg').textContent='Code not recognized.'; return; }
+  $('#tLogin').hidden=true; $('#tBody').hidden=false; $('#tCount').textContent=`Question bank: ${BANK.length} questions`;
+  $('#tList').innerHTML=TOPICS.slice(1).map(t=>`<h3>${t}</h3>`+BANK.filter(q=>q.topic===t).map(q=>`<div class="tq">${q.q}<ol type="A">${q.opts.map((o,i)=>`<li class="${i===q.ans?'right':''}">${o}</li>`).join('')}</ol></div>`).join('')).join(''); }
+$('#tGo').addEventListener('click',tOpen); $('#tCode').addEventListener('keydown',e=>{ if(e.key==='Enter') tOpen(); });
+$('#tTouch').addEventListener('click',()=>document.body.classList.toggle('showtouch'));
+function printList(key){ $('#printView').innerHTML=`<h1>${META.title}: ${key?'Answer key':'Review questions'}</h1>`+(key?'':'<div>Name: ____________________ &nbsp; Period: ____</div>')+
+  TOPICS.slice(1).map(t=>`<h2 style="font-size:14px;margin:12px 0 4px">${t}</h2>`+BANK.filter(q=>q.topic===t).map((q,i)=>`<div class="pq"><b>${i+1}.</b> ${q.q}<ol type="A">${q.opts.map((o,j)=>`<li class="${key&&j===q.ans?'right':''}">${o}</li>`).join('')}</ol></div>`).join('')).join('');
+  setTimeout(()=>window.print(),100); }
+$('#tPrintQ').addEventListener('click',()=>printList(false)); $('#tPrintK').addEventListener('click',()=>printList(true));
+/* test hooks (used by the automated checks only) */
+window.__astro={get state(){return state;},get power(){return power;},get lives(){return lives;},get shield(){return shield;},get score(){return score;},get asked(){return asked;},get right(){return right;},
+  ask:()=>askQuestion(), current:()=>curQ, crash:()=>{ ship.inv=0; hitShip(); }, clearRocks:()=>{ rocks=[]; }, crystal:()=>spawnCrystal(), crystalAhead:()=>{ crystal={x:ship.x+Math.cos(ship.a)*90,y:ship.y+Math.sin(ship.a)*90,vx:0,vy:0,t:10,ph:0}; }, obs:()=>obs, world:()=>({WW,WH,cam:{...cam}}), setShip:(x,y,vx,vy)=>{ ship.x=x; ship.y=y; ship.vx=vx; ship.vy=vy; }, rocks:()=>rocks.length, killAll:()=>{ rocks=[]; }, crystalPos:()=>crystal&&{x:crystal.x,y:crystal.y}, ship:()=>ship};
+})();
+</script>
+
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

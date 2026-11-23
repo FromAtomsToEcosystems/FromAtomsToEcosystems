@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exercise, Heart Rate, and Breathing Rate (simulation) | Biology Unit 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1626; --panel:#142136; --panel2:#1a2a44; --line:#2a3d5f; --line2:#3a5580;
+  --text:#e8eef8; --muted:#a3b4cf; --dim:#7488a9;
+  --leaf:#5fe3a9; --sun:#ffd35c; --r:#ffd35c; --sky:#45c8f0; --ok:#4ade80; --bad:#fb7185; --pink:#f472b6;
+  --font:'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+*{box-sizing:border-box} [hidden]{display:none !important}
+html,body{margin:0}
+body{background-color:var(--bg); background-image:linear-gradient(rgba(110,150,210,.065) 1px,transparent 1px),linear-gradient(90deg,rgba(110,150,210,.065) 1px,transparent 1px); background-size:32px 32px;
+  color:var(--text); font-family:var(--font); font-size:17px; line-height:1.55; -webkit-user-select:none; user-select:none}
+input,textarea{-webkit-user-select:text; user-select:text}
+h1,h2,h3,h4{margin:0 0 .45em; line-height:1.2; font-weight:600}
+h1{font-size:clamp(28px,4.4vw,40px); font-weight:700} h2{font-size:24px} h3{font-size:19px}
+p{margin:0 0 .75em} .muted{color:var(--muted)} .small{font-size:14px}
+sub,sup{font-size:.72em}
+:focus-visible{outline:3px solid var(--r); outline-offset:2px}
+.top{position:sticky; top:0; z-index:20; background:rgba(13,22,38,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+.top-in{max-width:1100px; margin:0 auto; padding:8px 16px; display:flex; gap:12px; align-items:center}
+.brand{font-weight:600; font-size:15px; white-space:nowrap} .brand span{display:block; font-weight:400; font-size:12px; color:var(--muted)}
+.nav{display:flex; gap:6px; flex:1; overflow-x:auto; padding:3px 2px}
+.ntile{flex:0 0 auto; width:54px; height:54px; border-radius:7px; border:1.5px solid var(--line2); background:var(--panel); color:var(--text); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer; position:relative; font:inherit; padding:0}
+.ntile .ic{color:var(--leaf); line-height:0} .ntile .nm{font-size:8.5px; color:var(--muted)}
+.ntile.cur{border-color:var(--r); background:rgba(255,211,92,.14)}
+.ntile.cur .nm{color:var(--r)}
+.secnav{display:flex; justify-content:space-between; gap:10px; margin-top:4px}
+.ntile.done::after{content:'✓'; position:absolute; top:1px; right:4px; font-size:10px; font-weight:700; color:var(--ok)}
+.scorepill{font-size:13px; padding:4px 10px; border-radius:999px; background:var(--panel2); white-space:nowrap}
+.savenote{font-size:12.5px; color:var(--ok); white-space:nowrap} @media (max-width:1300px){ .savenote{display:none} } @media (max-width:900px){ .scorepill{display:none} }
+main{max-width:1000px; margin:0 auto; padding:20px 16px 80px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin:0 0 18px}
+.sec{scroll-margin-top:80px}
+.sechead{display:flex; gap:14px; align-items:center; margin:28px 0 10px}
+.badge{width:66px; height:66px; border-radius:10px; border:2px solid var(--leaf); background:var(--panel); display:flex; align-items:center; justify-content:center; position:relative; flex:0 0 auto; color:var(--leaf)}
+.badge .z{position:absolute; top:3px; left:6px; font-size:11px; color:var(--muted)}
+.meta{color:var(--muted); font-size:14px}
+.btn{font:inherit; font-weight:600; font-size:15px; border-radius:10px; padding:10px 18px; cursor:pointer; border:1.5px solid transparent}
+.btn.primary{background:var(--r); color:#231a00} .btn.ghost{background:transparent; border-color:var(--line2); color:var(--text)}
+.btn.small{padding:6px 12px; font-size:14px} .btn:disabled{opacity:.45; cursor:not-allowed}
+.btnrow{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:12px}
+.field{display:flex; flex-direction:column; gap:4px; font-size:14px; color:var(--muted)}
+.field input,.field select{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px}
+.formgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin:10px 0}
+.fb{margin-top:10px; padding:10px 14px; border-radius:10px; font-size:15px}
+.fb.ok{background:rgba(74,222,128,.12); color:#c9f7d8} .fb.no{background:rgba(251,113,133,.12); color:#ffd3db} .fb.info{background:var(--panel2)}
+.prob{border-top:1px solid var(--line); padding-top:16px; margin-top:16px}
+.prob:first-of-type{border-top:none; padding-top:0; margin-top:0}
+.pq{font-weight:500; margin-bottom:8px}
+.pnum{display:inline-block; min-width:30px; font-weight:700; color:var(--leaf)}
+.pts{font-size:13px; color:var(--muted); font-weight:400}
+.hintbox{background:rgba(255,211,92,.08); border-left:3px solid var(--r); border-radius:8px; padding:8px 12px; margin-top:8px; font-size:15px}
+/* drag and drop */
+.figwrap{position:relative; width:100%}
+.figwrap svg{width:100%; height:auto; display:block; background:#0a1322; border:1px solid var(--line); border-radius:12px}
+.figwrap svg text{font-family:var(--font)}
+.zone{position:absolute; transform:translate(-50%,-50%); min-height:32px; border:2px dashed #8fb3e6; border-radius:9px; background:rgba(13,22,38,.92); color:var(--text); font:inherit; font-size:14px; font-weight:600; display:flex; align-items:center; justify-content:center; padding:2px 6px; cursor:pointer; text-align:center; line-height:1.15}
+.zone.empty{color:var(--dim); font-weight:400; font-size:12.5px}
+.zone.filled{border-style:solid; border-color:var(--r); background:#2b2410}
+.zone.hot{box-shadow:0 0 0 3px rgba(255,211,92,.5)}
+.zone.locked{opacity:.9}
+.zone.ok{border-color:var(--ok); background:#0f2e1d} .zone.no{border-color:var(--bad); background:#3a0f1a}
+.pool{display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 4px; padding:10px; border:1px dashed var(--line2); border-radius:10px; min-height:52px}
+.pool .lbl{width:100%; font-size:12.5px; color:var(--muted)}
+.chip{font:inherit; font-size:15px; font-weight:600; padding:6px 14px; border-radius:999px; border:1.5px solid var(--line2); background:var(--panel2); color:var(--text); cursor:grab; touch-action:none}
+.chip.sel{border-color:var(--r); background:rgba(255,211,92,.16); box-shadow:0 0 0 3px rgba(255,211,92,.35)}
+.bins{display:grid; gap:10px; margin-top:6px}
+.bin{border:2px dashed var(--line2); border-radius:12px; padding:10px; min-height:96px; cursor:pointer; background:rgba(13,22,38,.5)}
+.bin h4{margin:0 0 8px; font-size:15px; color:var(--leaf)} .bin.hot{border-color:var(--r)}
+.bin .chip{cursor:pointer; margin:3px} .bin .chip.ok{border-color:var(--ok); background:#0f2e1d} .bin .chip.no{border-color:var(--bad); background:#3a0f1a}
+.phenbox{background:rgba(244,114,182,.1); border-left:4px solid #f472b6; border-radius:8px; padding:10px 14px; margin-bottom:14px}
+.fixnote{font-size:12px; color:#ffd3db; font-weight:400}
+/* equation */
+.eq{display:flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:20px; font-weight:600; margin:10px 0}
+.eq .zone{position:static; transform:none; min-width:120px; min-height:40px}
+/* choices */
+.opts{display:grid; gap:8px; margin:6px 0}
+.opt{display:flex; gap:12px; align-items:center; text-align:left; background:var(--panel2); border:1.5px solid var(--line); color:var(--text); border-radius:10px; padding:9px 14px; font:inherit; font-size:16px; cursor:pointer}
+.opt .L{flex:0 0 26px; height:26px; border-radius:50%; display:grid; place-items:center; background:var(--bg); font-weight:600; font-size:13px}
+.opt.multi .L{border-radius:6px}
+.opt.sel{border-color:var(--r); background:rgba(255,211,92,.08)} .opt.sel .L{background:var(--r); color:#231a00}
+.opt.ok{border-color:var(--ok); background:rgba(74,222,128,.1)} .opt.no{border-color:var(--bad); background:rgba(251,113,133,.1)}
+.opt:disabled{cursor:default}
+input.blank{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:7px 10px; font:inherit; font-size:16px; width:170px}
+input.blank.ok{border-color:var(--ok)} input.blank.no{border-color:var(--bad)}
+.brow{margin:8px 0}
+/* answer key (teacher) */
+body.keyon .zone[data-key]::after{content:'key: ' attr(data-key); position:absolute; top:100%; left:50%; transform:translateX(-50%); font-size:11px; color:var(--r); white-space:nowrap; margin-top:2px}
+body.keyon .chip[data-key]::after{content:' → ' attr(data-key); font-size:11px; color:var(--r)}
+body.keyon .opt[data-key]{outline:2px dashed var(--r); outline-offset:2px}
+body.keyon input.blank[data-key]+.keytxt{display:inline}
+.vbench{background:rgba(255,255,255,.04); border:1px solid #2a3d5f; border-radius:14px; padding:12px; margin-bottom:12px}
+#benchPic svg{width:100%; height:auto; display:block}
+.datatab select.ocell{font:inherit; padding:4px 6px; border-radius:8px; max-width:100%}
+.datatab input.dcell{width:72px; font:inherit; padding:4px 6px; border-radius:8px; text-align:center}
+.datachart svg{width:100%; height:auto; display:block; margin-top:10px}
+ol.proc li{margin:4px 0}
+.off{opacity:.35; pointer-events:none}
+.btbkey{display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; margin:6px 0 10px}.btbkey span{display:inline-block; width:16px; height:16px; border-radius:50%; vertical-align:middle; border:1px solid rgba(255,255,255,.4)}
+.simwrap{display:grid; grid-template-columns:minmax(150px,220px) 1fr; gap:18px; align-items:start; background:rgba(255,255,255,.04); border:1px solid var(--line,#2a3d5f); border-radius:14px; padding:14px}
+.simwrap.off{opacity:.35; pointer-events:none}
+.bigtube svg{width:100%; height:auto; display:block}.clock{text-align:center; font-weight:700; font-size:20px; margin-top:6px}
+.tg{display:block; margin:4px 0; font-size:17px}.tg input{transform:scale(1.3); margin-right:8px}
+.sensor{margin:10px 0; font-size:18px}.sensor b{font-size:24px; color:#ffd35c}
+.btn.on{outline:2px solid #ffd35c}
+.dot{display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:6px; vertical-align:middle}
+.predtab select{font:inherit; padding:4px 6px; border-radius:8px}
+#sChart svg{width:100%; height:auto; display:block}
+@media (max-width:700px){ .simwrap{grid-template-columns:1fr} .bigtube{max-width:180px; margin:0 auto} }
+.wbank2{margin-top:8px; padding:8px 10px; border:1px dashed rgba(163,180,207,.5); border-radius:10px; font-size:14px; line-height:2}
+.wchip{font:inherit; font-size:14px; margin:2px 4px 2px 0; padding:2px 10px; border-radius:999px; border:1px solid rgba(163,180,207,.6); background:rgba(255,255,255,.06); color:inherit; cursor:pointer}
+.wchip:hover{border-color:#ffd35c}
+.wtext{width:100%; min-height:110px; font:inherit; padding:10px; border-radius:10px; border:1.5px solid var(--line,#2a3d5f); background:rgba(255,255,255,.04); color:inherit; resize:vertical}
+.wkey{display:none; margin-top:6px; font-size:14px; color:var(--r,#ffd35c)}
+body.keyon .wkey{display:block}
+.keytxt{display:none; font-size:12px; color:var(--r); margin-left:6px}
+.big{font-size:52px; font-weight:700; color:var(--r); line-height:1}
+table.res{border-collapse:collapse; width:100%} table.res th,table.res td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line)} table.res th{color:var(--muted); font-weight:400}
+.card.nostore{border:2px solid var(--bad); background:rgba(251,113,133,.08)}
+.overlay{position:fixed; inset:0; background:rgba(4,9,18,.94); z-index:100; display:none; align-items:center; justify-content:center; padding:20px}
+.overlay.show{display:flex}
+.modal{background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:24px; max-width:900px; width:100%; max-height:92vh; overflow:auto}
+input.code{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px; width:200px}
+table.nb{border-collapse:collapse; width:100%; font-size:14px} table.nb th,table.nb td{border:1px solid var(--line2); padding:6px 8px} table.nb th{background:var(--panel2)}
+.wide{overflow-x:auto}
+@media (max-width:700px){ .zone{font-size:11px; min-height:26px} .chip{font-size:13px; padding:5px 10px} }
+@media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important} }
+.prob + p,.prob + .phenbox,.prob + .figwrap{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+
+.exfig svg{background:#f8fafc}
+.datatab input.dcell{background:var(--bg); color:var(--text); border:1.5px solid var(--line2)}
+.datatab input.dcell:disabled{opacity:1; color:var(--text); border-color:var(--line); background:var(--panel2)}
+.datatab th{font-size:13.5px; font-weight:500}
+.exchart svg{width:100%; height:auto; display:block; margin-top:10px; max-width:760px}
+.isstat{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; font-weight:600; margin:8px 0 6px}
+.isclock{font-variant-numeric:tabular-nums; font-size:22px; color:var(--r); background:var(--bg); border:1px solid var(--line2); border-radius:8px; padding:2px 12px}
+.ispic svg{width:100%; height:auto; display:block; border-radius:12px; max-width:660px; margin:0 auto}
+.exchoose{display:flex; flex-direction:column; gap:6px; margin:4px 0 6px} .exchoose .btn{margin:2px 4px 2px 0}
+.btn.exopt.on{border-color:var(--r); color:var(--r); background:rgba(255,211,92,.1)}
+.btn.tapbtn{background:#f43f5e; color:#fff; font-size:18px; padding:12px 30px; min-width:130px} .btn.tapbtn:disabled{background:var(--panel2); color:var(--muted)}
+.btn.tapbtn:active:not(:disabled){transform:scale(.96)}
+.tapn{font-weight:700; color:var(--r); min-width:70px; font-variant-numeric:tabular-nums}
+.exlog td,.exlog th{text-align:center} .exlog td:first-child,.exlog th:first-child{text-align:left} .exlog tr.cur td{background:rgba(255,211,92,.1)}
+.board{background:#f8fafc; border:6px solid #94a3b8; border-radius:10px; padding:8px 12px; color:#1e293b}
+.board table{border-collapse:collapse; width:100%; font-size:15px} .board th,.board td{padding:5px 8px; border-bottom:1px solid #cbd5e1; text-align:center} .board th{color:#334155; font-weight:600; font-size:13.5px} .board td:first-child{text-align:left; font-weight:600}
+@media (max-width:520px){ .predtab td,.predtab th{padding:5px} .predtab select{max-width:160px} .btn.tapbtn{padding:12px 20px} }
+
+</style>
+</head>
+<body>
+<header class="top" id="top" hidden>
+  <div class="top-in">
+    <div class="brand">Exercise lab (simulation)<span id="whoami"></span></div>
+    <nav class="nav" id="nav" aria-label="Worksheet parts"></nav>
+    <span class="scorepill" id="scorePill"></span>
+    <span class="savenote" id="saveNote" aria-live="polite"></span>
+    <button class="btn ghost small" id="teachBtn" type="button">Teacher</button>
+  </div>
+</header>
+
+<main>
+  <section id="start">
+    <div class="muted" style="margin-top:8px">Biology · Unit 1: Homeostasis, Macromolecules, and Enzymes · Lab simulation for students who missed the lab · about 35 minutes</div>
+    <h1>Exercise, Heart Rate, and Breathing Rate (simulation)</h1>
+    <p class="muted" style="font-size:18px;max-width:42em">Count the heartbeats and breaths of a virtual student before and after exercise, and find out how the body gets back to normal.</p>
+    <div class="card"><h3>How it works</h3>
+      <p style="margin:0">Each problem gets <b>two tries</b>. Right on either try earns full credit. If your first try is wrong, you'll be told it isn't right yet (but not the answer), so look again and try once more. Wrong twice and the problem is marked wrong and locks. Stuck? Tap <b>Hint</b> before you check.</p></div>
+    <div class="card nostore" id="noStore" hidden><h3>This browser can't save your work</h3><p style="margin:0">You may be in guest or incognito mode. Sign in to your school account and open the worksheet again.</p></div>
+    <div class="card">
+      <h3 id="signinTitle">Sign in to start</h3>
+      <div id="resumeBox" hidden><p id="resumeText"></p>
+        <div class="btnrow"><button class="btn primary" id="resumeBtn" type="button">Continue my lab</button><button class="btn ghost small" id="notMeBtn" type="button">Not you? Sign in as a different student</button></div>
+        <div class="fb no" id="resumeErr" hidden></div></div>
+      <div id="startForm">
+        <div class="formgrid">
+          <label class="field">First name<input id="fFirst" autocomplete="off"></label><label class="field">Last name<input id="fLast" autocomplete="off"></label>
+          <label class="field">Student ID<input id="fId" inputmode="numeric" autocomplete="off"></label>
+          <label class="field">Period<select id="fPeriod"></select></label><label class="field">Teacher<select id="fTeacher"></select></label>
+        </div>
+        <p class="small muted">Your work saves as you go. On any Chromebook, sign in with the same student ID and last name to pick up where you left off.</p>
+        <div class="fb no" id="formErr" hidden></div>
+        <div class="btnrow"><button class="btn primary" type="button" id="startBtn">Start the lab</button></div>
+      </div>
+    </div>
+    <p style="text-align:center"><button class="btn ghost" id="teacherLink" type="button">Teacher: enter unlock code</button></p>
+  </section>
+  <div id="ws" hidden></div>
+</main>
+
+<div class="overlay" id="teachOv" role="dialog" aria-modal="true" aria-labelledby="tTitle">
+  <div class="modal"><div id="teachLogin"><h2 id="tTitle">Teacher</h2>
+    <div class="btnrow"><input class="code" id="teachCode" type="password" placeholder="Teacher code" autocomplete="off"><button class="btn primary" id="teachGo" type="button">Open</button><button class="btn ghost" id="teachCancel" type="button">Close</button></div>
+    <div class="fb no" id="teachErr" hidden>That code didn't work.</div></div><div id="teachPanel" hidden></div></div>
+</div>
+<div class="overlay" id="tabOv" role="dialog" aria-modal="true"><div class="modal" style="max-width:520px"><h2>This lab is open in another tab</h2><p>To keep your newest work safe, this copy stopped saving. Close the extra tab, then reload this one.</p><div class="btnrow"><button class="btn primary" type="button" onclick="location.reload()">Reload with my newest work</button></div></div></div>
+
+<script src="sheets-config.js"></script>
+<script>
+(function(){
+'use strict';
+/* ============================== SETTINGS ============================== */
+const LESSON_TITLE='Homeostasis';           // unlock code = last word of this title
+const UNLOCK_CODE=LESSON_TITLE.trim().split(/\s+/).pop();
+const TEACHER_CODE='Teacher007';   // universal teacher-tools code
+const codeIs=(v,c)=>String(v||'').trim().toLowerCase()===String(c).toLowerCase();
+const WS_ID='bio-u1-exercise-homeostasis-lab-sim', ACTIVITY='Exercise and Homeostasis Lab (simulation)';
+const BACKUP_URL='https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const SAVE_URL_BUILTIN='https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';
+const BACKUP_TEACHERS=['Austin','Mueller','McCue','Arce','Trimm','Garcia','Trimm/Callanan','Callanan'], BACKUP_PERIODS=['1','2','3','4','5','6','7','8'];
+const STORE='exerciseLabSim_v1', RECS='exerciseLabSim_records_v1';
+/* ===================================================================== */
+const teacherList=()=>{ try{ if(typeof TEACHERS!=='undefined'&&Array.isArray(TEACHERS)&&TEACHERS.length) return TEACHERS.map(String); }catch(e){} return BACKUP_TEACHERS; };
+const periodList=()=>{ try{ if(typeof PERIODS!=='undefined'&&Array.isArray(PERIODS)&&PERIODS.length) return PERIODS.map(String); }catch(e){} return BACKUP_PERIODS; };
+const sheetURL=()=>{ try{ if(typeof SHEETS_WEBHOOK_URL!=='undefined'&&SHEETS_WEBHOOK_URL&&String(SHEETS_WEBHOOK_URL).indexOf('PASTE')<0) return String(SHEETS_WEBHOOK_URL); }catch(e){} return BACKUP_URL; };
+const saveURL=()=>{ try{ if(typeof SAVE_WEBHOOK_URL!=='undefined'&&SAVE_WEBHOOK_URL&&String(SAVE_WEBHOOK_URL).indexOf('PASTE')<0) return String(SAVE_WEBHOOK_URL); }catch(e){} return SAVE_URL_BUILTIN; };
+const LOCKDOWN=false;   // worksheets never lock down
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const strip=s=>String(s).replace(/<[^>]+>/g,'');
+function h(tag,attrs,html){ const e=document.createElement(tag); if(attrs) for(const k in attrs){ if(attrs[k]===false||attrs[k]==null) continue; if(k==='class') e.className=attrs[k]; else if(k==='hidden') e.hidden=!!attrs[k]; else e.setAttribute(k,attrs[k]); } if(html!=null) e.innerHTML=html; return e; }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* ---------- state + saving ---------- */
+function fresh(){ return {ws:WS_ID, student:null, p:{}, ord:{}, locks:0, locked:false, lockOff:false, submittedAt:null, sentAt:null}; }
+let S; try{ S=JSON.parse(localStorage.getItem(STORE)); }catch(e){} if(!S||S.ws!==WS_ID) S=fresh();
+let STORAGE_OK=true, saveBlocked=false;
+try{ localStorage.setItem('__ps_t','1'); STORAGE_OK=localStorage.getItem('__ps_t')==='1'; localStorage.removeItem('__ps_t'); }catch(e){ STORAGE_OK=false; }
+function save(){
+  if(saveBlocked) return;
+  if(S.preview){ note('Preview: nothing is saved'); return; }
+  try{ const raw=localStorage.getItem(STORE); if(raw){ const st=JSON.parse(raw); if(st&&st.ws===WS_ID&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); return; } }
+    S.rev=(S.rev||0)+1; S.updatedAt=Date.now(); localStorage.setItem(STORE,JSON.stringify(S)); note(); cloudSave(false); }catch(e){}
+}
+window.addEventListener('storage',e=>{ if(e.key!==STORE||!e.newValue) return; try{ const st=JSON.parse(e.newValue); if(st&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); } }catch(_){} });
+const saveKey=st=>(String(st.id||'').replace(/\s+/g,'')+'-'+String(st.last||'').toLowerCase().replace(/[^a-z]/g,'')).toLowerCase();
+const checkedCount=st=>Object.values((st||S).p).filter(x=>x&&x.checked).length;
+let cloudTimer=null, cloudDirty=false, cloudBusy=false, cloudAt=null, cloudErr=false;
+const cloudOK=()=>!!saveURL()&&S.student&&!saveBlocked&&!S.preview;
+function cloudBody(){ const st=S.student||{}, sc=scoreAll();
+  return new URLSearchParams({code:saveKey(st), lesson:WS_ID, ver:String(S.updatedAt||Date.now()), prog:String((S.submittedAt?100000:0)+checkedCount(S)), studentId:st.id||'', lastName:st.last||'', firstName:st.first||'', period:st.period||'', teacher:st.teacher||'',
+    summary:S.submittedAt?`Turned in · ${sc.total}/${sc.max}`:`${checkedCount(S)} of ${PROBS.length} problems checked`, data:JSON.stringify(S)}); }
+function cloudSave(soon){ if(!cloudOK()) return; cloudDirty=true; if(soon){ clearTimeout(cloudTimer); cloudTimer=setTimeout(cloudFlush,1200); } else if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); }
+async function cloudFlush(){ cloudTimer=null; if(!cloudOK()||!cloudDirty) return; if(cloudBusy){ cloudTimer=setTimeout(cloudFlush,4000); return; } cloudBusy=true; cloudDirty=false;
+  try{ await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); cloudAt=new Date(); cloudErr=false; }catch(e){ cloudDirty=true; cloudErr=true; if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); } finally{ cloudBusy=false; note(); } }
+function cloudBeacon(){ if(!cloudOK()||!cloudDirty) return; try{ if(navigator.sendBeacon&&navigator.sendBeacon(saveURL(),cloudBody())) cloudDirty=false; }catch(e){} }
+async function cloudLoad(st){ const ctrl=new AbortController(), t=setTimeout(()=>ctrl.abort(),5000);
+  try{ const r=await fetch(saveURL()+'?'+new URLSearchParams({code:saveKey(st),lesson:WS_ID}),{signal:ctrl.signal}); const j=await r.json(); if(j&&j.found&&j.data){ const d=JSON.parse(j.data); if(d&&d.ws===WS_ID) return {status:'found',data:d}; } return {status:'none'}; }
+  catch(e){ return {status:'error'}; } finally{ clearTimeout(t); } }
+function adopt(ns){ let sr=0; try{ const raw=localStorage.getItem(STORE); if(raw) sr=JSON.parse(raw).rev||0; }catch(e){} ns.rev=Math.max(ns.rev||0,sr); S=ns; saveBlocked=false; save(); }
+function note(msg){ const n=$('#saveNote'); if(!n) return; const tm=d=>d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}); n.textContent=msg||(cloudErr?'✓ Saved on this Chromebook':'✓ Saved '+tm(new Date())+(cloudAt?' · backed up '+tm(cloudAt):'')); }
+document.addEventListener('visibilitychange',()=>{ if(document.hidden){ save(); cloudBeacon(); } });
+window.addEventListener('pagehide',()=>{ save(); cloudBeacon(); });
+
+/* ============================== DIAGRAMS ============================== */
+/* ============================== PROBLEMS ============================== */
+const PARTS=[
+ {k:'P1', label:'Setup', title:'Purpose and setup', min:12, icon:'<path d="M3 12h4l2-5 3 10 2-6 2 3h5"/>'},
+ {k:'P2', label:'Predict', title:'Predict', min:5, icon:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z"/>'},
+ {k:'P3', label:'Experiment', title:'Experiment and data', min:20, icon:'<rect x="3.5" y="4" width="17" height="16" rx="2"/><path d="M3.5 9h17M3.5 14.5h17M10 4v16"/>'},
+ {k:'P4', label:'Analysis', title:'Analysis', min:15, icon:'<path d="M3 21h18"/><path d="M5 17l5-5 4 3 6-7"/>'},
+ {k:'P5', label:'Conclusion', title:'Conclusion (CER)', min:8, icon:'<path d="M4 4h12l4 4v12H4z"/><path d="M8 11h8M8 15h6"/>'},
+ {k:'P6', label:'Grade', title:'Your grade', min:1, icon:'<rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4V2.5h6V4"/><path d="M8.5 13l2.5 2.5 4.5-5"/>'}
+];
+const ico=(i,s)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PARTS[i].icon}</svg>`;
+const PROBS=[];   // every problem: {id, part, max, score(), key()}
+
+function probShell(parent, part, num, q, pts){
+  const box=h('div',{class:'prob'}); parent.appendChild(box);
+  box.innerHTML=`<div class="pq"><span class="pnum">${num}.</span> ${q} <span class="pts">(${pts} pt${pts>1?'s':''})</span></div>`;
+  return box;
+}
+function actions(box, o){ // Hint + Check buttons + feedback
+  const row=h('div',{class:'btnrow'}); const hb=h('button',{class:'btn ghost small',type:'button'},'Hint'); const cb=h('button',{class:'btn primary small',type:'button'},'Check');
+  row.append(hb,cb); box.appendChild(row);
+  const hint=h('div',{class:'hintbox',hidden:true},'💡 '+o.hint); box.appendChild(hint);
+  const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'}); box.appendChild(fb);
+  hb.addEventListener('click',()=>{ hint.hidden=!hint.hidden; });
+  return {row,hb,cb,hint,fb};
+}
+const st=id=>S.p[id]||(S.p[id]={});
+/* Two tries per problem. Right on try 1 or 2 = full credit. Wrong twice = marked wrong (credit for parts right on try 2).
+   The correct answer is never shown. */
+function gradeTry(P,res,max){ const n=res.filter(Boolean).length; P.tries=(P.tries||0)+1;
+  if(n===max){ P.first=max; P.checked=true; P.right=true; }
+  else if(P.tries>=2){ P.first=n; P.checked=true; P.right=false; }
+  return n===max; }
+function showTry(ui,P,max,doneText){
+  if(P.checked&&P.right){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML=`<b>Correct!</b> ${doneText||''}`; }
+  else if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`<b>Marked wrong.</b> You earned ${P.first} of ${max} point${max>1?'s':''}. Ask your teacher if you'd like to try it again.`; }
+  else if(P.tries===1){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=max>1?'<b>Not quite.</b> Something isn\'t right yet. You have <b>one more try</b>.':'<b>Not quite.</b> You have <b>one more try</b>.'; }
+  else ui.fb.hidden=true;
+  if(ui.cb) ui.cb.textContent=P.checked?'Checked':(P.tries===1?'Check (last try)':'Check'); }
+
+/* ---------- drag onto a diagram (or into equation slots) ---------- */
+function dragProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.zones.length);
+  let fig;
+  if(o.equation){ fig=h('div',{class:'eq'}); box.appendChild(fig); }
+  else { fig=h('div',{class:'figwrap'}); fig.innerHTML=o.svg; box.appendChild(fig); }
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.chips.map((_,i)=>i)));
+  const zoneEls={};
+  const groupAns=g=>o.zones.filter(z=>z.group===g).map(z=>z.ans);
+  if(o.equation){ o.layout.forEach(item=>{ if(typeof item==='string'){ fig.appendChild(h('span',null,item)); } else { const z=o.zones[item]; const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans}); fig.appendChild(b); zoneEls[z.id]=b; } }); }
+  else o.zones.forEach(z=>{ const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans});
+    b.style.left=(z.x/o.vb[0]*100)+'%'; b.style.top=(z.y/o.vb[1]*100)+'%'; b.style.width=((z.w||130)/o.vb[0]*100)+'%'; fig.appendChild(b); zoneEls[z.id]=b; });
+  function placedChips(){ return new Set(Object.values(P.place)); }
+  function render(){
+    const used=placedChips();
+    pool.innerHTML='<div class="lbl">Tap a label, then tap a box (or drag it). Tap a filled box to take its label back.</div>';
+    order.forEach(ci=>{ if(used.has(ci)) return; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true'},o.chips[ci]); c.disabled=!!P.checked;
+      c.addEventListener('click',()=>{ sel=sel===ci?null:ci; render(); });
+      c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+      pool.appendChild(c); });
+    if(P.checked&&!pool.querySelector('.chip')) pool.hidden=true;
+    o.zones.forEach(z=>{ const b=zoneEls[z.id]; const ci=P.place[z.id];
+      b.className='zone'+(ci==null?' empty':' filled')+(P.checked?' locked':'');
+      if(ci==null) b.innerHTML=z.ph||'drop here';
+      else b.innerHTML=o.chips[ci];
+      b.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; ui.hb.disabled=!!P.checked&&false;
+    showTry(ui,P,o.zones.length,o.done);
+  }
+  o.zones.forEach(z=>{ const b=zoneEls[z.id];
+    const drop=ci=>{ if(P.checked) return; if(ci==null){ if(P.place[z.id]!=null){ delete P.place[z.id]; save(); render(); } return; }
+      for(const k in P.place) if(P.place[k]===ci) delete P.place[k];
+      P.place[z.id]=ci; sel=null; save(); render(); };
+    b.addEventListener('click',()=>drop(sel));
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  ui.cb.addEventListener('click',()=>{
+    if(P.checked) return;
+    const empty=o.zones.filter(z=>P.place[z.id]==null).length;
+    if(empty){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill every box before you check. ${empty} still empty.`; return; }
+    const res={}; const usedInGroup={};
+    o.zones.forEach(z=>{ const t=o.chips[P.place[z.id]];
+      if(z.group){ const ans=groupAns(z.group); usedInGroup[z.group]=usedInGroup[z.group]||[]; const ok=ans.includes(t)&&!usedInGroup[z.group].includes(t); if(ok) usedInGroup[z.group].push(t); res[z.id]=ok; }
+      else res[z.id]=t===z.ans; });
+    gradeTry(P,Object.values(res),o.zones.length); save(); cloudSave(true); render(); refresh();
+  });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.zones.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- sort into bins ---------- */
+function binProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.items.length);
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const bins=h('div',{class:'bins',style:`grid-template-columns:repeat(${o.bins.length},minmax(0,1fr))`}); box.appendChild(bins);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.items.map((_,i)=>i)));
+  const binEls={};
+  o.bins.forEach(bn=>{ const b=h('div',{class:'bin',role:'button',tabindex:'0'},`<h4>${bn.label}</h4><div class="bchips"></div>`); bins.appendChild(b); binEls[bn.k]=b;
+    const drop=ci=>{ if(P.checked||ci==null) return; P.place[ci]=bn.k; sel=null; save(); render(); };
+    b.addEventListener('click',e=>{ if(e.target.closest('.chip')) return; drop(sel); });
+    b.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); drop(sel); } });
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  const binLabel=k=>(o.bins.find(b=>b.k===k)||{}).label;
+  function chipEl(ci,inBin){ const it=o.items[ci]; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true','data-key':binLabel(it.k)},it.t);
+    
+    c.disabled=!!P.checked;
+    c.addEventListener('click',e=>{ if(P.checked) return; if(inBin){ e.stopPropagation(); if(sel!=null&&sel!==ci){ P.place[sel]=P.place[ci]; sel=null; save(); render(); return; } delete P.place[ci]; save(); render(); return; } sel=sel===ci?null:ci; render(); });
+    c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+    return c; }
+  function render(){
+    pool.innerHTML='<div class="lbl">Tap an item, then tap the box it belongs in (or drag it). Tap a sorted item to take it back.</div>';
+    order.forEach(ci=>{ if(P.place[ci]==null) pool.appendChild(chipEl(ci,false)); });
+    pool.hidden=!!P.checked;
+    o.bins.forEach(bn=>{ const holder=$('.bchips',binEls[bn.k]); holder.innerHTML=''; order.forEach(ci=>{ if(P.place[ci]===bn.k) holder.appendChild(chipEl(ci,true)); }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,o.items.length,o.done);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const left=o.items.filter((_,i)=>P.place[i]==null).length;
+    if(left){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Sort every item before you check. ${left} still left.`; return; }
+    const res=o.items.map((it,i)=>P.place[i]===it.k); gradeTry(P,res,o.items.length); save(); cloudSave(true); render(); refresh(); });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.items.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- choice problems: one, two-part, or select-all ---------- */
+function choiceProblem(parent, o){   // o.parts: [{q, opts, ans (index or array for select-all)}]
+  const P=st(o.id); P.pick=P.pick||{};
+  const max=o.parts.length;
+  const box=probShell(parent,o.part,o.num,o.q,max);
+  const groups=[];
+  o.parts.forEach((pt,pi)=>{
+    const multi=Array.isArray(pt.ans);
+    if(pt.q) box.insertAdjacentHTML('beforeend',`<div style="margin:10px 0 4px">${pt.q}${multi?' <span class="small muted">(Select all that apply.)</span>':''}</div>`);
+    const ordKey=o.id+'_'+pi; const order=S.ord[ordKey]||(S.ord[ordKey]=shuffle(pt.opts.map((_,i)=>i)));
+    const wrap=h('div',{class:'opts'}); box.appendChild(wrap);
+    const btns={};
+    order.forEach((oi,pos)=>{ const correct=multi?pt.ans.includes(oi):oi===pt.ans;
+      const b=h('button',{class:'opt'+(multi?' multi':''),type:'button'},`<span class="L">${'ABCDEF'[pos]}</span><span>${pt.opts[oi]}</span>`); if(correct) b.dataset.key='1';
+      b.addEventListener('click',()=>{ if(P.checked) return; if(multi){ const s=new Set(P.pick[pi]||[]); s.has(oi)?s.delete(oi):s.add(oi); P.pick[pi]=[...s]; } else P.pick[pi]=oi; save(); paint(); });
+      wrap.appendChild(b); btns[oi]=b; });
+    groups.push({pt,multi,btns});
+  });
+  const ui=actions(box,o);
+  function gradePart(g,pi){ const pk=P.pick[pi]; if(g.multi){ const s=new Set(pk||[]); return g.pt.ans.length===s.size&&g.pt.ans.every(a=>s.has(a)); } const ans=g.pt.ansFn?g.pt.ansFn():g.pt.ans; return pk===ans; }
+  function paint(){
+    groups.forEach((g,pi)=>{ const pk=P.pick[pi];
+      Object.entries(g.btns).forEach(([oi,b])=>{ oi=+oi; const picked=g.multi?(pk||[]).includes(oi):pk===oi; const correct=g.multi?g.pt.ans.includes(oi):oi===g.pt.ans;
+        b.className='opt'+(g.multi?' multi':'')+(picked?' sel':'')+(P.checked&&P.right&&picked?' ok':''); b.disabled=!!P.checked; }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,max,o.why);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const blank=groups.some((g,pi)=>g.multi?!(P.pick[pi]||[]).length:P.pick[pi]==null);
+    if(blank){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Answer every part before you check.'; return; }
+    gradeTry(P,groups.map((g,pi)=>gradePart(g,pi)),max); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- typed blanks (two tries, like every problem) ---------- */
+function typedProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.blanks.length);
+  const inputs=o.blanks.map((bl,i)=>{ const row=h('div',{class:'brow'}); row.innerHTML=`${bl.before} <input class="blank" type="text" aria-label="${esc(strip(bl.before))}" data-key="${esc(bl.show)}"><span class="keytxt">${bl.show}</span> ${bl.after||''}`; box.appendChild(row);
+    const inp=$('input',row); inp.value=P.val[i]||''; inp.addEventListener('input',()=>{ P.val[i]=inp.value; save(); }); return inp; });
+  const ui=actions(box,o);
+  const ok=(bl,v)=>{ v=String(v||'').trim().toLowerCase(); if(bl.calc){ const n=parseFloat(v.replace(/[\u2212\u2013\u2014]/g,'-').replace(/[^0-9.\-]/g,'')); const t=bl.calc(); return !isNaN(n)&&t!=null&&!isNaN(t)&&Math.abs(n-t)<=(bl.tol==null?0.15:bl.tol); } if(bl.num){ const n=parseFloat(v.replace(/[\u2212\u2013\u2014]/g,'-').replace(/[^0-9.\-]/g,'')); return !isNaN(n)&&n>=bl.num[0]&&n<=bl.num[1]; } return bl.accept.some(a=>v.replace(/\s+/g,' ')===a); };
+  function paint(){ inputs.forEach(inp=>{ inp.classList.remove('ok','no'); if(P.checked&&P.right) inp.classList.add('ok'); inp.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; showTry(ui,P,o.blanks.length,''); }
+  ui.cb.addEventListener('click',()=>{
+    if(inputs.some(inp=>!inp.value.trim())){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Fill in every blank before you check.'; return; }
+    if(P.checked) return;
+    const res=o.blanks.map((bl,i)=>ok(bl,inputs[i].value));
+    gradeTry(P,res,o.blanks.length); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.blanks.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- written answer, scored by key ideas (two tries, like every problem) ---------- */
+function writtenProblem(parent, o){
+  const P=st(o.id); if(P.val==null) P.val='';
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const ta=h('textarea',{class:'wtext',rows:'5','aria-label':'Your answer','data-key':o.model}); ta.value=P.val; box.appendChild(ta);
+  box.appendChild(h('div',{class:'wkey'},'<b>Key:</b> '+o.model));
+  if(o.bank){ const wb=h('div',{class:'wbank2'}); wb.innerHTML='<b>Word bank</b> <span class="small muted">(tap a word to add it)</span><br>'+o.bank.map(w=>`<button type="button" class="wchip">${w}</button>`).join('');
+    box.appendChild(wb);
+    wb.querySelectorAll('.wchip').forEach(c=>c.addEventListener('click',()=>{ if(ta.disabled) return; const w=c.textContent; const a=ta.selectionStart??ta.value.length, b=ta.selectionEnd??ta.value.length;
+      const before=ta.value.slice(0,a), after=ta.value.slice(b); const pre=(before&&!/\s$/.test(before))?' ':''; const ins=pre+w+' ';
+      ta.value=before+ins+after; ta.focus(); const p=a+ins.length; ta.setSelectionRange(p,p); ta.dispatchEvent(new Event('input',{bubbles:true})); })); }
+  ta.addEventListener('input',()=>{ P.val=ta.value; save(); });
+  const ui=actions(box,o);
+  const grade=()=>{ const t=ta.value.toLowerCase(); const hits=o.groups.filter(g=>g[1].test(t)).length; const n=Math.min(o.pts,hits); return Array.from({length:o.pts},(_,i)=>i<n); };
+  function paint(){ ta.disabled=!!P.checked; ui.cb.disabled=!!P.checked; showTry(ui,P,o.pts,o.why); }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(ta.value.trim().split(/\s+/).length<5){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Write a full answer (at least one complete sentence) before you check.'; return; }
+    gradeTry(P,grade(),o.pts); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- predictions: saved once, completion credit, never marked wrong ---------- */
+function predictProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.rows.length);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb predtab"><tr><th>${o.rowsLabel||'Tube'}</th><th>Setup</th><th>My prediction</th></tr>${o.rows.map((r,i)=>`<tr><td><b>${r.id}</b></td><td>${r.desc}</td><td><select data-i="${i}" aria-label="Prediction for ${r.id}"><option value="">choose…</option>${o.choices.map(c=>`<option>${c}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select')];
+  sels.forEach((sl,i)=>{ sl.value=P.val[i]||''; sl.addEventListener('change',()=>{ P.val[i]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Lock in my predictions';
+  function paint(){ sels.forEach(sl=>sl.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Predictions saved.</b> You\'ll compare them with your results later. Your observation table on page 3 is now unlocked.'; ui.cb.textContent='Predictions locked'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(sels.some(sl=>!sl.value)){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Choose a prediction for every tube first.'; return; }
+    if(!confirm('Lock in your predictions? You can\'t change them after this.')) return;
+    P.first=o.rows.length; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.rows.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- lab data table: groups type their own measurements; graph builds from them ---------- */
+function dataTableProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const cells=o.rows.length*o.cols.length;
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb datatab"><tr><th>${o.corner}</th>${o.cols.map(c=>`<th>${c}</th>`).join('')}</tr>${o.rows.map((r,i)=>`<tr><td><b>${r}</b></td>${o.cols.map((c,j)=>`<td><input class="dcell" inputmode="decimal" data-r="${i}" data-c="${j}" aria-label="${r}, ${c}"></td>`).join('')}</tr>`).join('')}</table>`;
+  const ins=[...wrap.querySelectorAll('input.dcell')];
+  const chart=h('div',{class:'datachart'}); box.appendChild(chart);
+  ins.forEach(inp=>{ const k=inp.dataset.r+'_'+inp.dataset.c; inp.value=P.val[k]??''; inp.addEventListener('input',()=>{ P.val[k]=inp.value; save(); draw(); }); });
+  function draw(){ chart.innerHTML=o.chart(P.val); }
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Save my data';
+  function paint(){ ins.forEach(i=>i.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Data saved.</b> Your analysis questions use these numbers.'; ui.cb.textContent='Data saved'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const bad=ins.filter(i=>i.value.trim()===''||isNaN(parseFloat(i.value)));
+    if(bad.length){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill in every box with a number first (${bad.length} still empty).`; bad[0].focus(); return; }
+    if(!confirm('Save your data? You can\'t change it after this, and your analysis will use these numbers.')) return;
+    P.first=o.pts; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  draw(); paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- observation table: each row has its own menu; completion credit when saved ---------- */
+function obsTableProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb datatab"><tr><th>Observation</th><th>What you saw</th></tr>${o.rows.map((r,i)=>`<tr><td>${r.q}</td><td><select class="ocell" data-r="${i}" aria-label="${r.q.replace(/<[^>]+>/g,'')}"><option value="">choose…</option>${r.opts.map(x=>`<option>${x}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select.ocell')];
+  sels.forEach(sl=>{ const k=sl.dataset.r; sl.value=P.val[k]||''; sl.addEventListener('change',()=>{ P.val[k]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Save my observations';
+  function paint(){ sels.forEach(s=>s.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Observations saved.</b> Your analysis questions use them.'; ui.cb.textContent='Observations saved'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const bad=sels.filter(s=>!s.value); if(bad.length){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Choose an answer in every row first (${bad.length} still empty).`; return; }
+    if(!confirm('Save your observations? You can\'t change them after this, and your analysis will use them.')) return;
+    P.first=o.pts; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ============================== WORKSHEET CONTENT ============================== */
+/* ===== Exercise, Heart Rate, and Breathing Rate Lab (shared content: helpers, drawings, charts, sections 1, 2, 4, 5) ===== */
+const TIMES=['Resting (before exercise)','Right after exercise (0 min)','1 minute after','2 minutes after','3 minutes after','4 minutes after','5 minutes after'];
+const TSHORT=['Rest','0','1','2','3','4','5'];
+const DCOLS=['Beats in 15 s','Heart rate (beats per minute)','Breaths in 30 s','Breathing rate (breaths per minute)'];
+const CLASS_ROWS=['Classmate A','Classmate B','Classmate C','Classmate D'];
+const CLASS_COLS=['Resting heart rate','Heart rate right after exercise','Heart rate 2 minutes after'];
+const HR_TOL=5, BR_TOL=2;
+
+/* ---------- small helpers ---------- */
+let UIDN=0; const uid=p=>p+'_'+(++UIDN);
+const f1=v=>(+v).toFixed(1);
+const stx=(x,y,t,fs,col,anchor,bold)=>`<text x="${x}" y="${y}" text-anchor="${anchor||'middle'}" font-size="${fs||14}" fill="${col||'#e8eef8'}"${bold?' font-weight="700"':''}>${t}</text>`;
+function hashStr(s){ let x=2166136261; for(const ch of String(s)){ x^=ch.charCodeAt(0); x=Math.imul(x,16777619); } return x>>>0; }
+function mulberry(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+const cellv=(v,r,c)=>{ const x=parseFloat((v||{})[r+'_'+c]); return isNaN(x)?null:x; };
+const niceTop=mx=>{ const step=mx<=10?2:mx<=25?5:mx<=60?10:mx<=150?20:40; return [Math.max(step,Math.ceil(mx/step)*step),step]; };
+const SKIN={a:'#d9a47c',b:'#b9805b',c:'#a86f4b'}, SKIN2={a:'#8d5a3c',b:'#6e432b',c:'#5c3723'};
+const arrowHead=(x,y,ang,col,sz)=>{ sz=sz||10; const a1=ang+2.6, a2=ang-2.6; return `<path d="M${f1(x)},${f1(y)} L${f1(x+Math.cos(a1)*sz)},${f1(y+Math.sin(a1)*sz)} L${f1(x+Math.cos(a2)*sz)},${f1(y+Math.sin(a2)*sz)} Z" fill="${col}"/>`; };
+
+/* ---------- materials picture ---------- */
+function stopwatchG(x,y,s,txt){ const id=uid('sw'); return `<g transform="translate(${x} ${y}) scale(${s||1})"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4b5563"/><stop offset="1" stop-color="#1f2937"/></linearGradient></defs>
+  <rect x="-8" y="-58" width="16" height="10" rx="3" fill="#9ca3af" stroke="#4b5563"/><path d="M-30,-47 l-8,-8 M30,-47 l8,-8" stroke="#6b7280" stroke-width="5" stroke-linecap="round"/>
+  <circle r="48" fill="url(#${id})" stroke="#111827" stroke-width="2"/><circle r="40" fill="#e5e7eb" stroke="#9ca3af"/>
+  <rect x="-30" y="-14" width="60" height="26" rx="4" fill="#c7d2c0" stroke="#6b7a63"/><text x="0" y="6" text-anchor="middle" font-size="16" font-family="monospace" fill="#1f2a1a">${txt||'0:00'}</text>
+  <circle cx="-14" cy="24" r="5" fill="#dc2626"/><circle cx="14" cy="24" r="5" fill="#2563eb"/></g>`; }
+function stepG(x,y,s){ const id=uid('st'); return `<g transform="translate(${x} ${y}) scale(${s||1})"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#475569"/><stop offset="1" stop-color="#1e293b"/></linearGradient></defs>
+  <ellipse cx="0" cy="4" rx="96" ry="7" fill="#000" opacity=".15"/><path d="M-84,-34 L84,-34 L94,-6 L-94,-6 Z" fill="url(#${id})"/><path d="M-84,-34 L84,-34 L88,-26 L-88,-26 Z" fill="#64748b"/>
+  ${[-1,1].map(sd=>`<rect x="${sd>0?52:-82}" y="-6" width="30" height="8" rx="2" fill="#0f172a"/>`).join('')}${Array.from({length:9},(_,i)=>`<line x1="${-72+i*18}" y1="-31" x2="${-74+i*18}" y2="-28" stroke="#94a3b8" stroke-width="1.2"/>`).join('')}</g>`; }
+function chairG(x,y,s){ return `<g transform="translate(${x} ${y}) scale(${s||1})"><path d="M-30,-96 L-26,-40" stroke="#1d4ed8" stroke-width="7" stroke-linecap="round"/><rect x="-36" y="-110" width="16" height="44" rx="5" fill="#2563eb" transform="rotate(5 -28 -88)"/>
+  <rect x="-32" y="-46" width="68" height="10" rx="4" fill="#2563eb"/><path d="M-28,-36 L-34,0 M30,-36 L36,0 M-20,-36 L-14,-4 M22,-36 L16,-4" stroke="#475569" stroke-width="4" stroke-linecap="round"/></g>`; }
+function clipboardG(x,y,s){ return `<g transform="translate(${x} ${y}) scale(${s||1})"><rect x="-40" y="-56" width="80" height="108" rx="6" fill="#b7854f" stroke="#7c5428" stroke-width="1.5"/><rect x="-33" y="-46" width="66" height="92" fill="#fff"/>
+  <rect x="-16" y="-62" width="32" height="14" rx="4" fill="#94a3b8" stroke="#475569"/>${Array.from({length:6},(_,i)=>`<line x1="-26" y1="${-30+i*12}" x2="26" y2="${-30+i*12}" stroke="#cbd5e1"/>`).join('')}<line x1="-8" y1="-38" x2="-8" y2="38" stroke="#cbd5e1"/>
+  <path d="M30,30 L52,-20 L58,-17 L36,33 Z" fill="#facc15" stroke="#a16207" stroke-width=".8"/><path d="M30,30 L36,33 L31,38 Z" fill="#334155"/></g>`; }
+function bottleG(x,y,s){ const id=uid('bt'); return `<g transform="translate(${x} ${y}) scale(${s||1})"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#93c5fd"/><stop offset=".5" stop-color="#dbeafe"/><stop offset="1" stop-color="#60a5fa"/></linearGradient></defs>
+  <rect x="-10" y="-96" width="20" height="12" rx="3" fill="#1d4ed8"/><path d="M-10,-84 Q-22,-74 -22,-58 L-22,-4 Q-22,2 -16,2 L16,2 Q22,2 22,-4 L22,-58 Q22,-74 10,-84 Z" fill="url(#${id})" stroke="#3b82f6" stroke-width="1.2" opacity=".95"/>
+  <rect x="-22" y="-50" width="44" height="22" fill="#0ea5e9" opacity=".55"/></g>`; }
+const MAT_PIC=`<svg viewBox="0 0 760 210" role="img" aria-label="Materials: a stopwatch, a sturdy step, a chair, a clipboard with a pencil, and a water bottle.">
+  <rect width="760" height="210" rx="14" fill="#f8fafc"/><rect y="168" width="760" height="42" fill="#e7dcc8"/><path d="M0 168 H760" stroke="#cbbd9f" stroke-width="2"/>
+  ${stopwatchG(90,104,1)}${stepG(255,168,1)}${chairG(420,168,1.05)}${clipboardG(560,108,1)}${bottleG(680,168,1)}
+  ${[[90,200,'stopwatch'],[255,200,'sturdy step or bottom stair'],[420,200,'chair'],[560,200,'clipboard and pencil'],[680,200,'water']].map(([x,y,t])=>stx(x,y,t,13.5,'#475569')).join('')}</svg>`;
+
+/* ---------- pulse points (labels are dragged on by the student) ---------- */
+const PULSE_VB=[760,340];
+const PULSE_PIC=(()=>{ const id=uid('pp'), sk=SKIN, s2=SKIN2;
+  let s=`<svg viewBox="0 0 760 340" role="img" aria-label="Two drawings. Left: a forearm and hand, palm up, with a marked spot on the wrist and the thumb. Right: a head and neck seen from the side, with a marked spot on the neck and another person's two fingers pressing there. Four empty label boxes point to the parts."><defs>
+    <linearGradient id="${id}a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${sk.a}"/><stop offset=".6" stop-color="${sk.a}"/><stop offset="1" stop-color="${sk.b}"/></linearGradient>
+    <linearGradient id="${id}b" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="${sk.b}"/><stop offset=".45" stop-color="${sk.a}"/><stop offset="1" stop-color="${sk.b}"/></linearGradient>
+    <linearGradient id="${id}c" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${s2.a}"/><stop offset="1" stop-color="${s2.b}"/></linearGradient></defs>
+    <rect width="760" height="340" rx="14" fill="#f8fafc"/><line x1="380" y1="16" x2="380" y2="324" stroke="#e2e8f0" stroke-width="2"/>`;
+  // left: forearm palm up, hand to the right, thumb on top side
+  s+=`<path d="M14,180 C90,172 180,166 246,166 L250,228 C180,230 90,238 14,246 Z" fill="url(#${id}a)" stroke="${sk.c}" stroke-width="1.4"/>`;
+  s+=`<path d="M40,204 C110,198 170,196 230,196" stroke="${sk.b}" stroke-width="1.2" fill="none" opacity=".5"/><path d="M60,186 C120,181 170,180 214,181" stroke="#7c9cc7" stroke-width="2" fill="none" opacity=".35"/>`;
+  s+=`<g transform="translate(262 172) rotate(-52)"><rect x="-6" y="-11" width="62" height="22" rx="11" fill="url(#${id}a)" stroke="${sk.c}" stroke-width="1.3"/><path d="M42,-9 Q52,0 42,9" fill="#f3d4c0" stroke="${sk.c}" stroke-width=".8"/><line x1="24" y1="-9" x2="24" y2="9" stroke="${sk.c}" stroke-width=".9" opacity=".6"/></g>`;
+  s+=`<path d="M244,166 Q284,154 322,164 L326,226 Q290,236 248,228 Z" fill="url(#${id}a)" stroke="${sk.c}" stroke-width="1.3"/>`;
+  [[170,54],[185,60],[200,57],[214,46]].forEach(([y,l],i)=>{ s+=`<rect x="314" y="${y-7}" width="${l}" height="14" rx="7" fill="url(#${id}a)" stroke="${sk.c}" stroke-width="1.2"/><line x1="${336+i}" y1="${y-6}" x2="${336+i}" y2="${y+6}" stroke="${sk.c}" stroke-width=".8" opacity=".6"/>`; });
+  s+=`<path d="M262,198 C276,190 296,192 304,206" stroke="${sk.c}" stroke-width="1" fill="none" opacity=".55"/><path d="M238,170 q-3,28 0,56 M230,171 q-3,28 0,55" stroke="${sk.c}" stroke-width="1" fill="none" opacity=".55"/>`;
+  s+=`<circle cx="222" cy="176" r="6" fill="#dc2626" opacity=".9"/><circle cx="222" cy="176" r="11" fill="none" stroke="#dc2626" stroke-width="1.5" opacity=".55"/><circle cx="288" cy="136" r="5" fill="#2563eb" opacity=".85"/>`;
+  s+=stx(190,318,'Arm and hand, palm up',13.5,'#475569');
+  // right: head and neck, side view, facing right
+  s+=`<path d="M520,300 L536,190 C512,172 500,140 506,110 C512,62 552,40 596,46 C632,52 648,82 646,112 L658,146 C660,150 656,152 650,152 L646,158 C648,164 646,170 642,172 C644,180 642,188 634,192 C624,198 610,198 598,196 L600,262 L612,300 Z" fill="url(#${id}b)" stroke="${sk.c}" stroke-width="1.4"/>`;
+  s+=`<path d="M506,108 C506,62 552,40 596,46 C626,50 642,70 644,92 C628,78 606,74 584,82 C566,88 556,104 552,124 C540,118 520,120 512,140 C506,130 505,118 506,108 Z" fill="#2b1d14"/>`;
+  s+=`<ellipse cx="562" cy="132" rx="10" ry="15" fill="${sk.b}" stroke="${sk.c}" stroke-width="1"/><path d="M560,124 q6,8 0,16" stroke="${sk.c}" stroke-width="1.2" fill="none"/>`;
+  s+=`<path d="M622,104 q8,-4 16,0" stroke="#2b1d14" stroke-width="2.4" fill="none" stroke-linecap="round"/><ellipse cx="628" cy="114" rx="4" ry="2.6" fill="#2b1d14"/><path d="M640,176 q-6,2 -10,0" stroke="#7a3b26" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+  s+=`<path d="M598,196 C590,198 576,190 568,176" stroke="${sk.c}" stroke-width="1.2" fill="none" opacity=".7"/><path d="M570,200 C578,232 584,262 590,300" stroke="#7c9cc7" stroke-width="2" fill="none" opacity=".35"/>`;
+  s+=`<path d="M500,340 L520,292 C548,304 588,306 616,292 L640,340 Z" fill="#0f766e"/><path d="M520,292 C548,304 588,306 616,292" stroke="#115e59" stroke-width="3" fill="none"/>`;
+  s+=`<circle cx="590" cy="218" r="6" fill="#dc2626" opacity=".9"/><circle cx="590" cy="218" r="11" fill="none" stroke="#dc2626" stroke-width="1.5" opacity=".55"/>`;
+  // partner's two fingers on the carotid, coming from the lower right
+  s+=`<g><path d="M760,330 L700,300 C690,290 694,276 706,274 L760,280 Z" fill="url(#${id}c)" stroke="${s2.c}" stroke-width="1.2"/>`;
+  [[0,0],[10,14]].forEach(([dx,dy])=>{ s+=`<g transform="translate(${598+dx} ${222+dy}) rotate(28)"><rect x="0" y="-8" width="112" height="16" rx="8" fill="url(#${id}c)" stroke="${s2.c}" stroke-width="1.2"/><path d="M4,-6 q-4,6 0,12" stroke="#d6b39a" stroke-width="2" fill="none"/><line x1="40" y1="-7" x2="40" y2="7" stroke="${s2.c}" stroke-width=".8" opacity=".7"/></g>`; });
+  s+=`</g>`;
+  s+=stx(570,30,'Head and neck, side view',13.5,'#475569','middle');
+  // leader lines to the four label boxes
+  const lead=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#64748b" stroke-width="1.6" stroke-dasharray="4 3"/><circle cx="${x2}" cy="${y2}" r="3" fill="#64748b"/>`;
+  s+=lead(110,96,218,172)+lead(300,64,288,132)+lead(452,262,584,220)+lead(688,174,672,254);
+  return s+'</svg>'; })();
+const PULSE_ZONES=[{id:'z1',x:110,y:76,w:180,ans:'Radial pulse (wrist, thumb side)'},{id:'z2',x:300,y:44,w:150,ans:'Thumb (has its own pulse)'},
+  {id:'z3',x:452,y:282,w:150,ans:'Carotid pulse (side of the neck)'},{id:'z4',x:672,y:154,w:150,ans:'Index and middle fingertips'}];
+
+/* ---------- feedback loop diagram (student drags the parts on) ---------- */
+const LOOP_VB=[760,520], LOOP_POS=[[380,74],[628,206],[540,428],[220,428],[132,206]], LOOP_HEADS=['Stimulus','Sensors','Control center','Effectors','Response'];
+const LOOP_PIC=(()=>{ let s=`<svg viewBox="0 0 760 520" role="img" aria-label="An empty feedback loop with five boxes in a circle: stimulus, sensors, control center, effectors, and response. Arrows go around the circle, and a dashed arrow goes from the response back to the stimulus. The middle says set point: normal CO2 and O2 levels in the blood.">
+   <rect width="760" height="520" rx="14" fill="#0f1b2e"/>`;
+  const bw=114, bh=56, cx=380, cy=262;
+  const ARR=[[500,66,610,58,640,138],[652,268,668,330,590,368],[422,446,380,470,340,446],[190,368,112,330,124,268],[124,148,124,60,260,62]];
+  ARR.forEach(([sx,sy,qx,qy,ex,ey],i)=>{ const col=i===4?'#5fe3a9':'#45c8f0';
+    s+=`<path d="M${sx},${sy} Q${qx},${qy} ${ex},${ey}" stroke="${col}" stroke-width="3.4" fill="none"${i===4?' stroke-dasharray="8 6"':''}/>`+arrowHead(ex,ey,Math.atan2(ey-qy,ex-qx),col,14); });
+  s+=`<circle cx="${cx}" cy="${cy}" r="74" fill="#1a2a44" stroke="#ffd35c" stroke-width="2" stroke-dasharray="6 4"/>`+stx(cx,cy-18,'Set point',15,'#ffd35c','middle',true)+stx(cx,cy+4,'normal CO₂ and O₂',13,'#e8eef8')+stx(cx,cy+22,'levels in the blood',13,'#e8eef8');
+  s+=stx(176,108,'feeds back',12.5,'#5fe3a9','middle',true);
+  LOOP_POS.forEach(([x,y],i)=>{ s+=`<rect x="${x-bw}" y="${y-bh}" width="${bw*2}" height="${bh*2}" rx="12" fill="#16243b" stroke="#3a5580" stroke-width="1.6"/>`+stx(x,y-bh+20,LOOP_HEADS[i],15,'#ffd35c','middle',true); });
+  return s+'</svg>'; })();
+const LOOP_ANS=['More CO₂ and less O₂ in the blood','Chemical sensors in the brain stem and big arteries','The brain stem (part of the brain)','The heart and the breathing muscles (diaphragm and rib muscles)','Heart beats faster; breathing gets faster and deeper'];
+const LOOP_ZONES=LOOP_POS.map(([x,y],i)=>({id:'L'+i,x,y:y+14,w:212,ans:LOOP_ANS[i]}));
+
+/* ---------- ordering strip (drag the steps into slots 1 to 6) ---------- */
+function orderPic(n,label){ const H=40+n*62; let s=`<svg viewBox="0 0 760 ${H}" role="img" aria-label="${label}"><rect width="760" height="${H}" rx="14" fill="#0f1b2e"/>`;
+  for(let i=0;i<n;i++){ const y=46+i*62; s+=`<circle cx="44" cy="${y}" r="17" fill="#1a2a44" stroke="#ffd35c" stroke-width="2"/>`+stx(44,y+5,String(i+1),15,'#ffd35c','middle',true);
+    if(i<n-1) s+=`<line x1="44" y1="${y+19}" x2="44" y2="${y+40}" stroke="#45c8f0" stroke-width="2.4"/>`+arrowHead(44,y+44,Math.PI/2,'#45c8f0',8); }
+  return s+'</svg>'; }
+const ORDER_STEPS=['You stop exercising.','Your muscles use less O₂ and make less CO₂.','CO₂ in the blood drops back toward normal.','Sensors detect the change and send fewer signals to the brain stem.','The brain stem sends fewer signals to the heart and breathing muscles.','Heart rate and breathing rate slow down toward resting.'];
+const ORDER_VB=[760,40+6*62];
+const ORDER_ZONES=ORDER_STEPS.map((t,i)=>({id:'o'+i,x:410,y:46+i*62,w:640,ans:t,ph:'drop step '+(i+1)+' here'}));
+
+/* ---------- predictions with a menu per row (same lock pattern as predictProblem) ---------- */
+function predictRows(parent,o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.rows.length);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb predtab"><tr><th>What to predict</th><th>My prediction</th></tr>${o.rows.map((r,i)=>`<tr><td>${r.id}</td><td><select data-i="${i}" aria-label="Prediction: ${esc(strip(r.id))}"><option value="">choose…</option>${r.choices.map(c=>`<option>${c}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select')];
+  sels.forEach((sl,i)=>{ sl.value=P.val[i]||''; sl.addEventListener('change',()=>{ P.val[i]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Lock in my predictions';
+  function paint(){ sels.forEach(sl=>sl.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Predictions saved.</b> You\'ll compare them with your results later. Page 3 is now unlocked.'; ui.cb.textContent='Predictions locked'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(sels.some(sl=>!sl.value)){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Choose a prediction in every row first.'; return; }
+    if(!confirm('Lock in your predictions? You can\'t change them after this.')) return;
+    P.first=o.rows.length; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.rows.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+const PRED_ROWS=[
+  {id:'Heart rate right after exercise',choices:['Much higher than resting','A little higher than resting','About the same as resting','Lower than resting']},
+  {id:'Breathing rate right after exercise',choices:['Much higher than resting','A little higher than resting','About the same as resting','Lower than resting']},
+  {id:'Which will get back to resting first?',choices:['Heart rate','Breathing rate','Both at about the same time','Neither will get back within 5 minutes']},
+  {id:'How long until heart rate is back to resting?',choices:['1 minute or less','2 to 3 minutes','4 to 5 minutes','More than 5 minutes']}];
+
+/* ---------- reading the student's own tables ---------- */
+function exData(){ const v=st('data').val||{}, g=(r,c)=>cellv(v,r,c)||0, R=[0,1,2,3,4,5,6];
+  return {hr:R.map(i=>g(i,1)), br:R.map(i=>g(i,3)), bc:R.map(i=>g(i,0)), rc:R.map(i=>g(i,2))}; }
+function recov(arr,tol){ for(let i=1;i<=6;i++) if(Math.abs(arr[i]-arr[0])<=tol+1e-9) return i-1; return null; }
+function clsData(){ const v=st('class').val||{}, g=(r,c)=>cellv(v,r,c)||0; return CLASS_ROWS.map((_,r)=>({rest:g(r,0),after:g(r,1),two:g(r,2)})); }
+const pct=(a,b)=>a>0?100*(b-a)/a:0;
+/* math check for the data table (never shows the answer, only which rows to check) */
+function mathCheck(v){ const bad=[];
+  TIMES.forEach((t,i)=>{ const b=cellv(v,i,0), hr=cellv(v,i,1), r=cellv(v,i,2), br=cellv(v,i,3);
+    if(b!=null&&hr!=null&&Math.abs(b*4-hr)>0.01) bad.push(TSHORT[i]==='Rest'?'resting heart rate':`heart rate at ${TSHORT[i]} min`);
+    if(r!=null&&br!=null&&Math.abs(r*2-br)>0.01) bad.push(TSHORT[i]==='Rest'?'resting breathing rate':`breathing rate at ${TSHORT[i]} min`); });
+  return bad; }
+
+/* ---------- charts (drawn only from numbers the student typed) ---------- */
+function panelSVG(o){ // o: {y0 offset, title, vals[7], col, unit, top}
+  const X0=78,X1=650, gx=i=>i===0?X0+28:X0+120+(X1-X0-140)*(i-1)/5, PH=200, Y0=o.oy+PH+30, Y1=o.oy+40;
+  let mx=1; o.vals.forEach(x=>{ if(x!=null) mx=Math.max(mx,x); }); const [top,step]=niceTop(mx*1.08), y=v=>Y0-(Y0-Y1)*v/top;
+  let s=stx(X0,o.oy+24,o.title,15,o.col,'start',true);
+  s+=`<rect x="${X0+56}" y="${Y1}" width="44" height="${Y0-Y1}" fill="#ffd35c" opacity=".08"/>`+stx(X0+78,Y1+14,'exercise',11.5,'#ffd35c','middle');
+  for(let k=0;k<=top+1e-9;k+=step) s+=`<line x1="${X0}" y1="${f1(y(k))}" x2="${X1}" y2="${f1(y(k))}" stroke="#2a3d5f"/>`+stx(X0-8,f1(y(k)+4),k,12,'#a3b4cf','end');
+  s+=`<text x="22" y="${(Y0+Y1)/2}" font-size="12.5" fill="#a3b4cf" transform="rotate(-90 22 ${(Y0+Y1)/2})" text-anchor="middle">${o.unit}</text>`;
+  TSHORT.forEach((t,i)=>s+=stx(gx(i),Y0+18,t,12.5,'#a3b4cf'));
+  if(o.vals[0]!=null) s+=`<line x1="${X0}" y1="${f1(y(o.vals[0]))}" x2="${X1}" y2="${f1(y(o.vals[0]))}" stroke="${o.col}" stroke-width="1.4" stroke-dasharray="6 5" opacity=".7"/>`+stx(X1,f1(y(o.vals[0])+16),'your resting rate',11.5,o.col,'end');
+  const pts=o.vals.map((v,i)=>v==null?null:[gx(i),y(v)]);
+  for(let i=1;i<6;i++) if(pts[i]&&pts[i+1]) s+=`<line x1="${f1(pts[i][0])}" y1="${f1(pts[i][1])}" x2="${f1(pts[i+1][0])}" y2="${f1(pts[i+1][1])}" stroke="${o.col}" stroke-width="3" class="dline"/>`;
+  if(pts[0]&&pts[1]) s+=`<line x1="${f1(pts[0][0])}" y1="${f1(pts[0][1])}" x2="${f1(pts[1][0])}" y2="${f1(pts[1][1])}" stroke="${o.col}" stroke-width="2" stroke-dasharray="3 4" opacity=".75"/>`;
+  pts.forEach(p=>{ if(p) s+=`<circle cx="${f1(p[0])}" cy="${f1(p[1])}" r="5.5" fill="${o.col}" stroke="#0f1b2e" stroke-width="1.5"/>`; });
+  s+=`<line x1="${X0}" y1="${Y0}" x2="${X1}" y2="${Y0}" stroke="#a3b4cf" stroke-width="1.5"/>`;
+  return s; }
+function exSVG(v){ const hr=TIMES.map((_,i)=>cellv(v,i,1)), br=TIMES.map((_,i)=>cellv(v,i,3));
+  let s=`<svg viewBox="0 0 680 600" role="img" aria-label="Two line graphs from your data table: heart rate and breathing rate at rest and at each minute after exercise."><rect width="680" height="600" rx="12" fill="#0f1b2e"/>`;
+  s+=panelSVG({oy:0,title:'Heart rate',vals:hr,col:'#fb7185',unit:'beats per minute'});
+  s+=panelSVG({oy:280,title:'Breathing rate',vals:br,col:'#45c8f0',unit:'breaths per minute'});
+  s+=stx(364,592,'Minutes after exercise',13,'#a3b4cf');
+  return s+'</svg>'; }
+function exChart(v){ const bad=mathCheck(v); let extra='';
+  if(bad.length) extra+=`<div class="fb no small">Check your math in: ${bad.join(', ')}. Heart rate = beats in 15 s × 4. Breathing rate = breaths in 30 s × 2.</div>`;
+  if(window.COUNT_CHECK){ const c=COUNT_CHECK(v); if(c.length) extra+=`<div class="fb no small">These counts don't match your count log above: ${c.join(', ')}.</div>`; }
+  return `<div class="exchart">${exSVG(v)}</div>${extra}`; }
+const CLS_COL=['#a3b4cf','#fb7185','#ffd35c'];
+function classSVG(v,mine){ const rows=CLASS_ROWS.map((_,r)=>[0,1,2].map(c=>cellv(v,r,c))); const all=mine?[...rows,mine]:rows, names=mine?[...CLASS_ROWS,'Your data']:CLASS_ROWS;
+  let mx=1; all.forEach(r=>r.forEach(x=>{ if(x!=null) mx=Math.max(mx,x); })); const W=680,H=330,X0=70,X1=660,Y0=270,Y1=56, [top,step]=niceTop(mx*1.05), y=val=>Y0-(Y0-Y1)*val/top, gw=(X1-X0)/all.length, bw=Math.min(34,gw/4);
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Bar graph of the class data: resting heart rate, heart rate right after exercise, and heart rate 2 minutes after, for each classmate."><rect width="${W}" height="${H}" rx="12" fill="#0f1b2e"/>`;
+  for(let k=0;k<=top+1e-9;k+=step) s+=`<line x1="${X0}" y1="${f1(y(k))}" x2="${X1}" y2="${f1(y(k))}" stroke="#2a3d5f"/>`+stx(X0-8,f1(y(k)+4),k,12,'#a3b4cf','end');
+  s+=`<text x="20" y="${(Y0+Y1)/2}" font-size="12.5" fill="#a3b4cf" transform="rotate(-90 20 ${(Y0+Y1)/2})" text-anchor="middle">Heart rate (beats per minute)</text>`;
+  ['Resting','Right after','2 minutes after'].forEach((t,i)=>s+=`<rect x="${90+i*170}" y="20" width="14" height="14" rx="3" fill="${CLS_COL[i]}"/>`+stx(110+i*170,32,t,13,'#e8eef8','start'));
+  all.forEach((r,ri)=>{ const cx=X0+gw*ri+gw/2; s+=stx(cx,Y0+20,names[ri],12.5,'#a3b4cf');
+    r.forEach((x,c)=>{ if(x==null) return; const bx=cx-1.5*bw-2+c*(bw+2); s+=`<rect class="cbar" x="${f1(bx)}" y="${f1(y(x))}" width="${f1(bw)}" height="${f1(Y0-y(x))}" rx="3" fill="${CLS_COL[c]}"/>`+stx(f1(bx+bw/2),f1(y(x)-5),x,11,'#e8eef8'); }); });
+  return s+`<line x1="${X0}" y1="${Y0}" x2="${X1}" y2="${Y0}" stroke="#a3b4cf" stroke-width="1.5"/></svg>`; }
+const classChart=v=>`<div class="exchart">${classSVG(v)}</div>`;
+
+/* ---------- shared text ---------- */
+const HEALTH_HTML=`<div class="phenbox" style="border-left-color:#45c8f0;background:rgba(69,200,240,.1)"><b>Health and privacy.</b> No one has to exercise. If you have a health condition or an injury, or you just don't want to, be the <b>timer and recorder</b> and record your partner's numbers instead. Pick a speed that feels OK for you. Stop if you feel dizzy, sick, or have pain, and tell your teacher. Your numbers stay on your page. Share them with the class only if you want to. This lab is not a medical test, and nothing here is medical advice.</div>`;
+const TOL_HTML=`<div class="phenbox" style="border-left-color:#ffd35c;background:rgba(255,211,92,.08)"><b>Rule for "back to resting":</b> heart rate is back when it is within <b>${HR_TOL} beats per minute</b> of your resting heart rate. Breathing rate is back when it is within <b>${BR_TOL} breaths per minute</b> of your resting breathing rate. Use the first minute when this happens.</div>`;
+const REC_OPTS=['1 minute or less','2 minutes','3 minutes','4 minutes','5 minutes','Not back to resting within 5 minutes'];
+
+function buildContent(sec){
+  let n=0; const num=()=>++n;
+  const say=(s,html)=>s.insertAdjacentHTML('beforeend',html);
+  /* ---------- 1. Setup ---------- */
+  say(sec[0],`<div class="phenbox"><b>Phenomenon:</b> A soccer player sprints down the field, then stops. During the sprint, her leg muscles need much more oxygen (O₂) and make much more carbon dioxide (CO₂). A few minutes later, she is calm again. What does her body do to keep the inside of her body stable?</div>
+   <p><b>Lab question:</b> How do heart rate and breathing rate change during and after exercise, and how does this help the body keep homeostasis?</p>
+   <p><b>Background.</b> <b>Homeostasis</b> means keeping the inside of the body stable, within a safe range. Your blood carries O₂ to your cells and carries CO₂ away. The body uses <b>feedback loops</b> to keep O₂ and CO₂ near their <b>set point</b>. A loop has a <b>stimulus</b> (a change), <b>sensors</b> that detect it, a <b>control center</b> that compares it to the set point, <b>effectors</b> that act, and a <b>response</b>. In a <b>negative feedback</b> loop, the response reverses the change.</p>
+   <p><b>Heart rate</b> is how many times your heart beats in 1 minute. You can feel each beat as a <b>pulse</b> in an artery. <b>Breathing rate</b> is how many breaths you take in 1 minute. Count one breath each time the chest rises.</p>
+   ${HEALTH_HTML}
+   ${SETUP_HTML}`);
+  dragProblem(sec[0],{id:'q1', part:'P1', num:num(), q:'Label the drawing. Where do you feel a pulse, and what do you use to feel it?', svg:PULSE_PIC, vb:PULSE_VB, zones:PULSE_ZONES,
+    chips:[...PULSE_ZONES.map(z=>z.ans),'Vein on the back of the hand'], hint:'The radial artery is on the thumb side of the wrist. The carotid artery is on the side of the neck, under the jaw. Use your fingertips, not your thumb.', done:'You can find both pulse points.'});
+  typedProblem(sec[0],{id:'q2', part:'P1', num:num(), q:'Practice the math before the lab. Heart rate = beats in 15 seconds × 4. Breathing rate = breaths in 30 seconds × 2.',
+    blanks:[{before:'<b>Part A:</b> You count 18 beats in 15 seconds. Heart rate =',num:[72,72],show:'72',after:'beats per minute'},
+            {before:'<b>Part B:</b> You count 9 breaths in 30 seconds. Breathing rate =',num:[18,18],show:'18',after:'breaths per minute'},
+            {before:'<b>Part C:</b> You count 31 beats in 15 seconds. Heart rate =',num:[124,124],show:'124',after:'beats per minute'}],
+    hint:'There are four 15-second parts in 1 minute, and two 30-second parts in 1 minute.'});
+  choiceProblem(sec[0],{id:'q3', part:'P1', num:num(), q:'Check your understanding of the procedure.',
+    parts:[{q:'<b>Part A:</b> Why should you <b>not</b> use your thumb to feel a pulse?',opts:['Your thumb has its own pulse, so you might count your own heartbeat','Your thumb is too short','Thumbs cannot feel anything','It is against the rules in sports'],ans:0},
+           {q:'<b>Part B:</b> Why should the recorder count breaths without telling the person?',opts:['People change their breathing when they know someone is counting','Counting out loud makes the heart stop','It is faster','Breaths can only be counted in silence'],ans:0},
+           {q:'<b>Part C:</b> A student has asthma and does not want to exercise. What should they do?',opts:['Be the timer and recorder. No one has to exercise.','Exercise anyway, as fast as possible','Skip the lab and get a zero','Make up their numbers'],ans:0},
+           {q:'<b>Part D:</b> Why does the exerciser sit quietly for 2 minutes before the resting count?',opts:['So the heart rate and breathing rate are at their resting levels','So they get bored','So the stopwatch can warm up','So they forget to breathe'],ans:0}],
+    hint:'Re-read the health note and the procedure.', why:'Use fingertips, count breaths quietly, anyone can be the recorder, and rest first to get true resting rates.'});
+  /* ---------- 2. Predict ---------- */
+  say(sec[1],`<p>Before you start, predict. There are no wrong predictions: you get full credit for making them, but you <b>can't change them</b> after you lock them in.</p>`);
+  predictRows(sec[1],{id:'pred', part:'P2', num:num(), q:'Make your predictions.', rows:PRED_ROWS});
+  writtenProblem(sec[1],{id:'hyp', part:'P2', num:num(), q:'Write a hypothesis about heart rate and breathing rate during and after exercise, in the form <b>"If… then… because…"</b>.', pts:3, bank:['If','then','because','exercise','heart rate','breathing rate','muscles','oxygen','carbon dioxide','go back to resting'],
+    groups:[['If… then… form',/\bif\b[\s\S]*\bthen\b/],['names heart rate or breathing rate',/heart|pulse|breath/],['a reason',/because|oxygen|o2|o₂|carbon dioxide|co2|co₂|muscle|energy|cells/]],
+    model:'If I exercise for 1 minute, then my heart rate and breathing rate will go up and then slowly go back to resting, because my muscles need more oxygen and make more carbon dioxide.',
+    hint:'Say what you will do, what you think will happen to heart rate and breathing rate, and why.', why:'A testable hypothesis names the change, the predicted result, and the reason.'});
+  /* ---------- 3. Data / Experiment (lab and simulation differ) ---------- */
+  buildData(sec[2],num);
+  /* ---------- 4. Analysis ---------- */
+  const alock=h('div',{class:'fb info'}); alock.innerHTML='<b>Locked.</b> Save your observations and both data tables on page 3 first.'; sec[3].appendChild(alock);
+  const awrap=h('div',{}); sec[3].appendChild(awrap);
+  const D=exData;
+  window.anaRefresh=()=>{ const ok=!!st('obs').checked&&!!st('data').checked&&!!st('class').checked; alock.hidden=ok; awrap.hidden=!ok;
+    $$('.anachart',awrap).forEach(e=>{ if(e.dataset.c==='ex') e.innerHTML=exSVG(st('data').val||{}); else { const d=D(); e.innerHTML=classSVG(st('class').val||{},[d.hr[0],d.hr[1],d.hr[3]]); } }); };
+  say(awrap,`<p>Use <b>your data</b> from page 3. Round percents to the nearest whole number.</p>
+    <div class="prob"><div class="pq">Your data</div><div class="anachart exchart" data-c="ex"></div></div>`);
+  typedProblem(awrap,{id:'a1', part:'P4', num:num(), q:'How much did the rates go up? <b>Increase = rate right after exercise (0 min) − resting rate.</b>',
+    blanks:[{before:'<b>Part A:</b> Heart rate increase =',calc:()=>D().hr[1]-D().hr[0],tol:0.5,show:'0 min heart rate − resting heart rate',after:'beats per minute'},
+            {before:'<b>Part B:</b> Breathing rate increase =',calc:()=>D().br[1]-D().br[0],tol:0.5,show:'0 min breathing rate − resting breathing rate',after:'breaths per minute'}],
+    hint:'Use the "Right after exercise (0 min)" row and the "Resting" row. Subtract resting from right after.'});
+  typedProblem(awrap,{id:'a2', part:'P4', num:num(), q:'<b>Percent increase = increase ÷ resting rate × 100.</b> Round to the nearest whole number.',
+    blanks:[{before:'<b>Part A:</b> Heart rate percent increase =',calc:()=>pct(D().hr[0],D().hr[1]),tol:1,after:'%',show:'increase ÷ resting × 100'},
+            {before:'<b>Part B:</b> Breathing rate percent increase =',calc:()=>pct(D().br[0],D().br[1]),tol:1,after:'%',show:'increase ÷ resting × 100'}],
+    hint:'Divide each increase from the problem above by the resting rate, then multiply by 100.'});
+  say(awrap,`<div style="margin-top:16px">${TOL_HTML}</div>`);
+  choiceProblem(awrap,{id:'a3', part:'P4', num:num(), q:'Use your data table and the rule above.',
+    parts:[{q:'<b>Part A:</b> When was the <b>heart rate</b> back to resting?',opts:REC_OPTS,ans:-1,ansFn:()=>{ const m=recov(D().hr,HR_TOL); return m==null?5:Math.max(0,m-1); }},
+           {q:'<b>Part B:</b> When was the <b>breathing rate</b> back to resting?',opts:REC_OPTS,ans:-1,ansFn:()=>{ const m=recov(D().br,BR_TOL); return m==null?5:Math.max(0,m-1); }},
+           {q:'<b>Part C:</b> Which one got back to resting first?',opts:['Heart rate','Breathing rate','Both at the same minute','Neither got back within 5 minutes'],ans:-1,ansFn:()=>{ const a=recov(D().hr,HR_TOL), b=recov(D().br,BR_TOL); if(a==null&&b==null) return 3; if(b==null||(a!=null&&a<b)) return 0; if(a==null||b<a) return 1; return 2; }}],
+    hint:'Go down your table one minute at a time. For each minute, find the difference from resting and compare it with the rule.', why:'Your answers match your own data.'});
+  dragProblem(awrap,{id:'a4', part:'P4', num:num(), q:'Label the feedback loop that controls heart rate and breathing during exercise. Drag each label into the right box.', svg:LOOP_PIC, vb:LOOP_VB, zones:LOOP_ZONES,
+    chips:[...LOOP_ANS,'Less CO₂ in the blood','The stomach'], hint:'The stimulus is the change in the blood. Sensors detect. The control center is in the brain. Effectors are the organs and muscles that act. The response is what they do.', done:'This loop keeps CO₂ and O₂ in the blood near the set point.'});
+  dragProblem(awrap,{id:'a5', part:'P4', num:num(), q:'After you stop exercising, the loop turns itself down. Put the steps in order, from 1 (first) to 6 (last).', svg:orderPic(6,'Six empty numbered slots, from step 1 at the top to step 6 at the bottom, joined by arrows.'), vb:ORDER_VB, zones:ORDER_ZONES,
+    chips:ORDER_STEPS, hint:'Start with what you do. Then follow the CO₂: muscles, blood, sensors, brain, and finally the heart and breathing muscles.', done:'When CO₂ goes back to normal, the signal that sped up the heart and breathing gets weaker. That is negative feedback.'});
+  binProblem(awrap,{id:'a6', part:'P4', num:num(), q:'Sort the changes. What does each one do for the body during exercise?',
+    bins:[{k:'gas',label:'Moves more O₂ in and CO₂ out'},{k:'heat',label:'Gets rid of extra heat'},{k:'no',label:'Not a response to exercise'}],
+    items:[{t:'Heart beats faster',k:'gas'},{t:'Breathing gets faster',k:'gas'},{t:'Breaths get deeper',k:'gas'},{t:'Heart pumps more blood with each beat',k:'gas'},
+           {t:'Sweat glands make sweat',k:'heat'},{t:'Blood vessels in the skin widen (face turns red)',k:'heat'},{t:'Bones grow longer',k:'no'},{t:'Fingernails grow faster',k:'no'}],
+    hint:'Your muscles need O₂ and make CO₂ and heat. Which changes help with the gases, and which help with the heat?', done:'Exercise sets off more than one feedback loop at the same time.'});
+  choiceProblem(awrap,{id:'a7', part:'P4', num:num(), q:'Think about the feedback loop.',
+    parts:[{q:'<b>Part A:</b> Exercise raises CO₂ in the blood. The response brings CO₂ back down. What kind of feedback is this?',opts:['Negative feedback: the response reverses the change','Positive feedback: the response makes the change bigger','No feedback: nothing is detected','Positive feedback, because the heart rate goes up'],ans:0},
+           {q:'<b>Part B:</b> Why doesn\'t your heart rate stay high after you stop exercising?',opts:['CO₂ goes back to normal, so the sensors send fewer signals and the brain slows the heart','The heart gets tired and stops','The lungs tell the heart to stop beating','Heart rate never goes back down'],ans:0},
+           {q:'<b>Part C:</b> Your heart rate went up a lot. Does that mean homeostasis failed?',opts:['No. The heart rate changed so that the levels of CO₂ and O₂ in the blood could stay in a safe range.','Yes. Homeostasis means nothing in the body ever changes.','Yes. A fast heart rate is always dangerous.','No, because heart rate is not part of the body.'],ans:0}],
+    hint:'"Negative" means "opposite." What stays stable: the heart rate, or the blood?', why:'Heart rate and breathing change on purpose, so that CO₂ and O₂ in the blood stay near the set point. That is negative feedback.'});
+  /* class data */
+  say(awrap,`<div class="prob"><div class="pq">Class data</div><p class="small muted" style="margin:0 0 6px">Your data is shown as the last group of bars: your resting, right after, and 2-minutes-after heart rates.</p><div class="anachart exchart" data-c="class"></div></div>`);
+  typedProblem(awrap,{id:'a8', part:'P4', num:num(), q:'<b>Drop in the first 2 minutes = heart rate right after exercise − heart rate 2 minutes after.</b> A bigger drop usually means the heart recovers faster.',
+    blanks:[...CLASS_ROWS.map((c,r)=>({before:`<b>${c}:</b> drop =`,calc:()=>clsData()[r].after-clsData()[r].two,tol:0.5,after:'beats per minute',show:'right after − 2 minutes after'})),
+            {before:'<b>Your data:</b> drop =',calc:()=>D().hr[1]-D().hr[3],tol:0.5,after:'beats per minute',show:'0 min − 2 min (your table)'}],
+    hint:'For your data, use the 0 min and 2 minutes rows of your heart rate column.'});
+  choiceProblem(awrap,{id:'a9', part:'P4', num:num(), q:'Use your answers above.',
+    parts:[{q:'<b>Part A:</b> Who had the biggest drop in the first 2 minutes?',opts:[...CLASS_ROWS,'Your data','Two or more tied for the biggest drop'],ans:-1,ansFn:()=>{ const d=D(), drops=[...clsData().map(c=>c.after-c.two),d.hr[1]-d.hr[3]], mx=Math.max(...drops), w=drops.map((x,i)=>i).filter(i=>Math.abs(drops[i]-mx)<1e-9); return w.length===1?w[0]:5; }}],
+    hint:'Compare the five drops you calculated.', why:'Your answer matches your calculations.'});
+  typedProblem(awrap,{id:'a10', part:'P4', num:num(), q:'<b>Range = highest − lowest.</b> Use the five resting heart rates: Classmates A to D and your data.',
+    blanks:[{before:'Range of resting heart rates =',calc:()=>{ const r=[...clsData().map(c=>c.rest),D().hr[0]]; return Math.max(...r)-Math.min(...r); },tol:0.5,after:'beats per minute',show:'highest resting − lowest resting'}],
+    hint:'Find the highest and the lowest resting heart rate in the class table and your table. Subtract.'});
+  choiceProblem(awrap,{id:'a11', part:'P4', num:num(), q:'Why are people\'s numbers different?',
+    parts:[{q:'<b>Part A:</b> A person who exercises often usually has…',opts:['a lower resting heart rate and a faster drop after exercise, because a stronger heart pumps more blood with each beat','a higher resting heart rate, because the heart is tired','no change in heart rate during exercise','a slower drop, because the muscles are bigger'],ans:0},
+           {q:'<b>Part B:</b> Two students did the same exercise, but their heart rates were different. Which is <b>not</b> a likely reason?',opts:['One of them has no feedback loop for CO₂','They are at different fitness levels','They exercised at different speeds','They have different ages, sizes, or health'],ans:0}],
+    hint:'Everyone has the same feedback loops. What else is different from person to person?', why:'Fitness, intensity, age, size, and health all cause variation. Everyone has the same loops.'});
+  writtenProblem(awrap,{id:'a12', part:'P4', num:num(), q:'Compare your data with your classmates\' data. Give one way the data were <b>alike</b>, one <b>difference</b>, and a possible <b>reason</b> for the difference.', pts:2, bank:['all','went up','higher','lower','different','because','fitness','exercise','harder','resting','drop'],
+    groups:[['says how the data were alike',/all|every|both|same|alike|everyone|each/],['gives a difference and a reason',/(differ|higher|lower|faster|slower|more|less|bigger|smaller)[\s\S]{0,140}(because|fitness|fit|exercis|harder|age|size|health|speed|intens|athlet|sport)/]],
+    model:'All of us had a higher heart rate right after exercise than at rest. Classmate B had a lower resting heart rate and a bigger drop than me, maybe because Classmate B plays a sport and is more fit.',
+    hint:'Alike: what happened to everyone? Different: whose numbers were higher or lower? Reason: fitness, speed, age, or health.', why:'Everyone\'s heart rate rose and fell, but the amounts varied between people.'});
+  choiceProblem(awrap,{id:'a13', part:'P4', num:num(), q:'Which are <b>sources of error</b> that could make the numbers in this lab less accurate?',
+    parts:[{q:'Select all that apply.',opts:['Counting beats for more or less than 15 seconds','Feeling the pulse with your thumb','Starting the count late, after the heart had already slowed','The person knew their breaths were being counted and changed their breathing','Losing count when the heart beats very fast','Writing each count down right after measuring','Using a stopwatch to time the count'],ans:[0,1,2,3,4]}],
+    hint:'A source of error is something that makes a measurement wrong. Good habits are not errors.', why:'Timing, thumbs, late starts, changed breathing, and losing count all add error. Recording right away and using a stopwatch make data better.'});
+  writtenProblem(awrap,{id:'a14', part:'P4', num:num(), q:'Did your results match your predictions from page 2? Explain, using at least one number from your data.', pts:2, bank:['I predicted','but','my heart rate','breathing rate','went from','to','minutes','matched','did not match'],
+    groups:[['refers to the prediction',/predict|thought|expected|guess|hypothes/],['uses a number from the data',/\d/]],
+    model:'I predicted that breathing rate would get back to resting first, and it did. My breathing rate was back at 2 minutes, but my heart rate went from 120 to 84 and took 4 minutes.',
+    hint:'Say what you predicted, then give a number from your data.', why:'Comparing predictions with data is how scientists test their ideas.'});
+  /* ---------- 5. Conclusion ---------- */
+  say(sec[4],`<p>Write a <b>claim, evidence, and reasoning</b> conclusion that answers: <i>How does the body keep homeostasis during and after exercise?</i> Use your data.</p>`);
+  writtenProblem(sec[4],{id:'k1', part:'P5', num:num(), q:'<b>Claim:</b> answer the question in one sentence.', pts:1, bank:['During exercise','after exercise','heart rate','breathing rate','goes up','goes back down','feedback loop','homeostasis'],
+    groups:[['says how heart rate or breathing changes to keep the body stable',/(heart|breath)[\s\S]{0,140}(up|increas|faster|rise|down|decreas|slow|back|feedback|return)|(feedback|homeostasis)[\s\S]{0,140}(heart|breath)/]],
+    model:'During exercise the body raises heart rate and breathing rate, and after exercise a negative feedback loop brings them back down, which keeps CO₂ and O₂ in the blood stable.', hint:'Say what happens to heart rate and breathing rate during and after exercise.', why:'The claim answers the question.'});
+  writtenProblem(sec[4],{id:'k2', part:'P5', num:num(), q:'<b>Evidence:</b> give numbers from your data: resting and right-after rates, and how long it took to get back to resting.', pts:3, bank:['resting','right after','beats per minute','breaths per minute','went from','to','minutes','back to resting','percent'],
+    groups:[['heart rate data with a number',/(heart|pulse|beat|bpm)[\s\S]{0,100}\d|\d[\s\S]{0,40}(beats|bpm)/],['breathing data with a number',/breath[\s\S]{0,100}\d|\d[\s\S]{0,40}breath/],['recovery time',/minute|min\b|back|return|recover/]],
+    model:'My heart rate went from 72 beats per minute at rest to 128 right after exercise, and my breathing rate went from 16 to 32 breaths per minute. My breathing rate was back to resting after 2 minutes, and my heart rate was back after 4 minutes.',
+    hint:'Use your data table and your answers in Analysis.', why:'Good evidence uses specific numbers.'});
+  writtenProblem(sec[4],{id:'k3', part:'P5', num:num(), q:'<b>Reasoning:</b> explain <i>why</i> your data show homeostasis. Use the parts of the feedback loop and the idea of negative feedback.', pts:4, bank:['stimulus','CO₂','O₂','sensors','brain stem','control center','effectors','heart','diaphragm','response','negative feedback','set point'],
+    groups:[['the stimulus: CO₂ or O₂ in the blood',/co2|co₂|carbon dioxide|oxygen|o2|o₂/],['sensors and the brain as the control center',/sensor|receptor|brain|control cent/],['effectors: heart and breathing muscles',/effector|diaphragm|rib|breathing muscle|heart (beats|pumps)|muscles/],['negative feedback brings it back',/negative feedback|back to (normal|the set point|resting)|reverse|opposite|set point|stable/]],
+    model:'During exercise, the muscles use more O₂ and make more CO₂. Sensors detect the extra CO₂ and signal the brain stem, the control center. The brain stem signals the effectors, the heart and the breathing muscles (diaphragm and rib muscles), to work faster, so more CO₂ leaves and more O₂ comes in. When I stopped, CO₂ went back to normal, so the heart and breathing slowed back to resting. This is negative feedback because the response reverses the change and keeps the blood near the set point.',
+    hint:'Cover four ideas: the stimulus (CO₂ and O₂), the sensors and brain, the effectors, and negative feedback.', why:'A negative feedback loop changes heart rate and breathing to keep CO₂ and O₂ in the blood stable.'});
+  dataRefresh();
+}
+
+/* ===== Exercise lab: simulation version (virtual student, real tap counting, seeded model in st('vsim')) ===== */
+const SETUP_HTML=`<div class="phenbox" style="border-left-color:#7c3aed;background:rgba(124,58,237,.12)"><b>Missed the lab?</b> In class, partners measured each other's pulse and breathing. You'll do the same experiment with a <b>virtual student</b>. You still do the counting yourself: tap once for each heartbeat and once for each breath. The virtual student's body is a model, so the numbers are modeled, not real medical data.</div>
+   <div class="figwrap exfig" style="margin:12px 0 8px">${MAT_PIC}</div>
+   <p class="small muted" style="margin-top:-4px">In class, each pair used a stopwatch, a chair, a step, a clipboard, and water.</p>
+   <p><b>How you count in the virtual lab:</b> the virtual student wears a <b>pulse watch</b>. The heart on the watch flashes once for each heartbeat. Tap <b>Beat</b> each time it flashes, for 15 seconds. Then watch the student's <b>chest</b> and tap <b>Breath</b> each time it rises, for 30 seconds. If you lose count, tap <b>Count again</b>.</p>
+   <p><b>Procedure (virtual):</b></p><ol class="proc">
+    <li>On page 2, make your predictions and lock them in.</li>
+    <li>On page 3, the virtual student is resting. Count the pulse for <b>15 seconds</b>, then the breaths for <b>30 seconds</b>.</li>
+    <li>Choose an exercise and how hard to go. Start <b>1 minute</b> of exercise (it runs sped up).</li>
+    <li>Right after the exercise, count the pulse and breaths again. This is the "0 min" row.</li>
+    <li>Skip ahead to <b>1, 2, 3, 4, and 5 minutes</b> after the exercise and count each time.</li>
+    <li>Use your count log to fill in the data table. Heart rate = beats × 4. Breathing rate = breaths × 2. Then copy the class board.</li></ol>`;
+const OBS_ROWS=[
+  {q:'Which exercise did you choose?', opts:['Jumping jacks','Stepping on and off a step','Walking in place']},
+  {q:'How hard?', opts:['Light','Medium','Hard']},
+  {q:'Right after exercise, how did the chest move compared with resting?', opts:['Faster and deeper','About the same','Slower and smaller']},
+  {q:'Right after exercise, how did the watch heart flash compared with resting?', opts:['Faster','About the same','Slower']},
+  {q:'What did you notice on the face right after exercise?', opts:['Red face and sweat','Red face, no sweat','No change']}];
+const EXS={jj:{name:'Jumping jacks',f:1.5,mod:1.1},step:{name:'Stepping on and off a step',f:0.8,mod:1.0},walk:{name:'Walking in place',f:1.1,mod:0.8}};
+const INTS={light:{name:'Light',dh:[22,36],db:[6,10],sp:0.75},med:{name:'Medium',dh:[42,60],db:[10,16],sp:1},hard:{name:'Hard',dh:[66,88],db:[16,24],sp:1.3}};
+const EX_SECONDS=10;   // 1 minute of exercise, sped up to 10 seconds
+
+/* ---------- the virtual student (front view; groups are moved by the animation) ---------- */
+function personG(){ const id=uid('ps'), sk=SKIN;
+  const leg=sd=>`<g data-p="leg${sd<0?'L':'R'}"><path d="M${sd*22},-122 L${sd*5},-122 L${sd*8},-10 L${sd*19},-10 Z" fill="url(#${id}k)" stroke="${sk.c}" stroke-width="1"/>
+    <path d="M${sd*12},-58 q${sd*5},4 0,8" stroke="${sk.c}" stroke-width="1" fill="none" opacity=".6"/><rect x="${sd>0?7:-20}" y="-22" width="13" height="12" fill="#f8fafc"/>
+    <path d="M${sd*25},-126 L${sd*1},-126 L${sd*3},-86 L${sd*25},-88 Z" fill="#1f2a44"/><path d="M${sd*(sd>0?3:27)},2 C${sd*(sd>0?3:27)},-12 ${sd*(sd>0?20:10)},-14 ${sd*(sd>0?26:4)},-6 L${sd*(sd>0?28:2)},2 Z" fill="#f2f4f8" stroke="#64748b" stroke-width="1.2"/><path d="M${sd*2},2 L${sd*28},2" stroke="#2dd4bf" stroke-width="3"/></g>`;
+  const arm=sd=>`<g data-p="arm${sd<0?'L':'R'}"><path d="M${sd*41},-180 L${sd*30},-180 L${sd*31},-120 L${sd*41},-121 Z" fill="url(#${id}k)" stroke="${sk.c}" stroke-width="1"/>
+    <path d="M${sd*42},-208 L${sd*27},-208 L${sd*29},-176 L${sd*43},-178 Z" fill="#0f766e"/><ellipse cx="${sd*36}" cy="-113" rx="6.5" ry="9" fill="${sk.a}" stroke="${sk.c}" stroke-width="1"/>
+    ${sd<0?`<rect x="-43" y="-136" width="14" height="10" rx="2" fill="#111827"/><rect x="-41" y="-134" width="10" height="6" rx="1" fill="#1f2937"/><rect data-p="wflash" x="-41" y="-134" width="10" height="6" rx="1" fill="#f43f5e" opacity="0"/>`:''}</g>`;
+  let g=`<defs><linearGradient id="${id}k" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="${sk.b}"/><stop offset=".5" stop-color="${sk.a}"/><stop offset="1" stop-color="${sk.b}"/></linearGradient>
+    <linearGradient id="${id}t" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14b8a6"/><stop offset="1" stop-color="#0f766e"/></linearGradient>
+    <radialGradient id="${id}h" cx="45%" cy="40%" r="60%"><stop offset="0" stop-color="${sk.a}"/><stop offset="1" stop-color="${sk.b}"/></radialGradient></defs>`;
+  g+=`<ellipse data-p="shadow" cx="0" cy="3" rx="44" ry="5" fill="#000" opacity=".2"/><g data-p="bob">`+leg(-1)+leg(1);
+  g+=`<g data-p="torso"><path d="M-35,-208 C-20,-216 20,-216 35,-208 L37,-162 L31,-118 L-31,-118 L-37,-162 Z" fill="url(#${id}t)" stroke="#115e59" stroke-width="1"/><path d="M-10,-212 L0,-196 L10,-212" fill="${sk.b}" stroke="#115e59" stroke-width="1"/><path d="M-30,-124 L30,-124" stroke="#115e59" stroke-width="1.5" opacity=".6"/><path d="M-20,-190 q20,10 40,0" stroke="#5eead4" stroke-width="1.2" fill="none" opacity=".5"/></g>`;
+  g+=`<g data-p="sh">`+arm(-1)+arm(1);
+  g+=`<rect x="-8" y="-226" width="16" height="18" fill="${sk.b}"/><ellipse cx="0" cy="-248" rx="21" ry="25" fill="url(#${id}h)" stroke="${sk.c}" stroke-width="1"/><ellipse cx="-21" cy="-246" rx="4" ry="6.5" fill="${sk.b}"/><ellipse cx="21" cy="-246" rx="4" ry="6.5" fill="${sk.b}"/>
+    <path d="M-22,-252 C-24,-280 22,-282 23,-254 C18,-266 6,-270 -6,-268 C-14,-266 -19,-260 -22,-252 Z" fill="#2b1d14"/>
+    <ellipse cx="-8" cy="-248" rx="2.8" ry="2.2" fill="#2b1d14"/><ellipse cx="8" cy="-248" rx="2.8" ry="2.2" fill="#2b1d14"/><path d="M-12,-255 q4,-2 8,0 M4,-255 q4,-2 8,0" stroke="#2b1d14" stroke-width="1.4" fill="none"/>
+    <path d="M-2,-243 q2,5 4,0" stroke="${sk.c}" stroke-width="1.4" fill="none"/><path data-p="mouth" d="M-6,-234 q6,3 12,0" stroke="#7a3b26" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <g data-p="flush" opacity="0"><ellipse cx="-12" cy="-238" rx="5.5" ry="3.2" fill="#e0565b"/><ellipse cx="12" cy="-238" rx="5.5" ry="3.2" fill="#e0565b"/></g>
+    <g data-p="sweat" opacity="0"><path d="M-14,-266 q-3,6 0,8 q3,-2 0,-8 Z M10,-268 q-3,6 0,8 q3,-2 0,-8 Z M-24,-232 q-3,6 0,8 q3,-2 0,-8 Z" fill="#7dd3fc" stroke="#0284c7" stroke-width=".7"/></g></g></g>`;
+  return g; }
+const HEART_D='M0,10 C-18,-2 -22,-14 -14,-22 C-8,-28 -2,-24 0,-18 C2,-24 8,-28 14,-22 C22,-14 18,-2 0,10 Z';
+function sceneSVG(ex){ const id=uid('sc'), cx=165, fy=392, sc=1.2;
+  let s=`<svg viewBox="0 0 580 440" role="img" aria-label="Virtual lab: a student in a gym, wearing a pulse watch on the left wrist. On the right, a close-up of the pulse watch. Its heart flashes once for each heartbeat. Watch the student's chest rise for each breath."><defs>
+    <linearGradient id="${id}w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eef2f7"/><stop offset="1" stop-color="#dde4ec"/></linearGradient>
+    <linearGradient id="${id}f" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d6a96b"/><stop offset="1" stop-color="#b9864a"/></linearGradient>
+    <linearGradient id="${id}c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4b5563"/><stop offset="1" stop-color="#1f2937"/></linearGradient></defs>
+    <rect width="580" height="440" rx="14" fill="url(#${id}w)"/><rect x="0" y="340" width="580" height="10" fill="#cbd5e1"/><rect x="0" y="150" width="580" height="14" fill="#cfd8e3"/>
+    <path d="M0,350 H580 V426 Q580,440 566,440 H14 Q0,440 0,426 Z" fill="url(#${id}f)"/>${[372,398,424].map(y=>`<line x1="0" y1="${y}" x2="580" y2="${y}" stroke="#a87a42" stroke-width="1" opacity=".55"/>`).join('')}${[70,230,390].map((x,i)=>`<line x1="${x+(i%2)*40}" y1="350" x2="${x+(i%2)*40}" y2="372" stroke="#a87a42" opacity=".5"/>`).join('')}`;
+  if(ex==='step') s+=stepG(cx,fy+4,1.15);
+  s+=`<g transform="translate(${cx} ${fy}) scale(${sc})"><g data-p="lift">${personG()}</g></g>`;
+  // pulse watch close-up
+  s+=`<g transform="translate(-178 0)"><rect x="508" y="34" width="232" height="300" rx="16" fill="#0f1b2e" stroke="#2a3d5f" stroke-width="2"/>
+    <rect x="594" y="44" width="72" height="280" rx="14" fill="#334155"/>${[70,92,270,292].map(y=>`<rect x="608" y="${y}" width="44" height="6" rx="3" fill="#1e293b"/>`).join('')}
+    <rect x="566" y="116" width="128" height="128" rx="30" fill="url(#${id}c)" stroke="#9ca3af" stroke-width="2"/><rect x="692" y="160" width="8" height="26" rx="3" fill="#6b7280"/>
+    <rect x="578" y="128" width="104" height="104" rx="22" fill="#05080f"/>
+    <circle data-p="ring" cx="630" cy="180" r="30" fill="none" stroke="#f43f5e" stroke-width="2" opacity="0"/>
+    <g transform="translate(630 186) scale(1.5)"><path d="${HEART_D}" fill="#2a0b10"/><g data-p="heart" opacity="0"><path d="${HEART_D}" fill="#ff3b5c" stroke="#ffd1da" stroke-width="1"/></g></g>`;
+  s+=stx(624,356,'Pulse watch (close-up)',13,'#334155','middle',true)+stx(624,374,'The heart flashes once for each beat.',12,'#475569')+'</g>';
+  return s+'</svg>'; }
+
+/* ---------- model ---------- */
+function buildData(s,num){
+  const lock=h('div',{class:'fb info'}); lock.innerHTML='<b>Locked.</b> Lock in your predictions on page 2 first.'; s.appendChild(lock);
+  const SIMS=st('vsim');
+  function init(){ if(SIMS.seed) return; const stu=S.student||{};
+    SIMS.seed=hashStr((stu.id||'')+'|'+(stu.last||'').toLowerCase()+'|'+WS_ID); const r=mulberry(SIMS.seed);
+    SIMS.p={hr0:60+Math.floor(r()*28), br0:12+Math.floor(r()*7), tauH:+(0.9+r()*1.3).toFixed(2), tauB:+(0.7+r()*1.4).toFixed(2)};
+    SIMS.m=0; SIMS.cnt=[]; SIMS.hr=[]; SIMS.br=[]; SIMS.att={}; }
+  const frozen=()=>!!st('data').checked;
+  const M=()=>SIMS.m||0, C=m=>(SIMS.cnt||[])[m]||{};
+  function rateAt(m){ const p=SIMS.p; if(!p) return {hr:72,br:15}; if(m===0||!SIMS.pk) return {hr:p.hr0,br:p.br0};
+    const t=m-1, r=mulberry(hashStr(SIMS.seed+'|noise|'+m)), nz=a=>Math.round((r()*2-1)*a);
+    return {hr:Math.round(p.hr0+(SIMS.pk.hr-p.hr0)*Math.exp(-t/p.tauH))+(m>1?nz(3):0), br:Math.max(p.br0-1,Math.round(p.br0+(SIMS.pk.br-p.br0)*Math.exp(-t/p.tauB))+(m>1?nz(1):0))}; }
+  function setPeak(){ const p=SIMS.p, e=EXS[SIMS.ex], it=INTS[SIMS.int], r=mulberry(hashStr(SIMS.seed+'|pk|'+SIMS.ex+'|'+SIMS.int));
+    SIMS.pk={hr:Math.min(188,p.hr0+Math.round(e.mod*(it.dh[0]+r()*(it.dh[1]-it.dh[0])))), br:Math.min(44,p.br0+Math.round(e.mod*(it.db[0]+r()*(it.db[1]-it.db[0]))))}; }
+  function makeClass(){ if(SIMS.cls) return; const r=mulberry(hashStr(SIMS.seed+'|class')), q4=x=>4*Math.round(x/4);
+    SIMS.cls=CLASS_ROWS.map(()=>{ const rest=q4(58+r()*32), after=q4(rest+36+r()*48), two=Math.max(rest,q4(after-(14+r()*32))); return [rest,after,two]; }); }
+  /* --- bench --- */
+  const bench=h('div',{class:'vbench'}); s.appendChild(bench);
+  bench.innerHTML=`<h3 style="margin:0 0 6px">Virtual lab: exercise and recovery</h3>
+    <div class="exchoose"><div><span class="small muted">Exercise:</span> ${Object.keys(EXS).map(k=>`<button class="btn ghost small exopt" type="button" data-ex="${k}">${EXS[k].name}</button>`).join('')}</div>
+      <div><span class="small muted">How hard:</span> ${Object.keys(INTS).map(k=>`<button class="btn ghost small exopt" type="button" data-int="${k}">${INTS[k].name}</button>`).join('')}</div></div>
+    <div class="isstat"><span id="exStep"></span><span class="isclock" id="exClock" aria-label="Timer">0:15</span></div>
+    <div class="ispic" id="exPic"></div><p id="exTxt" style="margin:8px 0"></p>
+    <div class="btnrow"><button class="btn primary" id="exCount" type="button"></button><button class="btn tapbtn" id="exTap" type="button">Tap</button><span class="tapn" id="exTapN" aria-live="polite"></span>
+      <button class="btn ghost small" id="exRedo" type="button">Count again</button><button class="btn primary" id="exNext" type="button"></button></div>
+    <h4 style="margin:16px 0 4px">Your count log</h4><div class="wide"><table class="nb exlog" id="exLog"></table></div>`;
+  const bq=q=>bench.querySelector(q); let win=null, exer=null, scene=null, sceneEx=null;
+  const P=k=>scene?scene.querySelector(`[data-p="${k}"]`):null;
+  function timeLabel(m){ return m===0?'Resting (before exercise)':m===1?'Right after exercise (0 min)':`${m-1} minute${m===2?'':'s'} after exercise`; }
+  function logHTML(){ return `<tr><th>Time</th><th>Beats counted in 15 s</th><th>Breaths counted in 30 s</th></tr>`+TIMES.map((t,m)=>{ const c=C(m);
+    return `<tr${m===M()&&!SIMS.done?' class="cur"':''}><td>${t}</td><td>${c.b==null?'':c.b}</td><td>${c.r==null?'':c.r}</td></tr>`; }).join(''); }
+  function drawB(){ const m=M(), c=C(m), busy=!!win||!!exer, fz=frozen();
+    if(!scene||sceneEx!==(SIMS.ex==='step'?'step':'x')){ bq('#exPic').innerHTML=sceneSVG(SIMS.ex==='step'?'step':''); scene=bq('#exPic svg'); sceneEx=SIMS.ex==='step'?'step':'x'; }
+    bench.querySelectorAll('.exopt').forEach(b=>{ const on=b.dataset.ex?SIMS.ex===b.dataset.ex:SIMS.int===b.dataset.int; b.classList.toggle('on',on); b.disabled=!!SIMS.exDone||busy||fz; });
+    bq('#exStep').textContent=exer?'Exercising: 1 minute (sped up)':timeLabel(m);
+    const cb=bq('#exCount'), tb=bq('#exTap'), rb=bq('#exRedo'), nb=bq('#exNext');
+    cb.textContent=c.b==null?'Start 15-second pulse count':c.r==null?'Start 30-second breath count':'Both counts done';
+    cb.disabled=busy||fz||(c.b!=null&&c.r!=null); cb.hidden=!!win||!!exer||(c.b!=null&&c.r!=null);
+    tb.disabled=!win; tb.hidden=!!exer||fz||(!win&&c.b!=null&&c.r!=null);tb.textContent=win?(win.type==='b'?'Beat':'Breath'):'Tap';
+    bq('#exTapN').textContent=win?`Taps: ${win.taps}`:'';
+    rb.hidden=c.b==null||fz||!!exer; rb.disabled=busy;
+    const both=c.b!=null&&c.r!=null;
+    nb.hidden=m>=6||!!win||!!exer;nb.textContent=m===0?'Start the exercise (1 minute)':`Skip ahead to ${m} minute${m>1?'s':''} after exercise`;
+    nb.disabled=busy||fz||!both||(m===0&&!(SIMS.ex&&SIMS.int));
+    let t='';
+    if(exer) t='<b>Exercising.</b> Watch the pulse watch and the chest.';
+    else if(win) t=win.type==='b'?'<b>Counting beats.</b> Tap <b>Beat</b> each time the heart on the watch flashes.':'<b>Counting breaths.</b> Tap <b>Breath</b> each time the chest rises.';
+    else if(SIMS.done&&fz) t='<b>All counts are done</b> and your data table is saved.';
+    else if(SIMS.done) t='<b>All counts are done.</b> Use your count log to fill in the data table below. You can still tap Count again to redo the last count before you save your data.';
+    else if(c.b==null) t=`${m===0?'The virtual student has been sitting quietly. ':''}Start the 15-second pulse count. Tap <b>Beat</b> each time the heart on the watch flashes.`;
+    else if(c.r==null) t=`You counted <b>${c.b} beats</b> in 15 seconds. Now start the 30-second breath count. Tap <b>Breath</b> each time the chest rises.`;
+    else if(m===0) t=`You counted <b>${c.b} beats</b> and <b>${c.r} breaths</b>. ${SIMS.ex&&SIMS.int?'Start the exercise.':'Choose an exercise and how hard to go (at the top), then start the exercise.'}`;
+    else t=`You counted <b>${c.b} beats</b> and <b>${c.r} breaths</b>. Skip ahead to the next minute.`;
+    bq('#exTxt').innerHTML=t;
+    if(!win&&!exer) bq('#exClock').textContent=c.b==null?'0:15':c.r==null?'0:30':'0:00';
+    bq('#exLog').innerHTML=logHTML(); }
+  /* --- counting windows --- */
+  function startWin(type){ init(); const m=M(); const R=rateAt(m); if(type==='b') SIMS.hr[m]=R.hr; else SIMS.br[m]=R.br;
+    const key=m+type; SIMS.att[key]=(SIMS.att[key]||0)+1; const dur=type==='b'?15:30, rate=type==='b'?R.hr:R.br, Pd=60/rate, r=mulberry(hashStr(SIMS.seed+'|w|'+key+'|'+SIMS.att[key]));
+    const ev=[]; let t=0.25+r()*Pd*0.9; while(t<dur+Pd){ ev.push(t); t+=Pd*(1+(r()-0.5)*0.08); }
+    win={type,m,dur,ev,taps:0,t0:performance.now(),truth:ev.filter(x=>x<dur).length}; save(); drawB(); }
+  function endWin(){ const w=win; win=null; const c=(SIMS.cnt[w.m]=SIMS.cnt[w.m]||{});
+    if(w.type==='b'){ c.b=w.taps; c.tb=w.truth; } else { c.r=w.taps; c.tr=w.truth; }
+    SIMS.done=TIMES.every((_,i)=>C(i).b!=null&&C(i).r!=null); if(SIMS.done) makeClass();
+    save(); cloudSave(true); drawB(); dataRefresh(); }
+  bq('#exCount').addEventListener('click',()=>{ if(win||exer||frozen()||!st('pred').checked) return; const c=C(M()); if(c.b==null) startWin('b'); else if(c.r==null) startWin('r'); });
+  bq('#exTap').addEventListener('click',()=>{ if(!win) return; win.taps++; bq('#exTapN').textContent=`Taps: ${win.taps}`; });
+  bq('#exRedo').addEventListener('click',()=>{ if(win||exer||frozen()) return; const c=C(M()); if(c.r!=null){ delete c.r; delete c.tr; } else if(c.b!=null){ delete c.b; delete c.tb; } else return;
+    SIMS.done=false; save(); drawB(); dataRefresh(); });
+  bench.querySelectorAll('.exopt').forEach(b=>b.addEventListener('click',()=>{ if(SIMS.exDone||win||exer||frozen()) return; if(b.dataset.ex) SIMS.ex=b.dataset.ex; else SIMS.int=b.dataset.int; save(); drawB(); }));
+  bq('#exNext').addEventListener('click',()=>{ const m=M(), c=C(m); if(win||exer||frozen()||c.b==null||c.r==null||m>=6) return;
+    if(m===0){ if(!(SIMS.ex&&SIMS.int)) return; init(); setPeak(); exer={t0:performance.now()}; save(); drawB(); return; }
+    SIMS.m=m+1; save(); cloudSave(true); drawB(); });
+  /* --- animation (driven by the same beat and breath times the student counts) --- */
+  const T0=performance.now();
+  function setT(k,v){ const e=P(k); if(e) e.setAttribute('transform',v); }
+  function tick(){ if(!scene||!document.body.contains(scene)) return; const now=performance.now(), ts=(now-T0)/1000, p=SIMS.p||{hr0:72,br0:15};
+    let hr, br, mode='still', ep=0;
+    if(exer){ ep=Math.min(1,(now-exer.t0)/1000/EX_SECONDS); const k=1-Math.exp(-ep*3.2); hr=p.hr0+(SIMS.pk.hr-p.hr0)*k; br=p.br0+(SIMS.pk.br-p.br0)*k; mode=SIMS.ex;
+      bq('#exClock').textContent='0:'+String(Math.min(60,Math.floor(ep*60))).padStart(2,'0');
+      if(ep>=1){ exer=null; SIMS.exDone=true; SIMS.m=1; save(); cloudSave(true); drawB(); } }
+    else { const R=rateAt(M()); hr=R.hr; br=R.br; }
+    // beat flash and breath phase
+    let flash=0, chest=0;
+    const lastBefore=(arr,t)=>{ let b=null; for(const x of arr){ if(x<=t) b=x; else break; } return b; };
+    if(win){ const t=(now-win.t0)/1000; if(t>=win.dur){ endWin(); return; }
+      bq('#exClock').textContent='0:'+String(Math.max(0,Math.ceil(win.dur-t))).padStart(2,'0');
+      if(win.type==='b'){ const lb=lastBefore(win.ev,t); flash=lb==null?0:Math.max(0,1-(t-lb)/0.22); const Pb=60/br; chest=0.5+0.5*Math.cos(2*Math.PI*ts/Pb); }
+      else { const Pb=60/rateAt(win.m).br; let best=1e9; win.ev.forEach(x=>{ if(Math.abs(t-x)<Math.abs(best)) best=t-x; }); chest=0.5+0.5*Math.cos(2*Math.PI*Math.max(-0.5,Math.min(0.5,best/Pb))); const Ph=60/hr; flash=Math.max(0,1-((ts%Ph))/0.22); } }
+    else { const Ph=60/hr, Pb=60/br; flash=Math.max(0,1-((ts%Ph))/0.22); chest=0.5+0.5*Math.cos(2*Math.PI*ts/Pb); }
+    const heart=P('heart'), ring=P('ring'), wf=P('wflash'); if(heart) heart.setAttribute('opacity',f1(flash)); if(wf) wf.setAttribute('opacity',f1(flash));
+    if(ring){ ring.setAttribute('opacity',f1(flash*0.8)); ring.setAttribute('r',f1(30+(1-flash)*18)); }
+    const depth=1+Math.min(1.6,Math.max(0,(br-p.br0)/10));
+    setT('torso',`translate(0 -160) scale(${(1+0.035*depth*chest).toFixed(3)} ${(1+0.025*depth*chest).toFixed(3)}) translate(0 160)`);
+    setT('sh',`translate(0 ${f1(-2.4*depth*chest)})`);
+    const el=Math.max(0,Math.min(1,(hr-p.hr0)/70)); const fl=P('flush'), sw=P('sweat'); if(fl) fl.setAttribute('opacity',f1(0.7*el)); if(sw) sw.setAttribute('opacity',f1(el>0.55?(el-0.55)/0.45:0));
+    // body movement
+    let armA=0, legB=0, bob=0, lift=0, lL=0, lR=0;
+    if(mode==='jj'){ const f=EXS.jj.f*INTS[SIMS.int].sp, ph=(1-Math.cos(2*Math.PI*f*ts))/2; armA=150*ph; legB=13*ph; bob=-14*Math.abs(Math.sin(2*Math.PI*f*ts)); }
+    else if(mode==='walk'||mode==='step'){ const f=EXS[mode].f*INTS[SIMS.int].sp, sn=Math.sin(2*Math.PI*f*ts), hgt=mode==='step'?34:26; lL=hgt*Math.max(0,sn); lR=hgt*Math.max(0,-sn); armA=(mode==='walk'?12:8)*sn;
+      if(mode==='step') lift=-26*Math.min(1,Math.max(0,(Math.sin(2*Math.PI*f*ts/2)+0.3)*1.6)); }
+    else if(SIMS.ex==='step'&&!exer) lift=0;
+    setT('bob',`translate(0 ${f1(bob)})`); setT('lift',`translate(0 ${f1(lift)})`);
+    if(mode==='jj'){ setT('armL',`rotate(${f1(armA)} -33 -202)`); setT('armR',`rotate(${f1(-armA)} 33 -202)`); setT('legL',`rotate(${f1(legB)} -12 -122)`); setT('legR',`rotate(${f1(-legB)} 12 -122)`); }
+    else { setT('armL',`rotate(${f1(armA)} -33 -202)`); setT('armR',`rotate(${f1(armA)} 33 -202)`);
+      setT('legL',`translate(-12 -122) scale(1 ${f1(1-lL/118)}) translate(12 122)`); setT('legR',`translate(12 -122) scale(1 ${f1(1-lR/118)}) translate(-12 122)`); }
+    const sh=P('shadow'); if(sh) sh.setAttribute('rx',f1(44+bob*0.8)); }
+  clearInterval(window.__exTick); window.__exTick=setInterval(tick,40);
+  drawB();
+  /* --- the same tables as the hands-on lab --- */
+  const dlock=h('div',{class:'fb info'}); dlock.innerHTML='<b>Tables locked.</b> Finish all 7 counts first (resting, then 0 to 5 minutes after exercise).'; s.appendChild(dlock);
+  const dwrap=h('div',{}); s.appendChild(dwrap);
+  window.COUNT_CHECK=v=>{ if(!SIMS.done) return []; const bad=[]; TIMES.forEach((t,i)=>{ const c=C(i), b=cellv(v,i,0), r=cellv(v,i,2);
+    if(b!=null&&b!==c.b) bad.push(`beats at ${TSHORT[i]==='Rest'?'rest':TSHORT[i]+' min'}`); if(r!=null&&r!==c.r) bad.push(`breaths at ${TSHORT[i]==='Rest'?'rest':TSHORT[i]+' min'}`); }); return bad; };
+  obsTableProblem(dwrap,{id:'obs', part:'P3', num:num(), q:'Record what you did and what you saw.', pts:3, rows:OBS_ROWS});
+  dwrap.insertAdjacentHTML('beforeend',`<div class="prob"><p style="margin:0">Copy each count from your count log, then do the math for the rate. The graph draws as you type.</p></div>`);
+  dataTableProblem(dwrap,{id:'data', part:'P3', num:num(), q:'Heart rate and breathing rate at rest and after exercise.', pts:4, corner:'Time', cols:DCOLS, rows:TIMES, chart:exChart});
+  const board=h('div',{class:'prob'}); dwrap.appendChild(board);
+  function drawBoard(){ board.innerHTML=SIMS.done&&SIMS.cls?`<div class="pq">Class board</div><p class="small muted" style="margin:0 0 6px">Four classmates shared their numbers from the in-class lab, with no names (in beats per minute).</p>
+    <div class="board wide"><table><tr><th></th>${CLASS_COLS.map(c=>`<th>${c}</th>`).join('')}</tr>${CLASS_ROWS.map((r,i)=>`<tr><td>${r}</td>${SIMS.cls[i].map(x=>`<td>${x}</td>`).join('')}</tr>`).join('')}</table></div>`:'<div class="pq">Class board</div><p class="small muted" style="margin:0">The class board appears after you finish all your counts.</p>'; }
+  drawBoard();
+  dataTableProblem(dwrap,{id:'class', part:'P3', num:num(), q:'Copy the class board into this table.', pts:2, corner:'Classmate', cols:CLASS_COLS, rows:CLASS_ROWS, chart:classChart});
+  window.dataRefresh=()=>{ const ok=!!st('pred').checked, ran=!!SIMS.done;
+    lock.hidden=ok; bench.classList.toggle('off',!ok); dlock.hidden=!ok||ran; dwrap.classList.toggle('off',!(ok&&ran)); drawBoard(); drawB(); if(window.anaRefresh) anaRefresh(); };
+}
+
+/* ============================== BUILD / SCORE ============================== */
+function scoreAll(){ const parts=PARTS.slice(0,-1).map(p=>({k:p.k,label:p.label,got:0,max:0})); PROBS.forEach(pr=>{ const pt=parts.find(x=>x.k===pr.part); pt.got+=pr.score(); pt.max+=pr.max; });
+  return {parts, total:parts.reduce((a,b)=>a+b.got,0), max:parts.reduce((a,b)=>a+b.max,0)}; }
+function build(){
+  PROBS.length=0; const ws=$('#ws'); ws.innerHTML='';
+  $('#nav').innerHTML=PARTS.map((pt,i)=>`<button class="ntile" type="button" data-i="${i}" aria-label="${pt.title}"><span class="ic">${ico(i,22)}</span><span class="nm">${pt.label}</span></button>`).join('');
+  $$('#nav .ntile').forEach(b=>b.addEventListener('click',()=>showPart(+b.dataset.i)));
+  const secs=PARTS.map((pt,i)=>{ const el=h('section',{class:'sec',id:'part'+i}); const last=i===PARTS.length-1;
+    el.innerHTML=`<div class="sechead"><div class="badge"><span class="z">${i+1}</span>${ico(i,34)}</div><div><div class="meta">${last?'Grade':`Section ${i+1} of ${PARTS.length-1} · about ${pt.min} min`}</div><h2>${pt.title}</h2></div></div>`;
+    const c=h('div',{class:'card'}); el.appendChild(c);
+    const nav=h('div',{class:'secnav'});
+    const back=h('button',{class:'btn ghost',type:'button'},i===0?'':'← Back'); if(i===0) back.style.visibility='hidden'; back.addEventListener('click',()=>showPart(i-1));
+    nav.appendChild(back);
+    if(!last){ const nx=h('button',{class:'btn primary',type:'button'},i===PARTS.length-2?'See my grade →':`Next: ${PARTS[i+1].title} →`); nx.addEventListener('click',()=>showPart(i+1)); nav.appendChild(nx); }
+    el.appendChild(nav); ws.appendChild(el); return c; });
+  buildContent(secs);
+  secs[PARTS.length-1].id='turnin';
+  showPart(Math.min(S.cur||0,PARTS.length-1),true);
+  $('#whoami').textContent=S.student?`${S.student.first} ${S.student.last}`:''; refresh();
+}
+function showPart(i,noScroll){
+  S.cur=i; $$('#ws .sec').forEach((el,j)=>el.hidden=j!==i);
+  $$('#nav .ntile').forEach((t,j)=>t.classList.toggle('cur',j===i));
+  if(!noScroll){ save(); window.scrollTo(0,0); }
+}
+function refresh(){
+  const sc=scoreAll(), done=PROBS.filter(p=>p.checked()).length;
+  $('#scorePill').textContent=`${done}/${PROBS.length} checked · ${sc.total}/${sc.max} pts`;
+  PARTS.slice(0,-1).forEach((pt,i)=>{ const t=$(`#nav .ntile[data-i="${i}"]`); if(t) t.classList.toggle('done',PROBS.filter(p=>p.part===pt.k).every(p=>p.checked())); });
+  const t7=$(`#nav .ntile[data-i="${PARTS.length-1}"]`); if(t7) t7.classList.toggle('done',!!S.submittedAt);
+  const c=$('#turnin'); if(!c) return;
+  const rows=sc.parts.map(p=>`<tr><th>${p.label}</th><td>${p.got} / ${p.max}</td></tr>`).join('');
+  c.innerHTML=`<div style="display:flex;gap:22px;align-items:center;flex-wrap:wrap"><div class="big">${sc.total}/${sc.max}</div><div><h3 style="margin:0">${esc(S.student?S.student.first+' '+S.student.last:'')}</h3><p class="muted" style="margin:0">${done} of ${PROBS.length} problems checked</p></div></div>
+    <table class="res" style="margin-top:12px">${rows}</table>
+    <p class="small muted" style="margin-top:10px">Problems you haven't checked count as 0. You can turn in again later; your teacher sees the newest one.</p>
+    <div class="btnrow"><button class="btn primary" id="subBtn" type="button">${S.submittedAt?'Turn in again':'Turn in my lab'}</button><button class="btn ghost" id="csvBtn" type="button">Download CSV</button></div>
+    <p class="fb info sheetStatus" aria-live="polite">${S.sentAt?`Sent to your teacher ${new Date(S.sentAt).toLocaleString()}.`:'Not turned in yet.'}</p>`;
+  $('#subBtn').addEventListener('click',turnIn);
+  $('#csvBtn').addEventListener('click',()=>downloadCSV([recordRow()],`ExerciseLabSim_${(S.student&&S.student.last||'student').replace(/\W+/g,'')}.csv`));
+}
+const CSV_HEAD=['Student ID','Last Name','First Name','Period','Teacher','Activity','Score','Total','Percent',...PARTS.slice(0,-1).map(p=>p.label),'Date'];
+function recordRow(){ const st=S.student||{}, sc=scoreAll(); return [st.id||'',st.last||'',st.first||'',st.period||'',st.teacher||'',ACTIVITY,sc.total,sc.max,Math.round(100*sc.total/sc.max)+'%',...sc.parts.map(p=>p.got),new Date(S.submittedAt||Date.now()).toLocaleString()]; }
+function csvText(rows){ const q=v=>{ v=String(v==null?'':v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }; return [CSV_HEAD,...rows].map(r=>r.map(q).join(',')).join('\r\n')+'\r\n'; }
+function downloadCSV(rows,name){ const b=new Blob([csvText(rows)],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500); }
+const loadRecs=()=>{ try{ return (JSON.parse(localStorage.getItem(RECS))||[]).filter(r=>r.length===CSV_HEAD.length); }catch(e){ return []; } };
+function saveRecord(){ if(S.preview) return; const recs=loadRecs(), row=recordRow(); const i=recs.findIndex(r=>r[0]===row[0]&&r[1]===row[1]); if(i>=0) recs[i]=row; else recs.push(row); try{ localStorage.setItem(RECS,JSON.stringify(recs)); }catch(e){} }
+function turnIn(){
+  const left=PROBS.filter(p=>!p.checked()).length;
+  if(left&&!confirm(`${left} problem${left>1?'s':''} not checked yet (they count as 0). Turn in anyway?`)) return;
+  S.submittedAt=Date.now(); save(); saveRecord(); cloudSave(true); disarm(); refresh();
+  const msg=t=>$$('.sheetStatus').forEach(e=>e.textContent=t);
+  if(S.preview){ msg('Preview mode: nothing is sent.'); return; }
+  const st=S.student, sc=scoreAll();
+  const body={studentId:st.id||'',firstName:st.first||'',lastName:st.last||'',period:st.period||'',teacher:st.teacher||'',locks:'0',when:new Date().toString(),activity:ACTIVITY,score:String(sc.total),total:String(sc.max),
+    qlabels:sc.parts.map((p,i)=>'P'+(i+1)+' '+PARTS[i].label).join('|'),qpoints:sc.parts.map(p=>p.got).join('|'),qmax:sc.parts.map(p=>p.max).join('|')};
+  msg('Sending...');
+  fetch(sheetURL(),{method:'POST',mode:'no-cors',body:new URLSearchParams(body)}).then(()=>{ S.sentAt=new Date().toISOString(); save(); msg('Sent! Your teacher will see your score.'); }).catch(()=>msg("Couldn't send. Check the Wi-Fi and try again, or download the CSV."));
+}
+
+/* ============================== NO LOCKDOWN ON WORKSHEETS ============================== */
+let teacherOpen=false;
+function arm(){} function disarm(){} function showLock(){} function enterFS(){}
+['copy','cut','paste','contextmenu'].forEach(ev=>document.addEventListener(ev,e=>{ if(teacherOpen||S.preview) return; e.preventDefault(); }));
+
+/* ============================== SIGN IN ============================== */
+function showWS(){ $('#start').hidden=true; $('#top').hidden=false; $('#ws').hidden=false; build(); window.scrollTo(0,0); if(S.locked&&LOCKDOWN&&!S.lockOff) showLock(); else arm(); }
+function renderStart(){ const has=!!S.student; $('#resumeBox').hidden=!has; $('#startForm').hidden=has; $('#signinTitle').textContent=has?'Welcome back':'Sign in to start';
+  if(has) $('#resumeText').innerHTML=`Signed in as <b>${esc(S.student.first)} ${esc(S.student.last)}</b>, period ${esc(S.student.period)}.`; }
+$('#fPeriod').innerHTML='<option value="">Choose your period</option>'+periodList().map(p=>`<option>${esc(p)}</option>`).join('');
+$('#fTeacher').innerHTML='<option value="">Choose your teacher</option>'+teacherList().map(t=>`<option>${esc(t)}</option>`).join('');
+let starting=false;
+async function start(){
+  if(starting) return; starting=true;
+  try{
+    const v={first:$('#fFirst').value.trim(),last:$('#fLast').value.trim(),id:$('#fId').value.trim(),period:$('#fPeriod').value,teacher:$('#fTeacher').value};
+    const miss=[]; if(!v.first) miss.push('first name'); if(!v.last) miss.push('last name'); if(!v.id) miss.push('student ID'); if(!v.period) miss.push('period'); if(!v.teacher) miss.push('teacher');
+    const err=$('#formErr'); if(miss.length){ err.className='fb no'; err.textContent='Fill in your '+miss.join(', ')+'.'; err.hidden=false; return; }
+    if(LOCKDOWN) enterFS();
+    err.className='fb info'; err.textContent='Checking for your saved work...'; err.hidden=false;
+    const res=await cloudLoad(v); err.hidden=true;
+    if(res.status==='found'){ const d=res.data; d.student=Object.assign({},d.student||{},{first:v.first,period:v.period,teacher:v.teacher}); adopt(d); showWS(); note('✓ Your saved work was loaded'); return; }
+    const ns=fresh(); ns.student=v; adopt(ns); showWS(); cloudSave(true);
+  } catch(ex){ const er=$('#formErr'); er.className='fb no'; er.textContent='Something went wrong starting ('+(ex&&ex.message||ex)+'). Reload and try again.'; er.hidden=false; }
+  finally{ starting=false; }
+}
+$('#startBtn').addEventListener('click',start);
+$('#startForm').addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.tagName==='INPUT'){ e.preventDefault(); start(); } });
+$('#resumeBtn').addEventListener('click',async()=>{ const b=$('#resumeBtn'); b.disabled=true; b.textContent='Loading your work...'; if(LOCKDOWN&&!S.locked) enterFS();
+  const res=await cloudLoad(S.student); b.disabled=false; b.textContent='Continue my lab';
+  if(res.status==='found'&&(res.data.updatedAt||0)>(S.updatedAt||0)&&checkedCount(res.data)>=checkedCount(S)){ const d=res.data; d.student=S.student; adopt(d); note('✓ Your newest saved work was loaded'); } showWS(); });
+$('#notMeBtn').addEventListener('click',async()=>{ const b=$('#notMeBtn'); b.disabled=true;
+  try{ if(cloudOK()) await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); }catch(e){ b.disabled=false; $('#resumeErr').textContent="Can't back up the last student's work right now. Check the Wi-Fi, or ask your teacher."; $('#resumeErr').hidden=false; return; }
+  b.disabled=false; adopt(fresh()); ['#fFirst','#fLast','#fId','#fPeriod','#fTeacher'].forEach(s=>$(s).value=''); renderStart(); });
+
+/* ============================== TEACHER ============================== */
+function openTeacher(){ teacherOpen=true; $('#teachLogin').hidden=false; $('#teachPanel').hidden=true; $('#teachErr').hidden=true; $('#teachCode').value=''; $('#teachOv').classList.add('show'); setTimeout(()=>$('#teachCode').focus(),50); }
+function closeTeacher(){ $('#teachOv').classList.remove('show'); teacherOpen=false; }
+$('#teacherLink').addEventListener('click',openTeacher); $('#teachBtn').addEventListener('click',openTeacher);
+$('#teachCancel').addEventListener('click',closeTeacher);
+$('#teachCode').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#teachGo').click(); });
+$('#teachGo').addEventListener('click',()=>{ if(!codeIs($('#teachCode').value,TEACHER_CODE)){ $('#teachErr').hidden=false; return; } $('#teachLogin').hidden=true; $('#teachPanel').hidden=false; renderTeacher(); });
+function renderTeacher(){
+  const recs=loadRecs(), p=$('#teachPanel'), keyOn=document.body.classList.contains('keyon');
+  p.innerHTML=`<h2>Teacher tools</h2>
+    <div class="btnrow"><button class="btn ghost" id="tKey" type="button">${keyOn?'Hide answer key':'Answer key'}</button>
+      <button class="btn ghost" id="tPrev" type="button">${S.preview?'End preview':'Preview (saves nothing)'}</button>
+      <button class="btn ghost" id="tResetWrong" type="button">Reset all wrong answers</button>
+      <button class="btn ghost" id="tReset" type="button">Reset this Chromebook</button><button class="btn ghost" id="tClose" type="button">Close</button></div>
+    <h3 style="margin-top:16px">Scores saved on this Chromebook (${recs.length})</h3>
+    <div class="wide">${recs.length?`<table class="nb"><tr><th>Student</th><th>ID</th><th>Period</th><th>Score</th><th>Date</th></tr>${recs.map(r=>`<tr><td>${esc(r[1])}, ${esc(r[2])}</td><td>${esc(r[0])}</td><td>${esc(r[3])}</td><td>${r[6]}/${r[7]}</td><td>${esc(r[r.length-1])}</td></tr>`).join('')}</table>`:'<p class="muted">None yet.</p>'}</div>
+    <div class="btnrow"><button class="btn primary" id="tCsv" type="button" ${recs.length?'':'disabled'}>Download scores (CSV)</button></div>
+    <h3 style="margin-top:16px">Load a student's saved work</h3>
+    <div class="btnrow"><input class="code" id="tId" placeholder="Student ID" style="width:150px"><input class="code" id="tLast" placeholder="Last name" style="width:170px"><button class="btn ghost" id="tLoad" type="button">Load work</button></div>
+    <p class="fb info" id="tMsg" style="min-height:1em"></p>`;
+  const msg=t=>$('#tMsg').textContent=t;
+  $('#tKey').addEventListener('click',()=>{ document.body.classList.toggle('keyon'); renderTeacher(); msg(document.body.classList.contains('keyon')?'Answer key on: each box shows its answer, sort chips show their box, and correct choices have a dashed gold outline.':'Answer key off.'); });
+  $('#tPrev').addEventListener('click',()=>{ if(S.preview){ location.reload(); return; } const ns=fresh(); ns.preview=true; ns.student={first:'Teacher',last:'Preview',id:'0',period:'-',teacher:teacherList()[0]}; S=ns; closeTeacher(); showWS(); note('Preview: nothing is saved'); });
+  $('#tReset').addEventListener('click',()=>{ if(confirm('Erase this lab on this Chromebook? Work backed up to the Saved Student Work sheet is not deleted.')){ try{ localStorage.removeItem(STORE); }catch(e){} location.reload(); } });
+  $('#tResetWrong').addEventListener('click',()=>{
+    const wrong=PROBS.filter(pr=>{ const P=S.p[pr.id]||{}; return (P.tries||0)>0 && !P.right; });
+    if(!wrong.length){ msg('Nothing to reset: this student has no wrong answers.'); return; }
+    if(!confirm(`Reset ${wrong.length} problem${wrong.length>1?'s':''} that ${wrong.length>1?'are':'is'} wrong or on a second try for ${(S.student&&S.student.first)||'this student'}? Correct answers stay.`)) return;
+    wrong.forEach(pr=>{ delete S.p[pr.id]; });
+    save(); cloudSave(true); msg(`Reset ${wrong.length} problem${wrong.length>1?'s':''}. Reloading…`); setTimeout(()=>location.reload(),700); });
+  $('#tClose').addEventListener('click',closeTeacher);
+  $('#tCsv').addEventListener('click',()=>downloadCSV(recs,`ExerciseLabSim_scores_${new Date().toISOString().slice(0,10)}.csv`));
+  $('#tLoad').addEventListener('click',async()=>{ const s={id:$('#tId').value.trim(),last:$('#tLast').value.trim()}; if(!s.id||!s.last){ msg('Type the student ID and last name.'); return; } msg('Looking up saved work...');
+    const r=await cloudLoad(s); if(r.status==='found'){ adopt(r.data); closeTeacher(); renderStart(); $('#start').hidden=false; $('#ws').hidden=true; $('#top').hidden=true; } else msg(r.status==='none'?'No saved work found for that student.':"Couldn't reach the saved-work sheet."); });
+}
+
+if(!STORAGE_OK) $('#noStore').hidden=false;
+renderStart();
+})();
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

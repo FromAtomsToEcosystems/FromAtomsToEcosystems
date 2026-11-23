@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Collision Course | Physics</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1220;--panel:#121c31;--panel2:#18243d;--line:#2b3a58;--text:#e8eefc;--muted:#9fb0cf;--gold:#facc15;--gold2:#fbbf24;--ok:#34d399;--bad:#f87171;--violet:#a78bfa}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 "Atkinson Hyperlegible",Arial,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:#0e172a}
+header .t{font-weight:800;font-size:17px}
+header .s{color:var(--muted);font-size:13px}
+header .sp{flex:1}
+.btn{font:inherit;font-weight:700;border-radius:10px;padding:9px 16px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--gold);color:#1a1300;border-color:var(--gold)}
+.btn:disabled{opacity:.5;cursor:default}
+main{max-width:1000px;margin:0 auto;padding:14px 16px 30px}
+.stage{position:relative;width:100%;aspect-ratio:16/10;background:#050a14;border:1px solid var(--line);border-radius:14px;overflow:hidden;touch-action:none}
+canvas{display:block;width:100%;height:100%}
+.ov{position:absolute;inset:0;display:flex;background:rgba(5,10,20,.78);padding:14px;overflow:auto}
+.ov>.card{margin:auto}
+#teachOv{position:fixed;z-index:60;background:rgba(5,10,20,.94)}
+.ov[hidden]{display:none}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;max-width:640px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.card h2{margin:0 0 6px;font-size:22px}
+.card h3{margin:12px 0 6px;font-size:15px;color:var(--gold)}
+.muted{color:var(--muted)} .small{font-size:13.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chip{font:inherit;font-size:14px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.chip.on{border-color:var(--gold);background:rgba(250,204,21,.16);font-weight:700}
+.qtag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--violet);margin-bottom:4px}
+.qtext{font-size:18px;margin:4px 0 12px}
+.opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:15.5px}
+.opt:hover:not(:disabled){border-color:var(--gold)}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:13px;font-weight:800}
+.opt.pick{border-color:var(--gold)}
+.fb{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:15.5px}
+.fb.ok{background:rgba(52,211,153,.14);border:1px solid rgba(52,211,153,.5)}
+.fb.no{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.45)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:14px;margin:6px 0}
+.keys b{color:var(--gold)}
+.ladder{display:flex;flex-wrap:wrap;gap:6px;font-size:13px;margin-top:6px}
+.ladder span{padding:3px 8px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}
+.touch{display:none;gap:10px;justify-content:space-between;margin-top:10px;user-select:none;-webkit-user-select:none}
+.touch .grp{display:flex;gap:10px}
+.tbtn{width:64px;height:58px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:22px;font-weight:800;touch-action:none}
+.tbtn.fire{width:110px;background:#3b2a07;border-color:var(--gold);color:var(--gold);font-size:17px}
+.tbtn.on{background:#334155}
+@media (pointer:coarse){.touch{display:flex}}
+@media (max-width:480px){.tbtn{width:52px;height:54px;font-size:20px}.tbtn.fire{width:86px}.touch .grp{gap:7px}.touch{gap:6px}}
+@media (max-width:760px),(max-height:560px){.ov{position:fixed;z-index:50;background:rgba(5,10,20,.92)}}
+body.showtouch .touch{display:flex}
+.info{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:14px;color:var(--muted)}
+.tpanel h3{margin-top:14px}
+.tq{margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font-size:14px}
+.tq ol{margin:4px 0 0;padding-left:22px}
+.tq li.right{color:var(--ok);font-weight:700}
+input.code{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0b1220;color:var(--text);width:180px}
+#printView{display:none}
+@media print{
+  body>*:not(#printView){display:none!important}
+  #printView{display:block!important;color:#000;background:#fff;font:12px/1.4 Arial,sans-serif}
+  #printView h1{font-size:18px;margin:0 0 4px} #printView .pq{break-inside:avoid;margin:8px 0}
+  #printView ol{margin:2px 0 0;padding-left:22px} #printView li.right{font-weight:700;text-decoration:underline}
+  html,body{background:#fff}
+}
+
+.refbox{margin-top:12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 14px}.refbox summary{cursor:pointer;font-weight:700;color:var(--gold)}
+.ref{font-size:14px}.ref .eqs{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}.ref .eqs span{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:4px 10px;font-weight:700}.ref ul{margin:4px 0;padding-left:20px}.ref h4{margin:10px 0 2px;color:var(--violet);font-size:14px}
+.ansrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.ansrow input{font:inherit;font-size:20px;font-weight:700;width:170px;padding:8px 10px;border-radius:10px;border:2px solid var(--gold);background:#0b1220;color:var(--text)}
+.ansrow label{font-weight:700}.ansrow #ansUnit{font-weight:700;color:var(--gold);min-width:40px}
+.keypad{display:grid;grid-template-columns:repeat(6,52px);gap:6px}.keypad .tbtn{width:52px;height:46px;font-size:18px}
+@media print{.ref .eqs span{border:1px solid #444}}
+</style>
+</head>
+<body>
+<header>
+  <div><div class="t">Collision Course</div><div class="s">Physics · Unit 6: Momentum & Collisions · Review game</div></div>
+  <div class="sp"></div>
+  <button class="btn" id="teachBtn" type="button">Teacher</button>
+</header>
+<main>
+  <div class="stage" id="stage">
+    <canvas id="cv" width="960" height="600" aria-label="Collision Course game. Use the left and right arrows to move and the space bar to fire."></canvas>
+    <div class="ov" id="startOv"><div class="card"><h2>Collision Course</h2><p class="small muted" style="margin:0 0 8px">You control the striker on a giant air-hockey table. Each question appears at the top, and four answer blocks slide down toward you. Fire a puck at the block with the right answer before it crosses the red line. Dodge the <b style="color:#fb7185">runaway pucks</b>!</p><div class="keys"><b>← →</b><span>move (or A and D, or tap where you want to shoot)</span><b>Space</b><span>fire (or ↑)</span><b>P</b><span>pause</span></div><h3>Choose a mode</h3><div class="chips" id="modes"></div><p class="small" id="modeTip" style="margin:0"></p><p class="small muted">Wrong hit, missed answer, or runaway puck = lose a heart. Every 5 right answers = level up and +1 heart.</p><div class="row"><button class="btn primary" id="startBtn" type="button">Start</button><span class="small muted" id="hiTxt"></span></div></div></div>
+    <div class="ov" id="overOv" hidden><div class="card"><h2>Game over</h2><div id="overBody"></div><div class="row"><button class="btn primary" id="againBtn" type="button">Play again</button><button class="btn" id="menuBtn" type="button">Change mode</button></div></div></div>
+    <div class="ov" id="pauseOv" hidden><div class="card" style="max-width:380px;text-align:center"><h2>Paused</h2><p class="muted">Press P (or Esc) or the button to keep playing.</p><button class="btn primary" id="resumeBtn" type="button">Resume</button></div></div>
+  </div>
+  
+  <div class="touch" id="touch"><div class="grp"><button class="tbtn" data-k="left" type="button" aria-label="Move left">◀</button><button class="tbtn" data-k="right" type="button" aria-label="Move right">▶</button><button class="tbtn" data-k="pause" type="button" aria-label="Pause">II</button></div><div class="grp"><button class="tbtn fire" data-k="fire" type="button" aria-label="Fire">FIRE</button></div></div>
+  <div class="info"><span id="info"></span></div>
+  <details class="refbox" open><summary>Reference sheet</summary><div id="refBox" class="ref"></div></details>
+</main>
+<div class="ov" id="teachOv" hidden>
+  <div class="card tpanel" style="max-width:780px">
+    <h2>Teacher tools</h2>
+    <div id="tLogin"><p class="small muted">Enter the teacher code.</p><div class="row" style="margin-top:4px"><input class="code" id="tCode" type="password" autocomplete="off" aria-label="Teacher code"><button class="btn primary" id="tGo" type="button">Open</button><button class="btn" id="tClose0" type="button">Close</button></div><div class="small" id="tMsg" style="color:var(--bad);margin-top:6px"></div></div>
+    <div id="tBody" hidden>
+      <div class="row"><button class="btn" id="tPrint" type="button">🖨 Print the reference sheet</button><button class="btn" id="tTouch" type="button">Show touch buttons</button><button class="btn" id="tClose" type="button">Close</button></div>
+      <div id="tInfo"></div>
+    </div>
+  </div>
+</div>
+<div id="printView"></div>
+<script>
+const META={"store": "physU6CollisionCourse", "unit": 6};
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const store={ get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+const shuffle=a=>{ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const rnd=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+const R=(a,b,s)=>{ s=s||1; const n=Math.round((b-a)/s); return +(a+s*Math.floor(Math.random()*(n+1))).toFixed(6); };
+const SUP={'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+const sci=(x,s)=>{ s=s||2; if(x===0) return '0'; const e=Math.floor(Math.log10(Math.abs(x))); let m=+(x/10**e).toFixed(s-1); let ee=e; if(Math.abs(m)>=10){ m=+(m/10).toFixed(s-1); ee++; } return `${m.toFixed(s-1)} × 10${String(ee).split('').map(c=>SUP[c]).join('')}`; };
+/* nice number: 3 sig figs, commas, sci notation for very big/small */
+const n=(x,s)=>{ s=s||3; if(!isFinite(x)) return '?'; if(x!==0&&(Math.abs(x)>=1e6||Math.abs(x)<1e-3)) return sci(x,s); const v=Number(x.toPrecision(s)); return v.toLocaleString('en-US',{maximumFractionDigits:6}); };
+const U=(x,u,s)=>n(x,s)+(u?' '+u:'');
+/* build a question with distinct distractors */
+function Q(q,a,bad,hint,calc){ const seen=new Set([a]); const b=[]; bad.forEach(x=>{ if(x!=null&&!seen.has(x)&&!/NaN|Infinity|\?/.test(x)){ seen.add(x); b.push(x); } }); return {q,a,bad:b,hint:hint||'',calc:!!calc}; }
+/* numeric question: right value + candidate wrong values, formatted with units */
+function QN(q,val,wrongs,unit,hint,s){ const a=U(val,unit,s); const extra=[val*2,val/2,val*10,val/10,val*1.5]; return Q(q,a,wrongs.concat(extra).map(w=>U(w,unit,s)),hint,true); }
+/* concept bank: items [question, right, [wrong...], hint] */
+function C(items){ let recent=[]; return ()=>{ let it; let g=0; do{ it=pick(items); g++; }while(recent.includes(it)&&g<30); recent.push(it); if(recent.length>Math.min(6,items.length-1)) recent.shift(); return Q(it[0],it[1],it[2],it[3]); }; }
+function makeG(){
+const pQ=()=>{ const m=pick([0.15,0.5,2,5,60,80,1000,1500]), v=pick([2,3,4,10,20,25,40]); return Math.random()<0.6?QN(`What is the momentum of a ${n(m)}-kg object moving at ${v} m/s?`,m*v,[m/v,v/m,0.5*m*v*v],'kg·m/s','p = mv.'):QN(`An object has ${n(m*v)} kg·m/s of momentum and moves at ${v} m/s. What is its mass?`,m,[m*v*v,v/(m*v)],'kg','m = p ÷ v.'); };
+const JQ=()=>{ const F=pick([50,100,200,500,1000,2000]), t=pick([0.01,0.02,0.05,0.1,0.2,0.5]); return QN(`A ${n(F)}-N force acts for ${t} s. What impulse does it give?`,F*t,[F/t,t/F],'N·s','J = FΔt.'); };
+const dpQ=()=>{ const m=pick([0.06,0.15,0.4,2,1200]), v1=pick([0,5,10,20]), v2=v1+pick([10,15,20,30]); return QN(`A ${n(m)}-kg object speeds up from ${v1} m/s to ${v2} m/s. What impulse acted on it?`,m*(v2-v1),[m*(v2+v1),m*v2,(v2-v1)/m],'N·s','Impulse = Δp = m(v_f − v_i).'); };
+const FtQ=()=>{ const m=pick([60,70,80]), v=pick([10,15,20]), t=pick([0.05,0.1,0.2,0.5]); return QN(`A ${m}-kg passenger moving at ${v} m/s is stopped by an airbag in ${t} s. What average force acts on the passenger?`,m*v/t,[m*v*t,m*v,m/t],'N','F = Δp ÷ Δt.'); };
+const stickQ=()=>{ const m1=pick([1,2,3,4,1000,1500]), m2=pick([1,2,3,4,1000,500]).toString()==='1000'&&m1<10?2:pick([1,2,3,4]), v=pick([2,3,4,6,8,10,12]); const M2=m1>=1000?pick([800,1000,2000]):m2; const vf=m1*v/(m1+M2);
+  return QN(`A ${n(m1)}-kg cart moving at ${v} m/s hits a stopped ${n(M2)}-kg cart. They stick together. What is their speed afterward?`,vf,[v,m1*v/M2,v/2===vf?v/3:v/2],'m/s','Total momentum before = after: m₁v = (m₁ + m₂)v_f.'); };
+const recoilQ=()=>{ const mb=pick([0.01,0.02,0.05]), vb=pick([300,400,500]), mg=pick([2,4,5]); return QN(`A ${mg}-kg rifle fires a ${mb}-kg bullet at ${vb} m/s. What is the rifle’s recoil speed?`,mb*vb/mg,[vb,mg*vb/mb,mb*vb],'m/s','Momentum before = 0, so m_bullet v_bullet = m_rifle v_rifle.'); };
+const ideas=C([['Momentum is a…','vector (it has direction)',['scalar','force','type of energy'],'p = mv, and v has direction.'],['Which has more momentum?','a slow truck',['a parked truck','a fast-moving fly','they have the same'],'p = mv: huge mass wins.'],['Airbags reduce injuries by…','increasing the time of the collision',['decreasing the impulse','increasing the force','stopping the car faster'],'Same Δp over a longer time = smaller force.'],['Bending your knees when you land…','increases stopping time, so less force',['decreases your momentum change','increases the force','has no effect'],'F = Δp ÷ Δt.'],['On a force–time graph, impulse is the…','area under the curve',['slope','highest point','y-intercept'],'J = F × Δt.'],['In a closed system, total momentum…','stays the same',['always increases','always decreases','turns into heat'],'Conservation of momentum.'],['Two carts at rest push apart. Their total momentum afterward is…','zero',['positive','negative','doubled'],'It was zero before, so it stays zero.'],['In a perfectly inelastic collision, the objects…','stick together',['bounce apart with no energy lost','pass through each other','explode'],'Maximum kinetic energy is lost.'],['In an elastic collision, which is conserved?','both momentum and kinetic energy',['only momentum','only kinetic energy','neither'],'Elastic: KE is kept too.'],['In every collision (no outside forces), what is conserved?','momentum',['kinetic energy','speed','velocity of each object'],'KE may be lost, momentum never.'],['A gun recoils when fired because…','the bullet and gun get equal and opposite momentum',['the bullet pushes air backward','gravity pulls the gun back','energy is lost'],'Total momentum stays zero.'],['Crumple zones are designed to…','crush and lengthen the collision time',['make the car stiffer','reduce the car’s mass','increase the force on passengers'],'Longer time, smaller force.']]);
+return {title:'Collision Course',unit:6,unitName:'Momentum & Collisions',store:'physU6CollisionCourse',qLabel:'Question',hazMsg:'Hit by a runaway puck!',shotColor:'#fda4af',
+ startMsg:'Launch pucks at the right answer!',overTip:'Tip: momentum before = momentum after. Impulse = FΔt = Δp.',
+ how:'The student slides along the bottom of an air-hockey table, firing pucks upward. Four answer blocks drift down. Hit the block with the right answer before it reaches the red line. A wrong hit or a missed answer costs a heart, and the same question stays. Every 5 right answers = level up (+1 heart, faster). After level 2, runaway pucks fall and must be dodged.',
+ modes:{p:{label:'Momentum & impulse math',tip:'p = mv, impulse J = FΔt = Δp, and average collision forces.'},coll:{label:'Collisions & recoil',tip:'Carts that stick together and recoil problems using conservation of momentum.'},ideas:{label:'Concepts & safety',tip:'Momentum as a vector, impulse, safety design, and elastic vs. inelastic collisions.'},mix:{label:'Mixed',tip:'Everything from Unit 6.'}},
+ gens:{p:[pQ,JQ,dpQ,FtQ],coll:[stickQ,stickQ,recoilQ],ideas:[ideas]},
+ ref:`<div class="eqs"><span>p = mv</span><span>J = FΔt = Δp</span><span>Δp = m(v<sub>f</sub> − v<sub>i</sub>)</span><span>m₁v₁ + m₂v₂ = m₁v₁′ + m₂v₂′</span><span>stick: m₁v₁ = (m₁ + m₂)v<sub>f</sub></span></div><h4>Impulse and safety</h4><ul><li>Same Δp over a longer time = smaller force (airbags, crumple zones, helmets, bending knees).</li><li>Impulse is the area under a force–time graph.</li></ul><h4>Collisions</h4><ul><li>Momentum is conserved in every collision (closed system).</li><li>Elastic: KE also conserved. Inelastic: some KE lost. Perfectly inelastic: objects stick.</li></ul>`,
+ bg:(c,t)=>{ c.fillStyle='#0f172a'; c.fillRect(0,0,W,H); c.fillStyle='#1e293b'; for(let x=20;x<W;x+=40) for(let y=170;y<H;y+=40){ c.fillRect(x,y,2,2); } c.strokeStyle='rgba(244,63,94,.35)'; c.lineWidth=3; c.beginPath(); c.arc(W/2,H/2+70,70,0,6.3); c.stroke(); c.beginPath(); c.moveTo(0,H/2+70); c.lineTo(W,H/2+70); c.stroke(); },
+ target:(c,x,y,w,h)=>{ c.save(); c.translate(x,y); rr(-w/2,-h/2,w,h,10); c.fillStyle='#4c0519'; c.fill(); c.strokeStyle='#fb7185'; c.lineWidth=3; c.stroke(); c.restore(); },
+ player:(c,x,y)=>{ c.save(); c.translate(x,y); c.fillStyle='#be123c'; c.beginPath(); c.arc(0,0,28,0,6.3); c.fill(); c.fillStyle='#fecdd3'; c.beginPath(); c.arc(0,0,14,0,6.3); c.fill(); c.fillStyle='#be123c'; c.beginPath(); c.arc(0,0,8,0,6.3); c.fill(); c.restore(); },
+ hazard:(c,x,y)=>{ c.save(); c.translate(x,y); c.fillStyle='#111827'; c.beginPath(); c.arc(0,0,14,0,6.3); c.fill(); c.strokeStyle='#f43f5e'; c.lineWidth=2; c.stroke(); c.restore(); }};
+}
+
+const G=makeG();
+const GAME={onPause:()=>{}, onResume:()=>{}};
+/* teacher tools (code teacher007) */
+function tShow(on){ $('#teachOv').hidden=!on; if(on){ GAME.onPause(); $('#tCode').value=''; $('#tMsg').textContent=''; setTimeout(()=>$('#tCode').focus(),30); } }
+$('#teachBtn').addEventListener('click',()=>tShow(true)); $('#tClose0').addEventListener('click',()=>tShow(false));
+$('#tClose').addEventListener('click',()=>{ tShow(false); $('#tBody').hidden=true; $('#tLogin').hidden=false; });
+function tOpen(){ if($('#tCode').value.trim().toLowerCase()!=='teacher007'){ $('#tMsg').textContent='Code not recognized.'; return; } $('#tLogin').hidden=true; $('#tBody').hidden=false; $('#tInfo').innerHTML=teacherHTML(); }
+$('#tGo').addEventListener('click',tOpen); $('#tCode').addEventListener('keydown',e=>{ if(e.key==='Enter') tOpen(); });
+$('#tTouch').addEventListener('click',()=>{ document.body.classList.toggle('showtouch'); $('#tTouch').textContent=document.body.classList.contains('showtouch')?'Hide touch buttons':'Show touch buttons'; });
+$('#tPrint').addEventListener('click',()=>{ $('#printView').innerHTML=`<h1>${G.title}: Reference Sheet</h1><p>Physics · Unit ${G.unit}: ${G.unitName}</p>`+G.ref; setTimeout(()=>window.print(),100); });
+$('#resumeBtn').addEventListener('click',()=>GAME.onResume());
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) GAME.onPause(); });
+$('#refBox').innerHTML=G.ref;
+/* modes */
+let mode=store.get(G.store+'_mode'); if(!G.modes[mode]) mode=Object.keys(G.modes)[0];
+$('#modes').innerHTML=Object.entries(G.modes).map(([k,m])=>`<button type="button" class="chip" data-m="${k}">${m.label}</button>`).join('');
+function drawModes(){ $$('#modes .chip').forEach(b=>b.classList.toggle('on',b.dataset.m===mode)); $('#modeTip').textContent=G.modes[mode].tip; }
+$$('#modes .chip').forEach(b=>b.addEventListener('click',()=>{ mode=b.dataset.m; store.set(G.store+'_mode',mode); drawModes(); })); drawModes();
+function genQ(m){ m=m||mode; const list=m==='mix'?Object.keys(G.gens):[m]; return pick(G.gens[pick(list)])(); }
+const HIKEY=G.store+'_hi'; function hiTxt(){ const h=+store.get(HIKEY)||0; $('#hiTxt').textContent=h?`High score on this Chromebook: ${h}`:''; } hiTxt();
+function saveHi(score){ const hi=+store.get(HIKEY)||0; if(score>hi) store.set(HIKEY,score); hiTxt(); return score>hi; }
+function teacherHTML(){ const ex=Object.keys(G.gens).map(k=>{ const q=genQ(k); return q.a==null?`<div class="tq"><b>${G.modes[k].label}</b> (sample): ${q.q}<br><b style="color:var(--ok)">Answer: ${n(q.ans)} ${q.unit}</b> (accepted within ±${Math.round((q.tol||0.03)*100)}%)</div>`:`<div class="tq"><b>${G.modes[k].label}</b> (sample): ${q.q}<ol>${[q.a].concat(q.bad.slice(0,2)).map((o,i)=>`<li class="${i?'':'right'}">${o}</li>`).join('')}</ol></div>`; }).join('');
+  return `<p class="small muted">This game is practice and is not graded. Questions are generated at random, so every game is different. ${G.wrongRule||'A wrong answer never shows the right one: the same question comes back until it is answered correctly.'}</p><h3>How it works</h3><p class="small">${G.how}</p><h3>Modes</h3><ul class="small">${Object.values(G.modes).map(m=>`<li><b>${m.label}:</b> ${m.tip}</li>`).join('')}</ul><h3>Sample questions (the right answer is bold)</h3>${ex}<h3>Reference sheet (also under the game)</h3><div class="small ref">${G.ref}</div>`; }
+/* canvas helpers */
+const cv=$('#cv'), ctx=cv.getContext('2d'); const W=960,H=600;
+let hudK=1; function fit(){ const r=cv.getBoundingClientRect(); if(r.width) hudK=Math.min(2,Math.max(1,560/r.width)); const d=Math.min(2,window.devicePixelRatio||1); const w=Math.round(r.width*d), h=Math.round(r.height*d); if(w&&h&&(cv.width!==w||cv.height!==h)){ cv.width=w; cv.height=h; } }
+window.addEventListener('resize',fit);
+function rr(x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+function wrap(t,maxW,font){ ctx.font=font; const words=String(t).split(' '); const lines=[]; let cur=''; words.forEach(w=>{ const tr=cur?cur+' '+w:w; if(ctx.measureText(tr).width>maxW&&cur){ lines.push(cur); cur=w; } else cur=tr; }); if(cur) lines.push(cur); return lines; }
+function textBox(t,cx,cy,maxW,maxH,size,color,bold){ let s=size, lines; do{ lines=wrap(t,maxW,`${bold?'bold ':''}${s}px Arial`); s--; }while((lines.length*(s+5)>maxH||lines.some(l=>ctx.measureText(l).width>maxW))&&s>10); s++; ctx.fillStyle=color; ctx.textAlign='center'; ctx.textBaseline='middle'; const lh=s+5; lines.forEach((l,i)=>ctx.fillText(l,cx,cy-(lines.length-1)*lh/2+i*lh)); }
+function qPanel(q,top){ ctx.fillStyle='#0e1a33'; ctx.fillRect(0,0,W,top); ctx.fillStyle='#9fb0cf'; ctx.font='13px Arial'; ctx.textAlign='left'; ctx.textBaseline='top'; ctx.fillText(G.qLabel||'Question',16,10); let s=26*Math.min(hudK,1.25), lines; do{ lines=wrap(q,W-260,`bold ${s}px Arial`); s--; }while(lines.length*(s+7)>top-38&&s>13); s++; ctx.fillStyle='#facc15'; ctx.textBaseline='top'; lines.forEach((l,i)=>ctx.fillText(l,16,32+i*(s+7))); }
+let parts=[]; function boom(x,y,col,k){ for(let i=0;i<k;i++){ const a=rnd(0,6.3),s=rnd(40,170); parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:rnd(.3,.8),col}); } }
+function stepParts(dt){ parts.forEach(p=>{ p.x+=p.vx*dt; p.y+=p.vy*dt; p.life-=dt; }); parts=parts.filter(p=>p.life>0); }
+function drawParts(){ parts.forEach(p=>{ ctx.globalAlpha=Math.max(0,Math.min(1,p.life*1.6)); ctx.fillStyle=p.col; ctx.fillRect(p.x-2,p.y-2,4,4); }); ctx.globalAlpha=1; }
+function hud(score,hearts,level,streak){ const k=hudK; ctx.textAlign='right'; ctx.textBaseline='top'; ctx.fillStyle='#e8eefc'; ctx.font=`bold ${18*k}px Arial`; ctx.fillText('Score '+score,W-14,10); ctx.font=`${20*k}px Arial`; ctx.fillStyle='#f87171'; ctx.fillText('♥'.repeat(Math.max(0,hearts)),W-14,14+20*k); ctx.font=`bold ${13*k}px Arial`; ctx.fillStyle='#93c5fd'; ctx.fillText('Level '+level+(streak>=3?`   Streak ×${streak}`:''),W-14,40+24*k); }
+function banner(m,top){ if(m&&performance.now()<m.until){ const k=Math.min(hudK,1.5); ctx.textAlign='center'; ctx.textBaseline='middle'; let s=19*k, lines; do{ lines=wrap(m.t,W-80,`bold ${s}px Arial`); s--; }while(lines.length>2&&s>11); s++; const lh=s+6, bh=lines.length*lh+14; const y0=top!=null?top+12:H-30-bh; ctx.fillStyle='rgba(5,10,20,.85)'; ctx.fillRect(30,y0,W-60,bh); ctx.fillStyle=m.c||'#fde68a'; lines.forEach((l,i)=>ctx.fillText(l,W/2,y0+7+lh/2+i*lh)); } }
+/* ===================== BLASTER ENGINE ===================== */
+const TOP=150, PY=H-58;
+let state='menu', px, cur, tg, shots, debris, hearts, score, streak, rightN, tries, level, msg, lastT, flash, cool, keys={}, nextT, t0;
+function newQ(){ cur=genQ(); spawnWave(); }
+function spawnWave(){ const opts=shuffle([{t:cur.a,ok:true}].concat(shuffle(cur.bad.slice()).slice(0,3).map(t=>({t,ok:false})))); const nn=opts.length, w=Math.min(210,(W-60)/nn-14);
+  tg=opts.map((o,i)=>({...o,x:30+(i+0.5)*(W-60)/nn,y:TOP+50,w,h:72,alive:true,ph:rnd(0,6)})); t0=performance.now(); }
+function vy(){ return (cur.calc?7:12)+level*2.2; }
+function startGame(){ state='play'; px=W/2; shots=[]; debris=[]; parts=[]; hearts=3; score=0; streak=0; rightN=0; tries=0; level=1; flash=null; cool=0; nextT=0; msg={t:G.startMsg||'Shoot the right answer!',until:performance.now()+2000};
+  newQ(); ['#startOv','#overOv','#pauseOv'].forEach(s=>$(s).hidden=true); $('#info').textContent='Mode: '+G.modes[mode].label; fit(); lastT=performance.now(); requestAnimationFrame(loop); }
+function gameOver(){ state='over'; const isHi=saveHi(score);
+  $('#overBody').innerHTML=`<p style="font-size:18px;margin:4px 0">Score: <b>${score}</b>${isHi?' <span style="color:var(--gold)">New high score!</span>':''}</p><p class="muted" style="margin:2px 0">Level reached: <b>${level}</b>. Answers right: <b>${rightN} of ${tries}</b>${tries?` (${Math.round(100*rightN/tries)}%)`:''}.</p><p class="small muted" style="margin-top:8px">${G.overTip||''}</p>`;
+  $('#overOv').hidden=false; }
+GAME.onPause=()=>{ if(state==='play'){ state='paused'; keys={}; $('#pauseOv').hidden=false; } };
+GAME.onResume=()=>{ if(state==='paused'){ state='play'; $('#pauseOv').hidden=true; lastT=performance.now(); requestAnimationFrame(loop); } };
+$('#startBtn').addEventListener('click',startGame); $('#againBtn').addEventListener('click',startGame);
+$('#menuBtn').addEventListener('click',()=>{ $('#overOv').hidden=true; $('#startOv').hidden=false; state='menu'; });
+function fire(){ if(state!=='play'||cool>0) return; shots.push({x:px,y:PY-30}); cool=0.28; }
+document.addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT') return;
+  if(e.code==='KeyP'||e.code==='Escape'){ state==='play'?GAME.onPause():GAME.onResume(); return; }
+  if(state!=='play') return; keys[e.code]=true; if(e.code==='Space'||e.code==='ArrowUp'||e.code==='KeyW'){ fire(); e.preventDefault(); } if(e.code==='ArrowLeft'||e.code==='ArrowRight') e.preventDefault(); });
+document.addEventListener('keyup',e=>{ keys[e.code]=false; });
+cv.addEventListener('pointerdown',e=>{ if(state!=='play') return; const r=cv.getBoundingClientRect(); px=Math.max(40,Math.min(W-40,(e.clientX-r.left)/r.width*W)); cool=0; fire(); });
+$$('.tbtn').forEach(b=>{ const k=b.dataset.k; b.addEventListener('pointerdown',e=>{ e.preventDefault(); if(k==='left') keys.ArrowLeft=true; if(k==='right') keys.ArrowRight=true; if(k==='fire') fire(); if(k==='pause') state==='play'?GAME.onPause():GAME.onResume(); });
+  ['pointerup','pointerleave','pointercancel'].forEach(ev=>b.addEventListener(ev,()=>{ if(k==='left') keys.ArrowLeft=false; if(k==='right') keys.ArrowRight=false; })); });
+function loop(t){ if(state!=='play') return; const dt=Math.min(0.05,(t-lastT)/1000); lastT=t; update(dt); draw(); if(state==='play') requestAnimationFrame(loop); }
+function update(dt){ const sp=520; if(keys.ArrowLeft||keys.KeyA) px-=sp*dt; if(keys.ArrowRight||keys.KeyD) px+=sp*dt; px=Math.max(40,Math.min(W-40,px)); cool=Math.max(0,cool-dt);
+  if(nextT>0){ nextT-=dt; if(nextT<=0) newQ(); }
+  shots.forEach(s=>{ s.y-=620*dt; tg.forEach(g=>{ if(g.alive&&nextT<=0&&Math.abs(s.x-g.x)<g.w/2&&Math.abs(s.y-g.y)<g.h/2){ s.dead=true; hit(g); } }); }); shots=shots.filter(s=>!s.dead&&s.y>TOP);
+  if(nextT<=0) tg.forEach(g=>{ if(g.alive){ g.y+=vy()*dt; g.ph+=dt; } });
+  if(nextT<=0&&tg.some(g=>g.alive&&g.ok&&g.y>PY-70)){ hearts--; streak=0; tries++; flash={c:'rgba(248,113,113,.28)',until:performance.now()+300}; msg={t:'Too slow! The same question comes back. −1 heart',until:performance.now()+2200}; if(hearts<=0){ gameOver(); return; } spawnWave(); }
+  if(level>=2&&Math.random()<dt*0.3*Math.min(3,level-1)) debris.push({x:rnd(40,W-40),y:TOP,v:rnd(150,230)});
+  debris.forEach(d=>{ d.y+=d.v*dt; if(!d.hit&&d.y>PY-24&&d.y<PY+24&&Math.abs(d.x-px)<30){ d.hit=true; hearts--; streak=0; boom(px,PY,'#fca5a5',16); flash={c:'rgba(248,113,113,.3)',until:performance.now()+300}; msg={t:G.hazMsg+' −1 heart',until:performance.now()+1500}; if(hearts<=0) gameOver(); } });
+  debris=debris.filter(d=>!d.hit&&d.y<H+20); stepParts(dt); }
+function hit(g){ g.alive=false; tries++;
+  if(g.ok){ rightN++; streak++; const fast=Math.max(0,Math.round(60-(performance.now()-t0)/1000*4)); score+=(cur.calc?150:100)+Math.min(10,streak)*10+fast; boom(g.x,g.y,'#fde68a',26); flash={c:'rgba(52,211,153,.16)',until:performance.now()+200};
+    tg.forEach(o=>o.alive=false);
+    if(rightN%5===0){ level++; hearts=Math.min(5,hearts+1); msg={t:`Level ${level}! +1 heart. Faster now.`,until:performance.now()+2000}; } else msg={t:pick(['Direct hit!','Correct!','Nice shot!','Yes!']),until:performance.now()+900,c:'#86efac'};
+    nextT=1.0; }
+  else { hearts--; streak=0; boom(g.x,g.y,'#f87171',18); flash={c:'rgba(248,113,113,.28)',until:performance.now()+300}; msg={t:`Not "${g.t}". ${cur.hint||'Keep going on the same question.'} The answers reshuffle.`,until:performance.now()+2800}; if(hearts<=0){ gameOver(); return; } spawnWave(); } }
+function draw(){ const sx=cv.width/W, sy=cv.height/H; ctx.setTransform(sx,0,0,sy,0,0);
+  G.bg(ctx,performance.now()/1000);
+  tg.forEach(g=>{ if(!g.alive) return; G.target(ctx,g.x,g.y+Math.sin(g.ph*2)*3,g.w,g.h); textBox(g.t,g.x,g.y+Math.sin(g.ph*2)*3,g.w-22,g.h-12,19,'#f8fafc',true); });
+  ctx.fillStyle=G.shotColor||'#fde047'; shots.forEach(s=>{ ctx.fillRect(s.x-2.5,s.y-12,5,18); });
+  debris.forEach(d=>G.hazard(ctx,d.x,d.y));
+  G.player(ctx,px,PY); drawParts();
+  ctx.strokeStyle='rgba(248,113,113,.35)'; ctx.setLineDash([8,8]); ctx.beginPath(); ctx.moveTo(0,PY-70); ctx.lineTo(W,PY-70); ctx.stroke(); ctx.setLineDash([]);
+  if(flash&&performance.now()<flash.until){ ctx.fillStyle=flash.c; ctx.fillRect(0,TOP,W,H-TOP); }
+  qPanel(cur.q,TOP); hud(score,hearts,level,streak); banner(msg); }
+(function idle(){ fit(); const sx=cv.width/W, sy=cv.height/H; ctx.setTransform(sx,0,0,sy,0,0); G.bg(ctx,0); G.player(ctx,W/2,PY); })();
+window.__game={get state(){return state;}, get hearts(){return hearts;}, get score(){return score;}, get level(){return level;}, get rightN(){return rightN;}, get tries(){return tries;}, get q(){return cur;},
+  targets:()=>tg, shoot:i=>{ if(tg[i]&&tg[i].alive&&nextT<=0) hit(tg[i]); }, rightIdx:()=>tg.findIndex(g=>g.ok&&g.alive), next:()=>{ if(nextT>0){ nextT=0.0001; update(0.001); } }, genQ};
+
+</script>
+</body>
+</html>

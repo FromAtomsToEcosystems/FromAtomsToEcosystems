@@ -153,6 +153,7 @@ body.key .keyonly{display:block!important}.keyonly{display:none;color:var(--teal
 .c-vi{color:#c3b2ff;font-weight:600}.c-vx{color:#ff8f96;font-weight:600}.c-a{color:#ffab70;font-weight:600}.c-D{color:#ffcf5a;font-weight:600}.c-t{color:#7cc2ff;font-weight:600}.c-vf{color:#3fd6a0;font-weight:600}
 .reqline{font-size:.84rem;color:var(--muted);margin-top:8px}
 </style>
+<style id="nolock">#tEndLock,#endLockBtn,#unlockInfo{display:none!important}</style>
 </head>
 <body>
 <div class="previewbar" id="previewBar" hidden>Preview mode: nothing is saved or sent. Reload to leave preview mode.</div>
@@ -227,7 +228,7 @@ function saveURL() {
   return SAVE_URL_BUILTIN;
 }
 const CLOUD = () => /^https?:/.test(location.protocol);
-const LOCK_ON = /github\.io$/i.test(location.hostname) || new URLSearchParams(location.search).has('lockdown');
+const LOCK_ON = false; // lockdown is used on tests only
 
 /* ================= HELPERS ================= */
 const $ = s => document.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -669,6 +670,14 @@ document.addEventListener('keydown', e => {
 /* ================= START ================= */
 showSign(); if (S.student && S.locked && live()) showLock();
 })();
+</script>
+<script>/* sandbox-safe sign-in: works even where form submissions are blocked (e.g., previews) */
+(function () { document.querySelectorAll('#startForm, #signForm').forEach(f => {
+  const go = () => f.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+  f.requestSubmit = go;
+  f.querySelectorAll('button[type="submit"]').forEach(b => { b.type = 'button'; b.addEventListener('click', go); });
+  f.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName === 'INPUT') { e.preventDefault(); go(); } });
+}); })();
 </script>
 </body>
 </html>

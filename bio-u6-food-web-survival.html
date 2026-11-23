@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Food Web Survival | Biology</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1220;--panel:#121c31;--panel2:#18243d;--line:#2b3a58;--text:#e8eefc;--muted:#9fb0cf;--gold:#facc15;--gold2:#fbbf24;--ok:#34d399;--bad:#f87171;--violet:#a78bfa}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 "Atkinson Hyperlegible",Arial,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:#0e172a}
+header .t{font-weight:800;font-size:17px}
+header .s{color:var(--muted);font-size:13px}
+header .sp{flex:1}
+.btn{font:inherit;font-weight:700;border-radius:10px;padding:9px 16px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--gold);color:#1a1300;border-color:var(--gold)}
+.btn:disabled{opacity:.5;cursor:default}
+main{max-width:1000px;margin:0 auto;padding:14px 16px 30px}
+.stage{position:relative;width:100%;aspect-ratio:16/10;background:#050a14;border:1px solid var(--line);border-radius:14px;overflow:hidden;touch-action:none}
+canvas{display:block;width:100%;height:100%}
+.ov{position:absolute;inset:0;display:flex;background:rgba(5,10,20,.78);padding:14px;overflow:auto}
+.ov>.card{margin:auto}
+#teachOv{position:fixed;z-index:60;background:rgba(5,10,20,.94)}
+.ov[hidden]{display:none}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;max-width:640px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.card h2{margin:0 0 6px;font-size:22px}
+.card h3{margin:12px 0 6px;font-size:15px;color:var(--gold)}
+.muted{color:var(--muted)} .small{font-size:13.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chip{font:inherit;font-size:14px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.chip.on{border-color:var(--gold);background:rgba(250,204,21,.16);font-weight:700}
+.qtag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--violet);margin-bottom:4px}
+.qtext{font-size:18px;margin:4px 0 12px}
+.opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:15.5px}
+.opt:hover:not(:disabled){border-color:var(--gold)}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:13px;font-weight:800}
+.opt.pick{border-color:var(--gold)}
+.fb{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:15.5px}
+.fb.ok{background:rgba(52,211,153,.14);border:1px solid rgba(52,211,153,.5)}
+.fb.no{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.45)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:14px;margin:6px 0}
+.keys b{color:var(--gold)}
+.ladder{display:flex;flex-wrap:wrap;gap:6px;font-size:13px;margin-top:6px}
+.ladder span{padding:3px 8px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}
+.touch{display:none;gap:10px;justify-content:space-between;margin-top:10px;user-select:none;-webkit-user-select:none}
+.touch .grp{display:flex;gap:10px}
+.tbtn{width:64px;height:58px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:22px;font-weight:800;touch-action:none}
+.tbtn.fire{width:110px;background:#3b2a07;border-color:var(--gold);color:var(--gold);font-size:17px}
+.tbtn.on{background:#334155}
+@media (pointer:coarse){.touch{display:flex}}
+@media (max-width:480px){.tbtn{width:52px;height:54px;font-size:20px}.tbtn.fire{width:86px}.touch .grp{gap:7px}.touch{gap:6px}}
+@media (max-width:760px),(max-height:560px){.ov{position:fixed;z-index:50;background:rgba(5,10,20,.92)}}
+body.showtouch .touch{display:flex}
+.info{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:14px;color:var(--muted)}
+.tpanel h3{margin-top:14px}
+.tq{margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font-size:14px}
+.tq ol{margin:4px 0 0;padding-left:22px}
+.tq li.right{color:var(--ok);font-weight:700}
+input.code{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0b1220;color:var(--text);width:180px}
+#printView{display:none}
+@media print{
+  body>*:not(#printView){display:none!important}
+  #printView{display:block!important;color:#000;background:#fff;font:12px/1.4 Arial,sans-serif}
+  #printView h1{font-size:18px;margin:0 0 4px} #printView .pq{break-inside:avoid;margin:8px 0}
+  #printView ol{margin:2px 0 0;padding-left:22px} #printView li.right{font-weight:700;text-decoration:underline}
+  html,body{background:#fff}
+}
+
+.stage{aspect-ratio:auto;min-height:620px;overflow:visible}.fw{padding:12px}.hud{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px;color:var(--muted);margin-bottom:8px}.hud b{color:var(--text)}.fwgrid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:14px;align-items:start}@media (max-width:820px){.fwgrid{grid-template-columns:1fr}}svg.web{width:100%;height:auto;display:block}#panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}.evcard{background:var(--panel2);border:1px solid var(--line);border-left:4px solid #f87171;border-radius:10px;padding:10px 12px}.pq{margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px}.pbtns{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}#panel .opt{margin:6px 0;width:100%}#panel .opt:disabled{opacity:.45;cursor:not-allowed}.node.dead text{opacity:.5}@media print{#printView svg text{fill:#fff}}</style>
+</head>
+<body>
+<header>
+  <div><div class="t">Food Web Survival</div><div class="s">Biology · Unit 6: Ecology · Review game</div></div>
+  <div class="sp"></div>
+  <button class="btn" id="teachBtn" type="button">Teacher</button>
+</header>
+<main>
+  <div class="stage" id="stage">
+    <div class="fw"><div class="hud" id="hud"></div><div class="fwgrid"><div id="web"></div><div id="panel"><p class="muted small">Press Start to begin.</p></div></div></div>
+    <div class="ov" id="startOv"><div class="card"><h2>Food Web Survival</h2><p class="small muted" style="margin:0 0 8px">You are the ranger for a patch of California chaparral. For 10 seasons, something happens each season: a drought, a wildfire, a disease, an invasive weed. <b>Predict</b> how other species will change, then run the season and see if you were right. Right predictions earn <b>eco points</b> you can spend to help struggling species.</p><p class="small"><b>Read the food web:</b> arrows point from the food to the eater. If an animal's <b>food</b> goes down, it usually goes down. If its <b>predators</b> go down, it usually goes up.</p><p class="small muted">If any species drops to zero, the game is over. Keep them all alive!</p><div class="row"><button class="btn primary" id="startBtn" type="button">Start</button><span class="small muted" id="hiTxt"></span></div></div></div>
+    <div class="ov" id="overOv" hidden><div class="card"><h2 id="overTitle">Game over</h2><div id="overBody"></div><div class="row"><button class="btn primary" id="againBtn" type="button">Play again</button><button class="btn" id="menuBtn" type="button">Main menu</button></div></div></div>
+
+    <div class="ov" id="pauseOv" hidden><div class="card" style="max-width:380px;text-align:center"><h2>Paused</h2><p class="muted">Press P or the button to keep playing.</p><button class="btn primary" id="resumeBtn" type="button">Resume</button></div></div>
+  </div>
+
+</main>
+<div class="ov" id="teachOv" hidden>
+  <div class="card tpanel" style="max-width:780px">
+    <h2>Teacher tools</h2>
+    <div id="tLogin"><p class="small muted">Enter the teacher code.</p><div class="row" style="margin-top:4px"><input class="code" id="tCode" type="password" autocomplete="off" aria-label="Teacher code"><button class="btn primary" id="tGo" type="button">Open</button><button class="btn" id="tClose0" type="button">Close</button></div><div class="small" id="tMsg" style="color:var(--bad);margin-top:6px"></div></div>
+    <div id="tBody" hidden>
+      <div class="row"><button class="btn" id="tPrint" type="button">🖨 Print the reference sheet</button><button class="btn" id="tTouch" type="button">Show touch buttons</button><button class="btn" id="tClose" type="button">Close</button></div>
+      <div id="tInfo"></div>
+    </div>
+  </div>
+</div>
+<div id="printView"></div>
+<script>
+const META={"store": "bioU6FoodWeb", "unit": 6};
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const store={ get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+const shuffle=a=>{ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const rnd=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const GAME={onPause:()=>{}, onResume:()=>{}, teacherHTML:()=>'', printHTML:()=>''};
+/* teacher tools (code Teacher007) */
+function tShow(on){ $('#teachOv').hidden=!on; if(on){ GAME.onPause(); $('#tCode').value=''; $('#tMsg').textContent=''; setTimeout(()=>$('#tCode').focus(),30); } }
+$('#teachBtn').addEventListener('click',()=>tShow(true)); $('#tClose0').addEventListener('click',()=>tShow(false));
+$('#tClose').addEventListener('click',()=>{ tShow(false); $('#tBody').hidden=true; $('#tLogin').hidden=false; });
+function tOpen(){ if($('#tCode').value.trim().toLowerCase()!=='teacher007'){ $('#tMsg').textContent='Code not recognized.'; return; } $('#tLogin').hidden=true; $('#tBody').hidden=false; $('#tInfo').innerHTML=GAME.teacherHTML(); }
+$('#tGo').addEventListener('click',tOpen); $('#tCode').addEventListener('keydown',e=>{ if(e.key==='Enter') tOpen(); });
+$('#tTouch').addEventListener('click',()=>document.body.classList.toggle('showtouch'));
+$('#tPrint').addEventListener('click',()=>{ $('#printView').innerHTML=GAME.printHTML(); setTimeout(()=>window.print(),100); });
+$('#resumeBtn').addEventListener('click',()=>GAME.onResume());
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) GAME.onPause(); });
+/* ===================== FOOD WEB SURVIVAL ===================== */
+const SP=[
+ {k:'grass',n:'Grass',e:'🌾',lvl:0,x:190,y:430,prod:true},
+ {k:'shrub',n:'Shrubs',e:'🌿',lvl:0,x:450,y:430,prod:true},
+ {k:'hopper',n:'Grasshopper',e:'🦗',lvl:1,x:80,y:300},
+ {k:'mouse',n:'Mouse',e:'🐁',lvl:1,x:320,y:300},
+ {k:'rabbit',n:'Rabbit',e:'🐇',lvl:1,x:560,y:300},
+ {k:'lizard',n:'Lizard',e:'🦎',lvl:2,x:120,y:170},
+ {k:'snake',n:'Snake',e:'🐍',lvl:2,x:330,y:170},
+ {k:'hawk',n:'Hawk',e:'🦅',lvl:3,x:250,y:45},
+ {k:'fox',n:'Gray fox',e:'🦊',lvl:3,x:520,y:120}];
+const S=Object.fromEntries(SP.map(s=>[s.k,s]));
+/* food → eater, with how much the eater depends on that food */
+const EATS=[['grass','hopper',1],['grass','rabbit',1],['shrub','rabbit',.6],['grass','mouse',.6],['shrub','mouse',.6],
+ ['hopper','lizard',1],['lizard','snake',.5],['mouse','snake',1],['mouse','hawk',1],['snake','hawk',.5],['rabbit','hawk',.6],['lizard','hawk',.3],['rabbit','fox',1],['mouse','fox',.6]];
+const prey=k=>EATS.filter(e=>e[1]===k), preds=k=>EATS.filter(e=>e[0]===k);
+const A=0.6, Bp=0.45, C=0.07, G=0.55, CRIT=15;
+function step(P,env){ const N={};
+  SP.forEach(s=>{ const k=s.k; const pr=preds(k); const predR=pr.length?pr.reduce((a,[f,e,w])=>a+w*P[e],0)/pr.reduce((a,[f,e,w])=>a+w*100,0):1;
+    let ch; if(s.prod){ ch=G*((env[k]||1)-1) - Bp*(predR-1) + C*(100-P[k])/100; }
+    else { const py=prey(k); const foodR=py.reduce((a,[f,e,w])=>a+w*P[f],0)/py.reduce((a,[f,e,w])=>a+w*100,0); ch=A*(foodR-1) - Bp*(predR-1) + C*(100-P[k])/100; }
+    ch=Math.max(-0.7,Math.min(0.8,ch)); let v=P[k]*(1+ch); if(v<3) v=0; N[k]=Math.min(250,v); });
+  return N; }
+function why(P,k,env){ env=env||{}; const s=S[k]; const pr=preds(k), py=prey(k);
+  const predR=pr.length?pr.reduce((a,[f,e,w])=>a+w*P[e],0)/pr.reduce((a,[f,e,w])=>a+w*100,0):1;
+  const foodR=py.length?py.reduce((a,[f,e,w])=>a+w*P[f],0)/py.reduce((a,[f,e,w])=>a+w*100,0):1;
+  const fT=s.prod?0:A*(foodR-1), pT=-Bp*(predR-1), eT=s.prod?G*((env[k]||1)-1):0;
+  if(s.prod&&Math.abs(eT)>=Math.abs(pT)) return eT<0?'the weather this year was bad for plants':'the weather this year was good for plants'; const names=l=>l.map(x=>S[x].n.toLowerCase()).join(' and ');
+  if(Math.abs(fT)>=Math.abs(pT)) return `its food (${names(py.map(e=>e[0]))}) ${foodR<1?'went down':'went up'}`;
+  return `the animals that eat it (${names(pr.map(e=>e[1]))}) ${predR>1?'went up':'went down'}`; }
+const EVENTS=[
+ {id:'drought',t:'Drought',d:'Almost no rain fell this winter. California has droughts often.',hit:{grass:.65,shrub:.85},env:{grass:.6,shrub:.8}},
+ {id:'rain',t:'A very wet winter',d:'Big storms soaked the hills. Plants grew fast this spring.',hit:{grass:1.4,shrub:1.2},env:{grass:1.3,shrub:1.15}},
+ {id:'fire',t:'Wildfire',d:'A wildfire burned through the area. Many shrubs and some animals were lost.',hit:{shrub:.4,grass:.65,rabbit:.8,mouse:.8,lizard:.8},env:{}},
+ {id:'rhd',t:'Rabbit disease',d:'A virus spread through the rabbits (this really happened in California in 2020).',hit:{rabbit:.45},env:{}},
+ {id:'trap',t:'Fox trapping',d:'People trapped many of the gray foxes in the area.',hit:{fox:.45},env:{}},
+ {id:'poison',t:'Rat poison',d:'Nearby farms used rat poison. Many mice died, and some hawks that ate poisoned mice died too.',hit:{mouse:.5,hawk:.8},env:{}},
+ {id:'thistle',t:'Invasive weed',d:'Yellow starthistle, an invasive plant, spread and crowded out the native grass.',hit:{grass:.6},env:{grass:.85}},
+ {id:'spray',t:'Pesticide spraying',d:'A farm sprayed pesticide to kill grasshoppers. Some drifted into this area.',hit:{hopper:.35},env:{}},
+ {id:'nest',t:'Hawk nest boxes',d:'Volunteers put up nest boxes, and more hawks moved in.',hit:{hawk:1.4},env:{}},
+ {id:'calm',t:'A normal year',d:'Nothing unusual happened this year.',hit:{},env:{}}];
+const ACTIONS=[
+ {id:'none',t:'Do nothing this season',c:0,f:P=>{}},
+ {id:'grass',t:'Plant native grass',c:1,f:P=>{ P.grass+=30; }},
+ {id:'shrub',t:'Plant native shrubs',c:1,f:P=>{ P.shrub+=30; }},
+ {id:'fox',t:'Bring in gray foxes from a nearby area',c:2,f:P=>{ P.fox+=35; }},
+ {id:'hawk',t:'Put up hawk nest boxes',c:1,f:P=>{ P.hawk+=25; }},
+ {id:'lizard',t:'Protect lizard habitat (rocks and logs)',c:1,f:P=>{ P.lizard+=25; }},
+ {id:'rabbit',t:'Protect rabbit burrows',c:1,f:P=>{ P.rabbit+=25; }},
+ {id:'snake',t:'Teach neighbors not to kill snakes',c:1,f:P=>{ P.snake+=25; }}];
+const SEASONS=10;
+const HIKEY=META.store+'_hi'; function hiTxt(){ const h=+store.get(HIKEY)||0; $('#hiTxt').textContent=h?`High score on this Chromebook: ${h}`:''; } hiTxt();
+let crit=new Set(), P, season, pts, score, right, asked, phase, ev, next, qs, answers, history, lastEv;
+/* ---------- the food web picture ---------- */
+function webSVG(opts){ opts=opts||{}; let s=`<svg viewBox="0 0 640 580" class="web" role="img" aria-label="Food web. Arrows point from the food to the animal that eats it.">`;
+  s+=`<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="#94a3b8"/></marker></defs>`;
+  EATS.forEach(([f,e])=>{ const a=S[f], b=S[e]; const dx=b.x-a.x, dy=b.y-a.y, L=Math.hypot(dx,dy); const x1=a.x+dx/L*42, y1=a.y+dy/L*42, x2=b.x-dx/L*44, y2=b.y-dy/L*44;
+    const hl=opts.hl&&(opts.hl.includes(f)||opts.hl.includes(e)); s+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${hl?'#facc15':'#94a3b8'}" stroke-width="${hl?3:2}" opacity="${hl?1:.75}" marker-end="url(#ah)"/>`; });
+  SP.forEach(sp=>{ const v=opts.blank?null:P[sp.k]; const dead=v===0, low=v!=null&&v<25; const hot=opts.hit&&opts.hit[sp.k]; const ask=opts.ask&&opts.ask.includes(sp.k);
+    s+=`<g class="node${dead?' dead':''}" data-k="${sp.k}"><circle cx="${sp.x}" cy="${sp.y}" r="38" fill="${dead?'#3f1d1d':ask?'#3b2f0b':'#13213d'}" stroke="${dead?'#f87171':hot?'#f87171':ask?'#facc15':low?'#fb923c':'#3b4f75'}" stroke-width="${hot||ask?4:2}"/>`;
+    s+=`<text x="${sp.x}" y="${sp.y+10}" text-anchor="middle" font-size="34">${sp.e}</text><text x="${sp.x}" y="${sp.y+54}" text-anchor="middle" font-size="14" font-weight="700" fill="#e8eefc">${sp.n}</text>`;
+    if(v!=null){ const w=70, f=Math.min(1,v/200); s+=`<rect x="${sp.x-w/2}" y="${sp.y+60}" width="${w}" height="8" rx="4" fill="#1e293b"/><rect x="${sp.x-w/2}" y="${sp.y+60}" width="${w*f}" height="8" rx="4" fill="${dead?'#f87171':low?'#fb923c':'#34d399'}"/><line x1="${sp.x}" y1="${sp.y+58}" x2="${sp.x}" y2="${sp.y+70}" stroke="#e2e8f0" stroke-width="1"/>`;
+      const d=opts.delta&&opts.delta[sp.k]; s+=`<text x="${sp.x+42}" y="${sp.y-26}" font-size="13" font-weight="700" fill="${dead?'#f87171':'#cbd5e1'}">${dead?'GONE':Math.round(v)+'%'}${d?` <tspan fill="${d>0?'#34d399':'#f87171'}">${d>0?'▲':'▼'}</tspan>`:''}</text>`; }
+    s+='</g>'; });
+  s+=`<g><rect x="20" y="540" width="600" height="30" rx="8" fill="#1a2a1a" stroke="#4d7c0f"/><text x="320" y="560" text-anchor="middle" font-size="13" fill="#bef264">🍄 Decomposers (fungi and bacteria) recycle nutrients from everything that dies.</text></g>`;
+  return s+'</svg>'; }
+/* ---------- game flow ---------- */
+function startGame(){ P=Object.fromEntries(SP.map(s=>[s.k,100])); season=0; pts=1; crit=new Set(); score=0; right=0; asked=0; history=[]; lastEv=null; $('#startOv').hidden=true; $('#overOv').hidden=true; newSeason(); }
+function newSeason(){ season++; if(season>SEASONS) return finish(true);
+  const pool=EVENTS.filter(e=>e.id!==lastEv&&!(e.hit.fox&&P.fox<40)&&!(e.hit.rabbit&&P.rabbit<40)&&!(e.hit.hopper&&P.hopper<40)&&!(e.hit.mouse&&P.mouse<40)&&!(e.hit.grass<1&&P.grass<45));
+  ev=season===1?EVENTS.find(e=>e.id==='drought'):pick(pool); lastEv=ev.id;
+  if(season>=5&&ev.id!=='calm'){ const e2=pick(pool.filter(e=>e.id!==ev.id&&e.id!=='calm'&&!Object.keys(e.hit).some(k=>ev.hit[k]))); if(e2){ const hit={...ev.hit,...e2.hit}, env={...ev.env}; Object.entries(e2.env).forEach(([k,v])=>{ env[k]=(env[k]||1)*v; });
+    ev={id:ev.id+'+'+e2.id,t:`${ev.t} AND ${e2.t.toLowerCase()}`,d:`${ev.d} ${e2.d} (From season 5 on, two things can happen at once.)`,hit,env}; } }
+  const before={...P}; Object.entries(ev.hit).forEach(([k,m])=>{ if(P[k]>0) P[k]=Math.max(3,P[k]*m); });
+  next=step(P,ev.env);
+  const hitK=Object.keys(ev.hit); const cand=SP.map(s=>s.k).filter(k=>!hitK.includes(k)&&P[k]>0).map(k=>({k,d:(next[k]-P[k])/P[k]}));
+  const near=new Set(); hitK.forEach(h=>EATS.forEach(([f,e])=>{ if(f===h) near.add(e); if(e===h) near.add(f); }));
+  const big=cand.filter(c=>Math.abs(c.d)>=0.08).sort((a,b)=>(near.has(b.k)-near.has(a.k))||Math.abs(b.d)-Math.abs(a.d));
+  const same=cand.filter(c=>Math.abs(c.d)<0.03);
+  qs=[]; if(big[0]) qs.push(big[0]); if(big[1]&&(Math.random()<.65||!same.length)) qs.push(big[1]); else if(same.length) qs.push(pick(same));
+  if(!qs.length&&cand.length) qs.push(cand.sort((a,b)=>Math.abs(b.d)-Math.abs(a.d))[0]);
+  qs=qs.map(q=>({k:q.k,ans:Math.abs(q.d)<0.03?'same':q.d>0?'up':'down',d:q.d}));
+  answers={}; phase='predict'; render({hit:ev.hit,ask:qs.map(q=>q.k)},before); }
+function render(o,before){
+  const delta={}; if(before) SP.forEach(s=>{ const d=P[s.k]-before[s.k]; if(Math.abs(d)>=1) delta[s.k]=d; });
+  $('#web').innerHTML=webSVG(Object.assign({delta},o));
+  $('#hud').innerHTML=`<span>Season <b>${Math.min(season,SEASONS)} of ${SEASONS}</b></span><span>Eco points <b>${pts}</b></span><span>Score <b>${score}</b></span><span>Predictions right <b>${right} of ${asked}</b></span>`;
+  const p=$('#panel');
+  if(phase==='predict'){
+    p.innerHTML=`<div class="evcard"><div class="qtag">Season ${season} event</div><h3 style="margin:2px 0 4px;color:var(--text)">${ev.t}</h3><p class="small" style="margin:0">${ev.d}</p>${Object.keys(ev.hit).length?`<p class="small muted" style="margin:6px 0 0">Hit right away: ${Object.entries(ev.hit).map(([k,m])=>`${S[k].n} ${m<1?'▼':'▲'}`).join(', ')}</p>`:''}</div>
+     <h3>Predict next season</h3><p class="small muted" style="margin:0 0 6px">Use the arrows in the food web. Each right prediction earns 1 eco point.</p>`+
+     qs.map((q,i)=>`<div class="pq"><div><b>${S[q.k].e} ${S[q.k].n}</b> will…</div><div class="pbtns">${[['up','increase ▲'],['down','decrease ▼'],['same','stay about the same']].map(([v,l])=>`<button type="button" class="chip" data-q="${i}" data-v="${v}">${l}</button>`).join('')}</div></div>`).join('')+
+     `<div class="row"><button class="btn primary" id="runBtn" type="button" disabled>Run the season</button></div>`;
+    $$('#panel .chip').forEach(b=>b.addEventListener('click',()=>{ answers[b.dataset.q]=b.dataset.v; $$(`#panel .chip[data-q="${b.dataset.q}"]`).forEach(x=>x.classList.toggle('on',x===b)); $('#runBtn').disabled=Object.keys(answers).length<qs.length; }));
+    $('#runBtn').addEventListener('click',runSeason); }
+  else if(phase==='results'){
+    p.innerHTML=`<h3 style="margin-top:0">What happened</h3>`+o.res.map(r=>`<div class="fb ${r.ok?'ok':'no'}" style="margin:6px 0"><b>${S[r.k].e} ${S[r.k].n}: ${r.ok?'Correct!':'Not this time.'}</b> It ${r.ans==='same'?'stayed about the same':r.ans==='up'?'increased':'decreased'}${r.ans==='same'?'.':`, because ${r.why}.`}</div>`).join('')+
+     (crit.size&&!o.lost.length?`<div class="fb no"><b>Critically endangered:</b> ${[...crit].map(k=>S[k].n).join(', ')} (below ${CRIT}%). If it is still below ${CRIT}% after next season, it will disappear from this ecosystem. Help it now!</div>`:'')+
+     (o.lost.length?`<div class="fb no"><b>Gone from this ecosystem:</b> ${o.lost.map(k=>S[k].n).join(', ')}. The ecosystem fell apart.</div>`:'')+
+     (o.lost.length?`<div class="row"><button class="btn primary" id="endBtn" type="button">See results</button></div>`:
+     `<h3>Help the ecosystem</h3><p class="small muted" style="margin:0 0 6px">You have <b>${pts}</b> eco point${pts===1?'':'s'}. Choose one action. Species in <b style="color:#fb923c">orange</b> are below 25%, and below ${CRIT}% is critically endangered.</p>`+
+     o.acts.map(a=>`<button type="button" class="opt act" data-a="${a.id}" ${a.c>pts?'disabled':''}><span class="k">${a.c}</span><span>${a.t}</span></button>`).join(''));
+    if(o.lost.length) $('#endBtn').addEventListener('click',()=>finish(false));
+    $$('#panel .act').forEach(b=>b.addEventListener('click',()=>{ const a=ACTIONS.find(x=>x.id===b.dataset.a); pts-=a.c; a.f(P); SP.forEach(s=>{ P[s.k]=Math.min(250,P[s.k]); }); history.push({season,ev:ev.t,act:a.t}); newSeason(); })); }
+}
+function runSeason(){ const res=qs.map((q,i)=>({k:q.k,ans:q.ans,ok:answers[i]===q.ans,why:why(P,q.k,ev.env)})); asked+=res.length;
+  res.forEach(r=>{ if(r.ok){ right++; pts++; score+=100; } });
+  const before={...P}; P=next; score+=50; const lost=SP.map(s=>s.k).filter(k=>P[k]===0||(P[k]<CRIT&&crit.has(k))); lost.forEach(k=>{ P[k]=0; }); crit=new Set(SP.map(s=>s.k).filter(k=>P[k]>0&&P[k]<CRIT));
+  const acts=[ACTIONS[0]].concat(shuffle(ACTIONS.slice(1).filter(a=>!(a.id==='fox'&&P.fox>150))).sort((a,b)=>(P[a.id]||100)-(P[b.id]||100)).slice(0,3));
+  phase='results'; render({res,lost,acts,hl:qs.map(q=>q.k)},before); }
+function finish(won){ phase='over'; const alive=SP.filter(s=>P[s.k]>0).length; const bio=Math.round(SP.reduce((a,s)=>a+Math.min(P[s.k],100),0)/SP.length);
+  if(won) score+=bio*10; const hi=+store.get(HIKEY)||0; if(score>hi) store.set(HIKEY,score);
+  $('#overTitle').textContent=won?'Your ecosystem survived!':'Game over';
+  $('#overBody').innerHTML=`<p style="font-size:18px;margin:4px 0">Score: <b>${score}</b>${score>hi?' <span style="color:var(--gold)">New high score!</span>':''}</p>
+   <p class="muted" style="margin:2px 0">${won?`All ${SEASONS} seasons done. Species still here: ${alive} of ${SP.length}. Balance bonus: ${bio*10}.`:`You made it to season ${season}.`} Predictions right: <b>${right} of ${asked}</b>.</p>
+   <p class="small">A food web stays healthy when there are many species and many connections. When one species crashes, the animals that eat it and the things it eats change too.</p>`;
+  $('#overOv').hidden=false; hiTxt(); }
+$('#startBtn').addEventListener('click',startGame); $('#againBtn').addEventListener('click',startGame);
+$('#menuBtn').addEventListener('click',()=>{ $('#overOv').hidden=true; $('#startOv').hidden=false; });
+$('#web').innerHTML=webSVG({blank:true});
+GAME.teacherHTML=()=>`<p class="small muted">Practice game, not graded. Students see the right answer only after they commit to a prediction, with the reason (food went up or down, or predators went up or down).</p>
+ <h3>How it works</h3><p class="small">${SEASONS} seasons. Each season an event hits the ecosystem (drought, wildfire, disease, an invasive weed, pesticide, and more). Students predict how 2 other species will change, then run the season. Right predictions earn eco points to spend on actions (plant grass, protect burrows, bring in foxes). If any species reaches 0, the game ends.</p>
+ <h3>The model</h3><p class="small">Each season, an animal's population goes up when its food goes up and down when its predators go up, with a pull back toward normal. Plants follow the weather and are eaten by plant-eaters. Arrows point from the food to the eater.</p>
+ <h3>Events</h3><ul class="small">${EVENTS.map(e=>`<li><b>${e.t}:</b> ${e.d}</li>`).join('')}</ul>`;
+GAME.printHTML=()=>`<h1>Food Web Survival: paper version</h1><div style="max-width:560px">${webSVG({blank:true}).replace('class="web"','class="web" style="background:#0b1220"')}</div>
+ <p>Arrows point from the food to the eater. For each event, predict whether each species will increase, decrease, or stay about the same, and explain why.</p>
+ <table border="1" cellpadding="6" style="border-collapse:collapse;font-size:12px;width:100%"><tr><th>Event</th><th>Species</th><th>Prediction</th><th>Why (food or predators?)</th></tr>${EVENTS.slice(0,6).map(e=>`<tr><td>${e.t}</td><td></td><td></td><td style="width:45%"></td></tr>`).join('')}</table>`;
+GAME.onPause=()=>{}; GAME.onResume=()=>{};
+window.__web={get P(){return P;}, get season(){return season;}, get phase(){return phase;}, get qs(){return qs;}, get pts(){return pts;}, get right(){return right;}, get asked(){return asked;}, get score(){return score;}, step, EVENTS};
+
+</script>
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

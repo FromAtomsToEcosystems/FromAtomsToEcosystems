@@ -887,6 +887,12 @@ const P = [
     model: 'Oxygen has 6 valence electrons. It is much easier to gain 2 electrons than to lose 6, and gaining 2 fills its outer shell to 8, an octet. With 8 protons and 10 electrons, its charge is 2−, so it forms O²⁻.' }
 ];
 P.filter(p => p.type === 'build').forEach(p => { const e = E(p.z), q = ionCharge(p.z); p.q = `Build the Bohr model of the ${ionName(p.z)} ${ionHTML(e.sym, q)}. Atomic number ${p.z}, atomic mass ${e.massStr}.`; });
+
+/* rotate correct-answer positions so the right choice isn't always first (fixed order, so saved work still matches) */
+(function () { let k = 0; P.forEach(p => {
+  if (p.type === 'mc' && Array.isArray(p.opts) && typeof p.a === 'number') { const n = p.opts.length, t = (k * 3 + 1) % n; k++; const o = p.opts.slice(); const c = o.splice(p.a, 1)[0]; o.splice(t, 0, c); p.opts = o; p.a = t; }
+  else if (p.type === 'ms' && Array.isArray(p.opts)) { const n = p.opts.length, r = (k * 2 + 1) % n; k++; p.opts = p.opts.slice(r).concat(p.opts.slice(0, r)); }
+}); })();
 const N = P.length, TOTAL = P.reduce((a, p) => a + p.pts, 0);
 
 /* ---------- state ---------- */

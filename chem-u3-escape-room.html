@@ -228,10 +228,18 @@ function wire(lk) {
   const ti = $('#turnIn'); if (ti) ti.addEventListener('click', turnIn);
 }
 function rerenderPage() { const y = window.scrollY; render(); window.scrollTo(0, y); }
+function lockMatch(ans, raw) {
+  const old = s => norm(s).replace(/[\s,.-]/g, ''), c = s => norm(s).replace(/[\s,]/g, '');
+  const num = s => { const t = c(s), m = t.match(/^-?\d*\.?\d+/); return m ? { n: parseFloat(m[0]), rest: t.slice(m[0].length) } : null; };
+  const rv = num(raw);
+  if (rv) { if (!/^[a-zμ°%/·]*$/.test(rv.rest)) return false;
+    return ans.some(x => { const xv = num(x); return xv && Math.abs(xv.n - rv.n) < 1e-9; }); }
+  return ans.some(x => old(x) === old(raw));
+}
 function tryLock(id) {
   const sec = CFG.sections.find(x => x.id === id), inp = $(`[data-lock="${id}"]`), v = norm(inp.value).replace(/[\s,.-]/g, '');
   const a = S.ans[id] || (S.ans[id] = {}); if (!v) return;
-  if (sec.answer.some(x => norm(x).replace(/[\s,.-]/g, '') === v)) { a.solved = true; a.at = Date.now(); save(); rerenderPage(); toast('Lock opened!');
+  if (lockMatch(sec.answer, inp.value)) { a.solved = true; a.at = Date.now(); save(); rerenderPage(); toast('Lock opened!');
     if (CFG.sections.filter(x => x.type === 'lock').every(x => S.ans[x.id] && S.ans[x.id].solved) && !S.escapedAt) { S.escapedAt = Date.now(); save(); rerenderPage(); } return; }
   a.tries = (a.tries || 0) + 1; save(); inp.classList.remove('shake'); void inp.offsetWidth; inp.classList.add('shake');
   if (a.tries === 2) rerenderPage(); else $('#lm-' + id).innerHTML = `That code didn't open it. Tries so far: ${a.tries}.`;

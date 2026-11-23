@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Enzymes: Practice | Biology Unit 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1626; --panel:#142136; --panel2:#1a2a44; --line:#2a3d5f; --line2:#3a5580;
+  --text:#e8eef8; --muted:#a3b4cf; --dim:#7488a9;
+  --leaf:#5fe3a9; --sun:#ffd35c; --r:#ffd35c; --sky:#45c8f0; --ok:#4ade80; --bad:#fb7185; --pink:#f472b6;
+  --font:'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+*{box-sizing:border-box} [hidden]{display:none !important}
+html,body{margin:0}
+body{background-color:var(--bg); background-image:linear-gradient(rgba(110,150,210,.065) 1px,transparent 1px),linear-gradient(90deg,rgba(110,150,210,.065) 1px,transparent 1px); background-size:32px 32px;
+  color:var(--text); font-family:var(--font); font-size:17px; line-height:1.55; -webkit-user-select:none; user-select:none}
+input,textarea{-webkit-user-select:text; user-select:text}
+h1,h2,h3,h4{margin:0 0 .45em; line-height:1.2; font-weight:600}
+h1{font-size:clamp(28px,4.4vw,40px); font-weight:700} h2{font-size:24px} h3{font-size:19px}
+p{margin:0 0 .75em} .muted{color:var(--muted)} .small{font-size:14px}
+sub,sup{font-size:.72em}
+:focus-visible{outline:3px solid var(--r); outline-offset:2px}
+.top{position:sticky; top:0; z-index:20; background:rgba(13,22,38,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+.top-in{max-width:1100px; margin:0 auto; padding:8px 16px; display:flex; gap:12px; align-items:center}
+.brand{font-weight:600; font-size:15px; white-space:nowrap} .brand span{display:block; font-weight:400; font-size:12px; color:var(--muted)}
+.nav{display:flex; gap:6px; flex:1; overflow-x:auto; padding:3px 2px}
+.ntile{flex:0 0 auto; width:54px; height:54px; border-radius:7px; border:1.5px solid var(--line2); background:var(--panel); color:var(--text); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer; position:relative; font:inherit; padding:0}
+.ntile .ic{color:var(--leaf); line-height:0} .ntile .nm{font-size:8.5px; color:var(--muted)}
+.ntile.cur{border-color:var(--r); background:rgba(255,211,92,.14)}
+.ntile.cur .nm{color:var(--r)}
+.secnav{display:flex; justify-content:space-between; gap:10px; margin-top:4px}
+.ntile.done::after{content:'✓'; position:absolute; top:1px; right:4px; font-size:10px; font-weight:700; color:var(--ok)}
+.scorepill{font-size:13px; padding:4px 10px; border-radius:999px; background:var(--panel2); white-space:nowrap}
+.savenote{font-size:12.5px; color:var(--ok); white-space:nowrap} @media (max-width:1300px){ .savenote{display:none} } @media (max-width:900px){ .scorepill{display:none} }
+main{max-width:1000px; margin:0 auto; padding:20px 16px 80px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin:0 0 18px}
+.sec{scroll-margin-top:80px}
+.sechead{display:flex; gap:14px; align-items:center; margin:28px 0 10px}
+.badge{width:66px; height:66px; border-radius:10px; border:2px solid var(--leaf); background:var(--panel); display:flex; align-items:center; justify-content:center; position:relative; flex:0 0 auto; color:var(--leaf)}
+.badge .z{position:absolute; top:3px; left:6px; font-size:11px; color:var(--muted)}
+.meta{color:var(--muted); font-size:14px}
+.btn{font:inherit; font-weight:600; font-size:15px; border-radius:10px; padding:10px 18px; cursor:pointer; border:1.5px solid transparent}
+.btn.primary{background:var(--r); color:#231a00} .btn.ghost{background:transparent; border-color:var(--line2); color:var(--text)}
+.btn.small{padding:6px 12px; font-size:14px} .btn:disabled{opacity:.45; cursor:not-allowed}
+.btnrow{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:12px}
+.field{display:flex; flex-direction:column; gap:4px; font-size:14px; color:var(--muted)}
+.field input,.field select{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px}
+.formgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin:10px 0}
+.fb{margin-top:10px; padding:10px 14px; border-radius:10px; font-size:15px}
+.fb.ok{background:rgba(74,222,128,.12); color:#c9f7d8} .fb.no{background:rgba(251,113,133,.12); color:#ffd3db} .fb.info{background:var(--panel2)}
+.prob{border-top:1px solid var(--line); padding-top:16px; margin-top:16px}
+.prob:first-of-type{border-top:none; padding-top:0; margin-top:0}
+.pq{font-weight:500; margin-bottom:8px}
+.pnum{display:inline-block; min-width:30px; font-weight:700; color:var(--leaf)}
+.pts{font-size:13px; color:var(--muted); font-weight:400}
+.hintbox{background:rgba(255,211,92,.08); border-left:3px solid var(--r); border-radius:8px; padding:8px 12px; margin-top:8px; font-size:15px}
+/* drag and drop */
+.figwrap{position:relative; width:100%}
+.figwrap svg{width:100%; height:auto; display:block; background:#0a1322; border:1px solid var(--line); border-radius:12px}
+.figwrap svg text{font-family:var(--font)}
+.zone{position:absolute; transform:translate(-50%,-50%); min-height:32px; border:2px dashed #8fb3e6; border-radius:9px; background:rgba(13,22,38,.92); color:var(--text); font:inherit; font-size:14px; font-weight:600; display:flex; align-items:center; justify-content:center; padding:2px 6px; cursor:pointer; text-align:center; line-height:1.15}
+.zone.empty{color:var(--dim); font-weight:400; font-size:12.5px}
+.zone.filled{border-style:solid; border-color:var(--r); background:#2b2410}
+.zone.hot{box-shadow:0 0 0 3px rgba(255,211,92,.5)}
+.zone.locked{opacity:.9}
+.zone.ok{border-color:var(--ok); background:#0f2e1d} .zone.no{border-color:var(--bad); background:#3a0f1a}
+.pool{display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 4px; padding:10px; border:1px dashed var(--line2); border-radius:10px; min-height:52px}
+.pool .lbl{width:100%; font-size:12.5px; color:var(--muted)}
+.chip{font:inherit; font-size:15px; font-weight:600; padding:6px 14px; border-radius:999px; border:1.5px solid var(--line2); background:var(--panel2); color:var(--text); cursor:grab; touch-action:none}
+.chip.sel{border-color:var(--r); background:rgba(255,211,92,.16); box-shadow:0 0 0 3px rgba(255,211,92,.35)}
+.bins{display:grid; gap:10px; margin-top:6px}
+.bin{border:2px dashed var(--line2); border-radius:12px; padding:10px; min-height:96px; cursor:pointer; background:rgba(13,22,38,.5)}
+.bin h4{margin:0 0 8px; font-size:15px; color:var(--leaf)} .bin.hot{border-color:var(--r)}
+.bin .chip{cursor:pointer; margin:3px} .bin .chip.ok{border-color:var(--ok); background:#0f2e1d} .bin .chip.no{border-color:var(--bad); background:#3a0f1a}
+.phenbox{background:rgba(244,114,182,.1); border-left:4px solid #f472b6; border-radius:8px; padding:10px 14px; margin-bottom:14px}
+.fixnote{font-size:12px; color:#ffd3db; font-weight:400}
+/* equation */
+.eq{display:flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:20px; font-weight:600; margin:10px 0}
+.eq .zone{position:static; transform:none; min-width:120px; min-height:40px}
+/* choices */
+.opts{display:grid; gap:8px; margin:6px 0}
+.opt{display:flex; gap:12px; align-items:center; text-align:left; background:var(--panel2); border:1.5px solid var(--line); color:var(--text); border-radius:10px; padding:9px 14px; font:inherit; font-size:16px; cursor:pointer}
+.opt .L{flex:0 0 26px; height:26px; border-radius:50%; display:grid; place-items:center; background:var(--bg); font-weight:600; font-size:13px}
+.opt.multi .L{border-radius:6px}
+.opt.sel{border-color:var(--r); background:rgba(255,211,92,.08)} .opt.sel .L{background:var(--r); color:#231a00}
+.opt.ok{border-color:var(--ok); background:rgba(74,222,128,.1)} .opt.no{border-color:var(--bad); background:rgba(251,113,133,.1)}
+.opt:disabled{cursor:default}
+input.blank{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:7px 10px; font:inherit; font-size:16px; width:170px}
+input.blank.ok{border-color:var(--ok)} input.blank.no{border-color:var(--bad)}
+.brow{margin:8px 0}
+/* answer key (teacher) */
+body.keyon .zone[data-key]::after{content:'key: ' attr(data-key); position:absolute; top:100%; left:50%; transform:translateX(-50%); font-size:11px; color:var(--r); white-space:nowrap; margin-top:2px}
+body.keyon .chip[data-key]::after{content:' → ' attr(data-key); font-size:11px; color:var(--r)}
+body.keyon .opt[data-key]{outline:2px dashed var(--r); outline-offset:2px}
+body.keyon input.blank[data-key]+.keytxt{display:inline}
+.wbank2{margin-top:8px; padding:8px 10px; border:1px dashed rgba(163,180,207,.5); border-radius:10px; font-size:14px; line-height:2}
+.wchip{font:inherit; font-size:14px; margin:2px 4px 2px 0; padding:2px 10px; border-radius:999px; border:1px solid rgba(163,180,207,.6); background:rgba(255,255,255,.06); color:inherit; cursor:pointer}
+.wchip:hover{border-color:#ffd35c}
+.wtext{width:100%; min-height:110px; font:inherit; padding:10px; border-radius:10px; border:1.5px solid var(--line,#2a3d5f); background:rgba(255,255,255,.04); color:inherit; resize:vertical}
+.wkey{display:none; margin-top:6px; font-size:14px; color:var(--r,#ffd35c)}
+body.keyon .wkey{display:block}
+.keytxt{display:none; font-size:12px; color:var(--r); margin-left:6px}
+.big{font-size:52px; font-weight:700; color:var(--r); line-height:1}
+table.res{border-collapse:collapse; width:100%} table.res th,table.res td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line)} table.res th{color:var(--muted); font-weight:400}
+.card.nostore{border:2px solid var(--bad); background:rgba(251,113,133,.08)}
+.overlay{position:fixed; inset:0; background:rgba(4,9,18,.94); z-index:100; display:none; align-items:center; justify-content:center; padding:20px}
+.overlay.show{display:flex}
+.modal{background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:24px; max-width:900px; width:100%; max-height:92vh; overflow:auto}
+input.code{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px; width:200px}
+table.nb{border-collapse:collapse; width:100%; font-size:14px} table.nb th,table.nb td{border:1px solid var(--line2); padding:6px 8px} table.nb th{background:var(--panel2)}
+.wide{overflow-x:auto}
+@media (max-width:700px){ .zone{font-size:11px; min-height:26px} .chip{font-size:13px; padding:5px 10px} }
+@media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important} }
+.prob + p,.prob + .phenbox,.prob + .figwrap{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.figwrap svg{background:#f8fafc}
+
+</style>
+</head>
+<body>
+<header class="top" id="top" hidden>
+  <div class="top-in">
+    <div class="brand">Enzymes worksheet<span id="whoami"></span></div>
+    <nav class="nav" id="nav" aria-label="Worksheet parts"></nav>
+    <span class="scorepill" id="scorePill"></span>
+    <span class="savenote" id="saveNote" aria-live="polite"></span>
+    <button class="btn ghost small" id="teachBtn" type="button">Teacher</button>
+  </div>
+</header>
+
+<main>
+  <section id="start">
+    <div class="muted" style="margin-top:8px">Biology · Unit 1: Homeostasis, Macromolecules, and Enzymes · Worksheet · about 25 minutes</div>
+    <h1>Enzymes: Practice</h1>
+    <p class="muted" style="font-size:18px;max-width:42em">Label energy diagrams and enzyme models, put the steps in order, sort enzymes, substrates, and products, read temperature, pH, and substrate graphs, and explain the pineapple puzzle.</p>
+    <div class="card"><h3>How it works</h3>
+      <p style="margin:0">Each problem gets <b>two tries</b>. Right on either try earns full credit. If your first try is wrong, you'll be told it isn't right yet (but not the answer), so look again and try once more. Wrong twice and the problem is marked wrong and locks. Stuck? Tap <b>Hint</b> before you check.</p></div>
+    <div class="card nostore" id="noStore" hidden><h3>This browser can't save your work</h3><p style="margin:0">You may be in guest or incognito mode. Sign in to your school account and open the worksheet again.</p></div>
+    <div class="card">
+      <h3 id="signinTitle">Sign in to start</h3>
+      <div id="resumeBox" hidden><p id="resumeText"></p>
+        <div class="btnrow"><button class="btn primary" id="resumeBtn" type="button">Continue my worksheet</button><button class="btn ghost small" id="notMeBtn" type="button">Not you? Sign in as a different student</button></div>
+        <div class="fb no" id="resumeErr" hidden></div></div>
+      <div id="startForm">
+        <div class="formgrid">
+          <label class="field">First name<input id="fFirst" autocomplete="off"></label><label class="field">Last name<input id="fLast" autocomplete="off"></label>
+          <label class="field">Student ID<input id="fId" inputmode="numeric" autocomplete="off"></label>
+          <label class="field">Period<select id="fPeriod"></select></label><label class="field">Teacher<select id="fTeacher"></select></label>
+        </div>
+        <p class="small muted">Your work saves as you go. On any Chromebook, sign in with the same student ID and last name to pick up where you left off.</p>
+        <div class="fb no" id="formErr" hidden></div>
+        <div class="btnrow"><button class="btn primary" type="button" id="startBtn">Start the worksheet</button></div>
+      </div>
+    </div>
+    <p style="text-align:center"><button class="btn ghost" id="teacherLink" type="button">Teacher: enter unlock code</button></p>
+  </section>
+  <div id="ws" hidden></div>
+</main>
+
+<div class="overlay" id="teachOv" role="dialog" aria-modal="true" aria-labelledby="tTitle">
+  <div class="modal"><div id="teachLogin"><h2 id="tTitle">Teacher</h2>
+    <div class="btnrow"><input class="code" id="teachCode" type="password" placeholder="Teacher code" autocomplete="off"><button class="btn primary" id="teachGo" type="button">Open</button><button class="btn ghost" id="teachCancel" type="button">Close</button></div>
+    <div class="fb no" id="teachErr" hidden>That code didn't work.</div></div><div id="teachPanel" hidden></div></div>
+</div>
+<div class="overlay" id="tabOv" role="dialog" aria-modal="true"><div class="modal" style="max-width:520px"><h2>This worksheet is open in another tab</h2><p>To keep your newest work safe, this copy stopped saving. Close the extra tab, then reload this one.</p><div class="btnrow"><button class="btn primary" type="button" onclick="location.reload()">Reload with my newest work</button></div></div></div>
+
+<script src="sheets-config.js"></script>
+<script>
+(function(){
+'use strict';
+/* ============================== SETTINGS ============================== */
+const LESSON_TITLE='Enzymes';           // unlock code = last word of this title
+const UNLOCK_CODE=LESSON_TITLE.trim().split(/\s+/).pop();
+const TEACHER_CODE='Teacher007';   // universal teacher-tools code
+const codeIs=(v,c)=>String(v||'').trim().toLowerCase()===String(c).toLowerCase();
+const WS_ID='bio-u1-enzymes-worksheet', ACTIVITY='Enzymes Worksheet';
+const BACKUP_URL='https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const SAVE_URL_BUILTIN='https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';
+const BACKUP_TEACHERS=['Austin','Mueller','McCue','Arce','Trimm','Garcia','Trimm/Callanan','Callanan'], BACKUP_PERIODS=['1','2','3','4','5','6','7','8'];
+const STORE='enzymesWorksheet_v1', RECS='enzymesWorksheet_records_v1';
+/* ===================================================================== */
+const teacherList=()=>{ try{ if(typeof TEACHERS!=='undefined'&&Array.isArray(TEACHERS)&&TEACHERS.length) return TEACHERS.map(String); }catch(e){} return BACKUP_TEACHERS; };
+const periodList=()=>{ try{ if(typeof PERIODS!=='undefined'&&Array.isArray(PERIODS)&&PERIODS.length) return PERIODS.map(String); }catch(e){} return BACKUP_PERIODS; };
+const sheetURL=()=>{ try{ if(typeof SHEETS_WEBHOOK_URL!=='undefined'&&SHEETS_WEBHOOK_URL&&String(SHEETS_WEBHOOK_URL).indexOf('PASTE')<0) return String(SHEETS_WEBHOOK_URL); }catch(e){} return BACKUP_URL; };
+const saveURL=()=>{ try{ if(typeof SAVE_WEBHOOK_URL!=='undefined'&&SAVE_WEBHOOK_URL&&String(SAVE_WEBHOOK_URL).indexOf('PASTE')<0) return String(SAVE_WEBHOOK_URL); }catch(e){} return SAVE_URL_BUILTIN; };
+const LOCKDOWN=false;   // worksheets never lock down
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const strip=s=>String(s).replace(/<[^>]+>/g,'');
+function h(tag,attrs,html){ const e=document.createElement(tag); if(attrs) for(const k in attrs){ if(attrs[k]===false||attrs[k]==null) continue; if(k==='class') e.className=attrs[k]; else if(k==='hidden') e.hidden=!!attrs[k]; else e.setAttribute(k,attrs[k]); } if(html!=null) e.innerHTML=html; return e; }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* ---------- state + saving ---------- */
+function fresh(){ return {ws:WS_ID, student:null, p:{}, ord:{}, locks:0, locked:false, lockOff:false, submittedAt:null, sentAt:null}; }
+let S; try{ S=JSON.parse(localStorage.getItem(STORE)); }catch(e){} if(!S||S.ws!==WS_ID) S=fresh();
+let STORAGE_OK=true, saveBlocked=false;
+try{ localStorage.setItem('__ps_t','1'); STORAGE_OK=localStorage.getItem('__ps_t')==='1'; localStorage.removeItem('__ps_t'); }catch(e){ STORAGE_OK=false; }
+function save(){
+  if(saveBlocked) return;
+  if(S.preview){ note('Preview: nothing is saved'); return; }
+  try{ const raw=localStorage.getItem(STORE); if(raw){ const st=JSON.parse(raw); if(st&&st.ws===WS_ID&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); return; } }
+    S.rev=(S.rev||0)+1; S.updatedAt=Date.now(); localStorage.setItem(STORE,JSON.stringify(S)); note(); cloudSave(false); }catch(e){}
+}
+window.addEventListener('storage',e=>{ if(e.key!==STORE||!e.newValue) return; try{ const st=JSON.parse(e.newValue); if(st&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); } }catch(_){} });
+const saveKey=st=>(String(st.id||'').replace(/\s+/g,'')+'-'+String(st.last||'').toLowerCase().replace(/[^a-z]/g,'')).toLowerCase();
+const checkedCount=st=>Object.values((st||S).p).filter(x=>x&&x.checked).length;
+let cloudTimer=null, cloudDirty=false, cloudBusy=false, cloudAt=null, cloudErr=false;
+const cloudOK=()=>!!saveURL()&&S.student&&!saveBlocked&&!S.preview;
+function cloudBody(){ const st=S.student||{}, sc=scoreAll();
+  return new URLSearchParams({code:saveKey(st), lesson:WS_ID, ver:String(S.updatedAt||Date.now()), prog:String((S.submittedAt?100000:0)+checkedCount(S)), studentId:st.id||'', lastName:st.last||'', firstName:st.first||'', period:st.period||'', teacher:st.teacher||'',
+    summary:S.submittedAt?`Turned in · ${sc.total}/${sc.max}`:`${checkedCount(S)} of ${PROBS.length} problems checked`, data:JSON.stringify(S)}); }
+function cloudSave(soon){ if(!cloudOK()) return; cloudDirty=true; if(soon){ clearTimeout(cloudTimer); cloudTimer=setTimeout(cloudFlush,1200); } else if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); }
+async function cloudFlush(){ cloudTimer=null; if(!cloudOK()||!cloudDirty) return; if(cloudBusy){ cloudTimer=setTimeout(cloudFlush,4000); return; } cloudBusy=true; cloudDirty=false;
+  try{ await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); cloudAt=new Date(); cloudErr=false; }catch(e){ cloudDirty=true; cloudErr=true; if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); } finally{ cloudBusy=false; note(); } }
+function cloudBeacon(){ if(!cloudOK()||!cloudDirty) return; try{ if(navigator.sendBeacon&&navigator.sendBeacon(saveURL(),cloudBody())) cloudDirty=false; }catch(e){} }
+async function cloudLoad(st){ const ctrl=new AbortController(), t=setTimeout(()=>ctrl.abort(),5000);
+  try{ const r=await fetch(saveURL()+'?'+new URLSearchParams({code:saveKey(st),lesson:WS_ID}),{signal:ctrl.signal}); const j=await r.json(); if(j&&j.found&&j.data){ const d=JSON.parse(j.data); if(d&&d.ws===WS_ID) return {status:'found',data:d}; } return {status:'none'}; }
+  catch(e){ return {status:'error'}; } finally{ clearTimeout(t); } }
+function adopt(ns){ let sr=0; try{ const raw=localStorage.getItem(STORE); if(raw) sr=JSON.parse(raw).rev||0; }catch(e){} ns.rev=Math.max(ns.rev||0,sr); S=ns; saveBlocked=false; save(); }
+function note(msg){ const n=$('#saveNote'); if(!n) return; const tm=d=>d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}); n.textContent=msg||(cloudErr?'✓ Saved on this Chromebook':'✓ Saved '+tm(new Date())+(cloudAt?' · backed up '+tm(cloudAt):'')); }
+document.addEventListener('visibilitychange',()=>{ if(document.hidden){ save(); cloudBeacon(); } });
+window.addEventListener('pagehide',()=>{ save(); cloudBeacon(); });
+
+/* ============================== DIAGRAMS ============================== */
+const FIG={};
+
+/* ============================== PROBLEMS ============================== */
+const PARTS=[
+ {k:'P1', label:'Speed up', title:'What enzymes do', min:5, icon:'<path d="M3 20h18"/><path d="M4 18c3 0 4-12 8-12s5 12 8 12" stroke-dasharray="2 2"/><path d="M4 18c3 0 5-6 8-6s5 6 8 6"/>'},
+ {k:'P2', label:'Active site', title:'The active site and the substrate', min:5, icon:'<path d="M4 12c0-5 3-7 5-7l1 3h4l1-3c2 0 5 2 5 7s-4 8-8 8-8-3-8-8z"/>'},
+ {k:'P3', label:'Specific', title:'Each enzyme has one job', min:5, icon:'<rect x="4" y="11" width="16" height="9" rx="3"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'},
+ {k:'P4', label:'Temp and pH', title:'Temperature, pH, and denaturing', min:6, icon:'<path d="M10 14V4a2 2 0 0 1 4 0v10"/><circle cx="12" cy="17.5" r="3.5"/>'},
+ {k:'P5', label:'Explain', title:'Substrate amount and explaining', min:6, icon:'<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>'},
+ {k:'P6', label:'Grade', title:'Your grade', min:1, icon:'<rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4V2.5h6V4"/><path d="M8.5 13l2.5 2.5 4.5-5"/>'}
+];
+const KFIG={"w_energy": "<svg role=\"img\" aria-label=\"An energy diagram with blank label boxes for the reactants, products, and the two activation energies.\" viewBox=\"0 0 560 340\" role=\"img\" aria-label=\"An energy diagram. The reactants start at a medium energy level and the products end lower. Without an enzyme, the reaction must climb a tall hill of activation energy. With an enzyme, the hill is much lower.\"><rect width=\"560\" height=\"340\" rx=\"14\" fill=\"#ffffff\"/><line x1=\"70\" y1=\"292\" x2=\"540\" y2=\"292\" stroke=\"#475569\" stroke-width=\"1.8\"/><line x1=\"70\" y1=\"292\" x2=\"70\" y2=\"22\" stroke=\"#475569\" stroke-width=\"1.8\"/><line x1=\"70.0\" y1=\"292.0\" x2=\"70.0\" y2=\"27.4\" stroke=\"#475569\" stroke-width=\"1.8\"/><path d=\"M70.0,16.0 L63.7,27.4 L76.3,27.4Z\" fill=\"#475569\"/><line x1=\"70.0\" y1=\"292.0\" x2=\"532.6\" y2=\"292.0\" stroke=\"#475569\" stroke-width=\"1.8\"/><path d=\"M544.0,292.0 L532.6,285.7 L532.6,298.3Z\" fill=\"#475569\"/><text x=\"305\" y=\"326\" text-anchor=\"middle\" font-size=\"13.5\" fill=\"#16213a\" font-weight=\"700\">Progress of the reaction</text><text x=\"24\" y=\"161\" transform=\"rotate(-90 24 161)\" text-anchor=\"middle\" font-size=\"13.5\" fill=\"#16213a\" font-weight=\"700\">Energy</text><path d=\"M90,187.2 L170,187.2 C230,187.2 250,56.2 300,56.2 C350,56.2 370,260.6 430,260.6 L520,260.6\" stroke=\"#dc2626\" stroke-width=\"3.6\" fill=\"none\" stroke-dasharray=\"9 6\" stroke-linecap=\"round\"/><path d=\"M90,187.2 L170,187.2 C230,187.2 250,134.8 300,134.8 C350,134.8 370,260.6 430,260.6 L520,260.6\" stroke=\"#15803d\" stroke-width=\"3.8\" fill=\"none\" stroke-linecap=\"round\"/><line x1=\"170\" y1=\"187.2\" x2=\"360\" y2=\"187.2\" stroke=\"#475569\" stroke-width=\"1.3\" stroke-dasharray=\"4 4\"/><line x1=\"214\" y1=\"56.2\" x2=\"300\" y2=\"56.2\" stroke=\"#475569\" stroke-width=\"1.3\" stroke-dasharray=\"4 4\"/><line x1=\"214.0\" y1=\"121.7\" x2=\"214.0\" y2=\"174.0\" stroke=\"#dc2626\" stroke-width=\"2.4\"/><path d=\"M214.0,187.2 L221.3,174.0 L206.7,174.0Z\" fill=\"#dc2626\"/><line x1=\"214.0\" y1=\"121.7\" x2=\"214.0\" y2=\"69.4\" stroke=\"#dc2626\" stroke-width=\"2.4\"/><path d=\"M214.0,56.2 L206.7,69.4 L221.3,69.4Z\" fill=\"#dc2626\"/><line x1=\"300\" y1=\"134.8\" x2=\"352\" y2=\"134.8\" stroke=\"#475569\" stroke-width=\"1.3\" stroke-dasharray=\"4 4\"/><line x1=\"352.0\" y1=\"161.0\" x2=\"352.0\" y2=\"174.0\" stroke=\"#15803d\" stroke-width=\"2.4\"/><path d=\"M352.0,187.2 L359.3,174.0 L344.7,174.0Z\" fill=\"#15803d\"/><line x1=\"352.0\" y1=\"161.0\" x2=\"352.0\" y2=\"148.0\" stroke=\"#15803d\" stroke-width=\"2.4\"/><path d=\"M352.0,134.8 L344.7,148.0 L359.3,148.0Z\" fill=\"#15803d\"/><rect x=\"352\" y=\"16\" width=\"176\" height=\"52\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\"/><line x1=\"364\" y1=\"30\" x2=\"394\" y2=\"30\" stroke=\"#dc2626\" stroke-width=\"3.4\" stroke-dasharray=\"7 5\"/><text x=\"402\" y=\"34\" text-anchor=\"start\" font-size=\"13\" fill=\"#16213a\">without enzyme</text><line x1=\"364\" y1=\"52\" x2=\"394\" y2=\"52\" stroke=\"#15803d\" stroke-width=\"3.4\"/><text x=\"402\" y=\"56\" text-anchor=\"start\" font-size=\"13\" fill=\"#16213a\">with enzyme</text></svg>", "w_energyZ": [{"id": "a", "x": 118, "y": 158, "ans": "reactants", "w": 120}, {"id": "b", "x": 476, "y": 232, "ans": "products", "w": 120}, {"id": "c", "x": 128, "y": 108, "ans": "activation energy without enzyme", "w": 150}, {"id": "d", "x": 446, "y": 146, "ans": "activation energy with enzyme", "w": 150}], "w_site": "<svg role=\"img\" aria-label=\"An enzyme holding a substrate in its pocket, with two sugar rings floating away. Four blank label boxes.\" viewBox=\"0 0 560 300\"><rect width=\"560\" height=\"300\" rx=\"14\" fill=\"#f8fafc\"/><g transform=\"translate(190.0 190.0) scale(1.1)\" opacity=\"1\"><defs><radialGradient id=\"q10ez_25\" cx=\"40%\" cy=\"30%\" r=\"80%\"><stop offset=\"0\" stop-color=\"#d8ccff\"/><stop offset=\".55\" stop-color=\"#8b6be0\"/><stop offset=\"1\" stop-color=\"#4c3399\"/></radialGradient><clipPath id=\"q10ec_26\"><path d=\"M36,-40 C54,-50 66,-54 80,-30 C94,-4 88,44 52,62 C22,78 -22,78 -52,62 C-88,44 -94,-4 -80,-30 C-66,-54 -54,-50 -36,-40 A17,17 0 0 0 -2,-40 L2,-40 A17,17 0 0 0 36,-40 Z\"/></clipPath></defs><ellipse cx=\"0\" cy=\"68\" rx=\"76\" ry=\"10\" fill=\"#000\" opacity=\".22\"/><path d=\"M36,-40 C54,-50 66,-54 80,-30 C94,-4 88,44 52,62 C22,78 -22,78 -52,62 C-88,44 -94,-4 -80,-30 C-66,-54 -54,-50 -36,-40 A17,17 0 0 0 -2,-40 L2,-40 A17,17 0 0 0 36,-40 Z\" fill=\"url(#q10ez_25)\" stroke=\"#4c3399\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/><g clip-path=\"url(#q10ec_26)\" fill=\"none\" stroke-linecap=\"round\"><path d=\"M-70,6 c8,-12 16,12 24,0 s16,12 24,0 s16,12 24,0\" stroke=\"#d8ccff\" stroke-width=\"6\" opacity=\".35\"/><path d=\"M-30,40 c8,-12 16,12 24,0 s16,12 24,0 s16,12 24,0 s16,12 24,0\" stroke=\"#d8ccff\" stroke-width=\"6\" opacity=\".3\"/><path d=\"M-62,34 L-24,58 M40,-8 L74,14\" stroke=\"#4c3399\" stroke-width=\"5\" opacity=\".35\"/><path d=\"M-48,-20 C-30,-30 -60,-36 -40,-46\" stroke=\"#fff\" stroke-width=\"3\" opacity=\".25\"/></g><g transform=\"translate(36 -40) rotate(-62.0)\"><path d=\"M0,0 C2,-9 12,-16 20,-12 C24,-8 18,-2 12,2 Z\" fill=\"#8b6be0\" stroke=\"#4c3399\" stroke-width=\"1.6\"/></g><g transform=\"translate(-36 -40) scale(-1 1) rotate(-62.0)\"><path d=\"M0,0 C2,-9 12,-16 20,-12 C24,-8 18,-2 12,2 Z\" fill=\"#8b6be0\" stroke=\"#4c3399\" stroke-width=\"1.6\"/></g></g><g transform=\"translate(190.0 151.5) scale(1.1)\" opacity=\"1\"><g opacity=\"1.0\"><path d=\"M-5,-6 L0,-3 L5,-6\" stroke=\"#5b3a06\" stroke-width=\"2.4\" fill=\"none\"/><circle cx=\"0\" cy=\"-3\" r=\"3.2\" fill=\"#ef4444\" stroke=\"#7f1d1d\" stroke-width=\".8\"/></g><g transform=\"translate(0.0 0.0)\"><path d=\"M-18.0,-15.0L-5.0,-7.5L-5.0,7.5L-18.0,15.0L-31.0,7.5L-31.0,-7.5Z\" fill=\"#fb923c\" stroke=\"#5b3a06\" stroke-width=\"1.6\" stroke-linejoin=\"round\"/><path d=\"M-18.0,-15.0L-5.0,-7.5L-5.0,7.5L-18.0,15.0L-31.0,7.5L-31.0,-7.5Z\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.8\" opacity=\".25\" transform=\"translate(-1.1 0.0) scale(.94)\"/><circle cx=\"-5.0\" cy=\"-7.5\" r=\"3.0\" fill=\"#ef4444\" stroke=\"#7f1d1d\" stroke-width=\".8\"/></g><g transform=\"translate(0.0 0.0)\"><path d=\"M18.0,-15.0L31.0,-7.5L31.0,7.5L18.0,15.0L5.0,7.5L5.0,-7.5Z\" fill=\"#ffd35c\" stroke=\"#5b3a06\" stroke-width=\"1.6\" stroke-linejoin=\"round\"/><path d=\"M18.0,-15.0L31.0,-7.5L31.0,7.5L18.0,15.0L5.0,7.5L5.0,-7.5Z\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.8\" opacity=\".25\" transform=\"translate(1.1 0.0) scale(.94)\"/><circle cx=\"31.0\" cy=\"-7.5\" r=\"3.0\" fill=\"#ef4444\" stroke=\"#7f1d1d\" stroke-width=\".8\"/></g></g><g transform=\"translate(440.0 100.0) scale(1.1)\" opacity=\"1\"><path d=\"M0.0,-15.0L13.0,-7.5L13.0,7.5L0.0,15.0L-13.0,7.5L-13.0,-7.5Z\" fill=\"#fb923c\" stroke=\"#5b3a06\" stroke-width=\"1.6\" stroke-linejoin=\"round\"/><path d=\"M0.0,-15.0L13.0,-7.5L13.0,7.5L0.0,15.0L-13.0,7.5L-13.0,-7.5Z\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.8\" opacity=\".25\" transform=\"translate(0.0 0.0) scale(.94)\"/><circle cx=\"13.0\" cy=\"-7.5\" r=\"3.0\" fill=\"#ef4444\" stroke=\"#7f1d1d\" stroke-width=\".8\"/></g><g transform=\"translate(500.0 150.0) scale(1.1)\" opacity=\"1\"><path d=\"M0.0,-15.0L13.0,-7.5L13.0,7.5L0.0,15.0L-13.0,7.5L-13.0,-7.5Z\" fill=\"#ffd35c\" stroke=\"#5b3a06\" stroke-width=\"1.6\" stroke-linejoin=\"round\"/><path d=\"M0.0,-15.0L13.0,-7.5L13.0,7.5L0.0,15.0L-13.0,7.5L-13.0,-7.5Z\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.8\" opacity=\".25\" transform=\"translate(0.0 0.0) scale(.94)\"/><circle cx=\"13.0\" cy=\"-7.5\" r=\"3.0\" fill=\"#ef4444\" stroke=\"#7f1d1d\" stroke-width=\".8\"/></g><line x1=\"290.0\" y1=\"140.0\" x2=\"382.9\" y2=\"113.5\" stroke=\"#94a3b8\" stroke-width=\"2.2\"/><path d=\"M395.0,110.0 L381.0,106.8 L384.8,120.1Z\" fill=\"#94a3b8\"/><line x1=\"352.0\" y1=\"256.0\" x2=\"293.4\" y2=\"235.9\" stroke=\"#475569\" stroke-width=\"2\"/><path d=\"M282.0,232.0 L291.2,242.1 L295.5,229.6Z\" fill=\"#475569\"/><line x1=\"352.0\" y1=\"196.0\" x2=\"247.2\" y2=\"154.4\" stroke=\"#475569\" stroke-width=\"2\"/><path d=\"M236.0,150.0 L244.7,160.6 L249.6,148.3Z\" fill=\"#475569\"/><line x1=\"138.0\" y1=\"82.0\" x2=\"160.5\" y2=\"125.3\" stroke=\"#475569\" stroke-width=\"2\"/><path d=\"M166.0,136.0 L166.3,122.3 L154.6,128.4Z\" fill=\"#475569\"/></svg>", "w_siteZ": [{"id": "a", "x": 420, "y": 258, "ans": "enzyme", "w": 130}, {"id": "b", "x": 420, "y": 196, "ans": "active site", "w": 130}, {"id": "c", "x": 100, "y": 66, "ans": "substrate", "w": 130}, {"id": "d", "x": 470, "y": 40, "ans": "products", "w": 130}], "w_temp": "<svg role=\"img\" aria-label=\"A graph of a human enzyme reaction rate vs temperature. It peaks at about 37 \u00b0C and drops to zero by about 55 \u00b0C.\" viewBox=\"0 0 560 320\" role=\"img\" aria-label=\"A graph of a human enzyme's reaction rate at different temperatures. The rate rises slowly from 0 \u00b0C, peaks at about 37 \u00b0C, then drops quickly to zero by about 55 \u00b0C.\"><rect width=\"560\" height=\"320\" rx=\"14\" fill=\"#ffffff\"/><line x1=\"70\" y1=\"268.0\" x2=\"538\" y2=\"268.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"272.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"70\" y1=\"227.0\" x2=\"538\" y2=\"227.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"231.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">20</text><line x1=\"70\" y1=\"186.0\" x2=\"538\" y2=\"186.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"190.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">40</text><line x1=\"70\" y1=\"145.0\" x2=\"538\" y2=\"145.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"149.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">60</text><line x1=\"70\" y1=\"104.0\" x2=\"538\" y2=\"104.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"108.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">80</text><line x1=\"70\" y1=\"63.0\" x2=\"538\" y2=\"63.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"67.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">100</text><line x1=\"70\" y1=\"22.0\" x2=\"538\" y2=\"22.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"26.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\"></text><line x1=\"70.0\" y1=\"268\" x2=\"70.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"70.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"128.5\" y1=\"268\" x2=\"128.5\" y2=\"273\" stroke=\"#475569\"/><text x=\"128.5\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">10</text><line x1=\"187.0\" y1=\"268\" x2=\"187.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"187.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">20</text><line x1=\"245.5\" y1=\"268\" x2=\"245.5\" y2=\"273\" stroke=\"#475569\"/><text x=\"245.5\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">30</text><line x1=\"304.0\" y1=\"268\" x2=\"304.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"304.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">40</text><line x1=\"362.5\" y1=\"268\" x2=\"362.5\" y2=\"273\" stroke=\"#475569\"/><text x=\"362.5\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">50</text><line x1=\"421.0\" y1=\"268\" x2=\"421.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"421.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">60</text><line x1=\"479.5\" y1=\"268\" x2=\"479.5\" y2=\"273\" stroke=\"#475569\"/><text x=\"479.5\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">70</text><line x1=\"538.0\" y1=\"268\" x2=\"538.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"538.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">80</text><defs><clipPath id=\"q12gc_27\"><rect x=\"70\" y=\"14\" width=\"474\" height=\"256\"/></clipPath></defs><g clip-path=\"url(#q12gc_27)\"><path d=\"M70.0,261.3L72.9,260.7L75.8,260.0L78.8,259.2L81.7,258.4L84.6,257.5L87.5,256.6L90.5,255.6L93.4,254.5L96.3,253.4L99.3,252.2L102.2,250.8L105.1,249.4L108.0,248.0L111.0,246.4L113.9,244.7L116.8,243.0L119.7,241.1L122.7,239.1L125.6,237.0L128.5,234.9L131.4,232.6L134.3,230.2L137.3,227.7L140.2,225.0L143.1,222.3L146.1,219.4L149.0,216.5L151.9,213.4L154.8,210.2L157.8,206.9L160.7,203.5L163.6,199.9L166.5,196.3L169.4,192.6L172.4,188.8L175.3,184.9L178.2,180.9L181.2,176.8L184.1,172.7L187.0,168.5L189.9,164.2L192.8,159.9L195.8,155.6L198.7,151.2L201.6,146.8L204.6,142.4L207.5,138.0L210.4,133.6L213.3,129.3L216.3,125.0L219.2,120.7L222.1,116.5L225.0,112.4L227.9,108.3L230.9,104.4L233.8,100.6L236.7,96.9L239.7,93.3L242.6,89.9L245.5,86.6L248.4,83.5L251.3,80.6L254.3,77.9L257.2,75.4L260.1,73.1L263.1,71.0L266.0,69.2L268.9,67.6L271.8,66.2L274.8,65.0L277.7,64.1L280.6,63.5L283.5,63.1L286.4,63.0L289.4,63.6L292.3,65.5L295.2,68.6L298.1,72.9L301.1,78.2L304.0,84.6L306.9,91.8L309.9,99.7L312.8,108.3L315.7,117.4L318.6,126.9L321.6,136.6L324.5,146.3L327.4,156.0L330.3,165.6L333.3,175.0L336.2,184.0L339.1,192.6L342.0,200.7L344.9,208.4L347.9,215.4L350.8,222.0L353.7,227.9L356.6,233.4L359.6,238.2L362.5,242.6L365.4,246.4L368.4,249.8L371.3,252.7L374.2,255.3L377.1,257.4L380.1,259.3L383.0,260.9L385.9,262.2L388.8,263.3L391.8,264.2L394.7,265.0L397.6,265.6L400.5,266.1L403.4,266.5L406.4,266.9L409.3,267.1L412.2,267.3L415.1,267.5L418.1,267.6L421.0,267.7L423.9,267.8L426.9,267.8L429.8,267.9L432.7,267.9L435.6,267.9L438.6,268.0L441.5,268.0L444.4,268.0L447.3,268.0L450.3,268.0L453.2,268.0L456.1,268.0L459.0,268.0L461.9,268.0L464.9,268.0L467.8,268.0L470.7,268.0L473.6,268.0L476.6,268.0L479.5,268.0L482.4,268.0L485.4,268.0L488.3,268.0L491.2,268.0L494.1,268.0L497.1,268.0L500.0,268.0L502.9,268.0L505.8,268.0L508.8,268.0L511.7,268.0L514.6,268.0L517.5,268.0L520.5,268.0L523.4,268.0L526.3,268.0L529.2,268.0L532.1,268.0L535.1,268.0L538.0,268.0\" stroke=\"#7c3aed\" stroke-width=\"3.6\" fill=\"none\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></g><line x1=\"70\" y1=\"268\" x2=\"538\" y2=\"268\" stroke=\"#475569\" stroke-width=\"1.6\"/><line x1=\"70\" y1=\"268\" x2=\"70\" y2=\"16\" stroke=\"#475569\" stroke-width=\"1.6\"/><text x=\"304\" y=\"308\" text-anchor=\"middle\" font-size=\"13.5\" fill=\"#16213a\" font-weight=\"700\">Temperature (\u00b0C)</text><text x=\"18\" y=\"145\" transform=\"rotate(-90 18 145)\" text-anchor=\"middle\" font-size=\"13\" fill=\"#16213a\" font-weight=\"700\">Reaction rate (% of fastest)</text></svg>", "w_ph": "<svg role=\"img\" aria-label=\"A graph of pepsin (peak near pH 2) and trypsin (peak near pH 8).\" viewBox=\"0 0 560 320\" role=\"img\" aria-label=\"A graph of two enzymes at different pH values. Pepsin works fastest near pH 2. Trypsin works fastest near pH 8.\"><rect width=\"560\" height=\"320\" rx=\"14\" fill=\"#ffffff\"/><line x1=\"70\" y1=\"268.0\" x2=\"538\" y2=\"268.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"272.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"70\" y1=\"227.0\" x2=\"538\" y2=\"227.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"231.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">20</text><line x1=\"70\" y1=\"186.0\" x2=\"538\" y2=\"186.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"190.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">40</text><line x1=\"70\" y1=\"145.0\" x2=\"538\" y2=\"145.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"149.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">60</text><line x1=\"70\" y1=\"104.0\" x2=\"538\" y2=\"104.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"108.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">80</text><line x1=\"70\" y1=\"63.0\" x2=\"538\" y2=\"63.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"67.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">100</text><line x1=\"70\" y1=\"22.0\" x2=\"538\" y2=\"22.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"26.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\"></text><line x1=\"70.0\" y1=\"268\" x2=\"70.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"70.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"136.9\" y1=\"268\" x2=\"136.9\" y2=\"273\" stroke=\"#475569\"/><text x=\"136.9\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">2</text><line x1=\"203.7\" y1=\"268\" x2=\"203.7\" y2=\"273\" stroke=\"#475569\"/><text x=\"203.7\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">4</text><line x1=\"270.6\" y1=\"268\" x2=\"270.6\" y2=\"273\" stroke=\"#475569\"/><text x=\"270.6\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">6</text><line x1=\"337.4\" y1=\"268\" x2=\"337.4\" y2=\"273\" stroke=\"#475569\"/><text x=\"337.4\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">8</text><line x1=\"404.3\" y1=\"268\" x2=\"404.3\" y2=\"273\" stroke=\"#475569\"/><text x=\"404.3\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">10</text><line x1=\"471.1\" y1=\"268\" x2=\"471.1\" y2=\"273\" stroke=\"#475569\"/><text x=\"471.1\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">12</text><line x1=\"538.0\" y1=\"268\" x2=\"538.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"538.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">14</text><defs><clipPath id=\"q13gc_28\"><rect x=\"70\" y=\"14\" width=\"474\" height=\"256\"/></clipPath></defs><g clip-path=\"url(#q13gc_28)\"><path d=\"M70.0,225.0L78.4,206.0L86.7,182.9L95.1,156.7L103.4,129.3L111.8,103.4L120.1,82.1L128.5,67.9L136.9,63.0L145.2,67.9L153.6,82.1L161.9,103.4L170.3,129.3L178.6,156.7L187.0,182.9L195.4,206.0L203.7,225.0L212.1,239.6L220.4,250.2L228.8,257.3L237.1,261.9L245.5,264.7L253.9,266.3L262.2,267.2L270.6,267.6L278.9,267.8L287.3,267.9L295.6,268.0L304.0,268.0L312.4,268.0L320.7,268.0L329.1,268.0L337.4,268.0L345.8,268.0L354.1,268.0L362.5,268.0L370.9,268.0L379.2,268.0L387.6,268.0L395.9,268.0L404.3,268.0L412.6,268.0L421.0,268.0L429.4,268.0L437.7,268.0L446.1,268.0L454.4,268.0L462.8,268.0L471.1,268.0L479.5,268.0L487.9,268.0L496.2,268.0L504.6,268.0L512.9,268.0L521.3,268.0L529.6,268.0L538.0,268.0\" stroke=\"#be185d\" stroke-width=\"3.6\" fill=\"none\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><path d=\"M70.0,268.0L78.4,268.0L86.7,268.0L95.1,268.0L103.4,268.0L111.8,268.0L120.1,268.0L128.5,268.0L136.9,268.0L145.2,268.0L153.6,268.0L161.9,268.0L170.3,268.0L178.6,268.0L187.0,267.9L195.4,267.8L203.7,267.6L212.1,267.2L220.4,266.3L228.8,264.7L237.1,261.9L245.5,257.3L253.9,250.2L262.2,239.6L270.6,225.0L278.9,206.0L287.3,182.9L295.6,156.7L304.0,129.3L312.4,103.4L320.7,82.1L329.1,67.9L337.4,63.0L345.8,67.9L354.1,82.1L362.5,103.4L370.9,129.3L379.2,156.7L387.6,182.9L395.9,206.0L404.3,225.0L412.6,239.6L421.0,250.2L429.4,257.3L437.7,261.9L446.1,264.7L454.4,266.3L462.8,267.2L471.1,267.6L479.5,267.8L487.9,267.9L496.2,268.0L504.6,268.0L512.9,268.0L521.3,268.0L529.6,268.0L538.0,268.0\" stroke=\"#c2410c\" stroke-width=\"3.6\" fill=\"none\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></g><text x=\"136.9\" y=\"53.0\" text-anchor=\"middle\" font-size=\"13\" fill=\"#be185d\" font-weight=\"700\">pepsin</text><text x=\"337.4\" y=\"53.0\" text-anchor=\"middle\" font-size=\"13\" fill=\"#c2410c\" font-weight=\"700\">trypsin</text><line x1=\"70\" y1=\"268\" x2=\"538\" y2=\"268\" stroke=\"#475569\" stroke-width=\"1.6\"/><line x1=\"70\" y1=\"268\" x2=\"70\" y2=\"16\" stroke=\"#475569\" stroke-width=\"1.6\"/><text x=\"304\" y=\"308\" text-anchor=\"middle\" font-size=\"13.5\" fill=\"#16213a\" font-weight=\"700\">pH</text><text x=\"18\" y=\"145\" transform=\"rotate(-90 18 145)\" text-anchor=\"middle\" font-size=\"13\" fill=\"#16213a\" font-weight=\"700\">Reaction rate (% of fastest)</text></svg>", "w_sat": "<svg role=\"img\" aria-label=\"A graph of rate vs amount of substrate. It rises fast, then levels off.\" viewBox=\"0 0 560 320\" role=\"img\" aria-label=\"A graph of reaction rate as more substrate is added. The rate rises quickly at first, then levels off.\"><rect width=\"560\" height=\"320\" rx=\"14\" fill=\"#ffffff\"/><line x1=\"70\" y1=\"268.0\" x2=\"538\" y2=\"268.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"272.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"70\" y1=\"227.0\" x2=\"538\" y2=\"227.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"231.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">20</text><line x1=\"70\" y1=\"186.0\" x2=\"538\" y2=\"186.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"190.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">40</text><line x1=\"70\" y1=\"145.0\" x2=\"538\" y2=\"145.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"149.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">60</text><line x1=\"70\" y1=\"104.0\" x2=\"538\" y2=\"104.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"108.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">80</text><line x1=\"70\" y1=\"63.0\" x2=\"538\" y2=\"63.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"67.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">100</text><line x1=\"70\" y1=\"22.0\" x2=\"538\" y2=\"22.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"26.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\"></text><line x1=\"70.0\" y1=\"268\" x2=\"70.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"70.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"148.0\" y1=\"268\" x2=\"148.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"148.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">5</text><line x1=\"226.0\" y1=\"268\" x2=\"226.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"226.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">10</text><line x1=\"304.0\" y1=\"268\" x2=\"304.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"304.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">15</text><line x1=\"382.0\" y1=\"268\" x2=\"382.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"382.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">20</text><line x1=\"460.0\" y1=\"268\" x2=\"460.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"460.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">25</text><line x1=\"538.0\" y1=\"268\" x2=\"538.0\" y2=\"273\" stroke=\"#475569\"/><text x=\"538.0\" y=\"287\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">30</text><defs><clipPath id=\"q14gc_29\"><rect x=\"70\" y=\"14\" width=\"474\" height=\"256\"/></clipPath></defs><g clip-path=\"url(#q14gc_29)\"><path d=\"M70.0,268.0L73.9,245.2L77.8,227.0L81.7,212.1L85.6,199.7L89.5,189.2L93.4,180.1L97.3,172.3L101.2,165.5L105.1,159.5L109.0,154.1L112.9,149.3L116.8,145.0L120.7,141.1L124.6,137.5L128.5,134.3L132.4,131.3L136.3,128.6L140.2,126.1L144.1,123.7L148.0,121.6L151.9,119.6L155.8,117.7L159.7,115.9L163.6,114.3L167.5,112.7L171.4,111.2L175.3,109.9L179.2,108.6L183.1,107.3L187.0,106.2L190.9,105.1L194.8,104.0L198.7,103.0L202.6,102.0L206.5,101.1L210.4,100.3L214.3,99.4L218.2,98.7L222.1,97.9L226.0,97.2L229.9,96.5L233.8,95.8L237.7,95.2L241.6,94.5L245.5,93.9L249.4,93.4L253.3,92.8L257.2,92.3L261.1,91.8L265.0,91.3L268.9,90.8L272.8,90.3L276.7,89.9L280.6,89.5L284.5,89.0L288.4,88.6L292.3,88.2L296.2,87.8L300.1,87.5L304.0,87.1L307.9,86.8L311.8,86.4L315.7,86.1L319.6,85.8L323.5,85.5L327.4,85.2L331.3,84.9L335.2,84.6L339.1,84.3L343.0,84.0L346.9,83.8L350.8,83.5L354.7,83.2L358.6,83.0L362.5,82.8L366.4,82.5L370.3,82.3L374.2,82.1L378.1,81.9L382.0,81.6L385.9,81.4L389.8,81.2L393.7,81.0L397.6,80.8L401.5,80.6L405.4,80.4L409.3,80.3L413.2,80.1L417.1,79.9L421.0,79.7L424.9,79.6L428.8,79.4L432.7,79.2L436.6,79.1L440.5,78.9L444.4,78.8L448.3,78.6L452.2,78.5L456.1,78.3L460.0,78.2L463.9,78.0L467.8,77.9L471.7,77.8L475.6,77.6L479.5,77.5L483.4,77.4L487.3,77.3L491.2,77.1L495.1,77.0L499.0,76.9L502.9,76.8L506.8,76.7L510.7,76.6L514.6,76.4L518.5,76.3L522.4,76.2L526.3,76.1L530.2,76.0L534.1,75.9L538.0,75.8\" stroke=\"#0369a1\" stroke-width=\"3.6\" fill=\"none\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></g><line x1=\"70\" y1=\"268\" x2=\"538\" y2=\"268\" stroke=\"#475569\" stroke-width=\"1.6\"/><line x1=\"70\" y1=\"268\" x2=\"70\" y2=\"16\" stroke=\"#475569\" stroke-width=\"1.6\"/><text x=\"304\" y=\"308\" text-anchor=\"middle\" font-size=\"13.5\" fill=\"#16213a\" font-weight=\"700\">Amount of substrate (units)</text><text x=\"18\" y=\"145\" transform=\"rotate(-90 18 145)\" text-anchor=\"middle\" font-size=\"13\" fill=\"#16213a\" font-weight=\"700\">Reaction rate (% of top speed)</text></svg>"};
+const ico=(i,s)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PARTS[i].icon}</svg>`;
+const PROBS=[];   // every problem: {id, part, max, score(), key()}
+
+function probShell(parent, part, num, q, pts){
+  const box=h('div',{class:'prob'}); parent.appendChild(box);
+  box.innerHTML=`<div class="pq"><span class="pnum">${num}.</span> ${q} <span class="pts">(${pts} pt${pts>1?'s':''})</span></div>`;
+  return box;
+}
+function actions(box, o){ // Hint + Check buttons + feedback
+  const row=h('div',{class:'btnrow'}); const hb=h('button',{class:'btn ghost small',type:'button'},'Hint'); const cb=h('button',{class:'btn primary small',type:'button'},'Check');
+  row.append(hb,cb); box.appendChild(row);
+  const hint=h('div',{class:'hintbox',hidden:true},'💡 '+o.hint); box.appendChild(hint);
+  const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'}); box.appendChild(fb);
+  hb.addEventListener('click',()=>{ hint.hidden=!hint.hidden; });
+  return {row,hb,cb,hint,fb};
+}
+const st=id=>S.p[id]||(S.p[id]={});
+/* Two tries per problem. Right on try 1 or 2 = full credit. Wrong twice = marked wrong (credit for parts right on try 2).
+   The correct answer is never shown. */
+function gradeTry(P,res,max){ const n=res.filter(Boolean).length; P.tries=(P.tries||0)+1;
+  if(n===max){ P.first=max; P.checked=true; P.right=true; }
+  else if(P.tries>=2){ P.first=n; P.checked=true; P.right=false; }
+  return n===max; }
+function showTry(ui,P,max,doneText){
+  if(P.checked&&P.right){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML=`<b>Correct!</b> ${doneText||''}`; }
+  else if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`<b>Marked wrong.</b> You earned ${P.first} of ${max} point${max>1?'s':''}. Ask your teacher if you'd like to try it again.`; }
+  else if(P.tries===1){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=max>1?'<b>Not quite.</b> Something isn\'t right yet. You have <b>one more try</b>.':'<b>Not quite.</b> You have <b>one more try</b>.'; }
+  else ui.fb.hidden=true;
+  if(ui.cb) ui.cb.textContent=P.checked?'Checked':(P.tries===1?'Check (last try)':'Check'); }
+
+/* ---------- drag onto a diagram (or into equation slots) ---------- */
+function dragProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.zones.length);
+  let fig;
+  if(o.equation){ fig=h('div',{class:'eq'}); box.appendChild(fig); }
+  else { fig=h('div',{class:'figwrap'}); fig.innerHTML=o.svg; box.appendChild(fig); }
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.chips.map((_,i)=>i)));
+  const zoneEls={};
+  const groupAns=g=>o.zones.filter(z=>z.group===g).map(z=>z.ans);
+  if(o.equation){ o.layout.forEach(item=>{ if(typeof item==='string'){ fig.appendChild(h('span',null,item)); } else { const z=o.zones[item]; const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans}); fig.appendChild(b); zoneEls[z.id]=b; } }); }
+  else o.zones.forEach(z=>{ const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans});
+    b.style.left=(z.x/o.vb[0]*100)+'%'; b.style.top=(z.y/o.vb[1]*100)+'%'; b.style.width=((z.w||130)/o.vb[0]*100)+'%'; fig.appendChild(b); zoneEls[z.id]=b; });
+  function placedChips(){ return new Set(Object.values(P.place)); }
+  function render(){
+    const used=placedChips();
+    pool.innerHTML='<div class="lbl">Tap a label, then tap a box (or drag it). Tap a filled box to take its label back.</div>';
+    order.forEach(ci=>{ if(used.has(ci)) return; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true'},o.chips[ci]); c.disabled=!!P.checked;
+      c.addEventListener('click',()=>{ sel=sel===ci?null:ci; render(); });
+      c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+      pool.appendChild(c); });
+    if(P.checked&&!pool.querySelector('.chip')) pool.hidden=true;
+    o.zones.forEach(z=>{ const b=zoneEls[z.id]; const ci=P.place[z.id];
+      b.className='zone'+(ci==null?' empty':' filled')+(P.checked?' locked':'');
+      if(ci==null) b.innerHTML=z.ph||'drop here';
+      else b.innerHTML=o.chips[ci];
+      b.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; ui.hb.disabled=!!P.checked&&false;
+    showTry(ui,P,o.zones.length,o.done);
+  }
+  o.zones.forEach(z=>{ const b=zoneEls[z.id];
+    const drop=ci=>{ if(P.checked) return; if(ci==null){ if(P.place[z.id]!=null){ delete P.place[z.id]; save(); render(); } return; }
+      for(const k in P.place) if(P.place[k]===ci) delete P.place[k];
+      P.place[z.id]=ci; sel=null; save(); render(); };
+    b.addEventListener('click',()=>drop(sel));
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  ui.cb.addEventListener('click',()=>{
+    if(P.checked) return;
+    const empty=o.zones.filter(z=>P.place[z.id]==null).length;
+    if(empty){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill every box before you check. ${empty} still empty.`; return; }
+    const res={}; const usedInGroup={};
+    o.zones.forEach(z=>{ const t=o.chips[P.place[z.id]];
+      if(z.group){ const ans=groupAns(z.group); usedInGroup[z.group]=usedInGroup[z.group]||[]; const ok=ans.includes(t)&&!usedInGroup[z.group].includes(t); if(ok) usedInGroup[z.group].push(t); res[z.id]=ok; }
+      else res[z.id]=t===z.ans; });
+    gradeTry(P,Object.values(res),o.zones.length); save(); cloudSave(true); render(); refresh();
+  });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.zones.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- sort into bins ---------- */
+function binProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.items.length);
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const bins=h('div',{class:'bins',style:`grid-template-columns:repeat(${o.bins.length},minmax(0,1fr))`}); box.appendChild(bins);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.items.map((_,i)=>i)));
+  const binEls={};
+  o.bins.forEach(bn=>{ const b=h('div',{class:'bin',role:'button',tabindex:'0'},`<h4>${bn.label}</h4><div class="bchips"></div>`); bins.appendChild(b); binEls[bn.k]=b;
+    const drop=ci=>{ if(P.checked||ci==null) return; P.place[ci]=bn.k; sel=null; save(); render(); };
+    b.addEventListener('click',e=>{ if(e.target.closest('.chip')) return; drop(sel); });
+    b.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); drop(sel); } });
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  const binLabel=k=>(o.bins.find(b=>b.k===k)||{}).label;
+  function chipEl(ci,inBin){ const it=o.items[ci]; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true','data-key':binLabel(it.k)},it.t);
+    
+    c.disabled=!!P.checked;
+    c.addEventListener('click',e=>{ if(P.checked) return; if(inBin){ e.stopPropagation(); if(sel!=null&&sel!==ci){ P.place[sel]=P.place[ci]; sel=null; save(); render(); return; } delete P.place[ci]; save(); render(); return; } sel=sel===ci?null:ci; render(); });
+    c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+    return c; }
+  function render(){
+    pool.innerHTML='<div class="lbl">Tap an item, then tap the box it belongs in (or drag it). Tap a sorted item to take it back.</div>';
+    order.forEach(ci=>{ if(P.place[ci]==null) pool.appendChild(chipEl(ci,false)); });
+    pool.hidden=!!P.checked;
+    o.bins.forEach(bn=>{ const holder=$('.bchips',binEls[bn.k]); holder.innerHTML=''; order.forEach(ci=>{ if(P.place[ci]===bn.k) holder.appendChild(chipEl(ci,true)); }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,o.items.length,o.done);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const left=o.items.filter((_,i)=>P.place[i]==null).length;
+    if(left){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Sort every item before you check. ${left} still left.`; return; }
+    const res=o.items.map((it,i)=>P.place[i]===it.k); gradeTry(P,res,o.items.length); save(); cloudSave(true); render(); refresh(); });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.items.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- choice problems: one, two-part, or select-all ---------- */
+function choiceProblem(parent, o){   // o.parts: [{q, opts, ans (index or array for select-all)}]
+  const P=st(o.id); P.pick=P.pick||{};
+  const max=o.parts.length;
+  const box=probShell(parent,o.part,o.num,o.q,max);
+  const groups=[];
+  o.parts.forEach((pt,pi)=>{
+    const multi=Array.isArray(pt.ans);
+    if(pt.q) box.insertAdjacentHTML('beforeend',`<div style="margin:10px 0 4px">${pt.q}${multi?' <span class="small muted">(Select all that apply.)</span>':''}</div>`);
+    const ordKey=o.id+'_'+pi; const order=S.ord[ordKey]||(S.ord[ordKey]=shuffle(pt.opts.map((_,i)=>i)));
+    const wrap=h('div',{class:'opts'}); box.appendChild(wrap);
+    const btns={};
+    order.forEach((oi,pos)=>{ const correct=multi?pt.ans.includes(oi):oi===pt.ans;
+      const b=h('button',{class:'opt'+(multi?' multi':''),type:'button'},`<span class="L">${'ABCDEF'[pos]}</span><span>${pt.opts[oi]}</span>`); if(correct) b.dataset.key='1';
+      b.addEventListener('click',()=>{ if(P.checked) return; if(multi){ const s=new Set(P.pick[pi]||[]); s.has(oi)?s.delete(oi):s.add(oi); P.pick[pi]=[...s]; } else P.pick[pi]=oi; save(); paint(); });
+      wrap.appendChild(b); btns[oi]=b; });
+    groups.push({pt,multi,btns});
+  });
+  const ui=actions(box,o);
+  function gradePart(g,pi){ const pk=P.pick[pi]; if(g.multi){ const s=new Set(pk||[]); return g.pt.ans.length===s.size&&g.pt.ans.every(a=>s.has(a)); } return pk===g.pt.ans; }
+  function paint(){
+    groups.forEach((g,pi)=>{ const pk=P.pick[pi];
+      Object.entries(g.btns).forEach(([oi,b])=>{ oi=+oi; const picked=g.multi?(pk||[]).includes(oi):pk===oi; const correct=g.multi?g.pt.ans.includes(oi):oi===g.pt.ans;
+        b.className='opt'+(g.multi?' multi':'')+(picked?' sel':'')+(P.checked&&P.right&&picked?' ok':''); b.disabled=!!P.checked; }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,max,o.why);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const blank=groups.some((g,pi)=>g.multi?!(P.pick[pi]||[]).length:P.pick[pi]==null);
+    if(blank){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Answer every part before you check.'; return; }
+    gradeTry(P,groups.map((g,pi)=>gradePart(g,pi)),max); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- typed blanks (two tries, like every problem) ---------- */
+function typedProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.blanks.length);
+  const inputs=o.blanks.map((bl,i)=>{ const row=h('div',{class:'brow'}); row.innerHTML=`${bl.before} <input class="blank" type="text" aria-label="${esc(strip(bl.before))}" data-key="${esc(bl.show)}"><span class="keytxt">${bl.show}</span> ${bl.after||''}`; box.appendChild(row);
+    const inp=$('input',row); inp.value=P.val[i]||''; inp.addEventListener('input',()=>{ P.val[i]=inp.value; save(); }); return inp; });
+  const ui=actions(box,o);
+  const ok=(bl,v)=>{ v=String(v||'').trim().toLowerCase(); if(bl.num){ const n=parseFloat(v.replace(/[^0-9.]/g,'')); return !isNaN(n)&&n>=bl.num[0]&&n<=bl.num[1]; } return bl.accept.some(a=>v.replace(/\s+/g,' ')===a); };
+  function paint(){ inputs.forEach(inp=>{ inp.classList.remove('ok','no'); if(P.checked&&P.right) inp.classList.add('ok'); inp.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; showTry(ui,P,o.blanks.length,''); }
+  ui.cb.addEventListener('click',()=>{
+    if(inputs.some(inp=>!inp.value.trim())){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Fill in every blank before you check.'; return; }
+    if(P.checked) return;
+    const res=o.blanks.map((bl,i)=>ok(bl,inputs[i].value));
+    gradeTry(P,res,o.blanks.length); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.blanks.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- written answer, scored by key ideas (two tries, like every problem) ---------- */
+function writtenProblem(parent, o){
+  const P=st(o.id); if(P.val==null) P.val='';
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const ta=h('textarea',{class:'wtext',rows:'5','aria-label':'Your answer','data-key':o.model}); ta.value=P.val; box.appendChild(ta);
+  box.appendChild(h('div',{class:'wkey'},'<b>Key:</b> '+o.model));
+  if(o.bank){ const wb=h('div',{class:'wbank2'}); wb.innerHTML='<b>Word bank</b> <span class="small muted">(tap a word to add it)</span><br>'+o.bank.map(w=>`<button type="button" class="wchip">${w}</button>`).join('');
+    box.appendChild(wb);
+    wb.querySelectorAll('.wchip').forEach(c=>c.addEventListener('click',()=>{ if(ta.disabled) return; const w=c.textContent; const a=ta.selectionStart??ta.value.length, b=ta.selectionEnd??ta.value.length;
+      const before=ta.value.slice(0,a), after=ta.value.slice(b); const pre=(before&&!/\s$/.test(before))?' ':''; const ins=pre+w+' ';
+      ta.value=before+ins+after; ta.focus(); const p=a+ins.length; ta.setSelectionRange(p,p); ta.dispatchEvent(new Event('input',{bubbles:true})); })); }
+  ta.addEventListener('input',()=>{ P.val=ta.value; save(); });
+  const ui=actions(box,o);
+  const grade=()=>{ const t=ta.value.toLowerCase(); const hits=o.groups.filter(g=>g[1].test(t)).length; const n=Math.min(o.pts,hits); return Array.from({length:o.pts},(_,i)=>i<n); };
+  function paint(){ ta.disabled=!!P.checked; ui.cb.disabled=!!P.checked; showTry(ui,P,o.pts,o.why); }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(ta.value.trim().split(/\s+/).length<5){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Write a full answer (at least one complete sentence) before you check.'; return; }
+    gradeTry(P,grade(),o.pts); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ============================== WORKSHEET CONTENT ============================== */
+function buildContent(sec){
+  let n=0; const num=()=>++n;
+  const say=(s,html)=>s.insertAdjacentHTML('beforeend',html);
+  const fig=(k,cap)=>`<div class="figwrap" style="margin:10px 0">${KFIG[k]}${cap?`<div class="small muted" style="margin-top:4px">${cap}</div>`:''}</div>`;
+  /* ---------------- 1 ---------------- */
+  say(sec[0],`<div class="phenbox"><b>Remember:</b> an enzyme is a protein that speeds up a reaction by lowering the activation energy. It is not used up.</div>`);
+  dragProblem(sec[0],{id:'w1', part:'P1', num:num(), q:'Label the energy diagram. Drag a label into each box.', svg:KFIG.w_energy, vb:[560,340], zones:KFIG.w_energyZ,
+    chips:['reactants','products','activation energy without enzyme','activation energy with enzyme','substrate'],
+    hint:'The reaction goes from left to right. The tall arrow goes with the dashed curve. One label is not used.', done:'Reactants on the left, products on the right. The enzyme makes the hill lower.'});
+  binProblem(sec[0],{id:'w2', part:'P1', num:num(), q:'Is each statement about enzymes true or false?',
+    bins:[{k:'t',label:'True'},{k:'f',label:'False'}],
+    items:[{t:'Enzymes are proteins',k:'t'},{t:'Enzymes speed up reactions',k:'t'},{t:'One enzyme can be used again and again',k:'t'},{t:'Enzymes are used up in a reaction',k:'f'},{t:'Enzymes add energy to a reaction',k:'f'},{t:'Enzymes raise the activation energy',k:'f'}],
+    hint:'Think about the hill on the energy diagram, and the last step of the lactase animation.', done:'Enzymes are reusable proteins that lower the activation energy.'});
+  choiceProblem(sec[0],{id:'w3', part:'P1', num:num(), q:'Two-part question.',
+    parts:[{q:'<b>Part A:</b> A reaction needs 80 units of activation energy without an enzyme. With the enzyme, which is most likely?',opts:['30 units','80 units','120 units','200 units'],ans:0},
+           {q:'<b>Part B:</b> Compared to the reaction without an enzyme, the products made with the enzyme are...',opts:['the same products','different products','more energy-rich products','enzyme molecules'],ans:0}],
+    hint:'An enzyme lowers the hill. It doesn\'t change where the reaction ends.', why:'The enzyme lowers the activation energy, and the products are the same.'});
+  /* ---------------- 2 ---------------- */
+  dragProblem(sec[1],{id:'w4', part:'P2', num:num(), q:'Label the model. Drag a label into each box.', svg:KFIG.w_site, vb:[560,300], zones:KFIG.w_siteZ,
+    chips:['enzyme','active site','substrate','products','activation energy'],
+    hint:'The big folded protein is the enzyme. The molecule in its pocket is the substrate. The pieces floating away are new. One label is not used.', done:'The substrate sits in the enzyme\'s active site. The products float away.'});
+  dragProblem(sec[1],{id:'w5', part:'P2', num:num(), q:'Put the steps in order. Drag a step into each box.', equation:true,
+    layout:['1.',0,'→ 2.',1,'→ 3.',2,'→ 4.',3],
+    zones:[{id:'a',ans:'substrate fits the active site'},{id:'b',ans:'active site hugs it (induced fit)'},{id:'c',ans:'a bond breaks'},{id:'d',ans:'products leave; enzyme reused'}],
+    chips:['substrate fits the active site','active site hugs it (induced fit)','a bond breaks','products leave; enzyme reused','enzyme is used up'],
+    hint:'First the substrate has to get into the enzyme. The enzyme is never used up. One step is not used.', done:'Fit, hug, break, release and reuse.'});
+  choiceProblem(sec[1],{id:'w6', part:'P2', num:num(), q:'What is the <b>enzyme-substrate complex</b>?',
+    parts:[{q:'',opts:['The enzyme and substrate joined together while the reaction happens','The products after they leave','An enzyme that has been denatured','Two enzymes stuck together'],ans:0}],
+    hint:'Complex means joined together.', why:'It is the enzyme holding its substrate in the active site.'});
+  /* ---------------- 3 ---------------- */
+  binProblem(sec[2],{id:'w7', part:'P3', num:num(), q:'Sort each molecule. Some are new to you: use the <b>-ase</b> clue.',
+    bins:[{k:'e',label:'Enzyme'},{k:'s',label:'Substrate'},{k:'p',label:'Product'}],
+    items:[{t:'Sucrase',k:'e'},{t:'Lipase',k:'e'},{t:'Sucrose (table sugar)',k:'s'},{t:'Fat',k:'s'},{t:'Glucose and fructose (from sucrose)',k:'p'},{t:'Fatty acids and glycerol (from fat)',k:'p'}],
+    hint:'Enzyme names usually end in -ase. The substrate is what goes in. The products are the smaller pieces that come out.', done:'Sucrase breaks sucrose into glucose and fructose. Lipase breaks fat into fatty acids and glycerol.'});
+  typedProblem(sec[2],{id:'w8', part:'P3', num:num(), q:'Name the enzyme. Type one word.',
+    blanks:[{before:'The enzyme that breaks down maltose is called',after:'',accept:['maltase'],show:'maltase'},{before:'The enzyme that breaks down lactose is called',after:'',accept:['lactase'],show:'lactase'}],
+    hint:'Take the substrate name, drop the -ose, and add -ase.'});
+  choiceProblem(sec[2],{id:'w9', part:'P3', num:num(), q:'Two-part question.',
+    parts:[{q:'<b>Part A:</b> Why can\'t catalase break down starch?',opts:['Starch doesn\'t fit catalase\'s active site','Catalase is used up','Starch is a protein','Catalase only works in the cold'],ans:0},
+           {q:'<b>Part B:</b> Lactose-free milk is made by adding which enzyme to milk?',opts:['Lactase','Amylase','Catalase','Pepsin'],ans:0}],
+    hint:'Enzymes are specific. Which enzyme fits lactose?', why:'Each active site fits one substrate. Lactase is added to split the lactose ahead of time.'});
+  /* ---------------- 4 ---------------- */
+  say(sec[3],fig('w_temp','A human enzyme at different temperatures.'));
+  typedProblem(sec[3],{id:'w10', part:'P4', num:num(), q:'Read the temperature graph.',
+    blanks:[{before:'Optimum temperature: about',after:'°C',num:[35,40],show:'37'},{before:'Reaction rate at 20 °C: about',after:'% of fastest',num:[44,56],show:'50'},{before:'Reaction rate at 60 °C: about',after:'% of fastest',num:[0,2],show:'0'}],
+    hint:'Find each temperature on the bottom axis. Go straight up to the curve, then across to the rate.'});
+  say(sec[3],fig('w_ph','Two digestive enzymes at different pH values.'));
+  choiceProblem(sec[3],{id:'w11', part:'P4', num:num(), q:'Use the pH graph. Two-part question.',
+    parts:[{q:'<b>Part A:</b> Which enzyme would work in the stomach (about pH 2)?',opts:['Pepsin','Trypsin','Both work equally','Neither'],ans:0},
+           {q:'<b>Part B:</b> Why does trypsin stop working at pH 2?',opts:['The wrong pH changes its shape, so the substrate no longer fits','It is used up by the acid','It works faster in acid','It is too cold'],ans:0}],
+    hint:'Find pH 2 on the graph. Which curve is high there?', why:'Pepsin peaks near pH 2. Far from its best pH, trypsin\'s shape changes.'});
+  binProblem(sec[3],{id:'w12', part:'P4', num:num(), q:'What happens to a <b>human</b> enzyme in each situation?',
+    bins:[{k:'d',label:'Denatured (shape ruined)'},{k:'s',label:'Slowed, but not damaged'},{k:'b',label:'Works at its best'}],
+    items:[{t:'Heated to 75 °C',k:'d'},{t:'Boiled in a pot',k:'d'},{t:'Cooled to 10 °C',k:'s'},{t:'Kept in a freezer',k:'s'},{t:'Kept at 37 °C at its best pH',k:'b'},{t:'Inside a healthy person\'s body',k:'b'}],
+    hint:'Heat ruins shape. Cold only slows. Homeostasis keeps the body near 37 °C.', done:'Too hot denatures; cold slows; body conditions are just right.'});
+  /* ---------------- 5 ---------------- */
+  say(sec[4],fig('w_sat','Reaction rate as more substrate is added.'));
+  typedProblem(sec[4],{id:'w13', part:'P5', num:num(), q:'Read the substrate graph.',
+    blanks:[{before:'Rate with 5 units of substrate: about',after:'% of top speed',num:[66,76],show:'71'},{before:'Rate with 30 units of substrate: about',after:'% of top speed',num:[90,97],show:'94'}],
+    hint:'Find the substrate amount on the bottom axis. Go up to the curve, then across.'});
+  choiceProblem(sec[4],{id:'w14', part:'P5', num:num(), q:'The graph has leveled off. Select <b>all</b> the true statements.',
+    parts:[{q:'',opts:['Almost every active site is busy','Adding more enzyme would make it faster','Adding more substrate will make it much faster','The enzymes are used up'],ans:[0,1]}],
+    hint:'Each enzyme holds one substrate at a time.', why:'The active sites are full, so only more enzyme raises the top speed.'});
+  writtenProblem(sec[4],{id:'w15', part:'P5', num:num(), q:'Explain why fresh pineapple keeps gelatin from setting, but canned pineapple does not. Use <b>enzyme</b>, <b>protein</b>, and <b>denature</b>.', pts:3,
+    bank:['enzyme','bromelain','protein','gelatin','substrate','active site','heat','denature','shape','canned','breaks down'],
+    groups:[['bromelain is an enzyme in fresh pineapple',/enzyme|bromelain/],['it breaks down gelatin protein (its substrate)',/protein|gelatin|substrate|break|cut/],['canning heats it and denatures it / changes its shape',/denatur|heat|hot|cook|shape|can/]],
+    model:'Fresh pineapple has an enzyme called bromelain. Its substrate is protein, so it breaks the gelatin protein into small pieces that can\'t tangle into a net, and the gelatin stays runny. Canned pineapple is heated, which denatures bromelain. Its shape is ruined, so it can\'t break down the gelatin, and the gelatin sets.',
+    hint:'Cover three ideas: what is in fresh pineapple, what it does to gelatin, and what heat from canning does.', why:'Bromelain breaks down gelatin protein; heat in canning denatures it.'});
+}
+
+/* ============================== BUILD / SCORE ============================== */
+function scoreAll(){ const parts=PARTS.slice(0,-1).map(p=>({k:p.k,label:p.label,got:0,max:0})); PROBS.forEach(pr=>{ const pt=parts.find(x=>x.k===pr.part); pt.got+=pr.score(); pt.max+=pr.max; });
+  return {parts, total:parts.reduce((a,b)=>a+b.got,0), max:parts.reduce((a,b)=>a+b.max,0)}; }
+function build(){
+  PROBS.length=0; const ws=$('#ws'); ws.innerHTML='';
+  $('#nav').innerHTML=PARTS.map((pt,i)=>`<button class="ntile" type="button" data-i="${i}" aria-label="${pt.title}"><span class="ic">${ico(i,22)}</span><span class="nm">${pt.label}</span></button>`).join('');
+  $$('#nav .ntile').forEach(b=>b.addEventListener('click',()=>showPart(+b.dataset.i)));
+  const secs=PARTS.map((pt,i)=>{ const el=h('section',{class:'sec',id:'part'+i}); const last=i===PARTS.length-1;
+    el.innerHTML=`<div class="sechead"><div class="badge"><span class="z">${i+1}</span>${ico(i,34)}</div><div><div class="meta">${last?'Grade':`Section ${i+1} of ${PARTS.length-1} · about ${pt.min} min`}</div><h2>${pt.title}</h2></div></div>`;
+    const c=h('div',{class:'card'}); el.appendChild(c);
+    const nav=h('div',{class:'secnav'});
+    const back=h('button',{class:'btn ghost',type:'button'},i===0?'':'← Back'); if(i===0) back.style.visibility='hidden'; back.addEventListener('click',()=>showPart(i-1));
+    nav.appendChild(back);
+    if(!last){ const nx=h('button',{class:'btn primary',type:'button'},i===PARTS.length-2?'See my grade →':`Next: ${PARTS[i+1].title} →`); nx.addEventListener('click',()=>showPart(i+1)); nav.appendChild(nx); }
+    el.appendChild(nav); ws.appendChild(el); return c; });
+  buildContent(secs);
+  secs[PARTS.length-1].id='turnin';
+  showPart(Math.min(S.cur||0,PARTS.length-1),true);
+  $('#whoami').textContent=S.student?`${S.student.first} ${S.student.last}`:''; refresh();
+}
+function showPart(i,noScroll){
+  S.cur=i; $$('#ws .sec').forEach((el,j)=>el.hidden=j!==i);
+  $$('#nav .ntile').forEach((t,j)=>t.classList.toggle('cur',j===i));
+  if(!noScroll){ save(); window.scrollTo(0,0); }
+}
+function refresh(){
+  const sc=scoreAll(), done=PROBS.filter(p=>p.checked()).length;
+  $('#scorePill').textContent=`${done}/${PROBS.length} checked · ${sc.total}/${sc.max} pts`;
+  PARTS.slice(0,-1).forEach((pt,i)=>{ const t=$(`#nav .ntile[data-i="${i}"]`); if(t) t.classList.toggle('done',PROBS.filter(p=>p.part===pt.k).every(p=>p.checked())); });
+  const t7=$(`#nav .ntile[data-i="${PARTS.length-1}"]`); if(t7) t7.classList.toggle('done',!!S.submittedAt);
+  const c=$('#turnin'); if(!c) return;
+  const rows=sc.parts.map(p=>`<tr><th>${p.label}</th><td>${p.got} / ${p.max}</td></tr>`).join('');
+  c.innerHTML=`<div style="display:flex;gap:22px;align-items:center;flex-wrap:wrap"><div class="big">${sc.total}/${sc.max}</div><div><h3 style="margin:0">${esc(S.student?S.student.first+' '+S.student.last:'')}</h3><p class="muted" style="margin:0">${done} of ${PROBS.length} problems checked</p></div></div>
+    <table class="res" style="margin-top:12px">${rows}</table>
+    <p class="small muted" style="margin-top:10px">Problems you haven't checked count as 0. You can turn in again later; your teacher sees the newest one.</p>
+    <div class="btnrow"><button class="btn primary" id="subBtn" type="button">${S.submittedAt?'Turn in again':'Turn in my worksheet'}</button><button class="btn ghost" id="csvBtn" type="button">Download CSV</button></div>
+    <p class="fb info sheetStatus" aria-live="polite">${S.sentAt?`Sent to your teacher ${new Date(S.sentAt).toLocaleString()}.`:'Not turned in yet.'}</p>`;
+  $('#subBtn').addEventListener('click',turnIn);
+  $('#csvBtn').addEventListener('click',()=>downloadCSV([recordRow()],`EnzymesWorksheet_${(S.student&&S.student.last||'student').replace(/\W+/g,'')}.csv`));
+}
+const CSV_HEAD=['Student ID','Last Name','First Name','Period','Teacher','Activity','Score','Total','Percent',...PARTS.slice(0,-1).map(p=>p.label),'Date'];
+function recordRow(){ const st=S.student||{}, sc=scoreAll(); return [st.id||'',st.last||'',st.first||'',st.period||'',st.teacher||'',ACTIVITY,sc.total,sc.max,Math.round(100*sc.total/sc.max)+'%',...sc.parts.map(p=>p.got),new Date(S.submittedAt||Date.now()).toLocaleString()]; }
+function csvText(rows){ const q=v=>{ v=String(v==null?'':v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }; return [CSV_HEAD,...rows].map(r=>r.map(q).join(',')).join('\r\n')+'\r\n'; }
+function downloadCSV(rows,name){ const b=new Blob([csvText(rows)],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500); }
+const loadRecs=()=>{ try{ return (JSON.parse(localStorage.getItem(RECS))||[]).filter(r=>r.length===CSV_HEAD.length); }catch(e){ return []; } };
+function saveRecord(){ if(S.preview) return; const recs=loadRecs(), row=recordRow(); const i=recs.findIndex(r=>r[0]===row[0]&&r[1]===row[1]); if(i>=0) recs[i]=row; else recs.push(row); try{ localStorage.setItem(RECS,JSON.stringify(recs)); }catch(e){} }
+function turnIn(){
+  const left=PROBS.filter(p=>!p.checked()).length;
+  if(left&&!confirm(`${left} problem${left>1?'s':''} not checked yet (they count as 0). Turn in anyway?`)) return;
+  S.submittedAt=Date.now(); save(); saveRecord(); cloudSave(true); disarm(); refresh();
+  const msg=t=>$$('.sheetStatus').forEach(e=>e.textContent=t);
+  if(S.preview){ msg('Preview mode: nothing is sent.'); return; }
+  const st=S.student, sc=scoreAll();
+  const body={studentId:st.id||'',firstName:st.first||'',lastName:st.last||'',period:st.period||'',teacher:st.teacher||'',locks:'0',when:new Date().toString(),activity:ACTIVITY,score:String(sc.total),total:String(sc.max),
+    qlabels:sc.parts.map((p,i)=>'P'+(i+1)+' '+PARTS[i].label).join('|'),qpoints:sc.parts.map(p=>p.got).join('|'),qmax:sc.parts.map(p=>p.max).join('|')};
+  msg('Sending...');
+  fetch(sheetURL(),{method:'POST',mode:'no-cors',body:new URLSearchParams(body)}).then(()=>{ S.sentAt=new Date().toISOString(); save(); msg('Sent! Your teacher will see your score.'); }).catch(()=>msg("Couldn't send. Check the Wi-Fi and try again, or download the CSV."));
+}
+
+/* ============================== NO LOCKDOWN ON WORKSHEETS ============================== */
+let teacherOpen=false;
+function arm(){} function disarm(){} function showLock(){} function enterFS(){}
+['copy','cut','paste','contextmenu'].forEach(ev=>document.addEventListener(ev,e=>{ if(teacherOpen||S.preview) return; e.preventDefault(); }));
+
+/* ============================== SIGN IN ============================== */
+function showWS(){ $('#start').hidden=true; $('#top').hidden=false; $('#ws').hidden=false; build(); window.scrollTo(0,0); if(S.locked&&LOCKDOWN&&!S.lockOff) showLock(); else arm(); }
+function renderStart(){ const has=!!S.student; $('#resumeBox').hidden=!has; $('#startForm').hidden=has; $('#signinTitle').textContent=has?'Welcome back':'Sign in to start';
+  if(has) $('#resumeText').innerHTML=`Signed in as <b>${esc(S.student.first)} ${esc(S.student.last)}</b>, period ${esc(S.student.period)}.`; }
+$('#fPeriod').innerHTML='<option value="">Choose your period</option>'+periodList().map(p=>`<option>${esc(p)}</option>`).join('');
+$('#fTeacher').innerHTML='<option value="">Choose your teacher</option>'+teacherList().map(t=>`<option>${esc(t)}</option>`).join('');
+let starting=false;
+async function start(){
+  if(starting) return; starting=true;
+  try{
+    const v={first:$('#fFirst').value.trim(),last:$('#fLast').value.trim(),id:$('#fId').value.trim(),period:$('#fPeriod').value,teacher:$('#fTeacher').value};
+    const miss=[]; if(!v.first) miss.push('first name'); if(!v.last) miss.push('last name'); if(!v.id) miss.push('student ID'); if(!v.period) miss.push('period'); if(!v.teacher) miss.push('teacher');
+    const err=$('#formErr'); if(miss.length){ err.className='fb no'; err.textContent='Fill in your '+miss.join(', ')+'.'; err.hidden=false; return; }
+    if(LOCKDOWN) enterFS();
+    err.className='fb info'; err.textContent='Checking for your saved work...'; err.hidden=false;
+    const res=await cloudLoad(v); err.hidden=true;
+    if(res.status==='found'){ const d=res.data; d.student=Object.assign({},d.student||{},{first:v.first,period:v.period,teacher:v.teacher}); adopt(d); showWS(); note('✓ Your saved work was loaded'); return; }
+    const ns=fresh(); ns.student=v; adopt(ns); showWS(); cloudSave(true);
+  } catch(ex){ const er=$('#formErr'); er.className='fb no'; er.textContent='Something went wrong starting ('+(ex&&ex.message||ex)+'). Reload and try again.'; er.hidden=false; }
+  finally{ starting=false; }
+}
+$('#startBtn').addEventListener('click',start);
+$('#startForm').addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.tagName==='INPUT'){ e.preventDefault(); start(); } });
+$('#resumeBtn').addEventListener('click',async()=>{ const b=$('#resumeBtn'); b.disabled=true; b.textContent='Loading your work...'; if(LOCKDOWN&&!S.locked) enterFS();
+  const res=await cloudLoad(S.student); b.disabled=false; b.textContent='Continue my worksheet';
+  if(res.status==='found'&&(res.data.updatedAt||0)>(S.updatedAt||0)&&checkedCount(res.data)>=checkedCount(S)){ const d=res.data; d.student=S.student; adopt(d); note('✓ Your newest saved work was loaded'); } showWS(); });
+$('#notMeBtn').addEventListener('click',async()=>{ const b=$('#notMeBtn'); b.disabled=true;
+  try{ if(cloudOK()) await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); }catch(e){ b.disabled=false; $('#resumeErr').textContent="Can't back up the last student's work right now. Check the Wi-Fi, or ask your teacher."; $('#resumeErr').hidden=false; return; }
+  b.disabled=false; adopt(fresh()); ['#fFirst','#fLast','#fId','#fPeriod','#fTeacher'].forEach(s=>$(s).value=''); renderStart(); });
+
+/* ============================== TEACHER ============================== */
+function openTeacher(){ teacherOpen=true; $('#teachLogin').hidden=false; $('#teachPanel').hidden=true; $('#teachErr').hidden=true; $('#teachCode').value=''; $('#teachOv').classList.add('show'); setTimeout(()=>$('#teachCode').focus(),50); }
+function closeTeacher(){ $('#teachOv').classList.remove('show'); teacherOpen=false; }
+$('#teacherLink').addEventListener('click',openTeacher); $('#teachBtn').addEventListener('click',openTeacher);
+$('#teachCancel').addEventListener('click',closeTeacher);
+$('#teachCode').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#teachGo').click(); });
+$('#teachGo').addEventListener('click',()=>{ if(!codeIs($('#teachCode').value,TEACHER_CODE)){ $('#teachErr').hidden=false; return; } $('#teachLogin').hidden=true; $('#teachPanel').hidden=false; renderTeacher(); });
+function renderTeacher(){
+  const recs=loadRecs(), p=$('#teachPanel'), keyOn=document.body.classList.contains('keyon');
+  p.innerHTML=`<h2>Teacher tools</h2>
+    <div class="btnrow"><button class="btn ghost" id="tKey" type="button">${keyOn?'Hide answer key':'Answer key'}</button>
+      <button class="btn ghost" id="tPrev" type="button">${S.preview?'End preview':'Preview (saves nothing)'}</button>
+      <button class="btn ghost" id="tResetWrong" type="button">Reset all wrong answers</button>
+      <button class="btn ghost" id="tReset" type="button">Reset this Chromebook</button><button class="btn ghost" id="tClose" type="button">Close</button></div>
+    <h3 style="margin-top:16px">Scores saved on this Chromebook (${recs.length})</h3>
+    <div class="wide">${recs.length?`<table class="nb"><tr><th>Student</th><th>ID</th><th>Period</th><th>Score</th><th>Date</th></tr>${recs.map(r=>`<tr><td>${esc(r[1])}, ${esc(r[2])}</td><td>${esc(r[0])}</td><td>${esc(r[3])}</td><td>${r[6]}/${r[7]}</td><td>${esc(r[r.length-1])}</td></tr>`).join('')}</table>`:'<p class="muted">None yet.</p>'}</div>
+    <div class="btnrow"><button class="btn primary" id="tCsv" type="button" ${recs.length?'':'disabled'}>Download scores (CSV)</button></div>
+    <h3 style="margin-top:16px">Load a student's saved work</h3>
+    <div class="btnrow"><input class="code" id="tId" placeholder="Student ID" style="width:150px"><input class="code" id="tLast" placeholder="Last name" style="width:170px"><button class="btn ghost" id="tLoad" type="button">Load work</button></div>
+    <p class="fb info" id="tMsg" style="min-height:1em"></p>`;
+  const msg=t=>$('#tMsg').textContent=t;
+  $('#tKey').addEventListener('click',()=>{ document.body.classList.toggle('keyon'); renderTeacher(); msg(document.body.classList.contains('keyon')?'Answer key on: each box shows its answer, sort chips show their box, and correct choices have a dashed gold outline.':'Answer key off.'); });
+  $('#tPrev').addEventListener('click',()=>{ if(S.preview){ location.reload(); return; } const ns=fresh(); ns.preview=true; ns.student={first:'Teacher',last:'Preview',id:'0',period:'-',teacher:teacherList()[0]}; S=ns; closeTeacher(); showWS(); note('Preview: nothing is saved'); });
+  $('#tReset').addEventListener('click',()=>{ if(confirm('Erase this worksheet on this Chromebook? Work backed up to the Saved Student Work sheet is not deleted.')){ try{ localStorage.removeItem(STORE); }catch(e){} location.reload(); } });
+  $('#tResetWrong').addEventListener('click',()=>{
+    const wrong=PROBS.filter(pr=>{ const P=S.p[pr.id]||{}; return (P.tries||0)>0 && !P.right; });
+    if(!wrong.length){ msg('Nothing to reset: this student has no wrong answers.'); return; }
+    if(!confirm(`Reset ${wrong.length} problem${wrong.length>1?'s':''} that ${wrong.length>1?'are':'is'} wrong or on a second try for ${(S.student&&S.student.first)||'this student'}? Correct answers stay.`)) return;
+    wrong.forEach(pr=>{ delete S.p[pr.id]; });
+    save(); cloudSave(true); msg(`Reset ${wrong.length} problem${wrong.length>1?'s':''}. Reloading…`); setTimeout(()=>location.reload(),700); });
+  $('#tClose').addEventListener('click',closeTeacher);
+  $('#tCsv').addEventListener('click',()=>downloadCSV(recs,`EnzymesWorksheet_scores_${new Date().toISOString().slice(0,10)}.csv`));
+  $('#tLoad').addEventListener('click',async()=>{ const s={id:$('#tId').value.trim(),last:$('#tLast').value.trim()}; if(!s.id||!s.last){ msg('Type the student ID and last name.'); return; } msg('Looking up saved work...');
+    const r=await cloudLoad(s); if(r.status==='found'){ adopt(r.data); closeTeacher(); renderStart(); $('#start').hidden=false; $('#ws').hidden=true; $('#top').hidden=true; } else msg(r.status==='none'?'No saved work found for that student.':"Couldn't reach the saved-work sheet."); });
+}
+
+if(!STORAGE_OK) $('#noStore').hidden=false;
+renderStart();
+})();
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

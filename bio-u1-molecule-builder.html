@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Molecule Builder | Biology</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1220;--panel:#121c31;--panel2:#18243d;--line:#2b3a58;--text:#e8eefc;--muted:#9fb0cf;--gold:#facc15;--gold2:#fbbf24;--ok:#34d399;--bad:#f87171;--violet:#a78bfa}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 "Atkinson Hyperlegible",Arial,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:#0e172a}
+header .t{font-weight:800;font-size:17px}
+header .s{color:var(--muted);font-size:13px}
+header .sp{flex:1}
+.btn{font:inherit;font-weight:700;border-radius:10px;padding:9px 16px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--gold);color:#1a1300;border-color:var(--gold)}
+.btn:disabled{opacity:.5;cursor:default}
+main{max-width:1000px;margin:0 auto;padding:14px 16px 30px}
+.stage{position:relative;width:100%;aspect-ratio:16/10;background:#050a14;border:1px solid var(--line);border-radius:14px;overflow:hidden;touch-action:none}
+canvas{display:block;width:100%;height:100%}
+.ov{position:absolute;inset:0;display:flex;background:rgba(5,10,20,.78);padding:14px;overflow:auto}
+.ov>.card{margin:auto}
+#teachOv{position:fixed;z-index:60;background:rgba(5,10,20,.94)}
+.ov[hidden]{display:none}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;max-width:640px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.card h2{margin:0 0 6px;font-size:22px}
+.card h3{margin:12px 0 6px;font-size:15px;color:var(--gold)}
+.muted{color:var(--muted)} .small{font-size:13.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chip{font:inherit;font-size:14px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.chip.on{border-color:var(--gold);background:rgba(250,204,21,.16);font-weight:700}
+.qtag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--violet);margin-bottom:4px}
+.qtext{font-size:18px;margin:4px 0 12px}
+.opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:15.5px}
+.opt:hover:not(:disabled){border-color:var(--gold)}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:13px;font-weight:800}
+.opt.pick{border-color:var(--gold)}
+.fb{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:15.5px}
+.fb.ok{background:rgba(52,211,153,.14);border:1px solid rgba(52,211,153,.5)}
+.fb.no{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.45)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:14px;margin:6px 0}
+.keys b{color:var(--gold)}
+.ladder{display:flex;flex-wrap:wrap;gap:6px;font-size:13px;margin-top:6px}
+.ladder span{padding:3px 8px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}
+.touch{display:none;gap:10px;justify-content:space-between;margin-top:10px;user-select:none;-webkit-user-select:none}
+.touch .grp{display:flex;gap:10px}
+.tbtn{width:64px;height:58px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:22px;font-weight:800;touch-action:none}
+.tbtn.fire{width:110px;background:#3b2a07;border-color:var(--gold);color:var(--gold);font-size:17px}
+.tbtn.on{background:#334155}
+@media (pointer:coarse){.touch{display:flex}}
+@media (max-width:480px){.tbtn{width:52px;height:54px;font-size:20px}.tbtn.fire{width:86px}.touch .grp{gap:7px}.touch{gap:6px}}
+@media (max-width:760px),(max-height:560px){.ov{position:fixed;z-index:50;background:rgba(5,10,20,.92)}}
+body.showtouch .touch{display:flex}
+.info{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:14px;color:var(--muted)}
+.tpanel h3{margin-top:14px}
+.tq{margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font-size:14px}
+.tq ol{margin:4px 0 0;padding-left:22px}
+.tq li.right{color:var(--ok);font-weight:700}
+input.code{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0b1220;color:var(--text);width:180px}
+#printView{display:none}
+@media print{
+  body>*:not(#printView){display:none!important}
+  #printView{display:block!important;color:#000;background:#fff;font:12px/1.4 Arial,sans-serif}
+  #printView h1{font-size:18px;margin:0 0 4px} #printView .pq{break-inside:avoid;margin:8px 0}
+  #printView ol{margin:2px 0 0;padding-left:22px} #printView li.right{font-weight:700;text-decoration:underline}
+  html,body{background:#fff}
+}
+
+.stage{aspect-ratio:auto;min-height:600px;overflow:visible}.stage .ov{position:fixed;z-index:50}.mb{padding:12px}.status{display:flex;gap:18px;font-size:14px;color:var(--muted);margin-bottom:8px}.status b{color:var(--text)}.ocard{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 14px}.pred{margin-top:8px;padding:8px 10px;border:1px dashed var(--gold);border-radius:10px}.pred input{width:70px;font:inherit;padding:4px 6px;border-radius:6px;border:1px solid var(--line);background:#0b1220;color:var(--text)}.chain{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-height:110px;margin:12px 0;padding:10px;background:#0e1a33;border:1px solid var(--line);border-radius:12px}.chain.lip{flex-wrap:nowrap}.gly svg{width:52px;height:150px}.fas{display:flex;flex-direction:column;gap:6px}.farow{display:flex;align-items:center;gap:6px;min-height:40px}.pc{display:flex;flex-direction:column;align-items:center;background:#f8fafc;border-radius:10px;padding:4px;color:#0f172a}.pc svg{width:62px;height:auto}.pc.bad{outline:3px solid #f87171}.bond{font-size:11px;color:#86efac;border-top:3px solid #86efac;padding-top:2px}.join{font:inherit;font-size:12px;font-weight:700;padding:6px 8px;border-radius:8px;border:1px dashed var(--gold);background:#3b2f0b;color:var(--gold);cursor:pointer}.join:disabled{opacity:.4;cursor:not-allowed}.split{font-size:12px;color:#7dd3fc;padding:0 6px}.waterrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:14px}.h2o{background:#0ea5e9;color:#fff;border-radius:999px;padding:2px 8px;font-size:12px;font-weight:700}.bins{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}@media (max-width:640px){.bins{grid-template-columns:repeat(3,1fr)}}.bin{font:inherit;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px;border-radius:12px;border:1px solid var(--line);background:#f8fafc;color:#0f172a;cursor:pointer}.bin svg{height:56px;width:auto}.bin:hover{outline:3px solid var(--gold)}.pbtns{display:flex;flex-wrap:wrap;gap:6px}table.ktab{border-collapse:collapse;font-size:13px;width:100%}table.ktab td,table.ktab th{border:1px solid var(--line);padding:4px 6px;text-align:left}</style>
+</head>
+<body>
+<header>
+  <div><div class="t">Molecule Builder</div><div class="s">Biology · Unit 1: Homeostasis, Macromolecules, and Enzymes · Review game</div></div>
+  <div class="sp"></div>
+  <button class="btn" id="teachBtn" type="button">Teacher</button>
+</header>
+<main>
+  <div class="stage" id="stage">
+    <div class="mb"><div class="status" id="status"></div><div id="bench"><p class="muted">Press Start.</p></div><h3 style="margin:12px 0 6px">Monomer bins</h3><div class="bins" id="bins"></div></div>
+    <div class="ov" id="startOv"><div class="card"><h2>Molecule Builder</h2><p class="small muted" style="margin:0 0 8px">You run a molecule factory inside a cell. Orders come in: <b>build</b> polymers from monomers, <b>digest</b> polymers back into monomers, and <b>identify</b> the macromolecules in mystery foods using food tests.</p><p class="small">Before each build or digest order, predict how many water molecules it takes. Building removes water at every bond (<b>dehydration synthesis</b>). Digesting adds water at every bond (<b>hydrolysis</b>).</p><div class="row"><button class="btn primary" id="startBtn" type="button">Start</button><span class="small muted" id="hiTxt"></span></div></div></div>
+    <div class="ov" id="overOv" hidden><div class="card"><h2>Shift complete!</h2><div id="overBody"></div><div class="row"><button class="btn primary" id="againBtn" type="button">Play again</button></div></div></div>
+
+    <div class="ov" id="pauseOv" hidden><div class="card" style="max-width:380px;text-align:center"><h2>Paused</h2><p class="muted">Press P or the button to keep playing.</p><button class="btn primary" id="resumeBtn" type="button">Resume</button></div></div>
+  </div>
+
+</main>
+<div class="ov" id="teachOv" hidden>
+  <div class="card tpanel" style="max-width:780px">
+    <h2>Teacher tools</h2>
+    <div id="tLogin"><p class="small muted">Enter the teacher code.</p><div class="row" style="margin-top:4px"><input class="code" id="tCode" type="password" autocomplete="off" aria-label="Teacher code"><button class="btn primary" id="tGo" type="button">Open</button><button class="btn" id="tClose0" type="button">Close</button></div><div class="small" id="tMsg" style="color:var(--bad);margin-top:6px"></div></div>
+    <div id="tBody" hidden>
+      <div class="row"><button class="btn" id="tPrint" type="button">🖨 Print the reference sheet</button><button class="btn" id="tTouch" type="button">Show touch buttons</button><button class="btn" id="tClose" type="button">Close</button></div>
+      <div id="tInfo"></div>
+    </div>
+  </div>
+</div>
+<div id="printView"></div>
+<script>
+const META={"store": "bioU1MoleculeBuilder", "unit": 1};
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const store={ get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+const shuffle=a=>{ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const rnd=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const GAME={onPause:()=>{}, onResume:()=>{}, teacherHTML:()=>'', printHTML:()=>''};
+/* teacher tools (code Teacher007) */
+function tShow(on){ $('#teachOv').hidden=!on; if(on){ GAME.onPause(); $('#tCode').value=''; $('#tMsg').textContent=''; setTimeout(()=>$('#tCode').focus(),30); } }
+$('#teachBtn').addEventListener('click',()=>tShow(true)); $('#tClose0').addEventListener('click',()=>tShow(false));
+$('#tClose').addEventListener('click',()=>{ tShow(false); $('#tBody').hidden=true; $('#tLogin').hidden=false; });
+function tOpen(){ if($('#tCode').value.trim().toLowerCase()!=='teacher007'){ $('#tMsg').textContent='Code not recognized.'; return; } $('#tLogin').hidden=true; $('#tBody').hidden=false; $('#tInfo').innerHTML=GAME.teacherHTML(); }
+$('#tGo').addEventListener('click',tOpen); $('#tCode').addEventListener('keydown',e=>{ if(e.key==='Enter') tOpen(); });
+$('#tTouch').addEventListener('click',()=>document.body.classList.toggle('showtouch'));
+$('#tPrint').addEventListener('click',()=>{ $('#printView').innerHTML=GAME.printHTML(); setTimeout(()=>window.print(),100); });
+$('#resumeBtn').addEventListener('click',()=>GAME.onResume());
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) GAME.onPause(); });
+/* ===================== MOLECULE BUILDER ===================== */
+const MONO={
+ glucose:{n:'glucose',svg:()=>`<svg viewBox="0 0 70 60"><polygon points="35,6 60,20 60,42 35,56 10,42 10,20" fill="#bbf7d0" stroke="#166534" stroke-width="3"/><text x="35" y="12" font-size="9" text-anchor="middle" fill="#7f1d1d" font-weight="700">O</text><text x="35" y="36" font-size="10" text-anchor="middle" fill="#14532d">C₆H₁₂O₆</text></svg>`},
+ amino:{n:'amino acid',svg:i=>`<svg viewBox="0 0 70 60"><circle cx="35" cy="34" r="20" fill="${['#fca5a5','#93c5fd','#fde68a','#c4b5fd','#86efac'][i%5]}" stroke="#334155" stroke-width="3"/><path d="M35 14V4" stroke="#334155" stroke-width="3"/><circle cx="35" cy="5" r="5" fill="#f472b6"/><text x="35" y="38" font-size="10" text-anchor="middle" fill="#0f172a" font-weight="700">N–C–C</text></svg>`},
+ nucleotide:{n:'nucleotide',svg:i=>`<svg viewBox="0 0 70 60"><circle cx="13" cy="18" r="9" fill="#fbbf24" stroke="#92400e" stroke-width="2"/><text x="13" y="21" font-size="8" text-anchor="middle">P</text><polygon points="35,10 50,20 45,36 25,36 20,20" fill="#e2e8f0" stroke="#475569" stroke-width="2"/><rect x="28" y="40" width="14" height="16" rx="2" fill="${['#ef4444','#3b82f6','#f59e0b','#22c55e'][i%4]}"/><text x="35" y="52" font-size="9" text-anchor="middle" fill="#fff" font-weight="700">${'ATCG'[i%4]}</text></svg>`},
+ fatty:{n:'fatty acid',svg:()=>`<svg viewBox="0 0 90 40"><polyline points="4,20 14,10 24,20 34,10 44,20 54,10 64,20 74,10 84,20" fill="none" stroke="#a16207" stroke-width="4"/><text x="8" y="36" font-size="9" fill="#78350f">COOH</text></svg>`},
+ glycerol:{n:'glycerol',svg:()=>`<svg viewBox="0 0 50 110"><rect x="16" y="6" width="18" height="98" rx="6" fill="#fde68a" stroke="#a16207" stroke-width="3"/>${[20,55,90].map(y=>`<text x="40" y="${y+4}" font-size="9" fill="#78350f">OH</text>`).join('')}</svg>`}};
+const KIND={carb:'Carbohydrate',protein:'Protein',nucleic:'Nucleic acid',lipid:'Lipid'};
+const ORDERS=[
+ {t:'build',name:'maltose, a disaccharide (2 sugars)',kind:'carb',m:'glucose',n:2,why:'Two glucose join into maltose. One bond = one water molecule removed.'},
+ {t:'build',name:'a short starch chain (polysaccharide)',kind:'carb',m:'glucose',n:4,why:'Starch is a polysaccharide: many glucose monomers joined by dehydration synthesis.'},
+ {t:'build',name:'a polypeptide (protein chain)',kind:'protein',m:'amino',n:5,why:'Proteins are chains of amino acids. 5 monomers need 4 bonds, so 4 waters come off.'},
+ {t:'build',name:'a short DNA strand (nucleic acid)',kind:'nucleic',m:'nucleotide',n:4,why:'Nucleic acids are chains of nucleotides.'},
+ {t:'build',name:'a fat (triglyceride)',kind:'lipid',m:'lipid',n:4,why:'A triglyceride is 1 glycerol + 3 fatty acids. Three bonds form, so 3 waters come off.'},
+ {t:'digest',name:'starch from a cracker',kind:'carb',m:'glucose',n:5,why:'Hydrolysis: one water is added to break each bond. 5 glucose had 4 bonds.'},
+ {t:'digest',name:'a protein from an egg',kind:'protein',m:'amino',n:4,why:'Digestive enzymes use water to break the bonds between amino acids.'},
+ {t:'digest',name:'a fat from butter',kind:'lipid',m:'lipid',n:4,why:'Lipase uses 3 waters to split a triglyceride into glycerol and 3 fatty acids.'},
+ {t:'test',name:'apple juice',res:{ben:'orange',iod:'amber',biu:'blue',pap:'no spot'},ans:['sugar']},
+ {t:'test',name:'a slice of potato',res:{ben:'blue',iod:'blue-black',biu:'blue',pap:'no spot'},ans:['starch']},
+ {t:'test',name:'egg white',res:{ben:'blue',iod:'amber',biu:'purple',pap:'no spot'},ans:['protein']},
+ {t:'test',name:'whole milk',res:{ben:'green',iod:'amber',biu:'purple',pap:'greasy spot'},ans:['sugar','protein','lipid']},
+ {t:'test',name:'peanut butter',res:{ben:'blue',iod:'amber',biu:'purple',pap:'greasy spot'},ans:['protein','lipid']}];
+const HIKEY=META.store+'_hi'; function hiTxt(){ const h=+store.get(HIKEY)||0; $('#hiTxt').textContent=h?`High score on this Chromebook: ${h}`:''; } hiTxt();
+let order, oi, list, bench, bonds, water, score, firstTry, pred, predOK, tries, done=0, picked;
+function startGame(){ score=0; done=0; const b=ORDERS.filter(o=>o.t==='build'), d=ORDERS.filter(o=>o.t==='digest'), t=ORDERS.filter(o=>o.t==='test');
+  list=shuffle(b.slice()).concat(shuffle(d.slice())).concat(shuffle(t.slice()).slice(0,4)); oi=-1; $('#startOv').hidden=true; $('#overOv').hidden=true; next(); }
+function next(){ oi++; if(oi>=list.length) return finish(); order=list[oi]; firstTry=true; tries=0; pred=null; predOK=null; picked=new Set();
+  if(order.t==='build'){ bench=[]; bonds=[]; water=0; }
+  else if(order.t==='digest'){ bench=order.m==='lipid'?['glycerol','fatty','fatty','fatty']:Array(order.n).fill(order.m); bonds=Array(order.m==='lipid'?3:order.n-1).fill(true); water=0; }
+  render(); }
+function lipidOK(){ return bench[0]==='glycerol'&&bench.length===4&&bench.slice(1).every(x=>x==='fatty'); }
+function render(){ const o=order; $('#status').innerHTML=`<span>Order <b>${oi+1} of ${list.length}</b></span><span>Score <b>${score}</b></span>`;
+  let h=`<div class="ocard"><div class="qtag">${o.t==='build'?'Build order: dehydration synthesis':o.t==='digest'?'Digest order: hydrolysis':'Food lab: identify the macromolecules'}</div>`;
+  if(o.t==='test'){ h+=`<h3 style="margin:4px 0">Mystery food: ${o.name}</h3><p class="small muted" style="margin:0 0 6px">The class ran four food tests. Use the key to decide which macromolecules are in it. Select all that apply.</p>
+     <table class="ktab"><tr><th>Test</th><th>Looks for</th><th>Positive result</th><th>This food</th></tr><tr><td>Benedict's (heated)</td><td>simple sugar</td><td>green, yellow, orange, or brick red</td><td><b>${o.res.ben}</b></td></tr><tr><td>Iodine</td><td>starch</td><td>blue-black</td><td><b>${o.res.iod}</b></td></tr><tr><td>Biuret</td><td>protein</td><td>purple</td><td><b>${o.res.biu}</b></td></tr><tr><td>Brown paper</td><td>lipid</td><td>greasy spot</td><td><b>${o.res.pap}</b></td></tr></table>
+     <div class="pbtns" style="margin-top:8px">${['sugar','starch','protein','lipid'].map(x=>`<button type="button" class="chip${picked.has(x)?' on':''}" data-x="${x}">${x==='sugar'?'simple sugar':x}</button>`).join('')}</div>
+     <div class="row"><button class="btn primary" id="checkBtn" type="button">Check</button></div><div id="fb"></div></div>`;
+    $('#bench').innerHTML=h; $('#bins').innerHTML=''; $$('#bench .chip').forEach(b=>b.addEventListener('click',()=>{ const x=b.dataset.x; picked.has(x)?picked.delete(x):picked.add(x); render(); })); $('#checkBtn').addEventListener('click',checkTest); return; }
+  const need=o.m==='lipid'?3:o.n-1;
+  h+=`<h3 style="margin:4px 0">${o.t==='build'?'Build':'Digest'} ${o.name}</h3><p class="small muted" style="margin:0">${o.t==='build'?(o.m==='lipid'?'Add 1 glycerol and 3 fatty acids, then join each fatty acid to the glycerol.':`Add ${o.n} of the right monomer, then join them. Each join removes one water molecule (H₂O).`):'Add one water molecule to each bond to break the polymer apart into monomers.'}</p>`;
+  if(pred===null) h+=`<div class="pred"><b>Predict first:</b> how many water molecules will be ${o.t==='build'?'released':'used'}? <input id="predIn" type="number" min="0" max="20" inputmode="numeric"> <button class="btn" id="predBtn" type="button">Lock in</button></div>`;
+  else h+=`<div class="small" style="margin-top:6px">Your prediction: <b>${pred}</b> water molecule${pred===1?'':'s'}.</div>`;
+  h+='</div><div class="chain'+(o.m==='lipid'?' lip':'')+'">';
+  if(o.m==='lipid'&&bench[0]==='glycerol'){ h+=`<div class="gly">${MONO.glycerol.svg()}</div><div class="fas">`; for(let i=1;i<4;i++){ h+=`<div class="farow">${i<bench.length?bondHTML(i-1)+`<div class="pc ${bench[i]==='fatty'?'':'bad'}">${(MONO[bench[i]]||MONO.fatty).svg(i)}<span class="small">${MONO[bench[i]].n}</span></div>`:'<span class="small muted">empty spot</span>'}</div>`; } h+='</div>'; }
+  else bench.forEach((m,i)=>{ if(i>0){ h+=bondHTML(i-1); } h+=`<div class="pc">${MONO[m].svg(i)}<span class="small">${MONO[m].n}</span></div>`; });
+  if(!bench.length) h+='<span class="muted small">Your workbench is empty. Add monomers from the bins below.</span>';
+  h+=`</div><div class="waterrow"><b>Water molecules ${o.t==='build'?'released':'used'}:</b> ${'<span class="h2o">H₂O</span>'.repeat(water)||'<span class="muted small">none yet</span>'}</div>`;
+  h+=`<div class="row">${o.t==='build'?'<button class="btn" id="undoBtn" type="button">Remove last piece</button>':''}<button class="btn primary" id="doneBtn" type="button">${o.t==='build'?'Ship the order':'Done digesting'}</button></div><div id="fb"></div>`;
+  $('#bench').innerHTML=h;
+  $('#bins').innerHTML=o.t==='build'?Object.entries(MONO).map(([k,v])=>`<button type="button" class="bin" data-m="${k}">${v.svg(1)}<span>${v.n}</span></button>`).join(''):'';
+  $$('#bins .bin').forEach(b=>b.addEventListener('click',()=>add(b.dataset.m))); $$('#bench .join').forEach(b=>b.addEventListener('click',()=>join(+b.dataset.b)));
+  if($('#predBtn')) $('#predBtn').addEventListener('click',lockPred); if($('#predIn')) $('#predIn').addEventListener('keydown',e=>{ if(e.key==='Enter') lockPred(); });
+  if($('#undoBtn')) $('#undoBtn').addEventListener('click',()=>{ if(!bench.length) return; bench.pop(); bonds.length=Math.max(0,bench.length-1); recount(); render(); });
+  $('#doneBtn').addEventListener('click',ship); }
+function bondHTML(i){ const o=order, dis=pred===null?'disabled':'';
+  if(o.t==='build') return bonds[i]?'<span class="bond">bond</span>':`<button type="button" class="join" data-b="${i}" ${dis}>Join (−H₂O)</button>`;
+  return bonds[i]?`<button type="button" class="join" data-b="${i}" ${dis}>bond: add H₂O</button>`:'<span class="split">split ✂</span>'; }
+function lockPred(){ const v=parseInt($('#predIn').value,10); if(isNaN(v)) return; pred=v; predOK=v===(order.m==='lipid'?3:order.n-1); render(); }
+function recount(){ water=bonds.filter(b=>order.t==='build'?b:!b).length; }
+function add(m){ if(order.m==='lipid'){ if(bench.length>=4) return; bench.push(m); if(bench.length>1) bonds.push(false); }
+  else { if(bench.length>=8) return; bench.push(m); if(bench.length>1) bonds.push(false); } render(); }
+function join(i){ if(order.t==='build'){ bonds[i]=true; } else { bonds[i]=false; } recount(); render(); }
+function say(ok,html){ $('#fb').innerHTML=`<div class="fb ${ok?'ok':'no'}" style="margin-top:8px">${html}</div>`+(ok?`<div class="row"><button class="btn primary" id="nextBtn" type="button">Next order</button></div>`:''); if(ok) $('#nextBtn').addEventListener('click',next); }
+function ship(){ const o=order, need=o.m==='lipid'?3:o.n-1;
+  if(pred===null) return say(false,'Make your prediction first.');
+  if(o.t==='digest'){ if(bonds.some(b=>b)) { firstTry=false; return say(false,`Not done yet: ${bonds.filter(b=>b).length} bond${bonds.filter(b=>b).length>1?'s are':' is'} still holding monomers together.`); } }
+  else { let err=null;
+    if(o.m==='lipid'){ if(!lipidOK()) err='A triglyceride (fat) is made of 1 glycerol and 3 fatty acids, with the glycerol first.'; }
+    else if(bench.some(m=>m!==o.m)) err=`${KIND[o.kind]}s are built from ${{glucose:'glucose (a monosaccharide)',amino:'amino acids',nucleotide:'nucleotides'}[o.m]} only. Something on the bench is the wrong monomer.`;
+    else if(bench.length!==o.n) err=`The order asks for ${o.n} monomers. You have ${bench.length}.`;
+    if(!err&&bonds.some(b=>!b)) err='Some monomers are not joined yet.';
+    if(err){ firstTry=false; return say(false,err); } }
+  const pts=(firstTry?100:50)+(predOK?50:0); score+=pts; done++;
+  say(true,`<b>Order complete! +${pts}</b> ${o.why} ${predOK?`Your prediction (${pred}) was right.`:`You predicted ${pred}; it was <b>${need}</b>. Rule: <b>n monomers in a chain need n − 1 bonds</b>, and every bond ${o.t==='build'?'releases':'uses'} one water.`}`); }
+function checkTest(){ const o=order, a=new Set(o.ans); const ok=picked.size===a.size&&[...picked].every(x=>a.has(x));
+  if(ok){ const pts=firstTry?150:75; score+=pts; done++; say(true,`<b>Correct! +${pts}</b> ${o.name[0].toUpperCase()+o.name.slice(1)} has ${o.ans.map(x=>x==='sugar'?'simple sugar':x).join(', ')}.`); }
+  else { firstTry=false; say(false,'Not quite. Look at each test: is it positive or negative? A positive result means that macromolecule is there.'); } }
+function finish(){ const hi=+store.get(HIKEY)||0; if(score>hi) store.set(HIKEY,score);
+  $('#overBody').innerHTML=`<p style="font-size:18px;margin:4px 0">Score: <b>${score}</b>${score>hi?' <span style="color:var(--gold)">New high score!</span>':''}</p><p class="small"><b>Remember:</b> monomers join by <b>dehydration synthesis</b> (a water comes off at each bond). Polymers break apart by <b>hydrolysis</b> (a water is added at each bond). A chain of n monomers has n − 1 bonds. Fats are 1 glycerol + 3 fatty acids.</p>`; $('#overOv').hidden=false; hiTxt(); }
+$('#startBtn').addEventListener('click',startGame); $('#againBtn').addEventListener('click',startGame);
+GAME.teacherHTML=()=>`<p class="small muted">Practice game, not graded.</p><h3>How it works</h3><p class="small">Each round has 5 build orders (dehydration synthesis), 3 digest orders (hydrolysis), and 4 food-lab mysteries (Benedict's, iodine, Biuret, brown paper). Before building or digesting, students predict how many water molecules will be released or used. Mistakes get an explanation of the rule (wrong monomer, wrong count, unjoined pieces).</p><h3>Answer key</h3><ul class="small">${ORDERS.map(o=>`<li>${o.t==='test'?`Food lab, ${o.name}: ${o.ans.join(', ')}`:`${o.t==='build'?'Build':'Digest'} ${o.name}: ${o.m==='lipid'?'1 glycerol + 3 fatty acids':o.n+' '+MONO[o.m].n+'s'}, ${o.m==='lipid'?3:o.n-1} water molecules`}</li>`).join('')}</ul>`;
+GAME.printHTML=()=>`<h1>Molecule Builder: reference</h1><table border="1" cellpadding="6" style="border-collapse:collapse;font-size:13px"><tr><th>Macromolecule</th><th>Monomer</th><th>Example</th><th>Food test</th></tr><tr><td>Carbohydrate</td><td>monosaccharide (glucose)</td><td>starch, sugar</td><td>Benedict's (sugar), iodine (starch)</td></tr><tr><td>Protein</td><td>amino acid</td><td>enzymes, egg white</td><td>Biuret: purple</td></tr><tr><td>Lipid</td><td>glycerol + 3 fatty acids</td><td>butter, oil</td><td>brown paper: greasy spot</td></tr><tr><td>Nucleic acid</td><td>nucleotide</td><td>DNA, RNA</td><td>none</td></tr></table><p>Dehydration synthesis removes one water per bond. Hydrolysis adds one water per bond. n monomers in a chain have n − 1 bonds.</p>`;
+GAME.onPause=()=>{}; GAME.onResume=()=>{};
+window.__mb={get order(){return order;}, get oi(){return oi;}, get score(){return score;}, get bench(){return bench;}, get bonds(){return bonds;}, get done(){return done;}, get list(){return list;}};
+
+</script>
+
+
+
+
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

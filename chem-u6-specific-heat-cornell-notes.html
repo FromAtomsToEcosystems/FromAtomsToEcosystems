@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Specific Heat: Cornell Notes</title>
+<style>
+:root{--ink:#1d2b36;--muted:#5a6a75;--line:#9fb0bd;--soft:#eef3f8;--accent:#2f5d9b;--key:#c0392b;--cue:#f6f8fb}
+*{box-sizing:border-box}
+body{margin:0;background:#e7ecf1;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:15px;line-height:1.55}
+button{font:inherit;cursor:pointer}
+.bar{position:sticky;top:0;z-index:5;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;padding:10px;background:var(--accent);color:#fff}
+.bar button{background:#fff;color:var(--accent);border:0;border-radius:6px;padding:7px 14px;font-weight:700}
+.bar button.on{background:var(--key);color:#fff}
+.bar span{font-size:13px;opacity:.9}
+.bar .saved{font-weight:700;opacity:1;min-width:110px;text-align:left}
+.page{width:8.5in;max-width:100%;min-height:11in;margin:18px auto;background:#fff;padding:.5in .55in;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+.head{display:grid;grid-template-columns:1fr auto;gap:6px 18px;border-bottom:3px solid var(--accent);padding-bottom:8px;margin-bottom:10px}
+.head h1{margin:0;font-size:22px;color:var(--accent)}
+.head .sub{font-size:13px;color:var(--muted)}
+.who{display:grid;grid-template-columns:auto 1fr;gap:4px 8px;font-size:13px;align-items:end;min-width:250px}
+.who input{border:0;border-bottom:1px solid var(--ink);font:inherit;padding:1px 4px;width:100%}
+.eq{background:var(--soft);border-left:5px solid var(--accent);padding:6px 12px;margin:0 0 10px;font-size:14px}
+.cornell{display:grid;grid-template-columns:24% 76%;border:2px solid var(--ink)}
+.cue,.notes{padding:9px 12px;border-top:1px solid var(--line)}
+.cornell > :nth-child(1),.cornell > :nth-child(2){border-top:0}
+.cue{background:var(--cue);border-right:2px solid var(--ink);font-weight:700;font-size:14px;color:var(--accent)}
+.cue small{display:block;font-weight:400;color:var(--muted);font-size:12px;margin-top:4px}
+.where{display:flex;align-items:center;gap:6px;margin-bottom:5px;font-size:11.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.3px}
+.tile{text-transform:none;display:inline-grid;place-items:center;width:30px;height:32px;border-radius:5px;border:1.5px solid var(--accent);background:#fff;color:var(--accent);font-size:14px;font-weight:800;line-height:1;position:relative;padding-top:6px}
+.tile i{position:absolute;top:2px;left:4px;font-size:8px;font-style:normal;font-weight:600}
+.colhead{background:var(--accent)!important;color:#fff!important;font-weight:700;font-size:13px;letter-spacing:.4px;text-transform:uppercase;padding:5px 12px}
+.notes p{margin:0 0 6px}
+.notes ul,.notes ol{margin:2px 0 6px;padding-left:20px}
+.notes li{margin:2px 0}
+.ex{border-top:1px dashed var(--line);margin-top:6px;padding-top:5px}
+.ex b:first-child{color:var(--accent)}
+input.b{font:inherit;border:0;border-bottom:1.5px solid var(--ink);background:transparent;padding:0 3px;text-align:center;color:var(--ink);min-width:3ch}
+input.b:focus{outline:2px solid #f2b705;outline-offset:1px}
+body.key input.b{color:var(--key);font-weight:700}
+table.t{border-collapse:collapse;width:100%;font-size:13.5px;margin:4px 0}
+table.t th,table.t td{border:1px solid var(--line);padding:3px 6px;text-align:center}
+table.t th{background:var(--soft)}
+.models{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:6px}
+.model{border:1px solid var(--line);border-radius:6px;padding:4px;text-align:center}
+.model b{font-size:13px}
+.model svg{width:100%;max-width:230px;height:auto;display:block;margin:0 auto}
+.slot{cursor:pointer}
+.mini{font-size:11px;padding:2px 8px;border:1px solid var(--line);background:#fff;border-radius:10px;color:var(--muted)}
+.rule{display:flex;gap:12px;align-items:center}
+.rule svg{flex:0 0 112px}
+.checks{list-style:none;padding-left:0!important}
+.checks li::before{content:"☐ ";color:var(--accent)}
+.summary{border:2px solid var(--ink);border-top:0;padding:8px 12px}
+.summary h3{margin:0 0 4px;font-size:14px;color:var(--accent);text-transform:uppercase;letter-spacing:.4px}
+.summary textarea{width:100%;min-height:96px;border:0;resize:vertical;font:inherit;line-height:24px;padding:0 2px;
+ background:repeating-linear-gradient(transparent 0 23px,#9fb0bd 23px 24px)}
+.foot{font-size:11px;color:var(--muted);text-align:right;margin-top:6px}
+@media screen and (max-width:760px){.cornell{grid-template-columns:1fr}.cue{border-right:0}.models{grid-template-columns:1fr}.page{padding:16px}.rule{flex-direction:column;align-items:flex-start}}
+@media print{
+ @page{size:letter;margin:.4in}
+ body{background:#fff;font-size:12.5px;line-height:1.45}
+ .cue,.notes{padding:6px 10px}
+ .notes p{margin:0 0 4px}
+ .head{padding-bottom:5px;margin-bottom:7px}
+ .models{grid-template-columns:repeat(2,210px);justify-content:center;margin-top:3px}
+ .model{padding:2px}
+ .model svg{max-width:122px}
+ .summary textarea{min-height:150px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .bar,.noprint{display:none!important}
+ .page{box-shadow:none;margin:0;padding:0;width:auto;min-height:0}
+ .page + .page{break-before:page}
+ .cue,.colhead,table.t th,.eq{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+.tmap{display:grid;grid-template-columns:repeat(8,24px);gap:3px;flex:0 0 auto;margin:4px 0}
+.tmap span{height:20px;border:1px solid var(--line);border-radius:2px;background:#fff}
+.tmap span.x{visibility:hidden}
+.mapwrap{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.trow{display:grid;grid-template-columns:auto 1fr 1fr;gap:0}
+@media print{.summary textarea{min-height:76px!important;height:76px}}
+.tile.atom{position:relative;overflow:hidden;width:34px;height:34px}
+.tile.atom .ab{position:absolute;left:50%;top:58%;width:calc(6px + var(--f) * 22px);height:calc(6px + var(--f) * 22px);transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 40% 35%,#cfe3fb,#9cc0ea);border:1px dashed #2f5d9b}
+.tile.atom .as{position:relative;z-index:1;font-size:12px;margin-top:4px}
+.yti b{color:#b5610e}
+.ex.yt{border-top:0;margin-top:0;padding-top:2px}.ex.yt b:first-child{color:#b5610e}
+
+/* ionic bonding notes additions */
+.tile.icon{display:inline-grid;place-items:center;position:relative;width:34px;height:34px;padding:0}
+.tile.icon svg{width:24px;height:24px;margin-top:3px}
+.tile.icon i{position:absolute;left:2px;top:0;font-size:8px;font-style:normal;color:var(--muted)}
+.side{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+.dg{display:block;width:100%;max-width:330px;height:auto;margin:4px auto}
+.side .dg{width:230px}.dg.sm{width:120px!important}
+.yti b{color:#b5610e}
+.ex.yt{border-top:0;margin-top:0;padding-top:2px}.ex.yt b:first-child{color:#b5610e}
+.who .fill{display:inline-block;min-width:150px;border-bottom:1px solid var(--line);font-weight:600;padding:0 4px;min-height:1.4em}
+.b.right{background:#e3f6e9;border-bottom-color:#1b7f4b}.b.wrong{background:#fde7e7;border-bottom-color:#c0392b}.b.empty{background:#eef1f4}
+.scorebar{position:sticky;top:46px;z-index:4;max-width:8.5in;margin:8px auto 0;background:#fff8e1;border:1px solid #e0a526;border-radius:8px;padding:8px 12px;font-size:14px}
+.scorebar .small{display:block;color:var(--muted);font-size:12px}
+.sum-pts{font-weight:600;color:var(--muted);font-size:13px}
+.ov{position:fixed;inset:0;background:rgba(15,25,40,.55);display:grid;place-items:center;z-index:20;padding:16px}.ov[hidden]{display:none}
+.modal{background:#fff;border-radius:12px;padding:20px 22px;max-width:640px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.modal h2{margin:0 0 10px;color:var(--accent)}
+.si-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.si-grid label{display:grid;gap:3px;font-size:13px;color:var(--muted)}
+.si-grid input,.si-grid select{font:inherit;padding:7px 9px;border:1px solid var(--line);border-radius:6px}
+.modal .go{margin-top:12px;background:var(--accent);color:#fff;border:0;border-radius:6px;padding:9px 16px;font-weight:700}
+.modal .err{color:#c0392b;min-height:1.2em;margin:6px 0 0}.modal .small{color:var(--muted);font-size:12px}
+.hidden{display:none!important}
+.foot{text-align:right;color:var(--muted);font-size:11px;margin-top:6px}
+@media print{.b.right,.b.wrong,.b.empty{background:none}.scorebar,.ov{display:none!important}.summary textarea{min-height:64px!important;height:64px}}
+
+.drawbox{width:200px;height:90px;border:1.5px dashed #9fb0bd;border-radius:8px;display:flex;align-items:flex-start;justify-content:flex-start;padding:4px 8px;font-size:11px;color:#5b6b7a}
+.dg.lw{display:inline-block;max-width:none;margin:4px 0}
+table.t.mini{width:auto;font-size:12.5px;margin:2px 0}table.t.mini th,table.t.mini td{padding:2px 10px;text-align:center}
+
+.ba{display:inline-flex;align-items:center;gap:6px;margin:2px 0}.ba small{display:block;font-size:9px;color:#5b6b7a;text-transform:uppercase;letter-spacing:.04em}
+.ba-ar{font-size:18px;color:#b8860b;font-weight:700}.ba-l{font-weight:800;font-size:12px;margin-right:2px}
+.ba-row{display:flex;flex-direction:column;gap:0}.ba-row .dg.lw{width:auto!important;height:52px}.ba-row .ba{gap:6px}.ba-row .ba small{display:inline;margin-right:4px}
+.wb{margin-top:3px;font-size:10.5px;color:#41536a;display:flex;flex-wrap:wrap;gap:3px 5px;align-items:center}.wb b{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:#5b6b7a}.wb span{border:1px solid #c9d4df;border-radius:999px;padding:0 6px;background:#f7fafc}
+
+.pp{display:inline-block;vertical-align:middle;background:#fff;border:1px solid #c9d4df;border-radius:6px;margin:2px}.pp svg{display:block;height:auto}
+.eqrow{display:flex;align-items:center;gap:4px;flex-wrap:wrap;font-weight:700;font-size:16px;margin:2px 0}
+.eqrow .eqt{font-size:11.5px;color:#41536a;margin-left:6px}.eqrow b{font-size:14px}
+.ptile{display:inline-flex;flex-direction:column;align-items:center;width:62px;border:1.5px solid #9fb3c8;border-radius:6px;padding:2px;line-height:1.1;margin:2px;vertical-align:top}.ptile small{align-self:flex-start;font-size:9px;color:#5b6b86}.ptile b{font-size:18px}.ptile i{font-size:8px;font-style:normal;color:#5b6b86}.ptile em{font-style:normal;font-weight:700;font-size:11px;color:#9a6a00}
+.mmap{display:flex;align-items:center;gap:10px;margin:4px 0}.mmap span{border:2px solid #2b5d9a;border-radius:8px;padding:4px 12px;font-weight:700}.mmap em{font-style:normal;font-size:11px;font-weight:700;color:#9a6a00;text-align:center}
+.nfrac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;font-size:12px;font-weight:600}.nfrac span:last-child{border-top:1.5px solid #16213a}
+.nbridge{margin:4px 0;font-size:13px}.nbridge s{text-decoration-color:#e05252;text-decoration-thickness:1.5px}
+.nmap{width:330px;height:auto;display:block}
+.ntbl{border-collapse:collapse;font-size:12px;margin:2px 0}.ntbl th,.ntbl td{border:1px solid #cbd5e1;padding:2px 8px}.ntbl th{background:#eaf1fb}
+</style>
+</head>
+<body>
+<div class="bar noprint">
+ <button onclick="window.print()">Print</button>
+ <button onclick="checkNotes()">Check my notes</button>
+ <button id="keybtn" onclick="toggleKey()">Teacher: answer key</button>
+ <span class="saved" id="saved" aria-live="polite"></span>
+</div>
+<div class="scorebar noprint hidden" id="scorebar" aria-live="polite"></div>
+
+
+
+<div class="page">
+ <div class="head">
+  <div><h1>Specific Heat</h1><div class="sub">Chemistry · Unit 6: Energy, Rates, and Solutions · Cornell Notes</div></div>
+  <div class="who"><label for="nm">Name</label><input id="nm" data-save="name"><label for="pd">Period</label><input id="pd" data-save="period"><label for="dt">Date</label><input id="dt" data-save="date"></div>
+ </div>
+ <div class="eq"><b>Phenomenon:</b> At noon, beach sand burns your feet but the ocean is still cool. <b>Essential question:</b> Why do substances warm up at different rates, and how do we calculate heat?</div>
+ <div class="cornell" id="p1"></div>
+</div>
+
+<div class="page p2">
+ <div class="head small-head"><div><h1>Specific Heat (continued)</h1><div class="sub">Identifying metals, calorimetry, real-world uses</div></div></div>
+ <div class="cornell" id="p2"></div>
+ <div class="summary"><h3>Summary <span class="sum-pts" id="sumPts"></span></h3>
+  <p class="small">In 2–3 sentences: Explain why beach sand gets hotter than the ocean at noon. Use the words <b>specific heat</b>, <b>energy</b>, <b>water</b>, and <b>temperature</b>.</p>
+  <textarea id="summary" data-save="summary" aria-label="Summary"></textarea>
+ </div>
+ <div class="foot">From Atoms To Ecosystems</div>
+</div>
+
+<script>
+
+const KEY = 'fate_chem_specific_heat_notes_v1';
+const TEACHER_CODE = 'teacher007';
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+
+/* ---------- section icons (same drawings as the lesson, print colors) ---------- */
+const ICON = {
+  1: `<svg viewBox="0 0 40 40"><rect x="6" y="8" width="8" height="26" rx="4" fill="none" stroke="#334155" stroke-width="2"/><rect x="8" y="22" width="4" height="10" fill="#1f7aa8"/><rect x="24" y="8" width="8" height="26" rx="4" fill="none" stroke="#334155" stroke-width="2"/><rect x="26" y="12" width="4" height="20" fill="#ea580c"/></svg>`,
+  2: `<svg viewBox="0 0 40 40"><rect x="5" y="8" width="30" height="24" rx="3" fill="none" stroke="#334155" stroke-width="2"/><path d="M5 16h30M5 24h30M20 8v24" stroke="#334155" stroke-width="1.4"/></svg>`,
+  3: `<svg viewBox="0 0 40 40"><text x="20" y="25" font-size="12" font-weight="800" text-anchor="middle" fill="#c48a10">q=mcΔT</text></svg>`,
+  4: `<svg viewBox="0 0 40 40"><text x="20" y="27" font-size="18" font-weight="800" text-anchor="middle" fill="#1f7aa8">ΔT</text></svg>`,
+  5: `<svg viewBox="0 0 40 40"><rect x="8" y="14" width="24" height="16" rx="2" fill="#475569"/><text x="20" y="26" font-size="10" font-weight="800" text-anchor="middle" fill="#ffffff">?</text></svg>`,
+  6: `<svg viewBox="0 0 40 40"><path d="M8 12h24l-3 22H11z" fill="none" stroke="#334155" stroke-width="2"/><rect x="11" y="20" width="18" height="12" fill="#2563eb" opacity=".6"/><rect x="16" y="24" width="8" height="6" fill="#ea580c"/></svg>`,
+  7: `<svg viewBox="0 0 40 40"><path d="M2 30q9-6 18 0t18 0V38H2z" fill="#2563eb"/><path d="M2 30l14-6h22v6" fill="#c48a10" opacity=".85"/><circle cx="32" cy="10" r="5" fill="#c48a10"/></svg>`,
+  8: `<svg viewBox="0 0 40 40"><circle cx="17" cy="17" r="10" fill="none" stroke="#334155" stroke-width="3"/><path d="M25 25l9 9" stroke="#334155" stroke-width="4" stroke-linecap="round"/><path d="M13 13l8 8M21 13l-8 8" stroke="#e05252" stroke-width="2.6" stroke-linecap="round"/></svg>`,
+  9: `<svg viewBox="0 0 40 40"><rect x="9" y="6" width="22" height="29" rx="3" fill="none" stroke="#475569" stroke-width="2.4"/><rect x="15" y="3" width="10" height="6" rx="2" fill="#475569"/><path d="M14 17l3 3 6-6M14 27l3 3 6-6" fill="none" stroke="#1b7f4b" stroke-width="2.4" stroke-linecap="round"/></svg>`,
+  10: `<svg viewBox="0 0 40 40"><path d="M12 6h16v8a8 8 0 0 1-16 0z" fill="#c48a10"/><path d="M12 9H6a6 6 0 0 0 6 7M28 9h6a6 6 0 0 1-6 7" fill="none" stroke="#c48a10" stroke-width="2"/><rect x="17" y="21" width="6" height="7" fill="#c48a10"/><rect x="12" y="28" width="16" height="5" rx="1.5" fill="#c48a10"/></svg>`
+};
+const T = n => `<div class="where"><span class="tile icon"><i>${n}</i>${ICON[n]}</span>Section ${n}</div>`;
+/* ---------- molecule drawings (same as the lesson) ---------- */
+function parseF(f) {
+  let m = f.match(/^(\d*)(.*)$/), coef = m[1] ? +m[1] : 1, s = m[2], i = 0, order = [];
+  function group() { const out = {};
+    while (i < s.length && s[i] !== ')') {
+      if (s[i] === '(') { i++; const g = group(); i++; let n = ''; while (/\d/.test(s[i] || '')) n += s[i++]; const k = n ? +n : 1; Object.entries(g).forEach(([e, c]) => { out[e] = (out[e] || 0) + c * k; }); }
+      else { let e = s[i++]; while (/[a-z]/.test(s[i] || '')) e += s[i++]; let n = ''; while (/\d/.test(s[i] || '')) n += s[i++]; if (!order.includes(e)) order.push(e); out[e] = (out[e] || 0) + (n ? +n : 1); }
+    } return out; }
+  const per = group(), total = {}; Object.entries(per).forEach(([e, c]) => { total[e] = c * coef; });
+  return { coef, per, total, order };
+}
+/* pretty formula: digits after a letter or ")" become subscripts; a leading number stays big */
+const fmt = f => { const m = f.match(/^(\d*)(.*)$/); return (m[1] ? `<span class="coef">${m[1]}</span>` : '') + m[2].replace(/([A-Za-z)])(\d+)/g, '$1<sub>$2</sub>'); };
+const ACOL = { Zn: '#94a3b8', Cu: '#d97706', Ag: '#e5e7eb', Pb: '#6b7280', Hg: '#9ca3af', I: '#7c3aed', Br: '#b45309', H: '#f1f5f9', O: '#ef4444', C: '#475569', N: '#3b82f6', Ca: '#22c55e', Mg: '#a3e635', Cl: '#34d399', S: '#facc15', Na: '#a78bfa', Al: '#cbd5e1', Fe: '#f97316', K: '#c084fc', P: '#fb923c' };
+const AR = e => e === 'H' ? 9 : 13;
+/* ---------- molecules drawn in their real shapes (ball and stick) ---------- */
+const METALS = ['Na', 'K', 'Li', 'Ca', 'Mg', 'Ba', 'Al', 'Fe', 'Cu', 'Zn', 'Ag', 'Pb', 'Sr', 'Hg'];
+/* structured parse of one formula unit: [{el, n} | {group:[...], n}] */
+function parseParts(s) {
+  let i = 0;
+  function list() { const out = [];
+    while (i < s.length && s[i] !== ')') {
+      if (s[i] === '(') { i++; const g = list(); i++; let n = ''; while (/\d/.test(s[i] || '')) n += s[i++]; out.push({ group: g, n: n ? +n : 1 }); }
+      else { let e = s[i++]; while (/[a-z]/.test(s[i] || '')) e += s[i++]; let n = ''; while (/\d/.test(s[i] || '')) n += s[i++]; out.push({ el: e, n: n ? +n : 1 }); }
+    } return out; }
+  return list();
+}
+const flat = parts => { const a = []; parts.forEach(p => { if (p.el) for (let k = 0; k < p.n; k++) a.push(p.el); else for (let k = 0; k < p.n; k++) a.push(...flat(p.group)); }); return a; };
+/* center + ligands in the right geometry; returns {atoms:[{e,x,y}], bonds:[[i,j]]} */
+function star(center, ligs, L) {
+  const atoms = [{ e: center, x: 0, y: 0 }], bonds = [], n = ligs.length, lone = ligs.every(e => e === 'H') ? ({ O: 2, S: 2, N: 1, P: 1 }[center] || 0) : 0;
+  let angs;
+  if (n === 1) angs = [0];
+  else if (n === 2) angs = lone ? [-52, 52].map(a => a + 90) : [180, 0];                 /* bent (water) or straight (CO2) */
+  else if (n === 3) angs = lone ? [150, 90, 30] : [270, 30, 150];                         /* pyramid seen from the side (NH3) or flat triangle (NO3) */
+  else angs = [270, 0, 90, 180];                                                          /* tetrahedral, drawn as a cross */
+  ligs.forEach((e, k) => { const a = (angs[k] ?? (k * 360 / n)) * Math.PI / 180, l = L * (e === 'H' ? (lone && n === 3 ? 1.05 : .85) : 1); atoms.push({ e, x: l * Math.cos(a), y: l * Math.sin(a) }); bonds.push([0, k + 1]); });
+  return { atoms, bonds };
+}
+function chainCH(nC) {          /* C3H8-style chain: zigzag carbons, hydrogens on the outside */
+  const atoms = [], bonds = [], dx = 34;
+  for (let k = 0; k < nC; k++) { atoms.push({ e: 'C', x: (k - (nC - 1) / 2) * dx, y: k % 2 ? 10 : -10 }); if (k) bonds.push([k - 1, k]); }
+  for (let k = 0; k < nC; k++) { const c = atoms[k], up = k % 2 ? 1 : -1, hs = (k === 0 || k === nC - 1) ? 3 : 2, list = [];
+    if (hs === 3) list.push(k === 0 ? [-26, 0] : [26, 0]); list.push([-12, up * 26], [12, up * 26]);
+    list.slice(0, hs).forEach(([ox, oy]) => { atoms.push({ e: 'H', x: c.x + ox, y: c.y + oy }); bonds.push([k, atoms.length - 1]); }); }
+  return { atoms, bonds };
+}
+function glucose() {             /* ring of 5 C + 1 O, with OH, H, and CH2OH groups pointing outward */
+  const atoms = [], bonds = [], R = 30, ring = ['O', 'C', 'C', 'C', 'C', 'C'];
+  ring.forEach((e, k) => { const a = (-90 + k * 60) * Math.PI / 180; atoms.push({ e, x: R * Math.cos(a), y: R * Math.sin(a) }); bonds.push([k, (k + 1) % 6]); });
+  const add = (from, e, dx, dy) => { const f = atoms[from]; atoms.push({ e, x: f.x + dx, y: f.y + dy }); bonds.push([from, atoms.length - 1]); return atoms.length - 1; };
+  [1, 2, 3, 4].forEach(k => { const a = (-90 + k * 60) * Math.PI / 180, ux = Math.cos(a), uy = Math.sin(a);
+    const o = add(k, 'O', ux * 26 + uy * 9, uy * 26 - ux * 9); add(o, 'H', ux * 16, uy * 16); add(k, 'H', ux * 18 - uy * 13, uy * 18 + ux * 13); });
+  const a5 = (-90 + 300) * Math.PI / 180, ux = Math.cos(a5), uy = Math.sin(a5);
+  add(5, 'H', ux * 16 + uy * 12, uy * 16 - ux * 12);
+  const c6 = add(5, 'C', ux * 28 - uy * 8, uy * 28 + ux * 8); add(c6, 'H', -12, -18); add(c6, 'H', -20, 10); const o6 = add(c6, 'O', 10, -24); add(o6, 'H', 14, -10);
+  return { atoms, bonds };
+}
+function groupShape(parts) {     /* a group like NO3, SO4, OH, NH4, PO4 */
+  const els = flat(parts), ctr = parts.find(p => p.el && p.n === 1 && p.el !== 'H' && els.length > 1) || parts[0];
+  const ligs = els.slice(); ligs.splice(ligs.indexOf(ctr.el), 1);
+  if (ligs.length === 1) return { atoms: [{ e: ctr.el, x: -11, y: 0 }, { e: ligs[0], x: 13, y: 0 }], bonds: [[0, 1]] };
+  return star(ctr.el, ligs, 25);
+}
+function molShape(f) {
+  const parts = parseParts(f), els = flat(parts), uniq = [...new Set(els)];
+  if (f === 'C6H12O6') return glucose();
+  if (uniq.length === 2 && uniq.includes('C') && uniq.includes('H') && els.filter(e => e === 'C').length > 1) return chainCH(els.filter(e => e === 'C').length);
+  if (f === 'H2O2') return { atoms: [{ e: 'O', x: -13, y: 0 }, { e: 'O', x: 13, y: 0 }, { e: 'H', x: -26, y: -16 }, { e: 'H', x: 26, y: 16 }], bonds: [[0, 1], [0, 2], [1, 3]] };
+  const metals = parts.filter(p => p.el && METALS.includes(p.el)), groups = parts.filter(p => p.group);
+  if (metals.length || groups.length) {           /* ionic: metal ions surrounded by groups / anions */
+    const atoms = [], bonds = [], units = [];
+    metals.forEach(m => { for (let k = 0; k < m.n; k++) units.push({ atoms: [{ e: m.el, x: 0, y: 0 }], bonds: [], metal: true }); });
+    groups.forEach(g => { for (let k = 0; k < g.n; k++) units.push(groupShape(g.group)); });
+    const rest = parts.filter(p => p.el && !METALS.includes(p.el));
+    if (rest.length) { if (groups.length || rest.length > 1 || rest.some(p => p.n > 1 && rest.length > 1)) { if (rest.length > 1) units.push(groupShape(rest)); else for (let k = 0; k < rest[0].n; k++) units.push({ atoms: [{ e: rest[0].el, x: 0, y: 0 }], bonds: [] }); }
+      else for (let k = 0; k < rest[0].n; k++) units.push({ atoms: [{ e: rest[0].el, x: 0, y: 0 }], bonds: [] }); }
+    const ms = units.filter(u => u.metal), others = units.filter(u => !u.metal);
+    const place = (u, ox, oy) => { const b0 = atoms.length; u.atoms.forEach(a => atoms.push({ e: a.e, x: a.x + ox, y: a.y + oy })); u.bonds.forEach(([i, j]) => bonds.push([b0 + i, b0 + j])); };
+    if (!groups.length && others.length + ms.length <= 6) {   /* simple ionic like NaCl, Fe2O3: alternate in a row */
+      const seq = []; let a = ms.slice(), b = others.slice(); while (a.length || b.length) { if (a.length) seq.push(a.shift()); if (b.length) seq.push(b.shift()); }
+      const rad = u => Math.max(...u.atoms.map(q => Math.hypot(q.x, q.y) + AR(q.e))), widths = seq.map(u => 2 * rad(u) + 2), tot = widths.reduce((x, y) => x + y, 0); let cx = -tot / 2;
+      seq.forEach((u, k) => { place(u, cx + widths[k] / 2, 0); cx += widths[k]; }); return { atoms, bonds, ionic: true };
+    }
+    ms.forEach((u, k) => place(u, (k - (ms.length - 1) / 2) * 34, 0));
+    const uR = u => Math.max(...u.atoms.map(a => Math.hypot(a.x, a.y) + AR(a.e))), R = Math.max(46, Math.max(...others.map(uR)) + 22) + Math.max(0, others.length - 2) * 6;
+    others.forEach((u, k) => { const a = (-90 + k * 360 / others.length) * Math.PI / 180; place(u, R * Math.cos(a) * (ms.length > 1 ? 1.25 : 1), R * Math.sin(a)); });
+    return { atoms, bonds, ionic: true };
+  }
+  if (uniq.length === 1) { const n = els.length, atoms = els.map((e, k) => ({ e, x: (k - (n - 1) / 2) * 24, y: 0 })), bonds = atoms.slice(1).map((a, k) => [k, k + 1]); return { atoms, bonds }; }
+  const ctrP = parts.find(p => p.el && p.n === 1 && p.el !== 'H') || parts.find(p => p.el !== 'H');
+  const ligs = els.slice(); ligs.splice(ligs.indexOf(ctrP.el), 1);
+  return star(ctrP.el, ligs, 28);
+}
+function molSVG(f, cx, cy) {
+  const m = molShape(f.replace(/^\d+/, '')); let s = '', r = 0;
+  m.atoms.forEach(a => { r = Math.max(r, Math.hypot(a.x, a.y) + AR(a.e)); });
+  m.bonds.forEach(([i, j]) => { const a = m.atoms[i], b = m.atoms[j]; s += `<line x1="${(cx + a.x).toFixed(1)}" y1="${(cy + a.y).toFixed(1)}" x2="${(cx + b.x).toFixed(1)}" y2="${(cy + b.y).toFixed(1)}" stroke="#94a3b8" stroke-width="3.5"/>`; });
+  m.atoms.slice().sort((a, b) => AR(a.e) - AR(b.e)).reverse().forEach(a => { const x = cx + a.x, y = cy + a.y;
+    s += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${AR(a.e)}" fill="${ACOL[a.e] || '#94a3b8'}" stroke="#0c1424" stroke-width="1.5"/><text x="${x.toFixed(1)}" y="${(y + 4).toFixed(1)}" font-size="${a.e.length > 1 ? 8 : 10}" font-weight="700" text-anchor="middle" fill="${['H', 'Al', 'Mg', 'S', 'Ca'].includes(a.e) ? '#0c1424' : '#fff'}">${a.e}</text>`; });
+  if (m.ionic) s = `<circle cx="${cx}" cy="${cy}" r="${(r + 6).toFixed(1)}" fill="rgba(148,163,184,.06)" stroke="#35496f" stroke-dasharray="4 4"/>` + s;
+  return { s, r: r + 8 };
+}
+
+function particles(f, W = 560, H = 170) {
+  const p = parseF(f), n = p.coef, m = molSVG(f, 0, 0); W = Math.max(W, n * (2 * m.r + 14) + 20); H = Math.max(H, 2 * m.r + 20); const gap = Math.max(2 * m.r + 14, Math.min(150, (W - 40) / n)), x0 = W / 2 - gap * (n - 1) / 2;
+  let s = ''; for (let k = 0; k < n; k++) s += `<g transform="translate(${(x0 + k * gap).toFixed(1)} ${H / 2})">${m.s}</g>`;
+  return `<svg viewBox="0 0 ${W} ${H}" class="psvg" role="img" aria-label="${n} molecule${n > 1 ? 's' : ''} of ${f.replace(/^\d+/, '')}">${s}</svg>`;
+}
+const legendA = els => `<p class="legend">${els.map(e => `<span><span class="dot" style="background:${ACOL[e] || '#94a3b8'}"></span>${bySym(e) ? bySym(e).name : e} (${e})</span>`).join('')}</p>`;
+
+
+const PIC = (f, w, h) => `<span class="pp">${particles(f, w, h).replace('class="psvg"', `class="psvg" style="height:${h}px;width:auto"`)}</span>`;
+const EQ = (l, r, h = 54) => `<div class="eqrow">${l.map(f => PIC(f, 10, h)).join('<b>+</b>')}<b>→</b>${r.map(f => PIC(f, 10, h)).join('<b>+</b>')}<span class="eqt">${l.map(fmt).join(' + ')} → ${r.map(fmt).join(' + ')}</span></div>`;
+const FR = (t, b) => `<span class="nfrac"><span>${t}</span><span>${b}</span></span>`;
+const BR = (start, f, ans) => `<div class="nbridge">${start} × ${f} = <b>${ans}</b></div>`;
+const MAP = `<svg viewBox="0 0 420 150" class="nmap"><rect x="150" y="50" width="120" height="44" rx="8" fill="#fff7e6" stroke="#c48a10" stroke-width="2"/><text x="210" y="78" font-size="16" font-weight="800" text-anchor="middle" fill="#16213a">MOLES</text>
+  <rect x="6" y="50" width="100" height="44" rx="8" fill="none" stroke="#1f7aa8" stroke-width="2"/><text x="56" y="78" font-size="14" font-weight="700" text-anchor="middle" fill="#16213a">grams</text>
+  <rect x="314" y="50" width="100" height="44" rx="8" fill="none" stroke="#7c3aed" stroke-width="2"/><text x="364" y="78" font-size="14" font-weight="700" text-anchor="middle" fill="#16213a">particles</text>
+  <rect x="160" y="112" width="100" height="34" rx="8" fill="none" stroke="#1b7f4b" stroke-width="2"/><text x="210" y="134" font-size="13" font-weight="700" text-anchor="middle" fill="#16213a">liters (gas)</text>
+  <path d="M106 72h44M270 72h44M210 94v18" stroke="#41536a" stroke-width="2"/><text x="128" y="44" font-size="10" text-anchor="middle" fill="#1f7aa8">molar mass</text><text x="292" y="44" font-size="10" text-anchor="middle" fill="#7c3aed">6.02 × 10²³</text><text x="262" y="108" font-size="10" fill="#1b7f4b">22.4 L/mol</text></svg>`;
+const BR2 = (start, f1, f2, ans) => `<div class="nbridge">${start} × ${f1} × ${f2} = <b>${ans}</b></div>`;
+const CTAB = `<table class="ntbl"><tr><th>Substance</th><th>c (J/g·°C)</th></tr><tr><td>Water</td><td>4.18</td></tr><tr><td>Aluminum</td><td>0.897</td></tr><tr><td>Sand</td><td>0.83</td></tr><tr><td>Iron</td><td>0.449</td></tr><tr><td>Copper</td><td>0.385</td></tr></table>`;
+const P1 = [{ head: true },
+ { where: T(1), cue: 'What is specific heat?', notes: `
+  <p>The energy needed to raise {{1}} g of a substance by 1 °C. A {{high}} specific heat means it warms up slowly.</p>` },
+ { where: T(2), cue: 'Which warm up fastest?', notes: `
+  <div class="side"><div><p>Water has a very {{high}} specific heat. Metals like {{copper}} have low specific heats and warm up quickly.</p></div><div>${CTAB}</div></div>` },
+ { where: T(3), cue: 'How do I find q?', cueSmall: 'q = m × c × ΔT', notes: `
+  <p>q = m × c × ΔT, where ΔT = final − {{initial}}. <span class="yti"><b>Your turn:</b></span> 50.0 g of water warmed 10.0 °C: q = {{2090|2,090}} J.</p>` },
+ { where: T(4), cue: 'How do I find ΔT?', notes: `
+  <p>Put in the numbers, then {{divide}}. <span class="yti"><b>Your turn:</b></span> 2,090 J into 100 g of water: ΔT = {{5|5.0}} °C.</p>` }
+];
+const P2 = [{ head: true },
+ { where: T(5), cue: 'How do I identify a metal?', notes: `
+  <p>Solve for c, then compare with the table. <span class="yti"><b>Your turn:</b></span> 50.0 g absorbs 449 J and warms 20.0 °C: c = {{0.449}} J/g·°C → {{iron}}.</p>` },
+ { where: T(6), cue: 'What happens in a calorimeter?', notes: `
+  <p>Heat flows from {{hot}} to cold until the temperatures are equal. Heat lost by the metal = heat {{gained}} by the water.</p>` },
+ { where: T(7), cue: 'Real-world uses', notes: `
+  <p>Oceans keep coastal weather {{mild}}. Water cools car engines because its specific heat is {{high}}.</p>` },
+ { where: T(8), cue: 'How do I spot the mistake?', cueSmall: 'Spot the mistake', notes: `
+  <p class="ex"><b>Example:</b> "Water from 20 °C to 30 °C: ΔT = 30." Fix: ΔT = {{10}} °C. <span class="yti"><b>Your turn:</b></span> "Copper heats fast because its c is high." Fix: its c is {{low}}.</p>` }
+];
+
+let blankId = 0; const BLANKS = [];
+function blanksIn(html, sec) {
+  return html.replace(/\{\{([^}]+)\}\}/g, (m, a) => {
+    const alts = a.split('|'), id = 'b' + (blankId++); BLANKS.push({ id, ans: alts[0], alts, sec });
+    const w = Math.max(4, alts[0].length + 2);
+    return `<input class="b" id="${id}" style="width:${w}ch" aria-label="Blank" autocomplete="off">`;
+  });
+}
+let secN = 0;
+/* word bank: this section's answers, each once, in a mixed-up order */
+function wordBank(n) {
+  const seen = new Set(), words = [];
+  BLANKS.filter(b => b.sec === n).forEach(b => { const k = b.ans.toLowerCase(); if (!seen.has(k)) { seen.add(k); words.push(b.ans); } });
+  const h = w => [...w].reduce((t, c) => (t * 31 + c.charCodeAt(0)) % 9973, 7);
+  words.sort((x, y) => h(x) - h(y));
+  const rep = BLANKS.filter(b => b.sec === n).length > words.length;
+  return words.length ? `<div class="wb"><b>Word bank:</b> ${words.map(w => `<span>${w}</span>`).join('')}${rep ? '<i>(some words are used more than once)</i>' : ''}</div>` : '';
+}
+function build(el, rows) {
+  $('#' + el).innerHTML = rows.map(r => r.head ? `<div class="cue colhead">Questions / Cues</div><div class="notes colhead">Notes</div>`
+    : (secN++, `<div class="cue">${r.where}${r.cue}${r.cueSmall ? `<small>${r.cueSmall}</small>` : ''}</div><div class="notes" data-sec="${secN}">${blanksIn(r.notes, secN)}${wordBank(secN)}</div>`)).join('');
+}
+build('p1', P1); build('p2', P2);
+const NSEC = secN;
+
+/* ---------- checking ---------- */
+const SUBS = '₀₁₂₃₄₅₆₇₈₉';
+const norm = s => String(s || '').toLowerCase().replace(/[₀-₉]/g, d => String(SUBS.indexOf(d))).replace(/⁺/g, '+').replace(/[⁻−–]/g, '-').replace(/²/g, '2').replace(/³/g, '3').replace(/\s+/g, '');
+const ok = b => b.alts.some(x => norm(x) === norm($('#' + b.id).value));
+const SUM_KW = [/specific heat/i, /energy|heat/i, /water/i, /temperature|warm/i, /sand|lower|less|5/i];
+function summaryPts() { const t = ($('#summary').value || '').trim(); if (t.length < 30) return 0; const k = SUM_KW.filter(re => re.test(t)).length; return k >= 5 ? 3 : k >= 3 ? 2 : k >= 1 ? 1 : 0; }
+function scores() {
+  const sec = []; for (let n = 1; n <= NSEC; n++) { const bs = BLANKS.filter(b => b.sec === n); sec.push({ n, pts: bs.filter(b => $('#' + b.id).value.trim() && ok(b)).length, max: bs.length }); }
+  const sum = summaryPts();
+  return { sec, sum, total: sec.reduce((a, s) => a + s.pts, 0) + sum, max: BLANKS.length + 3 };
+}
+function checkNotes() {
+  if (keyOn) return;
+  BLANKS.forEach(b => { const el = $('#' + b.id), v = el.value.trim(); el.classList.toggle('right', !!v && ok(b)); el.classList.toggle('wrong', !!v && !ok(b)); el.classList.toggle('empty', !v); });
+  const s = scores(); D.checked = true; save();
+  $('#scorebar').classList.remove('hidden');
+  $('#scorebar').innerHTML = `<b>${s.total} / ${s.max} points</b> · ` + s.sec.map(x => `S${x.n}: ${x.pts}/${x.max}`).join(' · ') + ` · Summary: ${s.sum}/3 <span class="small">Green = right, red = fix it, gray = still blank. Fix and check again anytime.</span>`;
+  $('#sumPts').textContent = `(${s.sum}/3)`;
+}
+/* ---------- saving on this device ---------- */
+let D = { blanks: {}, fields: {}, checked: false };
+let saveTimer, SAVE_OFF = false;
+function save() {
+  if (keyOn || SAVE_OFF) return;
+  BLANKS.forEach(b => { D.blanks[b.id] = $('#' + b.id).value; });
+  $$('[data-save]').forEach(el => { D.fields[el.dataset.save] = el.value; });
+  try { localStorage.setItem(KEY, JSON.stringify(D)); const s = $('#saved'); s.textContent = 'Saved ✓'; clearTimeout(saveTimer); saveTimer = setTimeout(() => { s.textContent = ''; }, 1800); } catch (e) {}
+}
+function load() {
+  try { const d = JSON.parse(localStorage.getItem(KEY) || 'null'); if (d) D = Object.assign(D, d); } catch (e) {}
+  BLANKS.forEach(b => { if (D.blanks[b.id] != null) $('#' + b.id).value = D.blanks[b.id]; });
+  $$('[data-save]').forEach(el => { if (D.fields[el.dataset.save] != null) el.value = D.fields[el.dataset.save]; });
+}
+document.addEventListener('input', e => { if (e.target.matches('input.b,[data-save]')) { e.target.classList.remove('right', 'wrong', 'empty'); save(); } });
+
+/* ---------- teacher answer key ---------- */
+let keyOn = false; const savedVals = {};
+function toggleKey() {
+  if (!keyOn) { const c = window.prompt('Teacher code:'); if (c === null) return; if (c.trim().toLowerCase() !== TEACHER_CODE) { alert("That code isn't right."); return; } }
+  keyOn = !keyOn; document.body.classList.toggle('key', keyOn);
+  const btn = $('#keybtn'); btn.textContent = keyOn ? 'Hide answer key' : 'Teacher: answer key'; btn.classList.toggle('on', keyOn);
+  BLANKS.forEach(b => { const el = $('#' + b.id); if (keyOn) { savedVals[b.id] = el.value; el.value = b.ans; el.readOnly = true; } else { el.value = savedVals[b.id] || ''; el.readOnly = false; } });
+}
+
+/* ---------- safeguards: right-click and copy/paste blocked, two tabs, guest window ---------- */
+['copy', 'cut', 'paste', 'contextmenu'].forEach(ev => document.addEventListener(ev, e => e.preventDefault()));
+function warn(t) { const w = $('#scorebar'); w.classList.remove('hidden'); w.innerHTML = t; }
+try { const bc = new BroadcastChannel('fate-tab-' + KEY), me = Math.random().toString(36).slice(2);
+  bc.onmessage = e => { if (!e.data) return; if (e.data.t === 'hello' && e.data.id !== me) bc.postMessage({ t: 'here', id: me }); if (e.data.t === 'here' && e.data.id !== me && !SAVE_OFF) { SAVE_OFF = true; warn('⚠ These notes are already open in another tab. Saving is off here. Close this tab.'); } };
+  bc.postMessage({ t: 'hello', id: me }); } catch (e) {}
+try { if (navigator.storage && navigator.storage.estimate) navigator.storage.estimate().then(est => { if (est && est.quota && est.quota < 200 * 1024 * 1024) warn('⚠ You seem to be in a guest or incognito window. Your notes will be erased when you close it.'); }); } catch (e) {}
+
+load();
+
+</script>
+</body>
+</html>

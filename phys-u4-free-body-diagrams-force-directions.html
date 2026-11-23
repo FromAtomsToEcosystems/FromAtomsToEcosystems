@@ -243,6 +243,7 @@ body.key .keyonly{display:block!important}
 @media print{.top,#calc{display:none}}
 .phbox{width:100%;min-height:60px;border:1px solid var(--line2);border-radius:8px;padding:8px;background:var(--bg2);color:var(--ink);font-family:inherit;font-size:.92rem;resize:vertical;margin-top:3px}
 </style>
+<style id="nolock">#tEndLock,#endLockBtn,#unlockInfo{display:none!important}</style>
 </head>
 <body>
 <div class="preview-bar" id="previewBar" hidden>Preview mode: nothing is saved or sent. Reload the page to leave preview mode.</div>
@@ -391,6 +392,7 @@ body.key .keyonly{display:block!important}
    ========================================================= */
 const LESSON = 'Free-Body Diagrams and Force Directions';
 const LESSON_ID = 'phys-u4-free-body-diagrams-force-directions';
+function __ord(seed, arr) { let h = 2166136261; for (const ch of String(seed)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } const idx = arr.map((_, i) => i); for (let i = idx.length - 1; i > 0; i--) { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; const j = (h >>> 0) % (i + 1); [idx[i], idx[j]] = [idx[j], idx[i]]; } return idx; }
 const KEY = 'fate_phys_u4_fbd_directions_v1';
 const RECS = KEY + '_records';
 const UNLOCK_CODE = 'directions';           // last word of the lesson title: unlocks the lockdown screen only
@@ -412,7 +414,7 @@ function saveURL() {
   return SAVE_URL_BUILTIN;
 }
 const CLOUD = () => !!saveURL() && /^https?:/.test(location.protocol);
-const LOCK_ON = /github\.io$/i.test(location.hostname) || new URLSearchParams(location.search).has('lockdown');
+const LOCK_ON = false; // lockdown is used on tests only
 const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* =========================================================
@@ -443,7 +445,7 @@ const subs = s => String(s).replace(/\b([vDa])_(ix|iy|fy|fx|x|y)\b/g, (m, b, s2)
 function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toast.T); toast.T = setTimeout(() => el.classList.remove('show'), 2600); }
 function parseNum(s) {
   s = String(s || '').trim().replace(/[−–—]/g, '-').replace(/,/g, '');
-  s = s.replace(/\s*[x×*·]\s*10\s*\^\s*\(?\s*([+-]?\d+)\s*\)?/i, 'e$1');
+  s = s.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺]+/g, m => '^' + [...m].map(ch => ch === '⁻' ? '-' : ch === '⁺' ? '+' : '⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(ch)).join('')).replace(/\s*[x×*·]\s*10\s*\^\s*\(?\s*([+-]?\d+)\s*\)?/i, 'e$1');
   const m = s.match(/-?\d*\.?\d+(e[+-]?\d+)?/i); if (!m) return NaN; return parseFloat(m[0]);
 }
 function close(ans, v, tol) { if (!isFinite(v)) return false; const t = tol != null ? tol : Math.max(0.051, Math.abs(ans) * 0.02); return Math.abs(v - ans) <= t + 1e-9; }
@@ -697,8 +699,8 @@ const QC = {};
 function qcHTML(n, k, q) {
   const id = `s${n}${k}`; QC[id] = Object.assign({ n, k }, q);
   return `<div class="qcwrap" id="qc-${id}"><p><b>${q.label || 'Quick check ' + (k === 'q1' ? 1 : 2)}.</b> ${q.q}</p>${q.fig || ''}
-    <div class="opts">${q.opts.map((o, i) => `<button type="button" class="opt" data-qc="${id}" data-i="${i}"><span class="L">${LET[i]}</span><span>${o}</span></button>`).join('')}</div>
-    <p class="fb" data-fb></p><div class="keyonly keytag">Answer: ${LET[q.a]}</div></div>`;
+    <div class="opts">${__ord(LESSON_ID + id, q.opts).map((i, pos) => `<button type="button" class="opt" data-qc="${id}" data-i="${i}"><span class="L">${LET[pos]}</span><span>${q.opts[i]}</span></button>`).join('')}</div>
+    <p class="fb" data-fb></p><div class="keyonly keytag">Answer: ${LET[__ord(LESSON_ID + id, q.opts).indexOf(q.a)]}</div></div>`;
 }
 function qcCard(n, a, b) { return `<div class="card"><span class="chip qc">Quick check</span>${qcHTML(n, 'q1', a)}${qcHTML(n, 'q2', b)}</div>`; }
 function paintQC(id) {
@@ -1314,6 +1316,14 @@ heroFig(); buildAll(); renderStart(); showNote();
 go(0);
 if (S.student && S.locked && lockLive()) showLock();
 })();
+</script>
+<script>/* sandbox-safe sign-in: works even where form submissions are blocked (e.g., previews) */
+(function () { document.querySelectorAll('#startForm, #signForm').forEach(f => {
+  const go = () => f.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+  f.requestSubmit = go;
+  f.querySelectorAll('button[type="submit"]').forEach(b => { b.type = 'button'; b.addEventListener('click', go); });
+  f.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName === 'INPUT') { e.preventDefault(); go(); } });
+}); })();
 </script>
 </body>
 </html>

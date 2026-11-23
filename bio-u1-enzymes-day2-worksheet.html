@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Enzymes: Day 2 Practice | Biology Unit 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1626; --panel:#142136; --panel2:#1a2a44; --line:#2a3d5f; --line2:#3a5580;
+  --text:#e8eef8; --muted:#a3b4cf; --dim:#7488a9;
+  --leaf:#5fe3a9; --sun:#ffd35c; --r:#ffd35c; --sky:#45c8f0; --ok:#4ade80; --bad:#fb7185; --pink:#f472b6;
+  --font:'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+*{box-sizing:border-box} [hidden]{display:none !important}
+html,body{margin:0}
+body{background-color:var(--bg); background-image:linear-gradient(rgba(110,150,210,.065) 1px,transparent 1px),linear-gradient(90deg,rgba(110,150,210,.065) 1px,transparent 1px); background-size:32px 32px;
+  color:var(--text); font-family:var(--font); font-size:17px; line-height:1.55; -webkit-user-select:none; user-select:none}
+input,textarea{-webkit-user-select:text; user-select:text}
+h1,h2,h3,h4{margin:0 0 .45em; line-height:1.2; font-weight:600}
+h1{font-size:clamp(28px,4.4vw,40px); font-weight:700} h2{font-size:24px} h3{font-size:19px}
+p{margin:0 0 .75em} .muted{color:var(--muted)} .small{font-size:14px}
+sub,sup{font-size:.72em}
+:focus-visible{outline:3px solid var(--r); outline-offset:2px}
+.top{position:sticky; top:0; z-index:20; background:rgba(13,22,38,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+.top-in{max-width:1100px; margin:0 auto; padding:8px 16px; display:flex; gap:12px; align-items:center}
+.brand{font-weight:600; font-size:15px; white-space:nowrap} .brand span{display:block; font-weight:400; font-size:12px; color:var(--muted)}
+.nav{display:flex; gap:6px; flex:1; overflow-x:auto; padding:3px 2px}
+.ntile{flex:0 0 auto; width:54px; height:54px; border-radius:7px; border:1.5px solid var(--line2); background:var(--panel); color:var(--text); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer; position:relative; font:inherit; padding:0}
+.ntile .ic{color:var(--leaf); line-height:0} .ntile .nm{font-size:8.5px; color:var(--muted)}
+.ntile.cur{border-color:var(--r); background:rgba(255,211,92,.14)}
+.ntile.cur .nm{color:var(--r)}
+.secnav{display:flex; justify-content:space-between; gap:10px; margin-top:4px}
+.ntile.done::after{content:'✓'; position:absolute; top:1px; right:4px; font-size:10px; font-weight:700; color:var(--ok)}
+.scorepill{font-size:13px; padding:4px 10px; border-radius:999px; background:var(--panel2); white-space:nowrap}
+.savenote{font-size:12.5px; color:var(--ok); white-space:nowrap} @media (max-width:1300px){ .savenote{display:none} } @media (max-width:900px){ .scorepill{display:none} }
+main{max-width:1000px; margin:0 auto; padding:20px 16px 80px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin:0 0 18px}
+.sec{scroll-margin-top:80px}
+.sechead{display:flex; gap:14px; align-items:center; margin:28px 0 10px}
+.badge{width:66px; height:66px; border-radius:10px; border:2px solid var(--leaf); background:var(--panel); display:flex; align-items:center; justify-content:center; position:relative; flex:0 0 auto; color:var(--leaf)}
+.badge .z{position:absolute; top:3px; left:6px; font-size:11px; color:var(--muted)}
+.meta{color:var(--muted); font-size:14px}
+.btn{font:inherit; font-weight:600; font-size:15px; border-radius:10px; padding:10px 18px; cursor:pointer; border:1.5px solid transparent}
+.btn.primary{background:var(--r); color:#231a00} .btn.ghost{background:transparent; border-color:var(--line2); color:var(--text)}
+.btn.small{padding:6px 12px; font-size:14px} .btn:disabled{opacity:.45; cursor:not-allowed}
+.btnrow{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:12px}
+.field{display:flex; flex-direction:column; gap:4px; font-size:14px; color:var(--muted)}
+.field input,.field select{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px}
+.formgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin:10px 0}
+.fb{margin-top:10px; padding:10px 14px; border-radius:10px; font-size:15px}
+.fb.ok{background:rgba(74,222,128,.12); color:#c9f7d8} .fb.no{background:rgba(251,113,133,.12); color:#ffd3db} .fb.info{background:var(--panel2)}
+.prob{border-top:1px solid var(--line); padding-top:16px; margin-top:16px}
+.prob:first-of-type{border-top:none; padding-top:0; margin-top:0}
+.pq{font-weight:500; margin-bottom:8px}
+.pnum{display:inline-block; min-width:30px; font-weight:700; color:var(--leaf)}
+.pts{font-size:13px; color:var(--muted); font-weight:400}
+.hintbox{background:rgba(255,211,92,.08); border-left:3px solid var(--r); border-radius:8px; padding:8px 12px; margin-top:8px; font-size:15px}
+/* drag and drop */
+.figwrap{position:relative; width:100%}
+.figwrap svg{width:100%; height:auto; display:block; background:#0a1322; border:1px solid var(--line); border-radius:12px}
+.figwrap svg text{font-family:var(--font)}
+.zone{position:absolute; transform:translate(-50%,-50%); min-height:32px; border:2px dashed #8fb3e6; border-radius:9px; background:rgba(13,22,38,.92); color:var(--text); font:inherit; font-size:14px; font-weight:600; display:flex; align-items:center; justify-content:center; padding:2px 6px; cursor:pointer; text-align:center; line-height:1.15}
+.zone.empty{color:var(--dim); font-weight:400; font-size:12.5px}
+.zone.filled{border-style:solid; border-color:var(--r); background:#2b2410}
+.zone.hot{box-shadow:0 0 0 3px rgba(255,211,92,.5)}
+.zone.locked{opacity:.9}
+.zone.ok{border-color:var(--ok); background:#0f2e1d} .zone.no{border-color:var(--bad); background:#3a0f1a}
+.pool{display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 4px; padding:10px; border:1px dashed var(--line2); border-radius:10px; min-height:52px}
+.pool .lbl{width:100%; font-size:12.5px; color:var(--muted)}
+.chip{font:inherit; font-size:15px; font-weight:600; padding:6px 14px; border-radius:999px; border:1.5px solid var(--line2); background:var(--panel2); color:var(--text); cursor:grab; touch-action:none}
+.chip.sel{border-color:var(--r); background:rgba(255,211,92,.16); box-shadow:0 0 0 3px rgba(255,211,92,.35)}
+.bins{display:grid; gap:10px; margin-top:6px}
+.bin{border:2px dashed var(--line2); border-radius:12px; padding:10px; min-height:96px; cursor:pointer; background:rgba(13,22,38,.5)}
+.bin h4{margin:0 0 8px; font-size:15px; color:var(--leaf)} .bin.hot{border-color:var(--r)}
+.bin .chip{cursor:pointer; margin:3px} .bin .chip.ok{border-color:var(--ok); background:#0f2e1d} .bin .chip.no{border-color:var(--bad); background:#3a0f1a}
+.phenbox{background:rgba(244,114,182,.1); border-left:4px solid #f472b6; border-radius:8px; padding:10px 14px; margin-bottom:14px}
+.fixnote{font-size:12px; color:#ffd3db; font-weight:400}
+/* equation */
+.eq{display:flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:20px; font-weight:600; margin:10px 0}
+.eq .zone{position:static; transform:none; min-width:120px; min-height:40px}
+/* choices */
+.opts{display:grid; gap:8px; margin:6px 0}
+.opt{display:flex; gap:12px; align-items:center; text-align:left; background:var(--panel2); border:1.5px solid var(--line); color:var(--text); border-radius:10px; padding:9px 14px; font:inherit; font-size:16px; cursor:pointer}
+.opt .L{flex:0 0 26px; height:26px; border-radius:50%; display:grid; place-items:center; background:var(--bg); font-weight:600; font-size:13px}
+.opt.multi .L{border-radius:6px}
+.opt.sel{border-color:var(--r); background:rgba(255,211,92,.08)} .opt.sel .L{background:var(--r); color:#231a00}
+.opt.ok{border-color:var(--ok); background:rgba(74,222,128,.1)} .opt.no{border-color:var(--bad); background:rgba(251,113,133,.1)}
+.opt:disabled{cursor:default}
+input.blank{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:7px 10px; font:inherit; font-size:16px; width:170px}
+input.blank.ok{border-color:var(--ok)} input.blank.no{border-color:var(--bad)}
+.brow{margin:8px 0}
+/* answer key (teacher) */
+body.keyon .zone[data-key]::after{content:'key: ' attr(data-key); position:absolute; top:100%; left:50%; transform:translateX(-50%); font-size:11px; color:var(--r); white-space:nowrap; margin-top:2px}
+body.keyon .chip[data-key]::after{content:' → ' attr(data-key); font-size:11px; color:var(--r)}
+body.keyon .opt[data-key]{outline:2px dashed var(--r); outline-offset:2px}
+body.keyon input.blank[data-key]+.keytxt{display:inline}
+.wbank2{margin-top:8px; padding:8px 10px; border:1px dashed rgba(163,180,207,.5); border-radius:10px; font-size:14px; line-height:2}
+.wchip{font:inherit; font-size:14px; margin:2px 4px 2px 0; padding:2px 10px; border-radius:999px; border:1px solid rgba(163,180,207,.6); background:rgba(255,255,255,.06); color:inherit; cursor:pointer}
+.wchip:hover{border-color:#ffd35c}
+.wtext{width:100%; min-height:110px; font:inherit; padding:10px; border-radius:10px; border:1.5px solid var(--line,#2a3d5f); background:rgba(255,255,255,.04); color:inherit; resize:vertical}
+.wkey{display:none; margin-top:6px; font-size:14px; color:var(--r,#ffd35c)}
+body.keyon .wkey{display:block}
+.keytxt{display:none; font-size:12px; color:var(--r); margin-left:6px}
+.big{font-size:52px; font-weight:700; color:var(--r); line-height:1}
+table.res{border-collapse:collapse; width:100%} table.res th,table.res td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line)} table.res th{color:var(--muted); font-weight:400}
+.card.nostore{border:2px solid var(--bad); background:rgba(251,113,133,.08)}
+.overlay{position:fixed; inset:0; background:rgba(4,9,18,.94); z-index:100; display:none; align-items:center; justify-content:center; padding:20px}
+.overlay.show{display:flex}
+.modal{background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:24px; max-width:900px; width:100%; max-height:92vh; overflow:auto}
+input.code{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px; width:200px}
+table.nb{border-collapse:collapse; width:100%; font-size:14px} table.nb th,table.nb td{border:1px solid var(--line2); padding:6px 8px} table.nb th{background:var(--panel2)}
+.wide{overflow-x:auto}
+@media (max-width:700px){ .zone{font-size:11px; min-height:26px} .chip{font-size:13px; padding:5px 10px} }
+@media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important} }
+.prob + p,.prob + .phenbox,.prob + .figwrap{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.figwrap svg{background:#f8fafc}
+
+</style>
+</head>
+<body>
+<header class="top" id="top" hidden>
+  <div class="top-in">
+    <div class="brand">Enzymes Day 2<span id="whoami"></span></div>
+    <nav class="nav" id="nav" aria-label="Worksheet parts"></nav>
+    <span class="scorepill" id="scorePill"></span>
+    <span class="savenote" id="saveNote" aria-live="polite"></span>
+    <button class="btn ghost small" id="teachBtn" type="button">Teacher</button>
+  </div>
+</header>
+
+<main>
+  <section id="start">
+    <div class="muted" style="margin-top:8px">Biology · Unit 1: Homeostasis, Macromolecules, and Enzymes · Worksheet · about 30 minutes</div>
+    <h1>Enzymes: Day 2 Practice</h1>
+    <p class="muted" style="font-size:18px;max-width:42em">Read and label new enzyme graphs, calculate reaction rates from catalase data, predict curves, plan the catalase lab, and explain with a claim, evidence, and reasoning.</p>
+    <div class="card"><h3>How it works</h3>
+      <p style="margin:0">Each problem gets <b>two tries</b>. Right on either try earns full credit. If your first try is wrong, you'll be told it isn't right yet (but not the answer), so look again and try once more. Wrong twice and the problem is marked wrong and locks. Stuck? Tap <b>Hint</b> before you check.</p></div>
+    <div class="card nostore" id="noStore" hidden><h3>This browser can't save your work</h3><p style="margin:0">You may be in guest or incognito mode. Sign in to your school account and open the worksheet again.</p></div>
+    <div class="card">
+      <h3 id="signinTitle">Sign in to start</h3>
+      <div id="resumeBox" hidden><p id="resumeText"></p>
+        <div class="btnrow"><button class="btn primary" id="resumeBtn" type="button">Continue my worksheet</button><button class="btn ghost small" id="notMeBtn" type="button">Not you? Sign in as a different student</button></div>
+        <div class="fb no" id="resumeErr" hidden></div></div>
+      <div id="startForm">
+        <div class="formgrid">
+          <label class="field">First name<input id="fFirst" autocomplete="off"></label><label class="field">Last name<input id="fLast" autocomplete="off"></label>
+          <label class="field">Student ID<input id="fId" inputmode="numeric" autocomplete="off"></label>
+          <label class="field">Period<select id="fPeriod"></select></label><label class="field">Teacher<select id="fTeacher"></select></label>
+        </div>
+        <p class="small muted">Your work saves as you go. On any Chromebook, sign in with the same student ID and last name to pick up where you left off.</p>
+        <div class="fb no" id="formErr" hidden></div>
+        <div class="btnrow"><button class="btn primary" type="button" id="startBtn">Start the worksheet</button></div>
+      </div>
+    </div>
+    <p style="text-align:center"><button class="btn ghost" id="teacherLink" type="button">Teacher: enter unlock code</button></p>
+  </section>
+  <div id="ws" hidden></div>
+</main>
+
+<div class="overlay" id="teachOv" role="dialog" aria-modal="true" aria-labelledby="tTitle">
+  <div class="modal"><div id="teachLogin"><h2 id="tTitle">Teacher</h2>
+    <div class="btnrow"><input class="code" id="teachCode" type="password" placeholder="Teacher code" autocomplete="off"><button class="btn primary" id="teachGo" type="button">Open</button><button class="btn ghost" id="teachCancel" type="button">Close</button></div>
+    <div class="fb no" id="teachErr" hidden>That code didn't work.</div></div><div id="teachPanel" hidden></div></div>
+</div>
+<div class="overlay" id="tabOv" role="dialog" aria-modal="true"><div class="modal" style="max-width:520px"><h2>This worksheet is open in another tab</h2><p>To keep your newest work safe, this copy stopped saving. Close the extra tab, then reload this one.</p><div class="btnrow"><button class="btn primary" type="button" onclick="location.reload()">Reload with my newest work</button></div></div></div>
+
+<script src="sheets-config.js"></script>
+<script>
+(function(){
+'use strict';
+/* ============================== SETTINGS ============================== */
+const LESSON_TITLE='Enzymes';           // unlock code = last word of this title
+const UNLOCK_CODE=LESSON_TITLE.trim().split(/\s+/).pop();
+const TEACHER_CODE='Teacher007';   // universal teacher-tools code
+const codeIs=(v,c)=>String(v||'').trim().toLowerCase()===String(c).toLowerCase();
+const WS_ID='bio-u1-enzymes-day2-worksheet', ACTIVITY='Enzymes Day 2 Worksheet';
+const BACKUP_URL='https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const SAVE_URL_BUILTIN='https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';
+const BACKUP_TEACHERS=['Austin','Mueller','McCue','Arce','Trimm','Garcia','Trimm/Callanan','Callanan'], BACKUP_PERIODS=['1','2','3','4','5','6','7','8'];
+const STORE='enzymesDay2Worksheet_v1', RECS='enzymesDay2Worksheet_records_v1';
+/* ===================================================================== */
+const teacherList=()=>{ try{ if(typeof TEACHERS!=='undefined'&&Array.isArray(TEACHERS)&&TEACHERS.length) return TEACHERS.map(String); }catch(e){} return BACKUP_TEACHERS; };
+const periodList=()=>{ try{ if(typeof PERIODS!=='undefined'&&Array.isArray(PERIODS)&&PERIODS.length) return PERIODS.map(String); }catch(e){} return BACKUP_PERIODS; };
+const sheetURL=()=>{ try{ if(typeof SHEETS_WEBHOOK_URL!=='undefined'&&SHEETS_WEBHOOK_URL&&String(SHEETS_WEBHOOK_URL).indexOf('PASTE')<0) return String(SHEETS_WEBHOOK_URL); }catch(e){} return BACKUP_URL; };
+const saveURL=()=>{ try{ if(typeof SAVE_WEBHOOK_URL!=='undefined'&&SAVE_WEBHOOK_URL&&String(SAVE_WEBHOOK_URL).indexOf('PASTE')<0) return String(SAVE_WEBHOOK_URL); }catch(e){} return SAVE_URL_BUILTIN; };
+const LOCKDOWN=false;   // worksheets never lock down
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const strip=s=>String(s).replace(/<[^>]+>/g,'');
+function h(tag,attrs,html){ const e=document.createElement(tag); if(attrs) for(const k in attrs){ if(attrs[k]===false||attrs[k]==null) continue; if(k==='class') e.className=attrs[k]; else if(k==='hidden') e.hidden=!!attrs[k]; else e.setAttribute(k,attrs[k]); } if(html!=null) e.innerHTML=html; return e; }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* ---------- state + saving ---------- */
+function fresh(){ return {ws:WS_ID, student:null, p:{}, ord:{}, locks:0, locked:false, lockOff:false, submittedAt:null, sentAt:null}; }
+let S; try{ S=JSON.parse(localStorage.getItem(STORE)); }catch(e){} if(!S||S.ws!==WS_ID) S=fresh();
+let STORAGE_OK=true, saveBlocked=false;
+try{ localStorage.setItem('__ps_t','1'); STORAGE_OK=localStorage.getItem('__ps_t')==='1'; localStorage.removeItem('__ps_t'); }catch(e){ STORAGE_OK=false; }
+function save(){
+  if(saveBlocked) return;
+  if(S.preview){ note('Preview: nothing is saved'); return; }
+  try{ const raw=localStorage.getItem(STORE); if(raw){ const st=JSON.parse(raw); if(st&&st.ws===WS_ID&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); return; } }
+    S.rev=(S.rev||0)+1; S.updatedAt=Date.now(); localStorage.setItem(STORE,JSON.stringify(S)); note(); cloudSave(false); }catch(e){}
+}
+window.addEventListener('storage',e=>{ if(e.key!==STORE||!e.newValue) return; try{ const st=JSON.parse(e.newValue); if(st&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); } }catch(_){} });
+const saveKey=st=>(String(st.id||'').replace(/\s+/g,'')+'-'+String(st.last||'').toLowerCase().replace(/[^a-z]/g,'')).toLowerCase();
+const checkedCount=st=>Object.values((st||S).p).filter(x=>x&&x.checked).length;
+let cloudTimer=null, cloudDirty=false, cloudBusy=false, cloudAt=null, cloudErr=false;
+const cloudOK=()=>!!saveURL()&&S.student&&!saveBlocked&&!S.preview;
+function cloudBody(){ const st=S.student||{}, sc=scoreAll();
+  return new URLSearchParams({code:saveKey(st), lesson:WS_ID, ver:String(S.updatedAt||Date.now()), prog:String((S.submittedAt?100000:0)+checkedCount(S)), studentId:st.id||'', lastName:st.last||'', firstName:st.first||'', period:st.period||'', teacher:st.teacher||'',
+    summary:S.submittedAt?`Turned in · ${sc.total}/${sc.max}`:`${checkedCount(S)} of ${PROBS.length} problems checked`, data:JSON.stringify(S)}); }
+function cloudSave(soon){ if(!cloudOK()) return; cloudDirty=true; if(soon){ clearTimeout(cloudTimer); cloudTimer=setTimeout(cloudFlush,1200); } else if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); }
+async function cloudFlush(){ cloudTimer=null; if(!cloudOK()||!cloudDirty) return; if(cloudBusy){ cloudTimer=setTimeout(cloudFlush,4000); return; } cloudBusy=true; cloudDirty=false;
+  try{ await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); cloudAt=new Date(); cloudErr=false; }catch(e){ cloudDirty=true; cloudErr=true; if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); } finally{ cloudBusy=false; note(); } }
+function cloudBeacon(){ if(!cloudOK()||!cloudDirty) return; try{ if(navigator.sendBeacon&&navigator.sendBeacon(saveURL(),cloudBody())) cloudDirty=false; }catch(e){} }
+async function cloudLoad(st){ const ctrl=new AbortController(), t=setTimeout(()=>ctrl.abort(),5000);
+  try{ const r=await fetch(saveURL()+'?'+new URLSearchParams({code:saveKey(st),lesson:WS_ID}),{signal:ctrl.signal}); const j=await r.json(); if(j&&j.found&&j.data){ const d=JSON.parse(j.data); if(d&&d.ws===WS_ID) return {status:'found',data:d}; } return {status:'none'}; }
+  catch(e){ return {status:'error'}; } finally{ clearTimeout(t); } }
+function adopt(ns){ let sr=0; try{ const raw=localStorage.getItem(STORE); if(raw) sr=JSON.parse(raw).rev||0; }catch(e){} ns.rev=Math.max(ns.rev||0,sr); S=ns; saveBlocked=false; save(); }
+function note(msg){ const n=$('#saveNote'); if(!n) return; const tm=d=>d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}); n.textContent=msg||(cloudErr?'✓ Saved on this Chromebook':'✓ Saved '+tm(new Date())+(cloudAt?' · backed up '+tm(cloudAt):'')); }
+document.addEventListener('visibilitychange',()=>{ if(document.hidden){ save(); cloudBeacon(); } });
+window.addEventListener('pagehide',()=>{ save(); cloudBeacon(); });
+
+/* ============================== DIAGRAMS ============================== */
+const FIG={};
+
+/* ============================== PROBLEMS ============================== */
+const PARTS=[
+ {k:'P1', label:'Read graphs', title:'Reading enzyme graphs: a hot-spring enzyme', min:6, icon:'<path d="M3 20h18M3 20V4"/><path d="M4 18c3-12 6-12 8 0M10 18c3-12 6-12 9 0"/>'},
+ {k:'P2', label:'Calculate', title:'Calculating reaction rates: catalase data', min:7, icon:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 11h2M12 11h2M8 15h2M12 15h2M16 11v4"/>'},
+ {k:'P3', label:'Predict', title:'Predict the curve', min:5, icon:'<path d="M3 20h18M3 20V4"/><path d="M5 17c4-1 6-9 14-10" stroke-dasharray="2 2"/>'},
+ {k:'P4', label:'Design', title:'Planning the catalase lab', min:5, icon:'<path d="M9 3v6L4 19a2 2 0 0 0 2 3h12a2 2 0 0 0 2-3L15 9V3"/><path d="M8 3h8M7 15h10"/>'},
+ {k:'P5', label:'CER', title:'Explain with CER', min:6, icon:'<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>'},
+ {k:'P6', label:'Grade', title:'Your grade', min:1, icon:'<rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4V2.5h6V4"/><path d="M8.5 13l2.5 2.5 4.5-5"/>'}
+];
+const KFIG={"w_taq": "<svg role=\"img\" aria-label=\"Graph of a human enzyme and a hot-spring enzyme. Three blank label boxes.\" viewBox=\"0 0 640 360\" role=\"img\" aria-label=\"A graph of two enzymes. A human enzyme peaks near 37 \u00b0C. An enzyme from hot-spring bacteria peaks near 75 \u00b0C.\"><rect width=\"640\" height=\"360\" rx=\"14\" fill=\"#ffffff\"/><line x1=\"70\" y1=\"308.0\" x2=\"618\" y2=\"308.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"312.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"70\" y1=\"256.0\" x2=\"618\" y2=\"256.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"260.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">20</text><line x1=\"70\" y1=\"204.0\" x2=\"618\" y2=\"204.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"208.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">40</text><line x1=\"70\" y1=\"152.0\" x2=\"618\" y2=\"152.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"156.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">60</text><line x1=\"70\" y1=\"100.0\" x2=\"618\" y2=\"100.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"104.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">80</text><line x1=\"70\" y1=\"48.0\" x2=\"618\" y2=\"48.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"52.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">100</text><line x1=\"70.0\" y1=\"308\" x2=\"70.0\" y2=\"313\" stroke=\"#475569\"/><text x=\"70.0\" y=\"327\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"124.8\" y1=\"308\" x2=\"124.8\" y2=\"313\" stroke=\"#475569\"/><text x=\"124.8\" y=\"327\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">10</text><line x1=\"179.6\" y1=\"308\" x2=\"179.6\" y2=\"313\" stroke=\"#475569\"/><text x=\"179.6\" y=\"327\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">20</text><line x1=\"234.4\" y1=\"308\" x2=\"234.4\" y2=\"313\" stroke=\"#475569\"/><text x=\"234.4\" y=\"327\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">30</text><line x1=\"289.2\" y1=\"308\" x2=\"289.2\" y2=\"313\" stroke=\"#475569\"/><text x=\"289.2\" y=\"327\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">40</text><line x1=\"344.0\" y1=\"308\" x2=\"344.0\" y2=\"313\" stroke=\"#475569\"/><text x=\"344.0\" y=\"327\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">50</text><line x1=\"398.8\" y1=\"308\" x2=\"398.8\" y2=\"313\" stroke=\"#475569\"/><text x=\"398.8\" y=\"327\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">60</text><line x1=\"453.6\" y1=\"308\" x2=\"453.6\" y2=\"313\" stroke=\"#475569\"/><text x=\"453.6\" y=\"327\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">70</text><line x1=\"508.4\" y1=\"308\" x2=\"508.4\" y2=\"313\" stroke=\"#475569\"/><text x=\"508.4\" y=\"327\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">80</text><line x1=\"563.2\" y1=\"308\" x2=\"563.2\" y2=\"313\" stroke=\"#475569\"/><text x=\"563.2\" y=\"327\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">90</text><line x1=\"618.0\" y1=\"308\" x2=\"618.0\" y2=\"313\" stroke=\"#475569\"/><text x=\"618.0\" y=\"327\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">100</text><defs><clipPath id=\"q16gc_30\"><rect x=\"70\" y=\"14\" width=\"554\" height=\"296\"/></clipPath></defs><g clip-path=\"url(#q16gc_30)\"><path d=\"M70.0,299.5L72.7,298.7L75.5,297.8L78.2,296.9L81.0,295.8L83.7,294.7L86.4,293.6L89.2,292.3L91.9,290.9L94.7,289.5L97.4,287.9L100.1,286.2L102.9,284.5L105.6,282.6L108.4,280.6L111.1,278.5L113.8,276.2L116.6,273.9L119.3,271.4L122.1,268.7L124.8,266.0L127.5,263.1L130.3,260.0L133.0,256.8L135.8,253.5L138.5,250.0L141.2,246.4L144.0,242.6L146.7,238.7L149.5,234.7L152.2,230.5L154.9,226.1L157.7,221.7L160.4,217.1L163.2,212.4L165.9,207.5L168.6,202.6L171.4,197.5L174.1,192.3L176.9,187.1L179.6,181.8L182.3,176.4L185.1,170.9L187.8,165.4L190.6,159.9L193.3,154.3L196.0,148.7L198.8,143.1L201.5,137.6L204.3,132.1L207.0,126.6L209.7,121.2L212.5,115.9L215.2,110.6L218.0,105.5L220.7,100.5L223.4,95.7L226.2,91.0L228.9,86.4L231.7,82.1L234.4,78.0L237.1,74.1L239.9,70.4L242.6,66.9L245.4,63.8L248.1,60.8L250.8,58.2L253.6,55.8L256.3,53.8L259.1,52.0L261.8,50.6L264.5,49.5L267.3,48.6L270.0,48.2L272.8,48.0L275.5,48.8L278.2,51.2L281.0,55.1L283.7,60.5L286.5,67.3L289.2,75.3L291.9,84.5L294.7,94.6L297.4,105.5L300.2,117.0L302.9,129.0L305.6,141.3L308.4,153.7L311.1,166.0L313.9,178.2L316.6,190.0L319.3,201.4L322.1,212.4L324.8,222.7L327.6,232.4L330.3,241.3L333.0,249.6L335.8,257.2L338.5,264.1L341.3,270.2L344.0,275.7L346.7,280.6L349.5,284.9L352.2,288.6L355.0,291.8L357.7,294.6L360.4,297.0L363.2,299.0L365.9,300.7L368.7,302.1L371.4,303.2L374.1,304.2L376.9,305.0L379.6,305.6L382.4,306.1L385.1,306.5L387.8,306.9L390.6,307.1L393.3,307.3L396.1,307.5L398.8,307.6L401.5,307.7L404.3,307.8L407.0,307.8L409.8,307.9L412.5,307.9L415.2,307.9L418.0,308.0L420.7,308.0L423.5,308.0L426.2,308.0L428.9,308.0L431.7,308.0L434.4,308.0L437.2,308.0L439.9,308.0L442.6,308.0L445.4,308.0L448.1,308.0L450.9,308.0L453.6,308.0L456.3,308.0L459.1,308.0L461.8,308.0L464.6,308.0L467.3,308.0L470.0,308.0L472.8,308.0L475.5,308.0L478.3,308.0L481.0,308.0L483.7,308.0L486.5,308.0L489.2,308.0L492.0,308.0L494.7,308.0L497.4,308.0L500.2,308.0L502.9,308.0L505.7,308.0L508.4,308.0L511.1,308.0L513.9,308.0L516.6,308.0L519.4,308.0L522.1,308.0L524.8,308.0L527.6,308.0L530.3,308.0L533.1,308.0L535.8,308.0L538.5,308.0L541.3,308.0L544.0,308.0L546.8,308.0L549.5,308.0L552.2,308.0L555.0,308.0L557.7,308.0L560.5,308.0L563.2,308.0L565.9,308.0L568.7,308.0L571.4,308.0L574.2,308.0L576.9,308.0L579.6,308.0L582.4,308.0L585.1,308.0L587.9,308.0L590.6,308.0L593.3,308.0L596.1,308.0L598.8,308.0L601.6,308.0L604.3,308.0L607.0,308.0L609.8,308.0L612.5,308.0L615.3,308.0L618.0,308.0\" stroke=\"#7c3aed\" stroke-width=\"3.6\" fill=\"none\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><path d=\"M70.0,308.0L83.7,308.0L97.4,307.9L111.1,307.9L124.8,307.8L138.5,307.7L152.2,307.5L165.9,307.2L179.6,306.6L193.3,305.8L207.0,304.6L220.7,302.8L234.4,300.3L248.1,296.7L261.8,291.8L275.5,285.4L289.2,277.0L302.9,266.4L316.6,253.5L330.3,238.1L344.0,220.2L357.7,200.0L371.4,178.2L385.1,155.2L398.8,132.1L412.5,109.8L426.2,89.4L439.9,72.2L453.6,59.0L467.3,50.8L481.0,48.0L494.7,67.3L508.4,117.0L522.1,178.2L535.8,232.4L549.5,270.2L563.2,291.8L576.9,302.1L590.6,306.1L604.3,307.5L618.0,307.9\" stroke=\"#ea580c\" stroke-width=\"3.6\" fill=\"none\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></g><text x=\"272.8\" y=\"38.0\" text-anchor=\"middle\" font-size=\"13\" fill=\"#7c3aed\" font-weight=\"700\">human enzyme</text><text x=\"481.0\" y=\"38.0\" text-anchor=\"middle\" font-size=\"13\" fill=\"#ea580c\" font-weight=\"700\">hot-spring enzyme</text><line x1=\"70\" y1=\"308\" x2=\"618\" y2=\"308\" stroke=\"#475569\" stroke-width=\"1.6\"/><line x1=\"70\" y1=\"308\" x2=\"70\" y2=\"16\" stroke=\"#475569\" stroke-width=\"1.6\"/><text x=\"344\" y=\"348\" text-anchor=\"middle\" font-size=\"13.5\" fill=\"#16213a\" font-weight=\"700\">Temperature (\u00b0C)</text><text x=\"18\" y=\"165\" transform=\"rotate(-90 18 165)\" text-anchor=\"middle\" font-size=\"13\" fill=\"#16213a\" font-weight=\"700\">Reaction rate (% of fastest)</text></svg>", "w_taqZ": [{"id": "a", "x": 160, "y": 96, "ans": "human optimum", "w": 130}, {"id": "b", "x": 520, "y": 110, "ans": "hot-spring optimum", "w": 150}, {"id": "c", "x": 350, "y": 270, "ans": "human enzyme denatured", "w": 170}], "o2Table": [[0, 0], [1, 14], [2, 26], [3, 36], [4, 42], [5, 45], [6, 46]], "o2Chart": "<svg role=\"img\" aria-label=\"Graph of oxygen gas collected: 0, 14, 26, 36, 42, 45, 46 mL from minute 0 to 6.\" viewBox=\"0 0 640 340\" role=\"img\" aria-label=\"A line graph\"><rect width=\"640\" height=\"340\" rx=\"14\" fill=\"#ffffff\"/><line x1=\"70\" y1=\"288.0\" x2=\"618\" y2=\"288.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"292.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"70\" y1=\"234.8\" x2=\"618\" y2=\"234.8\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"238.8\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">10</text><line x1=\"70\" y1=\"181.6\" x2=\"618\" y2=\"181.6\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"185.6\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">20</text><line x1=\"70\" y1=\"128.4\" x2=\"618\" y2=\"128.4\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"132.4\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">30</text><line x1=\"70\" y1=\"75.2\" x2=\"618\" y2=\"75.2\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"79.2\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">40</text><line x1=\"70\" y1=\"22.0\" x2=\"618\" y2=\"22.0\" stroke=\"#e2e8f0\"/><text x=\"63\" y=\"26.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">50</text><line x1=\"70.0\" y1=\"288\" x2=\"70.0\" y2=\"293\" stroke=\"#475569\"/><text x=\"70.0\" y=\"307\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"161.3\" y1=\"288\" x2=\"161.3\" y2=\"293\" stroke=\"#475569\"/><text x=\"161.3\" y=\"307\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">1</text><line x1=\"252.7\" y1=\"288\" x2=\"252.7\" y2=\"293\" stroke=\"#475569\"/><text x=\"252.7\" y=\"307\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">2</text><line x1=\"344.0\" y1=\"288\" x2=\"344.0\" y2=\"293\" stroke=\"#475569\"/><text x=\"344.0\" y=\"307\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">3</text><line x1=\"435.3\" y1=\"288\" x2=\"435.3\" y2=\"293\" stroke=\"#475569\"/><text x=\"435.3\" y=\"307\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">4</text><line x1=\"526.7\" y1=\"288\" x2=\"526.7\" y2=\"293\" stroke=\"#475569\"/><text x=\"526.7\" y=\"307\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">5</text><line x1=\"618.0\" y1=\"288\" x2=\"618.0\" y2=\"293\" stroke=\"#475569\"/><text x=\"618.0\" y=\"307\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">6</text><defs><clipPath id=\"q23gc_37\"><rect x=\"70\" y=\"14\" width=\"554\" height=\"276\"/></clipPath></defs><g clip-path=\"url(#q23gc_37)\"><path d=\"M70.0,288.0L161.3,213.5L252.7,149.7L344.0,96.5L435.3,64.6L526.7,48.6L618.0,43.3\" stroke=\"#0369a1\" stroke-width=\"3\" fill=\"none\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><circle cx=\"70.0\" cy=\"288.0\" r=\"5\" fill=\"#0369a1\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"161.3\" cy=\"213.5\" r=\"5\" fill=\"#0369a1\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"252.7\" cy=\"149.7\" r=\"5\" fill=\"#0369a1\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"344.0\" cy=\"96.5\" r=\"5\" fill=\"#0369a1\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"435.3\" cy=\"64.6\" r=\"5\" fill=\"#0369a1\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"526.7\" cy=\"48.6\" r=\"5\" fill=\"#0369a1\" stroke=\"#ffffff\" stroke-width=\"1.5\"/><circle cx=\"618.0\" cy=\"43.3\" r=\"5\" fill=\"#0369a1\" stroke=\"#ffffff\" stroke-width=\"1.5\"/></g><line x1=\"70\" y1=\"288\" x2=\"618\" y2=\"288\" stroke=\"#475569\" stroke-width=\"1.6\"/><line x1=\"70\" y1=\"288\" x2=\"70\" y2=\"16\" stroke=\"#475569\" stroke-width=\"1.6\"/><text x=\"344\" y=\"328\" text-anchor=\"middle\" font-size=\"13.5\" fill=\"#16213a\" font-weight=\"700\">Time (minutes)</text><text x=\"18\" y=\"155\" transform=\"rotate(-90 18 155)\" text-anchor=\"middle\" font-size=\"13\" fill=\"#16213a\" font-weight=\"700\">Oxygen gas collected (mL)</text></svg>", "g_peak": "<svg style=\"width:190px;height:auto;display:block\" viewBox=\"0 0 300 190\" role=\"img\" aria-label=\"A curve with one peak in the middle\"><rect width=\"300\" height=\"190\" rx=\"14\" fill=\"#ffffff\"/><line x1=\"46\" y1=\"148.0\" x2=\"278\" y2=\"148.0\" stroke=\"#e2e8f0\"/><text x=\"39\" y=\"152.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"46\" y1=\"90.7\" x2=\"278\" y2=\"90.7\" stroke=\"#e2e8f0\"/><text x=\"39\" y=\"94.7\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">50</text><line x1=\"46\" y1=\"33.5\" x2=\"278\" y2=\"33.5\" stroke=\"#e2e8f0\"/><text x=\"39\" y=\"37.5\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">100</text><line x1=\"46.0\" y1=\"148\" x2=\"46.0\" y2=\"153\" stroke=\"#475569\"/><text x=\"46.0\" y=\"167\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"162.0\" y1=\"148\" x2=\"162.0\" y2=\"153\" stroke=\"#475569\"/><text x=\"162.0\" y=\"167\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">5</text><line x1=\"278.0\" y1=\"148\" x2=\"278.0\" y2=\"153\" stroke=\"#475569\"/><text x=\"278.0\" y=\"167\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">10</text><defs><clipPath id=\"q17gc_31\"><rect x=\"46\" y=\"14\" width=\"238\" height=\"136\"/></clipPath></defs><g clip-path=\"url(#q17gc_31)\"><path d=\"M46.0,148.0L48.3,148.0L50.6,148.0L53.0,148.0L55.3,148.0L57.6,148.0L59.9,147.9L62.2,147.9L64.6,147.9L66.9,147.8L69.2,147.8L71.5,147.7L73.8,147.6L76.2,147.5L78.5,147.3L80.8,147.0L83.1,146.7L85.4,146.4L87.8,145.9L90.1,145.3L92.4,144.6L94.7,143.7L97.0,142.6L99.4,141.4L101.7,139.8L104.0,138.0L106.3,135.9L108.6,133.5L111.0,130.7L113.3,127.5L115.6,124.0L117.9,120.0L120.2,115.7L122.6,111.0L124.9,105.9L127.2,100.4L129.5,94.7L131.8,88.8L134.2,82.7L136.5,76.6L138.8,70.5L141.1,64.5L143.4,58.8L145.8,53.4L148.1,48.5L150.4,44.1L152.7,40.4L155.0,37.4L157.4,35.2L159.7,33.9L162.0,33.5L164.3,33.9L166.6,35.2L169.0,37.4L171.3,40.4L173.6,44.1L175.9,48.5L178.2,53.4L180.6,58.8L182.9,64.5L185.2,70.5L187.5,76.6L189.8,82.7L192.2,88.8L194.5,94.7L196.8,100.4L199.1,105.9L201.4,111.0L203.8,115.7L206.1,120.0L208.4,124.0L210.7,127.5L213.0,130.7L215.4,133.5L217.7,135.9L220.0,138.0L222.3,139.8L224.6,141.4L227.0,142.6L229.3,143.7L231.6,144.6L233.9,145.3L236.2,145.9L238.6,146.4L240.9,146.7L243.2,147.0L245.5,147.3L247.8,147.5L250.2,147.6L252.5,147.7L254.8,147.8L257.1,147.8L259.4,147.9L261.8,147.9L264.1,147.9L266.4,148.0L268.7,148.0L271.0,148.0L273.4,148.0L275.7,148.0L278.0,148.0\" stroke=\"#2563eb\" stroke-width=\"3\" fill=\"none\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></g><line x1=\"46\" y1=\"148\" x2=\"278\" y2=\"148\" stroke=\"#475569\" stroke-width=\"1.6\"/><line x1=\"46\" y1=\"148\" x2=\"46\" y2=\"16\" stroke=\"#475569\" stroke-width=\"1.6\"/><text x=\"162\" y=\"178\" text-anchor=\"middle\" font-size=\"13.5\" fill=\"#16213a\" font-weight=\"700\"> </text><text x=\"18\" y=\"85\" transform=\"rotate(-90 18 85)\" text-anchor=\"middle\" font-size=\"13\" fill=\"#16213a\" font-weight=\"700\">Rate</text></svg>", "g_level": "<svg style=\"width:190px;height:auto;display:block\" viewBox=\"0 0 300 190\" role=\"img\" aria-label=\"A curve that rises fast, then levels off\"><rect width=\"300\" height=\"190\" rx=\"14\" fill=\"#ffffff\"/><line x1=\"46\" y1=\"148.0\" x2=\"278\" y2=\"148.0\" stroke=\"#e2e8f0\"/><text x=\"39\" y=\"152.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"46\" y1=\"90.7\" x2=\"278\" y2=\"90.7\" stroke=\"#e2e8f0\"/><text x=\"39\" y=\"94.7\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">50</text><line x1=\"46\" y1=\"33.5\" x2=\"278\" y2=\"33.5\" stroke=\"#e2e8f0\"/><text x=\"39\" y=\"37.5\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">100</text><line x1=\"46.0\" y1=\"148\" x2=\"46.0\" y2=\"153\" stroke=\"#475569\"/><text x=\"46.0\" y=\"167\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"162.0\" y1=\"148\" x2=\"162.0\" y2=\"153\" stroke=\"#475569\"/><text x=\"162.0\" y=\"167\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">5</text><line x1=\"278.0\" y1=\"148\" x2=\"278.0\" y2=\"153\" stroke=\"#475569\"/><text x=\"278.0\" y=\"167\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">10</text><defs><clipPath id=\"q18gc_32\"><rect x=\"46\" y=\"14\" width=\"238\" height=\"136\"/></clipPath></defs><g clip-path=\"url(#q18gc_32)\"><path d=\"M46.0,148.0L48.3,139.2L50.6,131.6L53.0,125.1L55.3,119.4L57.6,114.3L59.9,109.8L62.2,105.8L64.6,102.2L66.9,98.9L69.2,95.9L71.5,93.2L73.8,90.7L76.2,88.4L78.5,86.3L80.8,84.4L83.1,82.5L85.4,80.9L87.8,79.3L90.1,77.8L92.4,76.4L94.7,75.1L97.0,73.9L99.4,72.7L101.7,71.6L104.0,70.6L106.3,69.6L108.6,68.7L111.0,67.8L113.3,67.0L115.6,66.2L117.9,65.4L120.2,64.7L122.6,64.0L124.9,63.3L127.2,62.7L129.5,62.1L131.8,61.5L134.2,60.9L136.5,60.4L138.8,59.9L141.1,59.4L143.4,58.9L145.8,58.4L148.1,58.0L150.4,57.6L152.7,57.2L155.0,56.8L157.4,56.4L159.7,56.0L162.0,55.6L164.3,55.3L166.6,54.9L169.0,54.6L171.3,54.3L173.6,54.0L175.9,53.7L178.2,53.4L180.6,53.1L182.9,52.8L185.2,52.5L187.5,52.3L189.8,52.0L192.2,51.8L194.5,51.5L196.8,51.3L199.1,51.1L201.4,50.9L203.8,50.6L206.1,50.4L208.4,50.2L210.7,50.0L213.0,49.8L215.4,49.6L217.7,49.4L220.0,49.3L222.3,49.1L224.6,48.9L227.0,48.7L229.3,48.6L231.6,48.4L233.9,48.2L236.2,48.1L238.6,47.9L240.9,47.8L243.2,47.6L245.5,47.5L247.8,47.3L250.2,47.2L252.5,47.1L254.8,46.9L257.1,46.8L259.4,46.7L261.8,46.5L264.1,46.4L266.4,46.3L268.7,46.2L271.0,46.1L273.4,46.0L275.7,45.8L278.0,45.7\" stroke=\"#2563eb\" stroke-width=\"3\" fill=\"none\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></g><line x1=\"46\" y1=\"148\" x2=\"278\" y2=\"148\" stroke=\"#475569\" stroke-width=\"1.6\"/><line x1=\"46\" y1=\"148\" x2=\"46\" y2=\"16\" stroke=\"#475569\" stroke-width=\"1.6\"/><text x=\"162\" y=\"178\" text-anchor=\"middle\" font-size=\"13.5\" fill=\"#16213a\" font-weight=\"700\"> </text><text x=\"18\" y=\"85\" transform=\"rotate(-90 18 85)\" text-anchor=\"middle\" font-size=\"13\" fill=\"#16213a\" font-weight=\"700\">Rate</text></svg>", "g_line": "<svg style=\"width:190px;height:auto;display:block\" viewBox=\"0 0 300 190\" role=\"img\" aria-label=\"A straight line going up\"><rect width=\"300\" height=\"190\" rx=\"14\" fill=\"#ffffff\"/><line x1=\"46\" y1=\"148.0\" x2=\"278\" y2=\"148.0\" stroke=\"#e2e8f0\"/><text x=\"39\" y=\"152.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"46\" y1=\"90.7\" x2=\"278\" y2=\"90.7\" stroke=\"#e2e8f0\"/><text x=\"39\" y=\"94.7\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">50</text><line x1=\"46\" y1=\"33.5\" x2=\"278\" y2=\"33.5\" stroke=\"#e2e8f0\"/><text x=\"39\" y=\"37.5\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">100</text><line x1=\"46.0\" y1=\"148\" x2=\"46.0\" y2=\"153\" stroke=\"#475569\"/><text x=\"46.0\" y=\"167\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"162.0\" y1=\"148\" x2=\"162.0\" y2=\"153\" stroke=\"#475569\"/><text x=\"162.0\" y=\"167\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">5</text><line x1=\"278.0\" y1=\"148\" x2=\"278.0\" y2=\"153\" stroke=\"#475569\"/><text x=\"278.0\" y=\"167\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">10</text><defs><clipPath id=\"q19gc_33\"><rect x=\"46\" y=\"14\" width=\"238\" height=\"136\"/></clipPath></defs><g clip-path=\"url(#q19gc_33)\"><path d=\"M46.0,148.0L48.3,146.9L50.6,145.7L53.0,144.6L55.3,143.4L57.6,142.3L59.9,141.1L62.2,140.0L64.6,138.8L66.9,137.7L69.2,136.5L71.5,135.4L73.8,134.3L76.2,133.1L78.5,132.0L80.8,130.8L83.1,129.7L85.4,128.5L87.8,127.4L90.1,126.2L92.4,125.1L94.7,123.9L97.0,122.8L99.4,121.7L101.7,120.5L104.0,119.4L106.3,118.2L108.6,117.1L111.0,115.9L113.3,114.8L115.6,113.6L117.9,112.5L120.2,111.3L122.6,110.2L124.9,109.1L127.2,107.9L129.5,106.8L131.8,105.6L134.2,104.5L136.5,103.3L138.8,102.2L141.1,101.0L143.4,99.9L145.8,98.7L148.1,97.6L150.4,96.5L152.7,95.3L155.0,94.2L157.4,93.0L159.7,91.9L162.0,90.7L164.3,89.6L166.6,88.4L169.0,87.3L171.3,86.1L173.6,85.0L175.9,83.9L178.2,82.7L180.6,81.6L182.9,80.4L185.2,79.3L187.5,78.1L189.8,77.0L192.2,75.8L194.5,74.7L196.8,73.5L199.1,72.4L201.4,71.3L203.8,70.1L206.1,69.0L208.4,67.8L210.7,66.7L213.0,65.5L215.4,64.4L217.7,63.2L220.0,62.1L222.3,60.9L224.6,59.8L227.0,58.7L229.3,57.5L231.6,56.4L233.9,55.2L236.2,54.1L238.6,52.9L240.9,51.8L243.2,50.6L245.5,49.5L247.8,48.3L250.2,47.2L252.5,46.1L254.8,44.9L257.1,43.8L259.4,42.6L261.8,41.5L264.1,40.3L266.4,39.2L268.7,38.0L271.0,36.9L273.4,35.7L275.7,34.6L278.0,33.5\" stroke=\"#2563eb\" stroke-width=\"3\" fill=\"none\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></g><line x1=\"46\" y1=\"148\" x2=\"278\" y2=\"148\" stroke=\"#475569\" stroke-width=\"1.6\"/><line x1=\"46\" y1=\"148\" x2=\"46\" y2=\"16\" stroke=\"#475569\" stroke-width=\"1.6\"/><text x=\"162\" y=\"178\" text-anchor=\"middle\" font-size=\"13.5\" fill=\"#16213a\" font-weight=\"700\"> </text><text x=\"18\" y=\"85\" transform=\"rotate(-90 18 85)\" text-anchor=\"middle\" font-size=\"13\" fill=\"#16213a\" font-weight=\"700\">Rate</text></svg>", "g_flat": "<svg style=\"width:190px;height:auto;display:block\" viewBox=\"0 0 300 190\" role=\"img\" aria-label=\"A flat line at zero\"><rect width=\"300\" height=\"190\" rx=\"14\" fill=\"#ffffff\"/><line x1=\"46\" y1=\"148.0\" x2=\"278\" y2=\"148.0\" stroke=\"#e2e8f0\"/><text x=\"39\" y=\"152.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"46\" y1=\"90.7\" x2=\"278\" y2=\"90.7\" stroke=\"#e2e8f0\"/><text x=\"39\" y=\"94.7\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">50</text><line x1=\"46\" y1=\"33.5\" x2=\"278\" y2=\"33.5\" stroke=\"#e2e8f0\"/><text x=\"39\" y=\"37.5\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">100</text><line x1=\"46.0\" y1=\"148\" x2=\"46.0\" y2=\"153\" stroke=\"#475569\"/><text x=\"46.0\" y=\"167\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"162.0\" y1=\"148\" x2=\"162.0\" y2=\"153\" stroke=\"#475569\"/><text x=\"162.0\" y=\"167\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">5</text><line x1=\"278.0\" y1=\"148\" x2=\"278.0\" y2=\"153\" stroke=\"#475569\"/><text x=\"278.0\" y=\"167\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">10</text><defs><clipPath id=\"q20gc_34\"><rect x=\"46\" y=\"14\" width=\"238\" height=\"136\"/></clipPath></defs><g clip-path=\"url(#q20gc_34)\"><path d=\"M46.0,147.5L48.3,147.5L50.6,147.5L53.0,147.5L55.3,147.5L57.6,147.5L59.9,147.5L62.2,147.5L64.6,147.5L66.9,147.5L69.2,147.5L71.5,147.5L73.8,147.5L76.2,147.5L78.5,147.5L80.8,147.5L83.1,147.5L85.4,147.5L87.8,147.5L90.1,147.5L92.4,147.5L94.7,147.5L97.0,147.5L99.4,147.5L101.7,147.5L104.0,147.5L106.3,147.5L108.6,147.5L111.0,147.5L113.3,147.5L115.6,147.5L117.9,147.5L120.2,147.5L122.6,147.5L124.9,147.5L127.2,147.5L129.5,147.5L131.8,147.5L134.2,147.5L136.5,147.5L138.8,147.5L141.1,147.5L143.4,147.5L145.8,147.5L148.1,147.5L150.4,147.5L152.7,147.5L155.0,147.5L157.4,147.5L159.7,147.5L162.0,147.5L164.3,147.5L166.6,147.5L169.0,147.5L171.3,147.5L173.6,147.5L175.9,147.5L178.2,147.5L180.6,147.5L182.9,147.5L185.2,147.5L187.5,147.5L189.8,147.5L192.2,147.5L194.5,147.5L196.8,147.5L199.1,147.5L201.4,147.5L203.8,147.5L206.1,147.5L208.4,147.5L210.7,147.5L213.0,147.5L215.4,147.5L217.7,147.5L220.0,147.5L222.3,147.5L224.6,147.5L227.0,147.5L229.3,147.5L231.6,147.5L233.9,147.5L236.2,147.5L238.6,147.5L240.9,147.5L243.2,147.5L245.5,147.5L247.8,147.5L250.2,147.5L252.5,147.5L254.8,147.5L257.1,147.5L259.4,147.5L261.8,147.5L264.1,147.5L266.4,147.5L268.7,147.5L271.0,147.5L273.4,147.5L275.7,147.5L278.0,147.5\" stroke=\"#2563eb\" stroke-width=\"3\" fill=\"none\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></g><line x1=\"46\" y1=\"148\" x2=\"278\" y2=\"148\" stroke=\"#475569\" stroke-width=\"1.6\"/><line x1=\"46\" y1=\"148\" x2=\"46\" y2=\"16\" stroke=\"#475569\" stroke-width=\"1.6\"/><text x=\"162\" y=\"178\" text-anchor=\"middle\" font-size=\"13.5\" fill=\"#16213a\" font-weight=\"700\"> </text><text x=\"18\" y=\"85\" transform=\"rotate(-90 18 85)\" text-anchor=\"middle\" font-size=\"13\" fill=\"#16213a\" font-weight=\"700\">Rate</text></svg>", "g_peakL": "<svg style=\"width:190px;height:auto;display:block\" viewBox=\"0 0 300 190\" role=\"img\" aria-label=\"A curve with a peak near the left side\"><rect width=\"300\" height=\"190\" rx=\"14\" fill=\"#ffffff\"/><line x1=\"46\" y1=\"148.0\" x2=\"278\" y2=\"148.0\" stroke=\"#e2e8f0\"/><text x=\"39\" y=\"152.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"46\" y1=\"90.7\" x2=\"278\" y2=\"90.7\" stroke=\"#e2e8f0\"/><text x=\"39\" y=\"94.7\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">50</text><line x1=\"46\" y1=\"33.5\" x2=\"278\" y2=\"33.5\" stroke=\"#e2e8f0\"/><text x=\"39\" y=\"37.5\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">100</text><line x1=\"46.0\" y1=\"148\" x2=\"46.0\" y2=\"153\" stroke=\"#475569\"/><text x=\"46.0\" y=\"167\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"162.0\" y1=\"148\" x2=\"162.0\" y2=\"153\" stroke=\"#475569\"/><text x=\"162.0\" y=\"167\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">7</text><line x1=\"278.0\" y1=\"148\" x2=\"278.0\" y2=\"153\" stroke=\"#475569\"/><text x=\"278.0\" y=\"167\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">14</text><defs><clipPath id=\"q21gc_35\"><rect x=\"46\" y=\"14\" width=\"238\" height=\"136\"/></clipPath></defs><g clip-path=\"url(#q21gc_35)\"><path d=\"M46.0,124.0L47.7,120.0L49.3,115.7L51.0,111.0L52.6,105.9L54.3,100.4L55.9,94.7L57.6,88.8L59.3,82.7L60.9,76.6L62.6,70.5L64.2,64.5L65.9,58.8L67.5,53.4L69.2,48.5L70.9,44.1L72.5,40.4L74.2,37.4L75.8,35.2L77.5,33.9L79.1,33.5L80.8,33.9L82.5,35.2L84.1,37.4L85.8,40.4L87.4,44.1L89.1,48.5L90.7,53.4L92.4,58.8L94.1,64.5L95.7,70.5L97.4,76.6L99.0,82.7L100.7,88.8L102.3,94.7L104.0,100.4L105.7,105.9L107.3,111.0L109.0,115.7L110.6,120.0L112.3,124.0L113.9,127.5L115.6,130.7L117.3,133.5L118.9,135.9L120.6,138.0L122.2,139.8L123.9,141.4L125.5,142.6L127.2,143.7L128.9,144.6L130.5,145.3L132.2,145.9L133.8,146.4L135.5,146.7L137.1,147.0L138.8,147.3L140.5,147.5L142.1,147.6L143.8,147.7L145.4,147.8L147.1,147.8L148.7,147.9L150.4,147.9L152.1,147.9L153.7,148.0L155.4,148.0L157.0,148.0L158.7,148.0L160.3,148.0L162.0,148.0L163.7,148.0L165.3,148.0L167.0,148.0L168.6,148.0L170.3,148.0L171.9,148.0L173.6,148.0L175.3,148.0L176.9,148.0L178.6,148.0L180.2,148.0L181.9,148.0L183.5,148.0L185.2,148.0L186.9,148.0L188.5,148.0L190.2,148.0L191.8,148.0L193.5,148.0L195.1,148.0L196.8,148.0L198.5,148.0L200.1,148.0L201.8,148.0L203.4,148.0L205.1,148.0L206.7,148.0L208.4,148.0L210.1,148.0L211.7,148.0L213.4,148.0L215.0,148.0L216.7,148.0L218.3,148.0L220.0,148.0L221.7,148.0L223.3,148.0L225.0,148.0L226.6,148.0L228.3,148.0L229.9,148.0L231.6,148.0L233.3,148.0L234.9,148.0L236.6,148.0L238.2,148.0L239.9,148.0L241.5,148.0L243.2,148.0L244.9,148.0L246.5,148.0L248.2,148.0L249.8,148.0L251.5,148.0L253.1,148.0L254.8,148.0L256.5,148.0L258.1,148.0L259.8,148.0L261.4,148.0L263.1,148.0L264.7,148.0L266.4,148.0L268.1,148.0L269.7,148.0L271.4,148.0L273.0,148.0L274.7,148.0L276.3,148.0L278.0,148.0\" stroke=\"#2563eb\" stroke-width=\"3\" fill=\"none\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></g><line x1=\"46\" y1=\"148\" x2=\"278\" y2=\"148\" stroke=\"#475569\" stroke-width=\"1.6\"/><line x1=\"46\" y1=\"148\" x2=\"46\" y2=\"16\" stroke=\"#475569\" stroke-width=\"1.6\"/><text x=\"162\" y=\"178\" text-anchor=\"middle\" font-size=\"13.5\" fill=\"#16213a\" font-weight=\"700\">pH</text><text x=\"18\" y=\"85\" transform=\"rotate(-90 18 85)\" text-anchor=\"middle\" font-size=\"13\" fill=\"#16213a\" font-weight=\"700\">Rate</text></svg>", "g_peakR": "<svg style=\"width:190px;height:auto;display:block\" viewBox=\"0 0 300 190\" role=\"img\" aria-label=\"A curve with a peak near the right side\"><rect width=\"300\" height=\"190\" rx=\"14\" fill=\"#ffffff\"/><line x1=\"46\" y1=\"148.0\" x2=\"278\" y2=\"148.0\" stroke=\"#e2e8f0\"/><text x=\"39\" y=\"152.0\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"46\" y1=\"90.7\" x2=\"278\" y2=\"90.7\" stroke=\"#e2e8f0\"/><text x=\"39\" y=\"94.7\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">50</text><line x1=\"46\" y1=\"33.5\" x2=\"278\" y2=\"33.5\" stroke=\"#e2e8f0\"/><text x=\"39\" y=\"37.5\" text-anchor=\"end\" font-size=\"11.5\" fill=\"#475569\">100</text><line x1=\"46.0\" y1=\"148\" x2=\"46.0\" y2=\"153\" stroke=\"#475569\"/><text x=\"46.0\" y=\"167\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">0</text><line x1=\"162.0\" y1=\"148\" x2=\"162.0\" y2=\"153\" stroke=\"#475569\"/><text x=\"162.0\" y=\"167\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">7</text><line x1=\"278.0\" y1=\"148\" x2=\"278.0\" y2=\"153\" stroke=\"#475569\"/><text x=\"278.0\" y=\"167\" text-anchor=\"middle\" font-size=\"11.5\" fill=\"#475569\">14</text><defs><clipPath id=\"q22gc_36\"><rect x=\"46\" y=\"14\" width=\"238\" height=\"136\"/></clipPath></defs><g clip-path=\"url(#q22gc_36)\"><path d=\"M46.0,148.0L47.7,148.0L49.3,148.0L51.0,148.0L52.6,148.0L54.3,148.0L55.9,148.0L57.6,148.0L59.3,148.0L60.9,148.0L62.6,148.0L64.2,148.0L65.9,148.0L67.5,148.0L69.2,148.0L70.9,148.0L72.5,148.0L74.2,148.0L75.8,148.0L77.5,148.0L79.1,148.0L80.8,148.0L82.5,148.0L84.1,148.0L85.8,148.0L87.4,148.0L89.1,148.0L90.7,148.0L92.4,148.0L94.1,148.0L95.7,148.0L97.4,148.0L99.0,148.0L100.7,148.0L102.3,148.0L104.0,148.0L105.7,148.0L107.3,148.0L109.0,148.0L110.6,148.0L112.3,148.0L113.9,148.0L115.6,148.0L117.3,148.0L118.9,148.0L120.6,148.0L122.2,148.0L123.9,148.0L125.5,148.0L127.2,148.0L128.9,148.0L130.5,148.0L132.2,148.0L133.8,148.0L135.5,148.0L137.1,148.0L138.8,147.9L140.5,147.9L142.1,147.9L143.8,147.8L145.4,147.8L147.1,147.7L148.7,147.6L150.4,147.5L152.1,147.3L153.7,147.0L155.4,146.7L157.0,146.4L158.7,145.9L160.3,145.3L162.0,144.6L163.7,143.7L165.3,142.6L167.0,141.4L168.6,139.8L170.3,138.0L171.9,135.9L173.6,133.5L175.3,130.7L176.9,127.5L178.6,124.0L180.2,120.0L181.9,115.7L183.5,111.0L185.2,105.9L186.9,100.4L188.5,94.7L190.2,88.8L191.8,82.7L193.5,76.6L195.1,70.5L196.8,64.5L198.5,58.8L200.1,53.4L201.8,48.5L203.4,44.1L205.1,40.4L206.7,37.4L208.4,35.2L210.1,33.9L211.7,33.5L213.4,33.9L215.0,35.2L216.7,37.4L218.3,40.4L220.0,44.1L221.7,48.5L223.3,53.4L225.0,58.8L226.6,64.5L228.3,70.5L229.9,76.6L231.6,82.7L233.3,88.8L234.9,94.7L236.6,100.4L238.2,105.9L239.9,111.0L241.5,115.7L243.2,120.0L244.9,124.0L246.5,127.5L248.2,130.7L249.8,133.5L251.5,135.9L253.1,138.0L254.8,139.8L256.5,141.4L258.1,142.6L259.8,143.7L261.4,144.6L263.1,145.3L264.7,145.9L266.4,146.4L268.1,146.7L269.7,147.0L271.4,147.3L273.0,147.5L274.7,147.6L276.3,147.7L278.0,147.8\" stroke=\"#2563eb\" stroke-width=\"3\" fill=\"none\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></g><line x1=\"46\" y1=\"148\" x2=\"278\" y2=\"148\" stroke=\"#475569\" stroke-width=\"1.6\"/><line x1=\"46\" y1=\"148\" x2=\"46\" y2=\"16\" stroke=\"#475569\" stroke-width=\"1.6\"/><text x=\"162\" y=\"178\" text-anchor=\"middle\" font-size=\"13.5\" fill=\"#16213a\" font-weight=\"700\">pH</text><text x=\"18\" y=\"85\" transform=\"rotate(-90 18 85)\" text-anchor=\"middle\" font-size=\"13\" fill=\"#16213a\" font-weight=\"700\">Rate</text></svg>"};
+const ico=(i,s)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PARTS[i].icon}</svg>`;
+const PROBS=[];   // every problem: {id, part, max, score(), key()}
+
+function probShell(parent, part, num, q, pts){
+  const box=h('div',{class:'prob'}); parent.appendChild(box);
+  box.innerHTML=`<div class="pq"><span class="pnum">${num}.</span> ${q} <span class="pts">(${pts} pt${pts>1?'s':''})</span></div>`;
+  return box;
+}
+function actions(box, o){ // Hint + Check buttons + feedback
+  const row=h('div',{class:'btnrow'}); const hb=h('button',{class:'btn ghost small',type:'button'},'Hint'); const cb=h('button',{class:'btn primary small',type:'button'},'Check');
+  row.append(hb,cb); box.appendChild(row);
+  const hint=h('div',{class:'hintbox',hidden:true},'💡 '+o.hint); box.appendChild(hint);
+  const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'}); box.appendChild(fb);
+  hb.addEventListener('click',()=>{ hint.hidden=!hint.hidden; });
+  return {row,hb,cb,hint,fb};
+}
+const st=id=>S.p[id]||(S.p[id]={});
+/* Two tries per problem. Right on try 1 or 2 = full credit. Wrong twice = marked wrong (credit for parts right on try 2).
+   The correct answer is never shown. */
+function gradeTry(P,res,max){ const n=res.filter(Boolean).length; P.tries=(P.tries||0)+1;
+  if(n===max){ P.first=max; P.checked=true; P.right=true; }
+  else if(P.tries>=2){ P.first=n; P.checked=true; P.right=false; }
+  return n===max; }
+function showTry(ui,P,max,doneText){
+  if(P.checked&&P.right){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML=`<b>Correct!</b> ${doneText||''}`; }
+  else if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`<b>Marked wrong.</b> You earned ${P.first} of ${max} point${max>1?'s':''}. Ask your teacher if you'd like to try it again.`; }
+  else if(P.tries===1){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=max>1?'<b>Not quite.</b> Something isn\'t right yet. You have <b>one more try</b>.':'<b>Not quite.</b> You have <b>one more try</b>.'; }
+  else ui.fb.hidden=true;
+  if(ui.cb) ui.cb.textContent=P.checked?'Checked':(P.tries===1?'Check (last try)':'Check'); }
+
+/* ---------- drag onto a diagram (or into equation slots) ---------- */
+function dragProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.zones.length);
+  let fig;
+  if(o.equation){ fig=h('div',{class:'eq'}); box.appendChild(fig); }
+  else { fig=h('div',{class:'figwrap'}); fig.innerHTML=o.svg; box.appendChild(fig); }
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.chips.map((_,i)=>i)));
+  const zoneEls={};
+  const groupAns=g=>o.zones.filter(z=>z.group===g).map(z=>z.ans);
+  if(o.equation){ o.layout.forEach(item=>{ if(typeof item==='string'){ fig.appendChild(h('span',null,item)); } else { const z=o.zones[item]; const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans}); fig.appendChild(b); zoneEls[z.id]=b; } }); }
+  else o.zones.forEach(z=>{ const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans});
+    b.style.left=(z.x/o.vb[0]*100)+'%'; b.style.top=(z.y/o.vb[1]*100)+'%'; b.style.width=((z.w||130)/o.vb[0]*100)+'%'; fig.appendChild(b); zoneEls[z.id]=b; });
+  function placedChips(){ return new Set(Object.values(P.place)); }
+  function render(){
+    const used=placedChips();
+    pool.innerHTML='<div class="lbl">Tap a label, then tap a box (or drag it). Tap a filled box to take its label back.</div>';
+    order.forEach(ci=>{ if(used.has(ci)) return; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true'},o.chips[ci]); c.disabled=!!P.checked;
+      c.addEventListener('click',()=>{ sel=sel===ci?null:ci; render(); });
+      c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+      pool.appendChild(c); });
+    if(P.checked&&!pool.querySelector('.chip')) pool.hidden=true;
+    o.zones.forEach(z=>{ const b=zoneEls[z.id]; const ci=P.place[z.id];
+      b.className='zone'+(ci==null?' empty':' filled')+(P.checked?' locked':'');
+      if(ci==null) b.innerHTML=z.ph||'drop here';
+      else b.innerHTML=o.chips[ci];
+      b.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; ui.hb.disabled=!!P.checked&&false;
+    showTry(ui,P,o.zones.length,o.done);
+  }
+  o.zones.forEach(z=>{ const b=zoneEls[z.id];
+    const drop=ci=>{ if(P.checked) return; if(ci==null){ if(P.place[z.id]!=null){ delete P.place[z.id]; save(); render(); } return; }
+      for(const k in P.place) if(P.place[k]===ci) delete P.place[k];
+      P.place[z.id]=ci; sel=null; save(); render(); };
+    b.addEventListener('click',()=>drop(sel));
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  ui.cb.addEventListener('click',()=>{
+    if(P.checked) return;
+    const empty=o.zones.filter(z=>P.place[z.id]==null).length;
+    if(empty){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill every box before you check. ${empty} still empty.`; return; }
+    const res={}; const usedInGroup={};
+    o.zones.forEach(z=>{ const t=o.chips[P.place[z.id]];
+      if(z.group){ const ans=groupAns(z.group); usedInGroup[z.group]=usedInGroup[z.group]||[]; const ok=ans.includes(t)&&!usedInGroup[z.group].includes(t); if(ok) usedInGroup[z.group].push(t); res[z.id]=ok; }
+      else res[z.id]=t===z.ans; });
+    gradeTry(P,Object.values(res),o.zones.length); save(); cloudSave(true); render(); refresh();
+  });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.zones.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- sort into bins ---------- */
+function binProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.items.length);
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const bins=h('div',{class:'bins',style:`grid-template-columns:repeat(${o.bins.length},minmax(0,1fr))`}); box.appendChild(bins);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.items.map((_,i)=>i)));
+  const binEls={};
+  o.bins.forEach(bn=>{ const b=h('div',{class:'bin',role:'button',tabindex:'0'},`<h4>${bn.label}</h4><div class="bchips"></div>`); bins.appendChild(b); binEls[bn.k]=b;
+    const drop=ci=>{ if(P.checked||ci==null) return; P.place[ci]=bn.k; sel=null; save(); render(); };
+    b.addEventListener('click',e=>{ if(e.target.closest('.chip')) return; drop(sel); });
+    b.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); drop(sel); } });
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  const binLabel=k=>(o.bins.find(b=>b.k===k)||{}).label;
+  function chipEl(ci,inBin){ const it=o.items[ci]; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true','data-key':binLabel(it.k)},it.t);
+    
+    c.disabled=!!P.checked;
+    c.addEventListener('click',e=>{ if(P.checked) return; if(inBin){ e.stopPropagation(); if(sel!=null&&sel!==ci){ P.place[sel]=P.place[ci]; sel=null; save(); render(); return; } delete P.place[ci]; save(); render(); return; } sel=sel===ci?null:ci; render(); });
+    c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+    return c; }
+  function render(){
+    pool.innerHTML='<div class="lbl">Tap an item, then tap the box it belongs in (or drag it). Tap a sorted item to take it back.</div>';
+    order.forEach(ci=>{ if(P.place[ci]==null) pool.appendChild(chipEl(ci,false)); });
+    pool.hidden=!!P.checked;
+    o.bins.forEach(bn=>{ const holder=$('.bchips',binEls[bn.k]); holder.innerHTML=''; order.forEach(ci=>{ if(P.place[ci]===bn.k) holder.appendChild(chipEl(ci,true)); }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,o.items.length,o.done);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const left=o.items.filter((_,i)=>P.place[i]==null).length;
+    if(left){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Sort every item before you check. ${left} still left.`; return; }
+    const res=o.items.map((it,i)=>P.place[i]===it.k); gradeTry(P,res,o.items.length); save(); cloudSave(true); render(); refresh(); });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.items.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- choice problems: one, two-part, or select-all ---------- */
+function choiceProblem(parent, o){   // o.parts: [{q, opts, ans (index or array for select-all)}]
+  const P=st(o.id); P.pick=P.pick||{};
+  const max=o.parts.length;
+  const box=probShell(parent,o.part,o.num,o.q,max);
+  const groups=[];
+  o.parts.forEach((pt,pi)=>{
+    const multi=Array.isArray(pt.ans);
+    if(pt.q) box.insertAdjacentHTML('beforeend',`<div style="margin:10px 0 4px">${pt.q}${multi?' <span class="small muted">(Select all that apply.)</span>':''}</div>`);
+    const ordKey=o.id+'_'+pi; const order=S.ord[ordKey]||(S.ord[ordKey]=shuffle(pt.opts.map((_,i)=>i)));
+    const wrap=h('div',{class:'opts'}); box.appendChild(wrap);
+    const btns={};
+    order.forEach((oi,pos)=>{ const correct=multi?pt.ans.includes(oi):oi===pt.ans;
+      const b=h('button',{class:'opt'+(multi?' multi':''),type:'button'},`<span class="L">${'ABCDEF'[pos]}</span><span>${pt.opts[oi]}</span>`); if(correct) b.dataset.key='1';
+      b.addEventListener('click',()=>{ if(P.checked) return; if(multi){ const s=new Set(P.pick[pi]||[]); s.has(oi)?s.delete(oi):s.add(oi); P.pick[pi]=[...s]; } else P.pick[pi]=oi; save(); paint(); });
+      wrap.appendChild(b); btns[oi]=b; });
+    groups.push({pt,multi,btns});
+  });
+  const ui=actions(box,o);
+  function gradePart(g,pi){ const pk=P.pick[pi]; if(g.multi){ const s=new Set(pk||[]); return g.pt.ans.length===s.size&&g.pt.ans.every(a=>s.has(a)); } return pk===g.pt.ans; }
+  function paint(){
+    groups.forEach((g,pi)=>{ const pk=P.pick[pi];
+      Object.entries(g.btns).forEach(([oi,b])=>{ oi=+oi; const picked=g.multi?(pk||[]).includes(oi):pk===oi; const correct=g.multi?g.pt.ans.includes(oi):oi===g.pt.ans;
+        b.className='opt'+(g.multi?' multi':'')+(picked?' sel':'')+(P.checked&&P.right&&picked?' ok':''); b.disabled=!!P.checked; }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,max,o.why);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const blank=groups.some((g,pi)=>g.multi?!(P.pick[pi]||[]).length:P.pick[pi]==null);
+    if(blank){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Answer every part before you check.'; return; }
+    gradeTry(P,groups.map((g,pi)=>gradePart(g,pi)),max); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- typed blanks (two tries, like every problem) ---------- */
+function typedProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.blanks.length);
+  const inputs=o.blanks.map((bl,i)=>{ const row=h('div',{class:'brow'}); row.innerHTML=`${bl.before} <input class="blank" type="text" aria-label="${esc(strip(bl.before))}" data-key="${esc(bl.show)}"><span class="keytxt">${bl.show}</span> ${bl.after||''}`; box.appendChild(row);
+    const inp=$('input',row); inp.value=P.val[i]||''; inp.addEventListener('input',()=>{ P.val[i]=inp.value; save(); }); return inp; });
+  const ui=actions(box,o);
+  const ok=(bl,v)=>{ v=String(v||'').trim().toLowerCase(); if(bl.num){ const n=parseFloat(v.replace(/[^0-9.]/g,'')); return !isNaN(n)&&n>=bl.num[0]&&n<=bl.num[1]; } return bl.accept.some(a=>v.replace(/\s+/g,' ')===a); };
+  function paint(){ inputs.forEach(inp=>{ inp.classList.remove('ok','no'); if(P.checked&&P.right) inp.classList.add('ok'); inp.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; showTry(ui,P,o.blanks.length,''); }
+  ui.cb.addEventListener('click',()=>{
+    if(inputs.some(inp=>!inp.value.trim())){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Fill in every blank before you check.'; return; }
+    if(P.checked) return;
+    const res=o.blanks.map((bl,i)=>ok(bl,inputs[i].value));
+    gradeTry(P,res,o.blanks.length); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.blanks.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- written answer, scored by key ideas (two tries, like every problem) ---------- */
+function writtenProblem(parent, o){
+  const P=st(o.id); if(P.val==null) P.val='';
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const ta=h('textarea',{class:'wtext',rows:'5','aria-label':'Your answer','data-key':o.model}); ta.value=P.val; box.appendChild(ta);
+  box.appendChild(h('div',{class:'wkey'},'<b>Key:</b> '+o.model));
+  if(o.bank){ const wb=h('div',{class:'wbank2'}); wb.innerHTML='<b>Word bank</b> <span class="small muted">(tap a word to add it)</span><br>'+o.bank.map(w=>`<button type="button" class="wchip">${w}</button>`).join('');
+    box.appendChild(wb);
+    wb.querySelectorAll('.wchip').forEach(c=>c.addEventListener('click',()=>{ if(ta.disabled) return; const w=c.textContent; const a=ta.selectionStart??ta.value.length, b=ta.selectionEnd??ta.value.length;
+      const before=ta.value.slice(0,a), after=ta.value.slice(b); const pre=(before&&!/\s$/.test(before))?' ':''; const ins=pre+w+' ';
+      ta.value=before+ins+after; ta.focus(); const p=a+ins.length; ta.setSelectionRange(p,p); ta.dispatchEvent(new Event('input',{bubbles:true})); })); }
+  ta.addEventListener('input',()=>{ P.val=ta.value; save(); });
+  const ui=actions(box,o);
+  const grade=()=>{ const t=ta.value.toLowerCase(); const hits=o.groups.filter(g=>g[1].test(t)).length; const n=Math.min(o.pts,hits); return Array.from({length:o.pts},(_,i)=>i<n); };
+  function paint(){ ta.disabled=!!P.checked; ui.cb.disabled=!!P.checked; showTry(ui,P,o.pts,o.why); }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(ta.value.trim().split(/\s+/).length<5){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Write a full answer (at least one complete sentence) before you check.'; return; }
+    gradeTry(P,grade(),o.pts); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ============================== WORKSHEET CONTENT ============================== */
+function buildContent(sec){
+  let n=0; const num=()=>++n;
+  const say=(s,html)=>s.insertAdjacentHTML('beforeend',html);
+  const fig=(k,cap)=>`<div class="figwrap" style="margin:10px 0">${KFIG[k]}${cap?`<div class="small muted" style="margin-top:4px">${cap}</div>`:''}</div>`;
+  const tbl=(head,rows)=>`<div class="wide"><table class="nb" style="width:100%;border-collapse:collapse"><tr>${head.map(x=>`<th>${x}</th>`).join('')}</tr>${rows.map(r=>`<tr>${r.map(x=>`<td>${x}</td>`).join('')}</tr>`).join('')}</table></div>`;
+  /* ---------------- 1 ---------------- */
+  say(sec[0],`<div class="phenbox"><b>Today:</b> use what you learned on new data. Read and label enzyme graphs, calculate reaction rates, predict curves, plan the catalase lab, and explain with a claim, evidence, and reasoning.</div>
+   <p><b>A hot-spring enzyme.</b> Some bacteria live in hot springs in Yellowstone National Park, where the water can be about 70 °C or hotter. Scientists found that enzymes from these bacteria keep their shape at high temperatures. The graph compares one of these enzymes with a human enzyme. <span class="small muted">(Simplified graph. The hot-spring enzyme's optimum is about 75 °C.)</span></p>`);
+  dragProblem(sec[0],{id:'v1', part:'P1', num:num(), q:'Label the graph. Drag a label into each box.', svg:KFIG.w_taq, vb:[640,360], zones:KFIG.w_taqZ,
+    chips:['human optimum','hot-spring optimum','human enzyme denatured','substrate used up'],
+    hint:'An optimum is the peak of a curve. Where does the human curve drop to zero? One label is not used.', done:'Human peak near 37 °C, hot-spring peak near 75 °C, and above about 55 °C the human enzyme is denatured.'});
+  typedProblem(sec[0],{id:'v2', part:'P1', num:num(), q:'Read the graph.',
+    blanks:[{before:'Optimum of the human enzyme: about',after:'°C',num:[35,40],show:'37'},{before:'Optimum of the hot-spring enzyme: about',after:'°C',num:[70,80],show:'75'},{before:'Rate of the hot-spring enzyme at 37 °C: about',after:'% of fastest',num:[5,15],show:'8'}],
+    hint:'Find each peak and read straight down. For the last one, find 37 °C and go up to the orange curve.'});
+  choiceProblem(sec[0],{id:'v3', part:'P1', num:num(), q:'Two-part question.',
+    parts:[{q:'<b>Part A:</b> At 60 °C, which enzyme is working?',opts:['Only the hot-spring enzyme','Only the human enzyme','Both, equally','Neither'],ans:0},
+           {q:'<b>Part B:</b> Why is the hot-spring enzyme slow at 20 °C?',opts:['The cold slows its molecules down, far below its optimum','It is denatured at 20 °C','It is used up','It needs pH 14'],ans:0}],
+    hint:'Find 60 °C on the graph. Then think: what does cold do to enzymes?', why:'The human enzyme is denatured by 60 °C. Cold slows enzymes without ruining their shape.'});
+  /* ---------------- 2 ---------------- */
+  say(sec[1],`<p><b>Catalase data.</b> A class put a piece of liver (which has lots of catalase) into hydrogen peroxide. They collected the oxygen gas in an upside-down tube and read the volume every minute. <span class="small muted">(Modeled class data.)</span></p>`+tbl(['Time (min)','0','1','2','3','4','5','6'],[['Oxygen (mL)',...KFIG.o2Table.map(p=>p[1])]])+fig('o2Chart'));
+  typedProblem(sec[1],{id:'v4', part:'P2', num:num(), q:'Calculate. <b>Rate = change in oxygen ÷ change in time.</b>',
+    blanks:[{before:'Oxygen made in the first 2 minutes:',after:'mL',num:[26,26],show:'26'},{before:'Rate for the first 2 minutes:',after:'mL per minute',num:[13,13],show:'13'},{before:'Rate from minute 4 to minute 6:',after:'mL per minute',num:[2,2],show:'2'}],
+    hint:'First 2 minutes: 26 − 0 = 26 mL, then divide by 2. Minutes 4 to 6: (46 − 42) ÷ 2.'});
+  choiceProblem(sec[1],{id:'v5', part:'P2', num:num(), q:'Two-part question.',
+    parts:[{q:'<b>Part A:</b> Why did the reaction slow down near the end?',opts:['The hydrogen peroxide (substrate) was running out','The catalase was used up','The liver got hotter','Oxygen is the substrate'],ans:0},
+           {q:'<b>Part B:</b> The class adds fresh hydrogen peroxide to the same liver at minute 6. What will happen?',opts:['Bubbles speed up again, because the catalase still works','Nothing, because the catalase is used up','The liver turns into oxygen','The tube freezes'],ans:0}],
+    hint:'Enzymes are not used up. What else is in the tube that gets changed?', why:'The substrate ran out, but the enzyme was reused, so new substrate restarts the reaction.'});
+  /* ---------------- 3 ---------------- */
+  const G=(k,t)=>`<span style="display:inline-flex;align-items:center;gap:10px">${KFIG[k]}<span>${t}</span></span>`;
+  choiceProblem(sec[2],{id:'v6', part:'P3', num:num(), q:'Predict the curve: <b>catalase rate</b> as the <b>temperature</b> goes from 0 °C to 80 °C.',
+    parts:[{q:'',opts:[G('g_level','Rises, then levels off'),G('g_peak','Rises to a peak, then drops'),G('g_line','Keeps going up'),G('g_flat','Stays at zero')],ans:1}],
+    hint:'Cold is slow. Too hot denatures.', why:'Rate rises to the optimum, then drops fast as the enzyme denatures.'});
+  choiceProblem(sec[2],{id:'v7', part:'P3', num:num(), q:'Predict the curve: <b>catalase rate</b> as you add <b>more and more hydrogen peroxide</b> (same amount of enzyme, 37 °C).',
+    parts:[{q:'',opts:[G('g_peak','Rises to a peak, then drops'),G('g_line','Keeps going up forever'),G('g_level','Rises, then levels off'),G('g_flat','Stays at zero')],ans:2}],
+    hint:'What happens when every active site is busy?', why:'Once every active site is busy, the rate levels off.'});
+  choiceProblem(sec[2],{id:'v8', part:'P3', num:num(), q:'Predict the curve: <b>pepsin</b> (a stomach enzyme) as the <b>pH</b> goes from 0 to 14.',
+    parts:[{q:'',opts:[G('g_peakR','Peak near pH 10'),G('g_peakL','Peak near pH 2'),G('g_level','Rises, then levels off'),G('g_flat','Stays at zero')],ans:1}],
+    hint:'The stomach is very acidic.', why:'Pepsin works best near pH 2, like the stomach.'});
+  choiceProblem(sec[2],{id:'v9', part:'P3', num:num(), q:'Predict the curve: catalase that was <b>boiled first</b>, then tested from 0 °C to 80 °C.',
+    parts:[{q:'',opts:[G('g_peak','Rises to a peak, then drops'),G('g_level','Rises, then levels off'),G('g_line','Keeps going up'),G('g_flat','Stays at zero')],ans:3}],
+    hint:'Can a denatured enzyme get its shape back?', why:'Boiling denatured it for good, so it never works.'});
+  /* ---------------- 4 ---------------- */
+  say(sec[3],`<p><b>Plan the catalase lab.</b> Your question: <i>How does temperature affect catalase in potato?</i> You will put potato pieces that were kept at different temperatures into hydrogen peroxide and measure the foam height. In a fair test, you change <b>one</b> thing, measure the result, and keep everything else the same.</p>`);
+  binProblem(sec[3],{id:'v10', part:'P4', num:num(), q:'Sort each part of the experiment.',
+    bins:[{k:'c',label:'What I change'},{k:'m',label:'What I measure'},{k:'s',label:'What I keep the same'}],
+    items:[{t:'Temperature of the potato',k:'c'},{t:'Height of the foam',k:'m'},{t:'Size of the potato piece',k:'s'},{t:'Amount of hydrogen peroxide',k:'s'},{t:'Time before measuring',k:'s'}],
+    hint:'Only one thing is changed on purpose. The result you record is what you measure.', done:'Change temperature, measure foam, and keep the potato size, peroxide amount, and time the same.'});
+  choiceProblem(sec[3],{id:'v11', part:'P4', num:num(), q:'Two-part question.',
+    parts:[{q:'<b>Part A:</b> Why should you add a tube with hydrogen peroxide but <b>no potato</b>?',opts:['To show the bubbles come from the potato\'s catalase, not the peroxide alone','To make more foam','To use up the extra peroxide','To heat the tubes'],ans:0},
+           {q:'<b>Part B:</b> Why should you do each temperature <b>3 times</b>?',opts:['Repeating makes the results more reliable','To use up the potato','So the enzyme gets used up','It is not needed'],ans:0}],
+    hint:'A control shows what happens without the thing you are testing.', why:'The no-potato tube is a control. Repeated trials make results more reliable.'});
+  /* ---------------- 5 ---------------- */
+  say(sec[4],fig('w_taq','Look back at the hot-spring enzyme graph.'));
+  writtenProblem(sec[4],{id:'v12', part:'P5', num:num(), q:'A scientist heats both enzymes to <b>75 °C</b>. Which one still works? Write a claim, give evidence (numbers from the graph), and explain your reasoning. Use <b>optimum</b>, <b>denature</b>, and <b>active site</b>.', pts:4,
+    bank:['claim','evidence','reasoning','hot-spring enzyme','human enzyme','optimum','denature','shape','active site','substrate','75 °C','37 °C'],
+    groups:[['claim: the hot-spring enzyme works, the human one does not',/hot.?spring|bacteri/],['evidence: numbers from the graph',/\d/],['human enzyme denatured: shape / active site ruined',/denatur|shape|unfold|active site/],['75 °C is the hot-spring enzyme\'s optimum',/optimum|best|peak|keep.*shape/]],
+    model:'Claim: only the hot-spring enzyme still works at 75 °C. Evidence: the hot-spring enzyme is at about 100% at 75 °C, but the human enzyme drops to about 0 above 55 °C. Reasoning: 75 °C is near the hot-spring enzyme\'s optimum, so it keeps its shape. The human enzyme\'s optimum is about 37 °C, so at 75 °C it is denatured: its shape changes and its active site no longer fits the substrate.',
+    hint:'Cover four ideas: which enzyme works, numbers from the graph, what heat does to the human enzyme, and each enzyme\'s optimum.', why:'Each enzyme has its own optimum. 75 °C denatures the human enzyme but suits the hot-spring enzyme.'});
+}
+
+/* ============================== BUILD / SCORE ============================== */
+function scoreAll(){ const parts=PARTS.slice(0,-1).map(p=>({k:p.k,label:p.label,got:0,max:0})); PROBS.forEach(pr=>{ const pt=parts.find(x=>x.k===pr.part); pt.got+=pr.score(); pt.max+=pr.max; });
+  return {parts, total:parts.reduce((a,b)=>a+b.got,0), max:parts.reduce((a,b)=>a+b.max,0)}; }
+function build(){
+  PROBS.length=0; const ws=$('#ws'); ws.innerHTML='';
+  $('#nav').innerHTML=PARTS.map((pt,i)=>`<button class="ntile" type="button" data-i="${i}" aria-label="${pt.title}"><span class="ic">${ico(i,22)}</span><span class="nm">${pt.label}</span></button>`).join('');
+  $$('#nav .ntile').forEach(b=>b.addEventListener('click',()=>showPart(+b.dataset.i)));
+  const secs=PARTS.map((pt,i)=>{ const el=h('section',{class:'sec',id:'part'+i}); const last=i===PARTS.length-1;
+    el.innerHTML=`<div class="sechead"><div class="badge"><span class="z">${i+1}</span>${ico(i,34)}</div><div><div class="meta">${last?'Grade':`Section ${i+1} of ${PARTS.length-1} · about ${pt.min} min`}</div><h2>${pt.title}</h2></div></div>`;
+    const c=h('div',{class:'card'}); el.appendChild(c);
+    const nav=h('div',{class:'secnav'});
+    const back=h('button',{class:'btn ghost',type:'button'},i===0?'':'← Back'); if(i===0) back.style.visibility='hidden'; back.addEventListener('click',()=>showPart(i-1));
+    nav.appendChild(back);
+    if(!last){ const nx=h('button',{class:'btn primary',type:'button'},i===PARTS.length-2?'See my grade →':`Next: ${PARTS[i+1].title} →`); nx.addEventListener('click',()=>showPart(i+1)); nav.appendChild(nx); }
+    el.appendChild(nav); ws.appendChild(el); return c; });
+  buildContent(secs);
+  secs[PARTS.length-1].id='turnin';
+  showPart(Math.min(S.cur||0,PARTS.length-1),true);
+  $('#whoami').textContent=S.student?`${S.student.first} ${S.student.last}`:''; refresh();
+}
+function showPart(i,noScroll){
+  S.cur=i; $$('#ws .sec').forEach((el,j)=>el.hidden=j!==i);
+  $$('#nav .ntile').forEach((t,j)=>t.classList.toggle('cur',j===i));
+  if(!noScroll){ save(); window.scrollTo(0,0); }
+}
+function refresh(){
+  const sc=scoreAll(), done=PROBS.filter(p=>p.checked()).length;
+  $('#scorePill').textContent=`${done}/${PROBS.length} checked · ${sc.total}/${sc.max} pts`;
+  PARTS.slice(0,-1).forEach((pt,i)=>{ const t=$(`#nav .ntile[data-i="${i}"]`); if(t) t.classList.toggle('done',PROBS.filter(p=>p.part===pt.k).every(p=>p.checked())); });
+  const t7=$(`#nav .ntile[data-i="${PARTS.length-1}"]`); if(t7) t7.classList.toggle('done',!!S.submittedAt);
+  const c=$('#turnin'); if(!c) return;
+  const rows=sc.parts.map(p=>`<tr><th>${p.label}</th><td>${p.got} / ${p.max}</td></tr>`).join('');
+  c.innerHTML=`<div style="display:flex;gap:22px;align-items:center;flex-wrap:wrap"><div class="big">${sc.total}/${sc.max}</div><div><h3 style="margin:0">${esc(S.student?S.student.first+' '+S.student.last:'')}</h3><p class="muted" style="margin:0">${done} of ${PROBS.length} problems checked</p></div></div>
+    <table class="res" style="margin-top:12px">${rows}</table>
+    <p class="small muted" style="margin-top:10px">Problems you haven't checked count as 0. You can turn in again later; your teacher sees the newest one.</p>
+    <div class="btnrow"><button class="btn primary" id="subBtn" type="button">${S.submittedAt?'Turn in again':'Turn in my worksheet'}</button><button class="btn ghost" id="csvBtn" type="button">Download CSV</button></div>
+    <p class="fb info sheetStatus" aria-live="polite">${S.sentAt?`Sent to your teacher ${new Date(S.sentAt).toLocaleString()}.`:'Not turned in yet.'}</p>`;
+  $('#subBtn').addEventListener('click',turnIn);
+  $('#csvBtn').addEventListener('click',()=>downloadCSV([recordRow()],`EnzymesDay2Worksheet_${(S.student&&S.student.last||'student').replace(/\W+/g,'')}.csv`));
+}
+const CSV_HEAD=['Student ID','Last Name','First Name','Period','Teacher','Activity','Score','Total','Percent',...PARTS.slice(0,-1).map(p=>p.label),'Date'];
+function recordRow(){ const st=S.student||{}, sc=scoreAll(); return [st.id||'',st.last||'',st.first||'',st.period||'',st.teacher||'',ACTIVITY,sc.total,sc.max,Math.round(100*sc.total/sc.max)+'%',...sc.parts.map(p=>p.got),new Date(S.submittedAt||Date.now()).toLocaleString()]; }
+function csvText(rows){ const q=v=>{ v=String(v==null?'':v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }; return [CSV_HEAD,...rows].map(r=>r.map(q).join(',')).join('\r\n')+'\r\n'; }
+function downloadCSV(rows,name){ const b=new Blob([csvText(rows)],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500); }
+const loadRecs=()=>{ try{ return (JSON.parse(localStorage.getItem(RECS))||[]).filter(r=>r.length===CSV_HEAD.length); }catch(e){ return []; } };
+function saveRecord(){ if(S.preview) return; const recs=loadRecs(), row=recordRow(); const i=recs.findIndex(r=>r[0]===row[0]&&r[1]===row[1]); if(i>=0) recs[i]=row; else recs.push(row); try{ localStorage.setItem(RECS,JSON.stringify(recs)); }catch(e){} }
+function turnIn(){
+  const left=PROBS.filter(p=>!p.checked()).length;
+  if(left&&!confirm(`${left} problem${left>1?'s':''} not checked yet (they count as 0). Turn in anyway?`)) return;
+  S.submittedAt=Date.now(); save(); saveRecord(); cloudSave(true); disarm(); refresh();
+  const msg=t=>$$('.sheetStatus').forEach(e=>e.textContent=t);
+  if(S.preview){ msg('Preview mode: nothing is sent.'); return; }
+  const st=S.student, sc=scoreAll();
+  const body={studentId:st.id||'',firstName:st.first||'',lastName:st.last||'',period:st.period||'',teacher:st.teacher||'',locks:'0',when:new Date().toString(),activity:ACTIVITY,score:String(sc.total),total:String(sc.max),
+    qlabels:sc.parts.map((p,i)=>'P'+(i+1)+' '+PARTS[i].label).join('|'),qpoints:sc.parts.map(p=>p.got).join('|'),qmax:sc.parts.map(p=>p.max).join('|')};
+  msg('Sending...');
+  fetch(sheetURL(),{method:'POST',mode:'no-cors',body:new URLSearchParams(body)}).then(()=>{ S.sentAt=new Date().toISOString(); save(); msg('Sent! Your teacher will see your score.'); }).catch(()=>msg("Couldn't send. Check the Wi-Fi and try again, or download the CSV."));
+}
+
+/* ============================== NO LOCKDOWN ON WORKSHEETS ============================== */
+let teacherOpen=false;
+function arm(){} function disarm(){} function showLock(){} function enterFS(){}
+['copy','cut','paste','contextmenu'].forEach(ev=>document.addEventListener(ev,e=>{ if(teacherOpen||S.preview) return; e.preventDefault(); }));
+
+/* ============================== SIGN IN ============================== */
+function showWS(){ $('#start').hidden=true; $('#top').hidden=false; $('#ws').hidden=false; build(); window.scrollTo(0,0); if(S.locked&&LOCKDOWN&&!S.lockOff) showLock(); else arm(); }
+function renderStart(){ const has=!!S.student; $('#resumeBox').hidden=!has; $('#startForm').hidden=has; $('#signinTitle').textContent=has?'Welcome back':'Sign in to start';
+  if(has) $('#resumeText').innerHTML=`Signed in as <b>${esc(S.student.first)} ${esc(S.student.last)}</b>, period ${esc(S.student.period)}.`; }
+$('#fPeriod').innerHTML='<option value="">Choose your period</option>'+periodList().map(p=>`<option>${esc(p)}</option>`).join('');
+$('#fTeacher').innerHTML='<option value="">Choose your teacher</option>'+teacherList().map(t=>`<option>${esc(t)}</option>`).join('');
+let starting=false;
+async function start(){
+  if(starting) return; starting=true;
+  try{
+    const v={first:$('#fFirst').value.trim(),last:$('#fLast').value.trim(),id:$('#fId').value.trim(),period:$('#fPeriod').value,teacher:$('#fTeacher').value};
+    const miss=[]; if(!v.first) miss.push('first name'); if(!v.last) miss.push('last name'); if(!v.id) miss.push('student ID'); if(!v.period) miss.push('period'); if(!v.teacher) miss.push('teacher');
+    const err=$('#formErr'); if(miss.length){ err.className='fb no'; err.textContent='Fill in your '+miss.join(', ')+'.'; err.hidden=false; return; }
+    if(LOCKDOWN) enterFS();
+    err.className='fb info'; err.textContent='Checking for your saved work...'; err.hidden=false;
+    const res=await cloudLoad(v); err.hidden=true;
+    if(res.status==='found'){ const d=res.data; d.student=Object.assign({},d.student||{},{first:v.first,period:v.period,teacher:v.teacher}); adopt(d); showWS(); note('✓ Your saved work was loaded'); return; }
+    const ns=fresh(); ns.student=v; adopt(ns); showWS(); cloudSave(true);
+  } catch(ex){ const er=$('#formErr'); er.className='fb no'; er.textContent='Something went wrong starting ('+(ex&&ex.message||ex)+'). Reload and try again.'; er.hidden=false; }
+  finally{ starting=false; }
+}
+$('#startBtn').addEventListener('click',start);
+$('#startForm').addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.tagName==='INPUT'){ e.preventDefault(); start(); } });
+$('#resumeBtn').addEventListener('click',async()=>{ const b=$('#resumeBtn'); b.disabled=true; b.textContent='Loading your work...'; if(LOCKDOWN&&!S.locked) enterFS();
+  const res=await cloudLoad(S.student); b.disabled=false; b.textContent='Continue my worksheet';
+  if(res.status==='found'&&(res.data.updatedAt||0)>(S.updatedAt||0)&&checkedCount(res.data)>=checkedCount(S)){ const d=res.data; d.student=S.student; adopt(d); note('✓ Your newest saved work was loaded'); } showWS(); });
+$('#notMeBtn').addEventListener('click',async()=>{ const b=$('#notMeBtn'); b.disabled=true;
+  try{ if(cloudOK()) await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); }catch(e){ b.disabled=false; $('#resumeErr').textContent="Can't back up the last student's work right now. Check the Wi-Fi, or ask your teacher."; $('#resumeErr').hidden=false; return; }
+  b.disabled=false; adopt(fresh()); ['#fFirst','#fLast','#fId','#fPeriod','#fTeacher'].forEach(s=>$(s).value=''); renderStart(); });
+
+/* ============================== TEACHER ============================== */
+function openTeacher(){ teacherOpen=true; $('#teachLogin').hidden=false; $('#teachPanel').hidden=true; $('#teachErr').hidden=true; $('#teachCode').value=''; $('#teachOv').classList.add('show'); setTimeout(()=>$('#teachCode').focus(),50); }
+function closeTeacher(){ $('#teachOv').classList.remove('show'); teacherOpen=false; }
+$('#teacherLink').addEventListener('click',openTeacher); $('#teachBtn').addEventListener('click',openTeacher);
+$('#teachCancel').addEventListener('click',closeTeacher);
+$('#teachCode').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#teachGo').click(); });
+$('#teachGo').addEventListener('click',()=>{ if(!codeIs($('#teachCode').value,TEACHER_CODE)){ $('#teachErr').hidden=false; return; } $('#teachLogin').hidden=true; $('#teachPanel').hidden=false; renderTeacher(); });
+function renderTeacher(){
+  const recs=loadRecs(), p=$('#teachPanel'), keyOn=document.body.classList.contains('keyon');
+  p.innerHTML=`<h2>Teacher tools</h2>
+    <div class="btnrow"><button class="btn ghost" id="tKey" type="button">${keyOn?'Hide answer key':'Answer key'}</button>
+      <button class="btn ghost" id="tPrev" type="button">${S.preview?'End preview':'Preview (saves nothing)'}</button>
+      <button class="btn ghost" id="tResetWrong" type="button">Reset all wrong answers</button>
+      <button class="btn ghost" id="tReset" type="button">Reset this Chromebook</button><button class="btn ghost" id="tClose" type="button">Close</button></div>
+    <h3 style="margin-top:16px">Scores saved on this Chromebook (${recs.length})</h3>
+    <div class="wide">${recs.length?`<table class="nb"><tr><th>Student</th><th>ID</th><th>Period</th><th>Score</th><th>Date</th></tr>${recs.map(r=>`<tr><td>${esc(r[1])}, ${esc(r[2])}</td><td>${esc(r[0])}</td><td>${esc(r[3])}</td><td>${r[6]}/${r[7]}</td><td>${esc(r[r.length-1])}</td></tr>`).join('')}</table>`:'<p class="muted">None yet.</p>'}</div>
+    <div class="btnrow"><button class="btn primary" id="tCsv" type="button" ${recs.length?'':'disabled'}>Download scores (CSV)</button></div>
+    <h3 style="margin-top:16px">Load a student's saved work</h3>
+    <div class="btnrow"><input class="code" id="tId" placeholder="Student ID" style="width:150px"><input class="code" id="tLast" placeholder="Last name" style="width:170px"><button class="btn ghost" id="tLoad" type="button">Load work</button></div>
+    <p class="fb info" id="tMsg" style="min-height:1em"></p>`;
+  const msg=t=>$('#tMsg').textContent=t;
+  $('#tKey').addEventListener('click',()=>{ document.body.classList.toggle('keyon'); renderTeacher(); msg(document.body.classList.contains('keyon')?'Answer key on: each box shows its answer, sort chips show their box, and correct choices have a dashed gold outline.':'Answer key off.'); });
+  $('#tPrev').addEventListener('click',()=>{ if(S.preview){ location.reload(); return; } const ns=fresh(); ns.preview=true; ns.student={first:'Teacher',last:'Preview',id:'0',period:'-',teacher:teacherList()[0]}; S=ns; closeTeacher(); showWS(); note('Preview: nothing is saved'); });
+  $('#tReset').addEventListener('click',()=>{ if(confirm('Erase this worksheet on this Chromebook? Work backed up to the Saved Student Work sheet is not deleted.')){ try{ localStorage.removeItem(STORE); }catch(e){} location.reload(); } });
+  $('#tResetWrong').addEventListener('click',()=>{
+    const wrong=PROBS.filter(pr=>{ const P=S.p[pr.id]||{}; return (P.tries||0)>0 && !P.right; });
+    if(!wrong.length){ msg('Nothing to reset: this student has no wrong answers.'); return; }
+    if(!confirm(`Reset ${wrong.length} problem${wrong.length>1?'s':''} that ${wrong.length>1?'are':'is'} wrong or on a second try for ${(S.student&&S.student.first)||'this student'}? Correct answers stay.`)) return;
+    wrong.forEach(pr=>{ delete S.p[pr.id]; });
+    save(); cloudSave(true); msg(`Reset ${wrong.length} problem${wrong.length>1?'s':''}. Reloading…`); setTimeout(()=>location.reload(),700); });
+  $('#tClose').addEventListener('click',closeTeacher);
+  $('#tCsv').addEventListener('click',()=>downloadCSV(recs,`EnzymesDay2Worksheet_scores_${new Date().toISOString().slice(0,10)}.csv`));
+  $('#tLoad').addEventListener('click',async()=>{ const s={id:$('#tId').value.trim(),last:$('#tLast').value.trim()}; if(!s.id||!s.last){ msg('Type the student ID and last name.'); return; } msg('Looking up saved work...');
+    const r=await cloudLoad(s); if(r.status==='found'){ adopt(r.data); closeTeacher(); renderStart(); $('#start').hidden=false; $('#ws').hidden=true; $('#top').hidden=true; } else msg(r.status==='none'?'No saved work found for that student.':"Couldn't reach the saved-work sheet."); });
+}
+
+if(!STORAGE_OK) $('#noStore').hidden=false;
+renderStart();
+})();
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

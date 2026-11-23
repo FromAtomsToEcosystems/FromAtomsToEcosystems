@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catalase: Enzymes in Action (simulation) | Biology Unit 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1626; --panel:#142136; --panel2:#1a2a44; --line:#2a3d5f; --line2:#3a5580;
+  --text:#e8eef8; --muted:#a3b4cf; --dim:#7488a9;
+  --leaf:#5fe3a9; --sun:#ffd35c; --r:#ffd35c; --sky:#45c8f0; --ok:#4ade80; --bad:#fb7185; --pink:#f472b6;
+  --font:'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+*{box-sizing:border-box} [hidden]{display:none !important}
+html,body{margin:0}
+body{background-color:var(--bg); background-image:linear-gradient(rgba(110,150,210,.065) 1px,transparent 1px),linear-gradient(90deg,rgba(110,150,210,.065) 1px,transparent 1px); background-size:32px 32px;
+  color:var(--text); font-family:var(--font); font-size:17px; line-height:1.55; -webkit-user-select:none; user-select:none}
+input,textarea{-webkit-user-select:text; user-select:text}
+h1,h2,h3,h4{margin:0 0 .45em; line-height:1.2; font-weight:600}
+h1{font-size:clamp(28px,4.4vw,40px); font-weight:700} h2{font-size:24px} h3{font-size:19px}
+p{margin:0 0 .75em} .muted{color:var(--muted)} .small{font-size:14px}
+sub,sup{font-size:.72em}
+:focus-visible{outline:3px solid var(--r); outline-offset:2px}
+.top{position:sticky; top:0; z-index:20; background:rgba(13,22,38,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+.top-in{max-width:1100px; margin:0 auto; padding:8px 16px; display:flex; gap:12px; align-items:center}
+.brand{font-weight:600; font-size:15px; white-space:nowrap} .brand span{display:block; font-weight:400; font-size:12px; color:var(--muted)}
+.nav{display:flex; gap:6px; flex:1; overflow-x:auto; padding:3px 2px}
+.ntile{flex:0 0 auto; width:54px; height:54px; border-radius:7px; border:1.5px solid var(--line2); background:var(--panel); color:var(--text); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer; position:relative; font:inherit; padding:0}
+.ntile .ic{color:var(--leaf); line-height:0} .ntile .nm{font-size:8.5px; color:var(--muted)}
+.ntile.cur{border-color:var(--r); background:rgba(255,211,92,.14)}
+.ntile.cur .nm{color:var(--r)}
+.secnav{display:flex; justify-content:space-between; gap:10px; margin-top:4px}
+.ntile.done::after{content:'✓'; position:absolute; top:1px; right:4px; font-size:10px; font-weight:700; color:var(--ok)}
+.scorepill{font-size:13px; padding:4px 10px; border-radius:999px; background:var(--panel2); white-space:nowrap}
+.savenote{font-size:12.5px; color:var(--ok); white-space:nowrap} @media (max-width:1300px){ .savenote{display:none} } @media (max-width:900px){ .scorepill{display:none} }
+main{max-width:1000px; margin:0 auto; padding:20px 16px 80px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin:0 0 18px}
+.sec{scroll-margin-top:80px}
+.sechead{display:flex; gap:14px; align-items:center; margin:28px 0 10px}
+.badge{width:66px; height:66px; border-radius:10px; border:2px solid var(--leaf); background:var(--panel); display:flex; align-items:center; justify-content:center; position:relative; flex:0 0 auto; color:var(--leaf)}
+.badge .z{position:absolute; top:3px; left:6px; font-size:11px; color:var(--muted)}
+.meta{color:var(--muted); font-size:14px}
+.btn{font:inherit; font-weight:600; font-size:15px; border-radius:10px; padding:10px 18px; cursor:pointer; border:1.5px solid transparent}
+.btn.primary{background:var(--r); color:#231a00} .btn.ghost{background:transparent; border-color:var(--line2); color:var(--text)}
+.btn.small{padding:6px 12px; font-size:14px} .btn:disabled{opacity:.45; cursor:not-allowed}
+.btnrow{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:12px}
+.field{display:flex; flex-direction:column; gap:4px; font-size:14px; color:var(--muted)}
+.field input,.field select{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px}
+.formgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin:10px 0}
+.fb{margin-top:10px; padding:10px 14px; border-radius:10px; font-size:15px}
+.fb.ok{background:rgba(74,222,128,.12); color:#c9f7d8} .fb.no{background:rgba(251,113,133,.12); color:#ffd3db} .fb.info{background:var(--panel2)}
+.prob{border-top:1px solid var(--line); padding-top:16px; margin-top:16px}
+.prob:first-of-type{border-top:none; padding-top:0; margin-top:0}
+.pq{font-weight:500; margin-bottom:8px}
+.pnum{display:inline-block; min-width:30px; font-weight:700; color:var(--leaf)}
+.pts{font-size:13px; color:var(--muted); font-weight:400}
+.hintbox{background:rgba(255,211,92,.08); border-left:3px solid var(--r); border-radius:8px; padding:8px 12px; margin-top:8px; font-size:15px}
+/* drag and drop */
+.figwrap{position:relative; width:100%}
+.figwrap svg{width:100%; height:auto; display:block; background:#0a1322; border:1px solid var(--line); border-radius:12px}
+.figwrap svg text{font-family:var(--font)}
+.zone{position:absolute; transform:translate(-50%,-50%); min-height:32px; border:2px dashed #8fb3e6; border-radius:9px; background:rgba(13,22,38,.92); color:var(--text); font:inherit; font-size:14px; font-weight:600; display:flex; align-items:center; justify-content:center; padding:2px 6px; cursor:pointer; text-align:center; line-height:1.15}
+.zone.empty{color:var(--dim); font-weight:400; font-size:12.5px}
+.zone.filled{border-style:solid; border-color:var(--r); background:#2b2410}
+.zone.hot{box-shadow:0 0 0 3px rgba(255,211,92,.5)}
+.zone.locked{opacity:.9}
+.zone.ok{border-color:var(--ok); background:#0f2e1d} .zone.no{border-color:var(--bad); background:#3a0f1a}
+.pool{display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 4px; padding:10px; border:1px dashed var(--line2); border-radius:10px; min-height:52px}
+.pool .lbl{width:100%; font-size:12.5px; color:var(--muted)}
+.chip{font:inherit; font-size:15px; font-weight:600; padding:6px 14px; border-radius:999px; border:1.5px solid var(--line2); background:var(--panel2); color:var(--text); cursor:grab; touch-action:none}
+.chip.sel{border-color:var(--r); background:rgba(255,211,92,.16); box-shadow:0 0 0 3px rgba(255,211,92,.35)}
+.bins{display:grid; gap:10px; margin-top:6px}
+.bin{border:2px dashed var(--line2); border-radius:12px; padding:10px; min-height:96px; cursor:pointer; background:rgba(13,22,38,.5)}
+.bin h4{margin:0 0 8px; font-size:15px; color:var(--leaf)} .bin.hot{border-color:var(--r)}
+.bin .chip{cursor:pointer; margin:3px} .bin .chip.ok{border-color:var(--ok); background:#0f2e1d} .bin .chip.no{border-color:var(--bad); background:#3a0f1a}
+.phenbox{background:rgba(244,114,182,.1); border-left:4px solid #f472b6; border-radius:8px; padding:10px 14px; margin-bottom:14px}
+.fixnote{font-size:12px; color:#ffd3db; font-weight:400}
+/* equation */
+.eq{display:flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:20px; font-weight:600; margin:10px 0}
+.eq .zone{position:static; transform:none; min-width:120px; min-height:40px}
+/* choices */
+.opts{display:grid; gap:8px; margin:6px 0}
+.opt{display:flex; gap:12px; align-items:center; text-align:left; background:var(--panel2); border:1.5px solid var(--line); color:var(--text); border-radius:10px; padding:9px 14px; font:inherit; font-size:16px; cursor:pointer}
+.opt .L{flex:0 0 26px; height:26px; border-radius:50%; display:grid; place-items:center; background:var(--bg); font-weight:600; font-size:13px}
+.opt.multi .L{border-radius:6px}
+.opt.sel{border-color:var(--r); background:rgba(255,211,92,.08)} .opt.sel .L{background:var(--r); color:#231a00}
+.opt.ok{border-color:var(--ok); background:rgba(74,222,128,.1)} .opt.no{border-color:var(--bad); background:rgba(251,113,133,.1)}
+.opt:disabled{cursor:default}
+input.blank{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:7px 10px; font:inherit; font-size:16px; width:170px}
+input.blank.ok{border-color:var(--ok)} input.blank.no{border-color:var(--bad)}
+.brow{margin:8px 0}
+/* answer key (teacher) */
+body.keyon .zone[data-key]::after{content:'key: ' attr(data-key); position:absolute; top:100%; left:50%; transform:translateX(-50%); font-size:11px; color:var(--r); white-space:nowrap; margin-top:2px}
+body.keyon .chip[data-key]::after{content:' → ' attr(data-key); font-size:11px; color:var(--r)}
+body.keyon .opt[data-key]{outline:2px dashed var(--r); outline-offset:2px}
+body.keyon input.blank[data-key]+.keytxt{display:inline}
+.vbench{background:rgba(255,255,255,.04); border:1px solid #2a3d5f; border-radius:14px; padding:12px; margin-bottom:12px}
+#benchPic svg{width:100%; height:auto; display:block}
+.datatab select.ocell{font:inherit; padding:4px 6px; border-radius:8px; max-width:100%}
+.datatab input.dcell{width:72px; font:inherit; padding:4px 6px; border-radius:8px; text-align:center}
+.datachart svg{width:100%; height:auto; display:block; margin-top:10px}
+ol.proc li{margin:4px 0}
+.off{opacity:.35; pointer-events:none}
+.btbkey{display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; margin:6px 0 10px}.btbkey span{display:inline-block; width:16px; height:16px; border-radius:50%; vertical-align:middle; border:1px solid rgba(255,255,255,.4)}
+.simwrap{display:grid; grid-template-columns:minmax(150px,220px) 1fr; gap:18px; align-items:start; background:rgba(255,255,255,.04); border:1px solid var(--line,#2a3d5f); border-radius:14px; padding:14px}
+.simwrap.off{opacity:.35; pointer-events:none}
+.bigtube svg{width:100%; height:auto; display:block}.clock{text-align:center; font-weight:700; font-size:20px; margin-top:6px}
+.tg{display:block; margin:4px 0; font-size:17px}.tg input{transform:scale(1.3); margin-right:8px}
+.sensor{margin:10px 0; font-size:18px}.sensor b{font-size:24px; color:#ffd35c}
+.btn.on{outline:2px solid #ffd35c}
+.dot{display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:6px; vertical-align:middle}
+.predtab select{font:inherit; padding:4px 6px; border-radius:8px}
+#sChart svg{width:100%; height:auto; display:block}
+@media (max-width:700px){ .simwrap{grid-template-columns:1fr} .bigtube{max-width:180px; margin:0 auto} }
+.wbank2{margin-top:8px; padding:8px 10px; border:1px dashed rgba(163,180,207,.5); border-radius:10px; font-size:14px; line-height:2}
+.wchip{font:inherit; font-size:14px; margin:2px 4px 2px 0; padding:2px 10px; border-radius:999px; border:1px solid rgba(163,180,207,.6); background:rgba(255,255,255,.06); color:inherit; cursor:pointer}
+.wchip:hover{border-color:#ffd35c}
+.wtext{width:100%; min-height:110px; font:inherit; padding:10px; border-radius:10px; border:1.5px solid var(--line,#2a3d5f); background:rgba(255,255,255,.04); color:inherit; resize:vertical}
+.wkey{display:none; margin-top:6px; font-size:14px; color:var(--r,#ffd35c)}
+body.keyon .wkey{display:block}
+.keytxt{display:none; font-size:12px; color:var(--r); margin-left:6px}
+.big{font-size:52px; font-weight:700; color:var(--r); line-height:1}
+table.res{border-collapse:collapse; width:100%} table.res th,table.res td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line)} table.res th{color:var(--muted); font-weight:400}
+.card.nostore{border:2px solid var(--bad); background:rgba(251,113,133,.08)}
+.overlay{position:fixed; inset:0; background:rgba(4,9,18,.94); z-index:100; display:none; align-items:center; justify-content:center; padding:20px}
+.overlay.show{display:flex}
+.modal{background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:24px; max-width:900px; width:100%; max-height:92vh; overflow:auto}
+input.code{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px; width:200px}
+table.nb{border-collapse:collapse; width:100%; font-size:14px} table.nb th,table.nb td{border:1px solid var(--line2); padding:6px 8px} table.nb th{background:var(--panel2)}
+.wide{overflow-x:auto}
+@media (max-width:700px){ .zone{font-size:11px; min-height:26px} .chip{font-size:13px; padding:5px 10px} }
+@media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important} }
+.prob + p,.prob + .phenbox,.prob + .figwrap{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+
+.catfig svg{background:#f8fafc}
+.catchart svg{width:100%; height:auto; display:block; margin-top:10px}
+.datatab input.dcell{background:var(--bg); color:var(--text); border:1.5px solid var(--line2)}
+.datatab input.dcell:disabled{opacity:1; color:var(--text); border-color:var(--line); background:var(--panel2)}
+.eq .eqarr{display:inline-flex; flex-direction:column; align-items:center; font-size:12px; font-weight:600; color:var(--muted); line-height:1; margin:0 4px}
+.eq .eqarr b{font-size:28px; color:var(--text); line-height:.9}
+.ordwrap .eq{display:grid; grid-template-columns:auto minmax(0,1fr); gap:8px 12px; font-size:16px; align-items:center}
+.ordwrap .eq .zone{width:100%; min-height:42px; font-size:15px; justify-content:flex-start; text-align:left; padding:4px 10px}
+.ordwrap .chip{font-size:14px; text-align:left; border-radius:12px}
+.proc ul{margin:6px 0 4px; padding-left:20px} .proc ul li{margin:3px 0}
+.isstat{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; font-weight:600; margin-bottom:6px}
+.isclock{font-variant-numeric:tabular-nums; font-size:22px; color:var(--r); background:var(--bg); border:1px solid var(--line2); border-radius:8px; padding:2px 12px}
+.cbpic svg{width:100%; height:auto; display:block; border-radius:12px; cursor:pointer}
+.cbm.on,.cbl.on{background:var(--r); color:#231a00; border-color:var(--r)}
+.cbzoom{display:grid; grid-template-columns:minmax(0,300px) 1fr; gap:16px; align-items:start; margin-top:10px}
+.cbzpic svg{width:100%; height:auto; display:block; border-radius:12px; border:1px solid var(--line)}
+.predtab select{max-width:100%}
+.tprep p{margin-bottom:.6em}
+@media (max-width:620px){ .cbzoom{grid-template-columns:1fr} .cbzpic{max-width:280px; margin:0 auto} .predtab td,.predtab th{padding:5px} .ordwrap .eq{grid-template-columns:1fr} .ordwrap .eq .zone{font-size:13px} }
+
+</style>
+</head>
+<body>
+<header class="top" id="top" hidden>
+  <div class="top-in">
+    <div class="brand">Catalase lab (simulation)<span id="whoami"></span></div>
+    <nav class="nav" id="nav" aria-label="Worksheet parts"></nav>
+    <span class="scorepill" id="scorePill"></span>
+    <span class="savenote" id="saveNote" aria-live="polite"></span>
+    <button class="btn ghost small" id="teachBtn" type="button">Teacher</button>
+  </div>
+</header>
+
+<main>
+  <section id="start">
+    <div class="muted" style="margin-top:8px">Biology · Unit 1: Homeostasis, Macromolecules, and Enzymes · Lab simulation for students who missed the lab · about 35 minutes</div>
+    <h1>Catalase: Enzymes in Action (simulation)</h1>
+    <p class="muted" style="font-size:18px;max-width:42em">Soak potato cubes at different temperatures on a virtual lab bench, measure the oxygen foam that catalase makes with a ruler, and test one more factor: pH or surface area.<span style="display:block;font-size:14px;margin-top:8px">Standard: NGSS HS-LS1-6 (supporting): enzymes are proteins, large carbon-based molecules whose folded shape lets them do their job.</span></p>
+    <div class="card"><h3>How it works</h3>
+      <p style="margin:0">Each problem gets <b>two tries</b>. Right on either try earns full credit. If your first try is wrong, you'll be told it isn't right yet (but not the answer), so look again and try once more. Wrong twice and the problem is marked wrong and locks. Stuck? Tap <b>Hint</b> before you check.</p></div>
+    <div class="card nostore" id="noStore" hidden><h3>This browser can't save your work</h3><p style="margin:0">You may be in guest or incognito mode. Sign in to your school account and open the worksheet again.</p></div>
+    <div class="card">
+      <h3 id="signinTitle">Sign in to start</h3>
+      <div id="resumeBox" hidden><p id="resumeText"></p>
+        <div class="btnrow"><button class="btn primary" id="resumeBtn" type="button">Continue my lab</button><button class="btn ghost small" id="notMeBtn" type="button">Not you? Sign in as a different student</button></div>
+        <div class="fb no" id="resumeErr" hidden></div></div>
+      <div id="startForm">
+        <div class="formgrid">
+          <label class="field">First name<input id="fFirst" autocomplete="off"></label><label class="field">Last name<input id="fLast" autocomplete="off"></label>
+          <label class="field">Student ID<input id="fId" inputmode="numeric" autocomplete="off"></label>
+          <label class="field">Period<select id="fPeriod"></select></label><label class="field">Teacher<select id="fTeacher"></select></label>
+        </div>
+        <p class="small muted">Your work saves as you go. On any Chromebook, sign in with the same student ID and last name to pick up where you left off.</p>
+        <div class="fb no" id="formErr" hidden></div>
+        <div class="btnrow"><button class="btn primary" type="button" id="startBtn">Start the lab</button></div>
+      </div>
+    </div>
+    <p style="text-align:center"><button class="btn ghost" id="teacherLink" type="button">Teacher: enter unlock code</button></p>
+  </section>
+  <div id="ws" hidden></div>
+</main>
+
+<div class="overlay" id="teachOv" role="dialog" aria-modal="true" aria-labelledby="tTitle">
+  <div class="modal"><div id="teachLogin"><h2 id="tTitle">Teacher</h2>
+    <div class="btnrow"><input class="code" id="teachCode" type="password" placeholder="Teacher code" autocomplete="off"><button class="btn primary" id="teachGo" type="button">Open</button><button class="btn ghost" id="teachCancel" type="button">Close</button></div>
+    <div class="fb no" id="teachErr" hidden>That code didn't work.</div></div><div id="teachPanel" hidden></div></div>
+</div>
+<div class="overlay" id="tabOv" role="dialog" aria-modal="true"><div class="modal" style="max-width:520px"><h2>This lab is open in another tab</h2><p>To keep your newest work safe, this copy stopped saving. Close the extra tab, then reload this one.</p><div class="btnrow"><button class="btn primary" type="button" onclick="location.reload()">Reload with my newest work</button></div></div></div>
+
+<script src="sheets-config.js"></script>
+<script>
+(function(){
+'use strict';
+/* ============================== SETTINGS ============================== */
+const LESSON_TITLE='Enzymes';           // unlock code = last word of this title
+const UNLOCK_CODE=LESSON_TITLE.trim().split(/\s+/).pop();
+const TEACHER_CODE='Teacher007';   // universal teacher-tools code
+const codeIs=(v,c)=>String(v||'').trim().toLowerCase()===String(c).toLowerCase();
+const WS_ID='bio-u1-catalase-lab-sim', ACTIVITY='Catalase Lab (simulation)';
+const BACKUP_URL='https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const SAVE_URL_BUILTIN='https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';
+const BACKUP_TEACHERS=['Austin','Mueller','McCue','Arce','Trimm','Garcia','Trimm/Callanan','Callanan'], BACKUP_PERIODS=['1','2','3','4','5','6','7','8'];
+const STORE='catalaseLabSim_v1', RECS='catalaseLabSim_records_v1';
+/* ===================================================================== */
+const teacherList=()=>{ try{ if(typeof TEACHERS!=='undefined'&&Array.isArray(TEACHERS)&&TEACHERS.length) return TEACHERS.map(String); }catch(e){} return BACKUP_TEACHERS; };
+const periodList=()=>{ try{ if(typeof PERIODS!=='undefined'&&Array.isArray(PERIODS)&&PERIODS.length) return PERIODS.map(String); }catch(e){} return BACKUP_PERIODS; };
+const sheetURL=()=>{ try{ if(typeof SHEETS_WEBHOOK_URL!=='undefined'&&SHEETS_WEBHOOK_URL&&String(SHEETS_WEBHOOK_URL).indexOf('PASTE')<0) return String(SHEETS_WEBHOOK_URL); }catch(e){} return BACKUP_URL; };
+const saveURL=()=>{ try{ if(typeof SAVE_WEBHOOK_URL!=='undefined'&&SAVE_WEBHOOK_URL&&String(SAVE_WEBHOOK_URL).indexOf('PASTE')<0) return String(SAVE_WEBHOOK_URL); }catch(e){} return SAVE_URL_BUILTIN; };
+const LOCKDOWN=false;   // worksheets never lock down
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const strip=s=>String(s).replace(/<[^>]+>/g,'');
+function h(tag,attrs,html){ const e=document.createElement(tag); if(attrs) for(const k in attrs){ if(attrs[k]===false||attrs[k]==null) continue; if(k==='class') e.className=attrs[k]; else if(k==='hidden') e.hidden=!!attrs[k]; else e.setAttribute(k,attrs[k]); } if(html!=null) e.innerHTML=html; return e; }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* ---------- state + saving ---------- */
+function fresh(){ return {ws:WS_ID, student:null, p:{}, ord:{}, locks:0, locked:false, lockOff:false, submittedAt:null, sentAt:null}; }
+let S; try{ S=JSON.parse(localStorage.getItem(STORE)); }catch(e){} if(!S||S.ws!==WS_ID) S=fresh();
+let STORAGE_OK=true, saveBlocked=false;
+try{ localStorage.setItem('__ps_t','1'); STORAGE_OK=localStorage.getItem('__ps_t')==='1'; localStorage.removeItem('__ps_t'); }catch(e){ STORAGE_OK=false; }
+function save(){
+  if(saveBlocked) return;
+  if(S.preview){ note('Preview: nothing is saved'); return; }
+  try{ const raw=localStorage.getItem(STORE); if(raw){ const st=JSON.parse(raw); if(st&&st.ws===WS_ID&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); return; } }
+    S.rev=(S.rev||0)+1; S.updatedAt=Date.now(); localStorage.setItem(STORE,JSON.stringify(S)); note(); cloudSave(false); }catch(e){}
+}
+window.addEventListener('storage',e=>{ if(e.key!==STORE||!e.newValue) return; try{ const st=JSON.parse(e.newValue); if(st&&(st.rev||0)>(S.rev||0)){ saveBlocked=true; $('#tabOv').classList.add('show'); } }catch(_){} });
+const saveKey=st=>(String(st.id||'').replace(/\s+/g,'')+'-'+String(st.last||'').toLowerCase().replace(/[^a-z]/g,'')).toLowerCase();
+const checkedCount=st=>Object.values((st||S).p).filter(x=>x&&x.checked).length;
+let cloudTimer=null, cloudDirty=false, cloudBusy=false, cloudAt=null, cloudErr=false;
+const cloudOK=()=>!!saveURL()&&S.student&&!saveBlocked&&!S.preview;
+function cloudBody(){ const st=S.student||{}, sc=scoreAll();
+  return new URLSearchParams({code:saveKey(st), lesson:WS_ID, ver:String(S.updatedAt||Date.now()), prog:String((S.submittedAt?100000:0)+checkedCount(S)), studentId:st.id||'', lastName:st.last||'', firstName:st.first||'', period:st.period||'', teacher:st.teacher||'',
+    summary:S.submittedAt?`Turned in · ${sc.total}/${sc.max}`:`${checkedCount(S)} of ${PROBS.length} problems checked`, data:JSON.stringify(S)}); }
+function cloudSave(soon){ if(!cloudOK()) return; cloudDirty=true; if(soon){ clearTimeout(cloudTimer); cloudTimer=setTimeout(cloudFlush,1200); } else if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); }
+async function cloudFlush(){ cloudTimer=null; if(!cloudOK()||!cloudDirty) return; if(cloudBusy){ cloudTimer=setTimeout(cloudFlush,4000); return; } cloudBusy=true; cloudDirty=false;
+  try{ await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); cloudAt=new Date(); cloudErr=false; }catch(e){ cloudDirty=true; cloudErr=true; if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); } finally{ cloudBusy=false; note(); } }
+function cloudBeacon(){ if(!cloudOK()||!cloudDirty) return; try{ if(navigator.sendBeacon&&navigator.sendBeacon(saveURL(),cloudBody())) cloudDirty=false; }catch(e){} }
+async function cloudLoad(st){ const ctrl=new AbortController(), t=setTimeout(()=>ctrl.abort(),5000);
+  try{ const r=await fetch(saveURL()+'?'+new URLSearchParams({code:saveKey(st),lesson:WS_ID}),{signal:ctrl.signal}); const j=await r.json(); if(j&&j.found&&j.data){ const d=JSON.parse(j.data); if(d&&d.ws===WS_ID) return {status:'found',data:d}; } return {status:'none'}; }
+  catch(e){ return {status:'error'}; } finally{ clearTimeout(t); } }
+function adopt(ns){ let sr=0; try{ const raw=localStorage.getItem(STORE); if(raw) sr=JSON.parse(raw).rev||0; }catch(e){} ns.rev=Math.max(ns.rev||0,sr); S=ns; saveBlocked=false; save(); }
+function note(msg){ const n=$('#saveNote'); if(!n) return; const tm=d=>d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}); n.textContent=msg||(cloudErr?'✓ Saved on this Chromebook':'✓ Saved '+tm(new Date())+(cloudAt?' · backed up '+tm(cloudAt):'')); }
+document.addEventListener('visibilitychange',()=>{ if(document.hidden){ save(); cloudBeacon(); } });
+window.addEventListener('pagehide',()=>{ save(); cloudBeacon(); });
+
+/* ============================== DIAGRAMS ============================== */
+/* ============================== PROBLEMS ============================== */
+const PARTS=[
+ {k:'P1', label:'Setup', title:'Purpose and setup', min:8, icon:'<path d="M9 2.5h6M10 2.5v6.5L5 18.5A2 2 0 0 0 6.8 21.5h10.4a2 2 0 0 0 1.8-3L14 9V2.5"/><path d="M7.5 15h9"/>'},
+ {k:'P2', label:'Predict', title:'Predict', min:5, icon:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z"/>'},
+ {k:'P3', label:'Experiment', title:'Experiment and data', min:22, icon:'<path d="M8 2.5v15a3 3 0 0 0 6 0v-15"/><path d="M7 2.5h8"/><path d="M8 11h6"/><circle cx="10.5" cy="8" r="1"/><circle cx="12" cy="5.5" r=".8"/><path d="M18 6v12M17 8h2M17 12h2M17 16h2"/>'},
+ {k:'P4', label:'Analysis', title:'Analysis', min:18, icon:'<path d="M3 21h18"/><rect x="5" y="12" width="3" height="7"/><rect x="10.5" y="7" width="3" height="12"/><rect x="16" y="14" width="3" height="5"/>'},
+ {k:'P5', label:'Conclusion', title:'Conclusion (CER)', min:8, icon:'<path d="M4 4h12l4 4v12H4z"/><path d="M8 11h8M8 15h6"/>'},
+ {k:'P6', label:'Grade', title:'Your grade', min:1, icon:'<rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4V2.5h6V4"/><path d="M8.5 13l2.5 2.5 4.5-5"/>'}
+];
+const ico=(i,s)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PARTS[i].icon}</svg>`;
+const PROBS=[];   // every problem: {id, part, max, score(), key()}
+
+function probShell(parent, part, num, q, pts){
+  const box=h('div',{class:'prob'}); parent.appendChild(box);
+  box.innerHTML=`<div class="pq"><span class="pnum">${num}.</span> ${q} <span class="pts">(${pts} pt${pts>1?'s':''})</span></div>`;
+  return box;
+}
+function actions(box, o){ // Hint + Check buttons + feedback
+  const row=h('div',{class:'btnrow'}); const hb=h('button',{class:'btn ghost small',type:'button'},'Hint'); const cb=h('button',{class:'btn primary small',type:'button'},'Check');
+  row.append(hb,cb); box.appendChild(row);
+  const hint=h('div',{class:'hintbox',hidden:true},'💡 '+o.hint); box.appendChild(hint);
+  const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'}); box.appendChild(fb);
+  hb.addEventListener('click',()=>{ hint.hidden=!hint.hidden; });
+  return {row,hb,cb,hint,fb};
+}
+const st=id=>S.p[id]||(S.p[id]={});
+/* Two tries per problem. Right on try 1 or 2 = full credit. Wrong twice = marked wrong (credit for parts right on try 2).
+   The correct answer is never shown. */
+function gradeTry(P,res,max){ const n=res.filter(Boolean).length; P.tries=(P.tries||0)+1;
+  if(n===max){ P.first=max; P.checked=true; P.right=true; }
+  else if(P.tries>=2){ P.first=n; P.checked=true; P.right=false; }
+  return n===max; }
+function showTry(ui,P,max,doneText){
+  if(P.checked&&P.right){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML=`<b>Correct!</b> ${doneText||''}`; }
+  else if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`<b>Marked wrong.</b> You earned ${P.first} of ${max} point${max>1?'s':''}. Ask your teacher if you'd like to try it again.`; }
+  else if(P.tries===1){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=max>1?'<b>Not quite.</b> Something isn\'t right yet. You have <b>one more try</b>.':'<b>Not quite.</b> You have <b>one more try</b>.'; }
+  else ui.fb.hidden=true;
+  if(ui.cb) ui.cb.textContent=P.checked?'Checked':(P.tries===1?'Check (last try)':'Check'); }
+
+/* ---------- drag onto a diagram (or into equation slots) ---------- */
+function dragProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.zones.length);
+  let fig;
+  if(o.equation){ fig=h('div',{class:'eq'}); box.appendChild(fig); }
+  else { fig=h('div',{class:'figwrap'}); fig.innerHTML=o.svg; box.appendChild(fig); }
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.chips.map((_,i)=>i)));
+  const zoneEls={};
+  const groupAns=g=>o.zones.filter(z=>z.group===g).map(z=>z.ans);
+  if(o.equation){ o.layout.forEach(item=>{ if(typeof item==='string'){ fig.appendChild(h('span',null,item)); } else { const z=o.zones[item]; const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans}); fig.appendChild(b); zoneEls[z.id]=b; } }); }
+  else o.zones.forEach(z=>{ const b=h('button',{class:'zone',type:'button','data-key':z.group?groupAns(z.group).join(' / '):z.ans});
+    b.style.left=(z.x/o.vb[0]*100)+'%'; b.style.top=(z.y/o.vb[1]*100)+'%'; b.style.width=((z.w||130)/o.vb[0]*100)+'%'; fig.appendChild(b); zoneEls[z.id]=b; });
+  function placedChips(){ return new Set(Object.values(P.place)); }
+  function render(){
+    const used=placedChips();
+    pool.innerHTML='<div class="lbl">Tap a label, then tap a box (or drag it). Tap a filled box to take its label back.</div>';
+    order.forEach(ci=>{ if(used.has(ci)) return; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true'},o.chips[ci]); c.disabled=!!P.checked;
+      c.addEventListener('click',()=>{ sel=sel===ci?null:ci; render(); });
+      c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+      pool.appendChild(c); });
+    if(P.checked&&!pool.querySelector('.chip')) pool.hidden=true;
+    o.zones.forEach(z=>{ const b=zoneEls[z.id]; const ci=P.place[z.id];
+      b.className='zone'+(ci==null?' empty':' filled')+(P.checked?' locked':'');
+      if(ci==null) b.innerHTML=z.ph||'drop here';
+      else b.innerHTML=o.chips[ci];
+      b.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; ui.hb.disabled=!!P.checked&&false;
+    showTry(ui,P,o.zones.length,o.done);
+  }
+  o.zones.forEach(z=>{ const b=zoneEls[z.id];
+    const drop=ci=>{ if(P.checked) return; if(ci==null){ if(P.place[z.id]!=null){ delete P.place[z.id]; save(); render(); } return; }
+      for(const k in P.place) if(P.place[k]===ci) delete P.place[k];
+      P.place[z.id]=ci; sel=null; save(); render(); };
+    b.addEventListener('click',()=>drop(sel));
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  ui.cb.addEventListener('click',()=>{
+    if(P.checked) return;
+    const empty=o.zones.filter(z=>P.place[z.id]==null).length;
+    if(empty){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill every box before you check. ${empty} still empty.`; return; }
+    const res={}; const usedInGroup={};
+    o.zones.forEach(z=>{ const t=o.chips[P.place[z.id]];
+      if(z.group){ const ans=groupAns(z.group); usedInGroup[z.group]=usedInGroup[z.group]||[]; const ok=ans.includes(t)&&!usedInGroup[z.group].includes(t); if(ok) usedInGroup[z.group].push(t); res[z.id]=ok; }
+      else res[z.id]=t===z.ans; });
+    gradeTry(P,Object.values(res),o.zones.length); save(); cloudSave(true); render(); refresh();
+  });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.zones.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- sort into bins ---------- */
+function binProblem(parent, o){
+  const P=st(o.id); P.place=P.place||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.items.length);
+  const pool=h('div',{class:'pool'}); box.appendChild(pool);
+  const bins=h('div',{class:'bins',style:`grid-template-columns:repeat(${o.bins.length},minmax(0,1fr))`}); box.appendChild(bins);
+  const ui=actions(box,o); let sel=null;
+  const order=S.ord[o.id]||(S.ord[o.id]=shuffle(o.items.map((_,i)=>i)));
+  const binEls={};
+  o.bins.forEach(bn=>{ const b=h('div',{class:'bin',role:'button',tabindex:'0'},`<h4>${bn.label}</h4><div class="bchips"></div>`); bins.appendChild(b); binEls[bn.k]=b;
+    const drop=ci=>{ if(P.checked||ci==null) return; P.place[ci]=bn.k; sel=null; save(); render(); };
+    b.addEventListener('click',e=>{ if(e.target.closest('.chip')) return; drop(sel); });
+    b.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); drop(sel); } });
+    b.addEventListener('dragover',e=>{ e.preventDefault(); b.classList.add('hot'); }); b.addEventListener('dragleave',()=>b.classList.remove('hot'));
+    b.addEventListener('drop',e=>{ e.preventDefault(); b.classList.remove('hot'); drop(+e.dataTransfer.getData('text/plain')); }); });
+  const binLabel=k=>(o.bins.find(b=>b.k===k)||{}).label;
+  function chipEl(ci,inBin){ const it=o.items[ci]; const c=h('button',{class:'chip'+(sel===ci?' sel':''),type:'button',draggable:P.checked?'false':'true','data-key':binLabel(it.k)},it.t);
+    
+    c.disabled=!!P.checked;
+    c.addEventListener('click',e=>{ if(P.checked) return; if(inBin){ e.stopPropagation(); if(sel!=null&&sel!==ci){ P.place[sel]=P.place[ci]; sel=null; save(); render(); return; } delete P.place[ci]; save(); render(); return; } sel=sel===ci?null:ci; render(); });
+    c.addEventListener('dragstart',e=>{ sel=ci; e.dataTransfer.setData('text/plain',String(ci)); });
+    return c; }
+  function render(){
+    pool.innerHTML='<div class="lbl">Tap an item, then tap the box it belongs in (or drag it). Tap a sorted item to take it back.</div>';
+    order.forEach(ci=>{ if(P.place[ci]==null) pool.appendChild(chipEl(ci,false)); });
+    pool.hidden=!!P.checked;
+    o.bins.forEach(bn=>{ const holder=$('.bchips',binEls[bn.k]); holder.innerHTML=''; order.forEach(ci=>{ if(P.place[ci]===bn.k) holder.appendChild(chipEl(ci,true)); }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,o.items.length,o.done);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const left=o.items.filter((_,i)=>P.place[i]==null).length;
+    if(left){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Sort every item before you check. ${left} still left.`; return; }
+    const res=o.items.map((it,i)=>P.place[i]===it.k); gradeTry(P,res,o.items.length); save(); cloudSave(true); render(); refresh(); });
+  render();
+  PROBS.push({id:o.id, part:o.part, max:o.items.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- choice problems: one, two-part, or select-all ---------- */
+function choiceProblem(parent, o){   // o.parts: [{q, opts, ans (index or array for select-all)}]
+  const P=st(o.id); P.pick=P.pick||{};
+  const max=o.parts.length;
+  const box=probShell(parent,o.part,o.num,o.q,max);
+  const groups=[];
+  o.parts.forEach((pt,pi)=>{
+    const multi=Array.isArray(pt.ans);
+    if(pt.q) box.insertAdjacentHTML('beforeend',`<div style="margin:10px 0 4px">${pt.q}${multi?' <span class="small muted">(Select all that apply.)</span>':''}</div>`);
+    const ordKey=o.id+'_'+pi; const order=S.ord[ordKey]||(S.ord[ordKey]=shuffle(pt.opts.map((_,i)=>i)));
+    const wrap=h('div',{class:'opts'}); box.appendChild(wrap);
+    const btns={};
+    order.forEach((oi,pos)=>{ const correct=multi?pt.ans.includes(oi):oi===pt.ans;
+      const b=h('button',{class:'opt'+(multi?' multi':''),type:'button'},`<span class="L">${'ABCDEF'[pos]}</span><span>${pt.opts[oi]}</span>`); if(correct) b.dataset.key='1';
+      b.addEventListener('click',()=>{ if(P.checked) return; if(multi){ const s=new Set(P.pick[pi]||[]); s.has(oi)?s.delete(oi):s.add(oi); P.pick[pi]=[...s]; } else P.pick[pi]=oi; save(); paint(); });
+      wrap.appendChild(b); btns[oi]=b; });
+    groups.push({pt,multi,btns});
+  });
+  const ui=actions(box,o);
+  function gradePart(g,pi){ const pk=P.pick[pi]; if(g.multi){ const s=new Set(pk||[]); return g.pt.ans.length===s.size&&g.pt.ans.every(a=>s.has(a)); } const ans=g.pt.ansFn?g.pt.ansFn():g.pt.ans; return pk===ans; }
+  function paint(){
+    groups.forEach((g,pi)=>{ const pk=P.pick[pi];
+      Object.entries(g.btns).forEach(([oi,b])=>{ oi=+oi; const picked=g.multi?(pk||[]).includes(oi):pk===oi; const correct=g.multi?g.pt.ans.includes(oi):oi===g.pt.ans;
+        b.className='opt'+(g.multi?' multi':'')+(picked?' sel':'')+(P.checked&&P.right&&picked?' ok':''); b.disabled=!!P.checked; }); });
+    ui.cb.disabled=!!P.checked;
+    showTry(ui,P,max,o.why);
+  }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const blank=groups.some((g,pi)=>g.multi?!(P.pick[pi]||[]).length:P.pick[pi]==null);
+    if(blank){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Answer every part before you check.'; return; }
+    gradeTry(P,groups.map((g,pi)=>gradePart(g,pi)),max); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- typed blanks (two tries, like every problem) ---------- */
+function typedProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.blanks.length);
+  const inputs=o.blanks.map((bl,i)=>{ const row=h('div',{class:'brow'}); row.innerHTML=`${bl.before} <input class="blank" type="text" aria-label="${esc(strip(bl.before))}" data-key="${esc(bl.show)}"><span class="keytxt">${bl.show}</span> ${bl.after||''}`; box.appendChild(row);
+    const inp=$('input',row); inp.value=P.val[i]||''; inp.addEventListener('input',()=>{ P.val[i]=inp.value; save(); }); return inp; });
+  const ui=actions(box,o);
+  const ok=(bl,v)=>{ v=String(v||'').trim().toLowerCase(); if(bl.calc){ const n=parseFloat(v.replace(/[\u2212\u2013\u2014]/g,'-').replace(/[^0-9.\-]/g,'')); const t=bl.calc(); return !isNaN(n)&&t!=null&&!isNaN(t)&&Math.abs(n-t)<=(bl.tol==null?0.15:bl.tol); } if(bl.num){ const n=parseFloat(v.replace(/[\u2212\u2013\u2014]/g,'-').replace(/[^0-9.\-]/g,'')); return !isNaN(n)&&n>=bl.num[0]&&n<=bl.num[1]; } return bl.accept.some(a=>v.replace(/\s+/g,' ')===a); };
+  function paint(){ inputs.forEach(inp=>{ inp.classList.remove('ok','no'); if(P.checked&&P.right) inp.classList.add('ok'); inp.disabled=!!P.checked; });
+    ui.cb.disabled=!!P.checked; showTry(ui,P,o.blanks.length,''); }
+  ui.cb.addEventListener('click',()=>{
+    if(inputs.some(inp=>!inp.value.trim())){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Fill in every blank before you check.'; return; }
+    if(P.checked) return;
+    const res=o.blanks.map((bl,i)=>ok(bl,inputs[i].value));
+    gradeTry(P,res,o.blanks.length); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.blanks.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- written answer, scored by key ideas (two tries, like every problem) ---------- */
+function writtenProblem(parent, o){
+  const P=st(o.id); if(P.val==null) P.val='';
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const ta=h('textarea',{class:'wtext',rows:'5','aria-label':'Your answer','data-key':o.model}); ta.value=P.val; box.appendChild(ta);
+  box.appendChild(h('div',{class:'wkey'},'<b>Key:</b> '+o.model));
+  if(o.bank){ const wb=h('div',{class:'wbank2'}); wb.innerHTML='<b>Word bank</b> <span class="small muted">(tap a word to add it)</span><br>'+o.bank.map(w=>`<button type="button" class="wchip">${w}</button>`).join('');
+    box.appendChild(wb);
+    wb.querySelectorAll('.wchip').forEach(c=>c.addEventListener('click',()=>{ if(ta.disabled) return; const w=c.textContent; const a=ta.selectionStart??ta.value.length, b=ta.selectionEnd??ta.value.length;
+      const before=ta.value.slice(0,a), after=ta.value.slice(b); const pre=(before&&!/\s$/.test(before))?' ':''; const ins=pre+w+' ';
+      ta.value=before+ins+after; ta.focus(); const p=a+ins.length; ta.setSelectionRange(p,p); ta.dispatchEvent(new Event('input',{bubbles:true})); })); }
+  ta.addEventListener('input',()=>{ P.val=ta.value; save(); });
+  const ui=actions(box,o);
+  const grade=()=>{ const t=ta.value.toLowerCase(); const hits=o.groups.filter(g=>g[1].test(t)).length; const n=Math.min(o.pts,hits); return Array.from({length:o.pts},(_,i)=>i<n); };
+  function paint(){ ta.disabled=!!P.checked; ui.cb.disabled=!!P.checked; showTry(ui,P,o.pts,o.why); }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(ta.value.trim().split(/\s+/).length<5){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Write a full answer (at least one complete sentence) before you check.'; return; }
+    gradeTry(P,grade(),o.pts); save(); cloudSave(true); paint(); refresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- predictions: saved once, completion credit, never marked wrong ---------- */
+function predictProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.rows.length);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb predtab"><tr><th>${o.rowsLabel||'Tube'}</th><th>Setup</th><th>My prediction</th></tr>${o.rows.map((r,i)=>`<tr><td><b>${r.id}</b></td><td>${r.desc}</td><td><select data-i="${i}" aria-label="Prediction for ${r.id}"><option value="">choose…</option>${o.choices.map(c=>`<option>${c}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select')];
+  sels.forEach((sl,i)=>{ sl.value=P.val[i]||''; sl.addEventListener('change',()=>{ P.val[i]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Lock in my predictions';
+  function paint(){ sels.forEach(sl=>sl.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Predictions saved.</b> You\'ll compare them with your results later. Your observation table on page 3 is now unlocked.'; ui.cb.textContent='Predictions locked'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(sels.some(sl=>!sl.value)){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Choose a prediction for every tube first.'; return; }
+    if(!confirm('Lock in your predictions? You can\'t change them after this.')) return;
+    P.first=o.rows.length; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.rows.length, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- lab data table: groups type their own measurements; graph builds from them ---------- */
+function dataTableProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const cells=o.rows.length*o.cols.length;
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb datatab"><tr><th>${o.corner}</th>${o.cols.map(c=>`<th>${c}</th>`).join('')}</tr>${o.rows.map((r,i)=>`<tr><td><b>${r}</b></td>${o.cols.map((c,j)=>`<td><input class="dcell" inputmode="decimal" data-r="${i}" data-c="${j}" aria-label="${r}, ${c}"></td>`).join('')}</tr>`).join('')}</table>`;
+  const ins=[...wrap.querySelectorAll('input.dcell')];
+  const chart=h('div',{class:'datachart'}); box.appendChild(chart);
+  ins.forEach(inp=>{ const k=inp.dataset.r+'_'+inp.dataset.c; inp.value=P.val[k]??''; inp.addEventListener('input',()=>{ P.val[k]=inp.value; save(); draw(); }); });
+  function draw(){ chart.innerHTML=o.chart(P.val); }
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Save my data';
+  function paint(){ ins.forEach(i=>i.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Data saved.</b> Your analysis questions use these numbers.'; ui.cb.textContent='Data saved'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const bad=ins.filter(i=>i.value.trim()===''||isNaN(parseFloat(i.value)));
+    if(bad.length){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Fill in every box with a number first (${bad.length} still empty).`; bad[0].focus(); return; }
+    if(!confirm('Save your data? You can\'t change it after this, and your analysis will use these numbers.')) return;
+    P.first=o.pts; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  draw(); paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ---------- observation table: each row has its own menu; completion credit when saved ---------- */
+function obsTableProblem(parent, o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,o.pts);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  wrap.innerHTML=`<table class="nb datatab"><tr><th>Observation</th><th>What you saw</th></tr>${o.rows.map((r,i)=>`<tr><td>${r.q}</td><td><select class="ocell" data-r="${i}" aria-label="${r.q.replace(/<[^>]+>/g,'')}"><option value="">choose…</option>${r.opts.map(x=>`<option>${x}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+  const sels=[...wrap.querySelectorAll('select.ocell')];
+  sels.forEach(sl=>{ const k=sl.dataset.r; sl.value=P.val[k]||''; sl.addEventListener('change',()=>{ P.val[k]=sl.value; save(); }); });
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Save my observations';
+  function paint(){ sels.forEach(s=>s.disabled=!!P.checked); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Observations saved.</b> Your analysis questions use them.'; ui.cb.textContent='Observations saved'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    const bad=sels.filter(s=>!s.value); if(bad.length){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML=`Choose an answer in every row first (${bad.length} still empty).`; return; }
+    if(!confirm('Save your observations? You can\'t change them after this, and your analysis will use them.')) return;
+    P.first=o.pts; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true); paint(); refresh(); if(window.dataRefresh) dataRefresh(); });
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:o.pts, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+/* ============================== WORKSHEET CONTENT ============================== */
+/* ===== Catalase: Enzymes in Action (shared content: drawings, charts, sections 1, 2, 4, 5) ===== */
+const TEMPS=[{k:'ice',row:'Ice water (about 2 °C)',short:'Ice water',tag:'Ice',c:2},{k:'room',row:'Room temperature (about 22 °C)',short:'Room temperature',tag:'Room',c:22},
+  {k:'warm',row:'Warm water (about 40 °C)',short:'Warm water',tag:'Warm',c:40},{k:'boil',row:'Boiled (100 °C)',short:'Boiled',tag:'Boiled',c:100}];
+const FACT={
+  ph:{name:'pH',pick:'pH (vinegar, water, baking soda)',rows:['Vinegar (acidic, about pH 3)','Plain water (neutral, pH 7)','Baking soda solution (basic, about pH 9)'],short:['Vinegar','Plain water','Baking soda'],tag:['Vinegar','Water','B. soda']},
+  sa:{name:'Surface area',pick:'Surface area (whole, cut, mashed)',rows:['One whole cube','One cube cut into 8 small pieces','One cube mashed with a fork'],short:['Whole cube','8 small pieces','Mashed'],tag:['Whole','8 pieces','Mashed']}};
+const fac=()=>((st('pred').val||{}).f)||null;
+const OBS_ROWS=[
+  {q:'<b>Control C1:</b> a room-temperature cube in 5 mL of <b>water</b> (no hydrogen peroxide). What happened?', opts:['No bubbles','A few small bubbles','A lot of foam']},
+  {q:'<b>Control C2:</b> 5 mL of hydrogen peroxide with <b>no potato</b>. What happened?', opts:['No bubbles','A few small bubbles','A lot of foam']},
+  {q:'<b>Reuse test:</b> the same room-temperature cube in 5 mL of <b>fresh</b> hydrogen peroxide. What happened?', opts:['A lot of foam again','A little foam','No foam']},
+  {q:'<b>Splint test:</b> a glowing wooden splint was held in the foam. What happened?', opts:['The splint glowed brighter or burst into flame','The splint went out','Nothing changed','We did not see this test']}];
+const OBS=()=>st('obs').val||{};
+
+/* ---------- small helpers ---------- */
+const f1=v=>(+v).toFixed(1);
+let UIDN=0; const uid=p=>p+'_'+(++UIDN);
+const tx=(x,y,t,fs,col,anchor,bold)=>`<text x="${x}" y="${y}" text-anchor="${anchor||'middle'}" font-size="${fs||14}" fill="${col||'#e8eef8'}"${bold?' font-weight="700"':''}>${t}</text>`;
+function rng(seed){ let s=seed%233280; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
+function hashStr(s){ let x=2166136261; for(const ch of String(s)){ x^=ch.charCodeAt(0); x=Math.imul(x,16777619); } return x>>>0; }
+function mulberry(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+const comma=n=>Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g,',');
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const easeOut=t=>1-Math.pow(1-clamp(t,0,1),2.4);
+function arw(x1,y1,x2,y2,col,w){ w=w||2.4; const a=Math.atan2(y2-y1,x2-x1), L=w*3+6, bx=x2-Math.cos(a)*L, by=y2-Math.sin(a)*L;
+  return `<line x1="${f1(x1)}" y1="${f1(y1)}" x2="${f1(bx)}" y2="${f1(by)}" stroke="${col}" stroke-width="${w}"/><path d="M${f1(x2)},${f1(y2)} L${f1(bx+Math.sin(a)*L*0.55)},${f1(by-Math.cos(a)*L*0.55)} L${f1(bx-Math.sin(a)*L*0.55)},${f1(by+Math.cos(a)*L*0.55)}Z" fill="${col}"/>`; }
+const mkr=(x,y,n,r)=>{ r=r||14; return `<circle cx="${f1(x)}" cy="${f1(y)}" r="${r}" fill="#ffd35c" stroke="#16213a" stroke-width="2"/>`+tx(f1(x),f1(y+r*0.4),n,r*1.15,'#16213a',null,true); };
+
+/* ---------- molecules (from the Enzymes lesson) ---------- */
+function atom(x,y,r,el){ const c=el==='O'?['#f87171','#b91c1c']:['#ffffff','#94a3b8']; const id=uid('at');
+  return `<defs><radialGradient id="${id}" cx="35%" cy="35%" r="70%"><stop offset="0" stop-color="${c[0]}"/><stop offset="1" stop-color="${c[1]}"/></radialGradient></defs><circle cx="${f1(x)}" cy="${f1(y)}" r="${r}" fill="url(#${id})" stroke="#334155" stroke-width=".8"/>`; }
+function h2o2(x,y,s){ return `<g transform="translate(${f1(x)} ${f1(y)}) scale(${s})"><path d="M-17,-10 L-6,4 L6,4 L17,-10" stroke="#cbd5e1" stroke-width="3"/>${atom(-17,-10,5.5,'H')}${atom(17,-10,5.5,'H')}${atom(-6,4,8.5,'O')}${atom(6,4,8.5,'O')}</g>`; }
+function water(x,y,s){ return `<g transform="translate(${f1(x)} ${f1(y)}) scale(${s})"><path d="M-12,8 L0,0 L12,8" stroke="#cbd5e1" stroke-width="3"/>${atom(-12,8,5.5,'H')}${atom(12,8,5.5,'H')}${atom(0,0,9,'O')}</g>`; }
+function oxygen2(x,y,s){ return `<g transform="translate(${f1(x)} ${f1(y)}) scale(${s})">${atom(-6,0,8.5,'O')}${atom(6,0,8.5,'O')}</g>`; }
+function catalaseG(x,y,s){ const pal=['#b4f5d2','#33b27a','#1a6b47'], id=uid('ez'), cl=uid('ec'), rim=20, pk='L-4,-18 Q0,-13 4,-18 L20,-40';
+  const body=`M${rim},-40 C${rim+18},-50 66,-54 80,-30 C94,-4 88,44 52,62 C22,78 -22,78 -52,62 C-88,44 -94,-4 -80,-30 C-66,-54 ${-rim-18},-50 ${-rim},-40 ${pk} Z`;
+  let g=`<g transform="translate(${f1(x)} ${f1(y)}) scale(${s})"><defs><radialGradient id="${id}" cx="40%" cy="30%" r="80%"><stop offset="0" stop-color="${pal[0]}"/><stop offset=".55" stop-color="${pal[1]}"/><stop offset="1" stop-color="${pal[2]}"/></radialGradient><clipPath id="${cl}"><path d="${body}"/></clipPath></defs>`;
+  g+=`<ellipse cx="0" cy="68" rx="76" ry="10" fill="#000" opacity=".22"/><path d="${body}" fill="url(#${id})" stroke="${pal[2]}" stroke-width="2.2" stroke-linejoin="round"/>`;
+  g+=`<g clip-path="url(#${cl})" fill="none" stroke-linecap="round"><path d="M-70,6 c8,-12 16,12 24,0 s16,12 24,0 s16,12 24,0" stroke="${pal[0]}" stroke-width="6" opacity=".35"/><path d="M-30,40 c8,-12 16,12 24,0 s16,12 24,0 s16,12 24,0 s16,12 24,0" stroke="${pal[0]}" stroke-width="6" opacity=".3"/><path d="M-62,34 L-24,58 M40,-8 L74,14" stroke="${pal[2]}" stroke-width="5" opacity=".35"/></g>`;
+  return g+'</g>'; }
+
+/* ---------- lab equipment (realistic, light background) ---------- */
+function potatoG(x,y,s){ const id=uid('pt');
+  let g=`<g transform="translate(${x} ${y}) scale(${s})"><defs><radialGradient id="${id}" cx="38%" cy="30%" r="78%"><stop offset="0" stop-color="#e2c088"/><stop offset=".55" stop-color="#c39557"/><stop offset="1" stop-color="#8d6334"/></radialGradient></defs>
+   <ellipse cx="2" cy="31" rx="56" ry="7" fill="#000" opacity=".14"/>
+   <path d="M-58,4 C-61,-19 -31,-34 4,-32 C40,-31 63,-16 60,7 C58,26 30,35 -3,32 C-37,31 -56,24 -58,4 Z" fill="url(#${id})" stroke="#6e4a22" stroke-width="1.4"/>`;
+  [[-34,-12,8],[-6,-22,-10],[24,-14,14],[38,8,-6],[-22,14,4],[8,12,20]].forEach(([a,b,r])=>g+=`<path d="M${a-4},${b} q4,-3 8,0" transform="rotate(${r} ${a} ${b})" stroke="#5b3a17" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="${a}" cy="${b+1.5}" r="1" fill="#5b3a17"/>`);
+  [[-44,0],[-14,-4],[16,0],[30,-24],[-30,24],[46,-6],[0,24]].forEach(([a,b])=>g+=`<ellipse cx="${a}" cy="${b}" rx="2.2" ry="1.4" fill="#9a6f3c" opacity=".7"/>`);
+  return g+`<path d="M-44,-14 C-30,-26 -6,-28 12,-26" stroke="#f3dcae" stroke-width="3" fill="none" opacity=".5" stroke-linecap="round"/></g>`; }
+const CUBEC={raw:['#fbf3d6','#efe0b0','#e2cf96','#b49a5c'], boiled:['#efe3a8','#dccb83','#c9b56a','#a08a46']};
+function cubeG(x,y,s,o){ o=o||{}; const c=o.boiled?CUBEC.boiled:CUBEC.raw;
+  return `<g transform="translate(${f1(x)} ${f1(y)}) scale(${s})"><path d="M0,-10 L10,-5 L0,0 L-10,-5 Z" fill="${c[0]}" stroke="${c[3]}" stroke-width=".7" stroke-linejoin="round"/><path d="M-10,-5 L0,0 L0,11 L-10,6 Z" fill="${c[1]}" stroke="${c[3]}" stroke-width=".7" stroke-linejoin="round"/><path d="M10,-5 L0,0 L0,11 L10,6 Z" fill="${c[2]}" stroke="${c[3]}" stroke-width=".7" stroke-linejoin="round"/>${o.boiled?'<path d="M-6,-5 L4,-7" stroke="#fff" stroke-width="1" opacity=".5"/>':''}</g>`; }
+function piecesG(x,y,s){ let g=''; [[-7,3],[0,4],[7,3],[-4,-1],[4,-1],[-8,-4],[1,-5],[8,-4]].forEach(([a,b],i)=>g+=cubeG(x+a*s,y+b*s,s*0.42)); return g; }
+function mashG(x,y,s){ const r=rng(Math.round(x*3+y)); let g=`<g transform="translate(${f1(x)} ${f1(y)}) scale(${s})"><path d="M-13,6 C-15,-2 -9,-8 -2,-7 C5,-10 13,-5 13,2 C14,7 6,9 0,8 C-6,9 -12,9 -13,6 Z" fill="#efe0b0" stroke="#b49a5c" stroke-width=".7"/>`;
+  for(let i=0;i<9;i++) g+=`<ellipse cx="${f1(-9+r()*18)}" cy="${f1(-4+r()*10)}" rx="${f1(1.4+r()*2)}" ry="${f1(1+r()*1.4)}" fill="${r()<.5?'#fbf3d6':'#e2cf96'}"/>`;
+  return g+'</g>'; }
+function thermoG(x,y,len,frac){ const col=Math.max(4,(len-14)*clamp(frac,0,1));
+  let g=`<rect x="${x-4}" y="${y}" width="8" height="${len}" rx="4" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.2" opacity=".95"/>`;
+  for(let i=1;i<10;i++) g+=`<line x1="${x+1}" y1="${f1(y+len-14-(len-20)*i/10)}" x2="${x+4}" y2="${f1(y+len-14-(len-20)*i/10)}" stroke="#64748b" stroke-width=".8"/>`;
+  g+=`<rect x="${x-1.6}" y="${f1(y+len-10-col)}" width="3.2" height="${f1(col+6)}" fill="#dc2626"/><circle cx="${x}" cy="${y+len}" r="6.5" fill="#dc2626" stroke="#7f1d1d" stroke-width="1"/><circle cx="${x-2}" cy="${y+len-2}" r="1.8" fill="#fca5a5"/>`;
+  return g; }
+/* beaker: x center, yb bottom. o: w,h,lvl(0..1),liq(color),cloud,ice,boil,cubes(list of 'raw'|'boiled'|'pieces'|'mash'),therm(frac),grad */
+function beakerG(x,yb,o){ const w=o.w||64, hh=o.h||82, L=x-w/2, R=x+w/2, T=yb-hh, lv=yb-hh*(o.lvl==null?.6:o.lvl), cid=uid('bk'), gid=uid('bg');
+  const inner=`M${L+2},${T+4} L${L+2},${yb-7} Q${L+2},${yb-2} ${L+7},${yb-2} L${R-7},${yb-2} Q${R-2},${yb-2} ${R-2},${yb-7} L${R-2},${T+4} Z`;
+  let g=`<defs><clipPath id="${cid}"><path d="${inner}"/></clipPath><linearGradient id="${gid}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffffff" stop-opacity=".5"/><stop offset=".25" stop-color="#ffffff" stop-opacity="0"/><stop offset=".8" stop-color="#ffffff" stop-opacity="0"/><stop offset="1" stop-color="#94a3b8" stop-opacity=".25"/></linearGradient></defs>`;
+  g+=`<ellipse cx="${x}" cy="${yb+2}" rx="${w/2+4}" ry="4" fill="#000" opacity=".12"/>`;
+  g+=`<g clip-path="url(#${cid})"><rect x="${L}" y="${f1(lv)}" width="${w}" height="${f1(yb-lv)}" fill="${o.liq||'#cfe8fb'}" opacity="${o.cloud?.9:.75}"/><path d="M${L},${f1(lv)} L${R},${f1(lv)}" stroke="#93c5fd" stroke-width="1.5" opacity=".9"/>`;
+  if(o.ice) [[-16,2,8],[5,-1,-12],[18,3,20],[-4,6,30]].forEach(([dx,dy,r])=>g+=`<rect x="${x+dx-7}" y="${f1(lv+dy-6)}" width="14" height="12" rx="3" fill="#f0f9ff" stroke="#bae6fd" stroke-width="1.2" opacity=".9" transform="rotate(${r} ${x+dx} ${f1(lv+dy)})"/>`);
+  (o.cubes||[]).forEach((c,i)=>{ const cx=x-(o.cubes.length-1)*9+i*18, cy=yb-11; g+=c==='pieces'?piecesG(cx,cy,0.9):c==='mash'?mashG(cx,cy,0.9):cubeG(cx,cy,0.9,{boiled:c==='boiled'}); });
+  if(o.boil){ const r=rng(7+Math.round(x)); for(let i=0;i<14;i++) g+=`<circle cx="${f1(L+6+r()*(w-12))}" cy="${f1(lv+6+r()*(yb-lv-14))}" r="${f1(1.5+r()*3)}" fill="#ffffff" opacity=".75" stroke="#bfdbfe" stroke-width=".6"/>`; }
+  g+=`</g><path d="M${L-3},${T} Q${L},${T+1} ${L},${T+6} L${L},${yb-6} Q${L},${yb} ${L+6},${yb} L${R-6},${yb} Q${R},${yb} ${R},${yb-6} L${R},${T+2}" fill="url(#${gid})" stroke="#64748b" stroke-width="1.8" stroke-linejoin="round"/>`;
+  if(o.grad!==false) for(let i=1;i<=3;i++){ const yy=yb-hh*0.22*i; g+=`<line x1="${R-12}" y1="${f1(yy)}" x2="${R-4}" y2="${f1(yy)}" stroke="#64748b" stroke-width="1"/>`; }
+  if(o.boil) g+=[0,1,2].map(i=>`<path d="M${x-14+i*14},${T-6} q-6,-10 0,-18 q6,-8 0,-18" stroke="#cbd5e1" stroke-width="3" fill="none" opacity=".7" stroke-linecap="round"/>`).join('');
+  if(o.therm!=null) g+=thermoG(x+w*0.22,T-34,hh+18,o.therm);
+  return g; }
+function hotplateG(x,y,w){ return `<rect x="${x-w/2}" y="${y}" width="${w}" height="22" rx="4" fill="#e5e7eb" stroke="#6b7280" stroke-width="1.4"/><rect x="${x-w/2+6}" y="${y-3}" width="${w-12}" height="5" rx="2" fill="#374151"/><circle cx="${x-w/2+12}" cy="${y+12}" r="4" fill="#9ca3af" stroke="#4b5563"/><circle cx="${x+w/2-12}" cy="${y+12}" r="3" fill="#ef4444"/>`; }
+function bottleG(x,yb,s){ const id=uid('bt'); return `<g transform="translate(${x} ${yb}) scale(${s})"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5b3412"/><stop offset=".35" stop-color="#8a5320"/><stop offset="1" stop-color="#4a2a0d"/></linearGradient></defs>
+  <ellipse cx="0" cy="2" rx="30" ry="4" fill="#000" opacity=".14"/><path d="M-28,0 L-28,-86 Q-28,-100 -14,-104 L-10,-112 L10,-112 L14,-104 Q28,-100 28,-86 L28,0 Z" fill="url(#${id})" stroke="#3b1f08" stroke-width="1.4"/>
+  <rect x="-12" y="-128" width="24" height="18" rx="3" fill="#f8fafc" stroke="#94a3b8"/><rect x="-24" y="-80" width="48" height="56" rx="4" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="0" y="-62" text-anchor="middle" font-size="8.5" font-weight="700" fill="#1e3a8a">Hydrogen</text><text x="0" y="-52" text-anchor="middle" font-size="8.5" font-weight="700" fill="#1e3a8a">peroxide</text><text x="0" y="-36" text-anchor="middle" font-size="12" font-weight="700" fill="#b91c1c">3%</text>
+  <path d="M-20,-96 L-20,-10" stroke="#ffffff" stroke-width="3" opacity=".25" stroke-linecap="round"/></g>`; }
+function rulerG(x,y,len,mm,o){ o=o||{}; const w=o.w||26; let g=`<rect x="${x}" y="${y}" width="${w}" height="${len*mm+12}" rx="3" fill="#fde68a" stroke="#b45309" stroke-width="1.2"/>`;
+  for(let i=0;i<=len;i++){ const yy=y+6+(len-i)*mm, L=i%10===0?w*0.45:i%5===0?w*0.32:w*0.2; if(mm<2.2&&i%2) continue;
+    g+=`<line x1="${x}" y1="${f1(yy)}" x2="${f1(x+L)}" y2="${f1(yy)}" stroke="#422006" stroke-width="${i%10===0?1.4:.8}"/>`;
+    if(i%10===0&&o.nums!==false) g+=`<text x="${f1(x+w-3)}" y="${f1(yy+4)}" text-anchor="end" font-size="${o.fs||9}" fill="#422006">${o.mmNum?i:i/10}</text>`; }
+  return g+(o.unit?`<text x="${f1(x+w/2)}" y="${f1(y+len*mm+24)}" text-anchor="middle" font-size="${o.fs||9}" fill="#422006">cm</text>`:''); }
+function tongsG(x,y,s){ return `<g transform="translate(${x} ${y}) scale(${s}) rotate(-20)"><path d="M0,0 L60,-5 Q66,-4 62,-1 L6,3 Z" fill="#cbd5e1" stroke="#475569"/><path d="M0,6 L60,13 Q66,12 62,9 L6,3 Z" fill="#e2e8f0" stroke="#475569"/><circle cx="2" cy="3" r="4" fill="#94a3b8" stroke="#334155"/></g>`; }
+function timerG(x,y,s){ return `<g transform="translate(${x} ${y}) scale(${s||1})"><rect x="-4" y="-30" width="8" height="7" rx="2" fill="#475569"/><circle r="23" fill="#e2e8f0" stroke="#334155" stroke-width="3"/><circle r="18" fill="#ffffff" stroke="#94a3b8"/>${Array.from({length:12},(_,i)=>{ const a=i*Math.PI/6; return `<line x1="${f1(Math.sin(a)*15)}" y1="${f1(-Math.cos(a)*15)}" x2="${f1(Math.sin(a)*17.5)}" y2="${f1(-Math.cos(a)*17.5)}" stroke="#475569" stroke-width="1.2"/>`; }).join('')}<line x1="0" y1="0" x2="0" y2="-13" stroke="#dc2626" stroke-width="1.8" stroke-linecap="round"/><circle r="2" fill="#0f172a"/></g>`; }
+function cylG(x,yb,s){ let g=`<g transform="translate(${x} ${yb}) scale(${s})"><path d="M-16,0 L16,0 L12,-6 L-12,-6 Z" fill="#cbd5e1" stroke="#64748b"/><rect x="-8" y="-118" width="16" height="112" fill="#f8fafc" stroke="#64748b" stroke-width="1.4" opacity=".9"/><rect x="-7" y="-48" width="14" height="42" fill="#dbeafe" opacity=".8"/><path d="M-11,-118 L8,-118 L8,-114 L-8,-114 Z" fill="#e2e8f0" stroke="#64748b"/>`;
+  for(let i=1;i<10;i++) g+=`<line x1="-8" y1="${-6-i*11}" x2="${i%5===0?2:-2}" y2="${-6-i*11}" stroke="#475569" stroke-width=".9"/>`;
+  return g+'</g>'; }
+function markerG(x,y,s){ return `<g transform="translate(${x} ${y}) scale(${s}) rotate(-35)"><rect x="-4" y="-34" width="8" height="52" rx="3" fill="#111827"/><rect x="-4.5" y="-46" width="9" height="16" rx="3" fill="#374151"/><path d="M-2.5,18 L2.5,18 L1,26 L-1,26 Z" fill="#111827"/><rect x="-3" y="-20" width="6" height="18" rx="1" fill="#f8fafc"/></g>`; }
+
+/* ---------- test tube with foam. o: mm (px per mm), L (mm), d (inner mm), liq (mm), foam (mm), piece, label, line, seed, fresh(liquid only), sel, bubbles (rising in liquid 0..1) ---------- */
+const BUBS={}; function bubList(seed){ if(BUBS[seed]) return BUBS[seed]; const r=mulberry(seed), a=[]; for(let i=0;i<320;i++) a.push([r(),r()*100,0.45+r()*0.85,r()]); return BUBS[seed]=a; }
+function tubeG(cx,yTop,o){ const mm=o.mm, r=o.d*mm/2, yB=yTop+o.L*mm, yLiq=yB-o.liq*mm, fz=Math.max(0,o.foam||0), yF=yLiq-fz*mm, cid=uid('tc'), gid=uid('tg'), fid=uid('tf');
+  const inner=`M${f1(cx-r)},${f1(yTop)} L${f1(cx-r)},${f1(yB-r)} A${f1(r)},${f1(r)} 0 0 0 ${f1(cx+r)},${f1(yB-r)} L${f1(cx+r)},${f1(yTop)} Z`;
+  let g=`<defs><clipPath id="${cid}"><path d="${inner}"/></clipPath><linearGradient id="${gid}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffffff" stop-opacity=".55"/><stop offset=".3" stop-color="#ffffff" stop-opacity=".05"/><stop offset=".75" stop-color="#ffffff" stop-opacity="0"/><stop offset="1" stop-color="#64748b" stop-opacity=".22"/></linearGradient>
+    <linearGradient id="${fid}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f1f5f9"/><stop offset=".45" stop-color="#ffffff"/><stop offset="1" stop-color="#e2e8f0"/></linearGradient></defs>`;
+  g+=`<g clip-path="url(#${cid})"><rect x="${f1(cx-r)}" y="${f1(yTop)}" width="${f1(2*r)}" height="${f1(yB-yTop)}" fill="#ffffff" opacity=".35"/>`;
+  if(o.liq>0) g+=`<rect x="${f1(cx-r)}" y="${f1(yLiq)}" width="${f1(2*r)}" height="${f1(yB-yLiq)}" fill="${o.liqCol||'#dbeafe'}" opacity=".85"/>`;
+  const bl=bubList(o.seed||1);
+  if(o.piece){ const py=yB-r*0.75, s=clamp(r/9,0.5,3.2);
+    g+=o.piece==='pieces'?piecesG(cx,py,s*0.95):o.piece==='mash'?mashG(cx,py+s,s*0.9):cubeG(cx,py,s,{boiled:o.piece==='boiled'}); }
+  if(o.bubbles>0&&o.liq>0){ bl.slice(0,Math.round(40*o.bubbles)).forEach(([a,b,c])=>{ const yy=yB-r-(b/100)*(yB-r-yLiq); g+=`<circle cx="${f1(cx-r+2+a*(2*r-4))}" cy="${f1(yy)}" r="${f1(c*mm*0.5)}" fill="none" stroke="#ffffff" stroke-width=".9" opacity=".9"/>`; }); }
+  if(fz>0){ const br=Math.min(0.9*mm,r/3);
+    g+=`<rect x="${f1(cx-r)}" y="${f1(yF+br)}" width="${f1(2*r)}" height="${f1(yLiq-yF-br+2)}" fill="url(#${fid})"/>`;
+    let d=`M${f1(cx-r)},${f1(yF+br*1.4)}`; const n=Math.max(2,Math.round(2*r/(2*br))), step=2*r/n; for(let i=0;i<n;i++) d+=` A${f1(step/2)},${f1(br)} 0 0 1 ${f1(cx-r+(i+1)*step)},${f1(yF+br*1.4)}`;
+    g+=`<path d="${d} L${f1(cx+r)},${f1(yF+br*2)} L${f1(cx-r)},${f1(yF+br*2)} Z" fill="#ffffff" stroke="${mm>3?'#64748b':'#cbd5e1'}" stroke-width="${mm>3?1.2:.7}"/>`;
+    bl.forEach(([a,b,c,k])=>{ const yy=yLiq-(b/100)*(fz*mm); if(yy<yF+br*2.2) return; if(k>Math.min(1,0.25+fz/40)) return; g+=`<circle cx="${f1(cx-r+a*2*r)}" cy="${f1(yy)}" r="${f1(c*mm*0.55)}" fill="#ffffff" stroke="${mm>3?'#94a3b8':'#cbd5e1'}" stroke-width=".7"/>`; }); }
+  g+=`</g><path d="${inner}" fill="url(#${gid})" stroke="${o.sel?'#f59e0b':'#64748b'}" stroke-width="${o.sel?2.6:1.6}"/><ellipse cx="${cx}" cy="${f1(yTop)}" rx="${f1(r+1.5)}" ry="${f1(Math.max(1.6,r*0.18))}" fill="none" stroke="#64748b" stroke-width="1.4"/>`;
+  if(o.line!==false&&o.liq>0) g+=`<line x1="${f1(cx-r-3)}" y1="${f1(yLiq)}" x2="${f1(cx+r+3)}" y2="${f1(yLiq)}" stroke="#111827" stroke-width="${mm>3?2.4:1.6}"/>`;
+  if(o.label) g+=tubeLabel(cx,yTop,o.label,r);
+  return g; }
+function tubeLabel(cx,yTop,label,r){ let g=''; { const o={label};
+  if(o.label){ const lw=Math.max(2*r+10,o.label.length*6.6+10); g+=`<rect x="${f1(cx-lw/2)}" y="${f1(yTop+10)}" width="${f1(lw)}" height="16" rx="3" fill="#fefce8" stroke="#a16207" stroke-width=".8"/>${tx(cx,f1(yTop+22),o.label,11,'#3f2a06',null,true)}`; } }
+  return g; }
+function rackG(x0,x1,yTop,yBase){ return `<rect x="${x0}" y="${yBase-6}" width="${x1-x0}" height="12" rx="3" fill="#b45309" stroke="#7c2d12"/><rect x="${x0+6}" y="${yTop}" width="8" height="${yBase-yTop}" fill="#c2410c" stroke="#7c2d12"/><rect x="${x1-14}" y="${yTop}" width="8" height="${yBase-yTop}" fill="#c2410c" stroke="#7c2d12"/>`; }
+const rackBar=(x0,x1,y)=>`<rect x="${x0}" y="${y}" width="${x1-x0}" height="13" rx="3" fill="#ea580c" stroke="#7c2d12" opacity=".93"/>`;
+
+/* ---------- pictures ---------- */
+const MAT_PIC=(()=>{ const lab=(x,y,t)=>t.split('|').map((u,k)=>tx(x,y+k*15,u,12.5,'#475569')).join('');
+  let s=`<svg viewBox="0 0 900 300" role="img" aria-label="Materials: a raw potato and potato cubes on a cutting board, a brown bottle of 3% hydrogen peroxide, test tubes in a rack, a 10 mL graduated cylinder, a ruler, a marker, tongs, a timer, and four water baths with thermometers: ice water, room temperature, warm water on a hot plate, and boiling water on a hot plate."><rect width="900" height="300" rx="14" fill="#f8fafc"/>`;
+  s+=`<rect x="22" y="150" width="150" height="62" rx="8" fill="#d6a76a" stroke="#92400e"/><rect x="26" y="154" width="142" height="54" rx="6" fill="#e4bc84"/>${potatoG(80,118,0.85)}${cubeG(120,182,1.5)}${cubeG(146,178,1.5)}${cubeG(132,196,1.5)}`;
+  s+=lab(97,232,'potato and|1 cm cubes');
+  s+=bottleG(222,212,1)+lab(222,232,'3% hydrogen|peroxide');
+  s+=rackG(282,402,120,212); [302,332,362,388].forEach(x=>s+=tubeG(x-4,64,{mm:0.95,L:150,d:16,liq:25,foam:0,line:true,seed:x}));
+  s+=rackBar(282,402,128)+lab(342,232,'test tubes|in a rack');
+  s+=cylG(440,212,1)+lab(440,232,'10 mL|cylinder');
+  s+=`<g transform="rotate(-8 492 140)">${rulerG(480,70,150,0.9,{w:22,fs:8})}</g>`+lab(500,232,'ruler');
+  s+=markerG(538,160,1)+tongsG(560,190,0.9)+timerG(612,128,1.05)+lab(588,232,'marker, tongs,|timer');
+  const bx=[690,760,830];
+  s+=beakerG(690,212,{w:54,h:70,lvl:.7,ice:true,therm:0.03,grad:false})+hotplateG(760,190,62)+beakerG(760,188,{w:54,h:70,lvl:.62,therm:0.4,grad:false})+hotplateG(830,190,62)+beakerG(830,188,{w:54,h:70,lvl:.6,boil:true,therm:0.95,grad:false});
+  s+=lab(760,232,'water baths with|thermometers');
+  s+=tx(450,284,'Ice water · room-temperature water · warm water (about 40 °C) · boiling water (teacher station)',12.5,'#64748b');
+  return s+'</svg>'; })();
+/* how to measure (for the labeling problem) */
+function measureFig(){ const W=640,H=420, mm=2.2, cx=420, yTop=24;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="A test tube held in a clamp. Hydrogen peroxide is at the bottom with a potato cube in it. A black marker line is at the top of the liquid. Foam sits above the line. A ruler stands next to the tube. Four empty label boxes point to the parts."><rect width="${W}" height="${H}" rx="14" fill="#f8fafc"/>`;
+  s+=`<rect x="${cx-70}" y="${yTop+150*mm+6}" width="200" height="14" rx="4" fill="#94a3b8" stroke="#475569"/><rect x="${cx+90}" y="40" width="8" height="${150*mm-26}" fill="#64748b"/><rect x="${cx+14}" y="70" width="80" height="10" rx="3" fill="#64748b"/><rect x="${cx+6}" y="62" width="16" height="26" rx="4" fill="#475569"/>`;
+  const liq=25, foam=38, yB=yTop+150*mm, yL=yB-liq*mm, yF=yL-foam*mm;
+  s+=tubeG(cx,yTop,{mm,L:150,d:16,liq,foam,piece:'raw',seed:11});
+  s+=rulerG(cx+24,yL-60*mm-6,60,mm,{w:36,fs:10,mmNum:true});
+  s+=`<line x1="${cx+68}" y1="${yF}" x2="${cx+68}" y2="${yL}" stroke="#7c3aed" stroke-width="2"/><line x1="${cx+62}" y1="${yF}" x2="${cx+74}" y2="${yF}" stroke="#7c3aed" stroke-width="2"/><line x1="${cx+62}" y1="${yL}" x2="${cx+74}" y2="${yL}" stroke="#7c3aed" stroke-width="2"/><line x1="${cx+20}" y1="${yF}" x2="${cx+62}" y2="${yF}" stroke="#7c3aed" stroke-width="1" stroke-dasharray="3 3"/>`;
+  const lead=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#334155" stroke-width="1.6"/><circle cx="${x2}" cy="${y2}" r="3.5" fill="#334155"/>`;
+  s+=lead(232,130,cx-4,f1(yF+foam*mm/2))+lead(232,215,cx-18,f1(yL))+lead(232,300,cx-10,f1(yB-34))+lead(232,385,cx-6,f1(yB-12));
+  return s+'</svg>'; }
+const MEAS_Z=[{id:'m1',x:128,y:130,w:200,ans:'Foam height'},{id:'m2',x:128,y:215,w:200,ans:'Marker line (start level)'},{id:'m3',x:128,y:300,w:200,ans:'Hydrogen peroxide'},{id:'m4',x:128,y:385,w:200,ans:'Potato cube'}];
+/* the lesson's temperature curve (human enzyme), letters A to C */
+const tempRate=T=>T<=37?100*Math.exp(-Math.pow((37-T)/20,2)):100*Math.exp(-Math.pow((T-37)/9,2));
+function lessonCurve(){ const W=640,H=360, x0=70, x1=W-24, y0=H-56, y1=26, X=v=>x0+(x1-x0)*v/80, Y=v=>y0-(y0-y1)*v/120;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Graph from the Enzymes lesson: reaction rate of a human enzyme at different temperatures. The rate rises from 0 °C to a peak at about 37 °C, then drops to zero by about 55 °C. Points A, B, and C are marked on the curve."><rect width="${W}" height="${H}" rx="14" fill="#0f1a2e"/>`;
+  for(let v=0;v<=100;v+=20) s+=`<line x1="${x0}" y1="${f1(Y(v))}" x2="${x1}" y2="${f1(Y(v))}" stroke="#22324f"/>`+tx(x0-7,f1(Y(v)+4),v,11.5,'#a3b4cf','end');
+  for(let v=0;v<=80;v+=10) s+=`<line x1="${f1(X(v))}" y1="${y0}" x2="${f1(X(v))}" y2="${y0+5}" stroke="#a3b4cf"/>`+tx(f1(X(v)),y0+19,v,11.5,'#a3b4cf');
+  let d=''; for(let t=0;t<=80;t+=0.5) d+=(t?'L':'M')+f1(X(t))+','+f1(Y(tempRate(t)));
+  s+=`<path d="${d}" stroke="#c4a1ff" stroke-width="3.6" fill="none" stroke-linejoin="round"/>`;
+  s+=`<line x1="${x0}" y1="${y0}" x2="${x1}" y2="${y0}" stroke="#a3b4cf" stroke-width="1.6"/><line x1="${x0}" y1="${y0}" x2="${x0}" y2="${y1-6}" stroke="#a3b4cf" stroke-width="1.6"/>`;
+  s+=tx((x0+x1)/2,H-14,'Temperature (°C)',13.5,'#e8eef8',null,true)+`<text x="18" y="${(y0+y1)/2}" transform="rotate(-90 18 ${(y0+y1)/2})" text-anchor="middle" font-size="13" fill="#e8eef8" font-weight="700">Reaction rate (% of fastest)</text>`;
+  [[12,'A'],[37,'B'],[49,'C']].forEach(([t,L])=>s+=mkr(X(t),Y(tempRate(t)),L,13));
+  return s+'</svg>'; }
+const CURVE_Z=(()=>{ const W=640, x0=70, x1=W-24, y0=304, y1=26, X=v=>x0+(x1-x0)*v/80, Y=v=>y0-(y0-y1)*v/120;
+  return [{id:'c1',x:Math.round(X(12)+100),y:Math.round(Y(tempRate(12))+18),w:170,ans:'Cold: slow, few collisions'},{id:'c2',x:Math.round(X(37)),y:22,w:150,ans:'Optimum: fastest'},{id:'c3',x:Math.round(X(49)+92),y:Math.round(Y(tempRate(49))),w:170,ans:'Too hot: denatured'}]; })();
+/* catalase reaction picture */
+function catFig(){ const W=680,H=330;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Model of the catalase reaction. A green enzyme with a pocket on top. A hydrogen peroxide molecule sits just above the pocket. An arrow points to the products: two water molecules and one oxygen molecule. Five empty label boxes point to the parts."><rect width="${W}" height="${H}" rx="14" fill="#0f1a2e"/>`;
+  s+=catalaseG(170,196,1.25)+h2o2(170,128,1.25);
+  s+=arw(300,170,400,170,'#ffd35c',3.2)+tx(350,158,'reaction',12.5,'#ffd35c');
+  s+=water(470,140,1.3)+water(470,214,1.3)+tx(520,180,'+',30,'#e8eef8',null,true)+oxygen2(590,178,1.4);
+  const lead=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#a3b4cf" stroke-width="1.6"/><circle cx="${x2}" cy="${y2}" r="3.5" fill="#a3b4cf"/>`;
+  s+=lead(170,272,150,236)+lead(70,150,166,170)+lead(250,82,188,118)+lead(470,262,470,226)+lead(590,262,592,190);
+  return s+'</svg>'; }
+const CAT_Z=[{id:'e1',x:170,y:294,w:180,ans:'Catalase (enzyme)'},{id:'e2',x:72,y:118,w:130,ans:'Active site'},{id:'e3',x:250,y:52,w:220,ans:'Hydrogen peroxide (substrate)'},
+  {id:'e4',x:440,y:290,w:150,ans:'Water (product)'},{id:'e5',x:604,y:290,w:140,ans:'Oxygen gas (product)'}];
+
+/* ---------- reading the student's own tables ---------- */
+const cellv=(v,r,c)=>{ const x=parseFloat((v||{})[r+'_'+c]); return isNaN(x)?null:x; };
+const avg3=(v,r)=>{ const a=[0,1,2].map(c=>cellv(v,r,c)); return a.some(x=>x==null)?null:(a[0]+a[1]+a[2])/3; };
+function labData(){ const tv=st('tdat').val||{}, fv=st('fdat').val||{};
+  const tA=TEMPS.map((_,i)=>avg3(tv,i)||0), fA=[0,1,2].map(i=>avg3(fv,i)||0);
+  const best=a=>{ const mx=Math.max(...a); return a.map((x,i)=>i).filter(i=>Math.abs(a[i]-mx)<1e-9); };
+  return {tA,fA,tBest:best(tA),fBest:best(fA),tMax:Math.max(...tA),tMin:Math.min(...tA)}; }
+
+/* ---------- charts (drawn only from numbers the student typed) ---------- */
+const CCOL=['#93c5fd','#5fe3a9','#fb923c','#f87171'], TMARK=['circle','square','diamond'];
+function tmark(k,x,y,col){ if(k==='circle') return `<circle cx="${f1(x)}" cy="${f1(y)}" r="5.5" fill="${col}" stroke="#0f1b2e" stroke-width="1.5"/>`;
+  if(k==='square') return `<rect x="${f1(x-5)}" y="${f1(y-5)}" width="10" height="10" fill="${col}" stroke="#0f1b2e" stroke-width="1.5"/>`;
+  return `<path d="M${f1(x)} ${f1(y-7)} L${f1(x+7)} ${f1(y)} L${f1(x)} ${f1(y+7)} L${f1(x-7)} ${f1(y)} Z" fill="${col}" stroke="#0f1b2e" stroke-width="1.5"/>`; }
+const niceTop=mx=>{ const step=mx<=20?5:mx<=60?10:mx<=150?20:50; return [Math.max(step*2,Math.ceil(mx/step)*step),step]; };
+/* mode 'dots': each trial a point. mode 'avg': bar for the average + trial points */
+function labChart(v,labels,o){ o=o||{}; const n=labels.length, W=680,H=340,X0=74,X1=660,Y0=270,Y1=56; let mx=10;
+  for(let r=0;r<n;r++) for(let c=0;c<3;c++){ const x=cellv(v,r,c); if(x!=null) mx=Math.max(mx,x); }
+  const [top,step]=niceTop(mx), y=val=>Y0-(Y0-Y1)*clamp(val,0,top)/top, gw=(X1-X0)/n;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${o.avg?'Bar graph of the average foam height for each condition, with each trial as a point, from your data.':'Graph of the foam height in each trial, from your data table.'}"><rect width="${W}" height="${H}" rx="12" fill="#0f1b2e"/>`;
+  s+=tx(W/2,28,o.title||'',14.5,'#ffd35c',null,true);
+  for(let k=0;k<=top;k+=step) s+=`<line x1="${X0}" y1="${f1(y(k))}" x2="${X1}" y2="${f1(y(k))}" stroke="#2a3d5f"/>`+tx(X0-8,f1(y(k)+4),k,12,'#a3b4cf','end');
+  s+=`<text x="22" y="${(Y0+Y1)/2}" font-size="13" fill="#a3b4cf" transform="rotate(-90 22 ${(Y0+Y1)/2})" text-anchor="middle">Foam height (mm)</text>`;
+  labels.forEach((L,r)=>{ const cx=X0+gw*r+gw/2; s+=tx(f1(cx),Y0+22,L,13,'#e8eef8');
+    if(o.avg){ const a=avg3(v,r); if(a!=null){ s+=`<rect x="${f1(cx-gw*0.28)}" y="${f1(y(a))}" width="${f1(gw*0.56)}" height="${f1(Math.max(0,Y0-y(a)))}" rx="4" fill="${CCOL[r%4]}" opacity=".55" stroke="${CCOL[r%4]}" stroke-width="1.5" class="abar"/>`; const hi=Math.max(a,...[0,1,2].map(c=>cellv(v,r,c)||0)), ly=y(hi)-14; s+=`<rect x="${f1(cx-24)}" y="${f1(ly-14)}" width="48" height="19" rx="6" fill="#0d1626" stroke="${CCOL[r%4]}" stroke-width="1.2"/>`+tx(f1(cx),f1(ly),f1(a),12.5,'#e8eef8',null,true); } }
+    [0,1,2].forEach(c=>{ const x=cellv(v,r,c); if(x==null) return; s+=tmark(TMARK[c],cx+(c-1)*(o.avg?16:20),y(x),o.avg?'#e8eef8':CCOL[r%4]).replace(/^<(\w+)/,'<$1 class="tdot"'); }); });
+  s+=`<line x1="${X0}" y1="${Y0}" x2="${X1}" y2="${Y0}" stroke="#a3b4cf" stroke-width="1.5"/>`;
+  s+=TMARK.map((k,c)=>tmark(k,X0+170+c*120,H-18,'#e8eef8')+tx(X0+182+c*120,H-13,'Trial '+(c+1),12.5,'#a3b4cf','start')).join('');
+  return s+'</svg>'; }
+const tLabels=()=>TEMPS.map(t=>t.short);
+const fLabels=()=>{ const f=fac(); return f?FACT[f].short:['Condition 1','Condition 2','Condition 3']; };
+
+/* ---------- predictions: temperature + the group's second factor (locks; full credit) ---------- */
+function predictLab(parent,o){
+  const P=st(o.id); P.val=P.val||{};
+  const box=probShell(parent,o.part,o.num,o.q,4);
+  const wrap=h('div',{class:'wide'}); box.appendChild(wrap);
+  const ui=actions(box,o); ui.hb.hidden=true; ui.cb.textContent='Lock in my predictions';
+  const opt=(arr,val)=>`<option value="">choose…</option>`+arr.map(([v,t])=>`<option value="${esc(v)}"${val===v?' selected':''}>${t}</option>`).join('');
+  function render(){ const f=P.val.f, T=TEMPS.map(t=>[t.short,t.short]);
+    const rows=[['Temperature','Which cube will make the <b>most</b> foam?','0',T],['Temperature','Which cube will make the <b>least</b> foam?','1',T],
+      ['Second factor',o.facDesc,'f',Object.keys(FACT).map(k=>[k,FACT[k].pick])],
+      [f?FACT[f].name:'Second factor',f?'Which will make the <b>most</b> foam?':'Choose your second factor first.','2',f?FACT[f].short.concat(['All about the same']).map(x=>[x,x]):[]]];
+    wrap.innerHTML=`<table class="nb predtab"><tr><th>Test</th><th>What to predict</th><th>My prediction</th></tr>${rows.map(([a,b,k,ch])=>`<tr><td><b>${a}</b></td><td>${b}</td><td><select data-k="${k}" aria-label="${esc(strip(a+': '+b))}"${ch.length?'':' disabled'}>${opt(ch,P.val[k])}</select></td></tr>`).join('')}</table>`;
+    wrap.querySelectorAll('select').forEach(sl=>{ if(P.checked) sl.disabled=true;
+      sl.addEventListener('change',()=>{ const k=sl.dataset.k; P.val[k]=sl.value; if(k==='f'){ delete P.val[2]; save(); render(); return; } save(); }); }); }
+  function paint(){ render(); ui.cb.disabled=!!P.checked;
+    if(P.checked){ ui.fb.hidden=false; ui.fb.className='fb ok'; ui.fb.innerHTML='<b>Predictions saved.</b> You\'ll compare them with your results later. Page 3 is now unlocked.'; ui.cb.textContent='Predictions locked'; } }
+  ui.cb.addEventListener('click',()=>{ if(P.checked) return;
+    if(['0','1','f','2'].some(k=>!P.val[k])){ ui.fb.hidden=false; ui.fb.className='fb no'; ui.fb.innerHTML='Choose a prediction in every row first.'; return; }
+    if(!confirm('Lock in your predictions? You can\'t change them after this.')) return;
+    P.first=4; P.checked=true; P.right=true; P.tries=1; save(); cloudSave(true);
+    const y=window.scrollY; build(); window.scrollTo(0,y); });   // rebuild so pages 3 and 4 use the chosen factor
+  paint();
+  PROBS.push({id:o.id, part:o.part, max:4, score:()=>P.checked?P.first:0, checked:()=>!!P.checked});
+}
+
+/* ---------- teacher answer key follows each student's own data ---------- */
+const LIVE=[];
+function liveChoice(parent,o){ choiceProblem(parent,o); LIVE.push({box:parent.lastElementChild, parts:o.parts}); }
+function liveKeys(){ LIVE.forEach(({box,parts})=>{ const wraps=box.querySelectorAll('.opts');
+  parts.forEach((pt,pi)=>{ if(!pt.ansFn) return; const want=pt.opts[pt.ansFn()]; wraps[pi].querySelectorAll('.opt').forEach(b=>{ const t=b.children[1]?b.children[1].innerHTML:''; if(t===want) b.dataset.key='1'; else delete b.dataset.key; }); }); }); }
+function teacherNote(html){ const tp=document.getElementById('teachPanel'); if(!tp||!window.MutationObserver||tp.dataset.ln) return; tp.dataset.ln='1';
+  new MutationObserver(()=>{ if(tp.firstElementChild&&!tp.querySelector('.labnote')){ const d=document.createElement('div'); d.className='labnote'; d.innerHTML=html; tp.appendChild(d); } }).observe(tp,{childList:true}); }
+
+function buildContent(sec){
+  let n=0; const num=()=>++n;
+  const say=(s,html)=>s.insertAdjacentHTML('beforeend',html);
+  LIVE.length=0;
+  /* ---------- 1. Setup ---------- */
+  say(sec[0],`<div class="phenbox"><b>Phenomenon:</b> Pour hydrogen peroxide on a scrape and it fizzes. Your cells make a little hydrogen peroxide by accident, and it can damage them. Almost every living cell, in you, in liver, and in a raw potato, has an enzyme called <b>catalase</b> that breaks it down fast. What makes catalase work faster or slower?</div>
+   <p><b>Lab question:</b> How do temperature and one other factor (pH or surface area) affect how fast catalase breaks down hydrogen peroxide?</p>
+   <p><b>Background.</b> Catalase is an <b>enzyme</b>: a protein that speeds up a reaction and is not used up. Its <b>substrate</b> is hydrogen peroxide. Catalase breaks it into water and oxygen gas:</p>
+   <p style="text-align:center;font-size:19px;font-weight:600">2 H₂O₂ → 2 H₂O + O₂</p>
+   <p>The oxygen gas makes bubbles. The bubbles pile up as <b>foam</b>. The faster catalase works, the more oxygen it makes in 1 minute, so the <b>taller the foam</b>. Foam height is how you will measure catalase activity (the reaction rate).</p>
+   ${SETUP_HTML}`);
+  choiceProblem(sec[0],{id:'q1', part:'P1', num:num(), q:'Check your understanding. Use the background and the procedure.',
+    parts:[{q:'<b>Part A:</b> What is the substrate of catalase?',opts:['Hydrogen peroxide','Oxygen gas','Water','The potato'],ans:0},
+           {q:'<b>Part B:</b> What gas fills the bubbles in the foam?',opts:['Oxygen','Carbon dioxide','Hydrogen','Air from the potato'],ans:0},
+           {q:'<b>Part C:</b> Why must every potato cube be the same size?',opts:['So the only thing that changes is the factor you are testing (a fair test)','So the cubes fit in the water bath','So the foam is white','It does not matter'],ans:0},
+           {q:'<b>Part D:</b> Hydrogen peroxide splashes in your eye. What do you do?',opts:['Rinse it at the eyewash for 15 minutes and tell your teacher','Wipe it with a paper towel','Keep working and rinse it later','Add water to the test tube'],ans:0}],
+    hint:'Re-read the background and the safety rules.', why:'Hydrogen peroxide is the substrate, the bubbles are oxygen, same-size cubes make a fair test, and splashes go to the eyewash.'});
+  dragProblem(sec[0],{id:'q2', part:'P1', num:num(), q:'Complete the equation for the reaction catalase speeds up. Drag a formula into each box.', equation:true,
+    layout:['2',0,'<span class="eqarr">catalase<b>→</b></span>','2',1,'+',2], zones:[{id:'r',ans:'H₂O₂',ph:'reactant'},{id:'p1',ans:'H₂O',ph:'product'},{id:'p2',ans:'O₂',ph:'product'}],
+    chips:['H₂O₂','H₂O','O₂','CO₂','H₂'], hint:'Hydrogen peroxide breaks into water and oxygen gas.', done:'2 H₂O₂ → 2 H₂O + O₂'});
+  dragProblem(sec[0],{id:'q3', part:'P1', num:num(), q:'This is how you will measure. Label the parts of the test tube.', svg:measureFig(), vb:[640,420], zones:MEAS_Z,
+    chips:['Foam height','Marker line (start level)','Hydrogen peroxide','Potato cube','Water bath','Thermometer'], hint:'You draw the marker line at the top of the liquid before the potato goes in. You measure the foam from that line up.', done:'Foam height is measured from the marker line to the top of the foam.'});
+  const ow=h('div',{class:'ordwrap'}); sec[0].appendChild(ow);
+  const STEPS=['Cut potato cubes that are all the same size','Soak the cubes in their water baths for 10 minutes','Drop each cube into its tube of hydrogen peroxide and start the timer','Wait exactly 1 minute','Measure from the marker line to the top of the foam','Record the height in mm, rinse the tubes, and do the next trial'];
+  dragProblem(ow,{id:'q4', part:'P1', num:num(), q:'Put the steps of one temperature trial in order. Drag each step into place.', equation:true,
+    layout:STEPS.flatMap((_,i)=>['Step '+(i+1),i]), zones:STEPS.map((t,i)=>({id:'s'+i,ans:t,ph:'drop step here'})), chips:STEPS,
+    hint:'The cubes must reach the bath temperature before they go into the peroxide. You measure only after the 1 minute is up.', done:'That is one trial.'});
+  /* ---------- 2. Predict ---------- */
+  say(sec[1],`<p>Before you test, predict. There are no wrong predictions: you get full credit for making them, but you <b>can't change them</b> after you lock them in.</p>`);
+  predictLab(sec[1],{id:'pred', part:'P2', num:num(), q:'Make your predictions.', facDesc:FAC_DESC});
+  writtenProblem(sec[1],{id:'hyp', part:'P2', num:num(), q:'Write a hypothesis about how <b>temperature</b> will affect catalase, in the form <b>"If… then… because…"</b>.', pts:3, bank:['If','then','because','temperature','warm','cold','boiled','catalase','foam','faster','slower','active site','shape'],
+    groups:[['If… then… form',/\bif\b[\s\S]*\bthen\b/],['names a temperature',/temperat|warm|hot|cold|ice|boil|heat|°/],['a reason',/because|since|so that|denatur|shape|active site|optimum|molecule|collid|move/]],
+    model:'If the potato cube is warm, then catalase will make the tallest foam, because molecules move faster and collide more. If it is boiled, then there will be little foam, because heat changes the shape of the active site.',
+    hint:'Say what temperature you will change, what you think will happen to the foam, and why.', why:'A testable hypothesis names the change, the predicted result, and the reason.'});
+  /* ---------- 3. Data / Experiment (lab and simulation differ) ---------- */
+  buildData(sec[2],num);
+  /* ---------- 4. Analysis ---------- */
+  const alock=h('div',{class:'fb info'}); alock.innerHTML='<b>Locked.</b> Save your observations and both data tables on page 3 first.'; sec[3].appendChild(alock);
+  const awrap=h('div',{}); sec[3].appendChild(awrap);
+  const D=labData, F=fac()||'ph', FS=FACT[F].short;
+  const anaCharts=()=>{ $$('.anachart',awrap).forEach(e=>{ const t=e.dataset.c==='t', done=!!st(t?'a1':'a2').checked;
+    e.innerHTML=done?labChart(st(t?'tdat':'fdat').val,t?tLabels():fLabels(),{avg:true,title:t?'Temperature test: average foam height':FACT[F].name+' test: average foam height'}):`<p class="fb info small" style="margin:0">Your ${t?'temperature':FACT[F].name} bar graph appears here after you check problem ${e.dataset.n}.</p>`; }); };
+  window.anaRefresh=()=>{ const ok=['obs','tdat','fdat'].every(k=>!!st(k).checked); alock.hidden=ok; awrap.hidden=!ok; if(ok){ anaCharts(); liveKeys(); } };
+  if(!window.__catClick){ window.__catClick=true; document.addEventListener('click',e=>{ if(e.target.closest&&e.target.closest('#part3 .btn.primary')) setTimeout(()=>{ if(window.anaRefresh) anaRefresh(); },0); }); }
+  say(awrap,`<p>Use <b>your data</b> from page 3. Round averages to one decimal place (tenths) and percents to the nearest whole number.</p>`);
+  const n1=n+1, n2=n+2;
+  typedProblem(awrap,{id:'a1', part:'P4', num:num(), q:'<b>Temperature test.</b> Find the average foam height for each temperature. Average = (Trial 1 + Trial 2 + Trial 3) ÷ 3.',
+    blanks:TEMPS.map((t,i)=>({before:`<b>Part ${'ABCD'[i]}:</b> ${t.short}: average =`,calc:()=>D().tA[i],tol:0.1,after:'mm',show:'sum of the 3 trials ÷ 3'})),
+    hint:'Add the three trials in one row, then divide by 3. Use the Temperature table.'});
+  typedProblem(awrap,{id:'a2', part:'P4', num:num(), q:`<b>${FACT[F].name} test.</b> Find the average foam height for each condition.`,
+    blanks:FS.map((t,i)=>({before:`<b>Part ${'ABC'[i]}:</b> ${t}: average =`,calc:()=>D().fA[i],tol:0.1,after:'mm',show:'sum of the 3 trials ÷ 3'})),
+    hint:`Use the ${FACT[F].name} table. Add the three trials in one row, then divide by 3.`});
+  say(awrap,`<div class="prob"><div class="pq">Your graphs</div><div class="anachart catchart" data-c="t" data-n="${n1}"></div><div class="anachart catchart" data-c="f" data-n="${n2}" style="margin-top:10px"></div></div>`);
+  const tOpts=TEMPS.map(t=>t.short).concat(['Two or more tied']), fOpts=FS.concat(['Two or more tied']);
+  const predT=()=>(st('pred').val||{})[0], predF=()=>(st('pred').val||{})[2];
+  liveChoice(awrap,{id:'a3', part:'P4', num:num(), q:'Use your averages to find the best conditions.',
+    parts:[{q:'<b>Part A:</b> Which temperature made the tallest foam (the fastest reaction)?',opts:tOpts,ans:-1,ansFn:()=>{ const b=D().tBest; return b.length===1?b[0]:4; }},
+           {q:`<b>Part B:</b> In your ${FACT[F].name} test, which condition made the tallest foam?`,opts:fOpts,ans:-1,ansFn:()=>{ const b=D().fBest; return b.length===1?b[0]:3; }},
+           {q:'<b>Part C:</b> On page 2, you predicted which temperature would make the most foam. Did that temperature make the tallest foam (or tie for tallest) in your data?',opts:['Yes','No'],ans:-1,ansFn:()=>{ const i=TEMPS.findIndex(t=>t.short===predT()); return D().tBest.includes(i)?0:1; }}],
+    hint:'Look at your averages and your graphs.', why:'Your answers match your own data.'});
+  typedProblem(awrap,{id:'a4', part:'P4', num:num(), q:'Compare your temperature averages with numbers.', blanks:[
+      {before:'<b>Part A:</b> Highest temperature average − lowest temperature average =',calc:()=>D().tMax-D().tMin,tol:0.15,after:'mm',show:'largest average − smallest average'},
+      {before:'<b>Part B:</b> The boiled average is what percent of your highest average? (boiled ÷ highest × 100) =',calc:()=>{ const d=D(); return d.tMax>0?100*d.tA[3]/d.tMax:0; },tol:1,after:'%',show:'boiled average ÷ highest average × 100'}],
+    hint:'Use your four temperature averages. For Part B, divide, then multiply by 100.'});
+  dragProblem(awrap,{id:'a5', part:'P4', num:num(), q:'This graph is from the Enzymes lesson. It shows a <b>human</b> enzyme. Label points A, B, and C.', svg:lessonCurve(), vb:[640,360], zones:CURVE_Z,
+    chips:['Cold: slow, few collisions','Optimum: fastest','Too hot: denatured','Enzyme used up','Substrate all gone'],
+    hint:'The highest point is the optimum. On the cold side, molecules move slowly. On the hot side, the enzyme loses its shape.', done:'Cold slows enzymes down. Too much heat denatures them.'});
+  liveChoice(awrap,{id:'a6', part:'P4', num:num(), q:'Compare <b>your</b> temperature results with the lesson graph above.',
+    parts:[{q:'<b>Part A:</b> Does your data have the same pattern: lower when cold, highest at room or warm temperature, and lowest when boiled?',opts:['Yes, my data has the same pattern','No, my data has a different pattern'],ans:-1,
+             ansFn:()=>{ const a=D().tA; return (Math.max(a[1],a[2])>a[0]&&a[3]<=Math.min(a[0],a[1],a[2]))?0:1; }},
+           {q:'<b>Part B:</b> Catalase comes from a potato, not a human. Why might its optimum be a little different from 37 °C?',opts:['Each enzyme has its own optimum that fits where the organism lives','All enzymes have the exact same optimum','Potatoes have no enzymes','Plants do not have proteins'],ans:0},
+           {q:'<b>Part C:</b> You tested only four temperatures. How could you find catalase\'s optimum more exactly?',opts:['Test more temperatures in between, such as 30, 40, 50, and 60 °C','Test only the boiled cube again','Use a bigger test tube','Wait 10 minutes instead of 1'],ans:0}],
+    hint:'Compare your graph with the curve. An optimum is a single best point.', why:'Every enzyme has its own optimum; testing more temperatures pins it down.'});
+  writtenProblem(awrap,{id:'a7', part:'P4', num:num(), q:'How much foam did the <b>boiled</b> cube make compared with the others? Explain why. Use the words <b>denatured</b> and <b>active site</b>.', pts:3, bank:['the boiled cube','less foam','boiling','heat','denatured','unfolded','shape','active site','hydrogen peroxide','fit','oxygen'],
+    groups:[['says what heat or boiling did',/boil|heat|hot|100/],['denatured or shape changed',/denatur|unfold|shape/],['active site or substrate cannot fit',/active site|substrate|fit|peroxide/]],
+    model:'The boiled cube made much less foam than the other cubes. Boiling heat denatured the catalase: it unfolded and the active site changed shape, so hydrogen peroxide could not fit, and very little oxygen was made.',
+    hint:'Compare the boiled foam with the others, then explain what heat does to the enzyme\'s shape.', why:'High heat denatures catalase. The active site loses its shape, so the substrate no longer fits.'});
+  dragProblem(awrap,{id:'a8', part:'P4', num:num(), q:'Label the model of the catalase reaction.', svg:catFig(), vb:[680,330], zones:CAT_Z,
+    chips:['Catalase (enzyme)','Active site','Hydrogen peroxide (substrate)','Water (product)','Oxygen gas (product)','Glucose'],
+    hint:'The enzyme is the big folded protein. The substrate fits into its pocket. Two products come out.', done:'Catalase holds hydrogen peroxide in its active site and splits it into water and oxygen.'});
+  binProblem(awrap,{id:'a9', part:'P4', num:num(), q:'Sort the variables from the <b>temperature</b> test.',
+    bins:[{k:'i',label:'Independent (you change it)'},{k:'d',label:'Dependent (you measure it)'},{k:'c',label:'Controlled (kept the same)'}],
+    items:[{t:'Temperature of the potato cube',k:'i'},{t:'Foam height after 1 minute',k:'d'},{t:'Volume of hydrogen peroxide (5 mL)',k:'c'},{t:'Size of the potato cube',k:'c'},{t:'Time before measuring',k:'c'},{t:'Strength of the peroxide (3%)',k:'c'},{t:'Size of the test tube',k:'c'}],
+    hint:'You change one thing on purpose. You measure one thing. Everything else stays the same.', done:'One independent variable, one dependent variable, and many controlled variables make a fair test.'});
+  const reuseOpts=['The catalase was not used up, so it broke down the new hydrogen peroxide too','Our cube did not foam again, so something else went wrong, because enzymes are not used up','The catalase was used up the first time','The potato made new hydrogen peroxide'];
+  liveChoice(awrap,{id:'a10', part:'P4', num:num(), q:'Think about your controls and extra tests.',
+    parts:[{q:'<b>Part A:</b> Why did you set up Control C1 (a cube in water, no hydrogen peroxide)?',opts:['To show the bubbles come from breaking down hydrogen peroxide, not from the potato or the water','To make the most foam','To keep the cube cold','To use up the catalase'],ans:0},
+           {q:'<b>Part B:</b> Look at <b>your</b> reuse test. What does it show?',opts:reuseOpts,ans:-1,ansFn:()=>/again|little/i.test(OBS()[2]||'')?0:1},
+           {q:'<b>Part C:</b> The foam in a tube stops growing after a few minutes. Why?',opts:['The hydrogen peroxide (the substrate) gets used up','The catalase gets used up','The tube is too small','The foam gets cold'],ans:0}],
+    hint:'An enzyme is not used up in a reaction. The substrate is.', why:'Controls show where the bubbles come from. Enzymes are reused; the substrate runs out.'});
+  binProblem(awrap,{id:'a11', part:'P4', num:num(), q:'Sources of error. Would each mistake make the measured foam <b>taller</b> or <b>shorter</b> than it should be?',
+    bins:[{k:'t',label:'Taller than it should be'},{k:'s',label:'Shorter than it should be'}],
+    items:[{t:'The potato cube was bigger than the others',k:'t'},{t:'The group waited 2 minutes before measuring',k:'t'},{t:'The group measured from the bottom of the tube, not the marker line',k:'t'},
+           {t:'The peroxide was old and had been left open',k:'s'},{t:'Some foam spilled over the top of the tube',k:'s'},{t:'The group measured after only 30 seconds',k:'s'}],
+    hint:'More catalase or more time means more oxygen. Less substrate or lost foam means less foam to measure.', done:'Careful, equal setups make every trial fair.'});
+  writtenProblem(awrap,{id:'a12', part:'P4', num:num(), q:'Did your results match your predictions from page 2? Explain, using at least one average from your data.', pts:2, bank:['I predicted','but','the','warm','room','ice','boiled','average','mm','matched','did not match'],
+    groups:[['refers to the prediction',/predict|thought|expected|guess|hypothes/],['uses a number from the data',/\d/]],
+    model:'I predicted the warm cube would make the most foam, and it did: its average was 31.3 mm, the tallest of the four temperatures, so my prediction matched.',
+    hint:'Say what you predicted, then give an average from your data.', why:'Comparing predictions with data is how scientists test their ideas.'});
+  /* ---------- 5. Conclusion ---------- */
+  say(sec[4],`<p>Write a <b>claim, evidence, and reasoning</b> conclusion that answers: <i>How do temperature and the other factor you tested affect catalase activity, and why?</i> Use your data.</p>`);
+  writtenProblem(sec[4],{id:'k1', part:'P5', num:num(), q:'<b>Claim:</b> answer the question in one or two sentences. Name the effect of temperature and of your second factor.', pts:2, bank:['Catalase','worked fastest','at','warm','room temperature','slower','cold','boiled','almost stopped','pH','vinegar','surface area','mashed'],
+    groups:[['says how temperature affects catalase',/(temperat|warm|room|heat|hot|cold|ice|boil)[\s\S]{0,140}(fast|slow|most|more|less|least|stop|best|activity|foam|work)|(fast|slow|most|more|less|least|stop|best|activity|foam|work)[\s\S]{0,140}(temperat|warm|room|heat|hot|cold|ice|boil)/],
+            ['says how the second factor affects catalase',/ph|acid|vinegar|baking soda|bas(e|ic)|neutral|surface|mash|cut|pieces/]],
+    model:'Catalase worked fastest at a warm temperature, slower in the cold, and almost stopped when boiled. It also worked faster in plain water (pH 7) than in vinegar, and faster when the potato was mashed.',
+    hint:'One part for temperature, one part for your second factor.', why:'The claim answers the question for both factors.'});
+  writtenProblem(sec[4],{id:'k2', part:'P5', num:num(), q:'<b>Evidence:</b> give numbers from your data: averages for at least two temperatures and two conditions of your second factor.', pts:3, bank:['average','mm','warm','ice','boiled','room','vinegar','water','baking soda','whole','mashed','compared with'],
+    groups:[['names temperatures',/ice|room|warm|boil|cold|°/],['names second-factor conditions',/vinegar|water|baking soda|whole|piece|mash|ph/],['uses numbers',/\d/]],
+    model:'The warm cubes averaged 31.3 mm of foam, but the boiled cubes averaged only 1.0 mm. In plain water the foam averaged 23.7 mm, and in vinegar it averaged 5.3 mm.',
+    hint:'Use your averages from problem 1 and 2 of the Analysis.', why:'Good evidence uses specific numbers.'});
+  writtenProblem(sec[4],{id:'k3', part:'P5', num:num(), q:'<b>Reasoning:</b> explain <i>why</i> temperature and your second factor changed how fast catalase worked. Use what you know about enzymes.', pts:4, bank:['molecules','move faster','collide','optimum','denatured','shape','active site','substrate','fit','pH','surface area','more cells','exposed'],
+    groups:[['warmer molecules move faster or collide more',/collid|collision|move faster|moving faster|faster.{0,20}move|more energy|move slow/],['optimum (best condition)',/optimum|best temperature|best ph|best condition/],['denatured or shape changed',/denatur|unfold|shape/],
+            ['active site or substrate fit',/active site|substrate|fit/],['reason for the second factor',/acid|ph|surface|more cells|exposed|contact|more enzyme/]],
+    model:'Warm molecules move faster and collide more, so more hydrogen peroxide reaches catalase\'s active site, up to the optimum. Too much heat denatured catalase: its shape and active site changed, so the substrate could not fit. Acid from vinegar also changed the enzyme\'s shape, while mashing exposed more cells, so more catalase touched the peroxide.',
+    hint:'Cover temperature (collisions, optimum, denatured) and your second factor (shape of the active site, or how much catalase touches the peroxide).', why:'Temperature changes collisions until heat denatures the enzyme; pH changes the shape of the active site; more surface area exposes more enzyme.'});
+  dataRefresh();
+}
+
+/* ===== Catalase lab: simulation version (virtual bench, seeded random results per student) ===== */
+const FAC_DESC='Which other factor will you test?';
+const SETUP_HTML=`<div class="phenbox" style="border-left-color:#7c3aed;background:rgba(124,58,237,.12)"><b>Missed the lab?</b> You'll do the same experiment on a virtual lab bench. Your potato is different from everyone else's, so your numbers are your own. You must <b>measure</b> every tube yourself with the virtual ruler.</div>
+   <div class="figwrap catfig" style="margin:12px 0 8px">${MAT_PIC}</div>
+   <p><b>In the real lab:</b> each group used potato cubes 1 cm on each side, 5 mL of 3% hydrogen peroxide per tube, a ruler, and four water baths with thermometers. Everyone wore goggles, because hydrogen peroxide can irritate eyes and skin, and only the teacher handled the boiling water.</p>
+   <p><b>Procedure (virtual):</b></p><ol class="proc">
+    <li>Answer the questions below. On page 2, make your predictions, choose your second factor, and lock them in.</li>
+    <li>On page 3, soak potato cubes in four water baths: ice water, room temperature, warm (about 40 °C), and boiling.</li>
+    <li>Run 3 trials. In each trial, one cube from each bath drops into a tube with 5 mL of hydrogen peroxide. The black marker line shows the top of the liquid.</li>
+    <li>After 1 minute, <b>measure</b> each tube: open its ruler view and read the top of the foam to the nearest mm.</li>
+    <li>Test your second factor the same way (3 trials).</li>
+    <li>Run the controls, the reuse test, and the glowing splint test.</li>
+    <li>Record everything in the tables on page 3. You can look at any tube again.</li></ol>`;
+const TEACH_HTML=`<h3 style="margin-top:16px">About this simulation</h3><p class="small">Each student gets a different virtual potato. Results are made from the student's ID and name (a seed), so reloading keeps them, and each trial's numbers are created only when the student runs that trial. Modeled foam heights (mm after 1 minute) center on about 11 (ice), 24 (room), 33 (warm, 40 °C), and 0 to 3 (boiled); pH: about 5 (vinegar), 24 (water), 17 (baking soda); surface area: about 24 (whole), 36 (8 pieces), 52 (mashed). Each potato is scaled by a random freshness factor, and each trial varies by up to about 16%. Students must read every height from a ruler view. If a typed number is more than 1 mm from the ruler, a note below the graph asks them to measure that tube again (it never shows the right number). Analysis questions are graded against the numbers the student <b>recorded</b>. With the answer key on, the key for those questions follows that student's recorded data.</p>`;
+const STG=[{t:'soak',set:'T'},{t:'run',set:'T',i:0},{t:'run',set:'T',i:1},{t:'run',set:'T',i:2},{t:'soak',set:'F'},{t:'run',set:'F',i:0},{t:'run',set:'F',i:1},{t:'run',set:'F',i:2},{t:'ctrl'}];
+const MEANS={T:[11,24,33,0], ph:[5,24,17], sa:[24,36,52]};
+function simTrial(seed,set,f,i){ const fr=0.8+0.45*mulberry(seed)(), r=mulberry(hashStr(seed+'|'+set+'|'+(set==='F'?f:'')+'|'+i));
+  return (set==='T'?MEANS.T:MEANS[f]).map((mu,j)=>{ const x=r(); return set==='T'&&j===3?Math.round(x*3):clamp(Math.round(mu*fr*(1+0.32*(x-0.5))),0,78); }); }
+const fmtClock=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
+
+function buildData(s,num){
+  teacherNote(TEACH_HTML);
+  const F=fac()||'ph', FX=FACT[F];
+  const lock=h('div',{class:'fb info'}); lock.innerHTML='<b>Locked.</b> Lock in your predictions on page 2 first.'; s.appendChild(lock);
+  const SIMS=st('vsim'); if(SIMS.k==null){ SIMS.k=0; SIMS.ran=false; SIMS.T=[]; SIMS.F=[]; }
+  const bench=h('div',{class:'vbench'}); s.appendChild(bench);
+  bench.innerHTML=`<h3 style="margin:0 0 6px">Virtual lab bench</h3><div class="isstat"><span id="cbStep"></span><span class="isclock" id="cbClock">0:00</span></div>
+    <div class="cbpic" id="cbPic"></div><p id="cbTxt" style="margin:8px 0"></p>
+    <div class="btnrow"><button class="btn primary" id="cbRun" type="button"></button><button class="btn primary" id="cbNext" type="button"></button><button class="btn ghost" id="cbBack" type="button">Back to the current step</button><label class="small muted" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="cbFast"> Fast animation</label></div>
+    <div id="cbMeas" class="cbmeas"></div><div id="cbLook" class="cblook"></div>`;
+  const bq=q=>bench.querySelector(q); let anim=false, timer=null, view=null, sel=null;
+  const seedOf=()=>{ if(SIMS.seed==null){ const stu=S.student||{}; SIMS.seed=hashStr((stu.id||'')+'|'+(stu.last||'').toLowerCase()+'|'+WS_ID); } return SIMS.seed; };
+  const cur=()=>SIMS.k, vIdx=()=>view!=null?view:Math.min(cur(),STG.length-1);
+  const hasRun=i=>i<cur()||(i===cur()&&SIMS.ran);
+  const setOf=g=>g.t==='ctrl'?'C':g.set;
+  const tags=g=>setOf(g)==='T'?TEMPS.map(t=>t.tag):setOf(g)==='F'?FX.tag:['C1','C2','Reuse'];
+  const vals=g=>g.t==='run'?(g.set==='T'?SIMS.T[g.i]:SIMS.F[g.i])||[]:g.t==='ctrl'?[0,0,SIMS.reuse||0]:[];
+  const trialName=g=>(g.set==='T'?'Temperature':FX.name)+' trial '+(g.i+1);
+  /* ---------- the bench scene ---------- */
+  const W=760,H=430, BENCH=346;
+  function leftArea(g,i,prog){ let o=''; const set=setOf(g);
+    const used=k=>{ let u=0; for(let j=0;j<STG.length;j++){ const q=STG[j]; if(q.t==='run'&&q.set===k&&(j<i||(j===i&&(hasRun(j)||prog>0)))) u++; } return u; };
+    if(set==='T'){ const soaked=i>0||hasRun(0)||prog>0, left=soaked?3-used('T'):0, xs=[62,137,212,287], fr=[0.1,0.27,0.43,0.95], deg=['2 °C','22 °C','40 °C','100 °C'];
+      xs.forEach((x,j)=>{ const hot=j>=2, yb=hot?BENCH-24:BENCH; if(hot) o+=hotplateG(x,BENCH-22,70);
+        const cubes=Array.from({length:Math.max(0,left)},()=>j===3?'boiled':'raw');
+        o+=beakerG(x,yb,{w:60,h:84,lvl:.66,ice:j===0,boil:j===3,cubes,therm:fr[j],grad:false});
+        o+=`<rect x="${x-26}" y="${yb-140}" width="52" height="20" rx="6" fill="#0d1626" opacity=".85"/>`+tx(x,yb-125,deg[j],12.5,'#ffd35c',null,true);
+        o+=tx(x,BENCH+26,['Ice water','Room temp.','Warm bath','Boiling'][j],13,'#334155',null,true); });
+      if(g.t==='soak'&&prog>0&&prog<1) o+=cubeG(62+225*prog,200,1.4); }
+    else if(set==='F'&&F==='ph'){ const soaked=g.t==='run'||hasRun(i)||prog>0, left=soaked?3-used('F'):0, xs=[75,175,275], liq=['#fef3c7','#cfe8fb','#f1f5f9'], strip=['#ef6a2e','#9ad146','#2fa58f'], ph=['pH about 3','pH 7','pH about 9'];
+      xs.forEach((x,j)=>{ o+=beakerG(x,BENCH,{w:64,h:84,lvl:.62,liq:liq[j],cloud:j===2,cubes:Array.from({length:Math.max(0,left)},()=>'raw')});
+        o+=`<rect x="${x+38}" y="${BENCH-54}" width="9" height="40" rx="2" fill="#fef9c3" stroke="#a16207" stroke-width=".7"/><rect x="${x+38}" y="${BENCH-34}" width="9" height="16" fill="${strip[j]}"/>`;
+        o+=tx(x,BENCH+26,FX.short[j],13,'#334155',null,true)+tx(x,BENCH+44,ph[j],12,'#64748b'); }); }
+    else if(set==='F'){ const ready=g.t==='run'||hasRun(i)||prog>0, left=3-used('F');
+      o+=`<rect x="28" y="${BENCH-58}" width="290" height="50" rx="8" fill="#d6a76a" stroke="#92400e"/><rect x="32" y="${BENCH-54}" width="282" height="42" rx="6" fill="#e4bc84"/>`;
+      [75,175,275].forEach((x,j)=>{ for(let k=0;k<Math.max(0,left);k++){ const yy=BENCH-26-k*0; const xx=x-14+k*14; o+=!ready||j===0?cubeG(xx,yy,1.05):j===1?piecesG(xx,yy+2,0.75):mashG(xx,yy+2,0.75); }
+        o+=tx(x,BENCH+26,FX.short[j],13,'#334155',null,true); });
+      o+=`<g transform="translate(60 ${BENCH-110}) rotate(-12)"><rect x="0" y="0" width="70" height="7" rx="3" fill="#e5e7eb" stroke="#6b7280"/><rect x="70" y="-1" width="40" height="9" rx="4" fill="#f8fafc" stroke="#6b7280"/></g>`;
+      o+=`<g transform="translate(210 ${BENCH-118}) rotate(10)"><rect x="0" y="0" width="70" height="6" rx="3" fill="#cbd5e1" stroke="#64748b"/>${[0,1,2,3].map(k=>`<rect x="${-22}" y="${-6+k*4.5}" width="24" height="2.4" fill="#cbd5e1" stroke="#64748b" stroke-width=".5"/>`).join('')}</g>`+tx(150,BENCH-130,'knife and fork',12,'#64748b'); }
+    else { o+=bottleG(80,BENCH,1)+beakerG(190,BENCH,{w:62,h:80,lvl:.6,grad:true})+tx(190,BENCH+26,'water',13,'#334155',null,true)+tx(80,BENCH+26,'peroxide',13,'#334155',null,true);
+      o+=`<rect x="250" y="${BENCH-10}" width="74" height="6" rx="2" fill="#d6a76a" stroke="#92400e"/>`+tx(287,BENCH+26,'splints',13,'#334155',null,true); }
+    return o; }
+  function scene(i,prog,splint){ const g=STG[i], v=vals(g), T=tags(g), n=T.length, xs=n===4?[430,510,590,670]:[450,560,670], ran=hasRun(i)||prog>0;
+    const pAnim=prog>0&&prog<1?prog:(hasRun(i)?1:0), drop=clamp(pAnim/0.14,0,1), grow=easeOut((pAnim-0.14)/0.86);
+    let o=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Virtual lab bench, step ${i+1} of ${STG.length}. ${g.t==='ctrl'?'Control tubes C1, C2, and a reuse tube':'Containers with potato cubes on the left and a rack of test tubes with hydrogen peroxide on the right'}.">`;
+    o+=`<defs><linearGradient id="cbw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eef2f7"/><stop offset="1" stop-color="#dfe6ef"/></linearGradient></defs><rect width="${W}" height="${H}" rx="14" fill="url(#cbw)"/><rect x="0" y="${BENCH}" width="${W}" height="${H-BENCH}" fill="#cbd5e1"/><rect x="0" y="${BENCH}" width="${W}" height="5" fill="#94a3b8"/>`;
+    o+=leftArea(g,i,prog);
+    o+=rackG(380,730,92,BENCH-8);
+    xs.forEach((x,j)=>{ const ctrl=g.t==='ctrl', liqCol=ctrl&&j===0?'#e0f2fe':null;
+      let piece=null; if(g.t!=='soak'&&!(ctrl&&j===1)&&drop>=1) piece=setOf(g)==='T'?(j===3?'boiled':'raw'):setOf(g)==='F'&&F==='sa'?['raw','pieces','mash'][j]:'raw';
+      const foam=(v[j]||0)*grow;
+      o+=tubeG(x,60,{mm:1.6,L:150,d:16,liq:25,liqCol,foam,piece,seed:100+j*7+i*31,sel:sel===j&&ran,bubbles:piece&&(v[j]||0)>3?Math.min(1,grow*1.5):0});
+      if(drop>0&&drop<1&&!(ctrl&&j===1)&&g.t!=='soak') o+=cubeG(x,40+drop*(226),1.3,{boiled:setOf(g)==='T'&&j===3});
+      o+=tx(x,BENCH+26,T[j],13,'#334155',null,true); });
+    o+=rackBar(380,730,110);
+    if(g.t==='ctrl'&&splint>0){ const x=xs[2], tipY=300-25*1.6-(v[2]||0)*1.6-8, y=-40+(tipY+40)*clamp(splint/0.55,0,1);
+      o+=`<rect x="${x-2.5}" y="${f1(y-150)}" width="5" height="150" rx="2" fill="#d6a76a" stroke="#92400e" stroke-width=".8"/>`;
+      if(splint<0.6) o+=`<circle cx="${x}" cy="${f1(y)}" r="5" fill="#f97316"/><circle cx="${x}" cy="${f1(y)}" r="9" fill="#fb923c" opacity=".35"/>`;
+      else o+=`<path d="M${x},${f1(y-30)} C${x+9},${f1(y-16)} ${x+10},${f1(y-4)} ${x},${f1(y+2)} C${x-10},${f1(y-4)} ${x-9},${f1(y-16)} ${x},${f1(y-30)} Z" fill="#fbbf24" stroke="#f97316" stroke-width="1.5"/><path d="M${x},${f1(y-16)} C${x+4},${f1(y-9)} ${x+4},${f1(y-3)} ${x},${f1(y)} C${x-4},${f1(y-3)} ${x-4},${f1(y-9)} ${x},${f1(y-16)} Z" fill="#fef3c7"/>`; }
+    xs.forEach((x,j)=>o+=tubeLabel(x,60,T[j],12.8));
+    return o+'</svg>'; }
+  /* ruler view: 0 mm at the marker line, read the top of the foam */
+  function zoomSVG(i,j){ const g=STG[i], v=vals(g)[j]||0, T=tags(g), mm=5, y0=430, cx=236;
+    const piece=g.t==='ctrl'&&j===1?null:setOf(g)==='T'?(j===3?'boiled':'raw'):setOf(g)==='F'&&F==='sa'?['raw','pieces','mash'][j]:'raw';
+    let o=`<svg viewBox="0 0 360 470" role="img" aria-label="Close-up ruler view of the ${T[j]} tube. The ruler's zero is at the marker line. Read the top of the foam on the ruler."><rect width="360" height="470" rx="12" fill="#e2e8f0"/>`;
+    o+=tubeG(cx,y0-125*mm,{mm,L:150,d:16,liq:25,liqCol:g.t==='ctrl'&&j===0?'#e0f2fe':null,foam:v,piece,seed:100+j*7+i*31,line:true});
+    o+=rulerG(128,y0-6-82*mm,82,mm,{w:66,fs:14,mmNum:true});
+    o+=`<line x1="190" y1="${y0}" x2="${cx-40}" y2="${y0}" stroke="#111827" stroke-width="1" stroke-dasharray="3 3"/>`;
+    o+=`<rect x="30" y="${y0-10}" width="92" height="20" rx="5" fill="#111827"/>`+tx(76,y0+4,'marker line',11.5,'#f8fafc',null,true);
+    o+=tx(122,24,'mm',14,'#422006','end',true);
+    return o+'</svg>'; }
+  function measHTML(){ const i=vIdx(), g=STG[i]; if(!(g.t==='run'||g.t==='ctrl')||!hasRun(i)) return '';
+    const T=tags(g); let o=`<div class="small" style="font-weight:600;margin:12px 0 6px">Measure a tube (${g.t==='ctrl'?'controls and reuse test':trialName(g)}):</div><div class="btnrow" style="margin-top:0">${T.map((t,j)=>`<button class="btn ghost small cbm${sel===j?' on':''}" data-j="${j}" type="button">Measure: ${t}</button>`).join('')}</div>`;
+    if(sel!=null&&sel<T.length) o+=`<div class="cbzoom"><div class="cbzpic">${zoomSVG(i,sel)}</div><div class="small"><b>Ruler view: ${T[sel]} tube${g.t==='run'?', '+trialName(g):''}.</b><br>The ruler's 0 is at the black marker line. Find where the <b>top of the foam</b> lines up with the ruler, and read it to the nearest mm. Each small line is 1 mm. If there is no foam, the height is 0 mm.<br><br>Write your reading in the table below, in the right row and trial column.</div></div>`;
+    return o; }
+  function lookHTML(){ const done=STG.map((g,i)=>i).filter(i=>STG[i].t!=='soak'&&hasRun(i)); if(!done.length) return '';
+    return `<div class="small" style="font-weight:600;margin:14px 0 6px">Look again:</div><div class="btnrow" style="margin-top:0">${done.map(i=>`<button class="btn ghost small cbl${vIdx()===i?' on':''}" data-i="${i}" type="button">${STG[i].t==='ctrl'?'Controls':trialName(STG[i])}</button>`).join('')}</div>`; }
+  function stepText(i){ const g=STG[i], ran=hasRun(i);
+    if(cur()>=STG.length&&view==null) return 'Procedure complete. Fill in the tables below. Use <b>Look again</b> to see any tube and measure it again.';
+    if(g.t==='soak'&&g.set==='T') return ran?'The cubes soaked for 10 minutes, so each one is at its bath\'s temperature. Each tube in the rack has 5 mL of 3% hydrogen peroxide, with a black marker line at the top of the liquid.':'Put 3 potato cubes in each water bath. Leave them for 10 minutes so each cube reaches the temperature of its bath. The thermometers show each bath\'s temperature.';
+    if(g.t==='soak') return F==='ph'?(ran?'The cubes soaked for 5 minutes. Three new tubes each have 5 mL of hydrogen peroxide and a marker line.':'Second factor: pH. Soak one room-temperature cube in each liquid for 5 minutes: vinegar (acidic), plain water (neutral), and baking soda solution (basic). The pH paper next to each beaker shows its pH.')
+      :(ran?'The cubes are ready. Every one started as the same size cube. Three new tubes each have 5 mL of hydrogen peroxide and a marker line.':'Second factor: surface area. Use room-temperature cubes. Leave one cube whole, cut one cube into 8 small pieces, and mash one cube with a fork.');
+    if(g.t==='run') return ran?`One minute is up. <b>Measure each tube</b>: tap a Measure button below, read the top of the foam on the ruler, and record it in the <b>Trial ${g.i+1}</b> column of the ${g.set==='T'?'Temperature':FX.name} table.`:`${trialName(g)}: drop one cube ${g.set==='T'?'from each bath':'of each kind'} into its tube, then start the 1-minute timer.`;
+    if(!ran) return 'Controls and extra tests. <b>C1:</b> a room-temperature cube in 5 mL of water (no peroxide). <b>C2:</b> 5 mL of peroxide with no potato. <b>Reuse:</b> the old liquid was poured off a room-temperature tube, and 5 mL of fresh peroxide was added to the same cube.';
+    return SIMS.splint?'The glowing splint went into the foam of the reuse tube. Watch what happened to it. Record all of your control observations on page 3.':'One minute is up. Look closely at all three tubes. Next: the glowing splint test. A wooden splint is lit, blown out so it only glows, and lowered into the foam of the reuse tube.'; }
+  function paint(prog,splint){ const i=vIdx(), g=STG[i], live=view==null||view===cur();
+    bq('#cbPic').innerHTML=scene(i,prog||0,splint!=null?splint:(g.t==='ctrl'&&SIMS.splint?1:0));
+    bq('#cbStep').textContent=cur()>=STG.length&&view==null?'Procedure complete':`Step ${i+1} of ${STG.length}${live?'':' (looking again)'}`;
+    bq('#cbTxt').innerHTML=live?stepText(i):`You are looking again at <b>${g.t==='ctrl'?'the controls':trialName(g)}</b>. Measure any tube.`;
+    if(!anim) bq('#cbClock').textContent=g.t==='soak'?(hasRun(i)?(g.set==='T'?'10:00':F==='ph'?'5:00':'done'):'0:00'):(hasRun(i)?'1:00':'0:00');
+    const k=cur(), pre=!st('pred').checked, atCur=view==null&&k<STG.length;
+    const runB=bq('#cbRun'), nxB=bq('#cbNext');
+    runB.hidden=!(atCur&&(!SIMS.ran||(g.t==='ctrl'&&!SIMS.splint))); runB.disabled=anim||pre;
+    runB.textContent=g.t==='soak'?(g.set==='T'?'Soak the cubes (10 minutes)':F==='ph'?'Soak the cubes (5 minutes)':'Cut and mash the cubes'):g.t==='run'?'Drop in the cubes and start the timer':SIMS.ran?'Do the glowing splint test':'Start the control tubes';
+    nxB.hidden=!(atCur&&SIMS.ran&&(g.t!=='ctrl'||SIMS.splint)); nxB.disabled=anim;
+    nxB.textContent=k+1>=STG.length?'Finish the procedure':STG[k+1].t==='soak'?'Next: second factor':STG[k+1].t==='ctrl'?'Next: controls':`Next: ${trialName(STG[k+1])}`;
+    bq('#cbBack').hidden=view==null; bq('#cbFast').disabled=anim;
+    bq('#cbMeas').innerHTML=anim?'':measHTML(); bq('#cbLook').innerHTML=anim?'':lookHTML();
+    bench.querySelectorAll('.cbm').forEach(b=>b.addEventListener('click',()=>{ sel=+b.dataset.j; paint(); }));
+    bench.querySelectorAll('.cbl').forEach(b=>b.addEventListener('click',()=>{ const ii=+b.dataset.i; view=(ii===cur()&&cur()<STG.length)?null:ii; sel=null; paint(); })); }
+  function animate(dur,fn,end){ anim=true; paint(0.0001); const t0=performance.now(); clearInterval(timer);
+    timer=setInterval(()=>{ const p=Math.min(1,(performance.now()-t0)/dur); fn(p); if(p>=1){ clearInterval(timer); anim=false; end(); } },45); }
+  bq('#cbRun').addEventListener('click',()=>{ if(anim||!st('pred').checked||cur()>=STG.length) return; view=null; sel=null; const i=cur(), g=STG[i], fast=bq('#cbFast').checked; seedOf();
+    if(g.t==='ctrl'&&SIMS.ran&&!SIMS.splint){ animate(fast?700:2200,p=>{ bq('#cbPic').innerHTML=scene(i,0,p); },()=>{ SIMS.splint=true; save(); cloudSave(true); paint(); }); return; }
+    if(g.t==='run'){ const v=simTrial(SIMS.seed,g.set,F,g.i); if(g.set==='T') SIMS.T[g.i]=v; else SIMS.F[g.i]=v; }
+    if(g.t==='ctrl'){ const r=mulberry(hashStr(SIMS.seed+'|reuse')), fr=0.8+0.45*mulberry(SIMS.seed)(); SIMS.reuse=Math.round(24*fr*(0.78+0.14*r())); }
+    SIMS.ran=true; save(); cloudSave(true);
+    const total=g.t==='soak'?(g.set==='T'?600:300):60, dur=g.t==='soak'?(fast?500:1600):(fast?1200:4500);
+    animate(dur,p=>{ bq('#cbPic').innerHTML=scene(i,Math.max(p,0.0001),0); if(!(g.t==='soak'&&F==='sa'&&g.set==='F')) bq('#cbClock').textContent=fmtClock(total*p); },()=>{ paint(); dataRefresh(); }); });
+  bq('#cbNext').addEventListener('click',()=>{ if(anim||!SIMS.ran) return; SIMS.k++; SIMS.ran=false; sel=null; view=null; if(SIMS.k>=STG.length) SIMS.done=true; save(); cloudSave(true); paint(); dataRefresh(); });
+  bq('#cbBack').addEventListener('click',()=>{ view=null; sel=null; paint(); });
+  bq('#cbPic').addEventListener('click',e=>{ const svg=bq('#cbPic svg'); if(!svg||anim) return; const i=vIdx(), g=STG[i]; if(!(g.t==='run'||g.t==='ctrl')||!hasRun(i)) return;
+    const r=svg.getBoundingClientRect(), x=(e.clientX-r.left)/r.width*W, n=tags(g).length, xs=n===4?[430,510,590,670]:[450,560,670];
+    const j=xs.findIndex(c=>Math.abs(c-x)<34); if(j>=0){ sel=j; paint(); } });
+  paint();
+  /* ---------- the same tables as the hands-on lab ---------- */
+  const dlock=h('div',{class:'fb info'}); dlock.innerHTML='<b>Tables locked.</b> Finish the virtual procedure first (all steps, through the controls).'; s.appendChild(dlock);
+  const dwrap=h('div',{}); s.appendChild(dwrap);
+  dwrap.insertAdjacentHTML('beforeend',`<p>Record your measurements in whole millimeters (mm). The graphs draw as you type.</p>`);
+  obsTableProblem(dwrap,{id:'obs', part:'P3', num:num(), q:'Controls and extra tests: record what you observed.', pts:4, rows:OBS_ROWS});
+  const check=(v,set)=>{ const tr=set==='T'?SIMS.T:SIMS.F, names=set==='T'?TEMPS.map(t=>t.short):FX.short, bad=[];
+    if(!SIMS.done) return ''; names.forEach((nm,r)=>[0,1,2].forEach(c=>{ const x=cellv(v,r,c), t=(tr[c]||[])[r]; if(x!=null&&t!=null&&Math.abs(x-t)>1) bad.push(`${nm}, Trial ${c+1}`); }));
+    return bad.length?`<div class="fb no small cbwarn">Measure again: ${bad.join('; ')}. ${bad.length>1?'These numbers do':'This number does'} not match the ruler. Use <b>Look again</b> above.</div>`:''; };
+  dataTableProblem(dwrap,{id:'tdat', part:'P3', num:num(), q:'<b>Temperature test:</b> foam height after 1 minute (mm).', pts:6, corner:'Potato cube', cols:['Trial 1 (mm)','Trial 2 (mm)','Trial 3 (mm)'], rows:TEMPS.map(t=>t.row),
+    chart:v=>`<div class="catchart">${labChart(v,tLabels(),{title:'Temperature test: each trial'})}</div>${check(v,'T')}`});
+  dataTableProblem(dwrap,{id:'fdat', part:'P3', num:num(), q:`<b>${FX.name} test:</b> foam height after 1 minute (mm). All cubes at room temperature.`, pts:4, corner:FX.name, cols:['Trial 1 (mm)','Trial 2 (mm)','Trial 3 (mm)'], rows:FX.rows,
+    chart:v=>`<div class="catchart">${labChart(v,fLabels(),{title:FX.name+' test: each trial'})}</div>${check(v,'F')}`});
+  writtenProblem(dwrap,{id:'notes', part:'P3', num:num(), q:'<b>Observations:</b> describe the foam in your own words. What did it look like, and how was it different between your tubes?', pts:2, bank:['white','tiny bubbles','foam','fizzing','tallest','shortest','almost none','more','less','fast','slow'],
+    groups:[['describes the foam or bubbles',/foam|bubbl|fizz/],['compares the tubes',/more|less|most|least|taller|tallest|shorter|shortest|higher|lower|none|faster|slower|different/]],
+    model:'The foam was white and made of tiny bubbles. Some tubes made tall foam fast, and one tube made almost no foam at all.',
+    hint:'Say what the foam looked like and compare the tubes.', why:'Careful observations are part of your data.'});
+  window.dataRefresh=()=>{ const ok=!!st('pred').checked, ran=!!SIMS.done; lock.hidden=ok; bench.classList.toggle('off',!ok); dlock.hidden=!ok||ran; dwrap.classList.toggle('off',!(ok&&ran)); if(!anim) paint(); if(window.anaRefresh) anaRefresh(); };
+}
+
+/* ============================== BUILD / SCORE ============================== */
+function scoreAll(){ const parts=PARTS.slice(0,-1).map(p=>({k:p.k,label:p.label,got:0,max:0})); PROBS.forEach(pr=>{ const pt=parts.find(x=>x.k===pr.part); pt.got+=pr.score(); pt.max+=pr.max; });
+  return {parts, total:parts.reduce((a,b)=>a+b.got,0), max:parts.reduce((a,b)=>a+b.max,0)}; }
+function build(){
+  PROBS.length=0; const ws=$('#ws'); ws.innerHTML='';
+  $('#nav').innerHTML=PARTS.map((pt,i)=>`<button class="ntile" type="button" data-i="${i}" aria-label="${pt.title}"><span class="ic">${ico(i,22)}</span><span class="nm">${pt.label}</span></button>`).join('');
+  $$('#nav .ntile').forEach(b=>b.addEventListener('click',()=>showPart(+b.dataset.i)));
+  const secs=PARTS.map((pt,i)=>{ const el=h('section',{class:'sec',id:'part'+i}); const last=i===PARTS.length-1;
+    el.innerHTML=`<div class="sechead"><div class="badge"><span class="z">${i+1}</span>${ico(i,34)}</div><div><div class="meta">${last?'Grade':`Section ${i+1} of ${PARTS.length-1} · about ${pt.min} min`}</div><h2>${pt.title}</h2></div></div>`;
+    const c=h('div',{class:'card'}); el.appendChild(c);
+    const nav=h('div',{class:'secnav'});
+    const back=h('button',{class:'btn ghost',type:'button'},i===0?'':'← Back'); if(i===0) back.style.visibility='hidden'; back.addEventListener('click',()=>showPart(i-1));
+    nav.appendChild(back);
+    if(!last){ const nx=h('button',{class:'btn primary',type:'button'},i===PARTS.length-2?'See my grade →':`Next: ${PARTS[i+1].title} →`); nx.addEventListener('click',()=>showPart(i+1)); nav.appendChild(nx); }
+    el.appendChild(nav); ws.appendChild(el); return c; });
+  buildContent(secs);
+  secs[PARTS.length-1].id='turnin';
+  showPart(Math.min(S.cur||0,PARTS.length-1),true);
+  $('#whoami').textContent=S.student?`${S.student.first} ${S.student.last}`:''; refresh();
+}
+function showPart(i,noScroll){
+  S.cur=i; $$('#ws .sec').forEach((el,j)=>el.hidden=j!==i);
+  $$('#nav .ntile').forEach((t,j)=>t.classList.toggle('cur',j===i));
+  if(!noScroll){ save(); window.scrollTo(0,0); }
+}
+function refresh(){
+  const sc=scoreAll(), done=PROBS.filter(p=>p.checked()).length;
+  $('#scorePill').textContent=`${done}/${PROBS.length} checked · ${sc.total}/${sc.max} pts`;
+  PARTS.slice(0,-1).forEach((pt,i)=>{ const t=$(`#nav .ntile[data-i="${i}"]`); if(t) t.classList.toggle('done',PROBS.filter(p=>p.part===pt.k).every(p=>p.checked())); });
+  const t7=$(`#nav .ntile[data-i="${PARTS.length-1}"]`); if(t7) t7.classList.toggle('done',!!S.submittedAt);
+  const c=$('#turnin'); if(!c) return;
+  const rows=sc.parts.map(p=>`<tr><th>${p.label}</th><td>${p.got} / ${p.max}</td></tr>`).join('');
+  c.innerHTML=`<div style="display:flex;gap:22px;align-items:center;flex-wrap:wrap"><div class="big">${sc.total}/${sc.max}</div><div><h3 style="margin:0">${esc(S.student?S.student.first+' '+S.student.last:'')}</h3><p class="muted" style="margin:0">${done} of ${PROBS.length} problems checked</p></div></div>
+    <table class="res" style="margin-top:12px">${rows}</table>
+    <p class="small muted" style="margin-top:10px">Problems you haven't checked count as 0. You can turn in again later; your teacher sees the newest one.</p>
+    <div class="btnrow"><button class="btn primary" id="subBtn" type="button">${S.submittedAt?'Turn in again':'Turn in my lab'}</button><button class="btn ghost" id="csvBtn" type="button">Download CSV</button></div>
+    <p class="fb info sheetStatus" aria-live="polite">${S.sentAt?`Sent to your teacher ${new Date(S.sentAt).toLocaleString()}.`:'Not turned in yet.'}</p>`;
+  $('#subBtn').addEventListener('click',turnIn);
+  $('#csvBtn').addEventListener('click',()=>downloadCSV([recordRow()],`CatalaseLabSim_${(S.student&&S.student.last||'student').replace(/\W+/g,'')}.csv`));
+}
+const CSV_HEAD=['Student ID','Last Name','First Name','Period','Teacher','Activity','Score','Total','Percent',...PARTS.slice(0,-1).map(p=>p.label),'Date'];
+function recordRow(){ const st=S.student||{}, sc=scoreAll(); return [st.id||'',st.last||'',st.first||'',st.period||'',st.teacher||'',ACTIVITY,sc.total,sc.max,Math.round(100*sc.total/sc.max)+'%',...sc.parts.map(p=>p.got),new Date(S.submittedAt||Date.now()).toLocaleString()]; }
+function csvText(rows){ const q=v=>{ v=String(v==null?'':v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }; return [CSV_HEAD,...rows].map(r=>r.map(q).join(',')).join('\r\n')+'\r\n'; }
+function downloadCSV(rows,name){ const b=new Blob([csvText(rows)],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500); }
+const loadRecs=()=>{ try{ return (JSON.parse(localStorage.getItem(RECS))||[]).filter(r=>r.length===CSV_HEAD.length); }catch(e){ return []; } };
+function saveRecord(){ if(S.preview) return; const recs=loadRecs(), row=recordRow(); const i=recs.findIndex(r=>r[0]===row[0]&&r[1]===row[1]); if(i>=0) recs[i]=row; else recs.push(row); try{ localStorage.setItem(RECS,JSON.stringify(recs)); }catch(e){} }
+function turnIn(){
+  const left=PROBS.filter(p=>!p.checked()).length;
+  if(left&&!confirm(`${left} problem${left>1?'s':''} not checked yet (they count as 0). Turn in anyway?`)) return;
+  S.submittedAt=Date.now(); save(); saveRecord(); cloudSave(true); disarm(); refresh();
+  const msg=t=>$$('.sheetStatus').forEach(e=>e.textContent=t);
+  if(S.preview){ msg('Preview mode: nothing is sent.'); return; }
+  const st=S.student, sc=scoreAll();
+  const body={studentId:st.id||'',firstName:st.first||'',lastName:st.last||'',period:st.period||'',teacher:st.teacher||'',locks:'0',when:new Date().toString(),activity:ACTIVITY,score:String(sc.total),total:String(sc.max),
+    qlabels:sc.parts.map((p,i)=>'P'+(i+1)+' '+PARTS[i].label).join('|'),qpoints:sc.parts.map(p=>p.got).join('|'),qmax:sc.parts.map(p=>p.max).join('|')};
+  msg('Sending...');
+  fetch(sheetURL(),{method:'POST',mode:'no-cors',body:new URLSearchParams(body)}).then(()=>{ S.sentAt=new Date().toISOString(); save(); msg('Sent! Your teacher will see your score.'); }).catch(()=>msg("Couldn't send. Check the Wi-Fi and try again, or download the CSV."));
+}
+
+/* ============================== NO LOCKDOWN ON WORKSHEETS ============================== */
+let teacherOpen=false;
+function arm(){} function disarm(){} function showLock(){} function enterFS(){}
+['copy','cut','paste','contextmenu'].forEach(ev=>document.addEventListener(ev,e=>{ if(teacherOpen||S.preview) return; e.preventDefault(); }));
+
+/* ============================== SIGN IN ============================== */
+function showWS(){ $('#start').hidden=true; $('#top').hidden=false; $('#ws').hidden=false; build(); window.scrollTo(0,0); if(S.locked&&LOCKDOWN&&!S.lockOff) showLock(); else arm(); }
+function renderStart(){ const has=!!S.student; $('#resumeBox').hidden=!has; $('#startForm').hidden=has; $('#signinTitle').textContent=has?'Welcome back':'Sign in to start';
+  if(has) $('#resumeText').innerHTML=`Signed in as <b>${esc(S.student.first)} ${esc(S.student.last)}</b>, period ${esc(S.student.period)}.`; }
+$('#fPeriod').innerHTML='<option value="">Choose your period</option>'+periodList().map(p=>`<option>${esc(p)}</option>`).join('');
+$('#fTeacher').innerHTML='<option value="">Choose your teacher</option>'+teacherList().map(t=>`<option>${esc(t)}</option>`).join('');
+let starting=false;
+async function start(){
+  if(starting) return; starting=true;
+  try{
+    const v={first:$('#fFirst').value.trim(),last:$('#fLast').value.trim(),id:$('#fId').value.trim(),period:$('#fPeriod').value,teacher:$('#fTeacher').value};
+    const miss=[]; if(!v.first) miss.push('first name'); if(!v.last) miss.push('last name'); if(!v.id) miss.push('student ID'); if(!v.period) miss.push('period'); if(!v.teacher) miss.push('teacher');
+    const err=$('#formErr'); if(miss.length){ err.className='fb no'; err.textContent='Fill in your '+miss.join(', ')+'.'; err.hidden=false; return; }
+    if(LOCKDOWN) enterFS();
+    err.className='fb info'; err.textContent='Checking for your saved work...'; err.hidden=false;
+    const res=await cloudLoad(v); err.hidden=true;
+    if(res.status==='found'){ const d=res.data; d.student=Object.assign({},d.student||{},{first:v.first,period:v.period,teacher:v.teacher}); adopt(d); showWS(); note('✓ Your saved work was loaded'); return; }
+    const ns=fresh(); ns.student=v; adopt(ns); showWS(); cloudSave(true);
+  } catch(ex){ const er=$('#formErr'); er.className='fb no'; er.textContent='Something went wrong starting ('+(ex&&ex.message||ex)+'). Reload and try again.'; er.hidden=false; }
+  finally{ starting=false; }
+}
+$('#startBtn').addEventListener('click',start);
+$('#startForm').addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.tagName==='INPUT'){ e.preventDefault(); start(); } });
+$('#resumeBtn').addEventListener('click',async()=>{ const b=$('#resumeBtn'); b.disabled=true; b.textContent='Loading your work...'; if(LOCKDOWN&&!S.locked) enterFS();
+  const res=await cloudLoad(S.student); b.disabled=false; b.textContent='Continue my lab';
+  if(res.status==='found'&&(res.data.updatedAt||0)>(S.updatedAt||0)&&checkedCount(res.data)>=checkedCount(S)){ const d=res.data; d.student=S.student; adopt(d); note('✓ Your newest saved work was loaded'); } showWS(); });
+$('#notMeBtn').addEventListener('click',async()=>{ const b=$('#notMeBtn'); b.disabled=true;
+  try{ if(cloudOK()) await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); }catch(e){ b.disabled=false; $('#resumeErr').textContent="Can't back up the last student's work right now. Check the Wi-Fi, or ask your teacher."; $('#resumeErr').hidden=false; return; }
+  b.disabled=false; adopt(fresh()); ['#fFirst','#fLast','#fId','#fPeriod','#fTeacher'].forEach(s=>$(s).value=''); renderStart(); });
+
+/* ============================== TEACHER ============================== */
+function openTeacher(){ teacherOpen=true; $('#teachLogin').hidden=false; $('#teachPanel').hidden=true; $('#teachErr').hidden=true; $('#teachCode').value=''; $('#teachOv').classList.add('show'); setTimeout(()=>$('#teachCode').focus(),50); }
+function closeTeacher(){ $('#teachOv').classList.remove('show'); teacherOpen=false; }
+$('#teacherLink').addEventListener('click',openTeacher); $('#teachBtn').addEventListener('click',openTeacher);
+$('#teachCancel').addEventListener('click',closeTeacher);
+$('#teachCode').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#teachGo').click(); });
+$('#teachGo').addEventListener('click',()=>{ if(!codeIs($('#teachCode').value,TEACHER_CODE)){ $('#teachErr').hidden=false; return; } $('#teachLogin').hidden=true; $('#teachPanel').hidden=false; renderTeacher(); });
+function renderTeacher(){
+  const recs=loadRecs(), p=$('#teachPanel'), keyOn=document.body.classList.contains('keyon');
+  p.innerHTML=`<h2>Teacher tools</h2>
+    <div class="btnrow"><button class="btn ghost" id="tKey" type="button">${keyOn?'Hide answer key':'Answer key'}</button>
+      <button class="btn ghost" id="tPrev" type="button">${S.preview?'End preview':'Preview (saves nothing)'}</button>
+      <button class="btn ghost" id="tResetWrong" type="button">Reset all wrong answers</button>
+      <button class="btn ghost" id="tReset" type="button">Reset this Chromebook</button><button class="btn ghost" id="tClose" type="button">Close</button></div>
+    <h3 style="margin-top:16px">Scores saved on this Chromebook (${recs.length})</h3>
+    <div class="wide">${recs.length?`<table class="nb"><tr><th>Student</th><th>ID</th><th>Period</th><th>Score</th><th>Date</th></tr>${recs.map(r=>`<tr><td>${esc(r[1])}, ${esc(r[2])}</td><td>${esc(r[0])}</td><td>${esc(r[3])}</td><td>${r[6]}/${r[7]}</td><td>${esc(r[r.length-1])}</td></tr>`).join('')}</table>`:'<p class="muted">None yet.</p>'}</div>
+    <div class="btnrow"><button class="btn primary" id="tCsv" type="button" ${recs.length?'':'disabled'}>Download scores (CSV)</button></div>
+    <h3 style="margin-top:16px">Load a student's saved work</h3>
+    <div class="btnrow"><input class="code" id="tId" placeholder="Student ID" style="width:150px"><input class="code" id="tLast" placeholder="Last name" style="width:170px"><button class="btn ghost" id="tLoad" type="button">Load work</button></div>
+    <p class="fb info" id="tMsg" style="min-height:1em"></p>`;
+  const msg=t=>$('#tMsg').textContent=t;
+  $('#tKey').addEventListener('click',()=>{ document.body.classList.toggle('keyon'); renderTeacher(); msg(document.body.classList.contains('keyon')?'Answer key on: each box shows its answer, sort chips show their box, and correct choices have a dashed gold outline.':'Answer key off.'); });
+  $('#tPrev').addEventListener('click',()=>{ if(S.preview){ location.reload(); return; } const ns=fresh(); ns.preview=true; ns.student={first:'Teacher',last:'Preview',id:'0',period:'-',teacher:teacherList()[0]}; S=ns; closeTeacher(); showWS(); note('Preview: nothing is saved'); });
+  $('#tReset').addEventListener('click',()=>{ if(confirm('Erase this lab on this Chromebook? Work backed up to the Saved Student Work sheet is not deleted.')){ try{ localStorage.removeItem(STORE); }catch(e){} location.reload(); } });
+  $('#tResetWrong').addEventListener('click',()=>{
+    const wrong=PROBS.filter(pr=>{ const P=S.p[pr.id]||{}; return (P.tries||0)>0 && !P.right; });
+    if(!wrong.length){ msg('Nothing to reset: this student has no wrong answers.'); return; }
+    if(!confirm(`Reset ${wrong.length} problem${wrong.length>1?'s':''} that ${wrong.length>1?'are':'is'} wrong or on a second try for ${(S.student&&S.student.first)||'this student'}? Correct answers stay.`)) return;
+    wrong.forEach(pr=>{ delete S.p[pr.id]; });
+    save(); cloudSave(true); msg(`Reset ${wrong.length} problem${wrong.length>1?'s':''}. Reloading…`); setTimeout(()=>location.reload(),700); });
+  $('#tClose').addEventListener('click',closeTeacher);
+  $('#tCsv').addEventListener('click',()=>downloadCSV(recs,`CatalaseLabSim_scores_${new Date().toISOString().slice(0,10)}.csv`));
+  $('#tLoad').addEventListener('click',async()=>{ const s={id:$('#tId').value.trim(),last:$('#tLast').value.trim()}; if(!s.id||!s.last){ msg('Type the student ID and last name.'); return; } msg('Looking up saved work...');
+    const r=await cloudLoad(s); if(r.status==='found'){ adopt(r.data); closeTeacher(); renderStart(); $('#start').hidden=false; $('#ws').hidden=true; $('#top').hidden=true; } else msg(r.status==='none'?'No saved work found for that student.':"Couldn't reach the saved-work sheet."); });
+}
+
+if(!STORAGE_OK) $('#noStore').hidden=false;
+renderStart();
+})();
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

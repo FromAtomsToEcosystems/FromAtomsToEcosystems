@@ -52,7 +52,7 @@ textarea:disabled,input:disabled,select:disabled{opacity:.8}
 <script>
 const CFG = { key: 'fate_chem_boiling_point_blitz_v1', activity: 'Boiling Point Blitz', file: 'BoilingPointBlitz', title: 'Boiling Point Blitz', sub: 'Chemistry · Unit 5 · Reteach game: vapor pressure and boiling point',
 sections: [
- { id: 'intro', type: 'info', title: 'How to play', icon: 'cards', html: `<p>Race through vapor pressure, boiling points at different air pressures, and why some liquids evaporate faster.</p><p><b>Blitz:</b> answer as many as you can in 75 seconds. You have 3 lives. Get 3 in a row for a ×2 combo, 6 in a row for ×3, and so on.</p><p><b>Memory Match:</b> flip two cards at a time to match each problem with its answer.</p><p><b>Your score is your stars (up to 3):</b> ★ get 5 or more right in one Blitz round · ★ score 1,500 or more in Blitz · ★ clear the Memory Match board. Play as many times as you like; your best counts.</p>` },
+ { id: 'intro', type: 'info', title: 'How to play', icon: 'cards', html: `<p>Race through vapor pressure, boiling points at different air pressures, and why some liquids evaporate faster.</p><p>Pick a game mode. Every mode uses the same review questions:</p><ul><li><b>⚡ Blitz:</b> 75 seconds and 3 lives; answers in a row build a combo.</li><li><b>🪙 Gold Quest:</b> answer, then open a chest. Finish 1st against 3 rivals.</li><li><b>🏰 Castle Defense:</b> every right answer loads a cannonball that fires when monsters get close. Survive 75 seconds.</li><li><b>🎣 Fishing Frenzy:</b> right answers catch fish; streaks upgrade your lure. Reach 100 lb.</li><li><b>🚀 Space Race:</b> every right answer boosts your rocket. Beat 3 rivals.</li><li><b>🧠 Memory Match:</b> match each problem with its answer.</li></ul><p><b>Your score is your stars (up to 3):</b> ★ get 5 or more right in any round · ★ win any challenge (Blitz 1,500+, 1st in Gold Quest, save the castle, 100 lb of fish, or win the race) · ★ clear the Memory Match board. Play as many times as you like; your best counts.</p>` },
  { id: 'sim', type: 'sim', sim: 'game', title: 'Play', pts: 3, scoreKey: 'gStars', icon: 'sim' },
  { id: 'refl', type: 'short', title: 'Reflection', qs: [{ q: "What was hardest about vapor pressure or boiling point, and what do you remember now?", pts: 1, groups: [[/\w{3,}.*\w{3,}.*\w{3,}.*\w{3,}/]], model: "Example: I thought water always boils at 100 \u00b0C. Now I remember it boils when its vapor pressure equals the air pressure, so it changes with altitude.", bank: [['what was hard', /hard|tricky|mistake|wrong/i], ['what I do now', /now|remember|first|then/i], ['because', /because/i]] }] }
 ] };
@@ -76,7 +76,11 @@ const GM_CSS = `
 .gm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.gm-card{min-height:78px;border-radius:12px;border:2px solid var(--line2);background:linear-gradient(135deg,#1e3a5f,#14304a);color:var(--text);font:600 15px var(--font);cursor:pointer;display:flex;align-items:center;justify-content:center;text-align:center;padding:6px;line-height:1.25}
 .gm-card.back{font-size:28px;color:#5fe1ff}.gm-card.up{background:var(--panel2);border-color:var(--e)}.gm-card.done{background:rgba(74,222,128,.12);border-color:#4ade80;cursor:default}
 .gm-end{text-align:center;padding:14px}.gm-end h3{font-size:26px;margin:0 0 6px}.gm-end .big{font-size:40px;color:#f6b93b;font-weight:800}
-@media (prefers-reduced-motion:reduce){.gm-pop{animation:none}.gm-bar i{transition:none}}`;
+@media (prefers-reduced-motion:reduce){.gm-pop{animation:none}.gm-bar i{transition:none}}.gm-lb{display:grid;gap:4px;margin:8px 0}.gm-lb div{display:flex;justify-content:space-between;background:#0b1322;border-radius:8px;padding:5px 10px;font-weight:700}.gm-lb .me{outline:2px solid #f6b93b}
+.gm-chests{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0}.gm-chest{font-size:54px;padding:18px 6px;border-radius:16px;border:2px solid var(--line2);background:var(--panel2);cursor:pointer;color:var(--text)}.gm-chest small{display:block;font-size:15px;font-weight:700;margin-top:6px}.gm-chest.pick{border-color:#f6b93b;background:rgba(246,185,59,.15)}
+.gm-field{width:100%;display:block;background:#0b1322;border-radius:12px;margin-bottom:10px}
+.gm-big{font-size:28px;font-weight:800;color:#f6b93b}
+`;
 function gameSim(el, api, G) {
   if (!document.getElementById('gm-css')) { const s = document.createElement('style'); s.id = 'gm-css'; s.textContent = GM_CSS; document.head.appendChild(s); }
   const st = api.state.g || (api.state.g = { stars: [false, false, false], bestBlitz: 0, bestMoves: null, plays: 0 });
@@ -87,14 +91,142 @@ function gameSim(el, api, G) {
   const award = (k) => { if (!st.stars[k]) { st.stars[k] = true; api.state.gStars = st.stars.filter(Boolean).length; if (api.state.gStars >= 1) api.done(); } api.save(); };
   const numOf = v => { let t = String(v ?? '').replace(/,/g, '').replace(/\s/g, '').replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]/g, c => ({ '⁰': 0, '¹': 1, '²': 2, '³': 3, '⁴': 4, '⁵': 5, '⁶': 6, '⁷': 7, '⁸': 8, '⁹': 9, '⁻': '-' })[c]).replace(/[a-zA-Z₀-₉]+$/, '');
     t = t.replace(/(?:[x×*]10\^?|e)\(?([+-]?\d+)\)?$/i, 'e$1'); return /^-?\d*\.?\d+(e[+-]?\d+)?$/i.test(t) ? parseFloat(t) : NaN; };
+  st.best = st.best || {};
+  const MODES = [
+    ['gmBlitz', '⚡ Blitz', `${BLITZ_S} seconds, 3 lives. Right answers in a row build a <b>combo</b>.`, () => `Best score: <b>${(st.bestBlitz || 0).toLocaleString()}</b>`, () => blitzStart()],
+    ['gmGold', '🪙 Gold Quest', 'Answer, then open a chest: gold, ×2, steal from the leader… or lose some. Finish 1st against 3 rivals.', () => `Best gold: <b>${(st.best.gold || 0).toLocaleString()}</b>`, () => goldStart()],
+    ['gmCastle', '🏰 Castle Defense', 'Monsters march at your castle. Every right answer loads a cannonball that fires when they get close. Survive 75 seconds.', () => `Most monsters stopped: <b>${st.best.castle || 0}</b>`, () => castleStart()],
+    ['gmFish', '🎣 Fishing Frenzy', 'Right answers catch fish. Streaks upgrade your lure for bigger fish. Reach 100 lb in 2 minutes.', () => `Best catch: <b>${st.best.fish || 0} lb</b>`, () => fishStart()],
+    ['gmRace', '🚀 Space Race', 'Every right answer boosts your rocket. Beat 3 rival rockets to the finish.', () => `Races won: <b>${st.best.race || 0}</b>`, () => raceStart()],
+    ['gmMatch', '🧠 Memory Match', 'Flip two cards. Match each problem to its answer in as few moves as you can.', () => `Best: <b>${st.bestMoves ? st.bestMoves + ' moves' : 'not cleared yet'}</b>`, () => matchStart()]];
   function home() {
     clearInterval(timer); R = null;
-    el.innerHTML = `<div class="gm-top"><div><b>${G.title}</b><div class="muted small">Earn stars: ★ 5+ right in a Blitz round · ★ Blitz score 1,500+ · ★ clear the Memory board</div></div>${starHTML()}</div>
-      <div class="gm-modes"><button type="button" class="gm-mode" id="gmBlitz"><h3>⚡ Blitz</h3><p>${BLITZ_S} seconds, 3 lives. Right answers in a row build a <b>combo</b> (×2, ×3…).</p><p>Best score: <b>${st.bestBlitz.toLocaleString()}</b></p></button>
-      <button type="button" class="gm-mode" id="gmMatch"><h3>🧠 Memory Match</h3><p>Flip two cards. Match each problem to its answer in as few moves as you can.</p><p>Best: <b>${st.bestMoves ? st.bestMoves + ' moves' : 'not cleared yet'}</b></p></button></div>
+    el.innerHTML = `<div class="gm-top"><div><b>${G.title}</b><div class="muted small">Earn stars: ★ get 5+ right in any round · ★ win any challenge (Blitz 1,500+, 1st in Gold Quest, save the castle, 100 lb of fish, win the race) · ★ clear the Memory board</div></div>${starHTML()}</div>
+      <div class="gm-modes">${MODES.map(([id, h, p, best]) => `<button type="button" class="gm-mode" id="${id}"><h3>${h}</h3><p>${p}</p><p>${best()}</p></button>`).join('')}</div>
       <p class="muted small" style="margin-top:10px">Use the <b>Calculator</b> button at the top whenever you need it.</p>`;
-    el.querySelector('#gmBlitz').addEventListener('click', blitzStart); el.querySelector('#gmMatch').addEventListener('click', matchStart);
+    MODES.forEach(([id, , , , fn]) => el.querySelector('#' + id).addEventListener('click', () => { if (!api.locked) fn(); }));
   }
+  /* ---------- shared question helpers for the challenge modes ---------- */
+  function nextQ() { if (R.k >= R.deck.length) R.deck = R.deck.concat(shuffle(G.pool)); return R.deck[R.k++]; }
+  function qHTML(q) { return `<div class="gm-q">${q.q}</div>` + (q.o ? `<div class="gm-opts">${q.o.map((o, i) => `<button type="button" class="gm-o" data-i="${i}">${o}</button>`).join('')}</div>`
+      : `<div class="gm-num"><input id="gmIn" inputmode="decimal" autocomplete="off" placeholder="${q.ph || 'Type your answer'}"><button type="button" class="btn primary" id="gmGo">Enter</button></div>`); }
+  function bindQ(box, q, cb) {
+    let used = false; const fin = (ok, btn) => { if (used) return; used = true;
+      if (!ok) { if (btn) btn.classList.add('wrong'); const r = box.querySelector(`.gm-o[data-i="${q.a}"]`); if (r) r.classList.add('right'); }
+      else if (btn) btn.classList.add('right'); cb(ok); };
+    box.querySelectorAll('.gm-o').forEach(b => b.addEventListener('click', () => fin(+b.dataset.i === q.a, b)));
+    const inp = box.querySelector('#gmIn'); if (inp) { inp.focus(); const go = () => { const v = numOf(inp.value); if (isNaN(v)) { const f = box.querySelector('.gm-flash'); if (f) { f.className = 'gm-flash bad'; f.textContent = 'Type a number (like 2.00 or 1.20e24).'; } return; } fin(Math.abs(v - q.ans) <= Math.max(q.tol || 0.02, Math.abs(q.ans) * (q.rel || 0.01)), null); };
+      box.querySelector('#gmGo').addEventListener('click', go); inp.addEventListener('keydown', e => { if (e.key === 'Enter') go(); }); }
+  }
+  const showAns = q => `✗ ${q.why || ''}${q.o ? ` Answer: ${q.o[q.a]}` : ` Answer: ${q.show || q.ans}`}`;
+  const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  function endCard(title, lines, won) {
+    clearInterval(timer); const res = R; R = null;
+    if (res.right >= 5) award(0); if (won) award(1); api.save();
+    el.innerHTML = `<div class="gm-top"><b>${title}</b>${starHTML()}</div><div class="card" style="text-align:center"><p class="gm-big">${won ? '🏆 You won!' : 'Round over'}</p>${lines.map(l => `<p>${l}</p>`).join('')}<p>Right answers: <b>${res.right}</b></p>
+      <div class="btn-row" style="justify-content:center"><button type="button" class="btn primary" id="gmAgain">Play again</button><button type="button" class="btn ghost" id="gmHome">Back to games</button></div></div>`;
+    el.querySelector('#gmAgain').addEventListener('click', () => res.again()); el.querySelector('#gmHome').addEventListener('click', home);
+  }
+  /* ---------- Gold Quest ---------- */
+  function goldStart() {
+    R = { mode: 'gold', gold: 0, n: 0, N: 12, right: 0, deck: shuffle(G.pool), k: 0, bots: [{ n: 'Captain Byte', g: 0 }, { n: 'Nova', g: 0 }, { n: 'Pip', g: 0 }], phase: 'q', msg: '', again: goldStart };
+    st.plays++; api.save(); goldQ();
+  }
+  const goldLB = () => `<div class="gm-lb">${[{ n: 'You', g: R.gold, me: 1 }].concat(R.bots).sort((a, b) => b.g - a.g).map((p, i) => `<div class="${p.me ? 'me' : ''}"><span>${i + 1}. ${p.n}</span><span>🪙 ${p.g}</span></div>`).join('')}</div>`;
+  function botsTurn() { R.bots.forEach(b => b.g += rnd(20, 50)); }
+  function goldQ() {
+    if (!R) return; if (R.n >= R.N) return goldEnd();
+    R.q = nextQ(); R.n++;
+    el.innerHTML = `<div class="gm-hud"><span>Question ${R.n} of ${R.N}</span><span class="sc">🪙 ${R.gold}</span></div>${goldLB()}${qHTML(R.q)}<div class="gm-flash ${R.msg ? 'good' : ''}" aria-live="polite">${R.msg}</div><button type="button" class="btn ghost" id="gmQuit2" style="margin-top:6px">End round</button>`; el.querySelector('#gmQuit2').addEventListener('click', () => { if (R) goldEnd(); });
+    R.msg = '';
+    bindQ(el, R.q, ok => { if (ok) { R.right++; setTimeout(goldChests, 500); } else { const f = el.querySelector('.gm-flash'); f.className = 'gm-flash bad'; f.textContent = showAns(R.q) + ' No chest this time.'; botsTurn(); setTimeout(goldQ, 1900); } });
+  }
+  function chestRoll() {
+    const r = Math.random(), lead = R.bots.slice().sort((a, b) => b.g - a.g)[0];
+    if (r < .25) return { t: '+40 gold', f: () => R.gold += 40 }; if (r < .45) return { t: '+75 gold', f: () => R.gold += 75 }; if (r < .55) return { t: '+150 gold!', f: () => R.gold += 150 };
+    if (r < .65) return { t: 'Double gold!', f: () => R.gold *= 2 }; if (r < .75) return { t: 'Lose 20%', f: () => R.gold = Math.floor(R.gold * .8) };
+    if (r < .90) return { t: `Steal 25% from ${lead.n}!`, f: () => { const x = Math.floor(lead.g * .25); lead.g -= x; R.gold += x; } };
+    return { t: '+20 gold', f: () => R.gold += 20 };
+  }
+  function goldChests() {
+    if (!R) return; const C = [chestRoll(), chestRoll(), chestRoll()];
+    el.innerHTML = `<div class="gm-hud"><span>Pick a chest!</span><span class="sc">🪙 ${R.gold}</span></div>${goldLB()}<div class="gm-chests">${C.map((c, i) => `<button type="button" class="gm-chest" data-i="${i}">🧰<small>?</small></button>`).join('')}</div><div class="gm-flash" aria-live="polite"></div><button type="button" class="btn ghost" id="gmQuit2" style="margin-top:6px">End round</button>`; el.querySelector('#gmQuit2').addEventListener('click', () => { if (R) goldEnd(); });
+    el.querySelectorAll('.gm-chest').forEach(b => b.addEventListener('click', () => {
+      if (b.dataset.done) return; el.querySelectorAll('.gm-chest').forEach((x, i) => { x.dataset.done = 1; x.querySelector('small').textContent = C[i].t; }); b.classList.add('pick');
+      C[+b.dataset.i].f(); botsTurn(); R.msg = `You got: ${C[+b.dataset.i].t}`; const f = el.querySelector('.gm-flash'); f.className = 'gm-flash good'; f.textContent = R.msg; setTimeout(goldQ, 1500); }));
+  }
+  function goldEnd() {
+    const rank = [{ n: 'You', g: R.gold }].concat(R.bots).sort((a, b) => b.g - a.g).findIndex(p => p.n === 'You') + 1, g = R.gold;
+    st.best.gold = Math.max(st.best.gold || 0, g); endCard('🪙 Gold Quest', [`You finished <b>#${rank}</b> with <b>${g}</b> gold.`], rank === 1);
+  }
+  /* ---------- Castle Defense ---------- */
+  function castleStart() {
+    R = { mode: 'castle', hp: 5, t: 75, en: [], kills: 0, ammo: 0, right: 0, streak: 0, spawn: 2, deck: shuffle(G.pool), k: 0, id: 0, again: castleStart };
+    st.plays++; api.save();
+    el.innerHTML = `<div class="gm-hud"><span class="t" id="cdT">75s</span><span>Castle: <span id="cdHp">❤️❤️❤️❤️❤️</span></span><span id="cdA">Cannonballs: 0 / 5</span><span class="sc" id="cdK">Stopped: 0</span></div><svg class="gm-field" id="cdF" viewBox="0 0 600 180"></svg><div id="cdQ"></div><button type="button" class="btn ghost" id="gmQuit2" style="margin-top:6px">End round</button>`; el.querySelector('#gmQuit2').addEventListener('click', () => { if (R) castleEnd(false); });
+    castleQ(); castleDraw();
+    timer = setInterval(() => { if (!R) return; R.spawn -= 0.1; R.t -= 0.1;
+      if (R.spawn <= 0) { R.en.push({ id: R.id++, x: 575, lane: rnd(0, 2), v: 11 + Math.random() * 5, e: ['👾', '🦖', '👻', '🐙'][rnd(0, 3)] }); R.spawn = Math.max(5, 8 - (75 - R.t) / 25); }
+      R.en.forEach(m => m.x -= m.v * 0.1);
+      if (R.ammo > 0) { R.en.sort((a, b) => a.x - b.x); if (R.en.length && R.en[0].x < 430) { R.en.shift(); R.ammo--; R.kills++; R.boom = 6; const k = el.querySelector('#cdK'); if (k) k.textContent = 'Stopped: ' + R.kills; } }
+      if (R.boom) R.boom--; const hit = R.en.filter(m => m.x <= 70); if (hit.length) { R.hp -= hit.length; R.en = R.en.filter(m => m.x > 70); }
+      castleDraw(); if (R.hp <= 0) return castleEnd(false); if (R.t <= 0) castleEnd(true); }, 100);
+  }
+  function castleDraw() {
+    const F = el.querySelector('#cdF'); if (!F || !R) return; const ly = [35, 90, 145];
+    F.innerHTML = ly.map(y => `<line x1="70" y1="${y + 18}" x2="600" y2="${y + 18}" stroke="#1e293b" stroke-width="2"/>`).join('') + `<text x="8" y="112" font-size="56">🏰</text>` + R.en.map(m => `<text x="${m.x}" y="${ly[m.lane] + 14}" font-size="30">${m.e}</text>`).join('') + (R.boom ? '<text x="80" y="60" font-size="26">💥</text>' : '') + '<line x1="430" y1="10" x2="430" y2="175" stroke="#f6b93b" stroke-dasharray="3 5" opacity=".5"/><text x="434" y="174" font-size="10" fill="#f6b93b">cannon range</text>';
+    const t = el.querySelector('#cdT'); if (t) { t.textContent = Math.max(0, Math.ceil(R.t)) + 's'; t.classList.toggle('low', R.t <= 10); }
+    const h = el.querySelector('#cdHp'); if (h) h.textContent = '❤️'.repeat(Math.max(0, R.hp)) + '🖤'.repeat(5 - Math.max(0, R.hp)); const a = el.querySelector('#cdA'); if (a) a.textContent = `Cannonballs: ${R.ammo} / 5`;
+  }
+  function castleQ(msg, cls) {
+    if (!R) return; const q = nextQ(), box = el.querySelector('#cdQ');
+    box.innerHTML = qHTML(q) + `<div class="gm-flash ${cls || ''}" aria-live="polite">${msg || ''}</div>`;
+    bindQ(box, q, ok => { if (!R) return;
+      if (ok) { R.right++; R.streak++; const add = R.streak >= 3 ? 2 : 1, before = R.ammo; R.ammo = Math.min(5, R.ammo + add); castleDraw();
+        setTimeout(() => castleQ(R.ammo > before ? `💣 +${R.ammo - before} cannonball${R.ammo - before > 1 ? 's' : ''}! They fire when a monster gets in range.` : 'Your cannon is full (5). Keep answering to reload as you fire!', 'good'), 350); }
+      else { R.streak = 0; const f = box.querySelector('.gm-flash'); if (f) { f.className = 'gm-flash bad'; f.textContent = showAns(q); } setTimeout(() => castleQ('', ''), 1900); } });
+  }
+  function castleEnd(won) { st.best.castle = Math.max(st.best.castle || 0, R.kills); endCard('🏰 Castle Defense', [won ? `Your castle survived with <b>${R.hp}</b> hearts left!` : 'The monsters broke through.', `Monsters stopped: <b>${R.kills}</b>`], won); }
+  /* ---------- Fishing Frenzy ---------- */
+  const FISH = [['🐟 Minnow', 1, 2, 1], ['🐠 Sunfish', 2, 5, 1], ['🐟 Trout', 4, 9, 2], ['🐡 Pufferfish', 7, 13, 2], ['🐟 Salmon', 10, 18, 3], ['🦈 Small shark', 15, 28, 4], ['🐋 Tuna', 22, 38, 4], ['✨ Golden coelacanth', 35, 60, 5]];
+  function fishStart() {
+    R = { mode: 'fish', t: 120, lb: 0, lure: 1, streak: 0, right: 0, last: '', deck: shuffle(G.pool), k: 0, again: fishStart };
+    st.plays++; api.save(); fishQ();
+    timer = setInterval(() => { if (!R) return; R.t--; const t = el.querySelector('.gm-hud .t'); if (t) { t.textContent = R.t + 's'; t.classList.toggle('low', R.t <= 10); } if (R.t <= 0) fishEnd(); }, 1000);
+  }
+  function fishQ(msg, cls) {
+    if (!R) return; const q = nextQ();
+    el.innerHTML = `<div class="gm-hud"><span class="t">${R.t}s</span><span>Lure: ${'🪝'.repeat(R.lure)}</span><span class="sc">${R.lb} lb / 100</span></div><div class="gm-bar" style="margin-bottom:8px"><i style="width:${Math.min(100, R.lb)}%"></i></div>${qHTML(q)}<div class="gm-flash ${cls || ''}" aria-live="polite">${msg || 'Answer right to cast your line.'}</div><button type="button" class="btn ghost" id="gmQuit2" style="margin-top:6px">End round</button>`; el.querySelector('#gmQuit2').addEventListener('click', () => { if (R) fishEnd(); });
+    bindQ(el, q, ok => { if (!R) return;
+      if (ok) { R.right++; R.streak++; const pool = FISH.filter(f => f[3] <= R.lure), f = pool[rnd(Math.max(0, pool.length - 3), pool.length - 1)], w = rnd(f[1], f[2]); R.lb += w;
+        let up = ''; if (R.streak % 2 === 0 && R.lure < 5) { R.lure++; up = ' Lure upgraded!'; }
+        if (R.lb >= 100 && !R.won) { R.won = true; }
+        setTimeout(() => fishQ(`You caught a ${f[0]} (${w} lb)!${up}`, 'good'), 350); }
+      else { R.streak = 0; const down = R.lure > 1 ? ' Your lure slipped down a level.' : ''; if (R.lure > 1) R.lure--; const f = el.querySelector('.gm-flash'); if (f) { f.className = 'gm-flash bad'; f.textContent = showAns(q) + down; } setTimeout(() => fishQ('The fish got away. Try the next one!', 'bad'), 1900); } });
+  }
+  function fishEnd() { st.best.fish = Math.max(st.best.fish || 0, R.lb); endCard('🎣 Fishing Frenzy', [`Total catch: <b>${R.lb} lb</b>`], R.lb >= 100); }
+  /* ---------- Space Race ---------- */
+  function raceStart() {
+    R = { mode: 'race', you: 0, goal: 15, bots: [{ n: 'Comet', p: 0, e: '🛸' }, { n: 'Orbit', p: 0, e: '🛰️' }, { n: 'Zip', p: 0, e: '☄️' }], streak: 0, right: 0, deck: shuffle(G.pool), k: 0, again: raceStart };
+    st.plays++; api.save();
+    el.innerHTML = `<div class="gm-hud"><span>First to the 🏁 wins</span><span class="sc" id="rcMe">You: 0 / 15</span></div><svg class="gm-field" id="rcF" viewBox="0 0 600 190"></svg><div id="rcQ"></div><button type="button" class="btn ghost" id="gmQuit2" style="margin-top:6px">End round</button>`; el.querySelector('#gmQuit2').addEventListener('click', () => { if (R) raceEnd(false, 'Nobody'); });
+    raceDraw(); raceQ();
+    timer = setInterval(() => { if (!R) return; R.bots.forEach(b => { if (Math.random() < 0.17) b.p = Math.min(R.goal, b.p + 1); }); raceDraw(); const w = R.bots.find(b => b.p >= R.goal); if (w) raceEnd(false, w.n); }, 1000);
+  }
+  function raceDraw() {
+    const F = el.querySelector('#rcF'); if (!F || !R) return; const X = p => 20 + p / R.goal * 520;
+    const rows = [{ n: 'You', p: R.you, e: '🚀' }].concat(R.bots);
+    F.innerHTML = `<line x1="560" y1="5" x2="560" y2="185" stroke="#f6b93b" stroke-width="3" stroke-dasharray="6 4"/><text x="565" y="100" font-size="22">🏁</text>` + rows.map((r, i) => `<line x1="20" y1="${30 + i * 45}" x2="560" y2="${30 + i * 45}" stroke="#1e293b" stroke-width="2"/><text x="${X(r.p)}" y="${38 + i * 45}" font-size="26">${r.e}</text><text x="2" y="${20 + i * 45}" font-size="11" fill="#94a3b8">${r.n}</text>`).join('');
+    const me = el.querySelector('#rcMe'); if (me) me.textContent = `You: ${R.you} / ${R.goal}`;
+  }
+  function raceQ(msg, cls) {
+    if (!R) return; const q = nextQ(), box = el.querySelector('#rcQ');
+    box.innerHTML = qHTML(q) + `<div class="gm-flash ${cls || ''}" aria-live="polite">${msg || ''}</div>`;
+    bindQ(box, q, ok => { if (!R) return;
+      if (ok) { R.right++; R.streak++; const b = R.streak >= 3 ? 2 : 1; R.you = Math.min(R.goal, R.you + b); raceDraw(); if (R.you >= R.goal) return raceEnd(true); setTimeout(() => raceQ(b > 1 ? '🔥 Double boost!' : '🚀 Boost!', 'good'), 300); }
+      else { R.streak = 0; const f = box.querySelector('.gm-flash'); if (f) { f.className = 'gm-flash bad'; f.textContent = showAns(q); } setTimeout(() => raceQ('', ''), 1900); } });
+  }
+  function raceEnd(won, who) { if (won) st.best.race = (st.best.race || 0) + 1; endCard('🚀 Space Race', [won ? 'You crossed the finish line first!' : who === 'Nobody' ? 'You ended the race early.' : `${who} reached the finish first.`, `Your rocket: <b>${R.you} / ${R.goal}</b>`], won); }
   /* ---------- Blitz ---------- */
   function blitzStart() {
     if (api.locked) return;
@@ -159,7 +291,6 @@ function gameSim(el, api, G) {
   }
   home();
 }
-
 const POOL = [
  { q: 'Vapor pressure is measured when evaporation and condensation are…', o: ['balanced (equilibrium)', 'stopped', 'both zero', 'only evaporation'], a: 0, why: 'Escape rate = return rate.' },
  { q: 'As temperature goes up, vapor pressure…', o: ['goes up', 'goes down', 'stays the same', 'drops to zero'], a: 0, why: 'More particles can escape.' },

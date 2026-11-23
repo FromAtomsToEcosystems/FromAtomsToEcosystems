@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Electron Express | Physics</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1220;--panel:#121c31;--panel2:#18243d;--line:#2b3a58;--text:#e8eefc;--muted:#9fb0cf;--gold:#facc15;--gold2:#fbbf24;--ok:#34d399;--bad:#f87171;--violet:#a78bfa}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 "Atkinson Hyperlegible",Arial,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:#0e172a}
+header .t{font-weight:800;font-size:17px}
+header .s{color:var(--muted);font-size:13px}
+header .sp{flex:1}
+.btn{font:inherit;font-weight:700;border-radius:10px;padding:9px 16px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--gold);color:#1a1300;border-color:var(--gold)}
+.btn:disabled{opacity:.5;cursor:default}
+main{max-width:1000px;margin:0 auto;padding:14px 16px 30px}
+.stage{position:relative;width:100%;aspect-ratio:16/10;background:#050a14;border:1px solid var(--line);border-radius:14px;overflow:hidden;touch-action:none}
+canvas{display:block;width:100%;height:100%}
+.ov{position:absolute;inset:0;display:flex;background:rgba(5,10,20,.78);padding:14px;overflow:auto}
+.ov>.card{margin:auto}
+#teachOv{position:fixed;z-index:60;background:rgba(5,10,20,.94)}
+.ov[hidden]{display:none}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;max-width:640px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.card h2{margin:0 0 6px;font-size:22px}
+.card h3{margin:12px 0 6px;font-size:15px;color:var(--gold)}
+.muted{color:var(--muted)} .small{font-size:13.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chip{font:inherit;font-size:14px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.chip.on{border-color:var(--gold);background:rgba(250,204,21,.16);font-weight:700}
+.qtag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--violet);margin-bottom:4px}
+.qtext{font-size:18px;margin:4px 0 12px}
+.opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:15.5px}
+.opt:hover:not(:disabled){border-color:var(--gold)}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:13px;font-weight:800}
+.opt.pick{border-color:var(--gold)}
+.fb{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:15.5px}
+.fb.ok{background:rgba(52,211,153,.14);border:1px solid rgba(52,211,153,.5)}
+.fb.no{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.45)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:14px;margin:6px 0}
+.keys b{color:var(--gold)}
+.ladder{display:flex;flex-wrap:wrap;gap:6px;font-size:13px;margin-top:6px}
+.ladder span{padding:3px 8px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}
+.touch{display:none;gap:10px;justify-content:space-between;margin-top:10px;user-select:none;-webkit-user-select:none}
+.touch .grp{display:flex;gap:10px}
+.tbtn{width:64px;height:58px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:22px;font-weight:800;touch-action:none}
+.tbtn.fire{width:110px;background:#3b2a07;border-color:var(--gold);color:var(--gold);font-size:17px}
+.tbtn.on{background:#334155}
+@media (pointer:coarse){.touch{display:flex}}
+@media (max-width:480px){.tbtn{width:52px;height:54px;font-size:20px}.tbtn.fire{width:86px}.touch .grp{gap:7px}.touch{gap:6px}}
+@media (max-width:760px),(max-height:560px){.ov{position:fixed;z-index:50;background:rgba(5,10,20,.92)}}
+body.showtouch .touch{display:flex}
+.info{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:14px;color:var(--muted)}
+.tpanel h3{margin-top:14px}
+.tq{margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font-size:14px}
+.tq ol{margin:4px 0 0;padding-left:22px}
+.tq li.right{color:var(--ok);font-weight:700}
+input.code{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0b1220;color:var(--text);width:180px}
+#printView{display:none}
+@media print{
+  body>*:not(#printView){display:none!important}
+  #printView{display:block!important;color:#000;background:#fff;font:12px/1.4 Arial,sans-serif}
+  #printView h1{font-size:18px;margin:0 0 4px} #printView .pq{break-inside:avoid;margin:8px 0}
+  #printView ol{margin:2px 0 0;padding-left:22px} #printView li.right{font-weight:700;text-decoration:underline}
+  html,body{background:#fff}
+}
+
+.refbox{margin-top:12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 14px}.refbox summary{cursor:pointer;font-weight:700;color:var(--gold)}
+.ref{font-size:14px}.ref .eqs{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}.ref .eqs span{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:4px 10px;font-weight:700}.ref ul{margin:4px 0;padding-left:20px}.ref h4{margin:10px 0 2px;color:var(--violet);font-size:14px}
+.ansrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.ansrow input{font:inherit;font-size:20px;font-weight:700;width:170px;padding:8px 10px;border-radius:10px;border:2px solid var(--gold);background:#0b1220;color:var(--text)}
+.ansrow label{font-weight:700}.ansrow #ansUnit{font-weight:700;color:var(--gold);min-width:40px}
+.keypad{display:grid;grid-template-columns:repeat(6,52px);gap:6px}.keypad .tbtn{width:52px;height:46px;font-size:18px}
+@media print{.ref .eqs span{border:1px solid #444}}
+</style>
+</head>
+<body>
+<header>
+  <div><div class="t">Electron Express</div><div class="s">Physics · Unit 10: Electricity & Magnetism · Review game</div></div>
+  <div class="sp"></div>
+  <button class="btn" id="teachBtn" type="button">Teacher</button>
+</header>
+<main>
+  <div class="stage" id="stage">
+    <canvas id="cv" width="960" height="600" aria-label="Electron Express game. Use the up and down arrows to change lanes."></canvas>
+    <div class="ov" id="startOv"><div class="card"><h2>Electron Express</h2><p class="small muted" style="margin:0 0 8px">You are an electron racing through a circuit board. Each question appears at the top, and three answer gates come toward you, one on each trace. Steer into the right answer. Dodge the <b style="color:#fde047">sparks</b>!</p><div class="keys"><b>↑ ↓</b><span>change lanes (or W and S, or 1 2 3, or tap a lane)</span><b>P</b><span>pause</span></div><h3>Choose a mode</h3><div class="chips" id="modes"></div><p class="small" id="modeTip" style="margin:0"></p><p class="small muted">Wrong gate or spark = lose a heart. Every 5 right answers = level up and +1 heart.</p><div class="row"><button class="btn primary" id="startBtn" type="button">Start</button><span class="small muted" id="hiTxt"></span></div></div></div>
+    <div class="ov" id="overOv" hidden><div class="card"><h2>Game over</h2><div id="overBody"></div><div class="row"><button class="btn primary" id="againBtn" type="button">Play again</button><button class="btn" id="menuBtn" type="button">Change mode</button></div></div></div>
+    <div class="ov" id="pauseOv" hidden><div class="card" style="max-width:380px;text-align:center"><h2>Paused</h2><p class="muted">Press P (or Esc) or the button to keep playing.</p><button class="btn primary" id="resumeBtn" type="button">Resume</button></div></div>
+  </div>
+  
+  <div class="touch" id="touch"><div class="grp"><button class="tbtn" data-k="up" type="button" aria-label="Lane up">▲</button><button class="tbtn" data-k="down" type="button" aria-label="Lane down">▼</button><button class="tbtn" data-k="pause" type="button" aria-label="Pause">II</button></div></div>
+  <div class="info"><span id="info"></span></div>
+  <details class="refbox" open><summary>Reference sheet</summary><div id="refBox" class="ref"></div></details>
+</main>
+<div class="ov" id="teachOv" hidden>
+  <div class="card tpanel" style="max-width:780px">
+    <h2>Teacher tools</h2>
+    <div id="tLogin"><p class="small muted">Enter the teacher code.</p><div class="row" style="margin-top:4px"><input class="code" id="tCode" type="password" autocomplete="off" aria-label="Teacher code"><button class="btn primary" id="tGo" type="button">Open</button><button class="btn" id="tClose0" type="button">Close</button></div><div class="small" id="tMsg" style="color:var(--bad);margin-top:6px"></div></div>
+    <div id="tBody" hidden>
+      <div class="row"><button class="btn" id="tPrint" type="button">🖨 Print the reference sheet</button><button class="btn" id="tTouch" type="button">Show touch buttons</button><button class="btn" id="tClose" type="button">Close</button></div>
+      <div id="tInfo"></div>
+    </div>
+  </div>
+</div>
+<div id="printView"></div>
+<script>
+const META={"store": "physU10ElectronExpress", "unit": 10};
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const store={ get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+const shuffle=a=>{ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const rnd=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+const R=(a,b,s)=>{ s=s||1; const n=Math.round((b-a)/s); return +(a+s*Math.floor(Math.random()*(n+1))).toFixed(6); };
+const SUP={'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+const sci=(x,s)=>{ s=s||2; if(x===0) return '0'; const e=Math.floor(Math.log10(Math.abs(x))); let m=+(x/10**e).toFixed(s-1); let ee=e; if(Math.abs(m)>=10){ m=+(m/10).toFixed(s-1); ee++; } return `${m.toFixed(s-1)} × 10${String(ee).split('').map(c=>SUP[c]).join('')}`; };
+/* nice number: 3 sig figs, commas, sci notation for very big/small */
+const n=(x,s)=>{ s=s||3; if(!isFinite(x)) return '?'; if(x!==0&&(Math.abs(x)>=1e6||Math.abs(x)<1e-3)) return sci(x,s); const v=Number(x.toPrecision(s)); return v.toLocaleString('en-US',{maximumFractionDigits:6}); };
+const U=(x,u,s)=>n(x,s)+(u?' '+u:'');
+/* build a question with distinct distractors */
+function Q(q,a,bad,hint,calc){ const seen=new Set([a]); const b=[]; bad.forEach(x=>{ if(x!=null&&!seen.has(x)&&!/NaN|Infinity|\?/.test(x)){ seen.add(x); b.push(x); } }); return {q,a,bad:b,hint:hint||'',calc:!!calc}; }
+/* numeric question: right value + candidate wrong values, formatted with units */
+function QN(q,val,wrongs,unit,hint,s){ const a=U(val,unit,s); const extra=[val*2,val/2,val*10,val/10,val*1.5]; return Q(q,a,wrongs.concat(extra).map(w=>U(w,unit,s)),hint,true); }
+/* concept bank: items [question, right, [wrong...], hint] */
+function C(items){ let recent=[]; return ()=>{ let it; let g=0; do{ it=pick(items); g++; }while(recent.includes(it)&&g<30); recent.push(it); if(recent.length>Math.min(6,items.length-1)) recent.shift(); return Q(it[0],it[1],it[2],it[3]); }; }
+function makeG(){
+const ohmQ=()=>{ const I=pick([0.5,1,1.5,2,3,4]), Rr=pick([2,4,5,6,10,12,20,48]); const V=I*Rr; const t=pick(['V','I','R']);
+  if(t==='V') return QN(`${I} A flows through a ${Rr}-Ω resistor. What is the voltage across it?`,V,[I/Rr,Rr/I],'V','V = IR.');
+  if(t==='I') return QN(`A ${n(V)}-V battery is connected across ${Rr} Ω. What current flows?`,I,[V*Rr,Rr/V],'A','I = V ÷ R.');
+  return QN(`A ${n(V)}-V source pushes ${I} A through a lamp. What is the lamp’s resistance?`,Rr,[V*I,I/V],'Ω','R = V ÷ I.'); };
+const serQ=()=>{ const a=pick([2,3,4,6,8,10]), b=pick([2,4,5,6,12]), V=pick([12,24,6,9]); return Math.random()<0.5?QN(`A ${a}-Ω and a ${b}-Ω resistor are in series. What is the equivalent resistance?`,a+b,[a*b/(a+b),a*b,Math.abs(a-b)||1.5],'Ω','Series: add them.'):QN(`A ${a}-Ω and a ${b}-Ω resistor are in series on a ${V}-V battery. What current flows?`,V/(a+b),[V/a+V/b,V*(a+b),V/(a*b/(a+b))],'A','Find Req = R₁ + R₂ first, then I = V ÷ Req.'); };
+const parQ=()=>{ const [a,b]=pick([[6,3],[4,4],[12,6],[10,10],[6,12],[20,5],[8,8]]); return QN(`A ${a}-Ω and a ${b}-Ω resistor are in parallel. What is the equivalent resistance?`,a*b/(a+b),[a+b,(a+b)/2,a*b],'Ω','Parallel: 1/Req = 1/R₁ + 1/R₂ (smaller than either).'); };
+const qtQ=()=>{ const I=pick([0.5,2,3,4,10]), t=pick([10,30,60,120]); return QN(`A current of ${I} A flows for ${t} s. How much charge passes?`,I*t,[I/t,t/I],'C','I = Q ÷ t, so Q = It.'); };
+const pQ=()=>{ const I=pick([0.5,2,5,10,12.5]), V=pick([120,12,9,240]); return QN(`A device draws ${I} A at ${V} V. What is its power?`,I*V,[V/I,I/V],'W','P = IV.'); };
+const kwhQ=()=>{ const P=pick([0.5,1,1.5,2,3]), h=pick([2,4,5,6,8,10]); return QN(`A ${P}-kW heater runs for ${h} h. How much energy does it use?`,P*h,[P/h,P*h*1000,h/P],'kWh','E = Pt (kW × h).'); };
+const costQ=()=>{ const P=pick([1,1.5,2,3]), h=pick([2,4,5,10]), r=pick([0.15,0.2,0.25,0.3]); const c=P*h*r; return Q(`A ${P}-kW appliance runs for ${h} h. Electricity costs $${r.toFixed(2)} per kWh. What does it cost?`,`$${c.toFixed(2)}`,[`$${(P*h/r).toFixed(2)}`,`$${(P*r).toFixed(2)}`,`$${(c*10).toFixed(2)}`,`$${(P*h).toFixed(2)}`],'Cost = kWh × price per kWh.',true); };
+const chg=C([['An object that gains electrons becomes…','negatively charged',['positively charged','neutral','magnetic'],'Electrons are negative.'],['Two negative charges…','repel',['attract','do nothing','cancel'],'Like charges repel.'],['A positive and a negative charge…','attract',['repel','do nothing','cancel'],'Opposites attract.'],['Which is a good conductor?','copper',['rubber','glass','plastic'],'Metals let electrons move easily.'],['Rubbing a balloon on hair moves…','electrons',['protons','neutrons','atoms'],'Only electrons move in charging.'],['If the distance between two charges doubles, the force becomes…','¼ as big',['½ as big','2× as big','4× as big'],'Inverse square: F ∝ 1/r².'],['Electric field lines point…','away from positive, toward negative',['toward positive','in circles','away from negative'],'Field lines show the push on a + test charge.'],['Voltage is…','energy per charge',['charge per second','resistance per amp','power per second'],'1 V = 1 J/C.'],['A battery supplies…','energy to push charges',['charge that gets used up','resistance','magnetism'],'Charges aren’t used up; energy is.'],['Which wire has the most resistance?','long and thin',['short and thick','long and thick','short and thin'],'Longer and thinner = more resistance.']]);
+const circ=C([['In a series circuit, the current through each resistor is…','the same',['different','zero','biggest in the first'],'Only one path.'],['In a parallel circuit, the voltage across each branch is…','the same',['split between branches','zero','biggest in the first'],'Each branch connects across the battery.'],['One bulb burns out in a series string. The others…','go out',['stay lit','get brighter','get dimmer'],'The only path is broken.'],['One bulb burns out in a parallel circuit. The others…','stay lit',['go out','all get dimmer','short out'],'Other paths still work.'],['Adding another branch in parallel makes the total current…','increase',['decrease','stay the same','zero'],'More paths, less total resistance.'],['An ammeter is connected…','in series',['in parallel','across the battery only','anywhere'],'Current must flow through it.'],['A voltmeter is connected…','in parallel across the part',['in series','inside the battery','to the ground'],'It compares two points.'],['Houses are wired in parallel so that…','each device gets full voltage and works on its own',['the current is the same everywhere','fewer wires are needed','resistance goes up']]].map(x=>x.length===3?x.concat(['Parallel: independent branches.']):x));
+const mag=C([['Two north poles…','repel',['attract','do nothing','cancel'],'Like poles repel.'],['An electric current creates…','a magnetic field',['static charge','gravity','light'],'Ørsted’s discovery.'],['To make an electromagnet stronger, you can…','add more coils of wire',['use a plastic core','use less current','straighten the wire'],'More turns, more current, iron core.'],['A motor changes…','electrical energy to mechanical energy',['mechanical to electrical','heat to light','chemical to nuclear'],'Current + magnetic field → force → spin.'],['A generator changes…','mechanical energy to electrical energy',['electrical to mechanical','light to heat','sound to electricity'],'Spinning a coil in a field induces current.'],['A magnet held still inside a coil produces…','no current',['a large current','a steady current','sparks'],'Induction needs a changing magnetic field.'],['Moving a magnet faster through a coil makes the induced voltage…','larger',['smaller','zero','the same'],'Faster change, bigger voltage.'],['A step-down transformer has…','fewer turns on the secondary coil',['more turns on the secondary coil','no coils','equal turns'],'Vs/Vp = Ns/Np.']]);
+return {title:'Electron Express',unit:10,unitName:'Electricity & Magnetism',store:'physU10ElectronExpress',qLabel:'Question',hazMsg:'Zapped by a short circuit!',gateFill:'#3b0764',gateStroke:'#e879f9',
+ startMsg:'Ride the circuit! Steer into the right answer.',overTip:'Tip: series = one path (same current); parallel = many paths (same voltage). V = IR everywhere.',
+ how:'The student is an electron racing along a circuit board. Each question appears at the top; three answer gates come in, one per lane (trace). Steer into the right one. Every 5 right answers = level up (+1 heart, faster). After level 2, sparks (short circuits) appear and must be dodged. Calculation questions move more slowly.',
+ modes:{charge:{label:'Charge & voltage',tip:'Charges, conductors, electric forces and fields, voltage, and resistance.'},circ:{label:'Circuit calculations',tip:'Ohm’s law, series and parallel resistors, current, power, and energy cost.'},mag:{label:'Circuits & magnetism ideas',tip:'Series vs. parallel, meters, magnets, electromagnets, motors, generators, and induction.'},mix:{label:'Mixed',tip:'Everything from Unit 10.'}},
+ gens:{charge:[chg],circ:[ohmQ,ohmQ,serQ,parQ,qtQ,pQ,kwhQ,costQ],mag:[circ,mag]},
+ ref:`<div class="eqs"><span>V = IR</span><span>I = Q ÷ t</span><span>series: Req = R₁ + R₂</span><span>parallel: 1/Req = 1/R₁ + 1/R₂</span><span>P = IV</span><span>E = Pt (kWh)</span></div><h4>Charge</h4><ul><li>Like charges repel; opposites attract. Only electrons move when objects are charged.</li><li>Voltage = energy per charge. Long, thin wires have more resistance.</li></ul><h4>Circuits</h4><ul><li>Series: same current, voltages add, one break stops everything.</li><li>Parallel: same voltage, currents add, branches work independently.</li></ul><h4>Magnetism</h4><ul><li>Current makes a magnetic field. A changing magnetic field through a coil induces a voltage.</li><li>Motor: electrical → mechanical. Generator: mechanical → electrical.</li></ul>`,
+ bg:(c,d)=>{ c.fillStyle='#052e16'; c.fillRect(0,0,W,H); c.strokeStyle='rgba(250,204,21,.25)'; c.lineWidth=3; const off=d%200; for(let x=-off;x<W+200;x+=200){ c.beginPath(); c.moveTo(x,200); c.lineTo(x+60,200); c.lineTo(x+60,260); c.lineTo(x+140,260); c.stroke(); c.fillStyle='rgba(250,204,21,.35)'; c.beginPath(); c.arc(x+140,260,5,0,6.3); c.fill(); c.strokeRect(x+90,560,50,20); } },
+ player:(c,x,y,d)=>{ c.save(); c.translate(x,y); const gl=c.createRadialGradient(0,0,4,0,0,34); gl.addColorStop(0,'rgba(56,189,248,.9)'); gl.addColorStop(1,'rgba(56,189,248,0)'); c.fillStyle=gl; c.beginPath(); c.arc(0,0,34,0,6.3); c.fill(); c.fillStyle='#38bdf8'; c.beginPath(); c.arc(0,0,16,0,6.3); c.fill(); c.fillStyle='#0c4a6e'; c.font='bold 22px Arial'; c.textAlign='center'; c.textBaseline='middle'; c.fillText('−',0,-1); for(let i=0;i<3;i++){ c.strokeStyle='rgba(125,211,252,.5)'; c.lineWidth=2; c.beginPath(); c.moveTo(-22-i*12,-6+i*6); c.lineTo(-34-i*12,-6+i*6); c.stroke(); } c.restore(); },
+ hazard:(c,x,y)=>{ c.save(); c.translate(x,y); c.strokeStyle='#fde047'; c.lineWidth=4; c.beginPath(); c.moveTo(-6,-30); c.lineTo(6,-6); c.lineTo(-6,4); c.lineTo(8,30); c.stroke(); c.fillStyle='rgba(253,224,71,.25)'; c.beginPath(); c.arc(0,0,28,0,6.3); c.fill(); c.restore(); }};
+}
+
+const G=makeG();
+const GAME={onPause:()=>{}, onResume:()=>{}};
+/* teacher tools (code teacher007) */
+function tShow(on){ $('#teachOv').hidden=!on; if(on){ GAME.onPause(); $('#tCode').value=''; $('#tMsg').textContent=''; setTimeout(()=>$('#tCode').focus(),30); } }
+$('#teachBtn').addEventListener('click',()=>tShow(true)); $('#tClose0').addEventListener('click',()=>tShow(false));
+$('#tClose').addEventListener('click',()=>{ tShow(false); $('#tBody').hidden=true; $('#tLogin').hidden=false; });
+function tOpen(){ if($('#tCode').value.trim().toLowerCase()!=='teacher007'){ $('#tMsg').textContent='Code not recognized.'; return; } $('#tLogin').hidden=true; $('#tBody').hidden=false; $('#tInfo').innerHTML=teacherHTML(); }
+$('#tGo').addEventListener('click',tOpen); $('#tCode').addEventListener('keydown',e=>{ if(e.key==='Enter') tOpen(); });
+$('#tTouch').addEventListener('click',()=>{ document.body.classList.toggle('showtouch'); $('#tTouch').textContent=document.body.classList.contains('showtouch')?'Hide touch buttons':'Show touch buttons'; });
+$('#tPrint').addEventListener('click',()=>{ $('#printView').innerHTML=`<h1>${G.title}: Reference Sheet</h1><p>Physics · Unit ${G.unit}: ${G.unitName}</p>`+G.ref; setTimeout(()=>window.print(),100); });
+$('#resumeBtn').addEventListener('click',()=>GAME.onResume());
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) GAME.onPause(); });
+$('#refBox').innerHTML=G.ref;
+/* modes */
+let mode=store.get(G.store+'_mode'); if(!G.modes[mode]) mode=Object.keys(G.modes)[0];
+$('#modes').innerHTML=Object.entries(G.modes).map(([k,m])=>`<button type="button" class="chip" data-m="${k}">${m.label}</button>`).join('');
+function drawModes(){ $$('#modes .chip').forEach(b=>b.classList.toggle('on',b.dataset.m===mode)); $('#modeTip').textContent=G.modes[mode].tip; }
+$$('#modes .chip').forEach(b=>b.addEventListener('click',()=>{ mode=b.dataset.m; store.set(G.store+'_mode',mode); drawModes(); })); drawModes();
+function genQ(m){ m=m||mode; const list=m==='mix'?Object.keys(G.gens):[m]; return pick(G.gens[pick(list)])(); }
+const HIKEY=G.store+'_hi'; function hiTxt(){ const h=+store.get(HIKEY)||0; $('#hiTxt').textContent=h?`High score on this Chromebook: ${h}`:''; } hiTxt();
+function saveHi(score){ const hi=+store.get(HIKEY)||0; if(score>hi) store.set(HIKEY,score); hiTxt(); return score>hi; }
+function teacherHTML(){ const ex=Object.keys(G.gens).map(k=>{ const q=genQ(k); return q.a==null?`<div class="tq"><b>${G.modes[k].label}</b> (sample): ${q.q}<br><b style="color:var(--ok)">Answer: ${n(q.ans)} ${q.unit}</b> (accepted within ±${Math.round((q.tol||0.03)*100)}%)</div>`:`<div class="tq"><b>${G.modes[k].label}</b> (sample): ${q.q}<ol>${[q.a].concat(q.bad.slice(0,2)).map((o,i)=>`<li class="${i?'':'right'}">${o}</li>`).join('')}</ol></div>`; }).join('');
+  return `<p class="small muted">This game is practice and is not graded. Questions are generated at random, so every game is different. ${G.wrongRule||'A wrong answer never shows the right one: the same question comes back until it is answered correctly.'}</p><h3>How it works</h3><p class="small">${G.how}</p><h3>Modes</h3><ul class="small">${Object.values(G.modes).map(m=>`<li><b>${m.label}:</b> ${m.tip}</li>`).join('')}</ul><h3>Sample questions (the right answer is bold)</h3>${ex}<h3>Reference sheet (also under the game)</h3><div class="small ref">${G.ref}</div>`; }
+/* canvas helpers */
+const cv=$('#cv'), ctx=cv.getContext('2d'); const W=960,H=600;
+let hudK=1; function fit(){ const r=cv.getBoundingClientRect(); if(r.width) hudK=Math.min(2,Math.max(1,560/r.width)); const d=Math.min(2,window.devicePixelRatio||1); const w=Math.round(r.width*d), h=Math.round(r.height*d); if(w&&h&&(cv.width!==w||cv.height!==h)){ cv.width=w; cv.height=h; } }
+window.addEventListener('resize',fit);
+function rr(x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+function wrap(t,maxW,font){ ctx.font=font; const words=String(t).split(' '); const lines=[]; let cur=''; words.forEach(w=>{ const tr=cur?cur+' '+w:w; if(ctx.measureText(tr).width>maxW&&cur){ lines.push(cur); cur=w; } else cur=tr; }); if(cur) lines.push(cur); return lines; }
+function textBox(t,cx,cy,maxW,maxH,size,color,bold){ let s=size, lines; do{ lines=wrap(t,maxW,`${bold?'bold ':''}${s}px Arial`); s--; }while((lines.length*(s+5)>maxH||lines.some(l=>ctx.measureText(l).width>maxW))&&s>10); s++; ctx.fillStyle=color; ctx.textAlign='center'; ctx.textBaseline='middle'; const lh=s+5; lines.forEach((l,i)=>ctx.fillText(l,cx,cy-(lines.length-1)*lh/2+i*lh)); }
+function qPanel(q,top){ ctx.fillStyle='#0e1a33'; ctx.fillRect(0,0,W,top); ctx.fillStyle='#9fb0cf'; ctx.font='13px Arial'; ctx.textAlign='left'; ctx.textBaseline='top'; ctx.fillText(G.qLabel||'Question',16,10); let s=26*Math.min(hudK,1.25), lines; do{ lines=wrap(q,W-260,`bold ${s}px Arial`); s--; }while(lines.length*(s+7)>top-38&&s>13); s++; ctx.fillStyle='#facc15'; ctx.textBaseline='top'; lines.forEach((l,i)=>ctx.fillText(l,16,32+i*(s+7))); }
+let parts=[]; function boom(x,y,col,k){ for(let i=0;i<k;i++){ const a=rnd(0,6.3),s=rnd(40,170); parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:rnd(.3,.8),col}); } }
+function stepParts(dt){ parts.forEach(p=>{ p.x+=p.vx*dt; p.y+=p.vy*dt; p.life-=dt; }); parts=parts.filter(p=>p.life>0); }
+function drawParts(){ parts.forEach(p=>{ ctx.globalAlpha=Math.max(0,Math.min(1,p.life*1.6)); ctx.fillStyle=p.col; ctx.fillRect(p.x-2,p.y-2,4,4); }); ctx.globalAlpha=1; }
+function hud(score,hearts,level,streak){ const k=hudK; ctx.textAlign='right'; ctx.textBaseline='top'; ctx.fillStyle='#e8eefc'; ctx.font=`bold ${18*k}px Arial`; ctx.fillText('Score '+score,W-14,10); ctx.font=`${20*k}px Arial`; ctx.fillStyle='#f87171'; ctx.fillText('♥'.repeat(Math.max(0,hearts)),W-14,14+20*k); ctx.font=`bold ${13*k}px Arial`; ctx.fillStyle='#93c5fd'; ctx.fillText('Level '+level+(streak>=3?`   Streak ×${streak}`:''),W-14,40+24*k); }
+function banner(m,top){ if(m&&performance.now()<m.until){ const k=Math.min(hudK,1.5); ctx.textAlign='center'; ctx.textBaseline='middle'; let s=19*k, lines; do{ lines=wrap(m.t,W-80,`bold ${s}px Arial`); s--; }while(lines.length>2&&s>11); s++; const lh=s+6, bh=lines.length*lh+14; const y0=top!=null?top+12:H-30-bh; ctx.fillStyle='rgba(5,10,20,.85)'; ctx.fillRect(30,y0,W-60,bh); ctx.fillStyle=m.c||'#fde68a'; lines.forEach((l,i)=>ctx.fillText(l,W/2,y0+7+lh/2+i*lh)); } }
+/* ===================== LANE RUNNER ENGINE ===================== */
+const LANES=[268,388,508], PX=150, TOP=172;
+let state='menu', lane, laneY, cur, col, haz, hearts, score, streak, speed, spawnT, rightN, tries, level, msg, lastT, flash, dist, missed;
+function newQ(){ cur=genQ(); missed=0; }
+function makeCol(){ const opts=shuffle([{t:cur.a,ok:true}].concat(shuffle(cur.bad.slice()).slice(0,2).map(t=>({t,ok:false})))); col={x:W+130,opts,done:false}; }
+function startGame(){ state='play'; lane=1; laneY=LANES[1]; col=null; haz=[]; parts=[]; hearts=3; score=0; streak=0; speed=140; rightN=0; tries=0; level=1; flash=null; dist=0; msg={t:G.startMsg||'Steer into the right answer!',until:performance.now()+2000};
+  newQ(); spawnT=1.2; ['#startOv','#overOv','#pauseOv'].forEach(s=>$(s).hidden=true); $('#info').textContent='Mode: '+G.modes[mode].label; fit(); lastT=performance.now(); requestAnimationFrame(loop); }
+function gameOver(){ state='over'; const isHi=saveHi(score);
+  $('#overBody').innerHTML=`<p style="font-size:18px;margin:4px 0">Score: <b>${score}</b>${isHi?' <span style="color:var(--gold)">New high score!</span>':''}</p><p class="muted" style="margin:2px 0">Level reached: <b>${level}</b>. Answers right: <b>${rightN} of ${tries}</b>${tries?` (${Math.round(100*rightN/tries)}%)`:''}.</p><p class="small muted" style="margin-top:8px">${G.overTip||''}</p>`;
+  $('#overOv').hidden=false; }
+GAME.onPause=()=>{ if(state==='play'){ state='paused'; $('#pauseOv').hidden=false; } };
+GAME.onResume=()=>{ if(state==='paused'){ state='play'; $('#pauseOv').hidden=true; lastT=performance.now(); requestAnimationFrame(loop); } };
+$('#startBtn').addEventListener('click',startGame); $('#againBtn').addEventListener('click',startGame);
+$('#menuBtn').addEventListener('click',()=>{ $('#overOv').hidden=true; $('#startOv').hidden=false; state='menu'; });
+const move=d=>{ if(state==='play') lane=Math.max(0,Math.min(2,lane+d)); };
+document.addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT') return;
+  if(e.code==='KeyP'||e.code==='Escape'){ state==='play'?GAME.onPause():GAME.onResume(); return; }
+  if(state!=='play') return;
+  if(e.code==='ArrowUp'||e.code==='KeyW'){ move(-1); e.preventDefault(); } if(e.code==='ArrowDown'||e.code==='KeyS'){ move(1); e.preventDefault(); }
+  if(e.key==='1'||e.key==='2'||e.key==='3') lane=+e.key-1; });
+cv.addEventListener('pointerdown',e=>{ if(state!=='play') return; const r=cv.getBoundingClientRect(); const y=(e.clientY-r.top)/r.height*H; if(y<TOP) return; let best=0; LANES.forEach((ly,i)=>{ if(Math.abs(y-ly)<Math.abs(y-LANES[best])) best=i; }); lane=best; });
+$$('.tbtn').forEach(b=>b.addEventListener('pointerdown',e=>{ e.preventDefault(); const k=b.dataset.k; if(k==='up') move(-1); if(k==='down') move(1); if(k==='pause') state==='play'?GAME.onPause():GAME.onResume(); }));
+function loop(t){ if(state!=='play') return; const dt=Math.min(0.05,(t-lastT)/1000); lastT=t; update(dt); draw(); if(state==='play') requestAnimationFrame(loop); }
+function colSpeed(){ return speed*(cur.calc?0.55:1); }
+function update(dt){ laneY+=(LANES[lane]-laneY)*Math.min(1,dt*14); dist+=speed*dt;
+  if(!col){ spawnT-=dt; if(spawnT<=0) makeCol(); }
+  else { col.x-=colSpeed()*dt; if(!col.done&&col.x<=PX){ col.done=true; col.picked=lane; col.at=performance.now(); resolve(); } if(col&&col.done&&performance.now()-col.at>450) col=null; }
+  if(level>=2&&Math.random()<dt*0.22&&!haz.some(h=>h.x>W-260)&&(!col||col.done||col.x>W-60||col.x<PX+300)){ haz.push({x:W+40,lane:Math.floor(Math.random()*3),hit:false}); }
+  haz.forEach(h=>{ h.x-=speed*1.15*dt; if(!h.hit&&Math.abs(h.x-PX)<28&&h.lane===lane){ h.hit=true; hearts--; streak=0; flash={c:'rgba(248,113,113,.3)',until:performance.now()+300}; boom(PX,laneY,'#fca5a5',18); msg={t:G.hazMsg+' −1 heart',until:performance.now()+1500}; if(hearts<=0) gameOver(); } });
+  haz=haz.filter(h=>h.x>-60); stepParts(dt); }
+function resolve(){ const o=col.opts[lane]; tries++;
+  if(o.ok){ rightN++; streak++; score+=(cur.calc?150:100)+Math.min(10,streak)*10; boom(PX,laneY,'#fde68a',16); flash={c:'rgba(52,211,153,.18)',until:performance.now()+200};
+    if(rightN%5===0){ level++; speed+=20; hearts=Math.min(5,hearts+1); msg={t:`Level ${level}! +1 heart. Faster now.`,until:performance.now()+2000}; } else msg={t:pick(['Correct!','Nice!','Yes!','Right!']),until:performance.now()+900,c:'#86efac'};
+    newQ(); spawnT=1.1; }
+  else { hearts--; streak=0; missed++; flash={c:'rgba(248,113,113,.28)',until:performance.now()+300}; boom(PX,laneY,'#f87171',14);
+    msg={t:`Not "${o.t}". ${cur.hint||'Try the same question again.'}`,until:performance.now()+2600}; spawnT=1.4; if(hearts<=0) gameOver(); } }
+function gate(x,y,o,alpha){ ctx.globalAlpha=alpha==null?1:alpha; rr(x-115,y-40,230,80,14); ctx.fillStyle=G.gateFill||'#1e293b'; ctx.fill(); ctx.lineWidth=3; ctx.strokeStyle=G.gateStroke||'#facc15'; ctx.stroke(); textBox(o.t,x,y,208,70,20,'#f8fafc',true); ctx.globalAlpha=1; }
+function draw(){ const sx=cv.width/W, sy=cv.height/H; ctx.setTransform(sx,0,0,sy,0,0);
+  G.bg(ctx,dist); for(let i=0;i<3;i++){ ctx.fillStyle=i===lane?'rgba(250,204,21,.07)':'rgba(148,163,184,.03)'; ctx.fillRect(0,LANES[i]-58,W,116); }
+  ctx.strokeStyle='rgba(148,163,184,.2)'; ctx.setLineDash([10,12]); [328,448].forEach(y=>{ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }); ctx.setLineDash([]);
+  if(col){ if(col.done){ const a=Math.max(0,1-(performance.now()-col.at)/450); gate(PX+60,LANES[col.picked],col.opts[col.picked],a); } else col.opts.forEach((o,i)=>gate(col.x,LANES[i],o)); }
+  haz.forEach(h=>G.hazard(ctx,h.x,LANES[h.lane]));
+  G.player(ctx,PX,laneY,dist); drawParts();
+  if(flash&&performance.now()<flash.until){ ctx.fillStyle=flash.c; ctx.fillRect(0,TOP,W,H-TOP); }
+  qPanel(cur.q,TOP); hud(score,hearts,level,streak); banner(msg); }
+(function idle(){ fit(); const sx=cv.width/W, sy=cv.height/H; ctx.setTransform(sx,0,0,sy,0,0); G.bg(ctx,0); G.player(ctx,PX,LANES[1],0); })();
+window.__game={get state(){return state;}, get hearts(){return hearts;}, get score(){return score;}, get level(){return level;}, get rightN(){return rightN;}, get tries(){return tries;}, get q(){return cur;},
+  col:()=>col, rightLane:()=>col?col.opts.findIndex(o=>o.ok):-1, setLane:i=>{ lane=i; laneY=LANES[i]; }, spawn:()=>{ if(!col||col.done){ col=null; spawnT=0; update(0.016); } }, fast:()=>{ if(col&&!col.done) col.x=Math.min(col.x,PX+3); }, genQ};
+
+</script>
+</body>
+</html>

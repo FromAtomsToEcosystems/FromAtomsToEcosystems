@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carrier Hunt | Biology</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1220;--panel:#121c31;--panel2:#18243d;--line:#2b3a58;--text:#e8eefc;--muted:#9fb0cf;--gold:#facc15;--gold2:#fbbf24;--ok:#34d399;--bad:#f87171;--violet:#a78bfa}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 "Atkinson Hyperlegible",Arial,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:#0e172a}
+header .t{font-weight:800;font-size:17px}
+header .s{color:var(--muted);font-size:13px}
+header .sp{flex:1}
+.btn{font:inherit;font-weight:700;border-radius:10px;padding:9px 16px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--gold);color:#1a1300;border-color:var(--gold)}
+.btn:disabled{opacity:.5;cursor:default}
+main{max-width:1000px;margin:0 auto;padding:14px 16px 30px}
+.stage{position:relative;width:100%;aspect-ratio:16/10;background:#050a14;border:1px solid var(--line);border-radius:14px;overflow:hidden;touch-action:none}
+canvas{display:block;width:100%;height:100%}
+.ov{position:absolute;inset:0;display:flex;background:rgba(5,10,20,.78);padding:14px;overflow:auto}
+.ov>.card{margin:auto}
+#teachOv{position:fixed;z-index:60;background:rgba(5,10,20,.94)}
+.ov[hidden]{display:none}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;max-width:640px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.card h2{margin:0 0 6px;font-size:22px}
+.card h3{margin:12px 0 6px;font-size:15px;color:var(--gold)}
+.muted{color:var(--muted)} .small{font-size:13.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chip{font:inherit;font-size:14px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.chip.on{border-color:var(--gold);background:rgba(250,204,21,.16);font-weight:700}
+.qtag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--violet);margin-bottom:4px}
+.qtext{font-size:18px;margin:4px 0 12px}
+.opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:15.5px}
+.opt:hover:not(:disabled){border-color:var(--gold)}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:13px;font-weight:800}
+.opt.pick{border-color:var(--gold)}
+.fb{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:15.5px}
+.fb.ok{background:rgba(52,211,153,.14);border:1px solid rgba(52,211,153,.5)}
+.fb.no{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.45)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:14px;margin:6px 0}
+.keys b{color:var(--gold)}
+.ladder{display:flex;flex-wrap:wrap;gap:6px;font-size:13px;margin-top:6px}
+.ladder span{padding:3px 8px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}
+.touch{display:none;gap:10px;justify-content:space-between;margin-top:10px;user-select:none;-webkit-user-select:none}
+.touch .grp{display:flex;gap:10px}
+.tbtn{width:64px;height:58px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:22px;font-weight:800;touch-action:none}
+.tbtn.fire{width:110px;background:#3b2a07;border-color:var(--gold);color:var(--gold);font-size:17px}
+.tbtn.on{background:#334155}
+@media (pointer:coarse){.touch{display:flex}}
+@media (max-width:480px){.tbtn{width:52px;height:54px;font-size:20px}.tbtn.fire{width:86px}.touch .grp{gap:7px}.touch{gap:6px}}
+@media (max-width:760px),(max-height:560px){.ov{position:fixed;z-index:50;background:rgba(5,10,20,.92)}}
+body.showtouch .touch{display:flex}
+.info{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:14px;color:var(--muted)}
+.tpanel h3{margin-top:14px}
+.tq{margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font-size:14px}
+.tq ol{margin:4px 0 0;padding-left:22px}
+.tq li.right{color:var(--ok);font-weight:700}
+input.code{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0b1220;color:var(--text);width:180px}
+#printView{display:none}
+@media print{
+  body>*:not(#printView){display:none!important}
+  #printView{display:block!important;color:#000;background:#fff;font:12px/1.4 Arial,sans-serif}
+  #printView h1{font-size:18px;margin:0 0 4px} #printView .pq{break-inside:avoid;margin:8px 0}
+  #printView ol{margin:2px 0 0;padding-left:22px} #printView li.right{font-weight:700;text-decoration:underline}
+  html,body{background:#fff}
+}
+
+.stage{aspect-ratio:auto;min-height:600px;overflow:visible}.stage .ov{position:fixed;z-index:50}.app{padding:12px}.status{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14px;color:var(--muted);margin-bottom:8px}.status b{color:var(--text)}.ocard{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 14px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.grid2{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:12px;align-items:start}@media (max-width:820px){.grid2{grid-template-columns:1fr}}.btns{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin-top:8px}.gbtn{font:inherit;text-align:left;display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:14px;line-height:1.3}.gbtn:hover:not(:disabled){border-color:var(--gold)}.gbtn:disabled{opacity:.45;cursor:not-allowed}.gbtn.on{border-color:var(--gold);background:rgba(250,204,21,.14)}.gbtn .k{flex:none;min-width:22px;height:22px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:12px;font-weight:800;padding:0 4px}.meter{margin:6px 0}.meter .lab{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}.meter .lab b{color:var(--text)}.meter .tr{height:12px;border-radius:6px;background:#1e293b;overflow:hidden}.meter .fl{height:100%;border-radius:6px;transition:width .25s}.chipsrow{display:flex;flex-wrap:wrap;gap:6px}table.ktab{border-collapse:collapse;font-size:13px;width:100%}table.ktab td,table.ktab th{border:1px solid var(--line);padding:4px 6px;text-align:left;vertical-align:top}.log{font-size:13px;max-height:170px;overflow:auto}.log div{padding:3px 0;border-bottom:1px solid var(--line)}.big{font-size:22px;font-weight:800}.btn.sm{padding:5px 11px;font-size:14px}.btn.on{background:var(--gold);color:#0b1220}.pp:hover rect,.pp:hover circle{stroke:#f59e0b}</style>
+</head>
+<body>
+<header>
+  <div><div class="t">Carrier Hunt</div><div class="s">Biology · Unit 4: Genetics · Review game</div></div>
+  <div class="sp"></div>
+  <button class="btn" id="teachBtn" type="button">Teacher</button>
+</header>
+<main>
+  <div class="stage" id="stage">
+    <div class="app" id="app"><p class="muted">Press Start.</p></div>
+    <div class="ov" id="startOv"><div class="card"><h2>Carrier Hunt</h2><p class="small muted" style="margin:0 0 8px">You are a genetic counselor. Each family wants to know who carries a disease allele. Use the family tree to work out every person's genotype. If more than one genotype fits the evidence, say "Can't tell." You have two DNA tests per family to settle the hardest cases. In the last two families, you must first figure out how the trait is inherited.</p><div class="row"><button class="btn primary" id="startBtn" type="button">Start</button><span class="small muted" id="hiTxt"></span></div></div></div>
+    <div class="ov" id="overOv" hidden><div class="card"><h2 id="overTitle"></h2><div id="overBody"></div><div class="row"><button class="btn primary" id="againBtn" type="button">Play again</button></div></div></div>
+
+    <div class="ov" id="pauseOv" hidden><div class="card" style="max-width:380px;text-align:center"><h2>Paused</h2><p class="muted">Press P or the button to keep playing.</p><button class="btn primary" id="resumeBtn" type="button">Resume</button></div></div>
+  </div>
+
+</main>
+<div class="ov" id="teachOv" hidden>
+  <div class="card tpanel" style="max-width:780px">
+    <h2>Teacher tools</h2>
+    <div id="tLogin"><p class="small muted">Enter the teacher code.</p><div class="row" style="margin-top:4px"><input class="code" id="tCode" type="password" autocomplete="off" aria-label="Teacher code"><button class="btn primary" id="tGo" type="button">Open</button><button class="btn" id="tClose0" type="button">Close</button></div><div class="small" id="tMsg" style="color:var(--bad);margin-top:6px"></div></div>
+    <div id="tBody" hidden>
+      <div class="row"><button class="btn" id="tPrint" type="button">🖨 Print the reference sheet</button><button class="btn" id="tTouch" type="button">Show touch buttons</button><button class="btn" id="tClose" type="button">Close</button></div>
+      <div id="tInfo"></div>
+    </div>
+  </div>
+</div>
+<div id="printView"></div>
+<script>
+const META={"store": "bioU4CarrierHunt"};
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const store={ get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+const shuffle=a=>{ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const rnd=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const GAME={onPause:()=>{}, onResume:()=>{}, teacherHTML:()=>'', printHTML:()=>''};
+/* teacher tools (code Teacher007) */
+function tShow(on){ $('#teachOv').hidden=!on; if(on){ GAME.onPause(); $('#tCode').value=''; $('#tMsg').textContent=''; setTimeout(()=>$('#tCode').focus(),30); } }
+$('#teachBtn').addEventListener('click',()=>tShow(true)); $('#tClose0').addEventListener('click',()=>tShow(false));
+$('#tClose').addEventListener('click',()=>{ tShow(false); $('#tBody').hidden=true; $('#tLogin').hidden=false; });
+function tOpen(){ if($('#tCode').value.trim().toLowerCase()!=='teacher007'){ $('#tMsg').textContent='Code not recognized.'; return; } $('#tLogin').hidden=true; $('#tBody').hidden=false; $('#tInfo').innerHTML=GAME.teacherHTML(); }
+$('#tGo').addEventListener('click',tOpen); $('#tCode').addEventListener('keydown',e=>{ if(e.key==='Enter') tOpen(); });
+$('#tTouch').addEventListener('click',()=>document.body.classList.toggle('showtouch'));
+$('#tPrint').addEventListener('click',()=>{ $('#printView').innerHTML=GAME.printHTML(); setTimeout(()=>window.print(),100); });
+$('#resumeBtn').addEventListener('click',()=>GAME.onResume());
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) GAME.onPause(); });
+
+const meter=(lab,v,max,col,txt)=>`<div class="meter"><div class="lab"><span>${lab}</span><b>${txt!=null?txt:Math.round(v)}</b></div><div class="tr"><div class="fl" style="width:${Math.max(0,Math.min(100,100*v/max))}%;background:${col}"></div></div></div>`;
+const HIKEY=META.store+'_hi'; function hiTxt(){ const h=+store.get(HIKEY)||0; const e=$('#hiTxt'); if(e) e.textContent=h?`High score on this Chromebook: ${h}`:''; } hiTxt();
+function saveHi(v){ const h=+store.get(HIKEY)||0; if(v>h){ store.set(HIKEY,v); return true; } return false; }
+function over(title,html){ $('#overTitle').textContent=title; $('#overBody').innerHTML=html; $('#overOv').hidden=false; hiTxt(); }
+/* ===================== CARRIER HUNT (pedigree deduction) ===================== */
+// person: [id, sex, affected, gen, x, marriedIn]
+const CASES=[
+ {mode:'AR',given:true,title:'The Okafor family',trait:'cystic fibrosis',P:[['I1','M',0,0,180],['I2','F',0,0,300],['II1','M',1,1,90],['II2','F',0,1,300],['II3','M',0,1,190],['II4','M',0,1,410,1],['III1','F',0,2,310],['III2','M',0,2,410]],
+  C:[['I1','I2',['II1','II2','II3']],['II2','II4',['III1','III2']]]},
+ {mode:'AD',given:true,title:'The Moreno family',trait:'Huntington\'s disease',P:[['I1','M',1,0,200],['I2','F',0,0,320],['II1','F',1,1,140],['II2','M',0,1,260],['II3','M',1,1,380],['II4','M',0,1,40,1],['II5','F',0,1,490,1],['III1','M',1,2,60],['III2','F',0,2,130],['III3','F',0,2,435]],
+  C:[['I1','I2',['II1','II2','II3']],['II1','II4',['III1','III2']],['II3','II5',['III3']]]},
+ {mode:'XR',given:true,title:'The Nguyen family',trait:'hemophilia',P:[['I1','M',0,0,200],['I2','F',0,0,320],['II1','M',1,1,90],['II2','F',0,1,300],['II3','M',0,1,190],['II4','M',0,1,410,1],['III1','M',1,2,290],['III2','F',0,2,360],['III3','M',0,2,430]],
+  C:[['I1','I2',['II1','II2','II3']],['II2','II4',['III1','III2','III3']]]},
+ {mode:'AR',given:false,title:'The Haddad family',trait:'a rare skin condition',P:[['I1','M',0,0,200],['I2','F',0,0,320],['II1','F',1,1,90],['II2','M',0,1,300],['II3','F',0,1,190],['II4','F',1,1,410,1],['III1','M',0,2,310],['III2','F',1,2,410]],
+  C:[['I1','I2',['II1','II2','II3']],['II2','II4',['III1','III2']]]},
+ {mode:'XR',given:false,title:'The Peterson family',trait:'red-green color blindness',P:[['I1','M',1,0,200],['I2','F',0,0,320],['II1','F',0,1,280],['II2','M',0,1,150],['II3','M',0,1,400,1],['III1','M',1,2,270],['III2','M',0,2,345],['III3','F',0,2,420]],
+  C:[['I1','I2',['II1','II2']],['II1','II3',['III1','III2','III3']]]}];
+const MODES={AD:'Autosomal dominant',AR:'Autosomal recessive',XR:'X-linked recessive'};
+const GT=(mode,sex)=>mode==='XR'?(sex==='M'?['XAY','XaY']:['XAXA','XAXa','XaXa']):['AA','Aa','aa'];
+const affOf=(mode,g)=>mode==='AD'?g.includes('A'):mode==='AR'?g==='aa':(g==='XaY'||g==='XaXa');
+function kids(mode,f,m,sex){ if(mode!=='XR'){ const o=new Set(); for(const x of f) for(const y of m) o.add([x,y].sort().join('')); return o; }
+  const fx=f[1], mx=[m[1],m[3]]; const o=new Set(); mx.forEach(a=>o.add(sex==='M'?'X'+a+'Y':'X'+[fx,a].sort().join('X'))); return o; }
+const norm=g=>g; // genotype strings already sorted (A before a)
+function solve(cs,mode,fixed){ const P=cs.P, par={}; cs.C.forEach(([a,b,ch])=>ch.forEach(c=>par[c]=[a,b])); const sols=[]; const as={};
+  const order=P.slice().sort((a,b)=>a[3]-b[3]);
+  (function rec(i){ if(i===order.length){ sols.push({...as}); return; } const [id,sex,aff,,,mi]=order[i];
+    for(const g of GT(mode,sex)){ if(!!affOf(mode,g)!==!!aff) continue; if(fixed&&fixed[id]&&fixed[id]!==g) continue;
+      if(par[id]){ const [a,b]=par[id], fa=P.find(p=>p[0]===a), f=fa[1]==='M'?as[a]:as[b], m=fa[1]==='M'?as[b]:as[a]; if(!kids(mode,f,m,sex).has(g)) continue; }
+      as[id]=g; rec(i+1); delete as[id]; } })(0);
+  if(!sols.length) return sols; const carriers=s=>P.filter(p=>p[5]&&!affOf(mode,s[p[0]])&&/a/.test(s[p[0]])&&s[p[0]]!=='XAY').length; const mn=Math.min(...sols.map(carriers)); return sols.filter(s=>carriers(s)===mn); }
+const fmt=g=>g.replace(/X([Aa])/g,'X<sup>$1</sup>');
+const fmtS=g=>g.replace(/X([Aa])/g,'X<tspan baseline-shift="super" font-size="9">$1</tspan>');
+let ci, cs, sols, truth, chosen, sel, tests, revealed, phase, tries, score, modeT, wrong;
+function startGame(){ ci=0; score=0; $('#startOv').hidden=true; $('#overOv').hidden=true; load(); }
+function load(){ cs=CASES[ci]; sols=solve(cs,cs.mode,null); truth=pick0(sols); revealed={}; chosen={}; sel=null; tests=2; tries=0; wrong=new Set(); modeT=0; phase=cs.given?'geno':'mode'; render(); }
+function pick0(a){ return a[Math.floor(Math.random()*a.length)]; }
+function possible(id){ const fx={...revealed}; const S=solve(cs,cs.mode,fx); return [...new Set(S.map(s=>s[id]))]; }
+function answerOf(id){ const p=possible(id); return p.length===1?p[0]:'?'; }
+function symbol(p){ const [id,sex,aff,gen,x]=p, y=40+gen*120, on=sel===id, g=chosen[id], bad=wrong.has(id), rev=revealed[id];
+  const sh=sex==='M'?`<rect x="${x-18}" y="${y-18}" width="36" height="36" fill="${aff?'#1e293b':'#fff'}" stroke="${on?'#facc15':'#1e293b'}" stroke-width="${on?4:2}"/>`:`<circle cx="${x}" cy="${y}" r="18" fill="${aff?'#1e293b':'#fff'}" stroke="${on?'#facc15':'#1e293b'}" stroke-width="${on?4:2}"/>`;
+  return `<g class="pp" data-id="${id}" style="cursor:pointer">${sh}<text x="${x+24}" y="${y-12}" font-size="11" fill="#64748b">${id.replace(/(I+)(\d)/,'$1-$2')}</text><text x="${x}" y="${y+36}" font-size="13" font-weight="700" text-anchor="middle" fill="${bad?'#dc2626':rev?'#7c3aed':'#0f172a'}">${rev?fmtS(rev)+' 🧪':g?(g==='?'?'can\'t tell':fmtS(g)):''}</text></g>`; }
+function tree(){ const P=cs.P, at=id=>P.find(p=>p[0]===id), Y=g=>40+g*120; let s=`<svg viewBox="0 0 580 ${Y(2)+60}" width="100%" style="max-width:640px;background:#f8fafc;border-radius:12px" role="img" aria-label="pedigree">`;
+  cs.C.forEach(([a,b,ch])=>{ const A=at(a),B=at(b), y=Y(A[3]), mx=(A[4]+B[4])/2; s+=`<line x1="${A[4]}" y1="${y}" x2="${B[4]}" y2="${y}" stroke="#334155" stroke-width="2"/>`; const xs=ch.map(c=>at(c)[4]), sy=y+60; s+=`<line x1="${mx}" y1="${y}" x2="${mx}" y2="${sy}" stroke="#334155" stroke-width="2"/><line x1="${Math.min(mx,...xs)}" y1="${sy}" x2="${Math.max(mx,...xs)}" y2="${sy}" stroke="#334155" stroke-width="2"/>`; xs.forEach(x=>s+=`<line x1="${x}" y1="${sy}" x2="${x}" y2="${sy+42}" stroke="#334155" stroke-width="2"/>`); });
+  P.forEach(p=>s+=symbol(p)); return s+'</svg>'; }
+function render(){ const M=cs.mode; const filled=cs.P.every(p=>chosen[p[0]]||revealed[p[0]]);
+  const sp=sel?cs.P.find(p=>p[0]===sel):null;
+  $('#app').innerHTML=`<div class="status"><span>Case <b>${ci+1} of ${CASES.length}</b>: ${cs.title}</span><span>Score <b>${score}</b></span><span>DNA tests left <b>${tests}</b></span></div>
+   <div class="ocard small">Trait: <b>${cs.trait}</b>. Shaded = has the trait. Squares are males, circles are females. ${phase==='mode'?'':`Inheritance: <b>${MODES[M]}</b>.`} Assume people who married into the family do not carry the allele, unless the pedigree proves they must.</div>
+   <div class="grid2" style="margin-top:8px"><div>${tree()}</div><div>
+   ${phase==='mode'?`<div class="panel"><b>First: how is this trait inherited?</b><div class="opts" style="margin-top:6px">${Object.entries(MODES).map(([k,v])=>`<button type="button" class="opt" data-m="${k}">${v}</button>`).join('')}</div><div id="mfb"></div></div>`:
+   `<div class="panel">${sp?`<b>Person ${sp[0].replace(/(I+)(\d)/,'$1-$2')}</b> (${sp[1]==='M'?'male':'female'}, ${sp[2]?'has the trait':'does not have the trait'})${revealed[sel]?`<p class="small">DNA test result: <b>${fmt(revealed[sel])}</b></p>`:`<div class="chipsrow" style="margin-top:6px">${GT(M,sp[1]).map(g=>`<button type="button" class="btn sm${chosen[sel]===g?' on':''}" data-g="${g}" ${phase!=='geno'?'disabled':''}>${fmt(g)}</button>`).join('')}<button type="button" class="btn sm${chosen[sel]==='?'?' on':''}" data-g="?" ${phase!=='geno'?'disabled':''}>Can't tell</button></div>
+     <div class="row"><button type="button" class="btn sm" id="testB" ${tests<=0||phase!=='geno'?'disabled':''}>🧪 Use a DNA test on this person</button></div>`}`:'<p class="small muted" style="margin:0">Tap a person in the family tree. Choose their genotype, or "Can\'t tell" if more than one genotype fits the evidence.</p>'}</div>
+   <div class="row"><button type="button" class="btn primary" id="subB" ${!filled||phase!=='geno'?'disabled':''}>Check the family</button><span class="small muted">${cs.P.filter(p=>chosen[p[0]]||revealed[p[0]]).length} of ${cs.P.length} done</span></div><div id="gfb">${phase==='done'?doneHTML():''}</div>`}
+   </div></div>`;
+  $$('.pp').forEach(g=>g.addEventListener('click',()=>{ sel=g.dataset.id; render(); }));
+  $$('[data-m]').forEach(b=>b.addEventListener('click',()=>pickMode(b.dataset.m)));
+  $$('[data-g]').forEach(b=>b.addEventListener('click',()=>{ chosen[sel]=b.dataset.g; wrong.delete(sel); render(); }));
+  const t=$('#testB'); if(t) t.addEventListener('click',()=>{ tests--; revealed[sel]=truth[sel]; delete chosen[sel]; render(); });
+  const sb=$('#subB'); if(sb) sb.addEventListener('click',submit); const nb=$('#nextC'); if(nb) nb.addEventListener('click',()=>{ ci++; if(ci>=CASES.length) finish(); else load(); }); }
+function pickMode(m){ modeT++; const ok=m===cs.mode;
+  if(ok||modeT>=2){ if(ok) score+=modeT===1?30:15; phase='geno'; render(); $('#gfb').innerHTML=`<div class="fb ${ok?'ok':'no'}">${ok?`<b>Correct! +${modeT===1?30:15}</b>`:'Not this time.'} It is <b>${MODES[cs.mode]}</b>. ${whyMode()}</div>`; return; }
+  $('#mfb').innerHTML=`<div class="fb no">That pattern doesn't fit this family. ${m==='AD'?'With a dominant trait, every affected child has an affected parent.':m==='XR'?'Check the daughters: an affected daughter needs an affected father for an X-linked recessive trait.':'For a recessive trait, both parents of an affected child must carry the allele. Check the married-in parents.'} One more try.</div>`; }
+function whyMode(){ return cs.mode==='AR'?'Two unaffected parents had an affected daughter, so both parents are carriers. It can\'t be dominant (no affected parent) or X-linked (her father is unaffected).':'Only males have it, and it passed from an affected grandfather through his unaffected daughter (a carrier) to her son. Autosomal recessive would require the married-in father to be a carrier too.'; }
+function submit(){ tries++; wrong=new Set(); let right=0; cs.P.forEach(p=>{ if(revealed[p[0]]) return; if(chosen[p[0]]===answerOf(p[0])) right++; else wrong.add(p[0]); });
+  const n=cs.P.filter(p=>!revealed[p[0]]).length;
+  if(!wrong.size||tries>=2){ const pts=right*(tries===1?10:5)+tests*10; score+=pts; phase='done'; if(wrong.size){ cs.P.forEach(p=>{ if(!revealed[p[0]]) chosen[p[0]]=answerOf(p[0]); }); }
+    render(); return; }
+  render(); $('#gfb').innerHTML=`<div class="fb no">${right} of ${n} correct. The red ones need another look. Ask: what must each parent have given this person? What must this person have passed to their children? You have one more check.</div>`; }
+let lastPts=0;
+function doneHTML(){ return `<div class="fb ${wrong.size?'no':'ok'}">${wrong.size?'Here are the correct genotypes (the ones you missed were in red).':'<b>Every genotype correct!</b>'} ${tests?`Unused DNA tests: +${tests*10}.`:''} "Can't tell" people could have more than one genotype; only a DNA test would show which.</div><div class="row"><button type="button" class="btn primary" id="nextC">${ci+1<CASES.length?'Next family':'See results'}</button></div>`; }
+function finish(){ const nh=saveHi(score); over('All families solved!',`<p style="font-size:18px;margin:4px 0">Score: <b>${score}</b>${nh?' <span style="color:var(--gold)">New high score!</span>':''}</p><p class="small"><b>Clues to remember:</b> Recessive traits can skip generations, and two unaffected parents can have an affected child (both are <b>carriers</b>). Dominant traits do not skip: every affected person has an affected parent. X-linked recessive traits show up mostly in males, and pass from a carrier mother to her sons.</p>`); }
+$('#startBtn').addEventListener('click',startGame); $('#againBtn').addEventListener('click',startGame);
+GAME.onPause=()=>{}; GAME.onResume=()=>{};
+GAME.teacherHTML=()=>`<p class="small muted">Practice game, not graded.</p><h3>How it works</h3><p class="small">Five families. In the first three the inheritance pattern is given; in the last two students must identify it first (2 tries). Students assign every person's genotype or "can't tell." The game works out the right answer by checking every genotype combination that fits the pedigree, assuming married-in people are not carriers unless they must be. Two DNA tests per family reveal one person's real genotype (picked from the possibilities), which can turn other "can't tell" people into known ones. Two checks per family; unused tests earn 10 points each. This game complements the Pedigree Detective activity.</p><h3>Families</h3><ul class="small">${CASES.map(c=>`<li>${c.title}: ${MODES[c.mode]} (${c.trait})</li>`).join('')}</ul>`;
+GAME.printHTML=()=>`<h1>Carrier Hunt notes</h1>${CASES.map(c=>`<h3>${c.title} (${c.trait})</h3><p>Pattern: ____________ &nbsp; Carriers I found: ____________________________</p>`).join('')}`;
+window.__car={get cs(){return cs;},get phase(){return phase;},answerOf,pickMode,setPick:(id,g)=>{chosen[id]=g;},submit,render,get score(){return score;},solve,CASES};
+
+</script>
+
+
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

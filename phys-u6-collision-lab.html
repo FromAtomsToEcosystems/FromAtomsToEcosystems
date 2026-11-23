@@ -276,12 +276,13 @@ body.key .keyonly{display:block!important}
 .opt svg{width:100%;max-width:160px;height:auto;display:block}
 @media (max-width:700px){.opts:has(svg){grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
+<style id="nolock">#tEndLock,#endLockBtn,#unlockInfo{display:none!important}</style>
 </head>
 <body>
 <div class="preview-bar" id="previewBar" hidden>Preview mode: nothing is saved or sent. Reload the page to leave preview mode.</div>
 <header class="top">
   <div class="top-in">
-    <div class="brand"><b>Second Law Calculations and Multistep Problems: Worksheet</b><span>Physics · Unit 6: Momentum &amp; Collisions</span></div>
+    <div class="brand"><b>Collision Lab: Is Momentum Conserved?</b><span>Physics · Unit 6: Momentum &amp; Collisions</span></div>
     <div class="top-tools">
       <span class="savenote" id="saveNote" aria-live="polite"></span>
       <button class="btn small" id="eqBtn" type="button">Equations</button> <button class="btn small" id="calcBtn" type="button">Calculator</button>
@@ -429,9 +430,10 @@ body.key .keyonly{display:block!important}
    ========================================================= */
 const LESSON = "Collision Lab: Is Momentum Conserved?";
 const LESSON_ID = 'phys-u6-collision-lab-worksheet';
+function __ord(seed, arr) { let h = 2166136261; for (const ch of String(seed)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } const idx = arr.map((_, i) => i); for (let i = idx.length - 1; i > 0; i--) { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; const j = (h >>> 0) % (i + 1); [idx[i], idx[j]] = [idx[j], idx[i]]; } return idx; }
 const KEY = 'fate_phys_u6_collision_lab_ws_v1';
 const RECS = KEY + '_records';
-const UNLOCK_CODE = 'cartlab';           // last word of the lesson title: unlocks the lockdown screen only
+const UNLOCK_CODE = 'conserved';           // last word of the lesson title: unlocks the lockdown screen only
 const TEACHER_CODE = 'teacher007';        // opens the teacher tools only
 const isTeacherCode = v => String(v || '').trim().toLowerCase() === TEACHER_CODE.toLowerCase();
 const G = 9.8;                            // a_y = -9.8 m/s^2 (up is positive)
@@ -450,7 +452,7 @@ function saveURL() {
   return SAVE_URL_BUILTIN;
 }
 const CLOUD = () => !!saveURL() && /^https?:/.test(location.protocol);
-const LOCK_ON = /github\.io$/i.test(location.hostname) || new URLSearchParams(location.search).has('lockdown');
+const LOCK_ON = false; // lockdown is used on tests only
 const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* =========================================================
@@ -481,7 +483,7 @@ const subs = s => String(s).replace(/\b([vDa])_(ix|iy|fy|fx|x|y)\b/g, (m, b, s2)
 function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toast.T); toast.T = setTimeout(() => el.classList.remove('show'), 2600); }
 function parseNum(s) {
   s = String(s || '').trim().replace(/[−–—]/g, '-').replace(/,/g, '');
-  s = s.replace(/\s*[x×*·]\s*10\s*\^\s*\(?\s*([+-]?\d+)\s*\)?/i, 'e$1');
+  s = s.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺]+/g, m => '^' + [...m].map(ch => ch === '⁻' ? '-' : ch === '⁺' ? '+' : '⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(ch)).join('')).replace(/\s*[x×*·]\s*10\s*\^\s*\(?\s*([+-]?\d+)\s*\)?/i, 'e$1');
   const m = s.match(/-?\d*\.?\d+(e[+-]?\d+)?/i); if (!m) return NaN; return parseFloat(m[0]);
 }
 function close(ans, v, tol) { if (!isFinite(v)) return false; const t = tol != null ? tol : Math.max(0.051, Math.abs(ans) * 0.02); return Math.abs(v - ans) <= t + 1e-9; }
@@ -759,8 +761,8 @@ const QC = {};
 function qcHTML(n, k, q) {
   const id = `s${n}${k}`; QC[id] = Object.assign({ n, k }, q);
   return `<div class="qcwrap" id="qc-${id}"><p><b>${n === 4 ? 'Question ' + k.slice(1) : 'Part d'}.</b> ${q.q}</p>${q.fig || ''}
-    <div class="opts">${q.opts.map((o, i) => `<button type="button" class="opt" data-qc="${id}" data-i="${i}"><span class="L">${LET[i]}</span><span>${o}</span></button>`).join('')}</div>
-    <p class="fb" data-fb></p><div class="keyonly keytag">Answer: ${LET[q.a]}</div></div>`;
+    <div class="opts">${__ord(LESSON_ID + id, q.opts).map((i, pos) => `<button type="button" class="opt" data-qc="${id}" data-i="${i}"><span class="L">${LET[pos]}</span><span>${q.opts[i]}</span></button>`).join('')}</div>
+    <p class="fb" data-fb></p><div class="keyonly keytag">Answer: ${LET[__ord(LESSON_ID + id, q.opts).indexOf(q.a)]}</div></div>`;
 }
 function qcCard(n, a, b) { return `<div class="card"><span class="chip qc">Quick check</span>${qcHTML(n, 'q1', a)}${qcHTML(n, 'q2', b)}</div>`; }
 function paintQC(id) {
@@ -872,7 +874,7 @@ const CIRC = ["", "①", "②", "③", "④", "⑤", "⑥", "⑦"];
 const NEQ = 7;
 const eqText = i => CIRC[i] + ' ' + EQS[i].map(t => VAR[t] ? vplain(t) : t).join(' ').replace(/ ²/g, '²').replace(/ ·/g, '·').replace(/· /g, '·');
 const eqHTML = i => `<b style="color:var(--amber)">${CIRC[i]}</b> ` + EQS[i].map(t => VAR[t] ? vlab(t) : t).join(' ').replace(/ ²/g, '²').replace(/ · /g, '·').replace(/ ?½· /g, ' ½').replace(/½·\( /g, '½(').replace(/ \)· /g, ')').replace(/tan⁻¹\( /g, 'tan⁻¹(').replace(/ \)$/, ')').replace(/ 2· /g, ' 2');
-const ALL_EQ = `<div class="eqbox"><div class="cap">Net force: right and up are positive; left and down are negative</div>${[1, 2, 3, 4].map(i => `<div class="eq">${eqHTML(i)}</div>`).join('')}<div class="cap" style="margin-top:8px">Newton\u2019s second law (mass in kg)</div><div class="eq">${eqHTML(5)}</div><div class="cap" style="margin-top:8px">Lab equations</div>${[6, 7].map(i => `<div class="eq">${eqHTML(i)}</div>`).join('')}</div>`;
+const ALL_EQ = `<div class="eqbox"><div class="cap">Lab equations</div>${[6, 7].map(i => `<div class="eq">${eqHTML(i)}</div>`).join('')}</div>`;
 function initEquations() {
   $('#eqBody').innerHTML = ALL_EQ; const st = document.getElementById('eqStart'); if (st) st.innerHTML = '<h3 style="margin-top:14px">Equations</h3>' + ALL_EQ;
   $('#eqBtn').addEventListener('click', () => { $('#eqPanel').hidden = !$('#eqPanel').hidden; }); $('#eqClose').addEventListener('click', () => { $('#eqPanel').hidden = true; });
@@ -884,12 +886,12 @@ const WS = () => (S.ws = S.ws || {});
 const nearV = (v, a, tol) => isFinite(v) && Math.abs(v - a) <= (tol != null ? tol : Math.max(0.051, Math.abs(a) * 0.02)) + 1e-9;
 function partHTML(it) {
   const st = WS()[it.id] || {}, L = `<span class="plabel">${it.label})</span>`, done = st.done;
-  if (it.type === 'mc') return `<div class="qpart" id="it-${it.id}">${L}${it.q}<div class="opts">${it.opts.map((o, i) => `<button type="button" class="opt ${done && i === it.a ? 'right' : ''}" data-mc="${it.id}" data-i="${i}" ${done ? 'disabled' : ''}><span class="L">${'ABCD'[i]}</span><span>${o}</span></button>`).join('')}</div><p class="wsfb ${done ? 'ok' : ''}" data-fb>${done ? 'Correct. ' + it.why : ''}</p><div class="keyonly keytag">Answer: ${'ABCD'[it.a]}</div></div>`;
+  if (it.type === 'mc') return `<div class="qpart" id="it-${it.id}">${L}${it.q}<div class="opts">${__ord(LESSON_ID + it.id, it.opts).map((i, pos) => `<button type="button" class="opt ${done && i === it.a ? 'right' : ''}" data-mc="${it.id}" data-i="${i}" ${done ? 'disabled' : ''}><span class="L">${'ABCD'[pos]}</span><span>${it.opts[i]}</span></button>`).join('')}</div><p class="wsfb ${done ? 'ok' : ''}" data-fb>${done ? 'Correct. ' + it.why : ''}</p><div class="keyonly keytag">Answer: ${'ABCD'[__ord(LESSON_ID + it.id, it.opts).indexOf(it.a)]}</div></div>`;
   if (it.type === 'num') return `<div class="qpart" id="it-${it.id}">${L}${it.q}<div class="row" style="margin-top:6px"><input class="ansin ${done ? 'right' : ''}" data-num="${it.id}" value="${esc(st.v || '')}" inputmode="decimal" autocomplete="off" aria-label="answer" ${done ? 'readonly' : ''}><span class="muted">${it.unit}</span><button class="btn small" type="button" data-chk="${it.id}" ${done ? 'disabled' : ''}>Check</button></div><p class="wsfb ${done ? 'ok' : ''}" data-fb>${done ? 'Correct.' : ''}</p>${done ? `<div class="wsol">${it.sol}</div>` : ''}<div class="keyonly keytag">Answer: ${it.show} ${it.unit}</div></div>`;
   // solve-it
   const eq = st.eq || '';
   return `<div class="qpart" id="it-${it.id}">${L}${it.q}<div class="solve">
-    <div class="st"><b>1. Pick the equation</b><div class="eqpick" data-eqpick="${it.id}">${Array.from({ length: NEQ }, (_, k) => k + 1).map(i => `<button type="button" class="eqbtn ${+eq === i ? 'on' : ''} ${done && +eq === i ? 'right' : ''}" data-pick="${it.id}" data-i="${i}" ${done ? 'disabled' : ''} aria-pressed="${+eq === i}">${eqHTML(i)}</button>`).join('')}</div></div>
+    <div class="st"><b>1. Pick the equation</b><div class="eqpick" data-eqpick="${it.id}">${Array.from({ length: NEQ - 5 }, (_, k) => k + 6).map(i => `<button type="button" class="eqbtn ${+eq === i ? 'on' : ''} ${done && +eq === i ? 'right' : ''}" data-pick="${it.id}" data-i="${i}" ${done ? 'disabled' : ''} aria-pressed="${+eq === i}">${eqHTML(i)}</button>`).join('')}</div></div>
     <div class="st"><b>2. Replace the letters with numbers</b><div class="eqline" data-line="${it.id}">${eq ? lineHTML(it, +eq, st.subs || {}, done) : '<span class="muted" style="font-size:.86rem">Pick an equation first.</span>'}</div></div>
     <div class="st"><b>3. Solve</b><div class="row">${it.tlabel || vlab(it.target)} = <input class="ansin ${done ? 'right' : ''}" data-ans="${it.id}" value="${esc(st.ans || '')}" inputmode="decimal" autocomplete="off" aria-label="answer" ${done ? 'readonly' : ''}> <span class="muted">${it.unit}</span><button class="btn small" type="button" data-chk="${it.id}" ${done ? 'disabled' : ''}>Check</button></div></div>
     <p class="wsfb ${done ? 'ok' : ''}" data-fb>${done ? 'Correct!' : ''}</p>${done ? `<div class="wsol">${solText(it)}</div>` : ''}
@@ -1374,6 +1376,14 @@ initEquations(); heroFig(); buildAll(); renderStart(); showNote();
 go(0);
 if (S.student && S.locked && lockLive()) showLock();
 })();
+</script>
+<script>/* sandbox-safe sign-in: works even where form submissions are blocked (e.g., previews) */
+(function () { document.querySelectorAll('#startForm, #signForm').forEach(f => {
+  const go = () => f.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+  f.requestSubmit = go;
+  f.querySelectorAll('button[type="submit"]').forEach(b => { b.type = 'button'; b.addEventListener('click', go); });
+  f.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName === 'INPUT') { e.preventDefault(); go(); } });
+}); })();
 </script>
 </body>
 </html>

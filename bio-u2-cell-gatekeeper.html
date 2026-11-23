@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cell Gatekeeper | Biology</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1220;--panel:#121c31;--panel2:#18243d;--line:#2b3a58;--text:#e8eefc;--muted:#9fb0cf;--gold:#facc15;--gold2:#fbbf24;--ok:#34d399;--bad:#f87171;--violet:#a78bfa}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 "Atkinson Hyperlegible",Arial,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:#0e172a}
+header .t{font-weight:800;font-size:17px}
+header .s{color:var(--muted);font-size:13px}
+header .sp{flex:1}
+.btn{font:inherit;font-weight:700;border-radius:10px;padding:9px 16px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--gold);color:#1a1300;border-color:var(--gold)}
+.btn:disabled{opacity:.5;cursor:default}
+main{max-width:1000px;margin:0 auto;padding:14px 16px 30px}
+.stage{position:relative;width:100%;aspect-ratio:16/10;background:#050a14;border:1px solid var(--line);border-radius:14px;overflow:hidden;touch-action:none}
+canvas{display:block;width:100%;height:100%}
+.ov{position:absolute;inset:0;display:flex;background:rgba(5,10,20,.78);padding:14px;overflow:auto}
+.ov>.card{margin:auto}
+#teachOv{position:fixed;z-index:60;background:rgba(5,10,20,.94)}
+.ov[hidden]{display:none}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;max-width:640px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.card h2{margin:0 0 6px;font-size:22px}
+.card h3{margin:12px 0 6px;font-size:15px;color:var(--gold)}
+.muted{color:var(--muted)} .small{font-size:13.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chip{font:inherit;font-size:14px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.chip.on{border-color:var(--gold);background:rgba(250,204,21,.16);font-weight:700}
+.qtag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--violet);margin-bottom:4px}
+.qtext{font-size:18px;margin:4px 0 12px}
+.opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:15.5px}
+.opt:hover:not(:disabled){border-color:var(--gold)}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:13px;font-weight:800}
+.opt.pick{border-color:var(--gold)}
+.fb{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:15.5px}
+.fb.ok{background:rgba(52,211,153,.14);border:1px solid rgba(52,211,153,.5)}
+.fb.no{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.45)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:14px;margin:6px 0}
+.keys b{color:var(--gold)}
+.ladder{display:flex;flex-wrap:wrap;gap:6px;font-size:13px;margin-top:6px}
+.ladder span{padding:3px 8px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}
+.touch{display:none;gap:10px;justify-content:space-between;margin-top:10px;user-select:none;-webkit-user-select:none}
+.touch .grp{display:flex;gap:10px}
+.tbtn{width:64px;height:58px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:22px;font-weight:800;touch-action:none}
+.tbtn.fire{width:110px;background:#3b2a07;border-color:var(--gold);color:var(--gold);font-size:17px}
+.tbtn.on{background:#334155}
+@media (pointer:coarse){.touch{display:flex}}
+@media (max-width:480px){.tbtn{width:52px;height:54px;font-size:20px}.tbtn.fire{width:86px}.touch .grp{gap:7px}.touch{gap:6px}}
+@media (max-width:760px),(max-height:560px){.ov{position:fixed;z-index:50;background:rgba(5,10,20,.92)}}
+body.showtouch .touch{display:flex}
+.info{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:14px;color:var(--muted)}
+.tpanel h3{margin-top:14px}
+.tq{margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font-size:14px}
+.tq ol{margin:4px 0 0;padding-left:22px}
+.tq li.right{color:var(--ok);font-weight:700}
+input.code{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0b1220;color:var(--text);width:180px}
+#printView{display:none}
+@media print{
+  body>*:not(#printView){display:none!important}
+  #printView{display:block!important;color:#000;background:#fff;font:12px/1.4 Arial,sans-serif}
+  #printView h1{font-size:18px;margin:0 0 4px} #printView .pq{break-inside:avoid;margin:8px 0}
+  #printView ol{margin:2px 0 0;padding-left:22px} #printView li.right{font-weight:700;text-decoration:underline}
+  html,body{background:#fff}
+}
+
+.methods{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}@media (max-width:640px){.methods{grid-template-columns:1fr 1fr}}.mbtn{font:inherit;text-align:left;display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:14px;line-height:1.3}.mbtn:hover{border-color:var(--gold)}.mbtn .k{flex:none;width:22px;height:22px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:12px;font-weight:800}table.ktab{border-collapse:collapse;font-size:13px;width:100%}table.ktab td,table.ktab th{border:1px solid var(--line);padding:4px 6px;text-align:left}</style>
+</head>
+<body>
+<header>
+  <div><div class="t">Cell Gatekeeper</div><div class="s">Biology · Unit 2: Cell Transport, Photosynthesis, and Cellular Respiration · Review game</div></div>
+  <div class="sp"></div>
+  <button class="btn" id="teachBtn" type="button">Teacher</button>
+</header>
+<main>
+  <div class="stage" id="stage">
+    <canvas id="cv" width="960" height="600" aria-label="Cell Gatekeeper game. Choose how each molecule crosses the membrane with keys 1 to 6."></canvas>
+    <div class="ov" id="startOv"><div class="card"><h2>Cell Gatekeeper</h2><p class="small muted" style="margin:0 0 8px">You control a cell membrane. Molecules drift toward it from outside (top) and inside (bottom). For the highlighted one, choose <b>how it crosses</b> before it gets stuck. The small copies on each side show where there is <b>more</b> of it.</p><div class="small" id="legend" style="line-height:1.55"></div><p class="small muted">Active transport, endocytosis, and exocytosis cost <b>ATP</b>. Bringing in glucose, oxygen, and food makes more ATP (cellular respiration). Wrong choice or a stuck molecule = lose a heart.</p><div class="keys"><b>1 to 6</b><span>choose a method (or tap the buttons under the game)</span><b>P</b><span>pause</span></div><div class="row"><button class="btn primary" id="startBtn" type="button">Start</button><span class="small muted" id="hiTxt"></span></div></div></div>
+    <div class="ov" id="overOv" hidden><div class="card"><h2>Game over</h2><div id="overBody"></div><div class="row"><button class="btn primary" id="againBtn" type="button">Play again</button><button class="btn" id="menuBtn" type="button">Main menu</button></div></div></div>
+
+    <div class="ov" id="pauseOv" hidden><div class="card" style="max-width:380px;text-align:center"><h2>Paused</h2><p class="muted">Press P or the button to keep playing.</p><button class="btn primary" id="resumeBtn" type="button">Resume</button></div></div>
+  </div>
+  <div class="methods" id="methods"></div>
+  <div class="touch" id="touch"><div class="grp"><button class="tbtn" data-k="pause" type="button" aria-label="Pause">II</button></div></div>
+
+</main>
+<div class="ov" id="teachOv" hidden>
+  <div class="card tpanel" style="max-width:780px">
+    <h2>Teacher tools</h2>
+    <div id="tLogin"><p class="small muted">Enter the teacher code.</p><div class="row" style="margin-top:4px"><input class="code" id="tCode" type="password" autocomplete="off" aria-label="Teacher code"><button class="btn primary" id="tGo" type="button">Open</button><button class="btn" id="tClose0" type="button">Close</button></div><div class="small" id="tMsg" style="color:var(--bad);margin-top:6px"></div></div>
+    <div id="tBody" hidden>
+      <div class="row"><button class="btn" id="tPrint" type="button">🖨 Print the reference sheet</button><button class="btn" id="tTouch" type="button">Show touch buttons</button><button class="btn" id="tClose" type="button">Close</button></div>
+      <div id="tInfo"></div>
+    </div>
+  </div>
+</div>
+<div id="printView"></div>
+<script>
+const META={"store": "bioU2CellGatekeeper", "unit": 2};
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const store={ get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+const shuffle=a=>{ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const rnd=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const GAME={onPause:()=>{}, onResume:()=>{}, teacherHTML:()=>'', printHTML:()=>''};
+/* teacher tools (code Teacher007) */
+function tShow(on){ $('#teachOv').hidden=!on; if(on){ GAME.onPause(); $('#tCode').value=''; $('#tMsg').textContent=''; setTimeout(()=>$('#tCode').focus(),30); } }
+$('#teachBtn').addEventListener('click',()=>tShow(true)); $('#tClose0').addEventListener('click',()=>tShow(false));
+$('#tClose').addEventListener('click',()=>{ tShow(false); $('#tBody').hidden=true; $('#tLogin').hidden=false; });
+function tOpen(){ if($('#tCode').value.trim().toLowerCase()!=='teacher007'){ $('#tMsg').textContent='Code not recognized.'; return; } $('#tLogin').hidden=true; $('#tBody').hidden=false; $('#tInfo').innerHTML=GAME.teacherHTML(); }
+$('#tGo').addEventListener('click',tOpen); $('#tCode').addEventListener('keydown',e=>{ if(e.key==='Enter') tOpen(); });
+$('#tTouch').addEventListener('click',()=>document.body.classList.toggle('showtouch'));
+$('#tPrint').addEventListener('click',()=>{ $('#printView').innerHTML=GAME.printHTML(); setTimeout(()=>window.print(),100); });
+$('#resumeBtn').addEventListener('click',()=>GAME.onResume());
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) GAME.onPause(); });
+/* ===================== CELL GATEKEEPER ===================== */
+const cv=$('#cv'), ctx=cv.getContext('2d'); const W=960,H=600, MY=300, MT=30; // membrane center and half-thickness
+const METHODS=[
+ {k:'dif', n:'Diffusion', s:'straight through the membrane, high → low'},
+ {k:'osm', n:'Osmosis', s:'water, through the membrane'},
+ {k:'fac', n:'Facilitated diffusion', s:'transport protein, high → low, no ATP'},
+ {k:'act', n:'Active transport', s:'transport protein + ATP, low → high'},
+ {k:'endo', n:'Endocytosis', s:'membrane wraps around something big to bring it in (ATP)'},
+ {k:'exo', n:'Exocytosis', s:'a vesicle joins the membrane to send something out (ATP)'}];
+const MN=Object.fromEntries(METHODS.map(m=>[m.k,m.n]));
+/* each card: what it is, where it starts, where it goes, and the concentration cue (dots) */
+const CARDS=[
+ {id:'o2', name:'O₂', draw:'o2', from:'out', hi:'out', m:'dif', why:'O₂ is small, so it slips right through the membrane from high to low. That is diffusion.', atp:2},
+ {id:'co2', name:'CO₂', draw:'co2', from:'in', hi:'in', m:'dif', why:'CO₂ is a small waste gas. It diffuses out from high (inside) to low (outside).'},
+ {id:'wIn', name:'water', draw:'h2o', from:'out', hi:'out', m:'osm', why:'There is more water outside (the outside is hypotonic), so water moves in by osmosis.'},
+ {id:'wOut', name:'water', draw:'h2o', from:'in', hi:'in', m:'osm', why:'There is more water inside (the outside is salty, hypertonic), so water moves out by osmosis.'},
+ {id:'gluF', name:'glucose', draw:'glu', from:'out', hi:'out', m:'fac', why:'Glucose is too big to slip through, so it uses a transport protein. High to low needs no ATP: facilitated diffusion.', atp:4},
+ {id:'gluA', name:'glucose', draw:'glu', from:'out', hi:'in', m:'act', why:'The cell pulls glucose in even though there is already more inside: low to high takes a transport protein and ATP.', cost:1, atp:4},
+ {id:'naA', name:'Na⁺', draw:'na', from:'in', hi:'out', m:'act', why:'The cell pumps Na⁺ out to where there is already more: low to high is active transport.', cost:1},
+ {id:'kA', name:'K⁺', draw:'k', from:'out', hi:'in', m:'act', why:'The cell pumps K⁺ in to where there is already more: active transport with ATP.', cost:1},
+ {id:'naF', name:'Na⁺', draw:'na', from:'out', hi:'out', m:'fac', why:'Ions are charged, so they need a transport protein. High to low needs no ATP: facilitated diffusion.'},
+ {id:'kF', name:'K⁺', draw:'k', from:'in', hi:'in', m:'fac', why:'K⁺ flows out through a transport protein from high to low: facilitated diffusion.'},
+ {id:'bac', name:'bacterium', draw:'bac', from:'out', m:'endo', why:'A bacterium is far too big for a transport protein. The membrane wraps around it: endocytosis.', cost:1},
+ {id:'food', name:'food particle', draw:'food', from:'out', m:'endo', why:'A big food particle is brought in by endocytosis: the membrane folds around it.', cost:1, atp:3},
+ {id:'ins', name:'insulin (in a vesicle)', draw:'ves', from:'in', m:'exo', why:'Proteins like insulin leave in a vesicle that joins the membrane: exocytosis.', cost:1},
+ {id:'waste', name:'waste (in a vesicle)', draw:'vesw', from:'in', m:'exo', why:'A vesicle of waste joins the membrane and dumps it outside: exocytosis.', cost:1}];
+$('#methods').innerHTML=METHODS.map((m,i)=>`<button type="button" class="mbtn" data-m="${m.k}"><span class="k">${i+1}</span><span><b>${m.n}</b><br><span class="small muted">${m.s}</span></span></button>`).join('');
+$('#legend').innerHTML=METHODS.map((m,i)=>`<b>${i+1}.</b> ${m.n}: ${m.s}`).join('<br>');
+const HIKEY=META.store+'_hi'; function hiTxt(){ const h=+store.get(HIKEY)||0; $('#hiTxt').textContent=h?`High score on this Chromebook: ${h}`:''; } hiTxt();
+let state='menu', mols, parts, hearts, atp, score, streak, level, queue, spawnT, speed, right, tries, missed, msg, lastT, flash, active;
+const COLS=[150,310,480,650,810];
+function newLevel(){ queue=shuffle(CARDS.slice()).slice(0,8+Math.min(6,level*2)); if(level===1) queue=shuffle(queue); spawnT=0.5; msg={t:`Level ${level}`,until:performance.now()+1500}; }
+function spawn(){ const c=queue.shift(); const free=COLS.filter(x=>!mols.some(m=>!m.gone&&Math.abs(m.x-x)<60)); const x=free.length?pick(free):pick(COLS);
+  const y=c.from==='out'?100:H-70; mols.push({c,x,y,dir:c.from==='out'?1:-1,state:'come',t:0,tries:0,dots:makeDots(c,x)}); }
+function makeDots(c,x){ if(!c.hi) return []; const d=[]; const n={out:c.hi==='out'?12:3,in:c.hi==='in'?12:3};
+  for(const side of ['out','in']) for(let i=0;i<n[side];i++){ const y=side==='out'?rnd(150,MY-MT-16):rnd(MY+MT+16,H-110); d.push([x+rnd(-62,62),y]); } return d; }
+function startGame(){ state='play'; mols=[]; parts=[]; hearts=5; atp=6; score=0; streak=0; level=1; speed=30; right=0; tries=0; missed={}; flash=null; newLevel();
+  ['#startOv','#overOv','#pauseOv'].forEach(s=>$(s).hidden=true); fit(); lastT=performance.now(); requestAnimationFrame(loop); }
+function gameOver(){ state='over'; const hi=+store.get(HIKEY)||0; if(score>hi) store.set(HIKEY,score); const miss=Object.entries(missed).sort((a,b)=>b[1]-a[1]);
+  $('#overBody').innerHTML=`<p style="font-size:18px;margin:4px 0">Score: <b>${score}</b>${score>hi?' <span style="color:var(--gold)">New high score!</span>':''}</p><p class="muted" style="margin:2px 0">You reached level ${level}. Right on the first try: <b>${right} of ${tries}</b>.</p>`+
+   (miss.length?`<h3>Kinds of transport to review</h3><p class="small" style="margin:0">${miss.map(([k,n])=>`${MN[k]} (${n})`).join(' · ')}</p>`:'');
+  $('#overOv').hidden=false; hiTxt(); }
+GAME.onPause=()=>{ if(state==='play'){ state='paused'; $('#pauseOv').hidden=false; } };
+GAME.onResume=()=>{ if(state==='paused'){ state='play'; $('#pauseOv').hidden=true; lastT=performance.now(); requestAnimationFrame(loop); } };
+$('#startBtn').addEventListener('click',startGame); $('#againBtn').addEventListener('click',startGame);
+$('#menuBtn').addEventListener('click',()=>{ $('#overOv').hidden=true; $('#startOv').hidden=false; state='menu'; });
+function choose(k){ if(state!=='play'||!active) return; const m=active, c=m.c;
+  if(k===c.m){ if(c.cost&&atp<c.cost){ msg={t:'Out of ATP! Bring in glucose and O₂ (cellular respiration makes ATP).',until:performance.now()+2200}; flash={c:'rgba(250,204,21,.18)',until:performance.now()+300}; return; }
+    atp-=c.cost||0; if(c.atp) atp=Math.min(20,atp+c.atp); if(m.tries===0) right++; tries+=m.tries===0?1:0; streak++; score+=(m.tries===0?100:40)+Math.min(10,streak)*10;
+    m.state='go'; m.t=0; m.method=k; msg={t:c.why,until:performance.now()+3200,ok:true}; burst(m.x,MY,'#86efac',12); }
+  else { if(m.tries===0){ tries++; missed[c.m]=(missed[c.m]||0)+1; } m.tries++; streak=0; hearts--; flash={c:'rgba(248,113,113,.22)',until:performance.now()+300};
+    msg={t:'Not quite. Look at the size and the dots: which side has more?',until:performance.now()+2200}; burst(m.x,m.y,'#f87171',10); if(hearts<=0) gameOver(); } }
+$$('.mbtn').forEach(b=>b.addEventListener('click',()=>choose(b.dataset.m)));
+document.addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT') return; if(e.code==='KeyP'||e.code==='Escape'){ state==='play'?GAME.onPause():GAME.onResume(); return; }
+  const n=+e.key; if(n>=1&&n<=6&&state==='play'){ choose(METHODS[n-1].k); e.preventDefault(); } });
+let hudK=1; function fit(){ const r=cv.getBoundingClientRect(); if(r.width) hudK=Math.min(2,Math.max(1,560/r.width)); const d=Math.min(2,window.devicePixelRatio||1); const w=Math.round(r.width*d), h=Math.round(r.height*d); if(w&&h&&(cv.width!==w||cv.height!==h)){ cv.width=w; cv.height=h; } }
+window.addEventListener('resize',fit);
+function burst(x,y,col,n){ for(let i=0;i<n;i++){ const a=rnd(0,6.3),s=rnd(30,140); parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:rnd(.3,.7),col}); } }
+function loop(t){ if(state!=='play') return; const dt=Math.min(0.05,(t-lastT)/1000); lastT=t; update(dt); draw(); if(state==='play') requestAnimationFrame(loop); }
+function update(dt){
+  const live=mols.filter(m=>m.state==='come');
+  spawnT-=dt; if(queue.length&&spawnT<=0&&live.length<3){ spawn(); spawnT=Math.max(1.6,4.2-level*0.4); }
+  atp=Math.min(20,atp+dt*0.08);
+  mols.forEach(m=>{ m.t+=dt;
+    if(m.state==='come'){ m.y+=m.dir*speed*dt; const edge=m.dir>0?MY-MT-26:MY+MT+26; if((m.dir>0&&m.y>=edge)||(m.dir<0&&m.y<=edge)){ m.state='miss'; m.t=0; hearts--; if(m.tries===0){ tries++; missed[m.c.m]=(missed[m.c.m]||0)+1; } streak=0; flash={c:'rgba(248,113,113,.22)',until:performance.now()+300}; msg={t:`The ${m.c.name} got stuck at the membrane! −1 heart`,until:performance.now()+2000}; if(hearts<=0) gameOver(); } }
+    else if(m.state==='go'){ m.y+=m.dir*170*dt; if(m.t>1.6) m.gone=true; }
+    else if(m.state==='miss'){ m.y-=m.dir*60*dt; if(m.t>1.1) m.gone=true; } });
+  mols=mols.filter(m=>!m.gone);
+  const cand=mols.filter(m=>m.state==='come'); active=cand.sort((a,b)=>Math.abs(a.y-MY)-Math.abs(b.y-MY))[0]||null;
+  parts.forEach(p=>{ p.x+=p.vx*dt; p.y+=p.vy*dt; p.life-=dt; }); parts=parts.filter(p=>p.life>0);
+  if(!queue.length&&!mols.length&&state==='play'){ level++; speed*=1.14; score+=300; hearts=Math.min(5,hearts+1); newLevel(); }
+}
+/* ---------- drawing ---------- */
+const ball=(x,y,r,f,s)=>{ ctx.beginPath(); ctx.arc(x,y,r,0,6.3); ctx.fillStyle=f; ctx.fill(); if(s){ ctx.strokeStyle=s; ctx.lineWidth=1.5; ctx.stroke(); } };
+function shape(kind,x,y,sc){ sc=sc||1; ctx.save(); ctx.translate(x,y); ctx.scale(sc,sc);
+  if(kind==='o2'){ ball(-6,0,9,'#ef4444','#7f1d1d'); ball(6,0,9,'#ef4444','#7f1d1d'); }
+  else if(kind==='co2'){ ball(-13,0,8,'#ef4444','#7f1d1d'); ball(13,0,8,'#ef4444','#7f1d1d'); ball(0,0,10,'#374151','#111827'); }
+  else if(kind==='h2o'){ ball(0,0,10,'#ef4444','#7f1d1d'); ball(-9,8,6,'#f8fafc','#64748b'); ball(9,8,6,'#f8fafc','#64748b'); }
+  else if(kind==='glu'){ ctx.beginPath(); for(let i=0;i<6;i++){ const a=Math.PI/3*i+Math.PI/6; ctx.lineTo(Math.cos(a)*15,Math.sin(a)*15); } ctx.closePath(); ctx.fillStyle='#86efac'; ctx.fill(); ctx.strokeStyle='#166534'; ctx.lineWidth=2; ctx.stroke(); }
+  else if(kind==='na'||kind==='k'){ ball(0,0,12,kind==='na'?'#a78bfa':'#fb923c',kind==='na'?'#4c1d95':'#7c2d12'); if(sc>=0.8){ ctx.fillStyle='#0b1220'; ctx.font='bold 11px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(kind==='na'?'Na⁺':'K⁺',0,1); } }
+  else if(kind==='bac'){ ctx.beginPath(); ctx.moveTo(-26,0); ctx.quadraticCurveTo(-42,-6,-54,4); ctx.strokeStyle='#4d7c0f'; ctx.lineWidth=2; ctx.stroke(); ctx.beginPath(); ctx.ellipse(0,0,30,14,0,0,6.3); ctx.fillStyle='#84cc16'; ctx.fill(); ctx.strokeStyle='#365314'; ctx.stroke(); ball(-8,-2,3,'#3f6212'); ball(9,3,3,'#3f6212'); }
+  else if(kind==='food'){ ctx.beginPath(); for(let i=0;i<10;i++){ const a=i/10*6.3, r=24+(i%3)*4; ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r); } ctx.closePath(); ctx.fillStyle='#b45309'; ctx.fill(); ctx.strokeStyle='#78350f'; ctx.lineWidth=2; ctx.stroke(); }
+  else if(kind==='ves'||kind==='vesw'){ ball(0,0,24,'rgba(254,243,199,.25)','#fbbf24'); ctx.beginPath(); ctx.arc(0,0,19,0,6.3); ctx.strokeStyle='#fbbf24'; ctx.stroke();
+    for(let i=0;i<7;i++){ const a=i*0.9, r=i%2?9:4; ball(Math.cos(a)*r,Math.sin(a)*r,3.2,kind==='ves'?'#38bdf8':'#78716c'); } }
+  ctx.restore(); }
+function draw(){ const sx=cv.width/W, sy=cv.height/H; ctx.setTransform(sx,0,0,sy,0,0); const k=hudK;
+  let g=ctx.createLinearGradient(0,0,0,MY); g.addColorStop(0,'#0c2a4a'); g.addColorStop(1,'#123d63'); ctx.fillStyle=g; ctx.fillRect(0,0,W,MY);
+  g=ctx.createLinearGradient(0,MY,0,H); g.addColorStop(0,'#3b2a16'); g.addColorStop(1,'#2a1d10'); ctx.fillStyle=g; ctx.fillRect(0,MY,W,H-MY);
+  ctx.fillStyle='rgba(191,219,254,.75)'; ctx.font=`bold ${13*Math.min(k,1.4)}px Arial`; ctx.textAlign='left'; ctx.textBaseline='top'; ctx.fillText('OUTSIDE THE CELL',12,H*0+120);
+  ctx.fillStyle='rgba(253,230,138,.8)'; ctx.fillText('INSIDE THE CELL (cytoplasm)',12,H-140);
+  // concentration dots for each molecule still coming
+  mols.forEach(m=>{ if(m.state!=='come') return; m.dots.forEach(([x,y])=>shape(m.c.draw,x,y,0.6)); });
+  // phospholipid bilayer with transport proteins
+  for(let x=-4;x<W+10;x+=13){ ctx.strokeStyle='#e7c9a9'; ctx.lineWidth=1.6; ctx.beginPath(); ctx.moveTo(x,MY-MT+6); ctx.lineTo(x-2,MY-4); ctx.moveTo(x+3,MY-MT+6); ctx.lineTo(x+4,MY-4); ctx.moveTo(x,MY+MT-6); ctx.lineTo(x-2,MY+4); ctx.moveTo(x+3,MY+MT-6); ctx.lineTo(x+4,MY+4); ctx.stroke();
+    ball(x+1,MY-MT+4,6,'#f472b6','#9d174d'); ball(x+1,MY+MT-4,6,'#f472b6','#9d174d'); }
+  COLS.forEach(x=>{ [-1,1].forEach(s=>{ ctx.beginPath(); ctx.ellipse(x+s*15,MY,12,MT+10,0,0,6.3); ctx.fillStyle='#7c3aed'; ctx.fill(); ctx.strokeStyle='#3b0764'; ctx.lineWidth=2; ctx.stroke(); }); });
+  ctx.fillStyle='rgba(233,213,255,.85)'; ctx.font=`${11*Math.min(k,1.4)}px Arial`; ctx.textAlign='center'; ctx.fillText('transport protein',COLS[0],MY+MT+14);
+  // molecules
+  mols.forEach(m=>{ const isA=m===active; let a=1; if(m.state==='miss') a=Math.max(0,1-m.t/1.1); if(m.state==='go'&&m.t>1.1) a=Math.max(0,1-(m.t-1.1)/0.5); ctx.globalAlpha=a;
+    if(isA){ ctx.beginPath(); ctx.arc(m.x,m.y,40,0,6.3); ctx.strokeStyle='#facc15'; ctx.lineWidth=3; ctx.setLineDash([6,5]); ctx.stroke(); ctx.setLineDash([]); }
+    if(m.state==='go'&&(m.method==='endo'||m.method==='exo')){ ctx.beginPath(); ctx.arc(m.x,m.y,40,0,6.3); ctx.strokeStyle='#f472b6'; ctx.lineWidth=5; ctx.stroke(); }
+    shape(m.c.draw,m.x,m.y,1.25);
+    ctx.font=`bold ${13*Math.min(k,1.4)}px Arial`; ctx.textAlign='center'; ctx.textBaseline='middle'; const lbl=m.c.name; const tw=ctx.measureText(lbl).width;
+    const lx=m.x+(m.x>W-200?-(44+tw/2):44+tw/2), ly=m.y; ctx.fillStyle='rgba(5,10,20,.75)'; ctx.fillRect(lx-tw/2-6,ly-11,tw+12,22); ctx.fillStyle=isA?'#fde68a':'#e2e8f0'; ctx.fillText(lbl,lx,ly);
+    ctx.globalAlpha=1; });
+  parts.forEach(p=>{ ctx.globalAlpha=Math.max(0,Math.min(1,p.life*1.8)); ctx.fillStyle=p.col; ctx.fillRect(p.x-2,p.y-2,4,4); }); ctx.globalAlpha=1;
+  if(flash&&performance.now()<flash.until){ ctx.fillStyle=flash.c; ctx.fillRect(0,0,W,H); }
+  // HUD
+  ctx.fillStyle='rgba(5,10,20,.6)'; ctx.fillRect(6,6,250*k,52*k); ctx.fillRect(W-260*k-6,6,260*k,52*k);
+  ctx.textAlign='left'; ctx.textBaseline='top'; ctx.fillStyle='#e8eefc'; ctx.font=`bold ${17*k}px Arial`; ctx.fillText(`Score ${score}`,14,10);
+  ctx.font=`${13*k}px Arial`; ctx.fillStyle='#9fb0cf'; ctx.fillText(`Level ${level} · ${queue.length+mols.filter(m=>m.state==='come').length} left`,14,12+20*k);
+  ctx.textAlign='right'; ctx.font=`${18*k}px Arial`; ctx.fillStyle='#f87171'; ctx.fillText('♥'.repeat(Math.max(0,hearts)),W-14,10);
+  const bw=150*k, bx=W-14-bw, by=14+22*k; ctx.fillStyle='#1e293b'; ctx.fillRect(bx,by,bw,12*k); ctx.fillStyle='#facc15'; ctx.fillRect(bx,by,bw*Math.min(1,atp/20),12*k);
+  ctx.fillStyle='#fde68a'; ctx.font=`bold ${12*k}px Arial`; ctx.fillText(`ATP ${Math.floor(atp)}`,bx-8,by-1);
+  if(msg&&performance.now()<msg.until){ ctx.font=`bold ${15*Math.min(k,1.5)}px Arial`; ctx.textAlign='center'; ctx.textBaseline='middle';
+    const words=msg.t.split(' '), lines=[]; let cur=''; words.forEach(w=>{ if(ctx.measureText(cur+' '+w).width>W-120){ lines.push(cur); cur=w; } else cur=cur?cur+' '+w:w; }); lines.push(cur);
+    const lh=22*Math.min(k,1.5), y0=H-24-lines.length*lh; ctx.fillStyle='rgba(5,10,20,.85)'; ctx.fillRect(40,y0-6,W-80,lines.length*lh+12);
+    ctx.fillStyle=msg.ok?'#86efac':'#fde68a'; lines.forEach((l,i)=>ctx.fillText(l,W/2,y0+lh/2+i*lh)); }
+}
+(function idle(){ fit(); const sx=cv.width/W, sy=cv.height/H; ctx.setTransform(sx,0,0,sy,0,0); ctx.fillStyle='#0c2a4a'; ctx.fillRect(0,0,W,H); })();
+GAME.teacherHTML=()=>`<p class="small muted">Practice game, not graded. A wrong choice costs a heart but never shows the right answer; the same molecule stays until it is sent the right way or reaches the membrane.</p>
+ <h3>How it works</h3><p class="small">Molecules drift toward the membrane from outside (top) or inside (bottom). The small copies on each side show the concentration. Students choose how the highlighted molecule crosses (keys 1 to 6 or the buttons). Active transport, endocytosis, and exocytosis cost 1 ATP. Bringing in glucose, O₂, and food makes ATP (cellular respiration). Each level adds more molecules and speed.</p>
+ <h3>Answer key</h3><table class="ktab"><tr><th>Card</th><th>Concentration</th><th>Correct method</th></tr>${CARDS.map(c=>`<tr><td>${c.name} (${c.from==='out'?'from outside':'from inside'})</td><td>${c.hi?(c.hi==='out'?'more outside':'more inside'):'no gradient (big)'}</td><td><b>${MN[c.m]}</b></td></tr>`).join('')}</table>`;
+GAME.printHTML=()=>`<h1>How Things Cross the Cell Membrane</h1><table border="1" cellpadding="6" style="border-collapse:collapse;font-size:13px"><tr><th>Method</th><th>What moves</th><th>Direction</th><th>Transport protein?</th><th>ATP?</th></tr>
+ <tr><td>Diffusion</td><td>small particles (O₂, CO₂)</td><td>high → low</td><td>no</td><td>no</td></tr><tr><td>Osmosis</td><td>water</td><td>toward the side with less water (more solute)</td><td>no</td><td>no</td></tr>
+ <tr><td>Facilitated diffusion</td><td>glucose, ions</td><td>high → low</td><td>yes</td><td>no</td></tr><tr><td>Active transport</td><td>ions, glucose</td><td>low → high</td><td>yes</td><td>yes</td></tr>
+ <tr><td>Endocytosis</td><td>big things in (bacteria, food)</td><td>into the cell</td><td>no (membrane folds)</td><td>yes</td></tr><tr><td>Exocytosis</td><td>vesicles out (insulin, waste)</td><td>out of the cell</td><td>no (vesicle joins membrane)</td><td>yes</td></tr></table>`;
+window.__cell={get state(){return state;}, get hearts(){return hearts;}, get atp(){return atp;}, get score(){return score;}, get level(){return level;}, get right(){return right;}, get tries(){return tries;},
+  active:()=>active&&{id:active.c.id,m:active.c.m,cost:active.c.cost||0}, choose, setATP:v=>{ atp=v; }, rush:()=>{ mols.forEach(m=>{ if(m.state==='come') m.y=m.dir>0?MY-MT-40:MY+MT+40; }); spawnT=0; }, CARDS};
+
+$$('.tbtn').forEach(b=>b.addEventListener('pointerdown',e=>{ e.preventDefault(); state==='play'?GAME.onPause():GAME.onResume(); }));
+</script>
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

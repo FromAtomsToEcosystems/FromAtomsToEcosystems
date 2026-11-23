@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Survival of the Fittest | Biology</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1220;--panel:#121c31;--panel2:#18243d;--line:#2b3a58;--text:#e8eefc;--muted:#9fb0cf;--gold:#facc15;--gold2:#fbbf24;--ok:#34d399;--bad:#f87171;--violet:#a78bfa}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 "Atkinson Hyperlegible",Arial,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:#0e172a}
+header .t{font-weight:800;font-size:17px}
+header .s{color:var(--muted);font-size:13px}
+header .sp{flex:1}
+.btn{font:inherit;font-weight:700;border-radius:10px;padding:9px 16px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--gold);color:#1a1300;border-color:var(--gold)}
+.btn:disabled{opacity:.5;cursor:default}
+main{max-width:1000px;margin:0 auto;padding:14px 16px 30px}
+.stage{position:relative;width:100%;aspect-ratio:16/10;background:#050a14;border:1px solid var(--line);border-radius:14px;overflow:hidden;touch-action:none}
+canvas{display:block;width:100%;height:100%}
+.ov{position:absolute;inset:0;display:flex;background:rgba(5,10,20,.78);padding:14px;overflow:auto}
+.ov>.card{margin:auto}
+#teachOv{position:fixed;z-index:60;background:rgba(5,10,20,.94)}
+.ov[hidden]{display:none}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;max-width:640px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.card h2{margin:0 0 6px;font-size:22px}
+.card h3{margin:12px 0 6px;font-size:15px;color:var(--gold)}
+.muted{color:var(--muted)} .small{font-size:13.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chip{font:inherit;font-size:14px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.chip.on{border-color:var(--gold);background:rgba(250,204,21,.16);font-weight:700}
+.qtag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--violet);margin-bottom:4px}
+.qtext{font-size:18px;margin:4px 0 12px}
+.opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:15.5px}
+.opt:hover:not(:disabled){border-color:var(--gold)}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:13px;font-weight:800}
+.opt.pick{border-color:var(--gold)}
+.fb{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:15.5px}
+.fb.ok{background:rgba(52,211,153,.14);border:1px solid rgba(52,211,153,.5)}
+.fb.no{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.45)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:14px;margin:6px 0}
+.keys b{color:var(--gold)}
+.ladder{display:flex;flex-wrap:wrap;gap:6px;font-size:13px;margin-top:6px}
+.ladder span{padding:3px 8px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}
+.touch{display:none;gap:10px;justify-content:space-between;margin-top:10px;user-select:none;-webkit-user-select:none}
+.touch .grp{display:flex;gap:10px}
+.tbtn{width:64px;height:58px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:22px;font-weight:800;touch-action:none}
+.tbtn.fire{width:110px;background:#3b2a07;border-color:var(--gold);color:var(--gold);font-size:17px}
+.tbtn.on{background:#334155}
+@media (pointer:coarse){.touch{display:flex}}
+@media (max-width:480px){.tbtn{width:52px;height:54px;font-size:20px}.tbtn.fire{width:86px}.touch .grp{gap:7px}.touch{gap:6px}}
+@media (max-width:760px),(max-height:560px){.ov{position:fixed;z-index:50;background:rgba(5,10,20,.92)}}
+body.showtouch .touch{display:flex}
+.info{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:14px;color:var(--muted)}
+.tpanel h3{margin-top:14px}
+.tq{margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font-size:14px}
+.tq ol{margin:4px 0 0;padding-left:22px}
+.tq li.right{color:var(--ok);font-weight:700}
+input.code{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0b1220;color:var(--text);width:180px}
+#printView{display:none}
+@media print{
+  body>*:not(#printView){display:none!important}
+  #printView{display:block!important;color:#000;background:#fff;font:12px/1.4 Arial,sans-serif}
+  #printView h1{font-size:18px;margin:0 0 4px} #printView .pq{break-inside:avoid;margin:8px 0}
+  #printView ol{margin:2px 0 0;padding-left:22px} #printView li.right{font-weight:700;text-decoration:underline}
+  html,body{background:#fff}
+}
+
+#cv{cursor:crosshair}</style>
+</head>
+<body>
+<header>
+  <div><div class="t">Survival of the Fittest</div><div class="s">Biology · Unit 5: Evolution · Review game</div></div>
+  <div class="sp"></div>
+  <button class="btn" id="teachBtn" type="button">Teacher</button>
+</header>
+<main>
+  <div class="stage" id="stage">
+    <canvas id="cv" width="960" height="600" aria-label="Survival of the Fittest game. Click moths to eat them."></canvas>
+    <div class="ov" id="startOv"><div class="card"><h2>Survival of the Fittest</h2><p class="small muted" style="margin:0 0 8px">You are a bird in England, 200 years ago. Peppered moths rest on tree bark. Some are pale and speckled, some are darker. <b>Click moths to eat them</b> before time runs out. The moths you can't find survive and have babies that inherit their color.</p><p class="small">Play 12 generations. Watch what happens to the moths when factory soot turns the trees black, and again when the air gets clean. The graphs on the right track the colors.</p><div class="row"><button class="btn primary" id="startBtn" type="button">Start</button><span class="small muted" id="hiTxt"></span></div></div></div>
+    <div class="ov" id="genOv" hidden><div class="card"><h2 id="genTitle"></h2><p id="genText"></p><div class="row"><button class="btn primary" id="genGo" type="button">Start hunting</button></div></div></div>
+    <div class="ov" id="overOv" hidden><div class="card"><h2>What happened to the moths?</h2><div id="overBody"></div><div class="row"><button class="btn primary" id="againBtn" type="button">Play again</button></div></div></div>
+
+    <div class="ov" id="pauseOv" hidden><div class="card" style="max-width:380px;text-align:center"><h2>Paused</h2><p class="muted">Press P or the button to keep playing.</p><button class="btn primary" id="resumeBtn" type="button">Resume</button></div></div>
+  </div>
+  <div class="row"><button class="btn primary" id="nextGen" type="button" hidden>Next generation: the survivors have babies →</button></div>
+  <div class="touch" id="touch"><div class="grp"><button class="tbtn" data-k="pause" type="button" aria-label="Pause">II</button></div></div>
+
+</main>
+<div class="ov" id="teachOv" hidden>
+  <div class="card tpanel" style="max-width:780px">
+    <h2>Teacher tools</h2>
+    <div id="tLogin"><p class="small muted">Enter the teacher code.</p><div class="row" style="margin-top:4px"><input class="code" id="tCode" type="password" autocomplete="off" aria-label="Teacher code"><button class="btn primary" id="tGo" type="button">Open</button><button class="btn" id="tClose0" type="button">Close</button></div><div class="small" id="tMsg" style="color:var(--bad);margin-top:6px"></div></div>
+    <div id="tBody" hidden>
+      <div class="row"><button class="btn" id="tPrint" type="button">🖨 Print the reference sheet</button><button class="btn" id="tTouch" type="button">Show touch buttons</button><button class="btn" id="tClose" type="button">Close</button></div>
+      <div id="tInfo"></div>
+    </div>
+  </div>
+</div>
+<div id="printView"></div>
+<script>
+const META={"store": "bioU5Survival", "unit": 5};
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const store={ get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+const shuffle=a=>{ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const rnd=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const GAME={onPause:()=>{}, onResume:()=>{}, teacherHTML:()=>'', printHTML:()=>''};
+/* teacher tools (code Teacher007) */
+function tShow(on){ $('#teachOv').hidden=!on; if(on){ GAME.onPause(); $('#tCode').value=''; $('#tMsg').textContent=''; setTimeout(()=>$('#tCode').focus(),30); } }
+$('#teachBtn').addEventListener('click',()=>tShow(true)); $('#tClose0').addEventListener('click',()=>tShow(false));
+$('#tClose').addEventListener('click',()=>{ tShow(false); $('#tBody').hidden=true; $('#tLogin').hidden=false; });
+function tOpen(){ if($('#tCode').value.trim().toLowerCase()!=='teacher007'){ $('#tMsg').textContent='Code not recognized.'; return; } $('#tLogin').hidden=true; $('#tBody').hidden=false; $('#tInfo').innerHTML=GAME.teacherHTML(); }
+$('#tGo').addEventListener('click',tOpen); $('#tCode').addEventListener('keydown',e=>{ if(e.key==='Enter') tOpen(); });
+$('#tTouch').addEventListener('click',()=>document.body.classList.toggle('showtouch'));
+$('#tPrint').addEventListener('click',()=>{ $('#printView').innerHTML=GAME.printHTML(); setTimeout(()=>window.print(),100); });
+$('#resumeBtn').addEventListener('click',()=>GAME.onResume());
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) GAME.onPause(); });
+/* ===================== SURVIVAL OF THE FITTEST (peppered moths) ===================== */
+const cv=$('#cv'), ctx=cv.getContext('2d'); const W=960,H=600, AW=640, N=30, EAT=18, HUNT=15, GENS=12;
+const period=g=>g<=3?{k:'lichen',t:'Before factories',d:'Tree bark is covered in pale lichen.'}:g<=8?{k:'soot',t:'The Industrial Revolution',d:'Coal smoke from factories kills the lichen and coats the bark with black soot.'}:{k:'lichen',t:'Clean air laws',d:'Laws cut the smoke. Lichen grows back and the bark turns pale again.'};
+const BARK={lichen:0.15,soot:0.85};
+const shadeCol=(s,a)=>{ const c1=[217,212,195], c2=[38,35,32]; const c=c1.map((v,i)=>Math.round(v+(c2[i]-v)*s)); return `rgba(${c[0]},${c[1]},${c[2]},${a==null?1:a})`; };
+/* bark textures, drawn once */
+function barkTex(kind){ const c=document.createElement('canvas'); c.width=AW; c.height=H; const x=c.getContext('2d'); let seed=kind==='soot'?7:3; const R=()=>{ seed=(seed*16807)%2147483647; return seed/2147483647; };
+  x.fillStyle=kind==='soot'?'#2f2b28':'#b9b4a2'; x.fillRect(0,0,AW,H);
+  for(let i=0;i<900;i++){ const px=R()*AW, py=R()*H, w=2+R()*6, h=20+R()*90; x.fillStyle=kind==='soot'?(v=>`rgba(${v},${Math.round(v*.96)},${Math.round(v*.9)},.5)`)(Math.round(15+R()*45)):`rgba(${120+R()*80},${115+R()*80},${100+R()*70},.45)`; x.fillRect(px,py,w,h); }
+  if(kind==='lichen') for(let i=0;i<260;i++){ const px=R()*AW, py=R()*H, r=6+R()*26; x.fillStyle=`rgba(${190+R()*40},${200+R()*40},${170+R()*40},.55)`; x.beginPath(); for(let k=0;k<9;k++){ const a=k/9*6.3, rr=r*(0.6+R()*0.6); x.lineTo(px+Math.cos(a)*rr,py+Math.sin(a)*rr); } x.closePath(); x.fill(); }
+  else for(let i=0;i<500;i++){ x.fillStyle=`rgba(0,0,0,${0.2+R()*0.3})`; x.beginPath(); x.arc(R()*AW,R()*H,1+R()*5,0,6.3); x.fill(); }
+  for(let i=0;i<14;i++){ x.strokeStyle=kind==='soot'?'rgba(0,0,0,.45)':'rgba(90,80,65,.35)'; x.lineWidth=2+R()*3; x.beginPath(); let px=R()*AW; x.moveTo(px,0); for(let y=0;y<=H;y+=40){ px+=R()*14-7; x.lineTo(px,y); } x.stroke(); }
+  return c; }
+const TEX={lichen:barkTex('lichen'),soot:barkTex('soot')};
+const randn=()=>{ let u=0,v=0; while(!u) u=Math.random(); while(!v) v=Math.random(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); };
+const HIKEY=META.store+'_hi'; function hiTxt(){ const h=+store.get(HIKEY)||0; $('#hiTxt').textContent=h?`High score on this Chromebook: ${h}`:''; } hiTxt();
+let state='menu', gen, moths, t, eaten, score, hist, lastT, msg, crumbs=[], youAte, quiz;
+function place(sh){ const out=[]; sh.forEach(s=>{ let x,y,g=0; do{ x=rnd(30,AW-30); y=rnd(40,H-30); }while(out.some(m=>Math.hypot(m.x-x,m.y-y)<44)&&g++<60); out.push({x,y,s,r:rnd(-0.6,0.6),dead:false,seed:Math.random()*1000}); }); return out; }
+function newGame(){ gen=0; score=0; hist=[]; const sh=[]; for(let i=0;i<N;i++) sh.push(Math.max(0,Math.min(1,0.14+randn()*0.07))); sh[3]=0.82; sh[17]=0.74; nextGen(sh); }
+function nextGen(sh){ gen++; if(gen>GENS) return finish(); moths=place(sh); const mean=sh.reduce((a,b)=>a+b,0)/sh.length; hist.push({gen,mean,shades:sh.slice(),per:period(gen).k});
+  const P=period(gen), prev=gen>1?period(gen-1):null; $('#genTitle').textContent=`Generation ${gen} of ${GENS}: ${P.t}`;
+  $('#genText').innerHTML=`${P.d}${prev&&prev.k!==P.k?' <b>The trees just changed!</b>':''} You are a hungry bird. You have <b>${HUNT} seconds</b> to find and eat moths. Other birds will eat the rest of the ${EAT} that get eaten each generation.`;
+  $('#genOv').hidden=false; state='brief'; draw(); }
+function startHunt(){ $('#genOv').hidden=true; state='play'; t=HUNT; eaten=0; youAte=0; crumbs=[]; lastT=performance.now(); requestAnimationFrame(loop); }
+function endHunt(){ // other birds eat the most visible moths until 15 are gone
+  const bark=BARK[period(gen).k]; const alive=moths.filter(m=>!m.dead).sort((a,b)=>Math.abs(b.s-bark)-Math.abs(a.s-bark)+rnd(-.08,.08));
+  for(let i=0;eaten<EAT&&i<alive.length;i++){ alive[i].dead=true; alive[i].other=true; eaten++; }
+  const surv=moths.filter(m=>!m.dead).map(m=>m.s); const kids=[]; for(let i=0;i<N;i++){ let s=pick(surv)+randn()*0.045; if(Math.random()<0.03) s=1-s; kids.push(Math.max(0,Math.min(1,s))); }
+  crumbs=[]; state='between'; const mSurv=surv.reduce((a,b)=>a+b,0)/surv.length, mAll=moths.reduce((a,m)=>a+m.s,0)/moths.length;
+  msg={t:`You ate ${youAte}. Other birds ate ${EAT-youAte}. Survivors' average color: ${(mSurv*100).toFixed(0)}% dark (the whole group was ${(mAll*100).toFixed(0)}%). The survivors now have babies that inherit their color.`,until:performance.now()+99999};
+  draw(); $('#nextGen').hidden=false; $('#nextGen').onclick=()=>{ $('#nextGen').hidden=true; msg=null; nextGen(kids); }; }
+cv.addEventListener('pointerdown',e=>{ if(state!=='play') return; const r=cv.getBoundingClientRect(); const x=(e.clientX-r.left)/r.width*W, y=(e.clientY-r.top)/r.height*H; if(x>AW) return;
+  let best=null, bd=1e9; moths.forEach(m=>{ if(m.dead) return; const d=Math.hypot(m.x-x,m.y-y); if(d<bd){ bd=d; best=m; } });
+  if(best&&bd<22){ best.dead=true; best.you=true; eaten++; youAte++; const bark=BARK[period(gen).k]; const pts=10+Math.round(30*(1-Math.abs(best.s-bark))); score+=pts; crumbs.push({x:best.x,y:best.y,t:0,pts}); if(eaten>=EAT) endHunt(); }
+  else crumbs.push({x,y,t:0,miss:true}); });
+function loop(ts){ if(state!=='play') return; const dt=Math.min(0.05,(ts-lastT)/1000); lastT=ts; t-=dt; crumbs.forEach(c=>c.t+=dt); crumbs=crumbs.filter(c=>c.t<0.8); if(t<=0){ t=0; endHunt(); return; } draw(); requestAnimationFrame(loop); }
+GAME.onPause=()=>{ if(state==='play'){ state='paused'; $('#pauseOv').hidden=false; } };
+GAME.onResume=()=>{ if(state==='paused'){ state='play'; $('#pauseOv').hidden=true; lastT=performance.now(); requestAnimationFrame(loop); } };
+document.addEventListener('keydown',e=>{ if(e.code==='KeyP'||e.code==='Escape'){ state==='play'?GAME.onPause():GAME.onResume(); } });
+let hudK=1; function fit(){ const r=cv.getBoundingClientRect(); if(r.width) hudK=Math.min(2,Math.max(1,560/r.width)); const d=Math.min(2,window.devicePixelRatio||1); const w=Math.round(r.width*d), h=Math.round(r.height*d); if(w&&h&&(cv.width!==w||cv.height!==h)){ cv.width=w; cv.height=h; } }
+window.addEventListener('resize',()=>{ fit(); draw(); });
+function moth(m){ ctx.save(); ctx.translate(m.x,m.y); ctx.rotate(m.r); const col=shadeCol(m.s);
+  ctx.fillStyle=col; [-1,1].forEach(sd=>{ ctx.beginPath(); ctx.ellipse(sd*11,-3,13,8,sd*0.35,0,6.3); ctx.fill(); ctx.beginPath(); ctx.ellipse(sd*8,7,8,6,-sd*0.4,0,6.3); ctx.fill(); });
+  let sd=m.seed; const R=()=>{ sd=(sd*16807+11)%2147483647; return (sd%1000)/1000; };
+  for(let i=0;i<16;i++){ const a=(R()-.5)*44, b=(R()-.5)*20; ctx.fillStyle=m.s<0.5?`rgba(30,28,25,${0.5-m.s*0.6})`:`rgba(200,195,180,${(m.s-0.5)*0.25})`; ctx.fillRect(a,b-2,2,2); }
+  ctx.fillStyle=shadeCol(Math.min(1,m.s+0.25)); ctx.beginPath(); ctx.ellipse(0,1,3,11,0,0,6.3); ctx.fill();
+  ctx.strokeStyle=shadeCol(Math.min(1,m.s+0.3)); ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(-1,-10); ctx.lineTo(-6,-17); ctx.moveTo(1,-10); ctx.lineTo(6,-17); ctx.stroke(); ctx.restore(); }
+function graphs(){ const x0=AW, k=hudK; ctx.fillStyle='#0b1220'; ctx.fillRect(x0,0,W-AW,H);
+  ctx.fillStyle='#e8eefc'; ctx.font='bold 15px Arial'; ctx.textAlign='left'; ctx.fillText(`Generation ${gen} of ${GENS}`,x0+16,26); ctx.font='13px Arial'; ctx.fillStyle='#9fb0cf'; ctx.fillText(period(gen).t,x0+16,46);
+  // histogram of this generation's colors
+  const h=hist[hist.length-1]; const bins=Array(10).fill(0); h.shades.forEach(s=>bins[Math.min(9,Math.floor(s*10))]++);
+  const gx=x0+20, gy=80, gw=W-AW-40, gh=150; ctx.fillStyle='#0e1a33'; ctx.fillRect(gx-6,gy-6,gw+12,gh+40); ctx.fillStyle='#9fb0cf'; ctx.font='12px Arial'; ctx.fillText('Moth colors this generation',gx,gy+6);
+  const mx=Math.max(8,...bins); bins.forEach((n,i)=>{ const bw=gw/10, bh=(gh-24)*n/mx; ctx.fillStyle=shadeCol(i/9+0.05); ctx.fillRect(gx+i*bw+2,gy+gh-bh,bw-4,bh); ctx.strokeStyle='#64748b'; ctx.strokeRect(gx+i*bw+2,gy+gh-bh,bw-4,bh); if(n){ ctx.fillStyle='#e2e8f0'; ctx.font='10px Arial'; ctx.textAlign='center'; ctx.fillText(n,gx+i*bw+bw/2,gy+gh-bh-3); } });
+  ctx.textAlign='left'; ctx.fillStyle='#9fb0cf'; ctx.font='11px Arial'; ctx.fillText('light',gx,gy+gh+14); ctx.textAlign='right'; ctx.fillText('dark',gx+gw,gy+gh+14);
+  // mean color over generations
+  const ly=300, lh=170; ctx.fillStyle='#0e1a33'; ctx.fillRect(gx-6,ly-6,gw+12,lh+44); ctx.textAlign='left'; ctx.fillStyle='#9fb0cf'; ctx.font='12px Arial'; ctx.fillText('Average color over time',gx,ly+6);
+  const X=g=>gx+(g-1)*gw/(GENS-1), Y=v=>ly+lh-v*(lh-24);
+  [[1,3,'lichen'],[4,8,'soot'],[9,12,'lichen']].forEach(([a,b,kd])=>{ ctx.fillStyle=kd==='soot'?'rgba(30,27,24,.9)':'rgba(185,180,162,.25)'; const xa=Math.max(gx,X(a-0.5)), xb=Math.min(gx+gw,X(b+0.5)); ctx.fillRect(xa,ly+16,xb-xa,lh-16); });
+  ctx.fillStyle='#9fb0cf'; ctx.font='10px Arial'; ctx.textAlign='center'; ctx.fillText('pale bark',X(2),ly+lh+14); ctx.fillText('sooty bark',X(6),ly+lh+14); ctx.fillText('pale again',X(10.5),ly+lh+14);
+  ctx.strokeStyle='#facc15'; ctx.lineWidth=2.5; ctx.beginPath(); hist.forEach((p,i)=>{ i?ctx.lineTo(X(p.gen),Y(p.mean)):ctx.moveTo(X(p.gen),Y(p.mean)); }); ctx.stroke();
+  hist.forEach(p=>{ ctx.beginPath(); ctx.arc(X(p.gen),Y(p.mean),3.5,0,6.3); ctx.fillStyle='#facc15'; ctx.fill(); });
+  ctx.textAlign='left'; ctx.fillStyle='#9fb0cf'; ctx.fillText('dark',gx-2,ly+24); ctx.fillText('light',gx-2,ly+lh-4);
+  ctx.fillStyle='#e8eefc'; ctx.font=`bold ${15*Math.min(k,1.3)}px Arial`; ctx.fillText(`Score ${score}`,x0+16,H-20); }
+function draw(){ const sx=cv.width/W, sy=cv.height/H; ctx.setTransform(sx,0,0,sy,0,0); const k=hudK;
+  if(!gen){ ctx.drawImage(TEX.lichen,0,0); ctx.fillStyle='#0b1220'; ctx.fillRect(AW,0,W-AW,H); return; }
+  ctx.drawImage(TEX[period(gen).k],0,0);
+  moths.forEach(m=>{ if(!m.dead) moth(m); else if(state==='between'){ ctx.strokeStyle=m.you?'#facc15':'#f87171'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(m.x,m.y,16,0,6.3); ctx.stroke(); ctx.globalAlpha=.45; moth(m); ctx.globalAlpha=1; } });
+  crumbs.forEach(c=>{ ctx.globalAlpha=1-c.t/0.8; ctx.fillStyle=c.miss?'#f87171':'#fde68a'; ctx.font='bold 15px Arial'; ctx.textAlign='center'; ctx.fillText(c.miss?'miss':'+'+c.pts,c.x,c.y-14-c.t*30); ctx.globalAlpha=1; });
+  if(state==='play'){ ctx.fillStyle='rgba(5,10,20,.7)'; ctx.fillRect(8,8,250*k,44*k); ctx.fillStyle='#e8eefc'; ctx.font=`bold ${16*k}px Arial`; ctx.textAlign='left'; ctx.fillText(`Time ${t.toFixed(1)} s   Eaten ${eaten}/${EAT}`,16,20+16*k); }
+  if(state==='between'){ ctx.fillStyle='rgba(5,10,20,.55)'; ctx.fillRect(8,8,330,30); ctx.fillStyle='#fde68a'; ctx.font='bold 13px Arial'; ctx.textAlign='left'; ctx.fillText('Gold circle = you ate it. Red circle = another bird did.',16,28); }
+  graphs();
+  if(msg){ ctx.font=`bold ${14*Math.min(k,1.5)}px Arial`; ctx.textAlign='center'; const words=msg.t.split(' '), lines=[]; let cur=''; words.forEach(w=>{ if(ctx.measureText(cur+' '+w).width>AW-60){ lines.push(cur); cur=w; } else cur=cur?cur+' '+w:w; }); lines.push(cur);
+    const lh=20*Math.min(k,1.5), y0=H-24-lines.length*lh; ctx.fillStyle='rgba(5,10,20,.88)'; ctx.fillRect(16,y0-8,AW-32,lines.length*lh+16); ctx.fillStyle='#fde68a'; ctx.textBaseline='middle'; lines.forEach((l,i)=>ctx.fillText(l,AW/2,y0+lh/2+i*lh)); ctx.textBaseline='alphabetic'; } }
+const QUIZ=[{q:'During the soot years, which type of selection happened?',o:['Directional selection toward dark moths','Stabilizing selection','Disruptive selection','No selection'],a:0,w:'The whole curve moved toward one end (dark), so it was directional selection.'},
+ {q:'Did any moth change its color to match the sooty trees?',o:['No. Some moths were already dark; they survived and passed on their color','Yes, the soot stained them dark','Yes, they chose to become dark','Yes, birds made them dark'],a:0,w:'Individuals never change. The population changes because the moths that survive pass their inherited color to their babies.'},
+ {q:'What would have happened if every moth had been the same color?',o:['Natural selection could not change the color, because there was no variation','All the moths would turn dark anyway','The birds would stop eating moths','The trees would change color'],a:0,w:'Natural selection needs variation. If every moth is the same, there is nothing to select.'}];
+function finish(){ state='over'; const hi=+store.get(HIKEY)||0; if(score>hi) store.set(HIKEY,score); draw();
+  const m=hist.map(h=>Math.round(h.mean*100)); quiz={i:0,right:0};
+  $('#overBody').innerHTML=`<p style="font-size:18px;margin:4px 0">Score: <b>${score}</b>${score>hi?' <span style="color:var(--gold)">New high score!</span>':''}</p>
+   <p class="small">Average moth color (% dark): generation 1: <b>${m[0]}%</b> → end of the soot years (generation 8): <b>${m[7]}%</b> → generation 12: <b>${m[11]}%</b>. The population changed, but no single moth ever changed color. That is <b>natural selection</b>.</p><div id="quiz"></div>`;
+  $('#overOv').hidden=false; hiTxt(); showQ(); }
+function showQ(){ const Q=QUIZ[quiz.i]; if(!Q){ $('#quiz').innerHTML=`<p class="small"><b>Check-in done: ${quiz.right} of ${QUIZ.length} right.</b></p>`; return; } const ord=shuffle(Q.o.map((_,i)=>i));
+  $('#quiz').innerHTML=`<h3>Quick check ${quiz.i+1} of ${QUIZ.length}</h3><p style="margin:0 0 6px">${Q.q}</p><div class="opts">${ord.map((i,k)=>`<button type="button" class="opt" data-i="${i}"><span class="k">${k+1}</span><span>${Q.o[i]}</span></button>`).join('')}</div><div id="qfb"></div>`;
+  $$('#quiz .opt').forEach(b=>b.addEventListener('click',()=>{ const ok=+b.dataset.i===Q.a; if(ok) quiz.right++; $$('#quiz .opt').forEach(x=>x.disabled=true); b.classList.add('pick');
+    $('#qfb').innerHTML=`<div class="fb ${ok?'ok':'no'}">${ok?'<b>Right.</b> ':'<b>Not quite.</b> '}${Q.w}</div><div class="row"><button class="btn primary" id="qn" type="button">${quiz.i+1<QUIZ.length?'Next question':'Done'}</button></div>`; $('#qn').addEventListener('click',()=>{ quiz.i++; showQ(); }); })); }
+$('#startBtn').addEventListener('click',()=>{ $('#startOv').hidden=true; fit(); newGame(); }); $('#againBtn').addEventListener('click',()=>{ $('#overOv').hidden=true; newGame(); });
+$('#genGo').addEventListener('click',startHunt);
+(function idle(){ fit(); draw(); })();
+GAME.teacherHTML=()=>`<p class="small muted">Practice game, not graded.</p><h3>How it works</h3><p class="small">Each generation, students have ${HUNT} seconds to click moths on the bark (they are the bird). ${EAT} of the ${N} moths are eaten each generation; if a student eats fewer, "other birds" eat the most visible moths that are left. The ${N-EAT} survivors have ${N} babies, each inheriting its parent's color with small random variation (and a rare mutation that flips light and dark). Generations 1 to 3 have pale lichen bark, 4 to 8 have sooty bark (Industrial Revolution), and 9 to 12 have pale bark again (clean air laws). The histogram and the average-color graph show directional selection toward dark, then back toward light.</p><p class="small">This models the real peppered moths of England (Biston betularia), where dark moths went from rare in the early 1800s to about 90% near Manchester, then fell again after clean air laws.</p>`;
+GAME.printHTML=()=>`<h1>Survival of the Fittest: data sheet</h1><p>Name: ____________________ Period: ____</p><table border="1" cellpadding="6" style="border-collapse:collapse;font-size:13px;width:100%"><tr><th>Generation</th><th>Bark</th><th>Average color (% dark)</th><th>What I noticed</th></tr>${Array.from({length:GENS},(_,i)=>`<tr><td>${i+1}</td><td>${period(i+1).k==='soot'?'sooty':'pale'}</td><td></td><td style="width:50%"></td></tr>`).join('')}</table><p>1. What type of selection happened during the soot years? Explain using the graph.</p><p>2. Did any moth change color during its life? What changed instead?</p>`;
+window.__moth={get state(){return state;}, get gen(){return gen;}, get hist(){return hist.map(h=>h.mean);}, get score(){return score;}, moths:()=>moths.filter(m=>!m.dead).map(m=>({x:m.x,y:m.y,s:m.s})), endHunt};
+
+$$('.tbtn').forEach(b=>b.addEventListener('pointerdown',e=>{ e.preventDefault(); state==='play'?GAME.onPause():GAME.onResume(); }));
+</script>
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

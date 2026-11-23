@@ -131,6 +131,7 @@ body.key input.b,body.key select.b,body.key textarea{color:var(--teal)}
   .ncols,.prac{break-inside:avoid}
 }
 </style>
+<style id="nolock">#tEndLock,#endLockBtn,#unlockInfo{display:none!important}</style>
 </head>
 <body>
 <div class="bar noprint">
@@ -163,7 +164,7 @@ const LESSON = "Circular Motion Applications: Artificial Gravity and Roller Coas
 const LESSON_ID = 'phys-u5-circular-motion-applications-notes';
 const KEY = 'fate_phys_u5_circular_motion_applications_notes_v1', RECS = KEY + '_records';
 const UNLOCK_CODE = 'coasters';           // last word of the lesson title: unlocks the lockdown screen only
-const LOCK_ON = /github\.io$/i.test(location.hostname) || new URLSearchParams(location.search).has('lockdown');
+const LOCK_ON = false; // lockdown is used on tests only
 const TEACHER_CODE = 'teacher007';        // opens the answer key and scores CSV
 const isTeacherCode = v => String(v || '').trim().toLowerCase() === TEACHER_CODE.toLowerCase();
 const BACKUP_URL = 'https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
@@ -215,7 +216,7 @@ const icon = k => `<svg viewBox="0 0 24 24" fill="none" stroke="#c28a00" stroke-
 const BL = [];
 let SEC = 0;
 const norm = s => String(s || '').toLowerCase().replace(/[−–—]/g, '-').replace(/[_\s]+/g, ' ').replace(/[^a-z0-9.\-+/° ]/g, '').replace(/ /g, '').trim();
-function numOf(s) { s = String(s || '').replace(/[−–—]/g, '-').replace(/,/g, '').replace(/\s*[x×*·]\s*10\s*\^\s*\(?\s*([+-]?\d+)\s*\)?/i, 'e$1'); const m = s.match(/-?\d*\.?\d+(e[+-]?\d+)?/i); return m ? parseFloat(m[0]) : NaN; }
+function numOf(s) { s = String(s || '').replace(/[−–—]/g, '-').replace(/,/g, '').replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺]+/g, m => '^' + [...m].map(ch => ch === '⁻' ? '-' : ch === '⁺' ? '+' : '⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(ch)).join('')).replace(/\s*[x×*·]\s*10\s*\^\s*\(?\s*([+-]?\d+)\s*\)?/i, 'e$1'); const m = s.match(/-?\d*\.?\d+(e[+-]?\d+)?/i); return m ? parseFloat(m[0]) : NaN; }
 function b(id, ans, w) { BL.push({ id, ans, sec: SEC, kind: 'b' }); return `<input class="b" id="${id}" style="width:${w || 80}px" autocomplete="off" spellcheck="false" aria-label="blank">`; }
 const EQN = ["①", "②", "③", "④"];
 function pick(id, ans) { BL.push({ id, ans, sec: SEC, kind: 'pick' }); return `<select class="b" id="${id}" aria-label="equation number"><option value=""> </option>${EQN.map((e, i) => `<option value="${i + 1}">${e}</option>`).join('')}</select>`; }

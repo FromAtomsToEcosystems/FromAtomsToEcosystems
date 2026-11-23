@@ -1,0 +1,2107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mitosis and the Cell Cycle | Biology Unit 4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1626; --panel:#142136; --panel2:#1a2a44; --line:#2a3d5f; --line2:#3a5580;
+  --text:#e8eef8; --muted:#a3b4cf; --dim:#7488a9;
+  --x:#ff7d6e; --y:#45c8f0; --a:#b996ff; --b:#5fe3a9; --r:#ffd35c; --amber:#f5a524;
+  --ok:#4ade80; --bad:#fb7185; --radius:14px;
+  --font:'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+html,body{margin:0}
+body{
+  background-color:var(--bg);
+  background-image:linear-gradient(rgba(110,150,210,.065) 1px,transparent 1px),linear-gradient(90deg,rgba(110,150,210,.065) 1px,transparent 1px);
+  background-size:32px 32px;
+  color:var(--text); font-family:var(--font); font-size:17px; line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{line-height:1.2; margin:0 0 .5em; font-weight:600}
+h1{font-size:clamp(30px,5vw,46px); font-weight:700; letter-spacing:-.01em}
+h2{font-size:clamp(24px,3.4vw,32px)}
+h3{font-size:20px}
+h4{font-size:16px}
+p{margin:0 0 .8em}
+sub{font-size:.72em}
+a{color:var(--y)}
+.num,.nb,input.ans,.readout{font-variant-numeric:tabular-nums}
+.cx{color:var(--x); font-weight:600} .cy{color:var(--y); font-weight:600}
+.ca{color:var(--a); font-weight:600} .cb{color:var(--b); font-weight:600} .cr{color:var(--r); font-weight:600}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky; top:0; z-index:20; background:rgba(13,22,38,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:1120px; margin:0 auto; display:flex; align-items:center; gap:14px; padding:8px 16px}
+.brand{font-weight:600; font-size:15px; white-space:nowrap}
+.brand span{display:block; font-weight:400; font-size:12px; color:var(--muted)}
+.savenote{font-size:13px; color:var(--ok); white-space:nowrap}
+@media (max-width:640px){ .savenote{display:none} }
+.card.nostore{border:2px solid var(--bad); background:rgba(251,113,133,.08)}
+.navtiles{display:flex; gap:6px; overflow-x:auto; flex:1; padding:4px 2px; scrollbar-width:thin}
+.progress{height:4px; background:var(--panel2)}
+.progress div{height:100%; width:0; background:var(--r); transition:width .5s ease}
+
+.tile{flex:0 0 auto; width:50px; height:54px; border-radius:6px; border:1.5px solid var(--line2); background:var(--panel); color:var(--text);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; cursor:pointer; font-family:var(--font); padding:0}
+.tile .z{position:absolute; top:2px; left:4px; font-size:9px; color:var(--muted)}
+.tile .sym{font-size:19px; font-weight:700; line-height:1}
+.tile .nm{font-size:8.5px; color:var(--muted); margin-top:2px}
+.tile.cur{background:var(--r); border-color:var(--r); color:#231a00}
+.tile.cur .z,.tile.cur .nm{color:#5a4600}
+.tile.done::after{content:'✓'; position:absolute; top:1px; right:4px; font-size:10px; font-weight:700; color:var(--ok)}
+.tile.cur.done::after{color:#1d6b35}
+.tile.locked{opacity:.4; cursor:not-allowed}
+.tile.ne{border-style:dashed}
+
+/* ---------- layout ---------- */
+main{max-width:1000px; margin:0 auto; padding:24px 18px 80px}
+.sechead{display:flex; gap:18px; align-items:center; margin:12px 0 8px}
+.badge{flex:0 0 auto; width:94px; height:94px; border-radius:10px; border:2px solid var(--r); background:var(--panel);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative}
+.badge .z{position:absolute; top:4px; left:7px; font-size:12px; color:var(--muted)}
+.badge .sym{font-size:38px; font-weight:700; line-height:1; color:var(--r)}
+.badge .nm{font-size:11px; color:var(--muted); margin-top:6px}
+.meta{color:var(--muted); font-size:15px; margin-bottom:4px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:22px 24px; margin:18px 0}
+.card.qc{border:2px solid var(--amber)}
+.tag{display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; padding:3px 11px 3px 8px; border-radius:999px; margin-bottom:12px}
+.tag svg{width:15px; height:15px}
+.tag.read{background:rgba(69,200,240,.14); color:var(--y)}
+.tag.try{background:rgba(95,227,169,.14); color:var(--b)}
+.tag.qc{background:rgba(245,165,36,.16); color:var(--amber)}
+.split{display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); gap:22px; align-items:start}
+@media (max-width:780px){ .split{grid-template-columns:1fr} }
+.fig{background:#0a1322; border:1px solid var(--line); border-radius:12px; width:100%; height:auto; display:block; touch-action:none; user-select:none; -webkit-user-select:none}
+.fig text{font-family:var(--font)}
+.handle{cursor:grab}
+.handle:focus{outline:none}
+.handle:focus-visible{stroke:#fff; stroke-width:3}
+.caption{font-size:15px; color:var(--muted); margin-top:8px; min-height:3em}
+.formula{display:inline-block; background:var(--bg); border:1px solid var(--line2); border-radius:10px; padding:8px 16px; font-size:19px; margin:4px 0 10px}
+.formula + .formula{margin-left:10px}
+.callout{background:var(--panel2); border-radius:10px; padding:12px 16px; margin:10px 0; font-size:16px}
+.callout b{color:var(--r)}
+ul.tight{margin:0 0 .8em; padding-left:1.2em} ul.tight li{margin:.25em 0}
+
+/* ---------- buttons & inputs ---------- */
+.btn{font:inherit; font-weight:600; font-size:15px; border-radius:10px; padding:10px 18px; cursor:pointer; border:1.5px solid transparent; transition:transform .08s ease}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--r); color:#231a00}
+.btn.primary:disabled{background:var(--line); color:var(--dim); cursor:not-allowed}
+.btn.ghost{background:transparent; border-color:var(--line2); color:var(--text)}
+.btn.ghost:hover{border-color:var(--muted)}
+.btn.small{padding:6px 12px; font-size:14px}
+.btn:disabled{opacity:.7}
+.btnrow{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:12px}
+:focus-visible{outline:3px solid var(--r); outline-offset:2px}
+input.ans, select.ans{width:112px; background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:7px 10px; font:inherit; font-size:16px}
+select.ans{width:auto}
+input.ans.ok, select.ans.ok{border-color:var(--ok); background:rgba(74,222,128,.08)}
+input.ans.no, select.ans.no{border-color:var(--bad)}
+input.ans:disabled, select.ans:disabled{opacity:.45}
+.field{display:flex; flex-direction:column; gap:4px; font-size:14px; color:var(--muted)}
+.field input,.field select{background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:9px 11px; font:inherit; font-size:16px}
+.formgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; margin:12px 0}
+.numrow{display:flex; flex-wrap:wrap; align-items:center; gap:8px 10px; margin:10px 0 4px}
+.numrow label{min-width:150px}
+.inwrap{display:inline-flex; align-items:center; gap:6px}
+.unit{color:var(--muted); font-size:15px}
+
+/* ---------- feedback ---------- */
+.fb{margin-top:10px; padding:10px 14px; border-radius:10px; font-size:15px}
+.fb.ok{background:rgba(74,222,128,.12); color:#cdf8dc}
+.fb.no{background:rgba(251,113,133,.12); color:#ffd3db}
+.fb.info{background:var(--panel2); color:var(--text)}
+.how{margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,.12); color:var(--text)}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes pop{0%{transform:scale(.85)}60%{transform:scale(1.06)}100%{transform:scale(1)}}
+.shake{animation:shake .35s}
+
+/* ---------- multiple choice ---------- */
+.mcq{margin:6px 0 22px}
+.mcq:last-child{margin-bottom:4px}
+.mcq .q{font-weight:500; margin-bottom:10px}
+.opts{display:grid; gap:8px}
+.opt{display:flex; gap:12px; align-items:center; text-align:left; background:var(--panel2); border:1.5px solid var(--line); color:var(--text); border-radius:10px; padding:9px 14px; font:inherit; font-size:16px; cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--line2)}
+.opt .L{flex:0 0 28px; height:28px; border-radius:50%; display:grid; place-items:center; background:var(--bg); font-weight:600; font-size:14px}
+.opt.right{border-color:var(--ok); background:rgba(74,222,128,.12)}
+.opt.right .L{background:var(--ok); color:#06210f}
+.opt.wrong{border-color:var(--bad); background:rgba(251,113,133,.08); opacity:.8}
+.opt:disabled{cursor:default}
+
+/* ---------- sorter ---------- */
+.chips{display:flex; flex-wrap:wrap; gap:8px; min-height:52px; padding:10px; border-radius:12px; background:var(--bg); border:1px solid var(--line)}
+.chips:empty::before{content:'All sorted.'; color:var(--muted); font-size:14px; padding:4px}
+.chip{background:var(--panel2); border:1.5px solid var(--line2); color:var(--text); border-radius:999px; padding:6px 14px; font:inherit; font-size:15px; cursor:grab}
+.chip.sel{border-color:var(--r); box-shadow:0 0 0 3px rgba(255,211,92,.25)}
+.chip.placed{cursor:default; border-color:rgba(74,222,128,.6); animation:pop .3s; pointer-events:none}
+.bins{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; margin-top:12px}
+.bin{border:2px dashed var(--line2); border-radius:12px; padding:10px; min-height:110px; cursor:pointer; transition:border-color .15s, background .15s}
+.bin h4{margin:0 0 8px; font-size:16px}
+.bin.over,.bin.ready{border-color:var(--r); background:rgba(255,211,92,.05)}
+.binchips{display:flex; flex-wrap:wrap; gap:6px}
+
+/* ---------- missions, readouts, tables ---------- */
+.missions{background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:12px 16px; margin-top:12px}
+.missions h4{margin-bottom:6px}
+.missions ol{margin:0; padding-left:1.3em}
+.missions li{margin:4px 0; color:var(--muted)}
+.missions li.cur{color:var(--text); font-weight:500}
+.missions li.done{color:var(--ok); text-decoration:line-through; text-decoration-color:rgba(74,222,128,.5)}
+.readout{display:grid; grid-template-columns:auto 1fr; gap:4px 14px; background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:12px 16px; font-size:16px}
+.readout dt{color:var(--muted)} .readout dd{margin:0; font-weight:600}
+table.nb{border-collapse:collapse; width:100%; margin:8px 0}
+table.nb th,table.nb td{border:1px solid var(--line2); padding:7px 10px; text-align:center}
+table.nb th{background:var(--panel2); font-weight:600; font-size:14px}
+table.nb td:first-child{text-align:left; font-size:15px}
+table.nb input.ans{width:90px}
+.cellwrap{display:inline-flex; gap:4px; align-items:center}
+.cellbtn{background:var(--panel2); border:1.5px solid var(--line2); color:var(--text); border-radius:8px; width:34px; height:36px; font:inherit; cursor:pointer}
+.cellbtn:disabled{opacity:.35; cursor:default}
+.steps-row{display:grid; grid-template-columns:minmax(150px,auto) 1fr; gap:10px 12px; align-items:center; margin:12px 0}
+.slider{display:flex; align-items:center; gap:12px; margin:8px 0}
+.slider input{flex:1; accent-color:var(--r)}
+.slider label{min-width:72px}
+.stepbox{background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:14px 16px; min-height:120px}
+.stepbox .k{color:var(--muted); font-size:14px; margin-bottom:4px}
+.wide{overflow-x:auto}
+
+/* ---------- unlock checklist ---------- */
+.unlock{border:1.5px dashed var(--line2); border-radius:var(--radius); padding:18px 22px; margin:30px 0 12px; background:rgba(20,33,54,.75)}
+.unlock h3{font-size:18px}
+.unlock ul{margin:0; padding:0}
+.unlock li{list-style:none; display:flex; gap:10px; align-items:flex-start; padding:5px 0; color:var(--muted)}
+.unlock li .box{width:22px; height:22px; border-radius:6px; border:2px solid var(--line2); flex:0 0 22px; display:grid; place-items:center; font-size:13px; font-weight:700; margin-top:2px}
+.unlock li.done{color:var(--text)}
+.unlock li.done .box{background:var(--ok); border-color:var(--ok); color:#06210f; animation:pop .3s}
+.secnav{display:flex; justify-content:space-between; gap:10px; margin-top:16px; flex-wrap:wrap}
+
+/* ---------- start page ---------- */
+.hero{display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr); gap:26px; align-items:center; margin:10px 0 18px}
+@media (max-width:780px){ .hero{grid-template-columns:1fr} }
+.hero .kicker{color:var(--muted); font-size:16px; margin-bottom:8px}
+.hero p.lead{font-size:19px; color:var(--muted); max-width:34em}
+.twocards{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+@media (max-width:700px){ .twocards{grid-template-columns:1fr} }
+.twocards .card{margin:0}
+.goals li{list-style:none; display:flex; gap:10px; padding:4px 0; color:var(--muted)}
+.goals ul{margin:0; padding:0}
+.goals li .box{width:22px; height:22px; border-radius:50%; border:2px solid var(--line2); flex:0 0 22px; display:grid; place-items:center; font-size:12px; font-weight:700; margin-top:2px}
+.goals li.done{color:var(--text)} .goals li.done .box{background:var(--ok); border-color:var(--ok); color:#06210f}
+.linkbtn{background:none; border:none; color:var(--muted); font:inherit; font-size:14px; text-decoration:underline; cursor:pointer; padding:4px}
+
+/* ---------- final check ---------- */
+.dots{display:flex; gap:6px; margin:4px 0 14px; flex-wrap:wrap}
+.dots span{width:28px; height:28px; border-radius:50%; border:2px solid var(--line2); display:grid; place-items:center; font-size:12px; color:var(--muted)}
+.dots span.cur{border-color:var(--r); color:var(--r)}
+.dots span.ans{background:var(--line2); color:var(--text)}
+.dots span.ok{background:var(--ok); border-color:var(--ok); color:#06210f}
+.dots span.no{background:var(--bad); border-color:var(--bad); color:#3a0611}
+.bigscore{font-size:54px; font-weight:700; line-height:1; color:var(--r)}
+.reviewlist{margin:14px 0 0; padding:0; list-style:none}
+.reviewlist li{border-top:1px solid var(--line); padding:10px 0; font-size:15px}
+.reviewlist .yes{color:var(--ok); font-weight:600} .reviewlist .nope{color:var(--bad); font-weight:600}
+
+/* ---------- results ---------- */
+table.res{border-collapse:collapse; width:100%; margin:6px 0 4px}
+table.res th,table.res td{text-align:left; padding:8px 10px; border-bottom:1px solid var(--line)}
+table.res th{color:var(--muted); font-weight:400; width:44%}
+
+/* ---------- overlays ---------- */
+.overlay{position:fixed; inset:0; background:rgba(4,9,18,.9); z-index:100; display:none; align-items:center; justify-content:center; padding:20px}
+.overlay.show{display:flex}
+.modal{background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:26px; max-width:560px; width:100%; max-height:92vh; overflow:auto}
+.modal.wide{max-width:980px}
+.lockicon{width:56px; height:56px; border-radius:14px; background:rgba(251,113,133,.15); display:grid; place-items:center; margin-bottom:12px}
+
+/* ---------- calculator ---------- */
+.calc{position:fixed; right:16px; bottom:16px; z-index:60; width:300px; background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:14px; box-shadow:0 18px 50px rgba(0,0,0,.45)}
+.calc header{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:14px; color:var(--muted)}
+.calc input{width:100%; background:var(--bg); color:var(--text); border:1.5px solid var(--line2); border-radius:8px; padding:8px 10px; font:inherit; font-size:17px; text-align:right}
+.calc .out{text-align:right; font-size:22px; font-weight:600; min-height:32px; margin:6px 2px; font-variant-numeric:tabular-nums; color:var(--r)}
+.calc .keys{display:grid; grid-template-columns:repeat(5,1fr); gap:6px}
+.calc .keys button{background:var(--panel2); border:1px solid var(--line); color:var(--text); border-radius:8px; padding:9px 0; font:inherit; font-size:15px; cursor:pointer}
+.calc .keys button.fn{color:var(--y)}
+.calc .keys button.eq{background:var(--r); color:#231a00; font-weight:700}
+@media (max-width:520px){ .calc{left:10px; right:10px; width:auto; bottom:10px} }
+
+
+.work{background:var(--bg); border:1.5px dashed var(--bad); border-radius:10px; padding:10px 14px; margin-bottom:12px; font-variant-numeric:tabular-nums}
+.mistabs .btn.on{border-color:var(--r); color:var(--r)}
+
+.tile .ic{display:block; line-height:0; color:var(--r)}
+.tile.cur .ic{color:#231a00}
+.badge .ic{display:block; line-height:0; color:var(--r); margin-top:4px}
+
+.wh{font:inherit; font-size:.92em; font-weight:600; color:var(--y); background:rgba(69,200,240,.1); border:1px dashed rgba(69,200,240,.6); border-radius:999px; padding:0 8px; cursor:help}
+.whpop{position:absolute; z-index:90; max-width:300px; background:var(--panel2); border:1px solid var(--y); border-radius:10px; padding:8px 12px; font-size:14px; box-shadow:0 10px 30px rgba(0,0,0,.4)}
+body.keyon .opt[data-key]{outline:2px dashed var(--r); outline-offset:2px}
+body.keyon .chip[data-key]:not(.placed)::after{content:' → ' attr(data-key); color:var(--r); font-size:12px}
+body.keyon [data-keyshow]::after{content:' (' attr(data-keyshow) ')'; color:var(--r); font-size:13px}
+.selall .opt .L{border-radius:6px}
+.opt.picked{border-color:var(--r); background:rgba(255,211,92,.1)}
+.opt.picked .L{background:var(--r); color:#231a00}
+.twopart h4{margin:14px 0 6px}
+#calcBtn{display:none !important}
+.stage{fill:none}
+
+.tag.phen{background:rgba(244,114,182,.16); color:#f9a8d4}
+.card.phencard{border:1.5px solid rgba(244,114,182,.5); background:linear-gradient(180deg,rgba(244,114,182,.07),transparent 40%), var(--panel)}
+.lvlbtns .btn.on{background:var(--r); color:#231a00; border-color:var(--r)}
+.meters{display:grid; gap:9px}
+.meter .lab{display:flex; justify-content:space-between; font-size:14px; margin-bottom:3px}
+.meter .track{height:12px; border-radius:6px; background:var(--panel2); overflow:hidden}
+.meter .fill{height:100%; border-radius:6px; transition:width .6s ease, background .6s}
+.runner .leg1{transform-origin:150px 150px; animation:swing var(--dur,1s) ease-in-out infinite alternate}
+.runner .leg2{transform-origin:150px 150px; animation:swing var(--dur,1s) ease-in-out infinite alternate-reverse}
+.runner .arm1{transform-origin:150px 100px; animation:swing var(--dur,1s) ease-in-out infinite alternate-reverse}
+.runner .arm2{transform-origin:150px 100px; animation:swing var(--dur,1s) ease-in-out infinite alternate}
+.runner.still .leg1,.runner.still .leg2,.runner.still .arm1,.runner.still .arm2{animation:none}
+@keyframes swing{from{transform:rotate(-24deg)} to{transform:rotate(24deg)}}
+.puff{animation:puff var(--bdur,4s) linear infinite; opacity:0}
+@keyframes puff{0%{transform:translate(0,0) scale(.6); opacity:.9} 100%{transform:translate(60px,-24px) scale(1.6); opacity:0}}
+.belt{animation:belt var(--dur,1s) linear infinite}
+@keyframes belt{from{stroke-dashoffset:0} to{stroke-dashoffset:-24}}
+.builder{margin:8px 0 14px}.sbrow{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.sbb{display:inline-flex;align-items:center;justify-content:center;width:46px;height:40px;border-radius:8px;color:#fff;font-weight:700;font-size:20px}.sbsel{width:46px;height:40px;font:inherit;font-weight:700;font-size:18px;text-align:center;border-radius:8px}
+.wbank{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px} .wbank span{font-size:13px; padding:3px 10px; border-radius:999px; border:1.5px solid var(--line2); color:var(--muted)} .wbank span.on{background:var(--ok); border-color:var(--ok); color:#06210f}
+.firstidea{background:var(--panel2); border-left:3px solid #f472b6; border-radius:8px; padding:10px 14px; margin:8px 0 12px; font-style:italic}
+
+.btbkey{display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; font-size:14px; background:var(--panel2); border-radius:10px; padding:8px 12px; margin:8px 0}
+.btbkey span{display:inline-block; width:16px; height:16px; border-radius:50%; vertical-align:middle; margin-right:2px; border:1.5px solid #e8eef8}
+.toggles label{display:flex; gap:8px; align-items:center; margin:6px 0; font-size:16px} .toggles input{width:18px; height:18px; accent-color:var(--r)}
+.btn.on{background:var(--r); color:#231a00; border-color:var(--r)}
+svg.tube{width:150px; height:auto; display:inline-block}
+.dot{display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:6px; vertical-align:middle; border:1px solid #e8eef8}
+.tuberow{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; text-align:center; margin:10px 0} .tuberow svg.tube{width:100%; max-width:110px}
+.eqbox{background:var(--panel2); border-radius:12px; padding:12px 16px; margin:8px 0}
+.eqlab{font-size:14px; font-weight:700; margin-top:6px} .eqline{font-size:20px; font-weight:600; margin:2px 0 6px}
+@media (prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important} }
+
+@media print{
+  body{background:#fff; color:#000; font-size:13px}
+  .topbar,.calc,.overlay,.noprint,.unlock,.secnav{display:none !important}
+  main{padding:0; max-width:none}
+  .card{background:#fff; border:1px solid #999; color:#000}
+  .badge{border-color:#000; background:#fff} .badge .sym{color:#000}
+  .muted,.meta,table.res th{color:#333}
+  table.res th,table.res td{border-color:#bbb}
+  .bigscore{color:#000}
+}
+.sorter .chip.placed{pointer-events:auto; cursor:pointer; opacity:1; border-color:rgba(163,180,207,.45); animation:none}
+.sorter .chip.placed:disabled{cursor:default; border-color:rgba(74,222,128,.6)}
+.mistabs .btn.on{color:#231a00}
+.aa{display:inline-block;padding:4px 10px;border-radius:9px;font-weight:700;font-size:14px;color:#0d1626}
+button.sbb{border:none;cursor:pointer;font:inherit;font-weight:700;color:#fff}
+.rtfig svg .rc:hover rect{stroke:#ffd35c}
+.oc:hover rect{stroke:#ffd35c}
+</style>
+</head>
+<body>
+<header class="topbar noprint" id="topbar" hidden>
+  <div class="topbar-inner">
+    <div class="brand">Mitosis<span id="whoami"></span></div>
+    <nav class="navtiles" id="navtiles" aria-label="Lesson sections"></nav>
+    <span class="savenote" id="saveNote" aria-live="polite"></span>
+    <button class="btn ghost small" id="teachBtn" type="button">Teacher</button>
+    <button class="btn ghost small" id="calcBtn" type="button" aria-expanded="false">Calculator</button>
+  </div>
+  <div class="progress" aria-hidden="true"><div id="progbar"></div></div>
+</header>
+
+<main id="main">
+  <!-- ================= START PAGE ================= -->
+  <section id="start" class="page">
+    <div class="hero">
+      <div>
+        <div class="kicker">Biology · Unit 4: Genetics · Lesson</div>
+        <h1>Mitosis and the Cell Cycle</h1>
+        <p class="lead">A scraped knee is covered with new skin in about ten days. Find out how one cell copies its chromosomes and splits into two identical cells, and what happens when that control breaks down.</p>
+      </div>
+      <div id="heroFig"></div>
+    </div>
+
+    <div class="twocards">
+      <div class="card">
+        <h3>Objective</h3>
+        <p>I can describe the cell cycle, explain how chromosomes are copied, identify the phases of mitosis, and explain how uncontrolled cell division leads to cancer.</p>
+      </div>
+      <div class="card">
+        <h3>Standards</h3>
+        <p class="small" style="margin-bottom:.5em"><b>NGSS HS-LS1-4</b> Use a model to illustrate the role of cellular division (mitosis) and differentiation in producing and maintaining complex organisms.</p>
+        <p class="small" style="margin:0"><b>Connects to Unit 4</b> Chromosomes carry the genes. Mitosis passes an identical set of chromosomes to every body cell.</p>
+      </div>
+    </div>
+
+    <div class="card goals" id="goalsCard">
+      <h3>Goals</h3>
+      <p class="small muted">These check themselves off as you finish sections.</p>
+      <ul id="goalsList"></ul>
+    </div>
+
+    <div class="card nostore" id="noStore" hidden>
+      <h3>This browser can't save your work</h3>
+      <p>You may be in guest or incognito mode. If you close this tab, your work will be lost. Sign in to your school account on your Chromebook and open the lesson again, or ask your teacher.</p>
+    </div>
+    <div class="card" id="signin">
+      <h3 id="signinTitle">Sign in to start</h3>
+      <div id="resumeBox" hidden>
+        <p id="resumeText"></p>
+        <div class="btnrow">
+          <button class="btn primary" id="resumeBtn" type="button">Continue the lesson</button>
+          <button class="linkbtn" id="notMeBtn" type="button">Not you? Ask your teacher to reset this device.</button>
+        </div>
+        <div class="fb no" id="resumeErr" hidden></div>
+        <div>
+        </div>
+      </div>
+      <form id="startForm" autocomplete="off" novalidate>
+        <div class="formgrid">
+          <label class="field">First name<input id="fFirst" required></label>
+          <label class="field">Last name<input id="fLast" required></label>
+          <label class="field">Student ID<input id="fId" inputmode="numeric" required></label>
+          <label class="field">Period<select id="fPeriod" required></select></label>
+          <label class="field">Teacher<select id="fTeacher" required></select></label>
+        </div>
+        <p class="small muted" id="saveInfo">You'll need about 40 minutes. Your progress saves on this device.</p>
+        <div class="fb no" id="formErr" hidden></div>
+        <div class="btnrow"><button class="btn primary" type="button" id="startBtn">Start the lesson</button></div>
+      </form>
+    </div>
+    <p style="text-align:center"><button class="btn ghost" id="teacherLink" type="button">Teacher: enter unlock code</button></p>
+  </section>
+
+  <div id="sections"></div>
+</main>
+
+<!-- ================= OPEN IN TWO TABS ================= -->
+<div class="overlay" id="tabOv" role="dialog" aria-modal="true" aria-labelledby="tabTitle">
+  <div class="modal">
+    <h2 id="tabTitle">This lesson is open in another tab</h2>
+    <p>To keep your newest work safe, this copy stopped saving. Close the extra tab, then reload this one.</p>
+    <div class="btnrow"><button class="btn primary" id="tabReload" type="button">Reload with my newest work</button></div>
+  </div>
+</div>
+
+<!-- ================= LOCK SCREEN ================= -->
+<div class="overlay" id="lockOv" role="dialog" aria-modal="true" aria-labelledby="lockTitle">
+  <div class="modal">
+    <div class="lockicon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fb7185" stroke-width="2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+    <h2 id="lockTitle">Lesson locked</h2>
+    <p id="lockMsg">You left the lesson page or exited full screen. Raise your hand so your teacher can unlock it. Your work is saved.</p>
+    <div class="btnrow">
+      <input class="ans" id="lockCode" type="password" placeholder="Teacher code" style="width:200px" autocomplete="off">
+      <button class="btn primary" id="lockBtn" type="button">Unlock</button>
+    </div>
+    <div class="fb no" id="lockErr" hidden>That code didn't work. Only your teacher can unlock the lesson.</div>
+  </div>
+</div>
+
+<!-- ================= FULL-SCREEN GATE ================= -->
+<div class="overlay" id="gateOv" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+  <div class="modal">
+    <h2 id="gateTitle">This lesson runs in full screen</h2>
+    <p>Stay on this page until you finish. If you leave the page or exit full screen, the lesson locks and your teacher has to unlock it.</p>
+    <div class="btnrow"><button class="btn primary" id="gateBtn" type="button">Enter full screen and continue</button></div>
+  </div>
+</div>
+
+<!-- ================= TEACHER VIEW ================= -->
+<div class="overlay" id="teachOv" role="dialog" aria-modal="true" aria-labelledby="teachTitle">
+  <div class="modal" id="teachModal">
+    <div id="teachLogin">
+      <h2 id="teachTitle">Teacher view</h2>
+      <p class="muted">Enter the teacher code.</p>
+      <div class="btnrow">
+        <input class="ans" id="teachCode" type="password" placeholder="Teacher code" style="width:200px" autocomplete="off">
+        <button class="btn primary" id="teachGo" type="button">Open</button>
+        <button class="btn ghost" id="teachCancel" type="button">Close</button>
+      </div>
+      <div class="fb no" id="teachErr" hidden>That code didn't work.</div>
+    </div>
+    <div id="teachPanel" hidden></div>
+  </div>
+</div>
+
+<!-- ================= CALCULATOR ================= -->
+<div class="calc noprint" id="calc" hidden role="dialog" aria-label="Calculator in degree mode">
+  <header><span>Calculator · degree mode</span><button class="linkbtn" id="calcClose" type="button">Close</button></header>
+  <input id="calcIn" aria-label="Calculation" placeholder="e.g. 20*cos(30)" autocomplete="off" spellcheck="false">
+  <div class="out" id="calcOut" aria-live="polite"></div>
+  <div class="keys" id="calcKeys"></div>
+</div>
+<script src="sheets-config.js"></script>
+<script>
+(function(){
+'use strict';
+
+/* =====================================================================
+   SETTINGS — the only part of this file you should need to change
+   ===================================================================== */
+const LESSON_ID   = 'bio-u4-mitosis';
+const LESSON_NAME = 'Mitosis and the Cell Cycle';
+const UNLOCK_CODE = LESSON_NAME.trim().split(/\s+/).pop();   // lock-screen code = last word of the title (respiration)
+const TEACHER_CODE = 'Teacher007';                           // universal teacher-tools code (also opens the lock screen)
+const codeIs=(v,c)=>String(v||'').trim().toLowerCase()===String(c).toLowerCase();
+/* Google Sheets + teacher list: same setup as the formative assessments and the Bohr model lesson.
+   If sheets-config.js (next to this file on the site) defines TEACHERS or SHEETS_WEBHOOK_URL, those win. */
+const BACKUP_URL = 'https://script.google.com/macros/s/AKfycbxogHjPorTs1pPPt8TCxY_WzG3FAlfsz2a8rt3yVt7_4N_Y62OjQmyiWtmSY6i07Kja/exec';
+const BACKUP_TEACHERS = ['Austin', 'Mueller', 'McCue', 'Arce', 'Trimm', 'Garcia', 'Trimm/Callanan', 'Callanan'];
+function teacherList() { try { if (typeof TEACHERS !== 'undefined' && Array.isArray(TEACHERS) && TEACHERS.length) return TEACHERS.map(String).filter(Boolean); } catch (e) {} return BACKUP_TEACHERS; }
+function sheetURL() { try { if (typeof SHEETS_WEBHOOK_URL !== 'undefined' && SHEETS_WEBHOOK_URL && String(SHEETS_WEBHOOK_URL).indexOf('PASTE') < 0) return String(SHEETS_WEBHOOK_URL); } catch (e) {} return BACKUP_URL; }
+const BACKUP_PERIODS = ['1','2','3','4','5','6','7','8'];
+function periodList(){ try{ if(typeof PERIODS!=='undefined'&&Array.isArray(PERIODS)&&PERIODS.length) return PERIODS.map(String); }catch(e){} return BACKUP_PERIODS; }
+const PASS_SCORE = 8;                          // out of 10 on the final check
+/* ===================================================================== */
+
+const STORE = 'mitosis_state_v1', RECS = 'mitosis_records_v1';
+const NS = 'http://www.w3.org/2000/svg';
+const COL = {x:'#ff7d6e', y:'#45c8f0', a:'#b996ff', b:'#5fe3a9', r:'#ffd35c', amber:'#f5a524',
+             grid:'#1b2a44', axis:'#5d7399', text:'#e8eef8', muted:'#a3b4cf', bg:'#0a1322', ok:'#4ade80'};
+const RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const $ = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+function h(tag, attrs={}, html){
+  const e=document.createElement(tag);
+  for(const k in attrs){
+    if(k==='class') e.className=attrs[k];
+    else if(k.startsWith('on') && typeof attrs[k]==='function') e.addEventListener(k.slice(2), attrs[k]);
+    else if(attrs[k]!==false && attrs[k]!=null) e.setAttribute(k, attrs[k]===true?'':attrs[k]);
+  }
+  if(html!=null) e.innerHTML=html;
+  return e;
+}
+function sv(tag, attrs={}, parent){
+  const e=document.createElementNS(NS,tag);
+  for(const k in attrs) if(attrs[k]!=null) e.setAttribute(k, attrs[k]);
+  if(parent) parent.appendChild(e);
+  return e;
+}
+const rad=d=>d*Math.PI/180, deg=r=>r*180/Math.PI;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+function fmt(v,d=1){ let s=(Math.round(v*Math.pow(10,d))/Math.pow(10,d)).toFixed(d); if(/^-0\.?0*$/.test(s)) s=s.slice(1); return s.replace('-','−'); }
+function parseNum(str){
+  if(str==null) return NaN;
+  const s=String(str).trim().replace(/[−–—]/g,'-').replace(/,/g,'').replace(/\s+/g,'');
+  const m=s.match(/^[+-]?(\d+\.?\d*|\.\d+)/);
+  return m?parseFloat(m[0]):NaN;
+}
+function near(v, ans, kind){
+  if(isNaN(v)) return false;
+  if(kind==='angle') return Math.abs(v-ans)<=0.6;
+  if(kind==='time') return Math.abs(v-ans)<=Math.max(0.015, Math.abs(ans)*0.025);
+  return Math.abs(v-ans) <= Math.max(0.15, Math.abs(ans)*0.015);
+}
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function tween(ms, fn){
+  return new Promise(res=>{
+    if(RM || ms<=0){ fn(1); res(); return; }
+    const t0=performance.now();
+    function step(now){ const t=Math.min(1,(now-t0)/ms); fn(ease(t)); if(t<1) requestAnimationFrame(step); else res(); }
+    requestAnimationFrame(step);
+  });
+}
+const wait=ms=>new Promise(r=>setTimeout(r, RM?0:ms));
+function quad(x,y){ if(x>0&&y>0) return 'I'; if(x<0&&y>0) return 'II'; if(x<0&&y<0) return 'III'; if(x>0&&y<0) return 'IV'; return null; }
+function stdAngle(x,y){ let a=deg(Math.atan2(y,x)); if(a<0) a+=360; return a; }
+function compass(th){
+  th=((th%360)+360)%360; const t=Math.round(th*10)/10;
+  const ax={0:'straight east',90:'straight north',180:'straight west',270:'straight south'};
+  if(ax[t]!==undefined) return {h:ax[t], v:null};
+  const f=n=>(Math.round(n*10)/10).toString();
+  if(t<90)  return {h:`${f(t)}° north of east`,  v:`${f(90-t)}° east of north`};
+  if(t<180) return {h:`${f(180-t)}° north of west`, v:`${f(t-90)}° west of north`};
+  if(t<270) return {h:`${f(t-180)}° south of west`, v:`${f(270-t)}° west of south`};
+  return {h:`${f(360-t)}° south of east`, v:`${f(t-270)}° east of south`};
+}
+// colored symbols
+const V = {
+  Ax:'<span class="cx">A<sub>x</sub></span>', Ay:'<span class="cy">A<sub>y</sub></span>',
+  Bx:'<span class="cx">B<sub>x</sub></span>', By:'<span class="cy">B<sub>y</sub></span>',
+  Rx:'<span class="cx">R<sub>x</sub></span>', Ry:'<span class="cy">R<sub>y</sub></span>',
+  vx:'<span class="cx">v<sub>x</sub></span>', vy:'<span class="cy">v<sub>y</sub></span>',
+  A:'<span class="ca">A</span>', B:'<span class="cb">B</span>', R:'<span class="cr">R</span>',
+  tref:'θ<sub>ref</sub>'
+};
+
+/* ---------------- state ---------------- */
+function freshState(){
+  return {lesson:LESSON_ID, student:null, startedAt:null, sec:0, unlocked:0, reqs:{}, first:{}, solved:{}, misc:{},
+    final:{attempts:0, fails:0, best:0, passed:false, cur:null, history:[], reviewed:false},
+    leaves:0, locked:false, completedAt:null, sent:false, preview:false};
+}
+function load(){ try{ const s=JSON.parse(localStorage.getItem(STORE)); return (s && s.lesson===LESSON_ID)?s:null; }catch(e){ return null; } }
+let S = load() || freshState();
+let STORAGE_OK=true, saveBlocked=false, onConflict=()=>{}, onSaved=()=>{};
+try{ localStorage.setItem('__vecAdd_test','1'); STORAGE_OK=localStorage.getItem('__vecAdd_test')==='1'; localStorage.removeItem('__vecAdd_test'); }catch(e){ STORAGE_OK=false; }
+try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){}
+function save(){
+  if(saveBlocked) return;
+  if(S.preview){ onSaved(); return; }
+  try{
+    const raw=localStorage.getItem(STORE);
+    if(raw){ const st=JSON.parse(raw); if(st && st.lesson===LESSON_ID && (st.rev||0)>(S.rev||0)){ saveBlocked=true; onConflict(); return; } }
+    S.rev=(S.rev||0)+1; S.updatedAt=Date.now();
+    localStorage.setItem(STORE, JSON.stringify(S)); onSaved();
+  }catch(e){}
+}
+
+const ITEMS = new Set();          // ids that count toward the assignment score
+const reg = id => { ITEMS.add(id); return id; };
+function attempt(id, ok){ if(!(id in S.first)) S.first[id]=ok; if(ok) S.solved[id]=true; save(); }
+function assignScore(){ let c=0; ITEMS.forEach(id=>{ if(S.first[id]===true) c++; }); const t=ITEMS.size; return {c, t, pct:t?Math.round(100*c/t):0}; }
+
+let onReqChange = ()=>{};
+function reqDone(id){ if(S.reqs[id]) return; S.reqs[id]=true; save(); onReqChange(id); }
+function allSolved(ids){ return ids.every(i=>S.solved[i]); }
+
+/* ---------------- SVG helpers ---------------- */
+function arrow(g, x1,y1,x2,y2, color, o={}){
+  const w=o.w||3, hl=o.head||12, hw=o.hw||6.5;
+  const dx=x2-x1, dy=y2-y1, L=Math.hypot(dx,dy);
+  const grp=sv('g',{opacity:o.op!=null?o.op:null},g);
+  if(L<0.5) return grp;
+  const ux=dx/L, uy=dy/L, hh=Math.min(hl, L*0.55);
+  const bx=x2-ux*hh, by=y2-uy*hh;
+  sv('line',{x1,y1,x2:bx,y2:by,stroke:color,'stroke-width':w,'stroke-linecap':o.dash?'butt':'round','stroke-dasharray':o.dash||null},grp);
+  const k=hh/hl;
+  sv('polygon',{points:`${x2},${y2} ${bx-uy*hw*k},${by+ux*hw*k} ${bx+uy*hw*k},${by-ux*hw*k}`,fill:color},grp);
+  return grp;
+}
+function label(g, x, y, txt, color, o={}){
+  const t=sv('text',{x,y,fill:color||COL.text,'font-size':o.size||15,'font-weight':o.weight||600,'text-anchor':o.anchor||'middle',
+    'dominant-baseline':'middle','paint-order':'stroke',stroke:COL.bg,'stroke-width':o.halo==null?5:o.halo,'stroke-linejoin':'round'},g);
+  t.innerHTML=txt;
+  return t;
+}
+function arcPath(cx,cy,r,a0,a1){
+  const p=a=>[cx+r*Math.cos(rad(a)), cy-r*Math.sin(rad(a))];
+  const [x0,y0]=p(a0),[x1,y1]=p(a1); const large=Math.abs(a1-a0)>180?1:0; const sweep=a1>a0?0:1;
+  return `M${x0},${y0} A${r},${r} 0 ${large} ${sweep} ${x1},${y1}`;
+}
+function niceStep(span){ const raw=span/8; const p=Math.pow(10,Math.floor(Math.log10(raw))); const m=raw/p; return (m<1.5?1:m<3.5?2:m<7.5?5:10)*p; }
+
+function plane(o){
+  const pad=o.pad??24;
+  const xmin=o.xmin,xmax=o.xmax,ymin=o.ymin,ymax=o.ymax;
+  const s=o.scale || ((o.w||440)-2*pad)/(xmax-xmin);
+  const W=(xmax-xmin)*s+2*pad, H=(ymax-ymin)*s+2*pad;
+  const svg=sv('svg',{viewBox:`0 0 ${W} ${H}`,class:'fig',role:'img','aria-label':o.label||'Coordinate grid'});
+  const X=x=>pad+(x-xmin)*s, Y=y=>pad+(ymax-y)*s;
+  const gGrid=sv('g',{},svg), gDraw=sv('g',{},svg), gTop=sv('g',{},svg);
+  const step=o.grid||1;
+  if(o.grid!==0){
+    for(let x=Math.ceil(xmin/step)*step; x<=xmax+1e-9; x+=step) sv('line',{x1:X(x),y1:Y(ymin),x2:X(x),y2:Y(ymax),stroke:COL.grid,'stroke-width':1},gGrid);
+    for(let y=Math.ceil(ymin/step)*step; y<=ymax+1e-9; y+=step) sv('line',{x1:X(xmin),y1:Y(y),x2:X(xmax),y2:Y(y),stroke:COL.grid,'stroke-width':1},gGrid);
+  }
+  if(xmin<=0&&xmax>=0) sv('line',{x1:X(0),y1:Y(ymin),x2:X(0),y2:Y(ymax),stroke:COL.axis,'stroke-width':1.6},gGrid);
+  if(ymin<=0&&ymax>=0) sv('line',{x1:X(xmin),y1:Y(0),x2:X(xmax),y2:Y(0),stroke:COL.axis,'stroke-width':1.6},gGrid);
+  if(o.ticks){
+    const ts=o.ticks;
+    for(let x=Math.ceil(xmin/ts)*ts; x<=xmax; x+=ts) if(Math.abs(x)>1e-9 && x>xmin && x<xmax) label(gGrid,X(x),Y(0)+13,String(+x.toFixed(2)).replace('-','−'),COL.muted,{size:11,weight:400,halo:3});
+    for(let y=Math.ceil(ymin/ts)*ts; y<=ymax; y+=ts) if(Math.abs(y)>1e-9 && y>ymin && y<ymax) label(gGrid,X(0)-5,Y(y),String(+y.toFixed(2)).replace('-','−'),COL.muted,{size:11,weight:400,anchor:'end',halo:3});
+  }
+  if(o.names!==false){
+    if(ymin<=0&&ymax>=0) label(gGrid,X(xmax)-4,Y(0)-11,'+x',COL.muted,{size:13,anchor:'end',halo:3});
+    if(xmin<=0&&xmax>=0) label(gGrid,X(0)+8,Y(ymax)+10,'+y',COL.muted,{size:13,anchor:'start',halo:3});
+  }
+  function toData(e){
+    const pt=svg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY;
+    const p=pt.matrixTransform(svg.getScreenCTM().inverse());
+    return {x:(p.x-pad)/s+xmin, y:ymax-(p.y-pad)/s};
+  }
+  return {svg,X,Y,s,W,H,gGrid,gDraw,gTop,toData};
+}
+function autoPlane(points, o={}){
+  let xs=[0,...points.map(p=>p[0])], ys=[0,...points.map(p=>p[1])];
+  let x0=Math.min(...xs), x1=Math.max(...xs), y0=Math.min(...ys), y1=Math.max(...ys);
+  const span=Math.max(x1-x0, y1-y0, 1); const m=span*0.16;
+  x0-=m; x1+=m; y0-=m; y1+=m;
+  const room=span*0.24; x0=Math.min(x0,-room); x1=Math.max(x1,room); y0=Math.min(y0,-room); y1=Math.max(y1,room);
+  // make the window square so tall or wide vectors don't stretch the figure
+  const sx=x1-x0, sy=y1-y0;
+  if(sx<sy){ const d=(sy-sx)/2; x0-=d; x1+=d; } else if(sy<sx){ const d=(sx-sy)/2; y0-=d; y1+=d; }
+  const step=niceStep(Math.max(x1-x0,y1-y0));
+  return plane(Object.assign({xmin:Math.floor(x0/step)*step, xmax:Math.ceil(x1/step)*step, ymin:Math.floor(y0/step)*step, ymax:Math.ceil(y1/step)*step, grid:step, w:o.w||420}, o));
+}
+function rightMark(g, P, cx, cy, dx, dy, size){
+  // small square at corner (cx,cy) in data coords; dx,dy are signs pointing into the triangle
+  const s=size/P.s;
+  sv('path',{d:`M${P.X(cx+dx*s)},${P.Y(cy)} L${P.X(cx+dx*s)},${P.Y(cy+dy*s)} L${P.X(cx)},${P.Y(cy+dy*s)}`,fill:'none',stroke:COL.muted,'stroke-width':1.3},g);
+}
+// drag handles on a plane. handles: [{get:()=>[x,y], set:(x,y)=>{}, el}]
+function svgDrag(P, handles, maxDist){
+  let act=null;
+  P.svg.addEventListener('pointerdown',e=>{
+    const d=P.toData(e); let best=null, bd=1e9;
+    handles.forEach(hd=>{ const [hx,hy]=hd.get(); const dd=Math.hypot(hx-d.x,hy-d.y); if(dd<bd){bd=dd; best=hd;} });
+    if(!best || (maxDist && bd>maxDist)) return;
+    act=best; try{ P.svg.setPointerCapture(e.pointerId); }catch(_){}
+    act.set(d.x,d.y); e.preventDefault();
+  });
+  P.svg.addEventListener('pointermove',e=>{ if(!act) return; const d=P.toData(e); act.set(d.x,d.y); });
+  const end=()=>{ act=null; };
+  P.svg.addEventListener('pointerup',end); P.svg.addEventListener('pointercancel',end);
+  handles.forEach(hd=>{
+    if(!hd.el) return;
+    hd.el.addEventListener('keydown',e=>{
+      const [x,y]=hd.get(); const st=hd.step||1; let nx=x, ny=y;
+      if(e.key==='ArrowLeft') nx-=st; else if(e.key==='ArrowRight') nx+=st; else if(e.key==='ArrowUp') ny+=st; else if(e.key==='ArrowDown') ny-=st; else return;
+      e.preventDefault(); hd.set(nx,ny);
+    });
+  });
+}
+
+/* ---------------- word-help chips (tap a key word to see what it means) ---------------- */
+function wh(term, def){ return `<button type="button" class="wh" data-def="${def.replace(/"/g,'&quot;')}">${term}</button>`; }
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.wh'); const old=document.querySelector('.whpop');
+  if(old&&(!b||old.dataset.for===b.textContent)){ old.remove(); if(b) return; }
+  if(old) old.remove(); if(!b) return;
+  const p=document.createElement('div'); p.className='whpop'; p.dataset.for=b.textContent; p.innerHTML=`<b>${b.textContent}</b>: ${b.dataset.def}`;
+  document.body.appendChild(p); const r=b.getBoundingClientRect();
+  p.style.left=Math.max(8,Math.min(window.innerWidth-p.offsetWidth-8, r.left+window.scrollX))+'px'; p.style.top=(r.bottom+window.scrollY+6)+'px';
+});
+
+/* ---------------- UI components ---------------- */
+const ICON = {
+  read:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H2z"/><path d="M22 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8z"/></svg>',
+  try:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V5a2 2 0 0 1 4 0v6"/><path d="M13 10a2 2 0 0 1 4 0v2a2 2 0 0 1 3 1v2a7 7 0 0 1-7 7h-1a7 7 0 0 1-6-3l-2.5-4a2 2 0 0 1 3.4-2L9 15"/></svg>',
+  qc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg>',
+  phen:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>'
+};
+function card(parent, kind, title){
+  const names={read:'Read', try:'Try it', qc:'Quick check', phen:'Phenomenon'};
+  const c=h('div',{class:'card'+(kind==='qc'?' qc':'')});
+  c.innerHTML=`<span class="tag ${kind}">${ICON[kind]}${names[kind]}</span>${title?`<h3>${title}</h3>`:''}`;
+  parent.appendChild(c); return c;
+}
+
+function mcq(parent, o){
+  reg(o.id);
+  const w=h('div',{class:'mcq'}); w.innerHTML=`<div class="q">${o.q}</div>`;
+  const opts=h('div',{class:'opts'}), fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'});
+  const ordKey='ord_'+o.id;
+  let order=S.misc[ordKey]; if(!order||order.length!==o.opts.length){ order=shuffle(o.opts.map((_,i)=>i)); S.misc[ordKey]=order; }
+  const btns=[];
+  order.forEach((i,pos)=>{ const t=o.opts[i];
+    const b=h('button',{class:'opt',type:'button'},`<span class="L">${'ABCDEF'[pos]}</span><span>${t}</span>`);
+    if(i===o.ans) b.dataset.key='1';
+    b.addEventListener('click',()=>{
+      if(w.dataset.done) return;
+      const ok=i===o.ans; attempt(o.id, ok);
+      if(ok){ solvedUI(); o.onSolved && o.onSolved(); }
+      else {
+        b.classList.add('wrong','shake'); b.disabled=true; setTimeout(()=>b.classList.remove('shake'),400);
+        fb.className='fb no'; fb.innerHTML='<b>Not quite.</b> '+((o.wrong&&o.wrong[i])||'Look back at the reading and try again.'); fb.hidden=false;
+      }
+    });
+    opts.appendChild(b); btns[i]=b;
+  });
+  function solvedUI(){
+    w.dataset.done=1; btns.forEach(x=>x.disabled=true); btns[o.ans].classList.add('right');
+    fb.className='fb ok'; fb.innerHTML='<b>Correct.</b> '+(o.why||''); fb.hidden=false;
+  }
+  w.append(opts, fb); parent.appendChild(w);
+  if(S.solved[o.id]) solvedUI();
+  return w;
+}
+function qcGroup(parent, qs, reqId){
+  const ids=qs.map(q=>q.id);
+  qs.forEach(q=>{ q.onSolved=()=>{ if(allSolved(ids)) reqDone(reqId); }; mcq(parent,q); });
+}
+
+function numq(parent, o){
+  const counts=o.counts!==false; if(counts) reg(o.id);
+  const wrap=h('div',{class:'numq'});
+  const row=h('div',{class:'numrow'});
+  row.innerHTML=`<label for="in-${o.id}">${o.label}</label><span class="inwrap"><input class="ans" id="in-${o.id}" type="text" autocomplete="off" spellcheck="false" placeholder="?"><span class="unit">${o.unit||''}</span></span><button class="btn small ghost" type="button">Check</button>`;
+  const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'});
+  const inp=$('input',row), btn=$('button',row); let tries=0;
+  function solvedUI(v){
+    wrap.dataset.done=1; inp.value=fmt(v, o.dp??1).replace('−','-'); inp.classList.remove('no'); inp.classList.add('ok'); inp.readOnly=true; btn.disabled=true;
+    if(o.why){ fb.className='fb ok'; fb.innerHTML='<b>Correct.</b> '+o.why; fb.hidden=false; } else fb.hidden=true;
+  }
+  function go(){
+    if(wrap.dataset.done) return;
+    const v=parseNum(inp.value);
+    if(isNaN(v)){ fb.className='fb no'; fb.innerHTML='Type a number first.'; fb.hidden=false; return; }
+    const ok=o.check?o.check(v):near(v,o.ans,o.kind);
+    if(counts) attempt(o.id, ok); else if(ok){ S.solved[o.id]=true; save(); }
+    if(ok){ S.misc['v_'+o.id]=v; save(); solvedUI(v); o.onSolved && o.onSolved(v); }
+    else{
+      tries++; inp.classList.add('no'); inp.classList.remove('shake'); void inp.offsetWidth; inp.classList.add('shake');
+      let msg=o.hint||'Check your work and try again.';
+      if(o.ans!=null && o.kind!=='angle' && near(-v,o.ans) && Math.abs(o.ans)>0.2) msg='Right size, wrong sign. Which way does it point along that axis?';
+      else if(o.signHint && o.ans!=null && near(Math.abs(v),Math.abs(o.ans)) ) msg=o.signHint;
+      fb.className='fb no'; fb.innerHTML='<b>Not yet.</b> '+msg+(tries>=2&&o.how?`<div class="how"><b>Here's how:</b> ${o.how}</div>`:''); fb.hidden=false;
+    }
+  }
+  btn.addEventListener('click',go);
+  inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); go(); } });
+  inp.addEventListener('input',()=>{ inp.classList.remove('no'); if(!wrap.dataset.done){ S.misc['d_'+o.id]=inp.value; save(); } });
+  if(!S.solved[o.id] && S.misc['d_'+o.id]) inp.value=S.misc['d_'+o.id];
+  wrap.append(row, fb); parent.appendChild(wrap);
+  if(S.solved[o.id]) solvedUI(S.misc['v_'+o.id]!=null?S.misc['v_'+o.id]:o.ans);
+  return wrap;
+}
+
+function sorter(parent, o){
+  // Cards can go in any box. One Check button says only whether EVERYTHING is right, never which card is wrong.
+  const key='sort_'+o.id; const st=S.misc[key]||(S.misc[key]={}); const doneKey=key+'_done';
+  const w=h('div',{class:'sorter'});
+  w.innerHTML=`<p class="small muted" style="margin-bottom:8px">Tap a card, then tap a box (or drag it). Tap a card in a box to take it back. When every card is placed, press <b>Check</b>.</p>`;
+  const tray=h('div',{class:'chips'}); const bins=h('div',{class:'bins'}); const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'});
+  const row=h('div',{class:'btnrow',style:'margin-top:10px'}); const cb=h('button',{class:'btn primary',type:'button'},'Check'); row.appendChild(cb);
+  let sel=null; const binEls={};
+  const done=()=>!!S.misc[doneKey];
+  o.bins.forEach(b=>{
+    const be=h('div',{class:'bin',tabindex:0,role:'button','aria-label':'Put the selected card in '+b.label});
+    be.innerHTML=`<h4>${b.html||b.label}</h4><div class="binchips"></div>`;
+    be.addEventListener('click',e=>{ if(done()) return; const hit=e.target.closest('.chip'); if(hit&&sel==null) return; if(sel!=null) place(sel,b.k); });
+    be.addEventListener('keydown',e=>{ if((e.key==='Enter'||e.key===' ')&&sel!=null){ e.preventDefault(); place(sel,b.k); } });
+    be.addEventListener('dragover',e=>{ e.preventDefault(); be.classList.add('over'); });
+    be.addEventListener('dragleave',()=>be.classList.remove('over'));
+    be.addEventListener('drop',e=>{ e.preventDefault(); be.classList.remove('over'); const i=+e.dataTransfer.getData('text/plain'); if(!isNaN(i)) place(i,b.k); });
+    bins.appendChild(be); binEls[b.k]=be;
+  });
+  const chips=[];
+  const order=S.misc[key+'_order']||(S.misc[key+'_order']=shuffle(o.items.map((_,i)=>i)));
+  order.forEach(i=>{
+    const it=o.items[i];
+    const c=h('button',{class:'chip',type:'button',draggable:'true','data-key':(o.bins.find(b=>b.k===it.k)||{}).label||''},it.html||it.t);
+    c.addEventListener('click',e=>{ if(done()) return;
+      if(st[i]!=null){ e.stopPropagation(); if(sel!=null&&sel!==i){ place(sel,st[i]); return; } delete st[i]; save(); render(); return; }
+      sel=(sel===i)?null:i; render(); });
+    c.addEventListener('dragstart',e=>{ if(done()){ e.preventDefault(); return; } sel=i; e.dataTransfer.setData('text/plain',String(i)); });
+    chips[i]=c;
+  });
+  function place(i,k){ st[i]=k; sel=null; fb.hidden=true; save(); render(); }
+  function render(){
+    order.forEach(i=>{ const c=chips[i]; c.classList.toggle('sel',sel===i); c.disabled=done(); c.classList.toggle('placed',st[i]!=null);
+      if(st[i]!=null) $('.binchips',binEls[st[i]]).appendChild(c); else tray.appendChild(c); });
+    Object.values(binEls).forEach(b=>b.classList.toggle('ready',sel!=null&&!done()));
+    const all=Object.keys(st).length===o.items.length;
+    cb.hidden=done(); cb.disabled=!all;
+    tray.hidden=!o.items.some((_,i)=>st[i]==null);
+    if(done()){ fb.className='fb ok'; fb.innerHTML='<b>Everything is correct!</b> '+(o.doneMsg||''); fb.hidden=false; }
+  }
+  cb.addEventListener('click',()=>{
+    if(Object.keys(st).length<o.items.length) return;
+    const right=o.items.every((it,i)=>st[i]===it.k);
+    if(right){ S.misc[doneKey]=true; save(); render(); o.onDone&&o.onDone(); }
+    else{ fb.className='fb no'; fb.innerHTML='<b>Something isn\'t right yet.</b> Move some cards and check again.'; fb.hidden=false; }
+  });
+  w.append(tray,bins,row,fb); parent.appendChild(w); render();
+  return w;
+}
+
+function missionBox(parent, key, list, reqId){
+  const box=h('div',{class:'missions'}); parent.appendChild(box);
+  let idx=S.misc[key]||0; let last='';
+  function render(){
+    box.innerHTML='<h4>Missions</h4><ol>'+list.map((m,i)=>`<li class="${i<idx?'done':i===idx?'cur':''}">${m.text}</li>`).join('')+'</ol>'
+      +(last?`<div class="fb ok">${last}</div>`:'')+(idx>=list.length&&!last?'<div class="fb ok">All missions complete.</div>':'');
+  }
+  render();
+  return function test(state){
+    if(idx>=list.length) return;
+    if(list[idx].test(state)){
+      last=list[idx].done||'Mission complete.'; idx++; S.misc[key]=idx; save(); render();
+      if(idx>=list.length) reqDone(reqId);
+    }
+  };
+}
+
+function stepper(parent, steps, onStep, reqId){
+  const box=h('div',{class:'stepbox'}); const nav=h('div',{class:'btnrow'});
+  const back=h('button',{class:'btn ghost small',type:'button'},'Back'); const next=h('button',{class:'btn primary small',type:'button'},'Next step');
+  nav.append(back,next); parent.append(box,nav);
+  let k=0;
+  function show(){
+    box.innerHTML=`<div class="k">Step ${k+1} of ${steps.length}</div>${steps[k]}`;
+    back.disabled=k===0; next.disabled=k===steps.length-1; next.textContent=k===steps.length-1?'Done':'Next step';
+    onStep&&onStep(k);
+    if(k===steps.length-1 && reqId) reqDone(reqId);
+  }
+  back.addEventListener('click',()=>{ if(k>0){k--; show();} });
+  next.addEventListener('click',()=>{ if(k<steps.length-1){k++; show();} });
+  show();
+  return {show:i=>{k=i; show();}};
+}
+// Section icons: Mitosis and the Cell Cycle
+const PHYS_ICONS=[
+{label:"Knee", svg:"<path d=\"M8 3v8c0 3 2 5 4 5s4-2 4-5V3\"/><ellipse cx=\"12\" cy=\"12\" rx=\"2.5\" ry=\"2\"/><path d=\"M8 21h8\"/>"},
+{label:"Cycle", svg:"<path d=\"M20 12a8 8 0 1 1-3-6.2\"/><path d=\"M17 3v4h4\"/><path d=\"M12 8v4l3 2\"/>"},
+{label:"Copy", svg:"<path d=\"M9 3v18M15 3v18\"/><path d=\"M8 12h8\"/><circle cx=\"12\" cy=\"12\" r=\"2\"/>"},
+{label:"PMAT", svg:"<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M5 12h14\" stroke-dasharray=\"2 2\"/><path d=\"M10 9v6M14 9v6\"/>"},
+{label:"Microscope", svg:"<path d=\"M9 3h4l-1 7h-2z\"/><path d=\"M11 10v3\"/><path d=\"M6 21h12M8 21c0-4 3-6 7-6\"/><circle cx=\"11\" cy=\"15\" r=\"2\"/>"},
+{label:"Control", svg:"<rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"8\"/><path d=\"M8 8l8 8M16 8l-8 8\"/>"},
+{label:"Mistake", svg:"<circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"M16 16l5 5M8.5 8.5l5 5M13.5 8.5l-5 5\"/>"},
+{label:"Final", svg:"<rect x=\"5\" y=\"4\" width=\"14\" height=\"18\" rx=\"2\"/><path d=\"M9 4V2.5h6V4\"/><path d=\"M8.5 13l2.5 2.5 4.5-5\"/>"},
+{label:"Results", svg:"<path d=\"M3 21h18\"/><rect x=\"5\" y=\"12\" width=\"3.5\" height=\"9\"/><rect x=\"10.25\" y=\"7\" width=\"3.5\" height=\"14\"/><rect x=\"15.5\" y=\"3\" width=\"3.5\" height=\"18\"/>"}
+];
+function iconSVG(i,size,color){ return `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="${color||'currentColor'}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PHYS_ICONS[i].svg}</svg>`; }
+
+/* =====================================================================
+   SECTION CONTENT: Cellular Respiration (Biology, freshman level)
+   ===================================================================== */
+const SECS=[];
+const PK='#f472b6', PKF='rgba(244,114,182,.16)', PK2='#f9a8d4', GLU='#5fe3a9', GOLD='#ffd35c', BLU='#45c8f0', TXT='#e8eef8', MUT='#a3b4cf', DIM='#4a5b7a';
+const WORDS={
+  atp:wh('ATP','The energy molecule cells "spend" to do work. Think of it as a charged battery.'),
+  glucose:wh('glucose','A sugar (C₆H₁₂O₆). The fuel that cells break down for energy.'),
+  mito:wh('mitochondrion','The organelle where the Krebs cycle and electron transport chain happen. Plural: mitochondria.'),
+  cyto:wh('cytoplasm','The jelly-like fluid inside the cell, outside the organelles.'),
+  matrix:wh('matrix','The fluid inside the inner membrane of a mitochondrion.'),
+  pyruvate:wh('pyruvate','The small molecule left after glycolysis splits glucose in half.'),
+  carrier:wh('electron carriers','NADH and FADH₂. They pick up electrons and carry them to the electron transport chain.'),
+  aerobic:wh('aerobic','With oxygen.'),
+  anaerobic:wh('anaerobic','Without oxygen.'),
+  ferment:wh('fermentation','What cells do without oxygen: keeps glycolysis running so it can still make 2 ATP.')
+};
+function star(x,y,r,txt,fs){ let p=''; for(let i=0;i<16;i++){ const a=Math.PI*i/8, rr=i%2?r*0.72:r; p+=(i?'L':'M')+(x+rr*Math.cos(a)).toFixed(1)+','+(y+rr*Math.sin(a)).toFixed(1); }
+  return `<path d="${p}Z" fill="${GOLD}" stroke="#c99a1e" stroke-width="1.5"/><text x="${x}" y="${y+5}" text-anchor="middle" font-size="${fs||14}" font-weight="700" fill="#231a00">${txt}</text>`; }
+function hexa(x,y,r,fill){ let p=''; for(let i=0;i<6;i++){ const a=Math.PI/3*i+Math.PI/6; p+=(i?'L':'M')+(x+r*Math.cos(a)).toFixed(1)+','+(y+r*Math.sin(a)).toFixed(1); } return `<path d="${p}Z" fill="${fill}" stroke="#2c8f66" stroke-width="2"/>`; }
+function arrowS(x1,y1,x2,y2,col,w,dash){ const a=Math.atan2(y2-y1,x2-x1), hl=10; const bx=x2-hl*Math.cos(a), by=y2-hl*Math.sin(a);
+  return `<line x1="${x1}" y1="${y1}" x2="${bx}" y2="${by}" stroke="${col}" stroke-width="${w||2.5}" ${dash?'stroke-dasharray="6 5"':''}/><path d="M${x2},${y2} L${bx-6*Math.sin(a)},${by+6*Math.cos(a)} L${bx+6*Math.sin(a)},${by-6*Math.cos(a)}Z" fill="${col}"/>`; }
+function tag(x,y,txt,col){ const w=txt.length*7+18; return `<rect x="${x-w/2}" y="${y-12}" width="${w}" height="24" rx="12" fill="#0d1626" stroke="${col||MUT}"/><text x="${x}" y="${y+5}" text-anchor="middle" font-size="12" fill="${col||MUT}">${txt}</text>`; }
+function box(x,y,w,h,txt,fill,stroke,fs,col){ const lines=txt.split('\n'); return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="${fill}" stroke="${stroke}" stroke-width="2"/>`+lines.map((l,i)=>`<text x="${x+w/2}" y="${y+h/2+5+(i-(lines.length-1)/2)*18}" text-anchor="middle" font-size="${fs||15}" font-weight="600" fill="${col||'#0d1626'}">${l}</text>`).join(''); }
+function cristae(cx,cy,rx,ry){ // folded inner membrane
+  let d=`M${cx-rx+22},${cy}`; const n=9; for(let i=0;i<n;i++){ const x0=cx-rx+22+i*((2*rx-44)/n), x1=x0+(2*rx-44)/n; const up=i%2?1:-1; d+=` C${x0+8},${cy+up*ry*0.75} ${x1-8},${cy+up*ry*0.75} ${x1},${cy}`; } return d; }
+
+/* ---------- the big map of cellular respiration (like the class diagram) ---------- */
+function respMap(o={}){
+  const o2=o.o2!==false, hl=o.hl||null;
+  const vis=(stage)=>{ const off=!o2&&(stage==='krebs'||stage==='etc'); return off?0.2:(hl&&hl!==stage?0.35:1); };
+  const badge=(x,y,n)=>`<circle cx="${x}" cy="${y}" r="13" fill="${GOLD}" stroke="#0d1626" stroke-width="2"/><text x="${x}" y="${y+5}" text-anchor="middle" font-size="14" font-weight="700" fill="#231a00">${n}</text>`;
+  const pill=(x,y,txt,fill,stroke,col)=>{ const w=txt.length*7.6+22; return `<rect x="${x-w/2}" y="${y-15}" width="${w}" height="30" rx="15" fill="${fill}" stroke="${stroke}" stroke-width="2"/><text x="${x}" y="${y+5}" text-anchor="middle" font-size="13" font-weight="700" fill="${col||'#0d1626'}">${txt}</text>`; };
+  let s=`<svg viewBox="0 0 900 500" class="fig" role="img" aria-label="${o2?'Cellular respiration map. 1 Glycolysis in the cytoplasm splits glucose into 2 pyruvate and makes 2 ATP. 2 The Krebs cycle in the mitochondrion matrix releases carbon dioxide and makes 2 ATP. 3 The electron transport chain on the inner membrane uses oxygen, makes water and about 32 ATP. Total about 36 ATP.':'Without oxygen, the Krebs cycle and electron transport chain stop. Glycolysis continues with fermentation, making 2 ATP.'}">`;
+  // the cell
+  s+=`<rect x="8" y="8" width="884" height="484" rx="26" fill="#121c30" stroke="#3a5580" stroke-width="2"/>`;
+  s+=`<text x="34" y="44" font-size="15" font-weight="700" fill="${MUT}">CYTOPLASM</text>`;
+  s+=`<text x="520" y="44" text-anchor="middle" font-size="16" font-weight="700" fill="${o2?GOLD:'#fb7185'}">${o2?'Total: about 36 ATP':'Total: only 2 ATP'}</text>`;
+  // mitochondrion: outer membrane, inner membrane, folds along the right side
+  s+=`<rect x="350" y="78" width="520" height="276" rx="138" fill="${PKF}" stroke="${PK}" stroke-width="6"/>`;
+  s+=`<rect x="372" y="98" width="476" height="236" rx="118" fill="none" stroke="${PK2}" stroke-width="2.5"/>`;
+  let f=''; [150,182,214,246,278].forEach(y=>{ const xe=(dy=>730+Math.sqrt(118*118-dy*dy))(y-216)-1, xe2=(dy=>730+Math.sqrt(118*118-dy*dy))(y+14-216)-1; f+=`<path d="M${xe.toFixed(1)},${y} H${Math.min(xe,xe2)-26} a7,7 0 0 0 0,14 H${xe2.toFixed(1)}" fill="none" stroke="${PK2}" stroke-width="2.5"/>`; }); s+=f;
+  s+=`<text x="372" y="70" font-size="14" font-weight="700" fill="${PK}">MITOCHONDRION</text>`;
+  // 1 glycolysis (cytoplasm)
+  s+=`<g opacity="${vis('gly')}">`+hexa(150,108,38,GLU)+`<text x="150" y="113" text-anchor="middle" font-size="14" font-weight="700" fill="#0d1626">Glucose</text>`;
+  s+=arrowS(150,148,150,176,TXT)+`<rect x="62" y="178" width="176" height="62" rx="12" fill="#e8eef8" stroke="#a3b4cf" stroke-width="2"/><text x="150" y="207" text-anchor="middle" font-size="18" font-weight="700" fill="#0d1626">Glycolysis</text><text x="150" y="228" text-anchor="middle" font-size="12" fill="#3a4a66">in the cytoplasm</text>`+badge(44,166,1);
+  s+=pill(150,262,'No O₂ needed','#0d1626',GLU,GLU);
+  s+=arrowS(120,280,104,306,GOLD)+star(96,338,32,'2 ATP',13)+arrowS(184,280,204,312,'#a3b4cf')+pill(214,330,'NADH','#e8eef8','#a3b4cf')+`</g>`;
+  // pyruvate into the mitochondrion
+  s+=`<g opacity="${o2?vis('krebs'):0.2}">`+arrowS(240,209,404,209,TXT)+`<text x="300" y="199" text-anchor="middle" font-size="13" fill="${TXT}">2 pyruvate</text></g>`;
+  // 2 Krebs cycle (matrix)
+  s+=`<g opacity="${vis('krebs')}"><circle cx="478" cy="209" r="64" fill="#e8eef8" stroke="#a3b4cf" stroke-width="2"/><text x="478" y="198" text-anchor="middle" font-size="17" font-weight="700" fill="#0d1626">Krebs</text><text x="478" y="219" text-anchor="middle" font-size="17" font-weight="700" fill="#0d1626">cycle</text><text x="478" y="238" text-anchor="middle" font-size="11" fill="#3a4a66">in the matrix</text>`+badge(410,146,2);
+  if(o2) s+=pill(478,124,'Needs O₂','#0d1626',PK,PK);
+  s+=arrowS(450,272,412,392,TXT)+pill(400,412,'CO₂ out','#bfe9f8','#45c8f0')+arrowS(504,272,524,382,GOLD)+star(530,418,32,'2 ATP',13)+`</g>`;
+  // electron carriers to the ETC
+  s+=`<g opacity="${o2?(hl&&hl!=='etc'&&hl!=='krebs'?0.35:1):0.2}">`+arrowS(545,209,622,209,'#7488a9',2,true)+`<text x="584" y="196" text-anchor="middle" font-size="11" fill="${MUT}">NADH,</text><text x="584" y="230" text-anchor="middle" font-size="11" fill="${MUT}">FADH₂</text></g>`;
+  // 3 electron transport chain (inner membrane)
+  s+=`<g opacity="${vis('etc')}"><rect x="626" y="166" width="168" height="86" rx="12" fill="#e8eef8" stroke="#a3b4cf" stroke-width="2"/><text x="710" y="194" text-anchor="middle" font-size="16" font-weight="700" fill="#0d1626">Electron</text><text x="710" y="215" text-anchor="middle" font-size="16" font-weight="700" fill="#0d1626">transport chain</text><text x="710" y="237" text-anchor="middle" font-size="11" fill="#3a4a66">on the inner membrane</text>`+badge(610,150,3);
+  if(o2) s+=pill(700,128,'Needs O₂','#0d1626',PK,PK);
+  s+=arrowS(800,26,772,164,BLU,2.5)+`<text x="812" y="30" font-size="14" font-weight="700" fill="${BLU}">O₂ in</text>`;
+  s+=arrowS(690,254,676,382,GOLD)+star(672,422,38,'≈ 32',14)+`<text x="672" y="474" text-anchor="middle" font-size="12" fill="${GOLD}">ATP (30–34)</text>`;
+  s+=arrowS(752,254,790,392,TXT)+pill(800,412,'Water out','#bfe9f8','#45c8f0')+`</g>`;
+  if(!o2){
+    s+=pill(494,124,'Stopped: no O₂','#3a0f1a','#fb7185','#fb7185')+pill(700,128,'Stopped: no O₂','#3a0f1a','#fb7185','#fb7185');
+    s+=`<path d="M778 56 l24 24 M802 56 l-24 24" stroke="#fb7185" stroke-width="4"/>`;
+    s+=arrowS(150,358,150,380,TXT)+`<rect x="40" y="382" width="220" height="80" rx="12" fill="#fde7c2" stroke="#f5a524" stroke-width="2"/><text x="150" y="410" text-anchor="middle" font-size="15" font-weight="700" fill="#0d1626">Fermentation</text><text x="150" y="430" text-anchor="middle" font-size="12.5" fill="#0d1626">lactic acid, or</text><text x="150" y="448" text-anchor="middle" font-size="12.5" fill="#0d1626">alcohol + CO₂</text>`;
+  }
+  return s+'</svg>';
+}
+
+/* ---------- mitochondrion diagram (labeled or numbered for labeling practice) ---------- */
+function mitoFig(mode){
+  const L=mode==='labels', N=mode==='numbers';
+  let s=`<svg viewBox="0 0 620 330" class="fig" role="img" aria-label="${L?'Mitochondrion with labels: outer membrane, inner membrane with folds, matrix, and the cytoplasm around it.':'Mitochondrion with numbered spots to label.'}">`;
+  s+=`<rect x="6" y="6" width="608" height="318" rx="18" fill="#121c30" stroke="#2a3d5f"/>`;
+  s+=`<ellipse cx="300" cy="170" rx="210" ry="115" fill="${PKF}" stroke="${PK}" stroke-width="7"/><path d="${cristae(300,170,210,115)}" fill="none" stroke="${PK2}" stroke-width="3.5"/>`;
+  for(let i=0;i<14;i++){ const a=i*1.9, r=50+((i*31)%60); s+=`<circle cx="${300+Math.cos(a)*r*1.9}" cy="${170+Math.sin(a)*r*0.9}" r="3" fill="${PK2}" opacity=".7"/>`; }
+  const pts=[{x:150,y:76,lx:96,ly:34,t:'Outer membrane'},{x:262,y:126,lx:150,ly:300,t:'Inner membrane (folds)'},{x:330,y:205,lx:470,ly:304,t:'Matrix (inside fluid)'},{x:560,y:110,lx:510,ly:34,t:'Cytoplasm (outside)'}];
+  pts.forEach((p,i)=>{
+    if(L){ s+=`<line x1="${p.x}" y1="${p.y}" x2="${p.lx}" y2="${p.ly}" stroke="${TXT}" stroke-width="1.5"/><circle cx="${p.x}" cy="${p.y}" r="4" fill="${TXT}"/>`;
+      const w=p.t.length*8+16; s+=`<rect x="${p.lx-w/2}" y="${p.ly-14}" width="${w}" height="26" rx="8" fill="#0d1626" stroke="${GOLD}"/><text x="${p.lx}" y="${p.ly+4}" text-anchor="middle" font-size="14" font-weight="600" fill="${GOLD}">${p.t}</text>`; }
+    if(N){ s+=`<circle cx="${p.x}" cy="${p.y}" r="15" fill="${GOLD}" stroke="#0d1626" stroke-width="2"/><text x="${p.x}" y="${p.y+5}" text-anchor="middle" font-size="15" font-weight="700" fill="#231a00">${i+1}</text>`; }
+  });
+  return s+'</svg>';
+}
+
+/* ---------- labeling with dropdowns (each spot checked on its own) ---------- */
+function labeler(parent, o){
+  const ids=o.spots.map((_,i)=>o.id+(i+1)); ids.forEach(reg);
+  const wrap=h('div',{class:'split'}); parent.appendChild(wrap);
+  const L=h('div'), R=h('div'); wrap.append(L,R); L.innerHTML=o.fig;
+  const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'});
+  o.spots.forEach((sp,i)=>{ const id=ids[i];
+    const row=h('div',{class:'numrow'}); row.innerHTML=`<label for="lb-${id}">Spot ${i+1}</label><select class="ans" id="lb-${id}" data-keyshow="${sp}"><option value="">choose a label</option>${o.choices.map(c=>`<option>${c}</option>`).join('')}</select>`;
+    R.appendChild(row); const sel=$('select',row);
+    const lock=()=>{ sel.value=sp; sel.classList.add('ok'); sel.disabled=true; };
+    if(S.solved[id]) lock();
+    sel.addEventListener('change',()=>{ if(!sel.value) return; const ok=sel.value===sp; attempt(id,ok);
+      if(ok){ lock(); fb.hidden=true; if(allSolved(ids)){ fb.className='fb ok'; fb.innerHTML='<b>All labeled.</b> '+(o.doneMsg||''); fb.hidden=false; reqDone(o.req); } }
+      else { sel.classList.add('no'); fb.className='fb no'; fb.innerHTML='<b>Not that one.</b> '+(o.hints[sp]||'Look back at the labeled diagram.'); fb.hidden=false; setTimeout(()=>sel.classList.remove('no'),600); } });
+  });
+  R.appendChild(fb);
+  if(allSolved(ids)){ fb.className='fb ok'; fb.innerHTML='<b>All labeled.</b> '+(o.doneMsg||''); fb.hidden=false; }
+}
+
+
+/* ===================== PHENOMENON: out of breath ===================== */
+const esc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const LEVELS=[
+ {k:'rest', label:'Rest', dur:'0s', bdur:'5s', breaths:12, co2:15, o2:95, burn:0, o2txt:'plenty', co2txt:'low', burntxt:'none', note:'Sitting still. Slow, easy breathing.'},
+ {k:'jog', label:'Jog', dur:'.55s', bdur:'2.4s', breaths:25, co2:50, o2:70, burn:5, o2txt:'enough', co2txt:'medium', burntxt:'none', note:'Steady jog. Breathing faster, but it feels fine.'},
+ {k:'sprint', label:'Sprint (60 s)', dur:'.26s', bdur:'1.1s', breaths:45, co2:92, o2:22, burn:90, o2txt:'running low', co2txt:'high', burntxt:'strong burn', note:'All-out sprint for a minute. Gasping for air, and the legs start to burn.'}
+];
+function runnerSVG(){
+  const puffs=[0,1,2,3].map(i=>`<circle class="puff" cx="176" cy="66" r="6" fill="#bfe9f8" style="animation-delay:calc(var(--bdur,4s) * ${i/4} * -1)"/>`).join('');
+  return `<svg viewBox="0 0 300 250" class="fig runner" id="runFig" role="img" aria-label="A person on a treadmill. Breath puffs come out faster as exercise gets harder.">
+    <rect x="6" y="6" width="288" height="238" rx="16" fill="#121c30" stroke="#2a3d5f"/>
+    <line class="belt" x1="40" y1="212" x2="250" y2="212" stroke="#5d7399" stroke-width="8" stroke-dasharray="12 12"/>
+    <rect x="36" y="206" width="218" height="14" rx="6" fill="none" stroke="#7488a9" stroke-width="2"/><line x1="236" y1="206" x2="252" y2="120" stroke="#7488a9" stroke-width="4"/><rect x="238" y="106" width="34" height="18" rx="4" fill="#2a3d5f" stroke="#7488a9"/>
+    <g stroke="#e8eef8" stroke-width="9" stroke-linecap="round" fill="none">
+      <line class="leg2" x1="150" y1="150" x2="150" y2="204" opacity=".55"/><line class="arm2" x1="150" y1="100" x2="150" y2="140" opacity=".55"/>
+      <line x1="150" y1="92" x2="150" y2="152"/>
+      <line class="leg1" x1="150" y1="150" x2="150" y2="204"/><line class="arm1" x1="150" y1="100" x2="150" y2="140"/>
+    </g>
+    <circle cx="152" cy="70" r="17" fill="#e8eef8"/>${puffs}
+    <g id="burnGlow" opacity="0"><ellipse cx="150" cy="178" rx="16" ry="30" fill="#fb7185" opacity=".45"/><text x="112" y="186" font-size="12" font-weight="700" fill="#fb7185" text-anchor="end">burn!</text></g>
+  </svg>`;
+}
+function phenomenon(body){
+  const c=card(body,'phen','Phenomenon: out of breath');
+  c.classList.add('phencard');
+  c.insertAdjacentHTML('beforeend',`<p>Watch what happens to a person's body as exercise gets harder. Try all three levels.</p>`);
+  const row=h('div',{class:'btnrow lvlbtns'}); c.appendChild(row);
+  const sp=h('div',{class:'split',style:'margin-top:12px'}); c.appendChild(sp); const L=h('div'), R=h('div'); sp.append(L,R);
+  L.innerHTML=runnerSVG();
+  R.innerHTML=`<p class="muted" id="lvlNote" style="min-height:3em"></p><div class="meters">
+    <div class="meter"><div class="lab"><span>Breaths per minute</span><b id="mB"></b></div><div class="track"><div class="fill" id="fB"></div></div></div>
+    <div class="meter"><div class="lab"><span>CO₂ breathed out</span><b id="mC"></b></div><div class="track"><div class="fill" id="fC"></div></div></div>
+    <div class="meter"><div class="lab"><span>Oxygen reaching the leg muscles</span><b id="mO"></b></div><div class="track"><div class="fill" id="fO"></div></div></div>
+    <div class="meter"><div class="lab"><span>Leg burn</span><b id="mL"></b></div><div class="track"><div class="fill" id="fL"></div></div></div></div>`;
+  const seen=new Set(S.misc.phenSeen||[]);
+  function setLevel(i){ const lv=LEVELS[i], fig=$('#runFig',L);
+    fig.style.setProperty('--dur',lv.dur==='0s'?'1s':lv.dur); fig.style.setProperty('--bdur',lv.bdur); fig.classList.toggle('still',lv.k==='rest'||RM);
+    $('#burnGlow',fig).setAttribute('opacity',lv.burn>50?'1':'0');
+    $('#lvlNote',R).textContent=lv.note;
+    const set=(id,f,val,txt,col)=>{ $('#'+id,R).textContent=txt; const el=$('#'+f,R); el.style.width=val+'%'; el.style.background=col; };
+    set('mB','fB',lv.breaths/50*100,lv.breaths,'#45c8f0'); set('mC','fC',lv.co2,lv.co2txt,'#a3b4cf'); set('mO','fO',lv.o2,lv.o2txt,lv.o2<40?'#fb7185':'#5fe3a9'); set('mL','fL',lv.burn,lv.burntxt,'#fb7185');
+    $$('.btn',row).forEach((b,j)=>b.classList.toggle('on',j===i));
+    seen.add(lv.k); S.misc.phenSeen=[...seen]; save(); if(seen.size>=3) reqDone('s1-phen'); }
+  LEVELS.forEach((lv,i)=>{ const b=h('button',{class:'btn ghost small',type:'button'},lv.label); b.addEventListener('click',()=>setLevel(i)); row.appendChild(b); });
+  setLevel(seen.has('sprint')?2:0);
+  c.insertAdjacentHTML('beforeend',`<h3 style="margin-top:18px">Your first idea</h3><p class="small muted">Why do you think we breathe harder when we exercise, and why do the legs burn? Just give your best guess. You'll come back to this at the end of the lesson.</p>`);
+  const ta=h('textarea',{class:'ans',rows:'3',style:'width:100%;min-height:80px;font:inherit;padding:10px;border-radius:10px;background:var(--bg);color:var(--text);border:1.5px solid var(--line2)','aria-label':'Your first idea'}); c.appendChild(ta);
+  const WB=[['oxygen',/oxygen|o2|o₂/],['energy',/energy|atp/],['muscles',/muscle/],['cells',/cell/],['carbon dioxide',/carbon dioxide|co2|co₂/]];
+  const wb=h('div',{class:'wbank'}); wb.innerHTML=WB.map(w=>`<span>${w[0]}</span>`).join(''); c.appendChild(wb);
+  ta.value=S.misc.phenIdea||'';
+  const light=()=>{ const t=ta.value.toLowerCase(); $$('span',wb).forEach((sp,i)=>sp.classList.toggle('on',WB[i][1].test(t))); };
+  function chkIdea(){ if((S.misc.phenIdea||'').trim().length>=15) reqDone('s1-idea'); }
+  ta.addEventListener('input',()=>{ S.misc.phenIdea=ta.value; save(); light(); chkIdea(); }); light(); chkIdea();
+}
+function backToPhenomenon(body, sec){
+  const c=card(body,'phen','Back to the phenomenon: out of breath'); c.classList.add('phencard');
+  c.insertAdjacentHTML('beforeend',`<p>At the start of the lesson, you watched a sprinter breathe harder and feel their legs burn. Here was your first idea:</p>
+    <div class="firstidea"></div><p>Now use what you learned.</p>`);
+  const fi=$('.firstidea',c); const showIdea=()=>{ fi.innerHTML=(S.misc.phenIdea||'').trim()?esc(S.misc.phenIdea):'(You didn\'t write a first idea.)'; };
+  showIdea(); if(sec) sec.onShow=showIdea;
+  qcGroup(c,[
+    {id:'s8p1', q:'<b>Part A:</b> Why does the sprinter breathe harder?', opts:['To bring in more oxygen for the electron transport chain and get rid of the extra CO₂ from the Krebs cycle','To bring in more glucose through the lungs','To breathe out extra oxygen the muscles made','Because glycolysis needs oxygen'], ans:0,
+      why:'Working muscles need more ATP. The ETC needs oxygen to make it, and the Krebs cycle makes more CO₂ to breathe out.', wrong:{1:'Glucose comes from food, not air.',2:'Muscles use oxygen; they don\'t make it.',3:'Glycolysis doesn\'t need oxygen.'}},
+    {id:'s8p2', q:'<b>Part B:</b> Why do the legs burn during the sprint?', opts:['The muscles run low on oxygen and switch to lactic acid fermentation','The muscles make too much oxygen','The Krebs cycle makes lactic acid','The muscles stop doing glycolysis'], ans:0,
+      why:'Without enough oxygen, the muscle cells use lactic acid fermentation. The lactic acid helps cause the burn.', wrong:{1:'Muscles use oxygen; they don\'t make it.',2:'Lactic acid comes from fermentation, not the Krebs cycle.',3:'Glycolysis keeps going; that\'s what fermentation keeps running.'}}
+  ],'s8-back');
+}
+
+/* ===================== SECTION 1: energy + the big equation ===================== */
+
+
+/* ===================== SECTION 2: mitochondria and where things happen ===================== */
+
+
+/* ---------- stage scene helper: a step-through with a drawing for each step ---------- */
+function scene(parent, steps, draw, req){
+  const sp=h('div',{class:'split'}); parent.appendChild(sp); const L=h('div'), R=h('div'); sp.append(L,R);
+  const fig=h('div'); L.appendChild(fig);
+  stepper(R, steps, k=>{ fig.innerHTML=draw(k); }, req);
+}
+function stageCard(title, rows){ return `<div class="wide"><table class="nb"><tr><th colspan="2">${title}</th></tr>${rows.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td></tr>`).join('')}</table></div>`; }
+
+/* ===================== SECTION 3: glycolysis ===================== */
+
+
+/* ===================== SECTION 4: Krebs cycle ===================== */
+
+
+/* ===================== SECTION 5: electron transport chain + ATP tally ===================== */
+function atpTally(parent){
+  const opts=['0','2','4','30–34'], want={gly:'2',krebs:'2',etc:'30–34'};
+  const names={gly:'Glycolysis',krebs:'Krebs cycle',etc:'Electron transport chain'};
+  const ids=['s5tal1','s5tal2','s5tal3']; ids.forEach(reg);
+  const sp=h('div',{class:'split'}); parent.appendChild(sp); const L=h('div'), R=h('div'); sp.append(L,R);
+  const fb=h('div',{class:'fb',hidden:true});
+  Object.keys(want).forEach((k,i)=>{ const id=ids[i]; const row=h('div',{class:'numrow'});
+    row.innerHTML=`<label for="tl-${k}">${names[k]}</label><select class="ans" id="tl-${k}" data-keyshow="${want[k]}"><option value="">ATP?</option>${opts.map(o=>`<option>${o}</option>`).join('')}</select>`; R.appendChild(row);
+    const sel=$('select',row); if(S.solved[id]){ sel.value=want[k]; sel.disabled=true; sel.classList.add('ok'); }
+    sel.addEventListener('change',()=>{ if(!sel.value) return; const ok=sel.value===want[k]; attempt(id,ok);
+      if(ok){ sel.disabled=true; sel.classList.add('ok'); fb.hidden=true; } else { fb.className='fb no'; fb.innerHTML='<b>Not quite.</b> '+(k==='etc'?'The ETC makes most of the ATP.':'Look back at the "at a glance" table for this stage.'); fb.hidden=false; }
+      draw(); if(allSolved(ids)){ fb.className='fb ok'; fb.innerHTML='<b>Total: about 36 ATP</b> (34–38) from one glucose when oxygen is present.'; fb.hidden=false; reqDone('s5-tally'); } }); });
+  R.appendChild(fb);
+  function draw(){ const val=k=>S.solved[ids[Object.keys(want).indexOf(k)]]?(k==='etc'?32:2):0;
+    const W=420,H=260,B=215,T=20,mx=34,sy=(B-T)/mx; let s=`<svg viewBox="0 0 ${W} ${H}" class="fig" role="img" aria-label="Bar graph of ATP made by each stage">`;
+    for(let v=0;v<=mx;v+=4){ const y=B-v*sy; s+=`<line x1="50" x2="${W-14}" y1="${y}" y2="${y}" stroke="#1b2a44"/><text x="42" y="${y+4}" text-anchor="end" font-size="11" fill="${MUT}">${v}</text>`; }
+    Object.keys(want).forEach((k,i)=>{ const x=80+i*112, v=val(k), hgt=v*sy; s+=`<rect x="${x}" y="${B-hgt}" width="70" height="${hgt}" fill="${GOLD}" rx="4" style="transition:all .5s"/><text x="${x+35}" y="${B-hgt-8}" text-anchor="middle" font-size="13" font-weight="700" fill="${GOLD}">${v?(k==='etc'?'30–34':'2'):''}</text><text x="${x+35}" y="${B+18}" text-anchor="middle" font-size="12" fill="${TXT}">${['Glycolysis','Krebs','ETC'][i]}</text>`; });
+    s+=`<line x1="50" x2="${W-14}" y1="${B}" y2="${B}" stroke="#5d7399"/><text x="16" y="${(B+T)/2}" font-size="12" fill="${MUT}" text-anchor="middle" transform="rotate(-90 16 ${(B+T)/2})">ATP made</text></svg>`;
+    L.innerHTML=s; }
+  draw();
+  if(allSolved(ids)){ fb.className='fb ok'; fb.innerHTML='<b>Total: about 36 ATP</b> (34–38) from one glucose when oxygen is present.'; fb.hidden=false; }
+}
+
+
+/* ===================== SECTION 6: fermentation ===================== */
+
+
+/* ===================== SECTION 7: aerobic vs anaerobic ===================== */
+
+
+/* ===================== SECTION 8: spot the mistake ===================== */
+function bioSpot(parent, list, reqId){
+  const ids=[]; list.forEach(m=>ids.push(m.id+'w', m.id+'f'));
+  parent.insertAdjacentHTML('beforeend','<p>Each tab shows a student\'s work with <b>one mistake</b>. Find what\'s wrong, then fix it.</p>');
+  const bar=h('div',{class:'btnrow mistabs',style:'margin-top:4px'}); parent.appendChild(bar);
+  const tabs=[], panes=[];
+  list.forEach((m,i)=>{
+    const b=h('button',{class:'btn ghost small',type:'button'},`Mistake ${i+1}`); b.addEventListener('click',()=>show(i)); bar.appendChild(b); tabs.push(b);
+    const pane=h('div'); parent.appendChild(pane); panes.push(pane);
+    pane.innerHTML=`<p style="margin:12px 0 6px"><b>${m.title}</b></p><div class="work"><div class="small muted" style="margin-bottom:4px">${m.who}'s work</div>${m.work}</div>`;
+    const fx=h('div',{class:'fixbox'});
+    mcq(pane,{id:m.id+'w', q:'What\'s wrong?', opts:m.opts, ans:m.ans, why:m.why, wrong:m.wrong, onSolved:()=>{ fx.hidden=false; upd(); }});
+    fx.hidden=!S.solved[m.id+'w']; pane.appendChild(fx);
+    mcq(fx,{id:m.id+'f', q:'<b>Now fix it.</b> '+m.fix.q, opts:m.fix.opts, ans:m.fix.ans, why:m.fix.why, onSolved:upd});
+  });
+  function show(i){ panes.forEach((p,j)=>p.hidden=j!==i); tabs.forEach((t,j)=>t.classList.toggle('on',j===i)); }
+  function upd(){ list.forEach((m,i)=>{ const d=S.solved[m.id+'w']&&S.solved[m.id+'f']; tabs[i].textContent=`Mistake ${i+1}${d?' ✓':''}`; }); if(allSolved(ids)) reqDone(reqId); }
+  show(0); upd();
+}
+
+
+
+/* =====================================================================
+   SECTION CONTENT: How Photosynthesis and Respiration Connect
+   ===================================================================== */
+const W2={
+  btb:wh('bromothymol blue','An indicator that is blue when there is little CO₂ in the water and turns yellow when there is a lot of CO₂. (BTB for short.)'),
+  react:wh('reactants','What goes into a chemical reaction (the left side of the arrow).'),
+  prod:wh('products','What comes out of a chemical reaction (the right side of the arrow).'),
+  chloro:wh('chloroplast','The organelle where photosynthesis happens. Found in plants and algae.'),
+  mito:wh('mitochondrion','The organelle where most of cellular respiration happens. Found in plants, animals, fungi, and more. Plural: mitochondria.'),
+  cycle:wh('cycle','Matter that is used again and again, going around in a loop.'),
+  flow:wh('flow','Energy that moves one way and does not come back. It is lost as heat.')
+};
+const BTB={blue:'#2f6fdc', start:'#27a3a0', green:'#7cbf3a', yellow:'#e8c22e'};
+function tubeResult(snail,plant,light){ const net=(snail?2:0)+(plant?1:0)-(plant&&light?3:0);
+  if(net<=-2) return {c:BTB.blue,name:'blue',txt:'turned blue (less CO₂)'}; if(net===0) return {c:BTB.start,name:'blue-green',txt:'stayed blue-green (no change)'};
+  if(net===1) return {c:BTB.green,name:'green',txt:'turned green (a little more CO₂)'}; return {c:BTB.yellow,name:'yellow',txt:'turned yellow (more CO₂)'}; }
+function tubeSVG(color,snail,plant,light,label){
+  let s=`<svg viewBox="0 0 120 230" class="tube" role="img" aria-label="${label||'Test tube'}">`;
+  s+=light?`<circle cx="98" cy="22" r="11" fill="#ffd35c"/>${[0,1,2,3,4,5,6,7].map(i=>{const a=i*Math.PI/4;return `<line x1="${98+Math.cos(a)*14}" y1="${22+Math.sin(a)*14}" x2="${98+Math.cos(a)*19}" y2="${22+Math.sin(a)*19}" stroke="#ffd35c" stroke-width="2.5" stroke-linecap="round"/>`;}).join('')}`
+          :`<path d="M106 12a12 12 0 1 0 6 20 9 9 0 0 1-6-20z" fill="#c7d2fe"/>`;
+  s+=`<rect x="34" y="20" width="44" height="10" rx="3" fill="#7488a9"/>`;
+  s+=`<path d="M38 30v158a18 18 0 0 0 36 0V30" fill="${color}" fill-opacity=".85" stroke="#e8eef8" stroke-width="3" style="transition:fill 1.6s"/>`;
+  if(plant) s+=`<path d="M52 196 C50 160 58 130 52 80 M52 150 l-9 -8 M52 130 l9 -8 M52 110 l-9 -8 M52 92 l9 -8 M53 170 l9 -6" stroke="#1d7a52" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
+  if(snail) s+=`<g transform="translate(62 186)"><ellipse cx="0" cy="6" rx="10" ry="4" fill="#c9a26b"/><circle cx="2" cy="0" r="7" fill="#9a6b3a"/><path d="M2 0 m-4 0 a4 4 0 1 1 4 4 a2.5 2.5 0 1 1 -2 -3" fill="none" stroke="#f3dcb4" stroke-width="1.4"/></g>`;
+  return s+'</svg>';
+}
+
+/* ---------- phenomenon: snail and water-plant tubes ---------- */
+function tubePhenomenon(body){
+  const c=card(body,'phen','Phenomenon: the snail and the water plant'); c.classList.add('phencard');
+  c.insertAdjacentHTML('beforeend',`<p>Scientists filled sealed test tubes with water and a few drops of ${W2.btb}. BTB is a color indicator:</p>
+    <div class="btbkey"><span style="background:${BTB.blue}"></span> blue = <b>little CO₂</b> <span style="background:${BTB.start}"></span> blue-green = <b>starting color</b> <span style="background:${BTB.green}"></span> green = <b>a bit more CO₂</b> <span style="background:${BTB.yellow}"></span> yellow = <b>lots of CO₂</b></div>
+    <p>Then they added a <b>snail</b>, a <b>water plant</b>, both, or neither, and left each tube in the <b>light</b> or the <b>dark</b> for 24 hours. Try it. Run at least <b>4 different setups</b>.</p>`);
+  const sp=h('div',{class:'split'}); c.appendChild(sp); const L=h('div',{style:'text-align:center'}), R=h('div'); sp.append(L,R);
+  const st=S.misc.tube||(S.misc.tube={snail:true,plant:false,light:true});
+  R.innerHTML=`<div class="toggles">
+     <label><input type="checkbox" id="tSnail"> Add a snail</label>
+     <label><input type="checkbox" id="tPlant"> Add a water plant</label>
+     <div class="btnrow" style="margin-top:6px"><button class="btn ghost small" id="tLight" type="button">☀ Light</button><button class="btn ghost small" id="tDark" type="button">☾ Dark</button></div></div>
+     <div class="btnrow"><button class="btn primary" id="tRun" type="button">Run 24 hours</button><span class="muted" id="tClock"></span></div>
+     <div class="fb info" id="tOut" style="min-height:2.6em"></div>
+     <h4 style="margin:12px 0 4px">Your results</h4><div class="wide"><table class="nb" id="tLog"><thead><tr><th>Snail</th><th>Plant</th><th>Light?</th><th>After 24 h</th></tr></thead><tbody id="tLogBody"></tbody></table></div>`;
+  const runs=S.misc.tubeRuns||(S.misc.tubeRuns={});
+  const key=()=>`${st.snail?1:0}${st.plant?1:0}${st.light?1:0}`;
+  function draw(color){ L.innerHTML=tubeSVG(color||BTB.start,st.snail,st.plant,st.light,'Test tube with BTB'); }
+  function log(){ const tb=$('#tLogBody',R);
+    tb.innerHTML=Object.keys(runs).map(k=>{ const [s,p,l]=k.split('').map(Number); const r=tubeResult(s,p,l); return `<tr><td>${s?'yes':'no'}</td><td>${p?'yes':'no'}</td><td>${l?'light':'dark'}</td><td><span class="dot" style="background:${r.c}"></span>${r.name}</td></tr>`; }).join('');
+    if(Object.keys(runs).length>=4) reqDone('s1-tubes'); }
+  function sync(){ $('#tSnail',R).checked=st.snail; $('#tPlant',R).checked=st.plant; $('#tLight',R).classList.toggle('on',st.light); $('#tDark',R).classList.toggle('on',!st.light); draw(); $('#tClock',R).textContent=''; $('#tOut',R).textContent='Choose a setup, then run it.'; }
+  $('#tSnail',R).addEventListener('change',e=>{ st.snail=e.target.checked; save(); sync(); });
+  $('#tPlant',R).addEventListener('change',e=>{ st.plant=e.target.checked; save(); sync(); });
+  $('#tLight',R).addEventListener('click',()=>{ st.light=true; save(); sync(); }); $('#tDark',R).addEventListener('click',()=>{ st.light=false; save(); sync(); });
+  let running=false;
+  const lockCtl=on=>{ ['#tRun','#tSnail','#tPlant','#tLight','#tDark'].forEach(q=>{ $(q,R).disabled=on; }); };
+  $('#tRun',R).addEventListener('click',()=>{ if(running) return; running=true; lockCtl(true); const r=tubeResult(st.snail,st.plant,st.light); draw(BTB.start);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{ const liq=L.querySelector('path[fill]'); const tube=L.querySelectorAll('path')[ st.light?0:1 ]; L.querySelectorAll('svg path').forEach(p=>{ if(p.getAttribute('fill-opacity')) p.setAttribute('fill',r.c); }); }));
+    let hr=0; const clk=$('#tClock',R); const tick=setInterval(()=>{ hr+=4; clk.textContent=`${hr} hours`; if(hr>=24){ clearInterval(tick); $('#tOut',R).innerHTML=`<b>After 24 hours:</b> the BTB ${r.txt}.`; runs[key()]=r.name; save(); log(); running=false; lockCtl(false); } }, RM?10:260); });
+  sync(); log();
+  c.insertAdjacentHTML('beforeend',`<h3 style="margin-top:18px">Your first idea</h3><p class="small muted">Why do some tubes turn yellow while others turn blue? Give your best guess. You'll come back to this in Section 7.</p>`);
+  const ta=h('textarea',{class:'ans',rows:'3',style:'width:100%;min-height:80px;font:inherit;padding:10px;border-radius:10px;background:var(--bg);color:var(--text);border:1.5px solid var(--line2)','aria-label':'Your first idea'}); c.appendChild(ta);
+  const WB=[['carbon dioxide',/carbon dioxide|co2|co₂/],['photosynthesis',/photosynth/],['respiration',/respir/],['light',/light|sun/],['snail',/snail/],['plant',/plant/]];
+  const wb=h('div',{class:'wbank'}); wb.innerHTML=WB.map(w=>`<span>${w[0]}</span>`).join(''); c.appendChild(wb);
+  ta.value=S.misc.phenIdea||''; const light=()=>{ const t=ta.value.toLowerCase(); $$('span',wb).forEach((s,i)=>s.classList.toggle('on',WB[i][1].test(t))); };
+  const chk=()=>{ if((S.misc.phenIdea||'').trim().length>=15) reqDone('s1-idea'); };
+  ta.addEventListener('input',()=>{ S.misc.phenIdea=ta.value; save(); light(); chk(); }); light(); chk();
+}
+
+/* ---------- the cycle diagram ---------- */
+function chloroplast(cx,cy,rx,ry){ let s=`<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="rgba(95,227,169,.16)" stroke="#5fe3a9" stroke-width="5"/>`;
+  [[-40,-6],[0,-14],[40,-4]].forEach(([dx,dy])=>{ for(let i=0;i<4;i++) s+=`<rect x="${cx+dx-16}" y="${cy+dy-14+i*9}" width="32" height="7" rx="3.5" fill="#3fbf87"/>`; }); return s; }
+function mitoSmall(cx,cy,rx,ry){ return `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${PKF}" stroke="${PK}" stroke-width="5"/><path d="${cristae(cx,cy,rx,ry)}" fill="none" stroke="${PK2}" stroke-width="2.5"/>`; }
+function cycleFig(mode){
+  const N=mode==='numbers';
+  const lab=(x,y,n,t,col)=> N?`<circle cx="${x}" cy="${y}" r="15" fill="${GOLD}" stroke="#0d1626" stroke-width="2"/><text x="${x}" y="${y+5}" text-anchor="middle" font-size="15" font-weight="700" fill="#231a00">${n}</text>`
+                             :`<text x="${x}" y="${y+6}" text-anchor="middle" font-size="17" font-weight="700" fill="${col||TXT}">${t}</text>`;
+  let s=`<svg viewBox="0 0 760 380" class="fig" role="img" aria-label="${N?'Cycle diagram with six numbered spots to label.':'Cycle: light energy goes into the chloroplast; glucose and oxygen go from the chloroplast to the mitochondrion; carbon dioxide and water go back; the mitochondrion makes ATP.'}">`;
+  s+=`<rect x="6" y="6" width="748" height="368" rx="20" fill="#121c30" stroke="#2a3d5f"/>`;
+  s+=chloroplast(170,200,115,70)+`<text x="170" y="300" text-anchor="middle" font-size="15" font-weight="700" fill="${GLU}">Chloroplast</text><text x="170" y="318" text-anchor="middle" font-size="12" fill="${MUT}">photosynthesis</text>`;
+  s+=mitoSmall(590,200,115,62)+`<text x="590" y="294" text-anchor="middle" font-size="15" font-weight="700" fill="${PK}">Mitochondrion</text><text x="590" y="312" text-anchor="middle" font-size="12" fill="${MUT}">cellular respiration</text>`;
+  s+=`<path d="M235 128 C330 50 430 50 525 128" fill="none" stroke="${TXT}" stroke-width="3"/><path d="M525 128 l-16 -3 8 -12z" fill="${TXT}"/>`;
+  s+=`<path d="M525 272 C430 350 330 350 235 272" fill="none" stroke="${TXT}" stroke-width="3"/><path d="M235 272 l16 3 -8 12z" fill="${TXT}"/>`;
+  s+=lab(320,42,1,'glucose','#5fe3a9')+lab(440,42,2,'O₂',BLU)+lab(320,358,3,'CO₂',BLU)+lab(440,358,4,'H₂O',BLU);
+  s+=sunGlyph(56,58)+`<path d="M78 80 L112 128" stroke="${GOLD}" stroke-width="3"/><path d="M112 128 l-2 -14 -10 6z" fill="${GOLD}"/>`+(N?lab(130,82,5):`<text x="96" y="104" text-anchor="start" font-size="13" fill="${GOLD}">light energy</text>`);
+  s+=`<path d="M690 170 L722 130" stroke="${GOLD}" stroke-width="3"/><path d="M722 130 l-12 4 6 8z" fill="${GOLD}"/>`+(N?lab(718,96,6):star(716,96,26,'ATP',13));
+  return s+'</svg>';
+}
+function sunGlyph(x,y){ let s=`<circle cx="${x}" cy="${y}" r="16" fill="${GOLD}"/>`; for(let i=0;i<8;i++){ const a=i*Math.PI/4; s+=`<line x1="${x+Math.cos(a)*21}" y1="${y+Math.sin(a)*21}" x2="${x+Math.cos(a)*29}" y2="${y+Math.sin(a)*29}" stroke="${GOLD}" stroke-width="3" stroke-linecap="round"/>`; } return s; }
+
+/* ===================== shared drawings: cells in each phase of the cell cycle ===================== */
+// phases: 'inter','pro','meta','ana','telo','cyto'. Animal cell = round; plant (o.plant) = brick with a wall.
+// o.stain = microscope look (onion root tip: pale pink cells, dark purple chromosomes). 2n = 4 in the drawings.
+const MCOL={m:'#e11d48',p:'#2563eb'}; // chromosome colors in diagrams: from mom (red) and dad (blue)
+const STAIN={cell:'#f3e3ea',edge:'#b98aa3',chrom:'#4c1d5e',nuc:'#e4c6d6',wall:'#c9a3b8'};
+const r1=v=>Math.round(v*10)/10;
+function chromatid(x,y,len,w,ang,col){ return `<rect x="${r1(x-w/2)}" y="${r1(y-len/2)}" width="${r1(w)}" height="${r1(len)}" rx="${r1(w/2)}" fill="${col}" transform="rotate(${r1(ang)} ${r1(x)} ${r1(y)})"/>`; }
+function xchrom(x,y,len,w,ang,col,cen){ const a=ang||0; return `<g>${chromatid(x,y,len,w,a-11,col)}${chromatid(x,y,len,w,a+11,col)}<circle cx="${r1(x)}" cy="${r1(y)}" r="${r1(w*0.55)}" fill="${cen||'#0f172a'}" opacity=".55"/></g>`; }
+function vchrom(x,y,len,w,dir,col){ // one chromatid pulled toward a pole: a V with its point (centromere) toward the pole. dir=-1: pole is above; +1: below
+  const e=y-dir*len*0.5; return `<path d="M${r1(x-len*0.22)},${r1(e)} L${r1(x)},${r1(y)} L${r1(x+len*0.22)},${r1(e)}" stroke="${col}" stroke-width="${r1(w)}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`; }
+function chromatin(cx,cy,r,col,seed){ let s='', a=seed||1; const R=()=>{ a=(a*9301+49297)%233280; return a/233280; };
+  for(let i=0;i<6;i++){ const ang=R()*6.28, rr=R()*r*0.6; let x=cx+Math.cos(ang)*rr, y=cy+Math.sin(ang)*rr, d=`M${r1(x)},${r1(y)}`;
+    for(let k=0;k<4;k++){ const dx=(R()-.5)*r*.5, dy=(R()-.5)*r*.5; d+=` q${r1(dx*0.5+(R()-.5)*r*.3)},${r1(dy*0.5+(R()-.5)*r*.3)} ${r1(dx)},${r1(dy)}`; }
+    s+=`<path d="${d}" stroke="${col}" stroke-width="1.2" fill="none" opacity=".6"/>`; }
+  return s; }
+function spindle(cx,cy,R,targets,col){ const pL=[cx,cy-R*0.82], pR=[cx,cy+R*0.82]; let s='';
+  targets.forEach(([x,y,side])=>{ const p=side<0?pL:side>0?pR:null; if(p) s+=`<line x1="${r1(p[0])}" y1="${r1(p[1])}" x2="${r1(x)}" y2="${r1(y)}" stroke="${col}" stroke-width="1" opacity=".55"/>`; else { s+=`<line x1="${r1(pL[0])}" y1="${r1(pL[1])}" x2="${r1(x)}" y2="${r1(y)}" stroke="${col}" stroke-width="1" opacity=".55"/><line x1="${r1(pR[0])}" y1="${r1(pR[1])}" x2="${r1(x)}" y2="${r1(y)}" stroke="${col}" stroke-width="1" opacity=".55"/>`; } });
+  return s; }
+function aster(x,y,col,plant){ if(plant) return ''; let s=`<circle cx="${r1(x)}" cy="${r1(y)}" r="3.2" fill="${col}"/>`; for(let i=0;i<10;i++){ const a=i/10*2*Math.PI; s+=`<line x1="${r1(x)}" y1="${r1(y)}" x2="${r1(x+Math.cos(a)*9)}" y2="${r1(y+Math.sin(a)*9)}" stroke="${col}" stroke-width=".9" opacity=".7"/>`; } return s; }
+/* the four chromosomes (2 pairs). k: 0..3 -> [color, length factor] */
+const CH=[['m',1],['p',1],['m',.62],['p',.62]];
+function mitCell(cx,cy,R,ph,o){ o=o||{}; const st=o.stain, pl=o.plant, L=R*0.42, W=Math.max(3,R*0.075);
+  const col=k=>st?STAIN.chrom:MCOL[CH[k][0]], len=k=>L*CH[k][1], fib=st?'#9d7a8f':'#94a3b8', cent=st?'#7a5a6c':'#f59e0b';
+  const fill=st?STAIN.cell:(pl?'#ecfccb':'#fde7f3'), edge=st?STAIN.edge:(pl?'#4d7c0f':'#be185d');
+  // body (anaphase/telophase cells stretch along the vertical axis; poles are top and bottom)
+  const sy=ph==='ana'?1.12:ph==='telo'?1.22:1; let s='';
+  const body=(x,y,rx,ry,pinch)=>{ if(pl) return `<rect x="${r1(x-rx)}" y="${r1(y-ry)}" width="${r1(rx*2)}" height="${r1(ry*2)}" rx="4" fill="${fill}" stroke="${st?STAIN.wall:edge}" stroke-width="${st?2:3}"/>`;
+    if(!pinch) return `<ellipse cx="${r1(x)}" cy="${r1(y)}" rx="${r1(rx)}" ry="${r1(ry)}" fill="${fill}" stroke="${edge}" stroke-width="2.2"/>`;
+    const k=pinch; return `<path d="M${r1(x)},${r1(y-ry)} C${r1(x+rx*1.15)},${r1(y-ry)} ${r1(x+rx*(1-k*0.9))},${r1(y-ry*0.1)} ${r1(x+rx*(1-k))},${r1(y)} C${r1(x+rx*(1-k*0.9))},${r1(y+ry*0.1)} ${r1(x+rx*1.15)},${r1(y+ry)} ${r1(x)},${r1(y+ry)} C${r1(x-rx*1.15)},${r1(y+ry)} ${r1(x-rx*(1-k*0.9))},${r1(y+ry*0.1)} ${r1(x-rx*(1-k))},${r1(y)} C${r1(x-rx*(1-k*0.9))},${r1(y-ry*0.1)} ${r1(x-rx*1.15)},${r1(y-ry)} ${r1(x)},${r1(y-ry)} Z" fill="${fill}" stroke="${edge}" stroke-width="2.2"/>`; };
+  const nucleus=(x,y,r,dashed,seed)=>`<circle cx="${r1(x)}" cy="${r1(y)}" r="${r1(r)}" fill="${st?STAIN.nuc:'#ede9fe'}" stroke="${st?STAIN.edge:'#6d28d9'}" stroke-width="1.6"${dashed?' stroke-dasharray="5 4"':''}/>${dashed?'':`<circle cx="${r1(x+r*0.25)}" cy="${r1(y-r*0.2)}" r="${r1(r*0.22)}" fill="${st?STAIN.chrom:'#7c3aed'}" opacity="${st?.5:.8}"/>`}${chromatin(x,y,r*0.8,st?STAIN.chrom:'#7c3aed',seed||3)}`;
+  if(ph==='cyto'){ const off=R*0.62; [[cx,cy-off],[cx,cy+off]].forEach(([x,y],i)=>{ s+=body(x,y,R*0.78,R*0.58); s+=nucleus(x,y,R*0.3,false,7+i); }); return s; }
+  s+=body(cx,cy,R,R*sy,ph==='telo'?0.55:0);
+  if(ph==='inter'){ s+=nucleus(cx,cy,R*0.45,false,5); if(!pl) s+=aster(cx+R*0.5,cy-R*0.5,cent); return s; }
+  if(ph==='pro'){ s+=`<circle cx="${cx}" cy="${cy}" r="${r1(R*0.5)}" fill="none" stroke="${st?STAIN.edge:'#6d28d9'}" stroke-width="1.4" stroke-dasharray="6 6" opacity=".7"/>`;
+    const P=[[-.22,-.18,30],[.2,-.15,-40],[-.15,.2,70],[.2,.18,-10]]; P.forEach(([dx,dy,a],k)=>s+=xchrom(cx+dx*R,cy+dy*R,len(k),W,a,col(k)));
+    s+=aster(cx-R*0.18,cy-R*0.78,cent,pl)+aster(cx+R*0.18,cy+R*0.78,cent,pl); return s; }
+  if(ph==='meta'){ const xs=[-.33,-.11,.11,.33], T=xs.map(dx=>[cx+dx*R,cy,0]);
+    s+=spindle(cx,cy,R,T,fib); xs.forEach((dx,k)=>s+=xchrom(cx+dx*R,cy,len(k)*0.85,W,0,col(k)));
+    s+=aster(cx,cy-R*0.82,cent,pl)+aster(cx,cy+R*0.82,cent,pl); return s; }
+  if(ph==='ana'){ const T=[], xs=[-.27,-.09,.09,.27], d=R*0.45*sy; xs.forEach(dx=>{ T.push([cx+dx*R,cy-d,-1]); T.push([cx+dx*R,cy+d,1]); });
+    s+=spindle(cx,cy,R*sy,T,fib); xs.forEach((dx,k)=>{ s+=vchrom(cx+dx*R,cy-d,len(k)*0.8,W,-1,col(k))+vchrom(cx+dx*R,cy+d,len(k)*0.8,W,1,col(k)); });
+    s+=aster(cx,cy-R*0.82*sy,cent,pl)+aster(cx,cy+R*0.82*sy,cent,pl); return s; }
+  if(ph==='telo'){ const off=R*0.62*sy; [[cx,cy-off],[cx,cy+off]].forEach(([x,y],i)=>{ s+=`<circle cx="${r1(x)}" cy="${r1(y)}" r="${r1(R*0.3)}" fill="${st?STAIN.nuc:'#ede9fe'}" stroke="${st?STAIN.edge:'#6d28d9'}" stroke-width="1.4" stroke-dasharray="${i?'3 2':'3 2'}"/>`;
+      [-.12,-.04,.04,.12].forEach((dx,k)=>s+=chromatid(x+dx*R,y,len(k)*0.6,W*0.8,0,col(k))); });
+    if(pl) s+=`<line x1="${r1(cx-R*0.8)}" y1="${cy}" x2="${r1(cx+R*0.8)}" y2="${cy}" stroke="${st?STAIN.wall:'#65a30d'}" stroke-width="3" stroke-dasharray="6 3"/>`;
+    return s; }
+  return s; }
+const PHASES=[{k:'inter',n:'Interphase'},{k:'pro',n:'Prophase'},{k:'meta',n:'Metaphase'},{k:'ana',n:'Anaphase'},{k:'telo',n:'Telophase'},{k:'cyto',n:'Cytokinesis'}];
+/* an onion root tip field of view: rows of brick cells, each in a phase. cells: array of phase keys (row-major), returns svg inner */
+function rootField(x0,y0,cols,rows,cw,chh,phs,o){ o=o||{}; let s=''; let i=0;
+  for(let r=0;r<rows;r++) for(let c=0;c<cols;c++){ const ph=phs[i++]||'inter', x=x0+c*cw, y=y0+r*chh; const cx=x+cw/2, cy=y+chh/2;
+    s+=`<g class="rc" data-i="${i-1}">${mitCell(cx,cy,Math.min(cw,chh)*0.48,ph,{plant:true,stain:true})}${o.mark&&o.mark[i-1]?`<rect x="${r1(x+2)}" y="${r1(y+2)}" width="${r1(cw-4)}" height="${r1(chh-4)}" fill="none" stroke="${o.mark[i-1]}" stroke-width="3" rx="4"/>`:''}</g>`; }
+  return s; }
+/* ===================== MITOSIS AND THE CELL CYCLE ===================== */
+const CW={
+  cycle:wh('cell cycle','The repeating life of a cell: it grows, copies its DNA, and divides into two cells.'),
+  interphase:wh('interphase','The longest part of the cell cycle. The cell grows, does its job, and copies its DNA.'),
+  mitosis:wh('mitosis','The division of the nucleus. One nucleus becomes two nuclei with the same chromosomes.'),
+  cytokinesis:wh('cytokinesis','The division of the cytoplasm. The cell splits into two daughter cells.'),
+  chromatid:wh('sister chromatids','The two identical copies of a chromosome after the DNA is copied. They are joined at the centromere.'),
+  centromere:wh('centromere','The pinched spot that holds sister chromatids together.'),
+  spindle:wh('spindle fibers','Protein fibers that attach to the chromosomes and pull them apart.'),
+  daughter:wh('daughter cells','The two new cells made when a cell divides.'),
+  diploid:wh('diploid','Having two sets of chromosomes (one from each parent). Human body cells have 46.'),
+  checkpoint:wh('checkpoint','A stop in the cell cycle where the cell checks for problems before it goes on.'),
+  tumor:wh('tumor','A lump of cells that keep dividing when they should stop.'),
+  cancer:wh('cancer','A disease in which cells divide out of control and can spread to other parts of the body.')
+};
+const tx=(x,y,t,fs,col,anchor,bold)=>`<text x="${x}" y="${y}" text-anchor="${anchor||'middle'}" font-size="${fs||14}" fill="${col||'#e8eef8'}"${bold?' font-weight="700"':''}>${t}</text>`;
+const clamp01=v=>Math.max(0,Math.min(1,v));
+const easeIO=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+const lrp=(a,b,t)=>a+(b-a)*t;
+const PANEL='#f8fafc', INKD='#16213a';
+const mk=(x,y,n)=>`<circle cx="${x}" cy="${y}" r="13" fill="#ffd35c" stroke="${INKD}" stroke-width="2"/>${tx(x,y+5,n,14,INKD,null,true)}`;
+/* ---------- phenomenon: a scraped knee healing ---------- */
+function kneePic(){ const day=(x,lab,heal)=>{ let s=`<g transform="translate(${x} 20)"><path d="M10,180 C10,90 40,20 90,20 C140,20 170,90 170,180 Z" fill="#d6a17a" stroke="#9a6a48" stroke-width="2"/><ellipse cx="90" cy="95" rx="${44-heal*6}" ry="${30-heal*4}" fill="${heal<1?'#b3312f':heal<2?'#8f3b2b':'#e9b294'}" opacity="${heal<2?1:.9}"/>`;
+    if(heal===0) for(let i=0;i<8;i++) s+=`<path d="M${60+i*8},${80+(i%3)*8} l6,10" stroke="#7f1d1d" stroke-width="2"/>`;
+    if(heal===1) s+=`<ellipse cx="90" cy="95" rx="30" ry="18" fill="#6b2a1e"/>`;
+    if(heal===2) s+=`<ellipse cx="90" cy="95" rx="22" ry="12" fill="#f0b9a0" stroke="#e29c80" stroke-dasharray="3 3"/>`;
+    return s+`</g>${tx(x+90,232,lab,15,INKD,null,true)}`; };
+  return `<svg viewBox="0 0 600 250" class="fig" role="img" aria-label="A scraped knee on day 1 (red and raw), day 4 (scabbed), and day 10 (new pink skin)."><rect width="600" height="250" rx="14" fill="${PANEL}"/>${day(10,'Day 1',0)}${day(210,'Day 4',1)}${day(410,'Day 10',2)}</svg>`; }
+/* ---------- cell cycle pie ---------- */
+function cyclePie(hl){ const cx=180, cy=170, R=130; const segs=[['G1',0,.40,'#93c5fd'],['S',.40,.70,'#5fe3a9'],['G2',.70,.90,'#c4b5fd'],['M',.90,1,'#fb923c']];
+  const arc=(a0,a1,col,on)=>{ const A0=a0*2*Math.PI-Math.PI/2, A1=a1*2*Math.PI-Math.PI/2, lg=a1-a0>.5?1:0; return `<path d="M${cx},${cy} L${(cx+R*Math.cos(A0)).toFixed(1)},${(cy+R*Math.sin(A0)).toFixed(1)} A${R},${R} 0 ${lg} 1 ${(cx+R*Math.cos(A1)).toFixed(1)},${(cy+R*Math.sin(A1)).toFixed(1)} Z" fill="${col}" stroke="#0f1a2e" stroke-width="3" opacity="${hl&&!on?.35:1}"/>`; };
+  let s=`<svg viewBox="0 0 600 340" class="fig" role="img" aria-label="The cell cycle as a circle. Interphase (G1, S, and G2) takes about 90 percent of the time. Mitosis and cytokinesis (M) take about 10 percent."><rect width="600" height="340" rx="14" fill="#0f1a2e"/>`;
+  segs.forEach(([n,a,b,c])=>{ s+=arc(a,b,c,hl===n); const m=(a+b)/2*2*Math.PI-Math.PI/2; s+=tx((cx+R*.62*Math.cos(m)).toFixed(1),(cy+R*.62*Math.sin(m)+6).toFixed(1),n,20,'#0f1a2e',null,true); });
+  s+=`<circle cx="${cx}" cy="${cy}" r="32" fill="#0f1a2e"/>`+tx(cx,cy+5,'cycle',13,'#e8eef8',null,true);
+  const key=[['G1','Cell grows and does its job','#93c5fd'],['S','DNA is copied (S = synthesis)','#5fe3a9'],['G2','Cell gets ready to divide','#c4b5fd'],['M','Mitosis and cytokinesis','#fb923c']];
+  key.forEach(([n,t,c],i)=>{ s+=`<rect x="342" y="${70+i*52}" width="22" height="22" rx="4" fill="${c}"/>`+tx(374,86+i*52,`<tspan font-weight="700">${n}:</tspan> ${t}`,14,'#e8eef8','start'); });
+  s+=`<path d="M 336 64 L 330 64 L 330 220 L 336 220" stroke="#ffd35c" fill="none" stroke-width="2"/>`+tx(322,145,'interphase',12,'#ffd35c','end',true)+tx(322,160,'(about 90%)',11,'#ffd35c','end');
+  return s+'</svg>'; }
+/* ---------- copying a chromosome ---------- */
+function copyDraw(k,p){ const q=easeIO(p); let s=`<svg viewBox="0 0 560 300" class="fig" role="img" aria-label="${['A chromosome before copying: one long DNA molecule.','During S phase the DNA is copied. Now there are two identical strands.','The copies coil up tightly and stay joined at the centromere: two sister chromatids.','46 chromosomes in a human body cell become 46 doubled chromosomes (92 chromatids) before mitosis.'][k]}"><rect width="560" height="300" rx="14" fill="#0f1a2e"/>`;
+  s+=tx(280,32,['1. One chromosome (uncopied)','2. S phase: the DNA is copied','3. Two sister chromatids','4. Count them'][k],16,'#ffd35c',null,true);
+  const wave=(y,col,op)=>{ let d=`M90,${y}`; for(let x=90;x<=470;x+=20) d+=` Q${x+5},${y-14} ${x+10},${y} T${x+20},${y}`; return `<path d="${d}" stroke="${col}" stroke-width="5" fill="none" opacity="${op}"/>`; };
+  if(k===0) s+=wave(150,'#e11d48',1)+tx(280,220,'one long DNA molecule (loose, like spaghetti)',14,'#e8eef8');
+  if(k===1){ s+=wave(lrp(150,130,q),'#e11d48',1)+wave(lrp(150,170,q),'#fb7185',q)+tx(280,230,'each strand is an exact copy',14,'#e8eef8'); }
+  if(k===2){ const L=lrp(380,150,q), w=lrp(5,20,q); s+=`<rect x="${(280-w-2).toFixed(1)}" y="${(160-L/2).toFixed(1)}" width="${w.toFixed(1)}" height="${L.toFixed(1)}" rx="${(w/2).toFixed(1)}" fill="#e11d48" transform="rotate(${-8*q} 280 160)"/><rect x="${(282).toFixed(1)}" y="${(160-L/2).toFixed(1)}" width="${w.toFixed(1)}" height="${L.toFixed(1)}" rx="${(w/2).toFixed(1)}" fill="#fb7185" transform="rotate(${8*q} 280 160)"/>`;
+    if(q>.7) s+=`<circle cx="281" cy="160" r="9" fill="#0f172a"/>`+tx(360,165,'centromere',14,'#ffd35c','start',true)+`<line x1="292" y1="160" x2="354" y2="160" stroke="#ffd35c" stroke-width="1.5"/>`+tx(150,110,'sister',14,'#e8eef8','end')+tx(150,128,'chromatid',14,'#e8eef8','end')+tx(420,110,'sister',14,'#e8eef8','start')+tx(420,128,'chromatid',14,'#e8eef8','start'); }
+  if(k===3){ for(let i=0;i<46;i++){ const x=40+(i%23)*21.5, y=i<23?110:200, c=i%2?'#2563eb':'#e11d48', o=clamp01(q*46/(i+1)); s+=`<g opacity="${o.toFixed(2)}">${xchrom(x+10,y,40,6,0,c)}</g>`; }
+    s+=tx(280,270,'46 chromosomes, each with 2 sister chromatids = 92 chromatids',14,'#e8eef8'); }
+  return s+'</svg>'; }
+/* ---------- mitosis animation ---------- */
+const PH_STEPS=['inter','pro','meta','ana','telo','cyto'];
+function mitDraw(k,p){ const ph=PH_STEPS[k], q=easeIO(p); const lab=['Interphase (DNA already copied)','Prophase','Metaphase','Anaphase','Telophase','Cytokinesis'][k];
+  let s=`<svg viewBox="0 0 560 330" class="fig" role="img" aria-label="${['An animal cell in interphase with a nucleus. Its DNA has been copied.','Prophase: chromosomes coil up and become visible, the nuclear membrane breaks down, and spindle fibers start to form.','Metaphase: the chromosomes line up across the middle of the cell, attached to spindle fibers.','Anaphase: the sister chromatids separate and are pulled to opposite ends of the cell.','Telophase: a new nucleus forms around each set of chromosomes, and the cell starts to pinch in.','Cytokinesis: the cytoplasm divides, making two identical daughter cells.'][k]}"><rect width="560" height="330" rx="14" fill="#0f1a2e"/>`;
+  s+=tx(280,30,lab,17,'#ffd35c',null,true);
+  s+=`<g opacity="${(0.25+0.75*q).toFixed(2)}">${mitCell(200,180,115,ph,{})}</g>`;
+  const notes=[['DNA copied (S phase)','nucleus intact'],['chromosomes coil up','nuclear membrane breaks down','spindle fibers form'],['chromosomes line up','in the middle'],['sister chromatids','pulled apart','to opposite poles'],['new nuclei form','cell pinches in'],['two identical','daughter cells']][k];
+  notes.forEach((t,i)=>s+=`<g opacity="${clamp01(q*3-i).toFixed(2)}">${tx(350,120+i*30,'• '+t,15,'#e8eef8','start')}</g>`);
+  return s+'</svg>'; }
+function animScene(parent, stepsHTML, draw, durs, reqId){
+  const sp=h('div',{class:'split'}); parent.appendChild(sp); const L=h('div'), R=h('div'); sp.append(L,R);
+  const fig=h('div'); L.appendChild(fig);
+  const rb=h('button',{class:'btn ghost small',type:'button',style:'margin-top:6px'},'▶ Replay animation'); L.appendChild(rb);
+  let raf=null, cur=0;
+  function play(k){ cur=k; if(raf) cancelAnimationFrame(raf);
+    if(RM||!durs[k]){ fig.innerHTML=draw(k,1); return; }
+    const t0=performance.now(); (function frame(now){ const p=Math.min(1,(now-t0)/durs[k]); fig.innerHTML=draw(k,p); if(p<1) raf=requestAnimationFrame(frame); else raf=null; })(t0); }
+  rb.addEventListener('click',()=>play(cur));
+  stepper(R, stepsHTML, k=>play(k), reqId);
+}
+function firstIdea(c, chips, prompt){
+  c.insertAdjacentHTML('beforeend',`<h3 style="margin-top:18px">Your first idea</h3><p class="small muted">${prompt} Give your best guess. You'll come back to this in Section 7.</p>`);
+  const ta=h('textarea',{class:'ans',rows:'3',style:'width:100%;min-height:80px;font:inherit;padding:10px;border-radius:10px;background:var(--bg);color:var(--text);border:1.5px solid var(--line2)','aria-label':'Your first idea'}); c.appendChild(ta);
+  const wb=h('div',{class:'wbank'}); wb.innerHTML=chips.map(w=>`<span>${w[0]}</span>`).join(''); c.appendChild(wb);
+  ta.value=S.misc.phenIdea||''; const light=()=>{ const t=ta.value.toLowerCase(); $$('span',wb).forEach((s,i)=>s.classList.toggle('on',chips[i][1].test(t))); };
+  const chk=()=>{ if((S.misc.phenIdea||'').trim().length>=15) reqDone('s1-idea'); };
+  ta.addEventListener('input',()=>{ S.misc.phenIdea=ta.value; save(); light(); chk(); }); light(); chk();
+}
+/* ---------- try it: put the phases in order (tap the cells) ---------- */
+function orderCells(parent, reqId){ const st=S.misc.ord||(S.misc.ord={picked:[],done:false}); const scr=S.misc.ordShuf||(S.misc.ordShuf=[3,0,5,1,4,2]);
+  const fig=h('div'); parent.appendChild(fig); const out=h('div',{class:'small',style:'margin:6px 0'}); parent.appendChild(out);
+  const row=h('div',{class:'btnrow'}); const rs=h('button',{class:'btn ghost small',type:'button'},'Start over'); row.appendChild(rs); parent.appendChild(row);
+  const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'}); parent.appendChild(fb);
+  function draw(){ let s=`<svg viewBox="0 0 600 230" class="fig" role="img" aria-label="Six cells in different phases, mixed up. Tap them in order, starting with interphase."><rect width="600" height="230" rx="14" fill="#0f1a2e"/>`;
+    scr.forEach((pi,i)=>{ const x=55+i*98, y=110, n=st.picked.indexOf(i); s+=`<g class="oc" data-i="${i}" style="cursor:pointer"><rect x="${x-46}" y="${y-92}" width="92" height="190" rx="10" fill="${n>=0?'#1f3a2a':'#13213d'}" stroke="${n>=0?'#5fe3a9':'#2a3d5f'}" stroke-width="2"/>${mitCell(x,y,38,PH_STEPS[pi],{plant:false})}${n>=0?mk(x,y+80,n+1):tx(x,y+86,String.fromCharCode(65+i),14,'#a3b4cf',null,true)}</g>`; });
+    fig.innerHTML=s+'</svg>'; $$('.oc',fig).forEach(g=>g.addEventListener('click',()=>pick(+g.dataset.i)));
+    out.innerHTML='Your order: '+(st.picked.map(i=>String.fromCharCode(65+i)).join(' → ')||'<span class="muted">tap the cells</span>'); }
+  function pick(i){ if(st.done||st.picked.includes(i)) return; st.picked.push(i); save(); draw();
+    if(st.picked.length===6){ const ok=st.picked.every((ci,n)=>scr[ci]===n); fb.hidden=false;
+      if(ok){ st.done=true; save(); fb.className='fb ok'; fb.innerHTML='<b>Correct!</b> Interphase → prophase → metaphase → anaphase → telophase → cytokinesis.'; reqDone(reqId); }
+      else { fb.className='fb no'; fb.innerHTML='Not quite. Start with the cell that still has a nucleus and no visible chromosomes. Then look for chromosomes coiling, lining up, separating, and two new nuclei. Press <b>Start over</b>.'; } } }
+  rs.addEventListener('click',()=>{ if(st.done) return; st.picked=[]; save(); fb.hidden=true; draw(); });
+  draw(); if(st.done){ fb.hidden=false; fb.className='fb ok'; fb.innerHTML='<b>Correct!</b> Interphase → prophase → metaphase → anaphase → telophase → cytokinesis.'; }
+}
+/* ---------- try it: find phases in an onion root tip ---------- */
+const RT=['inter','inter','pro','inter','inter','meta','inter','inter','inter','ana','inter','inter','inter','telo','inter','inter','pro','inter','inter','inter','inter','inter','meta','inter'];
+function rootHunt(parent, reqId){ const st=S.misc.rh||(S.misc.rh={found:{},n:0}); const fig=h('div',{class:'rtfig'}); parent.appendChild(fig); const fb=h('div',{class:'fb',hidden:true,'aria-live':'polite'}); parent.appendChild(fb);
+  const targets=[{k:'meta',t:'Find a cell in <b>metaphase</b>.'},{k:'ana',t:'Find a cell in <b>anaphase</b>.'},{k:'pro',t:'Find a cell in <b>prophase</b>.'},{k:'telo',t:'Find a cell in <b>telophase</b>.'}];
+  const test=missionBox(parent,'rhm',targets.map(t=>({text:t.t,test:s=>s===t.k,done:'Found it!'})),reqId);
+  function draw(){ const mark={}; Object.keys(st.found).forEach(i=>mark[i]='#22c55e');
+    fig.innerHTML=`<svg viewBox="0 0 600 300" class="fig" role="img" aria-label="An onion root tip under a microscope: rows of brick-shaped cells. Most are in interphase; a few are dividing."><rect width="600" height="300" rx="14" fill="#e9d3de"/>${rootField(12,10,8,3,72,92,RT,{mark})}</svg>`;
+    $$('.rc',fig).forEach(g=>{ g.style.cursor='pointer'; g.addEventListener('click',()=>{ const i=+g.dataset.i, ph=RT[i], idx=S.misc.rhm||0; if(idx>=targets.length) return; fb.hidden=false;
+      if(ph===targets[idx].k){ st.found[i]=1; save(); fb.className='fb ok'; fb.innerHTML=`Yes: that cell is in ${PHASES.find(p=>p.k===ph).n.toLowerCase()}.`; test(ph); draw(); }
+      else { fb.className='fb no'; fb.innerHTML=ph==='inter'?'That cell has a nucleus and no visible chromosomes, so it is in interphase. Try another.':'Not that one. Look at where the chromosomes are and what shape they make.'; } }); }); }
+  draw(); }
+/* ---------- figures used in later sections ---------- */
+function plantAnimal(){ return `<svg viewBox="0 0 600 260" class="fig" role="img" aria-label="Left: an animal cell pinching in two with a cleavage furrow. Right: a plant cell building a cell plate across the middle."><rect width="600" height="260" rx="14" fill="${PANEL}"/>${mitCell(150,130,90,'telo',{})}${mitCell(450,130,90,'telo',{plant:true})}${tx(150,250,'animal cell: pinches in',14,INKD,null,true)}${tx(450,250,'plant cell: builds a cell plate',14,INKD,null,true)}</svg>`; }
+function tumorPic(){ let s=`<svg viewBox="0 0 600 240" class="fig" role="img" aria-label="Left: normal skin cells in one neat layer. Right: cancer cells piling up into a lump, with uneven sizes and big nuclei."><rect width="600" height="240" rx="14" fill="${PANEL}"/>`;
+  for(let i=0;i<8;i++) s+=`<rect x="${30+i*30}" y="120" width="28" height="40" rx="5" fill="#fbcfe8" stroke="#be185d"/><circle cx="${44+i*30}" cy="140" r="6" fill="#a78bfa"/>`;
+  s+=`<rect x="20" y="160" width="260" height="30" fill="#fde68a" opacity=".6"/>`+tx(150,215,'normal cells: one neat layer',14,INKD,null,true);
+  const r=(a=>()=>{ a=(a*9301+49297)%233280; return a/233280; })(5); for(let i=0;i<34;i++){ const x=330+r()*240, y=160-r()*(100-Math.abs(x-450)*0.6), w=18+r()*16; s+=`<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${(w/2).toFixed(0)}" ry="${(w/2.4).toFixed(0)}" fill="#f9a8d4" stroke="#9d174d"/><circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${(w/4).toFixed(0)}" fill="#7c3aed"/>`; }
+  s+=`<rect x="320" y="160" width="260" height="30" fill="#fde68a" opacity=".6"/>`+tx(450,215,'cancer cells: pile up into a tumor',14,INKD,null,true);
+  return s+'</svg>'; }
+
+SECS.push({z:1, sym:'H', name:'Hydrogen', title:'A scraped knee heals', min:5,
+ reqs:[{id:'s1-read',text:'Read the phenomenon'},{id:'s1-idea',text:'Write your first idea'}],
+ build(body){
+  const c=card(body,'phen','Phenomenon: the scraped knee');
+  c.insertAdjacentHTML('beforeend',`<p>You fall off your bike and scrape off a patch of skin. In about a week and a half, the scrape is covered with brand-new skin. Millions of new cells filled the gap.</p>
+   <p>Where did all those new cells come from? And how does every new skin cell end up with the same 46 chromosomes as the cells around it?</p>${kneePic()}`);
+  const row=h('div',{class:'btnrow'}); const b=h('button',{class:'btn primary',type:'button'},'I read it'); row.appendChild(b); c.appendChild(row);
+  b.addEventListener('click',()=>{ reqDone('s1-read'); b.textContent='Got it'; b.disabled=true; }); if(S.reqs['s1-read']){ b.textContent='Got it'; b.disabled=true; }
+  firstIdea(c,[['divide',/divid|split|division/],['copy',/cop(y|ies)|duplicat|replicat/],['cells',/cell/],['chromosomes',/chromosom|dna/],['identical',/identical|same/]],'Where do the new skin cells come from?');
+ }
+});
+SECS.push({z:2, sym:'He', name:'Helium', title:'Why cells divide: the cell cycle', min:6,
+ reqs:[{id:'s2-sort',text:'Sort what happens in each stage'},{id:'s2-qc',text:'Answer the quick check questions correctly'}],
+ build(body){
+  const c1=card(body,'read','Growth, repair, and replacement');
+  c1.insertAdjacentHTML('beforeend',`<p>You started as <b>one cell</b>. Today you have about 30 trillion. Cells divide for three reasons: to <b>grow</b>, to <b>repair</b> damage (like your knee), and to <b>replace</b> old cells (you lose millions of skin cells every day).</p>
+   <p>Every body cell goes through the ${CW.cycle}:</p>
+   <ul><li>${CW.interphase}: the cell grows (G1), copies all its DNA (S phase), and gets ready to divide (G2). This is about 90% of the cycle.</li><li>${CW.mitosis} and ${CW.cytokinesis} (M phase): the nucleus divides, then the whole cell splits into two ${CW.daughter}.</li></ul>${cyclePie()}`);
+  const c2=card(body,'try','What happens when?');
+  sorter(c2,{id:'s2', bins:[{k:'g1',label:'G1'},{k:'s',label:'S'},{k:'g2',label:'G2'},{k:'m',label:'M (mitosis and cytokinesis)'}],
+    items:[{t:'The cell grows and does its normal job',k:'g1'},{t:'All of the DNA is copied',k:'s'},{t:'The cell makes the proteins it needs to divide',k:'g2'},{t:'The nucleus divides',k:'m'},{t:'The cytoplasm splits into two cells',k:'m'}],
+    doneMsg:'Interphase (G1, S, G2) is getting ready. M is the actual division.', onDone:()=>reqDone('s2-sort')});
+  const c3=card(body,'qc');
+  qcGroup(c3,[{id:'s2q1', q:'Which is <b>not</b> a reason your body cells divide?', opts:['To make egg or sperm cells','To grow','To repair a wound','To replace old cells'], ans:0,
+      why:'Mitosis is for growth, repair, and replacement. Egg and sperm come from a different kind of division (meiosis).', wrong:{1:'Growth is a reason.',2:'Repair is a reason; that is the knee.',3:'Replacing old cells is a reason.'}},
+    {id:'s2q2', q:'Most of a cell\'s life is spent in…', opts:['interphase','prophase','cytokinesis','anaphase'], ans:0,
+      why:'Interphase is about 90% of the cycle. Division itself is quick.', wrong:{1:'Prophase is one short step of mitosis.',2:'Cytokinesis is the short final split.',3:'Anaphase is one of the quickest steps.'}}],'s2-qc');
+ }
+});
+SECS.push({z:3, sym:'Li', name:'Lithium', title:'Copying the chromosomes', min:6,
+ reqs:[{id:'s3-step',text:'Watch all 4 steps'},{id:'s3-qc',text:'Answer the quick check questions correctly'}],
+ build(body){
+  const c1=card(body,'read','Copy first, then divide');
+  c1.insertAdjacentHTML('beforeend',`<p>Before a cell divides, it must copy every chromosome so that each new cell gets a full set. This happens in the <b>S phase</b> of interphase.</p>
+   <p>After copying, each chromosome is made of two identical ${CW.chromatid} joined at a ${CW.centromere}. That is why chromosomes look like an X in pictures: an X is a copied chromosome.</p>
+   <p>Human body cells are ${CW.diploid}: 46 chromosomes in 23 pairs. Before mitosis there are still 46 chromosomes, but each has 2 chromatids (92 chromatids). After mitosis, each new cell has 46 again.</p>`);
+  const c2=card(body,'try','Watch a chromosome being copied');
+  c2.insertAdjacentHTML('beforeend','<p class="small muted">Each step plays an animation. Press <b>Replay</b> to watch it again.</p>');
+  animScene(c2,['<p><b>One chromosome.</b> In interphase, DNA is loose and spread out, like a tangle of thread.</p>','<p><b>S phase.</b> The cell copies the DNA. Now there are two identical molecules.</p>','<p><b>Sister chromatids.</b> The copies coil up tightly and stay joined at the centromere.</p>','<p><b>Count.</b> A human body cell has 46 chromosomes. After S phase, each one has 2 sister chromatids.</p>'],copyDraw,[0,1400,1400,1800],'s3-step');
+  const c3=card(body,'qc');
+  qcGroup(c3,[{id:'s3q1', q:'What are sister chromatids?', opts:['Two identical copies of one chromosome, joined at the centromere','A chromosome from mom and one from dad','Two different genes','The two daughter cells'], ans:0,
+      why:'Sister chromatids are exact copies made in S phase.', wrong:{1:'Those are homologous chromosomes, not sister chromatids.',2:'Chromatids are whole copies of a chromosome.',3:'Daughter cells are whole cells.'}},
+    {id:'s3q2', q:'A skin cell is about to divide. How many chromosomes will <b>each</b> daughter cell have?', opts:['46','23','92','12'], ans:0,
+      why:'Mitosis makes two cells with the same number of chromosomes as the parent cell.', wrong:{1:'23 is the number in egg and sperm.',2:'92 is the number of chromatids before division, not chromosomes in each new cell.',3:'Human body cells have 46.'}}],'s3-qc');
+ }
+});
+SECS.push({z:4, sym:'Be', name:'Beryllium', title:'The phases of mitosis', min:9,
+ reqs:[{id:'s4-step',text:'Watch all 6 steps'},{id:'s4-ord',text:'Put the cells in order'},{id:'s4-qc',text:'Answer the quick check questions correctly'}],
+ build(body){
+  const c1=card(body,'read','PMAT: four phases, then the split');
+  c1.insertAdjacentHTML('beforeend',`<p>Mitosis has four phases. A memory trick: <b>PMAT</b>.</p>
+   <div class="wide"><table class="nb"><tr><th>Phase</th><th>What happens</th><th>Memory hint</th></tr>
+   <tr><td><b>Prophase</b></td><td>Chromosomes coil up and become visible. The nuclear membrane breaks down. ${CW.spindle} start to form.</td><td>P: chromosomes <b>p</b>op into view</td></tr>
+   <tr><td><b>Metaphase</b></td><td>Chromosomes line up across the <b>middle</b> of the cell.</td><td>M: <b>m</b>iddle</td></tr>
+   <tr><td><b>Anaphase</b></td><td>Sister chromatids separate and are pulled <b>apart</b> to opposite ends.</td><td>A: <b>a</b>part</td></tr>
+   <tr><td><b>Telophase</b></td><td>A new nucleus forms at each end. The chromosomes uncoil.</td><td>T: <b>t</b>wo nuclei</td></tr></table></div>
+   <p>Then ${CW.cytokinesis} splits the cytoplasm. Result: two daughter cells, identical to each other and to the parent cell.</p>`);
+  const c2=card(body,'try','Watch mitosis');
+  c2.insertAdjacentHTML('beforeend','<p class="small muted">Each step plays an animation. Press <b>Replay</b> to watch it again. (The drawing shows only 4 chromosomes so you can follow them. Red came from mom, blue from dad.)</p>');
+  animScene(c2,['<p><b>Interphase.</b> The DNA was copied in S phase, but it is loose inside the nucleus.</p>','<p><b>Prophase.</b> The chromosomes coil up into X shapes. The nuclear membrane falls apart. Spindle fibers grow from each end of the cell.</p>','<p><b>Metaphase.</b> Spindle fibers attach to each centromere and line the chromosomes up across the middle.</p>','<p><b>Anaphase.</b> The sister chromatids are pulled apart toward opposite ends. Each end gets one copy of every chromosome.</p>','<p><b>Telophase.</b> A new nuclear membrane forms around each set. The cell begins to pinch in.</p>','<p><b>Cytokinesis.</b> The cell splits into two daughter cells. Each has the same 4 chromosomes as the parent.</p>'],mitDraw,[0,1200,1200,1300,1200,1000],'s4-step');
+  const c3=card(body,'try','Put the cells in order');
+  c3.insertAdjacentHTML('beforeend','<p>These six cells are mixed up. Tap them in order, starting with interphase.</p>');
+  orderCells(c3,'s4-ord');
+  const c4=card(body,'qc');
+  qcGroup(c4,[{id:'s4q1', q:'In which phase do the chromosomes line up across the middle of the cell?', opts:['Metaphase','Prophase','Anaphase','Telophase'], ans:0,
+      why:'M = middle.', wrong:{1:'In prophase the chromosomes first appear.',2:'In anaphase they are pulled apart.',3:'In telophase new nuclei form.'}},
+    {id:'s4q2', q:'What is pulled apart in anaphase?', opts:['Sister chromatids','Homologous pairs from mom and dad','The two nuclei','The cell membranes'], ans:0,
+      why:'Each chromosome splits at its centromere, and its two chromatids go to opposite ends.', wrong:{1:'In mitosis, the copies of each chromosome separate, not the pairs.',2:'The nuclei form in telophase.',3:'The membrane pinches in during cytokinesis.'}}],'s4-qc');
+ }
+});
+SECS.push({z:5, sym:'B', name:'Boron', title:'Mitosis in real cells', min:7,
+ reqs:[{id:'s5-hunt',text:'Finish all 4 root tip missions'},{id:'s5-qc',text:'Answer the quick check questions correctly'}],
+ build(body){
+  const c1=card(body,'read','Looking under the microscope');
+  c1.insertAdjacentHTML('beforeend',`<p>Scientists study mitosis in the tip of an onion root, where cells divide fast to make the root grow. A stain turns the chromosomes dark purple. Most cells are in interphase (you see a round nucleus). Only a few are caught in the middle of mitosis.</p>
+   <p>Plant and animal cells divide the same way, with one difference at the end. An animal cell <b>pinches in</b> (a cleavage furrow). A plant cell has a stiff cell wall, so it builds a <b>cell plate</b> across the middle that becomes a new wall.</p>${plantAnimal()}`);
+  const c2=card(body,'try','Onion root tip hunt');
+  c2.insertAdjacentHTML('beforeend','<p>Tap cells in the microscope view to complete each mission.</p>');
+  rootHunt(c2,'s5-hunt');
+  const c3=card(body,'qc');
+  qcGroup(c3,[{id:'s5q1', q:'In a root tip, most cells are in interphase. What does that tell you?', opts:['Cells spend most of their time in interphase','Most of the cells are dead','Interphase is the fastest phase','Mitosis never happens in roots'], ans:0,
+      why:'More cells in a phase means that phase takes longer.', wrong:{1:'The cells are alive; they are getting ready to divide.',2:'Interphase is the longest.',3:'You saw dividing cells too.'}},
+    {id:'s5q2', q:'How does cytokinesis in a plant cell differ from an animal cell?', opts:['A plant cell builds a cell plate; an animal cell pinches in','A plant cell does not divide its cytoplasm','Only plant cells do anaphase','An animal cell builds a cell wall'], ans:0,
+      why:'The cell wall is too stiff to pinch, so plants build a new wall down the middle.', wrong:{1:'Plant cells do divide their cytoplasm.',2:'All dividing cells go through anaphase.',3:'Animal cells have no cell wall.'}}],'s5-qc');
+ }
+});
+SECS.push({z:6, sym:'C', name:'Carbon', title:'When the cell cycle loses control', min:6,
+ reqs:[{id:'s6-sort',text:'Sort normal cells and cancer cells'},{id:'s6-qc',text:'Answer the quick check questions correctly'}],
+ build(body){
+  const c1=card(body,'read','Checkpoints and cancer');
+  c1.insertAdjacentHTML('beforeend',`<p>The cell cycle has ${CW.checkpoint}s. At each one, proteins check: Is the DNA copied correctly? Is the cell big enough? Are the chromosomes attached to the spindle? If something is wrong, the cycle stops until it is fixed, or the cell destroys itself.</p>
+   <p>Normal cells also stop dividing when they touch their neighbors. If mutations damage the genes that control the cycle, a cell can divide over and over. The extra cells pile up into a ${CW.tumor}. When they invade nearby tissue or spread, it is ${CW.cancer}.</p>${tumorPic()}
+   <p class="small muted">Many cancer treatments target dividing cells. Some chemotherapy drugs stop spindle fibers from working, so the cells cannot finish mitosis.</p>`);
+  const c2=card(body,'try','Normal cell or cancer cell?');
+  sorter(c2,{id:'s6', bins:[{k:'n',label:'Normal cells'},{k:'c',label:'Cancer cells'}],
+    items:[{t:'Stop dividing when they touch other cells',k:'n'},{t:'Stop at a checkpoint if the DNA is damaged',k:'n'},{t:'Divide over and over, even when crowded',k:'c'},{t:'Ignore checkpoint signals',k:'c'},{t:'Can spread to other parts of the body',k:'c'}],
+    doneMsg:'Cancer is the cell cycle out of control.', onDone:()=>reqDone('s6-sort')});
+  const c3=card(body,'qc');
+  qcGroup(c3,[{id:'s6q1', q:'What is cancer?', opts:['Cells dividing out of control','Cells that stop dividing forever','A virus that kills cells','Cells with no DNA'], ans:0,
+      why:'Cancer cells ignore the signals that should stop the cell cycle.', wrong:{1:'Cancer cells divide too much.',2:'Most cancers are not caused directly by a virus.',3:'Cancer cells have DNA, often with mutations.'}},
+    {id:'s6q2', q:'A drug stops spindle fibers from forming. Which phase will the cancer cells get stuck in?', opts:['Before metaphase: the chromosomes can\'t line up or separate','G1','Cytokinesis only','S phase'], ans:0,
+      why:'Without spindle fibers, chromosomes can\'t be lined up and pulled apart.', wrong:{1:'G1 doesn\'t need spindle fibers.',2:'The cell would never reach cytokinesis.',3:'Copying DNA doesn\'t need spindle fibers.'}}],'s6-qc');
+ }
+});
+SECS.push({z:7, sym:'N', name:'Nitrogen', title:'Spot the mistake', min:5,
+ reqs:[{id:'s7-fix',text:'Find and fix both mistakes'},{id:'s7-back',text:'Explain the phenomenon'}],
+ build(body, sec){
+  const c=card(body,'try','Spot the mistake');
+  bioSpot(c,[
+    {id:'s7x1', who:'Diego', title:'Diego\'s explanation', work:'<p style="margin:0">"After mitosis, each daughter cell gets half of the chromosomes, so a skin cell with 46 makes two cells with 23."</p>',
+      opts:['Each daughter cell gets a full copy: 46 chromosomes, the same as the parent','Each daughter cell gets 92 chromosomes','Skin cells have 23 chromosomes','Nothing is wrong'], ans:0,
+      why:'The DNA is copied first, so each new cell gets all 46.', wrong:{1:'92 is the number of chromatids before division.',2:'Body cells have 46.',3:'Think about the S phase.'},
+      fix:{q:'Why can each daughter cell get all 46 chromosomes?', opts:['The DNA was copied in S phase before mitosis','The cell makes new chromosomes in anaphase','The daughter cells share chromosomes','Half the chromosomes are thrown away'], ans:0, why:'Copy first, then split.'}},
+    {id:'s7x2', who:'Maya', title:'Maya\'s order', work:'<p style="margin:0">"The phases of mitosis are: prophase, anaphase, metaphase, telophase."</p>',
+      opts:['Metaphase comes before anaphase: line up, then pull apart','Telophase comes first','Prophase comes last','Nothing is wrong'], ans:0,
+      why:'PMAT: prophase, metaphase, anaphase, telophase.', wrong:{1:'Telophase is the last phase.',2:'Prophase is first.',3:'Check the PMAT order.'},
+      fix:{q:'What happens right after the chromosomes line up in the middle?', opts:['Sister chromatids are pulled apart (anaphase)','New nuclei form (telophase)','The DNA is copied (S phase)','The chromosomes coil up (prophase)'], ans:0, why:'Metaphase, then anaphase.'}}
+  ],'s7-fix');
+  const b=card(body,'phen','Back to the phenomenon: the scraped knee'); b.classList.add('phencard');
+  b.insertAdjacentHTML('beforeend','<p>Here was your first idea:</p><div class="firstidea"></div>'+kneePic());
+  const fi=$('.firstidea',b); const show=()=>{ fi.innerHTML=(S.misc.phenIdea||'').trim()?esc(S.misc.phenIdea):'(You didn\'t write a first idea.)'; }; show(); if(sec) sec.onShow=show;
+  qcGroup(b,[{id:'s7p1', q:'<b>Part A:</b> Where did the new skin cells come from?', opts:['Skin cells next to the scrape divided by mitosis, over and over','New cells came from blood','The scab turned into skin','Cells grew from nothing'], ans:0,
+      why:'Each healthy skin cell at the edge divided again and again, filling the gap.', wrong:{1:'Blood cells don\'t become skin.',2:'The scab only protects the wound.',3:'Every cell comes from another cell.'}},
+    {id:'s7p2', q:'<b>Part B:</b> Why does every new skin cell have the same 46 chromosomes?', opts:['Each chromosome was copied in S phase, and mitosis gave each daughter cell one full copy','Half came from each neighbor cell','The cells shared one nucleus','New chromosomes are made in telophase'], ans:0,
+      why:'Copy (S phase), line up, and pull apart: each daughter gets an identical set.', wrong:{1:'Cells don\'t borrow chromosomes from neighbors.',2:'Each cell has its own nucleus.',3:'Telophase only builds nuclei around chromosomes already there.'}}],'s7-back');
+ }
+});
+function bioHero(){ $('#heroFig').innerHTML=mitDraw(3,1); }
+
+/* ===================== SECTION 9: final check ===================== */
+const FBANK=[
+ {id:'m1',t:'mc',q:'Which is a reason body cells divide by mitosis?',opts:['To make egg and sperm','To repair a wound','To change a cell\'s DNA','To make cells with half the chromosomes'],ans:1,why:'Mitosis is for growth, repair, and replacement.'},
+ {id:'m2',t:'mc',q:'During which part of the cell cycle is the DNA copied?',opts:['Metaphase','S phase of interphase','Cytokinesis','Telophase'],ans:1,why:'S stands for synthesis: the DNA is copied before mitosis.'},
+ {id:'m3',t:'mc',q:'Which part of the cell cycle takes the most time?',opts:['Prophase','Anaphase','Interphase','Cytokinesis'],ans:2,why:'Interphase is about 90% of the cell cycle.'},
+ {id:'m4',t:'mc',q:'What holds two sister chromatids together?',opts:['The centromere','The cell membrane','The nucleolus','The spindle'],ans:0,why:'Sister chromatids are joined at the centromere.'},
+ {id:'m5',t:'mc',q:'In which phase do chromosomes first coil up and become visible?',opts:['Telophase','Prophase','Anaphase','Metaphase'],ans:1,why:'In prophase the chromosomes condense and the nuclear membrane breaks down.'},
+ {id:'m6',t:'mc',q:'In which phase are sister chromatids pulled to opposite ends of the cell?',opts:['Metaphase','Anaphase','Prophase','Interphase'],ans:1,why:'A = apart.'},
+ {id:'m7',t:'mc',q:'A cell with 8 chromosomes divides by mitosis. How many chromosomes does each daughter cell have?',opts:['4','16','8','2'],ans:2,why:'Mitosis makes two cells with the same number of chromosomes as the parent.'},
+ {id:'m8',t:'mc',q:'What happens during cytokinesis?',opts:['The cytoplasm divides into two cells','The DNA is copied','Chromosomes line up','Spindle fibers form'],ans:0,why:'Cytokinesis splits the cytoplasm after mitosis.'},
+ {id:'m9',t:'mc',q:'How is cytokinesis in a plant cell different from an animal cell?',opts:['Plant cells pinch in','Plant cells build a cell plate','Plant cells skip cytokinesis','Animal cells build a cell wall'],ans:1,why:'The stiff cell wall can\'t pinch, so a new wall (cell plate) forms.'},
+ {id:'m10',t:'mc',q:'Cancer happens when…',opts:['cells stop dividing','cells divide out of control','cells copy their DNA','cells go through checkpoints'],ans:1,why:'Cancer cells ignore the controls on the cell cycle.'},
+ {id:'m11',t:'mc',q:'What do the two daughter cells of mitosis have in common?',opts:['They are genetically identical','Each has half the DNA','One has the mom\'s chromosomes and one has the dad\'s','They are always different sizes'],ans:0,why:'Both get an identical copy of every chromosome.'},
+ {id:'m12',t:'mc',q:'In an onion root tip, 80 of 100 cells are in interphase. What does this show?',opts:['Interphase is the shortest stage','Cells spend most of their time in interphase','The cells are dead','Onions don\'t do mitosis'],ans:1,why:'The more cells in a stage, the longer that stage lasts.'},
+ {id:'t1',t:'two',a:{q:'<b>Part A:</b> A cell has chromosomes lined up across its middle. Which phase is it in?',opts:['Prophase','Metaphase','Anaphase','Telophase'],ans:1},b:{q:'<b>Part B:</b> Which phase comes next?',opts:['Anaphase','Prophase','Interphase','Telophase'],ans:0},why:'M = middle, then A = apart.'},
+ {id:'t2',t:'two',a:{q:'<b>Part A:</b> A human skin cell is in G2, ready to divide. How many chromosomes does it have?',opts:['23','46','92','69'],ans:1},b:{q:'<b>Part B:</b> How many chromatids does it have?',opts:['46','23','92','184'],ans:2},why:'Still 46 chromosomes, but each has 2 sister chromatids after S phase.'},
+ {id:'t3',t:'two',a:{q:'<b>Part A:</b> A drug stops spindle fibers from working. What can\'t the chromosomes do?',opts:['Coil up','Line up and separate','Be copied','Make proteins'],ans:1},b:{q:'<b>Part B:</b> Why is this drug used to treat cancer?',opts:['It stops fast-dividing cells from finishing mitosis','It makes cells divide faster','It copies DNA','It turns cancer cells into skin cells'],ans:0},why:'Without spindle fibers, mitosis stops.'},
+ {id:'t4',t:'two',a:{q:'<b>Part A:</b> Two new nuclei are forming at the ends of a cell. Which phase is it?',opts:['Telophase','Metaphase','Prophase','S phase'],ans:0},b:{q:'<b>Part B:</b> What happens right after this?',opts:['Cytokinesis','Metaphase','DNA copying','Prophase'],ans:0},why:'T = two nuclei; then the cytoplasm splits.'},
+ {id:'s1',t:'sel',q:'Select <b>all</b> the things that happen in <b>interphase</b>.',opts:['The cell grows','The DNA is copied','Sister chromatids separate','The cell gets ready to divide'],ans:[0,1,3],why:'G1, S, and G2 are all part of interphase; separating chromatids is anaphase.'},
+ {id:'s2',t:'sel',q:'Select <b>all</b> the true statements about prophase.',opts:['Chromosomes coil up','The nuclear membrane breaks down','Spindle fibers start to form','Chromosomes line up in the middle'],ans:[0,1,2],why:'Lining up is metaphase.'},
+ {id:'s3',t:'sel',q:'Select <b>all</b> the ways normal cells control division.',opts:['Checkpoints check for damaged DNA','They stop dividing when crowded','They divide no matter what','They check that chromosomes are attached to the spindle'],ans:[0,1,3],why:'Cancer cells are the ones that divide no matter what.'},
+ {id:'s4',t:'sel',q:'Select <b>all</b> the cells that are made by mitosis.',opts:['New skin cells','Cells that make a baby grow','Sperm cells','Cells that replace red blood cells'],ans:[0,1,3],why:'Sperm and eggs are made by meiosis.'},
+ {id:'m13',t:'mc',q:'What is the correct order?',opts:['Prophase, anaphase, metaphase, telophase','Metaphase, prophase, telophase, anaphase','Prophase, metaphase, anaphase, telophase','Telophase, anaphase, metaphase, prophase'],ans:2,why:'PMAT.'},
+ {id:'m14',t:'mc',q:'Each chromosome looks like an X before mitosis because…',opts:['it is two identical sister chromatids joined at the centromere','it is a chromosome from mom and one from dad','it is broken','it has no DNA'],ans:0,why:'The X is a copied chromosome.'}
+];
+const FB=Object.fromEntries(FBANK.map(q=>[q.id,q]));
+function isAns(q,a){ if(a==null) return false; if(q.t==='mc') return true; if(q.t==='two') return a.a!=null&&a.b!=null; return Array.isArray(a)&&a.length>0; }
+function gradeQ(q,a){
+  if(!isAns(q,a)) return 0;
+  if(q.t==='mc') return a===q.ans?1:0;
+  if(q.t==='two') return (a.a===q.a.ans?0.5:0)+(a.b===q.b.ans?0.5:0);
+  const hit=a.filter(i=>q.ans.includes(i)).length, wrong=a.length-hit;
+  if(hit===q.ans.length&&wrong===0) return 1;
+  return (hit-wrong)/q.ans.length>=0.5?0.5:0;
+}
+function newAttempt(){
+  const prev=new Set((S.final.cur&&S.final.cur.ids)||[]);
+  const pick=(t,n)=>{ const pool=FBANK.filter(q=>q.t===t); const fresh=shuffle(pool.filter(q=>!prev.has(q.id))); const old=shuffle(pool.filter(q=>prev.has(q.id))); return fresh.concat(old).slice(0,n).map(q=>q.id); };
+  const ids=shuffle(pick('mc',4).concat(pick('two',3),pick('sel',3)));
+  const ord={}; ids.forEach(id=>{ const q=FB[id]; if(q.t==='two') ord[id]={a:shuffle(q.a.opts.map((_,i)=>i)),b:shuffle(q.b.opts.map((_,i)=>i))}; else ord[id]=shuffle(q.opts.map((_,i)=>i)); });
+  S.final.cur={ids, ord, answers:{}, idx:0, submitted:false, score:null}; save();
+}
+const fmtPts=p=>p===1?'1':p===0.5?'½':'0';
+function optText(q,a){ if(q.t==='mc') return q.opts[a]; if(q.t==='two') return `A: ${a&&a.a!=null?q.a.opts[a.a]:'blank'} · B: ${a&&a.b!=null?q.b.opts[a.b]:'blank'}`; return (a||[]).map(i=>q.opts[i]).join(', ')||'blank'; }
+function rightText(q){ if(q.t==='mc') return q.opts[q.ans]; if(q.t==='two') return `A: ${q.a.opts[q.a.ans]} · B: ${q.b.opts[q.b.ans]}`; return q.ans.map(i=>q.opts[i]).join(', '); }
+
+SECS.push({z:8, sym:'O', name:'Oxygen', title:'Final check', min:5,
+ reqs:[{id:'final-pass',text:`Score ${PASS_SCORE} out of 10 or better on the final check`}],
+ build(body, sec){
+  const wrap=h('div'); body.appendChild(wrap);
+  sec.onShow=()=>render();
+  function reviewNeeded(){ return S.final.fails>=3 && S.final.reviewedAt!==S.final.fails && !S.final.passed; }
+  function render(){
+    const F=S.final, cur=F.cur; wrap.innerHTML='';
+    if(cur && !cur.submitted) return renderQ();
+    if(cur && cur.submitted) return renderScore();
+    const c=card(wrap,'read','Show what you know');
+    c.insertAdjacentHTML('beforeend',`<p>You'll get <b>10 questions</b> picked at random: multiple choice, two-part, and select-all. You need <b>${PASS_SCORE} out of 10</b> to pass. Two-part and select-all questions can earn half credit.</p>
+      <p>You won't see right or wrong until you submit. If you don't pass, you'll get a new set of questions.</p>`);
+    const b=h('button',{class:'btn primary',type:'button'},'Start the final check'); b.addEventListener('click',()=>{ newAttempt(); render(); });
+    const row=h('div',{class:'btnrow'}); row.appendChild(b); c.appendChild(row);
+  }
+  function optList(ids, order, isSel, isPicked, onPick, keyIdx){
+    const box=h('div',{class:'opts'+(isSel?' selall':'')});
+    order.forEach((k,pos)=>{ const b=h('button',{class:'opt'+(isPicked(k)?' picked':''),type:'button','aria-pressed':isPicked(k)?'true':'false'},`<span class="L">${'ABCDEF'[pos]}</span><span>${ids[k]}</span>`);
+      if(keyIdx(k)) b.dataset.key='1'; b.addEventListener('click',()=>onPick(k)); box.appendChild(b); });
+    return box;
+  }
+  function renderQ(){
+    const cur=S.final.cur; const i=cur.idx; const id=cur.ids[i], q=FB[id];
+    const c=card(wrap,'qc',`Question ${i+1} of 10`);
+    const dots=h('div',{class:'dots','aria-hidden':'true'}); cur.ids.forEach((d,j)=>{ const el=h('span',{class:(j===i?'cur ':'')+(isAns(FB[d],cur.answers[d])?'ans':'')},String(j+1)); el.style.cursor='pointer'; el.addEventListener('click',()=>{ cur.idx=j; save(); render(); }); dots.appendChild(el); });
+    c.appendChild(dots);
+    const a=cur.answers[id];
+    if(q.t==='mc'){
+      c.insertAdjacentHTML('beforeend',`<p style="font-weight:500">${q.q}</p>`);
+      c.appendChild(optList(q.opts,cur.ord[id],false,k=>a===k,k=>{ cur.answers[id]=k; save(); render(); },k=>k===q.ans));
+    } else if(q.t==='two'){
+      const tp=h('div',{class:'twopart'}); c.appendChild(tp);
+      ['a','b'].forEach(part=>{ tp.insertAdjacentHTML('beforeend',`<h4>${q[part].q}</h4>`);
+        tp.appendChild(optList(q[part].opts,cur.ord[id][part],false,k=>a&&a[part]===k,k=>{ cur.answers[id]=Object.assign({},cur.answers[id]||{},{[part]:k}); save(); render(); },k=>k===q[part].ans)); });
+    } else {
+      c.insertAdjacentHTML('beforeend',`<p style="font-weight:500">${q.q}</p><p class="small muted" style="margin-top:-6px">Select all that apply.</p>`);
+      c.appendChild(optList(q.opts,cur.ord[id],true,k=>(a||[]).includes(k),k=>{ const s=new Set(cur.answers[id]||[]); s.has(k)?s.delete(k):s.add(k); cur.answers[id]=[...s].sort(); save(); render(); },k=>q.ans.includes(k)));
+    }
+    const msg=h('div',{class:'fb no',hidden:true}); c.appendChild(msg);
+    const nav=h('div',{class:'btnrow'});
+    const back=h('button',{class:'btn ghost',type:'button'},'Back'); back.disabled=i===0;
+    back.addEventListener('click',()=>{ cur.idx=Math.max(0,i-1); save(); render(); });
+    const last=i===9; const nextB=h('button',{class:'btn primary',type:'button'},last?'Submit the final check':'Next');
+    nextB.addEventListener('click',()=>{
+      if(!last){ cur.idx=i+1; save(); render(); return; }
+      const missing=cur.ids.map((d,j)=>isAns(FB[d],cur.answers[d])?null:j+1).filter(Boolean);
+      if(missing.length){ msg.innerHTML='Answer every question before you submit. Still blank: '+missing.join(', ')+'.'; msg.hidden=false; return; }
+      submit();
+    });
+    nav.append(back,nextB); c.appendChild(nav);
+  }
+  function submit(){
+    const F=S.final, cur=F.cur;
+    const pts=cur.ids.map(id=>gradeQ(FB[id],cur.answers[id])); const score=pts.reduce((x,y)=>x+y,0);
+    cur.submitted=true; cur.score=score; F.attempts++; F.best=Math.max(F.best,score); F.history.push({score,at:Date.now(),pts});
+    if(score>=PASS_SCORE){
+      F.passed=true; if(!S.completedAt) S.completedAt=Date.now(); save();
+      reqDone('final-pass'); disarm(); saveRecord(); sendSheet();
+    } else { F.fails++; save(); cloudSave(true); }
+    render(); window.scrollTo({top:0,behavior:RM?'auto':'smooth'});
+  }
+  function renderScore(){
+    const F=S.final, cur=F.cur, pass=cur.score>=PASS_SCORE;
+    const c=card(wrap,'qc',pass?'You passed the final check':'Not quite there yet');
+    c.insertAdjacentHTML('beforeend',`<div class="bigscore">${cur.score}/10</div><p class="muted" style="margin-top:6px">${pass?`Best score: ${F.best}/10. Your results are ready.`:`You need ${PASS_SCORE} out of 10. Look over what you missed, then try a new set of questions.`}</p>${pass?`<p class="fb info sheetStatus" aria-live="polite">${sendMsg()}</p>`:''}`);
+    const ul=h('ul',{class:'reviewlist'});
+    cur.ids.forEach((id,j)=>{ const q=FB[id], a=cur.answers[id], p=gradeQ(q,a);
+      const qtext=q.t==='two'?`${q.a.q} ${q.b.q}`:q.q;
+      ul.insertAdjacentHTML('beforeend',`<li><span class="${p===1?'yes':'nope'}">${p===1?'✓':p===0.5?'½':'✗'} ${j+1}.</span> ${qtext}<br><span class="muted">Your answer:</span> ${optText(q,a)}${p===1?'':` <span class="muted">· Correct:</span> ${rightText(q)}`}<br><span class="muted small">${q.why}</span></li>`); });
+    c.appendChild(ul);
+    const row=h('div',{class:'btnrow'});
+    if(pass){ const b=h('button',{class:'btn primary',type:'button'},'See your results'); b.addEventListener('click',()=>go(SECS.length-1)); row.appendChild(b); }
+    else if(reviewNeeded()){
+      c.appendChild(row);
+      const r=card(wrap,'read','Quick review before your next try');
+      r.insertAdjacentHTML('beforeend',`<p>You've tried ${F.fails} times. Here is the whole lesson on one card. Read it, then go again.</p>
+        <div class="wide"><table class="nb"><tr><th>Idea</th><th>What to remember</th></tr>
+        <tr><td>Why cells divide</td><td>Growth, repair, and replacement. Mitosis makes two identical daughter cells.</td></tr>
+        <tr><td>Cell cycle</td><td>Interphase (about 90%): G1 grow, S copy DNA, G2 get ready. Then M: mitosis and cytokinesis.</td></tr>
+        <tr><td>Chromosomes</td><td>After S phase, each chromosome is two sister chromatids joined at the centromere. Humans: 46 chromosomes in body cells.</td></tr>
+        <tr><td>PMAT</td><td>Prophase: chromosomes coil, nucleus breaks down. Metaphase: line up in the middle. Anaphase: chromatids pulled apart. Telophase: two nuclei. Cytokinesis: two cells.</td></tr>
+        <tr><td>Control</td><td>Checkpoints stop the cycle if something is wrong. Cells dividing out of control form tumors and can become cancer.</td></tr></table></div>
+        <p class="small muted">Want more practice first? Sections 2 to 6 each have their own practice.</p>`);
+      const rb=h('button',{class:'btn primary',type:'button'},'I reviewed it. Give me a new set');
+      rb.addEventListener('click',()=>{ F.reviewedAt=F.fails; newAttempt(); save(); render(); });
+      const rr=h('div',{class:'btnrow'}); rr.appendChild(rb); r.appendChild(rr); return;
+    } else { const b=h('button',{class:'btn primary',type:'button'},'Try a new set of questions'); b.addEventListener('click',()=>{ newAttempt(); render(); }); row.appendChild(b); }
+    c.appendChild(row);
+  }
+ }
+});
+
+/* ===================== RESULTS (Ne) ===================== */
+SECS.push({z:9, sym:'F', name:'Fluorine', title:'Your results', results:true, reqs:[],
+ build(body, sec){
+  const wrap=h('div'); body.appendChild(wrap);
+  sec.onShow=()=>render();
+  function render(){
+    wrap.innerHTML='';
+    if(!S.final.passed && !S.preview){ const c=card(wrap,'read','Almost there'); c.insertAdjacentHTML('beforeend','<p>Pass the final check to see your results.</p>'); return; }
+    const st=S.student||{}; const a=assignScore(); const mins=S.startedAt?Math.round(((S.completedAt||Date.now())-S.startedAt)/60000):0;
+    const c=h('div',{class:'card'}); wrap.appendChild(c);
+    c.innerHTML=`<h3>${st.first||''} ${st.last||''}</h3><p class="muted">${LESSON_NAME} · Biology Unit 4</p>
+      <table class="res">
+        <tr><th>Student ID</th><td>${st.id||''}</td></tr>
+        <tr><th>Period</th><td>${st.period||''}</td></tr>
+        <tr><th>Teacher</th><td>${st.teacher||''}</td></tr>
+        <tr><th>Lesson score (practice and quick checks right on the first try)</th><td><b>${a.c} of ${a.t}</b> <span class="muted">(${a.pct}%)</span></td></tr>
+        <tr><th>Final check (best score)</th><td><b>${S.final.best}/10</b> <span class="muted">(${S.final.best*10}%)</span></td></tr>
+        <tr><th>Final check tries</th><td>${S.final.attempts}</td></tr>
+        <tr><th>Times the lesson locked</th><td>${S.leaves}</td></tr>
+        <tr><th>Time in lesson</th><td>about ${mins} min</td></tr>
+        <tr><th>Finished</th><td>${S.completedAt?new Date(S.completedAt).toLocaleString():''}</td></tr>
+      </table>
+      <div class="btnrow noprint">
+        <button class="btn primary" type="button" id="csvBtn">Download CSV</button>
+        <button class="btn ghost" type="button" id="printBtn">Print</button>
+        <button class="btn ghost" type="button" id="sendBtn">Send my scores to my teacher</button>
+      </div>
+      <div class="fb info noprint sheetStatus" aria-live="polite">${sendMsg()}</div>`;
+    $('#csvBtn',c).addEventListener('click',()=>downloadCSV([recordFromState()],`Mitosis_${(st.last||'student').replace(/\W+/g,'')}_${(st.first||'').replace(/\W+/g,'')}_P${st.period||''}.csv`));
+    $('#printBtn',c).addEventListener('click',()=>window.print());
+    $('#sendBtn',c).addEventListener('click',()=>sendSheet());
+    const g=h('div',{class:'card goals'}); g.innerHTML='<h3>Goals</h3><ul></ul>'; wrap.appendChild(g); renderGoals($('ul',g));
+  }
+ }
+});
+
+/* ===================== records, CSV, Google Sheets ===================== */
+const CSV_HEAD=['Student ID','Last Name','First Name','Period','Teacher','Activity','Lesson Score (practice + quick checks right on first try)','Lesson Total','Final Check Score (best)','Final Check Total','Final Check Passed','Final Check Attempts','Sections Completed (of '+(SECS.length-1)+')','Times Locked','Date'];
+function recordFromState(){
+  const st=S.student||{}, a=assignScore();
+  let secs=0; for(let i=0;i<SECS.length-1;i++) if(secDone(i)) secs++;
+  return [st.id||'',st.last||'',st.first||'',st.period||'',st.teacher||'',LESSON_NAME,a.c,a.t,S.final.best,10,S.final.passed?'Yes':'No',S.final.attempts,secs,S.leaves,new Date(S.completedAt||Date.now()).toLocaleString()];
+}
+function csvText(rows){ const esc=v=>{ v=String(v??''); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }; return [CSV_HEAD,...rows].map(r=>r.map(esc).join(',')).join('\r\n')+'\r\n'; }
+function downloadCSV(rows, name){
+  const blob=new Blob([csvText(rows)],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500);
+}
+function loadRecs(){ try{ const r=JSON.parse(localStorage.getItem(RECS))||[]; return r.filter(x=>Array.isArray(x)&&x.length===CSV_HEAD.length); }catch(e){ return []; } }
+function saveRecord(){
+  if(S.preview) return;
+  const recs=loadRecs(); const row=recordFromState();
+  const i=recs.findIndex(r=>r[0]===row[0]&&r[1]===row[1]&&r[2]===row[2]);
+  if(i>=0) recs[i]=row; else recs.push(row);
+  try{ localStorage.setItem(RECS,JSON.stringify(recs)); }catch(e){}
+}
+/* Two rows, same as the Bohr model lesson: one for the lesson, one for the final check */
+const SEC_LABELS=["S1 Scraped knee", "S2 Cell cycle", "S3 Copying", "S4 PMAT", "S5 Real cells", "S6 Control", "S7 Spot the mistake"];
+function sheetBodies(){
+  const st=S.student||{}, F=S.final;
+  const base={studentId:st.id||'', firstName:st.first||'', lastName:st.last||'', period:st.period||'', teacher:st.teacher||'', locks:String(S.leaves), when:new Date().toString()};
+  const pts=SEC_LABELS.map(()=>0), max=SEC_LABELS.map(()=>0);
+  ITEMS.forEach(id=>{ const m=id.match(/^s(\d)/); if(!m) return; const n=+m[1]-1; max[n]++; if(S.first[id]===true) pts[n]++; });
+  const a=assignScore();
+  const lesson=Object.assign({},base,{activity:`${LESSON_NAME}: Lesson`, score:String(a.c), total:String(a.t), qlabels:SEC_LABELS.join('|'), qpoints:pts.join('|'), qmax:max.join('|')});
+  let best=null; F.history.forEach(x=>{ if(!best||x.score>=best.score) best=x; });
+  const fin=Object.assign({},base,{activity:`${LESSON_NAME}: Final Check`, score:String(F.best), total:'10'},
+    best&&best.pts?{qlabels:best.pts.map((_,i)=>'Q'+(i+1)).join('|'), qpoints:best.pts.join('|'), qmax:best.pts.map(()=>1).join('|')}
+                  :{qlabels:'Final Check', qpoints:String(F.best), qmax:'10'});
+  return [lesson,fin];
+}
+function sendMsg(){
+  if(S.preview) return 'Preview mode: scores are not sent.';
+  if(S.sentAt) return `Sent to your teacher ${new Date(S.sentAt).toLocaleString()}.`;
+  return S.final.passed?'Sending your scores to your teacher...':'';
+}
+function sendSheet(){
+  const msg=t=>$$('.sheetStatus').forEach(e=>{ e.textContent=t; });
+  if(S.preview){ msg('Preview mode: scores are not sent.'); return; }
+  if(!S.student){ msg('Sign in on the start page first.'); return; }
+  const url=sheetURL();
+  if(!url){ msg("This lesson isn't connected to your teacher's gradebook sheet yet. Download the CSV instead."); return; }
+  msg('Sending...');
+  Promise.all(sheetBodies().map(b=>fetch(url,{method:'POST',mode:'no-cors',body:new URLSearchParams(b)})))
+    .then(()=>{ S.sent=true; S.sentAt=new Date().toISOString(); save(); msg('Sent! Your teacher will see your scores.'); })
+    .catch(()=>msg("Couldn't send. Check your internet connection and try again, or download the CSV."));
+}
+
+/* ===================== goals ===================== */
+const GOALS=[
+  {t:"I can explain why cells divide and describe the stages of the cell cycle.",secs:[1]},
+  {t:"I can explain how a chromosome is copied into two sister chromatids.",secs:[2]},
+  {t:"I can put the phases of mitosis in order and identify them in real cells.",secs:[3, 4]},
+  {t:"I can explain how checkpoints control the cell cycle and how cancer forms.",secs:[5, 0, 6]}
+];
+function secDone(i){ const r=SECS[i].reqs; return r.length>0 && r.every(q=>S.reqs[q.id]); }
+function renderGoals(ul){ ul.innerHTML=GOALS.map(g=>{ const d=g.secs.every(secDone); return `<li class="${d?'done':''}"><span class="box">${d?'✓':''}</span><span>${g.t}</span></li>`; }).join(''); }
+
+/* ===================== navigation ===================== */
+const tilesEl=$('#navtiles'), secsEl=$('#sections');
+function canOpen(i){ if(S.preview) return true; if(i===SECS.length-1) return S.final.passed; return i<=S.unlocked; }
+function buildAll(){
+  SECS.forEach((s,i)=>{
+    const t=h('button',{class:'tile'+(i===SECS.length-1?' ne':''),type:'button','aria-label':`${s.results?'Results':'Section '+(i+1)}: ${s.title}`},`<span class="z">${s.z}</span><span class="ic">${iconSVG(i,22)}</span><span class="nm">${PHYS_ICONS[i].label}</span>`);
+    t.addEventListener('click',()=>{ if(canOpen(i)) go(i); }); tilesEl.appendChild(t); s.tile=t;
+    const sec=h('section',{class:'page',id:'sec'+i,hidden:true});
+    sec.innerHTML=`<div class="sechead"><div class="badge" aria-hidden="true"><span class="z">${s.z}</span><span class="ic">${iconSVG(i,42)}</span><span class="nm">${PHYS_ICONS[i].label}</span></div><div><div class="meta">${s.results?'Results':`Section ${i+1} of ${SECS.length-1} · about ${s.min} min`}</div><h2>${s.title}</h2></div></div>`;
+    const body=h('div'); sec.appendChild(body); secsEl.appendChild(sec); s.el=sec;
+    s.build(body,s);
+    if(s.reqs.length){
+      const u=h('div',{class:'unlock'}); u.innerHTML=`<h3>${i<SECS.length-2?'To unlock the next section':'To finish the lesson'}</h3><ul>${s.reqs.map(r=>`<li data-req="${r.id}"><span class="box"></span><span>${r.text}</span></li>`).join('')}</ul>`;
+      sec.appendChild(u); s.unlockEl=u;
+    }
+    const nav=h('div',{class:'secnav noprint'});
+    const back=h('button',{class:'btn ghost',type:'button'},i===0?'Back to start':'Back'); back.addEventListener('click',()=>i===0?showStart():go(i-1));
+    nav.appendChild(back);
+    if(i<SECS.length-1){ const nx=h('button',{class:'btn primary',type:'button'},i===SECS.length-2?'See your results':`Next: ${SECS[i+1].title}`); nx.addEventListener('click',()=>go(i+1)); nav.appendChild(nx); s.nextBtn=nx; }
+    sec.appendChild(nav);
+  });
+}
+function refreshAll(){
+  let u=0; while(u<SECS.length-2 && secDone(u)) u++; if(u>S.unlocked){ S.unlocked=u; save(); }
+  let tot=0, dn=0;
+  SECS.forEach((s,i)=>{
+    if(!s.tile) return;
+    s.reqs.forEach(r=>{ tot++; if(S.reqs[r.id]) dn++; });
+    if(s.unlockEl) $$('li',s.unlockEl).forEach(li=>{ const d=!!S.reqs[li.dataset.req]; li.classList.toggle('done',d); $('.box',li).textContent=d?'✓':''; });
+    if(s.nextBtn) s.nextBtn.disabled=!(S.preview || (i<SECS.length-2?secDone(i):S.final.passed));
+    s.tile.classList.toggle('done', i<SECS.length-1 ? secDone(i) : S.final.passed);
+    s.tile.classList.toggle('locked', !canOpen(i));
+    s.tile.classList.toggle('cur', !s.el.hidden);
+  });
+  $('#progbar').style.width=(tot?Math.round(100*dn/tot):0)+'%';
+  renderGoals($('#goalsList'));
+}
+onReqChange=()=>{ refreshAll(); cloudSave(true); };
+function go(i){
+  if(!canOpen(i)) return;
+  $('#start').hidden=true; $('#topbar').hidden=false;
+  SECS.forEach((s,j)=>{ s.el.hidden=j!==i; s.tile.classList.toggle('cur',j===i); });
+  S.sec=i; save(); refreshAll();
+  $('#whoami').textContent=S.student?`${S.student.first} ${S.student.last}`:'';
+  window.scrollTo(0,0);
+  SECS[i].tile.scrollIntoView({block:'nearest',inline:'center'});
+  SECS[i].onShow && SECS[i].onShow();
+}
+function showStart(){
+  SECS.forEach(s=>s.el.hidden=true); $('#start').hidden=false; $('#topbar').hidden=true; renderStart(); window.scrollTo(0,0);
+}
+
+/* ===================== cloud backup (save code = student ID + last name) ===================== */
+const SAVE_URL_BUILTIN='https://script.google.com/macros/s/AKfycbzs8JVNE3PU_idPirGkpCUq7FrNPB2sNxvd98tRfloumem5HtXHS8XwS2BIdmPz2c2h/exec';   // Saved Work web-app link (ends in /exec)
+function saveURL(){ try{ if(typeof SAVE_WEBHOOK_URL!=='undefined' && SAVE_WEBHOOK_URL && String(SAVE_WEBHOOK_URL).indexOf('PASTE')<0) return String(SAVE_WEBHOOK_URL); }catch(e){} return SAVE_URL_BUILTIN.indexOf('PASTE')<0?SAVE_URL_BUILTIN:''; }
+const CLOUD=()=>!!saveURL();
+function saveKey(st){ return (String(st.id||'').replace(/\s+/g,'')+'-'+String(st.last||'').toLowerCase().replace(/[^a-z]/g,'')).toLowerCase(); }
+function progressOf(st){ if(!st) return 0; return Object.keys(st.reqs||{}).length*1000+Object.keys(st.solved||{}).length*10+((st.final&&st.final.attempts)||0); }
+let cloudTimer=null, cloudDirty=false, cloudBusy=false, cloudAt=null, cloudErr=false;
+function cloudOK(){ return CLOUD() && S.student && !S.preview && !saveBlocked; }
+function cloudBody(){ const st=S.student||{}; return new URLSearchParams({code:saveKey(st), lesson:LESSON_ID, ver:String(S.updatedAt||Date.now()), prog:String(progressOf(S)),
+  studentId:st.id||'', lastName:st.last||'', firstName:st.first||'', period:st.period||'', teacher:st.teacher||'', summary:progressSummary(), data:JSON.stringify(S)}); }
+function progressSummary(){ let n=0; for(let i=0;i<SECS.length-1;i++) if(secDone(i)) n++; return `${n} of ${SECS.length-1} sections done`+(S.final.attempts?` · final check best ${S.final.best}/10`+(S.final.passed?' (passed)':''):''); }
+function cloudSave(soon){
+  if(!cloudOK()) return; cloudDirty=true;
+  if(soon){ clearTimeout(cloudTimer); cloudTimer=setTimeout(cloudFlush,1200); }
+  else if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000);
+}
+async function cloudFlush(){
+  cloudTimer=null;
+  if(!cloudOK()||!cloudDirty) return;
+  if(cloudBusy){ cloudTimer=setTimeout(cloudFlush,4000); return; }
+  cloudBusy=true; cloudDirty=false;
+  try{ await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); cloudAt=new Date(); cloudErr=false; }
+  catch(e){ cloudDirty=true; cloudErr=true; if(!cloudTimer) cloudTimer=setTimeout(cloudFlush,30000); }
+  finally{ cloudBusy=false; showNote(); }
+}
+function cloudBeacon(){ if(!cloudOK()||!cloudDirty) return; try{ if(navigator.sendBeacon && navigator.sendBeacon(saveURL(),cloudBody())) cloudDirty=false; }catch(e){} }
+async function cloudLoad(st){
+  if(!CLOUD()) return {status:'off'};
+  const ctrl=new AbortController(), t=setTimeout(()=>ctrl.abort(),5000);
+  try{
+    const u=saveURL(); const r=await fetch(u+(u.indexOf('?')<0?'?':'&')+new URLSearchParams({code:saveKey(st), lesson:LESSON_ID}).toString(),{signal:ctrl.signal});
+    const j=await r.json();
+    if(j && j.found && j.data){ const d=JSON.parse(j.data); if(d && d.lesson===LESSON_ID) return {status:'found', data:d}; }
+    return {status:'none'};
+  }catch(e){ return {status:'error'}; }finally{ clearTimeout(t); }
+}
+function adoptState(ns){
+  let storedRev=0; try{ const raw=localStorage.getItem(STORE); if(raw) storedRev=JSON.parse(raw).rev||0; }catch(e){}
+  ns.rev=Math.max(ns.rev||0,storedRev); S=ns; saveBlocked=false; save();
+  ITEMS.clear(); tilesEl.innerHTML=''; secsEl.innerHTML=''; buildAll(); refreshAll();
+}
+function showNote(extra){
+  const n=$('#saveNote'); if(!n) return;
+  const tm=d=>d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+  if(extra){ n.textContent=extra; return; }
+  if(cloudErr) n.textContent='✓ Saved on this Chromebook (backup will retry)';
+  else n.textContent='✓ Work saved '+tm(new Date())+(cloudAt?' · backed up '+tm(cloudAt):'');
+}
+function resumeTarget(){ return Math.min(S.sec||0, S.final.passed?SECS.length-1:S.unlocked); }
+function afterAdopt(msg){ if(LOCKDOWN && S.locked && !S.completedAt && !S.preview){ showLock('left the lesson page'); } go(resumeTarget()); if(msg) showNote(msg); }
+
+/* ===================== start page ===================== */
+function renderStart(){
+  renderGoals($('#goalsList'));
+  const has=!!S.student;
+  $('#resumeBox').hidden=!has; $('#startForm').hidden=has;
+  $('#signinTitle').textContent=has?'Welcome back':'Sign in to start';
+  if(has) $('#resumeText').innerHTML=`Signed in as <b>${S.student.first} ${S.student.last}</b>, period ${S.student.period}.`;
+  $('#notMeBtn').textContent=CLOUD()?'Not you? Sign in as a different student':'Not you? Ask your teacher to reset this device.';
+  if(CLOUD()) $('#saveInfo').innerHTML='You\'ll need about 40 minutes. <b>Your work is backed up.</b> On any Chromebook, sign in with the same <b>student ID and last name</b> to pick up where you left off.';
+}
+function fillSelects(){
+  $('#fPeriod').innerHTML='<option value="">Choose your period</option>'+periodList().map(p=>`<option>${p}</option>`).join('');
+  $('#fTeacher').innerHTML='<option value="">Choose your teacher</option>'+teacherList().map(t=>`<option>${t}</option>`).join('');
+}
+let skipCloud=false;
+$('#startForm').addEventListener('submit',e=>{ e.preventDefault(); startLesson(); });
+$('#startForm').addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.tagName==='INPUT'){ e.preventDefault(); startLesson(); } });
+$('#startBtn').addEventListener('click',()=>startLesson());
+let starting=false;
+async function startLesson(){
+  if(starting) return; starting=true; try{ await startLessonInner(); } catch(ex){ const er=$('#formErr'); er.className='fb no'; er.textContent='Something went wrong starting the lesson ('+(ex&&ex.message||ex)+'). Reload the page and try again.'; er.hidden=false; } finally{ starting=false; }
+}
+async function startLessonInner(){
+  const v={first:$('#fFirst').value.trim(), last:$('#fLast').value.trim(), id:$('#fId').value.trim(), period:$('#fPeriod').value, teacher:$('#fTeacher').value};
+  const miss=[]; if(!v.first) miss.push('first name'); if(!v.last) miss.push('last name'); if(!v.id) miss.push('student ID'); if(!v.period) miss.push('period'); if(!v.teacher) miss.push('teacher');
+  const err=$('#formErr'), btn=$('#startBtn');
+  if(miss.length){ err.className='fb no'; err.textContent='Fill in your '+miss.join(', ')+'.'; err.hidden=false; return; }
+  arm();
+  if(CLOUD() && !skipCloud){
+    btn.disabled=true; err.className='fb info'; err.textContent='Checking for your saved work...'; err.hidden=false;
+    const res=await cloudLoad(v);
+    btn.disabled=false;
+    if(res.status==='found'){
+      err.hidden=true;
+      const d=res.data; d.student=Object.assign({},d.student||{},{first:v.first, period:v.period, teacher:v.teacher});
+      adoptState(d); afterAdopt('✓ Your saved work was loaded'); return;
+    }
+    err.hidden=true;
+    if(res.status==='error'){ const ns=freshState(); ns.student=v; ns.startedAt=Date.now(); adoptState(ns); go(0); showNote('✓ Saving on this Chromebook'); cloudSave(true); return; }
+  }
+  const ns=freshState(); ns.student=v; ns.startedAt=Date.now(); adoptState(ns); go(0); cloudSave(true);
+}
+$('#resumeBtn').addEventListener('click',async()=>{
+  arm();
+  const btn=$('#resumeBtn');
+  if(CLOUD() && !S.preview){
+    btn.disabled=true; btn.textContent='Loading your work...';
+    const res=await cloudLoad(S.student);
+    btn.disabled=false; btn.textContent='Continue the lesson';
+    if(res.status==='found'){
+      const d=res.data, cp=progressOf(d), lp=progressOf(S);
+      if(cp>lp || (cp===lp && (d.updatedAt||0)>(S.updatedAt||0))){ d.student=S.student; adoptState(d); afterAdopt('✓ Your newest saved work was loaded'); return; }
+    }
+    cloudSave(true);
+  }
+  go(resumeTarget());
+});
+$('#notMeBtn').addEventListener('click',async()=>{
+  if(!CLOUD()) return openTeacher();
+  const btn=$('#notMeBtn'), err=$('#resumeErr'), who=S.student?`${S.student.first} ${S.student.last}`:'the last student';
+  btn.disabled=true; btn.textContent=`Backing up ${who}'s work...`;
+  try{ await fetch(saveURL(),{method:'POST',mode:'no-cors',body:cloudBody()}); }
+  catch(e){ btn.disabled=false; btn.textContent='Not you? Sign in as a different student'; err.textContent=`Can't back up ${who}'s work right now. Check the Wi-Fi and try again, or ask your teacher.`; err.hidden=false; return; }
+  btn.disabled=false; err.hidden=true;
+  const ns=freshState(); adoptState(ns); renderStart();
+  $('#fFirst').value=''; $('#fLast').value=''; $('#fId').value=''; $('#fPeriod').value=''; $('#fTeacher').value='';
+});
+
+/* ===================== lockdown ===================== */
+const LOCKDOWN = false/* lockdown is only used on unit tests and final exams */;
+let armed=false, teacherOpen=false;
+const fsOK=()=>!!(document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen);
+const inFS=()=>!!(document.fullscreenElement||document.webkitFullscreenElement);
+function enterFS(){ const d=document.documentElement; try{ const p=(d.requestFullscreen||d.webkitRequestFullscreen).call(d); return (p&&p.then)?p.catch(()=>{}):Promise.resolve(); }catch(e){ return Promise.resolve(); } }
+function arm(){ if(!LOCKDOWN||S.preview||S.completedAt||S.lockOff) return; enterFS().then(()=>setTimeout(()=>{ armed=true; },500)); }
+function disarm(){ armed=false; }
+function trip(reason){
+  if(!armed||S.locked||S.completedAt||S.preview||S.lockOff||teacherOpen) return;
+  armed=false; S.leaves++; S.locked=true; save(); showLock(reason);
+}
+function showLock(reason){ $('#lockMsg').textContent=`The lesson locked because you ${reason||'left the lesson page'}. Raise your hand so your teacher can unlock it. Your work is saved.`; $('#lockErr').hidden=true; $('#lockCode').value=''; $('#lockOv').classList.add('show'); setTimeout(()=>$('#lockCode').focus(),50); }
+$('#lockBtn').addEventListener('click',()=>{
+  if(codeIs($('#lockCode').value,UNLOCK_CODE)||codeIs($('#lockCode').value,TEACHER_CODE)){ S.locked=false; save(); $('#lockOv').classList.remove('show'); arm(); }
+  else $('#lockErr').hidden=false;
+});
+$('#lockCode').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#lockBtn').click(); });
+$('#gateBtn').addEventListener('click',()=>{ $('#gateOv').classList.remove('show'); arm(); });
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) trip('left the lesson page'); });
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>{ if(!inFS()&&fsOK()) trip('exited full screen'); }));
+window.addEventListener('blur',()=>setTimeout(()=>{ if(!document.hasFocus()) trip('switched to another window'); },300));
+
+/* ===================== teacher view ===================== */
+function openTeacher(){
+  teacherOpen=true; $('#teachLogin').hidden=false; $('#teachPanel').hidden=true; $('#teachErr').hidden=true; $('#teachCode').value='';
+  $('#teachModal').classList.remove('wide'); $('#teachOv').classList.add('show'); setTimeout(()=>$('#teachCode').focus(),50);
+}
+function closeTeacher(){ $('#teachOv').classList.remove('show'); teacherOpen=false; }
+$('#teacherLink').addEventListener('click',openTeacher);
+$('#teachBtn').addEventListener('click',openTeacher);
+$('#teachCancel').addEventListener('click',closeTeacher);
+$('#teachCode').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#teachGo').click(); });
+$('#teachGo').addEventListener('click',()=>{
+  if(!codeIs($('#teachCode').value,TEACHER_CODE)){ $('#teachErr').hidden=false; return; }
+  $('#teachLogin').hidden=true; $('#teachPanel').hidden=false; $('#teachModal').classList.add('wide'); renderTeacher();
+});
+function renderTeacher(){
+  const recs=loadRecs(); const p=$('#teachPanel');
+  const rows=recs.map(r=>`<tr><td>${r[1]}, ${r[2]}</td><td>${r[0]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[6]}/${r[7]}</td><td>${r[8]}/10</td><td>${r[11]}</td><td>${r[13]}</td><td>${r[14]}</td></tr>`).join('');
+  p.innerHTML=`<h2>Teacher view</h2>
+    <h3 style="margin-top:14px">Results saved on this device (${recs.length})</h3>
+    <div class="wide">${recs.length?`<table class="nb"><tr><th>Student</th><th>ID</th><th>Period</th><th>Teacher</th><th>Lesson</th><th>Final</th><th>Tries</th><th>Locked</th><th>Date</th></tr>${rows}</table>`:'<p class="muted">No finished lessons on this device yet. Each student\'s results page also has its own CSV download.</p>'}</div>
+    <div class="btnrow">
+      <button class="btn primary" type="button" id="tCsv" ${recs.length?'':'disabled'}>Download these results (CSV)</button>
+      <button class="btn ghost" type="button" id="tClear" ${recs.length?'':'disabled'}>Clear saved results</button>
+    </div>
+    <h3 style="margin-top:22px">This device</h3>
+    <p class="small muted">Student signed in: ${S.student?`${S.student.first} ${S.student.last} (period ${S.student.period})`:'nobody'}. Lockdown is ${LOCKDOWN?'on (opened from GitHub)':'off (only unit tests and final exams use lockdown)'}. Unlock code: the last word of the lesson title. Saved-work backup is ${CLOUD()?'on':'off (link not added yet)'}.</p>
+    <div class="btnrow">
+      ${S.locked?'<button class="btn primary" type="button" id="tUnlock">Unlock the lesson</button>':''}
+      ${S.student&&!S.preview?'<button class="btn ghost" type="button" id="tSend">Send this student\'s scores to the sheet</button>':''}
+      <button class="btn ghost" type="button" id="tKey">${document.body.classList.contains('keyon')?'Hide answer key':'Answer key'}</button>
+      ${S.student?'<button class="btn ghost" type="button" id="tUnlockAll">Unlock all sections</button>':''}
+      ${LOCKDOWN&&!S.lockOff?'<button class="btn ghost" type="button" id="tEndLock">End lockdown for this student</button>':''}
+      <button class="btn ghost" type="button" id="tPreview">${S.preview?'Turn off preview mode':'Preview: open every section'}</button>
+      <button class="btn ghost" type="button" id="tReset">Reset this device's lesson</button>
+      <button class="btn ghost" type="button" id="tClose">Close</button>
+    </div>
+    ${CLOUD()?`<h3 style="margin-top:22px">Load a student's saved work onto this device</h3>
+    <div class="btnrow"><input class="ans" id="tLoadId" placeholder="Student ID" style="width:150px"><input class="ans" id="tLoadLast" placeholder="Last name" style="width:170px"><button class="btn ghost" type="button" id="tLoad">Load work</button></div>`:''}
+    <p class="fb info sheetStatus" aria-live="polite" style="min-height:1em"></p>
+    <div class="fb info" id="tMsg" hidden></div>`;
+  const msg=t=>{ $('#tMsg').textContent=t; $('#tMsg').hidden=false; };
+  $('#tCsv').addEventListener('click',()=>downloadCSV(recs,`Mitosis_results_${new Date().toISOString().slice(0,10)}.csv`));
+  $('#tClear').addEventListener('click',()=>{ if(confirm('Delete the saved results list on this device? Students\' own lesson progress is not affected.')){ localStorage.removeItem(RECS); renderTeacher(); } });
+  if($('#tUnlock')) $('#tUnlock').addEventListener('click',()=>{ S.locked=false; save(); $('#lockOv').classList.remove('show'); closeTeacher(); arm(); });
+  $('#tPreview').addEventListener('click',()=>{
+    S.preview=!S.preview;
+    if(S.preview && !S.student){ S.student={first:'Teacher',last:'Preview',id:'0',period:'-',teacher:teacherList()[0]||''}; S.startedAt=Date.now(); }
+    save(); closeTeacher(); disarm(); $('#lockOv').classList.remove('show'); refreshAll(); if(S.preview) go(0); else location.reload();
+  });
+  $('#tReset').addEventListener('click',()=>{ if(confirm('Erase all lesson progress on this device and return to the sign-in page?')){ try{ localStorage.removeItem(STORE); }catch(e){} location.reload(); } });
+  $('#tClose').addEventListener('click',closeTeacher);
+  $('#tKey').addEventListener('click',()=>{ document.body.classList.toggle('keyon'); renderTeacher(); msg(document.body.classList.contains('keyon')?'Answer key is on: correct answers have a dashed gold outline, and sort chips show their box.':'Answer key is off.'); });
+  if($('#tUnlockAll')) $('#tUnlockAll').addEventListener('click',()=>{ S.unlocked=SECS.length-2; save(); refreshAll(); msg('All sections are unlocked for this student.'); });
+  if($('#tEndLock')) $('#tEndLock').addEventListener('click',()=>{ S.lockOff=true; S.locked=false; save(); disarm(); $('#lockOv').classList.remove('show'); renderTeacher(); msg('Lockdown is off for this student on this Chromebook.'); });
+  if($('#tSend')) $('#tSend').addEventListener('click',()=>sendSheet());
+  if($('#tLoad')) $('#tLoad').addEventListener('click',async()=>{
+    const st={id:$('#tLoadId').value.trim(), last:$('#tLoadLast').value.trim()};
+    if(!st.id||!st.last){ msg('Type the student ID and last name.'); return; }
+    msg('Looking up saved work...');
+    const res=await cloudLoad(st);
+    if(res.status==='found'){ const d=res.data; d.locked=false; adoptState(d); closeTeacher(); showStart(); }
+    else msg(res.status==='none'?'No saved work found for that student ID and last name.':"Couldn't reach the saved-work sheet. Check the Wi-Fi.");
+  });
+}
+
+/* ===================== calculator ===================== */
+(function(){
+  const keys=[['sin','sin(','fn'],['cos','cos(','fn'],['tan','tan(','fn'],['tan⁻¹','tan⁻¹(','fn'],['√','√(','fn'],
+    ['7','7'],['8','8'],['9','9'],['(','('],[')',')'],
+    ['4','4'],['5','5'],['6','6'],['×','×'],['÷','÷'],
+    ['1','1'],['2','2'],['3','3'],['+','+'],['−','−'],
+    ['0','0'],['.','.'],['x²','^2'],['C','C'],['=','=','eq']];
+  const kEl=$('#calcKeys'), inp=$('#calcIn'), out=$('#calcOut'); let ans=0;
+  keys.forEach(([t,v,c])=>{ const b=h('button',{type:'button',class:c||''},t); b.addEventListener('click',()=>{
+    if(v==='C'){ inp.value=''; out.textContent=''; }
+    else if(v==='='){ calc(); }
+    else { const s=inp.selectionStart??inp.value.length; inp.value=inp.value.slice(0,s)+v+inp.value.slice(inp.selectionEnd??s); inp.focus(); const p=s+v.length; inp.setSelectionRange(p,p); }
+  }); kEl.appendChild(b); });
+  function calc(){
+    let e=inp.value;
+    e=e.replace(/tan⁻¹|tan\^-1|tan-1|arctan|atan/gi,'AT').replace(/arcsin|asin/gi,'AS').replace(/arccos|acos/gi,'AC')
+       .replace(/sin/gi,'S').replace(/cos/gi,'C').replace(/tan/gi,'T').replace(/√|sqrt/gi,'Q').replace(/π|pi/gi,'PI').replace(/ans/gi,'ANS')
+       .replace(/×/g,'*').replace(/÷/g,'/').replace(/[−–]/g,'-').replace(/²/g,'^2').replace(/\^/g,'**');
+    e=e.replace(/(\d|\))\s*(?=[A-Z(])/g,'$1*');
+    const tokens=e.match(/[A-Z]+/g)||[]; const okT=['S','C','T','AT','AS','AC','Q','PI','ANS'];
+    if(!/^[0-9+\-*/().\sA-Z]*$/.test(e) || tokens.some(t=>!okT.includes(t))){ out.textContent='Check the expression'; return; }
+    try{
+      const f=new Function('S','C','T','AT','AS','AC','Q','PI','ANS','"use strict";return ('+e+');');
+      const r=f(x=>Math.sin(rad(x)),x=>Math.cos(rad(x)),x=>Math.tan(rad(x)),x=>deg(Math.atan(x)),x=>deg(Math.asin(x)),x=>deg(Math.acos(x)),Math.sqrt,Math.PI,ans);
+      if(typeof r!=='number'||!isFinite(r)){ out.textContent='Not a number'; return; }
+      ans=r; out.textContent=String(+r.toFixed(5)).replace('-','−');
+    }catch(err){ out.textContent='Check the expression'; }
+  }
+  inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); calc(); } });
+  $('#calcBtn').addEventListener('click',()=>{ const c=$('#calc'); c.hidden=!c.hidden; $('#calcBtn').setAttribute('aria-expanded',String(!c.hidden)); if(!c.hidden) inp.focus(); });
+  $('#calcClose').addEventListener('click',()=>{ $('#calc').hidden=true; $('#calcBtn').setAttribute('aria-expanded','false'); });
+})();
+
+/* ===================== hero + init ===================== */
+function hero(){ bioHero(); }
+onSaved=()=>{ showNote(); cloudSave(false); };
+document.addEventListener('visibilitychange',()=>{ if(document.hidden){ save(); cloudBeacon(); } });
+onConflict=()=>{ $('#tabOv').classList.add('show'); };
+$('#tabReload').addEventListener('click',()=>location.reload());
+window.addEventListener('storage',e=>{
+  if(e.key!==STORE || !e.newValue) return;
+  try{ const st=JSON.parse(e.newValue); if(st && (st.rev||0)>(S.rev||0)){ saveBlocked=true; onConflict(); } }catch(_){}
+});
+window.addEventListener('pagehide',()=>{ save(); cloudBeacon(); });
+if(!STORAGE_OK) $('#noStore').hidden=false;
+['copy','cut','paste','contextmenu'].forEach(ev=>document.addEventListener(ev,e=>{ if(teacherOpen||S.preview) return; if(e.target&&e.target.closest&&e.target.closest('#lockOv')) return; e.preventDefault(); }));
+fillSelects();
+buildAll();
+refreshAll();
+hero();
+showStart();
+if(S.student){
+  if(S.preview){ /* preview: no lockdown */ }
+  else if(LOCKDOWN && S.locked && !S.completedAt) showLock('left the lesson page');
+  else if(LOCKDOWN && !S.completedAt) { /* resume button arms full screen */ }
+}
+})();
+</script>
+
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

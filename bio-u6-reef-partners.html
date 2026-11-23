@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reef Partners | Biology</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1220;--panel:#121c31;--panel2:#18243d;--line:#2b3a58;--text:#e8eefc;--muted:#9fb0cf;--gold:#facc15;--gold2:#fbbf24;--ok:#34d399;--bad:#f87171;--violet:#a78bfa}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 "Atkinson Hyperlegible",Arial,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:#0e172a}
+header .t{font-weight:800;font-size:17px}
+header .s{color:var(--muted);font-size:13px}
+header .sp{flex:1}
+.btn{font:inherit;font-weight:700;border-radius:10px;padding:9px 16px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--gold);color:#1a1300;border-color:var(--gold)}
+.btn:disabled{opacity:.5;cursor:default}
+main{max-width:1000px;margin:0 auto;padding:14px 16px 30px}
+.stage{position:relative;width:100%;aspect-ratio:16/10;background:#050a14;border:1px solid var(--line);border-radius:14px;overflow:hidden;touch-action:none}
+canvas{display:block;width:100%;height:100%}
+.ov{position:absolute;inset:0;display:flex;background:rgba(5,10,20,.78);padding:14px;overflow:auto}
+.ov>.card{margin:auto}
+#teachOv{position:fixed;z-index:60;background:rgba(5,10,20,.94)}
+.ov[hidden]{display:none}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;max-width:640px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.card h2{margin:0 0 6px;font-size:22px}
+.card h3{margin:12px 0 6px;font-size:15px;color:var(--gold)}
+.muted{color:var(--muted)} .small{font-size:13.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chip{font:inherit;font-size:14px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.chip.on{border-color:var(--gold);background:rgba(250,204,21,.16);font-weight:700}
+.qtag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--violet);margin-bottom:4px}
+.qtext{font-size:18px;margin:4px 0 12px}
+.opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:15.5px}
+.opt:hover:not(:disabled){border-color:var(--gold)}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:13px;font-weight:800}
+.opt.pick{border-color:var(--gold)}
+.fb{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:15.5px}
+.fb.ok{background:rgba(52,211,153,.14);border:1px solid rgba(52,211,153,.5)}
+.fb.no{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.45)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:14px;margin:6px 0}
+.keys b{color:var(--gold)}
+.ladder{display:flex;flex-wrap:wrap;gap:6px;font-size:13px;margin-top:6px}
+.ladder span{padding:3px 8px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}
+.touch{display:none;gap:10px;justify-content:space-between;margin-top:10px;user-select:none;-webkit-user-select:none}
+.touch .grp{display:flex;gap:10px}
+.tbtn{width:64px;height:58px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:22px;font-weight:800;touch-action:none}
+.tbtn.fire{width:110px;background:#3b2a07;border-color:var(--gold);color:var(--gold);font-size:17px}
+.tbtn.on{background:#334155}
+@media (pointer:coarse){.touch{display:flex}}
+@media (max-width:480px){.tbtn{width:52px;height:54px;font-size:20px}.tbtn.fire{width:86px}.touch .grp{gap:7px}.touch{gap:6px}}
+@media (max-width:760px),(max-height:560px){.ov{position:fixed;z-index:50;background:rgba(5,10,20,.92)}}
+body.showtouch .touch{display:flex}
+.info{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:14px;color:var(--muted)}
+.tpanel h3{margin-top:14px}
+.tq{margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font-size:14px}
+.tq ol{margin:4px 0 0;padding-left:22px}
+.tq li.right{color:var(--ok);font-weight:700}
+input.code{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0b1220;color:var(--text);width:180px}
+#printView{display:none}
+@media print{
+  body>*:not(#printView){display:none!important}
+  #printView{display:block!important;color:#000;background:#fff;font:12px/1.4 Arial,sans-serif}
+  #printView h1{font-size:18px;margin:0 0 4px} #printView .pq{break-inside:avoid;margin:8px 0}
+  #printView ol{margin:2px 0 0;padding-left:22px} #printView li.right{font-weight:700;text-decoration:underline}
+  html,body{background:#fff}
+}
+
+.stage{aspect-ratio:auto;min-height:600px;overflow:visible}.stage .ov{position:fixed;z-index:50}.app{padding:12px}.status{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14px;color:var(--muted);margin-bottom:8px}.status b{color:var(--text)}.ocard{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 14px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.grid2{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:12px;align-items:start}@media (max-width:820px){.grid2{grid-template-columns:1fr}}.btns{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin-top:8px}.gbtn{font:inherit;text-align:left;display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:14px;line-height:1.3}.gbtn:hover:not(:disabled){border-color:var(--gold)}.gbtn:disabled{opacity:.45;cursor:not-allowed}.gbtn.on{border-color:var(--gold);background:rgba(250,204,21,.14)}.gbtn .k{flex:none;min-width:22px;height:22px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:12px;font-weight:800;padding:0 4px}.meter{margin:6px 0}.meter .lab{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}.meter .lab b{color:var(--text)}.meter .tr{height:12px;border-radius:6px;background:#1e293b;overflow:hidden}.meter .fl{height:100%;border-radius:6px;transition:width .25s}.chipsrow{display:flex;flex-wrap:wrap;gap:6px}table.ktab{border-collapse:collapse;font-size:13px;width:100%}table.ktab td,table.ktab th{border:1px solid var(--line);padding:4px 6px;text-align:left;vertical-align:top}.log{font-size:13px;max-height:170px;overflow:auto}.log div{padding:3px 0;border-bottom:1px solid var(--line)}.big{font-size:22px;font-weight:800}.reef{position:relative;display:grid;grid-template-columns:repeat(var(--n),1fr);gap:10px;padding:10px;border-radius:14px;background:linear-gradient(#0e7490,#164e63);max-width:460px}.rc{font:inherit;color:#fff;aspect-ratio:1;border-radius:12px;border:2px dashed rgba(255,255,255,.35);background:rgba(255,255,255,.06);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px;position:relative}.rc.has{border-style:solid;border-color:rgba(255,255,255,.6);background:rgba(8,47,73,.75)}.rc.hurt{border-color:#f87171}.rc .em{font-size:30px;line-height:1}.rc .nm{font-size:11px;text-align:center;line-height:1.1}.rc .hp{position:absolute;top:3px;right:5px;font-size:11px;font-weight:800;color:#cbd5e1}.rc .hp.pos{color:#4ade80}.rc .hp.neg{color:#f87171}.bdg{position:absolute;transform:translate(-50%,-50%);font-size:11px;font-weight:800;color:#fff;padding:1px 5px;border-radius:999px;pointer-events:none;border:1px solid rgba(0,0,0,.4);z-index:2}.tray{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.tp{font:inherit;font-size:14px;color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:5px 10px;cursor:pointer}.tp.sel{border-color:var(--gold);background:rgba(250,204,21,.18)}@media (max-width:480px){.reef{gap:6px;padding:6px}.rc .em{font-size:22px}.rc .nm{font-size:9.5px}}</style>
+</head>
+<body>
+<header>
+  <div><div class="t">Reef Partners</div><div class="s">Biology · Unit 6: Ecology · Review game</div></div>
+  <div class="sp"></div>
+  <button class="btn" id="teachBtn" type="button">Teacher</button>
+</header>
+<main>
+  <div class="stage" id="stage">
+    <div class="app" id="app"><p class="muted">Press Start.</p></div>
+    <div class="ov" id="startOv"><div class="card"><h2>Reef Partners</h2><p class="small muted" style="margin:0 0 8px">You are restoring a coral reef. Place each organism on the reef grid. Neighbors that share a side affect each other: some help, some harm. Each time two organisms meet for the first time, figure out their relationship: <b>mutualism</b>, <b>commensalism</b>, <b>parasitism</b>, <b>predation</b>, or <b>competition</b>. Arrange the reef so it is as healthy as possible.</p><div class="row"><button class="btn primary" id="startBtn" type="button">Start</button><span class="small muted" id="hiTxt"></span></div></div></div>
+    <div class="ov" id="overOv" hidden><div class="card"><h2 id="overTitle"></h2><div id="overBody"></div><div class="row"><button class="btn primary" id="againBtn" type="button">Play again</button></div></div></div>
+
+    <div class="ov" id="pauseOv" hidden><div class="card" style="max-width:380px;text-align:center"><h2>Paused</h2><p class="muted">Press P or the button to keep playing.</p><button class="btn primary" id="resumeBtn" type="button">Resume</button></div></div>
+  </div>
+
+</main>
+<div class="ov" id="teachOv" hidden>
+  <div class="card tpanel" style="max-width:780px">
+    <h2>Teacher tools</h2>
+    <div id="tLogin"><p class="small muted">Enter the teacher code.</p><div class="row" style="margin-top:4px"><input class="code" id="tCode" type="password" autocomplete="off" aria-label="Teacher code"><button class="btn primary" id="tGo" type="button">Open</button><button class="btn" id="tClose0" type="button">Close</button></div><div class="small" id="tMsg" style="color:var(--bad);margin-top:6px"></div></div>
+    <div id="tBody" hidden>
+      <div class="row"><button class="btn" id="tPrint" type="button">🖨 Print the reference sheet</button><button class="btn" id="tTouch" type="button">Show touch buttons</button><button class="btn" id="tClose" type="button">Close</button></div>
+      <div id="tInfo"></div>
+    </div>
+  </div>
+</div>
+<div id="printView"></div>
+<script>
+const META={"store": "bioU6ReefPartners"};
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const store={ get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+const shuffle=a=>{ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const rnd=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const GAME={onPause:()=>{}, onResume:()=>{}, teacherHTML:()=>'', printHTML:()=>''};
+/* teacher tools (code Teacher007) */
+function tShow(on){ $('#teachOv').hidden=!on; if(on){ GAME.onPause(); $('#tCode').value=''; $('#tMsg').textContent=''; setTimeout(()=>$('#tCode').focus(),30); } }
+$('#teachBtn').addEventListener('click',()=>tShow(true)); $('#tClose0').addEventListener('click',()=>tShow(false));
+$('#tClose').addEventListener('click',()=>{ tShow(false); $('#tBody').hidden=true; $('#tLogin').hidden=false; });
+function tOpen(){ if($('#tCode').value.trim().toLowerCase()!=='teacher007'){ $('#tMsg').textContent='Code not recognized.'; return; } $('#tLogin').hidden=true; $('#tBody').hidden=false; $('#tInfo').innerHTML=GAME.teacherHTML(); }
+$('#tGo').addEventListener('click',tOpen); $('#tCode').addEventListener('keydown',e=>{ if(e.key==='Enter') tOpen(); });
+$('#tTouch').addEventListener('click',()=>document.body.classList.toggle('showtouch'));
+$('#tPrint').addEventListener('click',()=>{ $('#printView').innerHTML=GAME.printHTML(); setTimeout(()=>window.print(),100); });
+$('#resumeBtn').addEventListener('click',()=>GAME.onResume());
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) GAME.onPause(); });
+
+const meter=(lab,v,max,col,txt)=>`<div class="meter"><div class="lab"><span>${lab}</span><b>${txt!=null?txt:Math.round(v)}</b></div><div class="tr"><div class="fl" style="width:${Math.max(0,Math.min(100,100*v/max))}%;background:${col}"></div></div></div>`;
+const HIKEY=META.store+'_hi'; function hiTxt(){ const h=+store.get(HIKEY)||0; const e=$('#hiTxt'); if(e) e.textContent=h?`High score on this Chromebook: ${h}`:''; } hiTxt();
+function saveHi(v){ const h=+store.get(HIKEY)||0; if(v>h){ store.set(HIKEY,v); return true; } return false; }
+function over(title,html){ $('#overTitle').textContent=title; $('#overBody').innerHTML=html; $('#overOv').hidden=false; hiTxt(); }
+/* ===================== REEF PARTNERS ===================== */
+const ORG={clown:['Clownfish','🐠'],anem:['Sea anemone','🌼'],remora:['Remora','🐟'],shark:['Reef shark','🦈'],shrimp:['Cleaner shrimp','🦐'],grouper:['Grouper','🐡'],isopod:['Isopod','🪳'],
+ coral:['Coral','🪸'],algae:['Zooxanthellae (algae)','🟢'],sponge:['Sponge','🧽'],pearl:['Pearlfish','🎏'],cuke:['Sea cucumber','🥒'],parrot:['Parrotfish','🦜']};
+const TYPES={mut:['Mutualism','+ / +',[2,2]],com:['Commensalism','+ / 0',[2,0]],par:['Parasitism','+ / −',[1,-2]],pred:['Predation','+ / −',[2,-3]],comp:['Competition','− / −',[-1,-1]]};
+const REL=[
+ ['clown','anem','mut','The clownfish hides from predators among the anemone\'s stinging tentacles. In return, it chases away fish that eat anemones, and its waste feeds the anemone.'],
+ ['shrimp','grouper','mut','The cleaner shrimp picks dead skin and tiny parasites off the grouper, and gets a meal by doing it.'],
+ ['coral','algae','mut','Tiny algae live inside the coral. They make sugar by photosynthesis and share it with the coral. The coral gives them shelter and carbon dioxide.'],
+ ['remora','shark','com','The remora rides along stuck to the shark and eats scraps from its meals. The shark is not helped or harmed.'],
+ ['pearl','cuke','com','The pearlfish hides inside the sea cucumber\'s body during the day. The sea cucumber is not helped or harmed.'],
+ ['isopod','grouper','par','The isopod clings to the grouper and feeds on its blood. The grouper is weakened but usually not killed.'],
+ ['shark','parrot','pred','The reef shark hunts, kills, and eats the parrotfish.'],
+ ['coral','sponge','comp','Coral and sponges both need hard, open space on the reef. Each one crowds the other and slows its growth.']];
+const relOf=(a,b)=>REL.find(r=>(r[0]===a&&r[1]===b)||(r[0]===b&&r[1]===a));
+const LEVELS=[
+ {n:3,sp:['clown','anem','remora','shark']},
+ {n:3,sp:['clown','anem','shrimp','grouper','isopod','remora','shark']},
+ {n:4,sp:['coral','algae','sponge','pearl','cuke','shark','parrot','clown','anem']},
+ {n:4,sp:['coral','algae','sponge','pearl','cuke','shark','parrot','clown','anem','shrimp','grouper','isopod','remora']}];
+let lv, grid, tray, sel, known, score, pend, target, lvDone, quiz;
+function startGame(){ lv=0; score=0; known={}; $('#startOv').hidden=true; $('#overOv').hidden=true; loadLv(); }
+function loadLv(){ const L=LEVELS[lv]; grid=Array(L.n*L.n).fill(null); tray=L.sp.slice(); sel=null; pend=null; lvDone=false; quiz=null; target=bestHealth(L)-(lv>=2?2:0); render(); }
+function adj(n,i){ const r=Math.floor(i/n), c=i%n, o=[]; if(c<n-1) o.push(i+1); if(r<n-1) o.push(i+n); if(c>0) o.push(i-1); if(r>0) o.push(i-n); return o; }
+function healthOf(g,n){ const h={}; g.forEach(k=>{ if(k) h[k]=0; }); let tot=0;
+  for(let i=0;i<g.length;i++){ if(!g[i]) continue; for(const j of adj(n,i)){ if(j<i||!g[j]) continue; const r=relOf(g[i],g[j]); if(!r) continue; const [ea,eb]=TYPES[r[2]][2]; const a=r[0]===g[i]?i:j, b=a===i?j:i; h[g[a]]+=ea; h[g[b]]+=eb; tot+=ea+eb; } } return {h,tot}; }
+function bestHealth(L){ let best=-99; const N=L.n*L.n; for(let t=0;t<400;t++){ let g=Array(N).fill(null); const cells=shuffle([...Array(N).keys()]); L.sp.forEach((k,i)=>g[cells[i]]=k); let cur=healthOf(g,L.n).tot;
+    for(let s=0;s<400;s++){ const a=Math.floor(Math.random()*N), b=Math.floor(Math.random()*N); [g[a],g[b]]=[g[b],g[a]]; const v=healthOf(g,L.n).tot; if(v>=cur) cur=v; else [g[a],g[b]]=[g[b],g[a]]; } best=Math.max(best,cur); if(t>40&&best>=0&&t>120) break; } return best; }
+const key=r=>r[0]+'-'+r[1];
+function place(i){ if(pend||lvDone) return; const L=LEVELS[lv];
+  if(grid[i]&&sel==null){ tray.push(grid[i]); grid[i]=null; render(); return; }
+  if(sel==null) return; if(grid[i]) tray.push(grid[i]); grid[i]=tray[sel]; tray.splice(sel,1); sel=null;
+  for(const j of adj(L.n,i)){ if(!grid[j]) continue; const r=relOf(grid[i],grid[j]); if(r&&!known[key(r)]){ pend={r,t:0}; break; } }
+  render(); }
+function classify(t){ const r=pend?pend.r:quiz[0].r; const st=pend||quiz[0]; st.t++; const ok=t===r[2];
+  if(ok){ const p=st.t===1?20:10; score+=p; known[key(r)]=true; st.msg=`<div class="fb ok"><b>Correct! +${p}</b> ${TYPES[t][0]} (${TYPES[t][1]}).</div>`; }
+  else if(st.t>=2){ known[key(r)]=true; st.msg=`<div class="fb no">It is <b>${TYPES[r[2]][0]}</b> (${TYPES[r[2]][1]}). ${r[2]==='par'?'A parasite lives on its host and harms it, but usually does not kill it.':r[2]==='pred'?'A predator kills and eats its prey.':r[2]==='com'?'One benefits and the other is not affected.':r[2]==='comp'?'Both need the same limited resource, so both are harmed.':'Both partners benefit.'}</div>`; }
+  else st.msg='<div class="fb no">Not quite. Reread who is helped and who is harmed. One more try.</div>';
+  st.closed=ok||st.t>=2; render(); }
+function closeQ(){ if(pend){ pend=null; } else if(quiz){ quiz.shift(); if(!quiz.length){ quiz=null; endLevel(); return; } } render(); }
+function check(){ if(tray.length) return; const L=LEVELS[lv]; const need=REL.filter(r=>L.sp.includes(r[0])&&L.sp.includes(r[1])&&!known[key(r)]); if(need.length){ quiz=need.map(r=>({r,t:0})); render(); return; } endLevel(); }
+function endLevel(){ const {tot}=healthOf(grid,LEVELS[lv].n); const ok=tot>=target; const p=ok?100:Math.max(0,Math.round(60*tot/Math.max(1,target))); score+=p; lvDone={tot,ok,p}; render(); }
+function badge(n,i,j){ const r=relOf(grid[i],grid[j]); if(!r) return ''; const ri=Math.floor(i/n), ci=i%n, rj=Math.floor(j/n), cj=j%n; const x=((ci+cj)/2+.5)/n*100, y=((ri+rj)/2+.5)/n*100; const T=TYPES[r[2]], k=known[key(r)];
+  const col=!k?'#64748b':r[2]==='mut'?'#16a34a':r[2]==='com'?'#0284c7':r[2]==='comp'?'#b45309':'#dc2626'; return `<span class="bdg" style="left:${x}%;top:${y}%;background:${col}">${k?T[1].replace(/ /g,''):'?'}</span>`; }
+function render(){ const L=LEVELS[lv], n=L.n, {h,tot}=healthOf(grid,n); let bd=''; for(let i=0;i<grid.length;i++) for(const j of adj(n,i)) if(j>i&&grid[i]&&grid[j]) bd+=badge(n,i,j);
+  const Q=pend||(quiz&&quiz[0]);
+  $('#app').innerHTML=`<div class="status"><span>Reef <b>${lv+1} of ${LEVELS.length}</b></span><span>Reef health <b>${pend?'?':tot}</b> (goal ${target})</span><span>Score <b>${score}</b></span></div>
+   <div class="grid2"><div><div class="reef" style="--n:${n}">${grid.map((k,i)=>`<button type="button" class="rc${k?' has':''}${k&&h[k]<0?' hurt':''}" data-i="${i}" aria-label="${k?ORG[k][0]:'empty spot'}">${k?`<span class="em">${ORG[k][1]}</span><span class="nm">${ORG[k][0]}</span><span class="hp ${pend?'':h[k]>0?'pos':h[k]<0?'neg':''}">${pend?'?':(h[k]>0?'+':'')+h[k]}</span>`:''}</button>`).join('')}${bd}</div>
+     <p class="small muted">Organisms only affect neighbors that share a side. Tap a placed organism to pick it back up.</p></div>
+    <div>${Q?`<div class="panel qbox"><b>New neighbors! ${ORG[Q.r[0]][1]} ${ORG[Q.r[0]][0]} and ${ORG[Q.r[1]][1]} ${ORG[Q.r[1]][0]}</b><p class="small" style="margin:6px 0">${Q.r[3]}</p><p class="small muted" style="margin:0 0 6px">What kind of relationship is this?</p>
+       <div class="opts">${Object.keys(TYPES).map(t=>`<button type="button" class="opt" data-t="${t}" ${Q.closed?'disabled':''}>${TYPES[t][0]}</button>`).join('')}</div>${Q.msg||''}${Q.closed?`<div class="row"><button type="button" class="btn primary" id="qok">Continue</button></div>`:''}</div>`:
+     lvDone?`<div class="fb ${lvDone.ok?'ok':'no'}"><b>${lvDone.ok?'Healthy reef!':'The reef is struggling.'}</b> Reef health ${lvDone.tot} (goal ${target}). +${lvDone.p}</div><div class="row"><button type="button" class="btn primary" id="nextL">${lv+1<LEVELS.length?'Next reef':'See results'}</button></div>`:
+     `<div class="panel"><b>Tray</b> <span class="small muted">Tap an organism, then tap a spot on the reef.</span><div class="tray">${tray.map((k,i)=>`<button type="button" class="tp${sel===i?' sel':''}" data-s="${i}">${ORG[k][1]} ${ORG[k][0]}</button>`).join('')||'<span class="small muted">Everyone is placed.</span>'}</div>
+       <div class="row"><button type="button" class="btn primary" id="chkB" ${tray.length?'disabled':''}>Check the reef</button></div></div>`}
+     <div class="panel" style="margin-top:8px"><b>Effects</b><table class="ktab" style="margin-top:4px">${Object.entries(TYPES).map(([k,t])=>`<tr><td>${t[0]}</td><td>${known_any(k)?`${t[1]} (${t[2][0]>0?'+':''}${t[2][0]} / ${t[2][1]>0?'+':''}${t[2][1]} health)`:'<span class="muted">discover it</span>'}</td></tr>`).join('')}</table></div></div></div>`;
+  $$('.rc').forEach(b=>b.addEventListener('click',()=>place(+b.dataset.i))); $$('.tp').forEach(b=>b.addEventListener('click',()=>{ sel=sel===+b.dataset.s?null:+b.dataset.s; render(); }));
+  $$('.qbox [data-t]').forEach(b=>b.addEventListener('click',()=>classify(b.dataset.t))); const q=$('#qok'); if(q) q.addEventListener('click',closeQ);
+  const c=$('#chkB'); if(c) c.addEventListener('click',check); const nl=$('#nextL'); if(nl) nl.addEventListener('click',()=>{ lv++; if(lv>=LEVELS.length) finish(); else loadLv(); }); }
+const known_any=t=>REL.some(r=>r[2]===t&&known[key(r)]);
+function finish(){ const nh=saveHi(score); over('Reef survey complete!',`<p style="font-size:18px;margin:4px 0">Score: <b>${score}</b>${nh?' <span style="color:var(--gold)">New high score!</span>':''}</p><table class="ktab"><tr><th>Relationship</th><th>Effect</th><th>Reef example</th></tr>${Object.entries(TYPES).map(([k,t])=>`<tr><td><b>${t[0]}</b></td><td>${t[1]}</td><td>${REL.filter(r=>r[2]===k).map(r=>ORG[r[0]][0]+' and '+ORG[r[1]][0].toLowerCase()).join('; ')}</td></tr>`).join('')}</table><p class="small">Mutualism, commensalism, and parasitism are types of <b>symbiosis</b>: two species living closely together.</p>`); }
+$('#startBtn').addEventListener('click',startGame); $('#againBtn').addEventListener('click',startGame);
+GAME.onPause=()=>{}; GAME.onResume=()=>{};
+GAME.teacherHTML=()=>`<p class="small muted">Practice game, not graded.</p><h3>How it works</h3><p class="small">Four reef puzzles on 3 × 3 and 4 × 4 grids. Organisms affect only side-by-side neighbors. The first time two related organisms touch, students read a short description and classify the relationship (20 points first try, 10 second). Any relationships in the level that never touched are quizzed at the end. Reef health goals are set by a computer search for the best layout (minus 2 on the larger reefs).</p><h3>Health effects</h3><ul class="small">${Object.values(TYPES).map(t=>`<li>${t[0]} ${t[1]}: ${t[2].join(' and ')}</li>`).join('')}</ul><h3>Pairs</h3><ul class="small">${REL.map(r=>`<li>${ORG[r[0]][0]} and ${ORG[r[1]][0]}: ${TYPES[r[2]][0]}</li>`).join('')}</ul>`;
+GAME.printHTML=()=>`<h1>Reef Partners notes</h1><table border="1" cellpadding="6" style="border-collapse:collapse;font-size:13px;width:100%"><tr><th>Pair</th><th>Who benefits?</th><th>Who is harmed?</th><th>Relationship</th></tr>${REL.map(r=>`<tr><td>${ORG[r[0]][0]} and ${ORG[r[1]][0]}</td><td></td><td></td><td></td></tr>`).join('')}</table>`;
+window.__reef={get grid(){return grid;},get tray(){return tray;},get pend(){return pend;},get quiz(){return quiz;},get lvDone(){return lvDone;},get target(){return target;},REL,healthOf,LEVELS,get lv(){return lv;},
+ setGrid:g=>{ grid=g.slice(); tray=[]; render(); },classify,closeQ,check,sel:i=>{sel=i;},place};
+
+</script>
+
+
+
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

@@ -877,6 +877,12 @@ const P = [
     model: 'On CO₂\'s phase diagram, the triple point is at 5.1 atm. Room pressure (1 atm) is below the triple point, so the 1 atm line never enters the liquid region. Warming dry ice at 1 atm crosses straight from solid to gas, which is sublimation.' }
 ];
 
+
+/* rotate correct-answer positions so the right choice isn't always first (fixed order, so saved work still matches) */
+(function () { let k = 0; P.forEach(p => {
+  if (p.type === 'mc' && Array.isArray(p.opts) && typeof p.a === 'number') { const n = p.opts.length, t = (k * 3 + 1) % n; k++; const o = p.opts.slice(); const c = o.splice(p.a, 1)[0]; o.splice(t, 0, c); p.opts = o; p.a = t; }
+  else if (p.type === 'ms' && Array.isArray(p.opts)) { const n = p.opts.length, r = (k * 2 + 1) % n; k++; p.opts = p.opts.slice(r).concat(p.opts.slice(0, r)); }
+}); })();
 const N = P.length, TOTAL = P.reduce((a, p) => a + p.pts, 0);
 
 /* ---------- state ---------- */

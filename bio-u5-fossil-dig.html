@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fossil Dig | Biology</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1220;--panel:#121c31;--panel2:#18243d;--line:#2b3a58;--text:#e8eefc;--muted:#9fb0cf;--gold:#facc15;--gold2:#fbbf24;--ok:#34d399;--bad:#f87171;--violet:#a78bfa}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 "Atkinson Hyperlegible",Arial,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:#0e172a}
+header .t{font-weight:800;font-size:17px}
+header .s{color:var(--muted);font-size:13px}
+header .sp{flex:1}
+.btn{font:inherit;font-weight:700;border-radius:10px;padding:9px 16px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--gold);color:#1a1300;border-color:var(--gold)}
+.btn:disabled{opacity:.5;cursor:default}
+main{max-width:1000px;margin:0 auto;padding:14px 16px 30px}
+.stage{position:relative;width:100%;aspect-ratio:16/10;background:#050a14;border:1px solid var(--line);border-radius:14px;overflow:hidden;touch-action:none}
+canvas{display:block;width:100%;height:100%}
+.ov{position:absolute;inset:0;display:flex;background:rgba(5,10,20,.78);padding:14px;overflow:auto}
+.ov>.card{margin:auto}
+#teachOv{position:fixed;z-index:60;background:rgba(5,10,20,.94)}
+.ov[hidden]{display:none}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;max-width:640px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.card h2{margin:0 0 6px;font-size:22px}
+.card h3{margin:12px 0 6px;font-size:15px;color:var(--gold)}
+.muted{color:var(--muted)} .small{font-size:13.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chip{font:inherit;font-size:14px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.chip.on{border-color:var(--gold);background:rgba(250,204,21,.16);font-weight:700}
+.qtag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--violet);margin-bottom:4px}
+.qtext{font-size:18px;margin:4px 0 12px}
+.opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:15.5px}
+.opt:hover:not(:disabled){border-color:var(--gold)}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:13px;font-weight:800}
+.opt.pick{border-color:var(--gold)}
+.fb{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:15.5px}
+.fb.ok{background:rgba(52,211,153,.14);border:1px solid rgba(52,211,153,.5)}
+.fb.no{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.45)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:14px;margin:6px 0}
+.keys b{color:var(--gold)}
+.ladder{display:flex;flex-wrap:wrap;gap:6px;font-size:13px;margin-top:6px}
+.ladder span{padding:3px 8px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}
+.touch{display:none;gap:10px;justify-content:space-between;margin-top:10px;user-select:none;-webkit-user-select:none}
+.touch .grp{display:flex;gap:10px}
+.tbtn{width:64px;height:58px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:22px;font-weight:800;touch-action:none}
+.tbtn.fire{width:110px;background:#3b2a07;border-color:var(--gold);color:var(--gold);font-size:17px}
+.tbtn.on{background:#334155}
+@media (pointer:coarse){.touch{display:flex}}
+@media (max-width:480px){.tbtn{width:52px;height:54px;font-size:20px}.tbtn.fire{width:86px}.touch .grp{gap:7px}.touch{gap:6px}}
+@media (max-width:760px),(max-height:560px){.ov{position:fixed;z-index:50;background:rgba(5,10,20,.92)}}
+body.showtouch .touch{display:flex}
+.info{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:14px;color:var(--muted)}
+.tpanel h3{margin-top:14px}
+.tq{margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font-size:14px}
+.tq ol{margin:4px 0 0;padding-left:22px}
+.tq li.right{color:var(--ok);font-weight:700}
+input.code{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0b1220;color:var(--text);width:180px}
+#printView{display:none}
+@media print{
+  body>*:not(#printView){display:none!important}
+  #printView{display:block!important;color:#000;background:#fff;font:12px/1.4 Arial,sans-serif}
+  #printView h1{font-size:18px;margin:0 0 4px} #printView .pq{break-inside:avoid;margin:8px 0}
+  #printView ol{margin:2px 0 0;padding-left:22px} #printView li.right{font-weight:700;text-decoration:underline}
+  html,body{background:#fff}
+}
+
+.stage{aspect-ratio:auto;min-height:600px;overflow:visible}.stage .ov{position:fixed;z-index:50}.app{padding:12px}.status{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14px;color:var(--muted);margin-bottom:8px}.status b{color:var(--text)}.ocard{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 14px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.grid2{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:12px;align-items:start}@media (max-width:820px){.grid2{grid-template-columns:1fr}}.btns{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin-top:8px}.gbtn{font:inherit;text-align:left;display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:14px;line-height:1.3}.gbtn:hover:not(:disabled){border-color:var(--gold)}.gbtn:disabled{opacity:.45;cursor:not-allowed}.gbtn.on{border-color:var(--gold);background:rgba(250,204,21,.14)}.gbtn .k{flex:none;min-width:22px;height:22px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:12px;font-weight:800;padding:0 4px}.meter{margin:6px 0}.meter .lab{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}.meter .lab b{color:var(--text)}.meter .tr{height:12px;border-radius:6px;background:#1e293b;overflow:hidden}.meter .fl{height:100%;border-radius:6px;transition:width .25s}.chipsrow{display:flex;flex-wrap:wrap;gap:6px}table.ktab{border-collapse:collapse;font-size:13px;width:100%}table.ktab td,table.ktab th{border:1px solid var(--line);padding:4px 6px;text-align:left;vertical-align:top}.log{font-size:13px;max-height:170px;overflow:auto}.log div{padding:3px 0;border-bottom:1px solid var(--line)}.big{font-size:22px;font-weight:800}.wall{border-radius:12px;overflow:hidden;border:1px solid var(--line);margin-top:8px}.lay{display:grid;grid-template-columns:82px repeat(8,minmax(0,1fr));gap:3px;padding:3px;background:#1b1712}.lname{font-size:12px;font-weight:700;color:#f5f0e1;display:flex;flex-direction:column;justify-content:center;line-height:1.2}.lname span{font-weight:400;color:#cbbfa6}.cell{height:48px;border-radius:6px;border:1px solid rgba(0,0,0,.4);cursor:pointer;background:var(--rc);background-image:radial-gradient(rgba(0,0,0,.18) 1px,transparent 1.5px),radial-gradient(rgba(255,255,255,.12) 1px,transparent 1.5px);background-size:9px 9px,13px 13px;background-position:0 0,4px 6px;display:grid;place-items:center}.cell:hover:not(:disabled){outline:2px solid var(--gold)}.cell.dug{background:#2b2620;box-shadow:inset 0 3px 8px rgba(0,0,0,.6);cursor:default}.cell:disabled{cursor:default}.chip{color:#f5f0e1;font-weight:900;letter-spacing:1px}.ash{background:repeating-linear-gradient(90deg,#e5e7eb 0 6px,#cbd5e1 6px 10px);color:#111827;font-size:11.5px;font-weight:700;padding:2px 8px}@media (max-width:560px){.lay{grid-template-columns:52px repeat(8,minmax(0,1fr));gap:2px}.cell{height:38px}.lname{font-size:10.5px}}.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-top:8px}.fos{font:inherit;color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px;align-items:flex-start;cursor:pointer;text-align:left}.fos:hover{border-color:var(--gold)}.fos.still{cursor:default}.fos.still:hover{border-color:var(--line)}.btn.sm{padding:5px 10px;font-size:13.5px}.btn.on{border-color:var(--gold)}.treebox{margin-top:10px}</style>
+</head>
+<body>
+<header>
+  <div><div class="t">Fossil Dig</div><div class="s">Biology · Unit 5: Evolution · Review game</div></div>
+  <div class="sp"></div>
+  <button class="btn" id="teachBtn" type="button">Teacher</button>
+</header>
+<main>
+  <div class="stage" id="stage">
+    <div class="app" id="app"><p class="muted">Press Start.</p></div>
+    <div class="ov" id="startOv"><div class="card"><h2>Fossil Dig</h2><p class="small muted" style="margin:0 0 8px">You are a paleontologist at a canyon where a river has exposed layers of ancient rock. You have 18 digs to find five skeletons of whale relatives. Then take them to the lab: put them in order by age, use dated volcanic ash to estimate how old they are, study how their skeletons changed, and build a family tree.</p><div class="row"><button class="btn primary" id="startBtn" type="button">Start</button><span class="small muted" id="hiTxt"></span></div></div></div>
+    <div class="ov" id="overOv" hidden><div class="card"><h2 id="overTitle"></h2><div id="overBody"></div><div class="row"><button class="btn primary" id="againBtn" type="button">Play again</button></div></div></div>
+
+    <div class="ov" id="pauseOv" hidden><div class="card" style="max-width:380px;text-align:center"><h2>Paused</h2><p class="muted">Press P or the button to keep playing.</p><button class="btn primary" id="resumeBtn" type="button">Resume</button></div></div>
+  </div>
+
+</main>
+<div class="ov" id="teachOv" hidden>
+  <div class="card tpanel" style="max-width:780px">
+    <h2>Teacher tools</h2>
+    <div id="tLogin"><p class="small muted">Enter the teacher code.</p><div class="row" style="margin-top:4px"><input class="code" id="tCode" type="password" autocomplete="off" aria-label="Teacher code"><button class="btn primary" id="tGo" type="button">Open</button><button class="btn" id="tClose0" type="button">Close</button></div><div class="small" id="tMsg" style="color:var(--bad);margin-top:6px"></div></div>
+    <div id="tBody" hidden>
+      <div class="row"><button class="btn" id="tPrint" type="button">🖨 Print the reference sheet</button><button class="btn" id="tTouch" type="button">Show touch buttons</button><button class="btn" id="tClose" type="button">Close</button></div>
+      <div id="tInfo"></div>
+    </div>
+  </div>
+</div>
+<div id="printView"></div>
+<script>
+const META={"store": "bioU5FossilDig"};
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const store={ get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+const shuffle=a=>{ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const rnd=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const GAME={onPause:()=>{}, onResume:()=>{}, teacherHTML:()=>'', printHTML:()=>''};
+/* teacher tools (code Teacher007) */
+function tShow(on){ $('#teachOv').hidden=!on; if(on){ GAME.onPause(); $('#tCode').value=''; $('#tMsg').textContent=''; setTimeout(()=>$('#tCode').focus(),30); } }
+$('#teachBtn').addEventListener('click',()=>tShow(true)); $('#tClose0').addEventListener('click',()=>tShow(false));
+$('#tClose').addEventListener('click',()=>{ tShow(false); $('#tBody').hidden=true; $('#tLogin').hidden=false; });
+function tOpen(){ if($('#tCode').value.trim().toLowerCase()!=='teacher007'){ $('#tMsg').textContent='Code not recognized.'; return; } $('#tLogin').hidden=true; $('#tBody').hidden=false; $('#tInfo').innerHTML=GAME.teacherHTML(); }
+$('#tGo').addEventListener('click',tOpen); $('#tCode').addEventListener('keydown',e=>{ if(e.key==='Enter') tOpen(); });
+$('#tTouch').addEventListener('click',()=>document.body.classList.toggle('showtouch'));
+$('#tPrint').addEventListener('click',()=>{ $('#printView').innerHTML=GAME.printHTML(); setTimeout(()=>window.print(),100); });
+$('#resumeBtn').addEventListener('click',()=>GAME.onResume());
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) GAME.onPause(); });
+
+const meter=(lab,v,max,col,txt)=>`<div class="meter"><div class="lab"><span>${lab}</span><b>${txt!=null?txt:Math.round(v)}</b></div><div class="tr"><div class="fl" style="width:${Math.max(0,Math.min(100,100*v/max))}%;background:${col}"></div></div></div>`;
+const HIKEY=META.store+'_hi'; function hiTxt(){ const h=+store.get(HIKEY)||0; const e=$('#hiTxt'); if(e) e.textContent=h?`High score on this Chromebook: ${h}`:''; } hiTxt();
+function saveHi(v){ const h=+store.get(HIKEY)||0; if(v>h){ store.set(HIKEY,v); return true; } return false; }
+function over(title,html){ $('#overTitle').textContent=title; $('#overBody').innerHTML=html; $('#overOv').hidden=false; hiTxt(); }
+/* ===================== FOSSIL DIG ===================== */
+const ROWS=5, COLS=8, DIGS=18;
+const LAYERS=[{rock:'Sandstone',c:'#c8a46a'},{rock:'Limestone',c:'#d6d0bd'},{rock:'Mudstone',c:'#9a5b3f'},{rock:'Siltstone',c:'#b08a5a'},{rock:'Shale',c:'#5f636b'}];
+const ASH={1:34,3:48}; // an ash bed sits on top of layer index 1 (34 million years) and on top of layer index 3 (48 million years)
+const SP={
+ mod:{n:'Modern whale',age:'about 5 million years',layer:0,fl:16,hl:0,flip:true,fluke:true,nos:.95,len:150,tilt:0},
+ dor:{n:'Dorudon',age:'about 40 million years',layer:1,fl:16,hl:5,flip:true,fluke:true,nos:.6,len:140,tilt:0},
+ rod:{n:'Rodhocetus',age:'about 47 million years',layer:2,fl:22,hl:22,flip:false,fluke:false,nos:.4,len:120,tilt:0},
+ amb:{n:'Ambulocetus',age:'about 49 million years',layer:3,fl:26,hl:30,flip:false,fluke:false,nos:.08,len:115,tilt:0},
+ pak:{n:'Pakicetus',age:'about 50 million years',layer:4,fl:38,hl:40,flip:false,fluke:false,nos:.03,len:100,tilt:0}};
+const ORDER=['pak','amb','rod','dor','mod']; // oldest to youngest
+const FILL=['shell','leaf','fish','tooth','shell','fish'];
+function skel(k,w){ const s=SP[k]; w=w||200; const L=s.len, y0=48, x0=30; let g='';
+  // spine of vertebrae
+  for(let i=0;i<=L;i+=6){ const x=x0+i, y=y0+(i>L*.7?(i-L*.7)*.12:0); g+=`<circle cx="${x}" cy="${y}" r="${i>L*.75?2.4:3.4}" fill="#f5f0e1"/>`; }
+  if(s.fluke) g+=`<path d="M${x0+L+2} ${y0+L*.036} l14 -10 l-4 10 l4 10 z" fill="#f5f0e1"/>`;
+  // ribs
+  for(let i=L*.22;i<L*.6;i+=7) g+=`<path d="M${x0+i} ${y0+2} q4 14 -2 24" stroke="#e7dfc8" stroke-width="2" fill="none"/>`;
+  // skull (to the left), snout length by species, nostril marked as an opening
+  const sk=s.flip?50:42; g+=`<path d="M${x0+4} ${y0-13} Q${x0-sk*.5} ${y0-12} ${x0-sk} ${y0-3} L${x0-sk} ${y0+4} L${x0+4} ${y0+12} Z" fill="#f5f0e1" stroke="#a8a08a"/>`;
+  const nx=x0-sk+sk*s.nos*.95; g+=`<ellipse cx="${nx}" cy="${y0-11+8*(1-s.nos)}" rx="4.5" ry="3" fill="#1c140c"/>`;
+  g+=`<circle cx="${x0-6}" cy="${y0-3}" r="4" fill="none" stroke="#3b2f22" stroke-width="1.5"/>`;
+  // front limb
+  const fx=x0+L*.2; if(s.flip) g+=`<path d="M${fx} ${y0+6} q-4 ${s.fl*.6} -14 ${s.fl}" stroke="#f5f0e1" stroke-width="7" stroke-linecap="round" fill="none"/>`;
+  else g+=`<path d="M${fx} ${y0+6} l-3 ${s.fl*.5} l3 ${s.fl*.5} l${s.hl>28?10:6} 0" stroke="#f5f0e1" stroke-width="3.5" fill="none" stroke-linejoin="round"/>`;
+  // pelvis and hind limb
+  const hx=x0+L*.66; g+=`<ellipse cx="${hx}" cy="${y0+(s.hl?7:12)}" rx="${s.hl?6:4}" ry="${s.hl?4:2}" fill="#e7dfc8"/>`;
+  if(s.hl) g+=`<path d="M${hx} ${y0+9} l4 ${s.hl*.5} l-4 ${s.hl*.5} l${s.hl>28?12:7} 0" stroke="#f5f0e1" stroke-width="${s.hl>10?3.5:2.5}" fill="none" stroke-linejoin="round"/>`;
+  const H=s.fl>s.hl?s.fl:s.hl; return `<svg viewBox="0 0 ${x0+L+50} ${y0+Math.max(H,20)+8}" width="${w}" role="img" aria-label="fossil skeleton" style="background:#2b2620;border-radius:8px;display:block;max-width:100%"><g transform="translate(30 0)">${g}</g></svg>`; }
+function glyph(t){ const m={shell:'<path d="M6 18 q8 -16 16 0 z M10 18 l4 -10 M14 18 l0 -12 M18 18 l-4 -10" fill="#eadfc4" stroke="#8a7a5a"/>',
+  leaf:'<path d="M4 20 q4 -16 18 -16 q-2 14 -18 16z M4 20 L20 6" fill="#9caf88" stroke="#4d5e3b"/>',
+  fish:'<path d="M3 12 q8 -8 16 0 q-8 8 -16 0z M19 12 l5 -5 l0 10z M7 12 h11 M9 9 v6 M12 8 v8 M15 9 v6" fill="none" stroke="#eadfc4" stroke-width="1.4"/>',
+  tooth:'<path d="M7 4 L19 4 L13 22 Z" fill="#d9d3c3" stroke="#6b6250"/>',bone:'<path d="M5 15 a3 3 0 1 1 3 -4 l9 -4 a3 3 0 1 1 4 3 a3 3 0 1 1 -2 4 l-9 4 a3 3 0 1 1 -5 -3z" fill="#f5f0e1" stroke="#8a7a5a"/>'}; return `<svg viewBox="0 0 26 24" width="26" height="24" aria-hidden="true">${m[t]}</svg>`; }
+const FNAME={shell:'snail shell',leaf:'fossil leaf',fish:'fish skeleton',tooth:'shark tooth'};
+let grid, digs, found, phase, score, ord, tries, brk, qi, tree, msg;
+function startGame(){ score=0; digs=DIGS; found=[]; phase='dig'; msg='Tap a spot on the canyon wall to dig. Bone chips mean a skeleton is right next door in the same layer.';
+  grid=Array.from({length:ROWS},()=>Array.from({length:COLS},()=>({dug:false,f:null})));
+  ORDER.forEach(k=>{ const r=SP[k].layer; let c; do c=Math.floor(Math.random()*COLS); while(grid[r][c].f); grid[r][c].f={whale:k}; });
+  for(let r=0;r<ROWS;r++){ for(let n=0;n<2;n++){ let c; do c=Math.floor(Math.random()*COLS); while(grid[r][c].f); grid[r][c].f={fill:pick(FILL)}; } }
+  $('#startOv').hidden=true; $('#overOv').hidden=true; render(); }
+const chips=(r,c)=>[c-1,c+1].some(x=>x>=0&&x<COLS&&grid[r][x].f&&grid[r][x].f.whale);
+function dig(r,c){ if(phase!=='dig'||digs<=0) return; const g=grid[r][c]; if(g.dug) return; g.dug=true; digs--;
+  if(g.f&&g.f.whale){ found.push(g.f.whale); score+=50; msg=`<b>Skeleton found in layer ${r+1}!</b> You uncovered a ${SP[g.f.whale].n}.`; }
+  else if(g.f) msg=`You found a ${FNAME[g.f.fill]}. Nice, but not a whale relative.`;
+  else msg=chips(r,c)?'<b>Bone chips!</b> A skeleton is buried right next to this spot, in the same layer.':'Just rock here.';
+  if(found.length===5){ score+=digs*10; msg+=` All five found with ${digs} digs to spare (+${digs*10}).`; }
+  render(); }
+function toLab(){ const miss=ORDER.filter(k=>!found.includes(k)); found=ORDER.slice(); phase='order'; ord=[]; tries=0; msg=miss.length?`The museum lent you the ${miss.length} skeleton${miss.length>1?'s':''} you didn't find (${miss.map(k=>SP[k].n).join(', ')}).`:''; render(); }
+function layerRow(k){ return SP[k].layer+1; }
+function render(){ const top=`<div class="status"><span>Score <b>${score}</b></span>${phase==='dig'?`<span>Digs left <b>${digs}</b></span><span>Skeletons found <b>${found.length} of 5</b></span>`:''}<span>Step <b>${({dig:1,order:2,date:3,traits:4,tree:5})[phase]} of 5</b></span></div>`;
+  if(phase==='dig'){ let h=''; for(let r=0;r<ROWS;r++){ if(ASH[r]) h+=`<div class="ash">volcanic ash bed: dated to ${ASH[r]} million years ago</div>`;
+      h+=`<div class="lay"><div class="lname">Layer ${r+1}<br><span>${LAYERS[r].rock}</span></div>${grid[r].map((g,c)=>`<button type="button" class="cell${g.dug?' dug':''}" data-r="${r}" data-c="${c}" style="--rc:${LAYERS[r].c}" ${g.dug||digs<=0?'disabled':''} aria-label="layer ${r+1} spot ${c+1}">${g.dug?(g.f?(g.f.whale?glyph('bone'):glyph(g.f.fill)):(chips(r,c)?'<span class="chip">· ∙ ·</span>':'')):''}</button>`).join('')}</div>`; }
+    $('#app').innerHTML=top+`<div class="ocard">You are working on a canyon wall where a river has cut through rock layers, so every layer is exposed. Find the five whale-relative skeletons.</div><div class="wall">${h}</div><div class="fb ${/Skeleton|chips/.test(msg)?'ok':''}" style="background:var(--panel2)">${msg}</div>
+     <div class="row"><button class="btn primary" id="labB" type="button" ${found.length<5&&digs>0?'disabled':''}>Take the fossils to the lab</button>${found.length?`<span class="small muted">Found: ${found.map(k=>SP[k].n).join(', ')}</span>`:''}</div>`;
+    $$('.cell').forEach(b=>b.addEventListener('click',()=>dig(+b.dataset.r,+b.dataset.c))); $('#labB').addEventListener('click',toLab); return; }
+  if(phase==='order'){ const left=ORDER.filter(k=>!ord.includes(k)).sort((a,b)=>SP[a].n<SP[b].n?-1:1);
+    $('#app').innerHTML=top+(msg?`<div class="ocard small">${msg}</div>`:'')+`<h3>Order the fossils from OLDEST to YOUNGEST</h3><p class="small muted">Rock layers are laid down one on top of another, so deeper layers are older. Tap the oldest first.</p>
+     <div class="fgrid">${left.map(k=>`<button type="button" class="fos" data-k="${k}">${skel(k,190)}<b>${SP[k].n}</b><span class="small muted">found in layer ${layerRow(k)} (${LAYERS[SP[k].layer].rock.toLowerCase()})</span></button>`).join('')}</div>
+     <div class="ocard" style="margin-top:8px"><b>Your order:</b> ${ord.map((k,i)=>`${i+1}. ${SP[k].n}`).join(' → ')||'<span class="muted">none yet</span>'}</div><div id="ofb"></div><div class="row"><button class="btn" id="clrB" type="button">Clear</button></div>`;
+    $$('.fos').forEach(b=>b.addEventListener('click',()=>{ ord.push(b.dataset.k); if(ord.length===5) checkOrder(); else render(); })); $('#clrB').addEventListener('click',()=>{ ord=[]; render(); }); return; }
+  if(phase==='date'){ $('#app').innerHTML=top+`<h3>Use the ash beds to bracket each fossil's age</h3><p class="small muted">Volcanic ash can be dated with radioactive elements. The ash bed above layer 2 is 34 million years old, and the ash bed above layer 4 is 48 million years old.</p>
+     <table class="ktab"><tr><th>Fossil (layer)</th><th>Age</th></tr>${ORDER.map(k=>`<tr><td><b>${SP[k].n}</b> (layer ${layerRow(k)})</td><td><div class="chipsrow">${[['y','younger than 34 million years'],['m','between 34 and 48 million years'],['o','older than 48 million years']].map(([v,l])=>`<button type="button" class="btn sm${brk[k].pick===v?' on':''}" data-k="${k}" data-v="${v}" ${brk[k].done?'disabled':''}>${l}</button>`).join('')}</div><div class="small">${brk[k].fb||''}</div></td></tr>`).join('')}</table>
+     <div class="row"><button class="btn primary" id="dateB" type="button" ${ORDER.every(k=>brk[k].done)?'':'disabled'}>Next: study the skeletons</button></div>`;
+    $$('[data-v]').forEach(b=>b.addEventListener('click',()=>dateAns(b.dataset.k,b.dataset.v))); $('#dateB').addEventListener('click',()=>{ phase='traits'; qi=0; tries=0; render(); }); return; }
+  if(phase==='traits'){ const Q=QS[qi]; $('#app').innerHTML=top+`<div class="fgrid">${ORDER.map(k=>`<div class="fos still">${skel(k,190)}<b>${SP[k].n}</b><span class="small muted">${SP[k].age}</span></div>`).join('')}</div>
+     <div class="panel" style="margin-top:10px"><b>Question ${qi+1} of ${QS.length}.</b> ${Q.q}<div class="opts" style="margin-top:8px">${Q.o.map((o,i)=>`<button type="button" class="opt" data-i="${i}">${o}</button>`).join('')}</div><div id="qfb"></div></div>`;
+    $$('.opt[data-i]').forEach(b=>b.addEventListener('click',()=>ansQ(+b.dataset.i))); return; }
+  if(phase==='tree'){ const names=Object.keys(TR); const left=names.filter(k=>!tree.includes(k));
+    $('#app').innerHTML=top+`<h3>Build the family tree</h3><p class="small muted">Each check mark is a whale feature. Organisms that share more features branch off later and are more closely related to modern whales. Tap organisms in the order they branch off, starting at the bottom of the tree.</p>
+     <div style="overflow-x:auto"><table class="ktab"><tr><th></th>${TRAITS.map(t=>`<th class="small">${t}</th>`).join('')}</tr>${names.slice().sort().map(k=>`<tr><td><b>${TR[k].n}</b></td>${TRAITS.map((_,i)=>`<td style="text-align:center">${TR[k].t>i?'✔':''}</td>`).join('')}</tr>`).join('')}</table></div>
+     <div class="treebox">${clado()}</div><div class="chipsrow" style="margin-top:8px">${left.sort().map(k=>`<button type="button" class="btn sm" data-t="${k}">${TR[k].n}</button>`).join('')}</div><div id="tfb"></div><div class="row"><button class="btn" id="tclr" type="button">Clear</button></div>`;
+    $$('[data-t]').forEach(b=>b.addEventListener('click',()=>{ tree.push(b.dataset.t); if(tree.length===6) checkTree(); else render(); })); $('#tclr').addEventListener('click',()=>{ tree=[]; render(); }); } }
+function checkOrder(){ const ok=ord.every((k,i)=>k===ORDER[i]); tries++;
+  if(ok){ const p=tries===1?100:50; score+=p; phase='date'; brk={}; ORDER.forEach(k=>brk[k]={t:0}); render(); return; }
+  if(tries>=2){ ord=ORDER.slice(); phase='date'; brk={}; ORDER.forEach(k=>brk[k]={t:0}); render(); return; }
+  ord=[]; render(); $('#ofb').innerHTML='<div class="fb no">Not quite. Which fossil came from the deepest layer? That one is oldest. Try once more.</div>'; }
+function dateAns(k,v){ const r=SP[k].layer, right=r===0?'y':r<=2?'m':'o'; const b=brk[k]; b.t++; b.pick=v;
+  if(v===right){ b.done=true; const p=b.t===1?20:10; score+=p; b.fb=`<span style="color:var(--good,#34d399)">Correct (+${p}).</span> ${SP[k].n} is ${SP[k].age} old.`; }
+  else if(b.t>=2){ b.done=true; b.fb='Not this time. Check which ash beds are above and below its layer.'; }
+  else b.fb='Look at which ash bed is above it and which is below it. One more try.'; render(); }
+const QS=[
+ {q:'Look at the dark nostril opening on each skull, from oldest to youngest. What trend do you see?',o:['The nostrils moved from the tip of the snout toward the top of the head','The nostrils moved from the top of the head to the tip of the snout','The nostrils stayed in the same place','The nostrils disappeared'],a:0,why:'Over millions of years the nostrils moved back to the top of the head. That is the blowhole, so a whale can breathe at the surface.'},
+ {q:'What happened to the back legs from oldest to youngest?',o:['They got longer and stronger','They got smaller, and then only tiny hip bones were left','They turned into flippers','They stayed the same'],a:1,why:'The hind legs shrank as these animals spent more time swimming with their tails.'},
+ {q:'A modern whale\'s flipper and Pakicetus\'s front leg have the same set of bones (upper arm, two forearm bones, wrist, finger bones) but are used differently. These are:',o:['Analogous structures','Vestigial structures','Homologous structures','Unrelated structures'],a:2,why:'Same bones, different jobs: homologous structures, evidence of a common ancestor.'},
+ {q:'Modern whales have tiny hip bones inside their bodies that are not attached to any legs. These are:',o:['Homologous structures that help them swim','Vestigial structures left from ancestors that had legs','Analogous structures','New structures that are still forming'],a:1,why:'Vestigial structures are reduced leftovers from ancestors that used them.'},
+ {q:'All five skeletons share a thick, dense ear bone that is found only in whales and their relatives. The best explanation is that:',o:['They all live in the ocean','They all inherited it from a common ancestor','They all needed it, so it grew','It is a coincidence'],a:1,why:'A shared, unusual trait points to common ancestry.'},
+ {q:'Which statement best describes what this fossil series shows?',o:['Whales were always the same as they are today','Land mammals slowly changed over many generations into whales that live in water','Whales turned into land mammals','Each fossil is a completely unrelated animal'],a:1,why:'The series shows a gradual change from land to water: transitional fossils.'}];
+function ansQ(i){ const Q=QS[qi]; tries++; if(i===Q.a){ const p=tries===1?40:20; score+=p; $('#qfb').innerHTML=`<div class="fb ok"><b>Correct! +${p}</b> ${Q.why}</div><div class="row"><button class="btn primary" id="nq" type="button">${qi+1<QS.length?'Next question':'Next: family tree'}</button></div>`; $$('.opt').forEach(b=>b.disabled=true); $('#nq').addEventListener('click',()=>{ qi++; tries=0; if(qi>=QS.length){ phase='tree'; tree=[]; tries=0; } render(); }); }
+  else if(tries>=2){ $('#qfb').innerHTML=`<div class="fb no">Not this time. Study the skeletons and talk it over with a partner.</div><div class="row"><button class="btn primary" id="nq" type="button">Next</button></div>`; $$('.opt').forEach(b=>b.disabled=true); $('#nq').addEventListener('click',()=>{ qi++; tries=0; if(qi>=QS.length){ phase='tree'; tree=[]; tries=0; } render(); }); }
+  else { $$('.opt')[i].disabled=true; $('#qfb').innerHTML='<div class="fb no">Not quite. Look closely at the skeletons and try once more.</div>'; } }
+const TRAITS=['Ankle bone shaped like a double pulley','Thick whale ear bone','Webbed feet for swimming','Nostrils moved back on the snout','Flippers and a tail fluke','Blowhole on top, no back legs'];
+const TR={hip:{n:'Hippo',t:1},pak:{n:'Pakicetus',t:2},amb:{n:'Ambulocetus',t:3},rod:{n:'Rodhocetus',t:4},dor:{n:'Dorudon',t:5},mod:{n:'Modern whale',t:6}};
+const TORD=['hip','pak','amb','rod','dor','mod'];
+function clado(){ const n=6, W=440, H=250, top=40; const tx=i=>40+i*(W-80)/(n-1); const R={x:tx(0)+30,y:H-12}, T={x:tx(n-1),y:top};
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:480px" role="img" aria-label="family tree"><path d="M${R.x} ${R.y} L${T.x} ${T.y}" stroke="#94a3b8" stroke-width="3"/>`;
+  for(let i=0;i<n;i++){ const f=i/(n-1), nx=R.x+(T.x-R.x)*f, ny=R.y+(T.y-R.y)*f; if(i<n-1) s+=`<path d="M${nx} ${ny} L${tx(i)} ${top}" stroke="#94a3b8" stroke-width="2"/>`;
+    s+=`<text x="${tx(i)}" y="${i%2?top-20:top-6}" fill="${tree[i]?'#fde68a':'#64748b'}" font-size="12" text-anchor="middle">${tree[i]?TR[tree[i]].n:'?'}</text>`; }
+  return s+'</svg>'; }
+function checkTree(){ tries++; const ok=tree.every((k,i)=>k===TORD[i]);
+  if(ok||tries>=2){ const p=ok?(tries===1?150:75):0; score+=p; render(); $('#tfb').innerHTML=`<div class="fb ${ok?'ok':'no'}">${ok?`<b>Correct! +${p}</b>`:'Here is the correct tree.'} The hippo branches off first: it shares the ankle bone but none of the whale features. Each later branch adds a feature, ending with modern whales. Hippos are the closest living relatives of whales.</div><div class="row"><button class="btn primary" id="finB" type="button">Finish</button></div>`; if(!ok){ tree=TORD.slice(); $('.treebox').innerHTML=clado(); } const cb=$('#tclr'); if(cb) cb.remove(); $$('[data-t]').forEach(b=>b.remove()); $('#finB').addEventListener('click',finish); return; }
+  tree=[]; render(); $('#tfb').innerHTML='<div class="fb no">Not quite. The organism with the fewest check marks branches off first. Try once more.</div>'; }
+function finish(){ const nh=saveHi(score); over('Field season complete!',`<p style="font-size:18px;margin:4px 0">Score: <b>${score}</b>${nh?' <span style="color:var(--gold)">New high score!</span>':''}</p><p class="small">You used <b>superposition</b> (deeper layers are older) and <b>radiometric dating</b> of ash beds to put the fossils in order, then found <b>transitional</b> features, <b>homologous</b> and <b>vestigial</b> structures, and built a family tree from shared traits. Together these are evidence that whales evolved from land mammals.</p>`); }
+$('#startBtn').addEventListener('click',startGame); $('#againBtn').addEventListener('click',startGame);
+GAME.onPause=()=>{}; GAME.onResume=()=>{};
+GAME.teacherHTML=()=>`<p class="small muted">Practice game, not graded.</p><h3>Steps</h3><ol class="small"><li>Dig: ${DIGS} digs on a 5 × 8 canyon wall to find 5 skeletons (one per layer). Bone chips appear next to a hidden skeleton in the same layer. Missing skeletons are "lent by the museum" so everyone continues.</li><li>Order oldest to youngest by layer (superposition).</li><li>Bracket ages with dated ash beds (34 and 48 million years).</li><li>Six questions: nostril and hind-leg trends, homologous, vestigial, common ancestry, transitional fossils.</li><li>Cladogram from a trait table with the hippo as the outgroup.</li></ol><h3>Ages used</h3><ul class="small">${ORDER.map(k=>`<li>${SP[k].n}: ${SP[k].age}, layer ${SP[k].layer+1}</li>`).join('')}</ul><p class="small">Skeletons are simplified drawings, not to scale.</p>`;
+GAME.printHTML=()=>`<h1>Fossil Dig field notes</h1><table border="1" cellpadding="6" style="border-collapse:collapse;font-size:13px;width:100%"><tr><th>Fossil</th><th>Layer</th><th>Age bracket</th><th>Nostril position</th><th>Back legs</th></tr>${ORDER.map(k=>`<tr><td>${SP[k].n}</td><td></td><td></td><td></td><td></td></tr>`).join('')}</table><p>1. How do you know which fossil is oldest?</p><p>2. Give one example of a homologous structure and one vestigial structure from the game.</p>`;
+window.__fos={get grid(){return grid;},get phase(){return phase;},get score(){return score;},dig,toLab,ORDER,QS,TORD};
+
+</script>
+
+
+
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

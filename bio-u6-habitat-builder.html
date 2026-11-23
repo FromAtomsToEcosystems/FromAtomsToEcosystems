@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Habitat Builder | Biology</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1220;--panel:#121c31;--panel2:#18243d;--line:#2b3a58;--text:#e8eefc;--muted:#9fb0cf;--gold:#facc15;--gold2:#fbbf24;--ok:#34d399;--bad:#f87171;--violet:#a78bfa}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 "Atkinson Hyperlegible",Arial,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:#0e172a}
+header .t{font-weight:800;font-size:17px}
+header .s{color:var(--muted);font-size:13px}
+header .sp{flex:1}
+.btn{font:inherit;font-weight:700;border-radius:10px;padding:9px 16px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--gold);color:#1a1300;border-color:var(--gold)}
+.btn:disabled{opacity:.5;cursor:default}
+main{max-width:1000px;margin:0 auto;padding:14px 16px 30px}
+.stage{position:relative;width:100%;aspect-ratio:16/10;background:#050a14;border:1px solid var(--line);border-radius:14px;overflow:hidden;touch-action:none}
+canvas{display:block;width:100%;height:100%}
+.ov{position:absolute;inset:0;display:flex;background:rgba(5,10,20,.78);padding:14px;overflow:auto}
+.ov>.card{margin:auto}
+#teachOv{position:fixed;z-index:60;background:rgba(5,10,20,.94)}
+.ov[hidden]{display:none}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;max-width:640px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.card h2{margin:0 0 6px;font-size:22px}
+.card h3{margin:12px 0 6px;font-size:15px;color:var(--gold)}
+.muted{color:var(--muted)} .small{font-size:13.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chip{font:inherit;font-size:14px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.chip.on{border-color:var(--gold);background:rgba(250,204,21,.16);font-weight:700}
+.qtag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--violet);margin-bottom:4px}
+.qtext{font-size:18px;margin:4px 0 12px}
+.opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:15.5px}
+.opt:hover:not(:disabled){border-color:var(--gold)}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:13px;font-weight:800}
+.opt.pick{border-color:var(--gold)}
+.fb{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:15.5px}
+.fb.ok{background:rgba(52,211,153,.14);border:1px solid rgba(52,211,153,.5)}
+.fb.no{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.45)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:14px;margin:6px 0}
+.keys b{color:var(--gold)}
+.ladder{display:flex;flex-wrap:wrap;gap:6px;font-size:13px;margin-top:6px}
+.ladder span{padding:3px 8px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}
+.touch{display:none;gap:10px;justify-content:space-between;margin-top:10px;user-select:none;-webkit-user-select:none}
+.touch .grp{display:flex;gap:10px}
+.tbtn{width:64px;height:58px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:22px;font-weight:800;touch-action:none}
+.tbtn.fire{width:110px;background:#3b2a07;border-color:var(--gold);color:var(--gold);font-size:17px}
+.tbtn.on{background:#334155}
+@media (pointer:coarse){.touch{display:flex}}
+@media (max-width:480px){.tbtn{width:52px;height:54px;font-size:20px}.tbtn.fire{width:86px}.touch .grp{gap:7px}.touch{gap:6px}}
+@media (max-width:760px),(max-height:560px){.ov{position:fixed;z-index:50;background:rgba(5,10,20,.92)}}
+body.showtouch .touch{display:flex}
+.info{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:14px;color:var(--muted)}
+.tpanel h3{margin-top:14px}
+.tq{margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font-size:14px}
+.tq ol{margin:4px 0 0;padding-left:22px}
+.tq li.right{color:var(--ok);font-weight:700}
+input.code{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0b1220;color:var(--text);width:180px}
+#printView{display:none}
+@media print{
+  body>*:not(#printView){display:none!important}
+  #printView{display:block!important;color:#000;background:#fff;font:12px/1.4 Arial,sans-serif}
+  #printView h1{font-size:18px;margin:0 0 4px} #printView .pq{break-inside:avoid;margin:8px 0}
+  #printView ol{margin:2px 0 0;padding-left:22px} #printView li.right{font-weight:700;text-decoration:underline}
+  html,body{background:#fff}
+}
+
+.stage{aspect-ratio:auto;min-height:600px;overflow:visible}.stage .ov{position:fixed;z-index:50}.app{padding:12px}.status{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14px;color:var(--muted);margin-bottom:8px}.status b{color:var(--text)}.ocard{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 14px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.grid2{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:12px;align-items:start}@media (max-width:820px){.grid2{grid-template-columns:1fr}}.btns{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin-top:8px}.gbtn{font:inherit;text-align:left;display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:14px;line-height:1.3}.gbtn:hover:not(:disabled){border-color:var(--gold)}.gbtn:disabled{opacity:.45;cursor:not-allowed}.gbtn.on{border-color:var(--gold);background:rgba(250,204,21,.14)}.gbtn .k{flex:none;min-width:22px;height:22px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:12px;font-weight:800;padding:0 4px}.meter{margin:6px 0}.meter .lab{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}.meter .lab b{color:var(--text)}.meter .tr{height:12px;border-radius:6px;background:#1e293b;overflow:hidden}.meter .fl{height:100%;border-radius:6px;transition:width .25s}.chipsrow{display:flex;flex-wrap:wrap;gap:6px}table.ktab{border-collapse:collapse;font-size:13px;width:100%}table.ktab td,table.ktab th{border:1px solid var(--line);padding:4px 6px;text-align:left;vertical-align:top}.log{font-size:13px;max-height:170px;overflow:auto}.log div{padding:3px 0;border-bottom:1px solid var(--line)}.big{font-size:22px;font-weight:800}.btn.sm{padding:5px 10px;font-size:14px}.btn.on{background:var(--gold);color:#0b1220}.fac{margin-bottom:12px}.fh{display:flex;justify-content:space-between;align-items:baseline}.fac input[type=range]{width:100%;accent-color:#fbbf24}.trow{display:grid;grid-template-columns:118px minmax(0,1fr) 92px;gap:6px;align-items:center;font-size:13px;margin:3px 0}.tn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.track{position:relative;height:14px;background:#1e293b;border-radius:7px}.track .st{position:absolute;top:0;bottom:0;background:#a16207;opacity:.75;border-radius:7px}.track .op{position:absolute;top:0;bottom:0;background:#16a34a;border-radius:7px}.track .cur{position:absolute;top:-4px;bottom:-4px;width:3px;margin-left:-1px;background:#fde047;box-shadow:0 0 4px #000}.zz{font-size:12px;font-weight:700}.zz.zopt{color:#4ade80}.zz.zstress{color:#fbbf24}.zz.zout{color:#f87171}.lg{display:inline-block;width:14px;height:10px;border-radius:3px;vertical-align:middle}.lg.op{background:#16a34a}.lg.st{background:#a16207}.lg.cur{background:#fde047;width:4px}.dome{min-height:150px;border-radius:120px 120px 14px 14px;border:2px solid #7dd3fc;background:linear-gradient(#0c4a6e55,#14532d88);display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;justify-content:center;padding:30px 16px 14px}.org{font-size:38px;transition:opacity .3s}.org.dead{opacity:.25;filter:grayscale(1)}.org.stress{filter:saturate(.4)}.org.thrive{filter:drop-shadow(0 0 6px #4ade80)}.rr{padding:3px 0;font-size:14px}.rr.dead b{color:#f87171}.rr.thrive b{color:#4ade80}@media (max-width:480px){.trow{grid-template-columns:92px minmax(0,1fr) 70px;font-size:12px}}</style>
+</head>
+<body>
+<header>
+  <div><div class="t">Habitat Builder</div><div class="s">Biology · Unit 6: Ecology · Review game</div></div>
+  <div class="sp"></div>
+  <button class="btn" id="teachBtn" type="button">Teacher</button>
+</header>
+<main>
+  <div class="stage" id="stage">
+    <div class="app" id="app"><p class="muted">Press Start.</p></div>
+    <div class="ov" id="startOv"><div class="card"><h2>Habitat Builder</h2><p class="small muted" style="margin:0 0 8px">You are building sealed habitat domes for a science museum. Set the <b>temperature</b>, <b>moisture</b>, and <b>light</b> so every species in the dome can survive, and as many as possible can thrive. Every species has its own range of tolerance. Animals also need their food, and some species need each other. You get 3 test runs per dome.</p><div class="row"><button class="btn primary" id="startBtn" type="button">Start</button><span class="small muted" id="hiTxt"></span></div></div></div>
+    <div class="ov" id="overOv" hidden><div class="card"><h2 id="overTitle"></h2><div id="overBody"></div><div class="row"><button class="btn primary" id="againBtn" type="button">Play again</button></div></div></div>
+
+    <div class="ov" id="pauseOv" hidden><div class="card" style="max-width:380px;text-align:center"><h2>Paused</h2><p class="muted">Press P or the button to keep playing.</p><button class="btn primary" id="resumeBtn" type="button">Resume</button></div></div>
+  </div>
+
+</main>
+<div class="ov" id="teachOv" hidden>
+  <div class="card tpanel" style="max-width:780px">
+    <h2>Teacher tools</h2>
+    <div id="tLogin"><p class="small muted">Enter the teacher code.</p><div class="row" style="margin-top:4px"><input class="code" id="tCode" type="password" autocomplete="off" aria-label="Teacher code"><button class="btn primary" id="tGo" type="button">Open</button><button class="btn" id="tClose0" type="button">Close</button></div><div class="small" id="tMsg" style="color:var(--bad);margin-top:6px"></div></div>
+    <div id="tBody" hidden>
+      <div class="row"><button class="btn" id="tPrint" type="button">🖨 Print the reference sheet</button><button class="btn" id="tTouch" type="button">Show touch buttons</button><button class="btn" id="tClose" type="button">Close</button></div>
+      <div id="tInfo"></div>
+    </div>
+  </div>
+</div>
+<div id="printView"></div>
+<script>
+const META={"store": "bioU6Habitat"};
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const store={ get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+const shuffle=a=>{ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const rnd=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const GAME={onPause:()=>{}, onResume:()=>{}, teacherHTML:()=>'', printHTML:()=>''};
+/* teacher tools (code Teacher007) */
+function tShow(on){ $('#teachOv').hidden=!on; if(on){ GAME.onPause(); $('#tCode').value=''; $('#tMsg').textContent=''; setTimeout(()=>$('#tCode').focus(),30); } }
+$('#teachBtn').addEventListener('click',()=>tShow(true)); $('#tClose0').addEventListener('click',()=>tShow(false));
+$('#tClose').addEventListener('click',()=>{ tShow(false); $('#tBody').hidden=true; $('#tLogin').hidden=false; });
+function tOpen(){ if($('#tCode').value.trim().toLowerCase()!=='teacher007'){ $('#tMsg').textContent='Code not recognized.'; return; } $('#tLogin').hidden=true; $('#tBody').hidden=false; $('#tInfo').innerHTML=GAME.teacherHTML(); }
+$('#tGo').addEventListener('click',tOpen); $('#tCode').addEventListener('keydown',e=>{ if(e.key==='Enter') tOpen(); });
+$('#tTouch').addEventListener('click',()=>document.body.classList.toggle('showtouch'));
+$('#tPrint').addEventListener('click',()=>{ $('#printView').innerHTML=GAME.printHTML(); setTimeout(()=>window.print(),100); });
+$('#resumeBtn').addEventListener('click',()=>GAME.onResume());
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) GAME.onPause(); });
+
+const meter=(lab,v,max,col,txt)=>`<div class="meter"><div class="lab"><span>${lab}</span><b>${txt!=null?txt:Math.round(v)}</b></div><div class="tr"><div class="fl" style="width:${Math.max(0,Math.min(100,100*v/max))}%;background:${col}"></div></div></div>`;
+const HIKEY=META.store+'_hi'; function hiTxt(){ const h=+store.get(HIKEY)||0; const e=$('#hiTxt'); if(e) e.textContent=h?`High score on this Chromebook: ${h}`:''; } hiTxt();
+function saveHi(v){ const h=+store.get(HIKEY)||0; if(v>h){ store.set(HIKEY,v); return true; } return false; }
+function over(title,html){ $('#overTitle').textContent=title; $('#overBody').innerHTML=html; $('#overOv').hidden=false; hiTxt(); }
+/* ===================== HABITAT BUILDER ===================== */
+// each factor: [min, optimal low, optimal high, max]
+const SPC={
+ cactus:{n:'Barrel cactus',i:'🌵',k:'producer',T:[5,25,40,50],W:[0,5,25,40],L:[50,70,100,100]},
+ fern:{n:'Fern',i:'🌿',k:'producer',T:[5,15,25,32],W:[50,70,100,100],L:[5,15,45,70]},
+ moss:{n:'Moss',i:'🟩',k:'producer',T:[0,8,22,30],W:[60,80,100,100],L:[0,5,40,70]},
+ grass:{n:'Grass',i:'🌾',k:'producer',T:[0,15,30,40],W:[20,35,65,85],L:[40,60,100,100]},
+ orchid:{n:'Orchid',i:'🌸',k:'producer',T:[18,22,30,35],W:[60,70,90,100],L:[20,30,60,80],needs:['bee'],why:'needs bees to pollinate it'},
+ beetle:{n:'Beetle',i:'🪲',k:'consumer',T:[10,20,35,45],W:[5,15,50,80],L:[0,20,80,100],eats:['cactus','fern','moss','grass','orchid']},
+ bee:{n:'Bee',i:'🐝',k:'consumer',T:[12,20,32,40],W:[30,40,80,95],L:[40,55,100,100],eats:['orchid']},
+ mouse:{n:'Mouse',i:'🐭',k:'consumer',T:[-5,10,30,38],W:[10,25,70,90],L:[0,10,80,100],eats:['grass']},
+ lizard:{n:'Lizard',i:'🦎',k:'consumer',T:[15,28,40,46],W:[0,5,35,60],L:[40,60,100,100],eats:['beetle']},
+ frog:{n:'Frog',i:'🐸',k:'consumer',T:[8,18,28,34],W:[70,70,100,100],L:[0,10,60,85],eats:['beetle']},
+ hawk:{n:'Hawk',i:'🦅',k:'consumer',T:[-10,5,30,40],W:[0,15,70,90],L:[40,60,100,100],eats:['mouse','lizard']}};
+const FAC={T:{n:'Temperature',u:'°C',min:-10,max:50,step:1},W:{n:'Moisture',u:'%',min:0,max:100,step:5},L:{n:'Light',u:'%',min:0,max:100,step:5}};
+const LEVELS=[
+ {t:'Desert dome',sp:['cactus','lizard','beetle'],thrive:1,txt:'Keep all three alive. At least 1 should thrive.'},
+ {t:'Rainforest corner',sp:['fern','frog','moss','beetle'],thrive:3,txt:'Keep all four alive, and get at least 3 to thrive.'},
+ {t:'Orchid house',sp:['orchid','bee','grass','mouse'],thrive:3,txt:'Keep all four alive (watch who depends on whom), with at least 3 thriving.'},
+ {t:'Design a food chain',choose:4,pool:['cactus','fern','grass','moss','beetle','mouse','lizard','frog','hawk'],thrive:2,txt:'Pick any 4 species, including at least one producer and one predator (lizard, frog, or hawk). Every animal needs its food in the dome. All 4 must survive and at least 2 must thrive.'},
+ {t:'Perfect balance',sp:['grass','mouse','hawk','beetle','lizard'],thrive:5,txt:'Get all FIVE to thrive at once. The window is narrow!'}];
+let lv, set, runs, score, chosen, res, done;
+function startGame(){ lv=0; score=0; $('#startOv').hidden=true; $('#overOv').hidden=true; loadLv(); }
+function loadLv(){ set={T:20,W:50,L:50}; runs=0; res=null; done=false; chosen=LEVELS[lv].choose?[]:LEVELS[lv].sp.slice(); render(); }
+function zone(f,v){ const [a,b,c,d]=f; return v<a||v>d?'out':v<b||v>c?'stress':'opt'; }
+function evaluate(){ const S=chosen; const st={}; S.forEach(k=>{ const z=['T','W','L'].map(f=>[f,zone(SPC[k][f],set[f])]); const bad=z.find(x=>x[1]==='out');
+    st[k]=bad?{s:'dead',why:(set[bad[0]]<SPC[k][bad[0]][0]?'too low ':'too high ')+FAC[bad[0]].n.toLowerCase()}:{s:z.every(x=>x[1]==='opt')?'thrive':'stress',why:z.filter(x=>x[1]==='stress').map(x=>FAC[x[0]].n.toLowerCase()+' is not ideal').join(', ')}; });
+  let ch=true; while(ch){ ch=false; S.forEach(k=>{ if(st[k].s==='dead') return; const sp=SPC[k];
+    if(sp.eats&&!sp.eats.some(e=>st[e]&&st[e].s!=='dead')){ st[k]={s:'dead',why:'no food; it eats '+sp.eats.map(e=>SPC[e].n.toLowerCase()).join(' or ')}; ch=true; }
+    if(sp.needs&&!sp.needs.some(e=>st[e]&&st[e].s!=='dead')){ st[k]={s:'dead',why:sp.why}; ch=true; } }); }
+  return st; }
+function goalMet(st){ const L=LEVELS[lv]; const v=Object.values(st); if(v.some(x=>x.s==='dead')) return false; if(v.filter(x=>x.s==='thrive').length<L.thrive) return false;
+  if(L.choose){ if(chosen.length!==L.choose) return false; if(!chosen.some(k=>SPC[k].k==='producer')) return false; if(!chosen.some(k=>['lizard','frog','hawk'].includes(k))) return false; } return true; }
+function tolHTML(f){ const F=FAC[f], X=v=>(v-F.min)/(F.max-F.min)*100; return chosen.map(k=>{ const [a,b,c,d]=SPC[k][f]; const z=zone(SPC[k][f],set[f]); return `<div class="trow"><span class="tn">${SPC[k].i} ${SPC[k].n}</span><span class="track"><span class="st" style="left:${X(a)}%;width:${X(d)-X(a)}%"></span><span class="op" style="left:${X(b)}%;width:${X(c)-X(b)}%"></span><span class="cur" style="left:${X(set[f])}%"></span></span><span class="zz z${z}">${z==='opt'?'optimal':z==='stress'?'stress':'can\'t survive'}</span></div>`; }).join(''); }
+function bars(f){ const F=FAC[f]; return `<div class="fac"><div class="fh"><b>${F.n}</b> <span class="big" id="val-${f}">${set[f]}${F.u}</span></div>
+  <input type="range" min="${F.min}" max="${F.max}" step="${F.step}" value="${set[f]}" data-f="${f}" aria-label="${F.n}" ${done?'disabled':''}>
+  <div class="tol" id="tol-${f}">${tolHTML(f)}</div></div>`; }
+function render(){ const L=LEVELS[lv];
+  $('#app').innerHTML=`<div class="status"><span>Dome <b>${lv+1} of ${LEVELS.length}</b>: ${L.t}</span><span>Score <b>${score}</b></span><span>Test runs used <b>${runs} of 3</b></span></div>
+   <div class="ocard">${L.txt}</div>
+   ${L.choose?`<div class="panel" style="margin-top:8px"><b>Choose ${L.choose} species</b> (${chosen.length} chosen)<div class="chipsrow" style="margin-top:6px">${L.pool.map(k=>`<button type="button" class="btn sm${chosen.includes(k)?' on':''}" data-pk="${k}" ${done?'disabled':''}>${SPC[k].i} ${SPC[k].n}</button>`).join('')}</div><p class="small muted" style="margin:6px 0 0">Food: beetles eat any plant; mice eat grass; lizards and frogs eat beetles; hawks eat mice or lizards.</p></div>`:''}
+   <div class="grid2" style="margin-top:8px"><div>${['T','W','L'].map(bars).join('')}<p class="small muted"><span class="lg op"></span> optimal range <span class="lg st"></span> stress zone (survives, but grows and reproduces poorly) · outside the bar: can't survive · <span class="lg cur"></span> your setting</p></div>
+    <div><div class="dome">${chosen.map(k=>`<span class="org ${res&&res[k]?res[k].s:''}" title="${SPC[k].n}">${SPC[k].i}</span>`).join('')||'<span class="small muted">Choose species</span>'}</div>
+     <div class="row"><button type="button" class="btn primary" id="runB" ${done||runs>=3||!chosen.length?'disabled':''}>Run one season</button></div><div id="rfb">${res?resHTML():''}</div></div></div>`;
+  $$('input[type=range]').forEach(r=>r.addEventListener('input',()=>{ const f=r.dataset.f; set[f]=+r.value; $('#val-'+f).textContent=set[f]+FAC[f].u; $('#tol-'+f).innerHTML=tolHTML(f); }));
+  $$('[data-pk]').forEach(b=>b.addEventListener('click',()=>{ const k=b.dataset.pk; if(chosen.includes(k)) chosen=chosen.filter(x=>x!==k); else if(chosen.length<L.choose) chosen.push(k); res=null; render(); }));
+  $('#runB').addEventListener('click',run); const nb=$('#nextL'); if(nb) nb.addEventListener('click',()=>{ lv++; if(lv>=LEVELS.length) finish(); else loadLv(); }); }
+let last;
+function run(){ runs++; res=evaluate(); const ok=goalMet(res); last=ok; if(ok){ done=true; const p=[150,100,60][runs-1]; score+=p; last=p; } else if(runs>=3) done=true; render(); }
+function resHTML(){ const L=LEVELS[lv]; const rows=chosen.map(k=>`<div class="rr ${res[k].s}">${SPC[k].i} <b>${SPC[k].n}</b>: ${res[k].s==='thrive'?'thriving':res[k].s==='stress'?'surviving but stressed':'died'}${res[k].why?` <span class="small muted">(${res[k].why})</span>`:''}</div>`).join('');
+  let extra=''; if(L.choose&&done===false){ if(!chosen.some(k=>SPC[k].k==='producer')) extra+='<div class="small">You need at least one producer.</div>'; if(!chosen.some(k=>['lizard','frog','hawk'].includes(k))) extra+='<div class="small">You need a predator.</div>'; if(chosen.length!==L.choose) extra+=`<div class="small">Choose exactly ${L.choose} species.</div>`; }
+  return `<div class="panel" style="margin-top:8px">${rows}${extra}</div>`+(done?`<div class="fb ${typeof last==='number'?'ok':'no'}">${typeof last==='number'?`<b>Dome stable! +${last}</b>`:'Out of test runs for this dome. Compare the bars: find the setting that is inside every species\' optimal range.'}</div><div class="row"><button type="button" class="btn primary" id="nextL">${lv+1<LEVELS.length?'Next dome':'See results'}</button></div>`:`<div class="fb no">Not stable yet. Adjust and try again (${3-runs} run${3-runs===1?'':'s'} left).</div>`); }
+function finish(){ const nh=saveHi(score); over('All domes tested!',`<p style="font-size:18px;margin:4px 0">Score: <b>${score}</b> of ${LEVELS.length*150}${nh?' <span style="color:var(--gold)">New high score!</span>':''}</p><p class="small">Every species has a <b>range of tolerance</b> for each <b>abiotic factor</b> (temperature, moisture, light). In the <b>optimal range</b> it thrives; in the <b>zone of physiological stress</b> it survives but grows and reproduces poorly; outside its tolerance it dies. <b>Biotic factors</b> matter too: a consumer dies without its food, and an orchid can't reproduce without its pollinator.</p>`); }
+$('#startBtn').addEventListener('click',startGame); $('#againBtn').addEventListener('click',startGame);
+GAME.onPause=()=>{}; GAME.onResume=()=>{};
+GAME.teacherHTML=()=>`<p class="small muted">Practice game, not graded.</p><h3>How it works</h3><p class="small">Five domes. Students set temperature, moisture, and light, then run a season (3 test runs per dome; 150, 100, or 60 points). Each species has a tolerance range with an optimal zone and stress zones, shown as bars. Consumers die if their food dies; the orchid dies without bees and bees die without orchids. Dome 4 lets students design their own food chain; dome 5 needs all five species in their optimal range at once.</p><h3>Sample solutions</h3><ul class="small"><li>Desert: 30°C, 20%, 80%</li><li>Rainforest: 21°C, 80%, 30%</li><li>Orchid house: 25°C, 70%, 60%</li><li>Food chain: grass, beetle, mouse, hawk at 25°C, 45%, 70%</li><li>Perfect balance: 28 to 30°C, 35%, 60 to 80%</li></ul>`;
+GAME.printHTML=()=>`<h1>Habitat Builder notes</h1><table border="1" cellpadding="6" style="border-collapse:collapse;font-size:13px;width:100%"><tr><th>Dome</th><th>Temperature</th><th>Moisture</th><th>Light</th><th>Which species were stressed? Why?</th></tr>${LEVELS.map(l=>`<tr><td>${l.t}</td><td></td><td></td><td></td><td></td></tr>`).join('')}</table><p>Draw a tolerance curve for one species. Label the optimal range, the zones of stress, and the zones of intolerance.</p>`;
+window.__hab={set:(T,W,L)=>{ set={T,W,L}; render(); },run,choose:a=>{ chosen=a; render(); },get lv(){return lv;},get res(){return res;},next:()=>$('#nextL').click(),evaluate};
+
+</script>
+
+
+
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

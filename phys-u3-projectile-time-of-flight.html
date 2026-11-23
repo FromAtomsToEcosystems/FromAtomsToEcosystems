@@ -243,6 +243,7 @@ body.key .keyonly{display:block!important}
 @media print{.top,#calc{display:none}}
 .phbox{width:100%;min-height:60px;border:1px solid var(--line2);border-radius:8px;padding:8px;background:var(--bg2);color:var(--ink);font-family:inherit;font-size:.92rem;resize:vertical;margin-top:3px}
 </style>
+<style id="nolock">#tEndLock,#endLockBtn,#unlockInfo{display:none!important}</style>
 </head>
 <body>
 <div class="preview-bar" id="previewBar" hidden>Preview mode: nothing is saved or sent. Reload the page to leave preview mode.</div>
@@ -391,6 +392,7 @@ body.key .keyonly{display:block!important}
    ========================================================= */
 const LESSON = 'Projectile Motion and Time of Flight';
 const LESSON_ID = 'phys-u3-projectile-time-of-flight-lesson30';
+function __ord(seed, arr) { let h = 2166136261; for (const ch of String(seed)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } const idx = arr.map((_, i) => i); for (let i = idx.length - 1; i > 0; i--) { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; const j = (h >>> 0) % (i + 1); [idx[i], idx[j]] = [idx[j], idx[i]]; } return idx; }
 const KEY = 'fate_phys_u3_projectile_tof_lesson30_v1';
 const RECS = KEY + '_records';
 const UNLOCK_CODE = 'flight';           // last word of the lesson title: unlocks the lockdown screen only
@@ -412,7 +414,7 @@ function saveURL() {
   return SAVE_URL_BUILTIN;
 }
 const CLOUD = () => !!saveURL() && /^https?:/.test(location.protocol);
-const LOCK_ON = /github\.io$/i.test(location.hostname) || new URLSearchParams(location.search).has('lockdown');
+const LOCK_ON = false; // lockdown is used on tests only
 const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* =========================================================
@@ -442,7 +444,7 @@ const subs = s => String(s).replace(/\b([vDa])_(ix|iy|fy|fx|x|y)\b/g, (m, b, s2)
 function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toast.T); toast.T = setTimeout(() => el.classList.remove('show'), 2600); }
 function parseNum(s) {
   s = String(s || '').trim().replace(/[−–—]/g, '-').replace(/,/g, '');
-  s = s.replace(/\s*[x×*·]\s*10\s*\^\s*\(?\s*([+-]?\d+)\s*\)?/i, 'e$1');
+  s = s.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺]+/g, m => '^' + [...m].map(ch => ch === '⁻' ? '-' : ch === '⁺' ? '+' : '⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(ch)).join('')).replace(/\s*[x×*·]\s*10\s*\^\s*\(?\s*([+-]?\d+)\s*\)?/i, 'e$1');
   const m = s.match(/-?\d*\.?\d+(e[+-]?\d+)?/i); if (!m) return NaN; return parseFloat(m[0]);
 }
 function close(ans, v, tol) { if (!isFinite(v)) return false; const t = tol != null ? tol : Math.max(0.051, Math.abs(ans) * 0.02); return Math.abs(v - ans) <= t + 1e-9; }
@@ -699,8 +701,8 @@ const QC = {};
 function qcHTML(n, k, q) {
   const id = `s${n}${k}`; QC[id] = Object.assign({ n, k }, q);
   return `<div class="qcwrap" id="qc-${id}"><p><b>Quick check ${k === 'q1' ? 1 : 2}.</b> ${q.q}</p>${q.fig || ''}
-    <div class="opts">${q.opts.map((o, i) => `<button type="button" class="opt" data-qc="${id}" data-i="${i}"><span class="L">${LET[i]}</span><span>${o}</span></button>`).join('')}</div>
-    <p class="fb" data-fb></p><div class="keyonly keytag">Answer: ${LET[q.a]}</div></div>`;
+    <div class="opts">${__ord(LESSON_ID + id, q.opts).map((i, pos) => `<button type="button" class="opt" data-qc="${id}" data-i="${i}"><span class="L">${LET[pos]}</span><span>${q.opts[i]}</span></button>`).join('')}</div>
+    <p class="fb" data-fb></p><div class="keyonly keytag">Answer: ${LET[__ord(LESSON_ID + id, q.opts).indexOf(q.a)]}</div></div>`;
 }
 function qcCard(n, a, b) { return `<div class="card"><span class="chip qc">Quick check</span>${qcHTML(n, 'q1', a)}${qcHTML(n, 'q2', b)}</div>`; }
 function paintQC(id) {
@@ -884,7 +886,7 @@ function build1() {
       <p>The ${wh('launch angle')} <span class="v">θ</span> is measured up from the ground. The two parts make a right triangle, so the ${wh('inverse tangent')} gives the angle.</p>
       ${EQ_TAN}
       <div class="callout"><b>Example.</b> A ball is launched with ${vix} = 10.0 m/s and ${viy} = 10.0 m/s. Find the launch angle.
-        ${work('', [['Equation', `<span class="v">θ</span> = tan⁻¹(${k('vi', viy)} ÷ ${k('vx', vix)})`], ['Plug in', `<span class="v">θ</span> = tan⁻¹(${k('vi', '10.0')} ÷ ${k('vx', '10.0')})`], ['Solve', `<span class="v">θ</span> = tan⁻¹(1) = <b>45.0°</b>`]])}${COLORNOTE}</div>
+        <div class='fig' style='margin:10px 0'><svg viewBox='0 0 360 220' role='img' aria-label='Diagram'><defs><marker id='pm586cb8ff' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='6' markerHeight='6' orient='auto'><path d='M0 0L10 5L0 10z' fill='#6cb8ff'/></marker></defs><line x1='10.0' y1='195.0' x2='350.0' y2='195.0' stroke='#5d6f96' stroke-width='2'/><path d='M40 195 Q180.0 -65.0 320 195' stroke='#6cb8ff' stroke-width='1.6' fill='none'/><circle cx='40.0' cy='187.0' r='8.0' fill='#ff9f5a' stroke='#ffd3b0' stroke-width='1.5'/><line x1='40.0' y1='187.0' x2='40.0' y2='125.0' stroke='#6cb8ff' stroke-width='2.4' marker-end='url(#pm586cb8ff)'/><text x='46' y='121' font-size='12' fill='#6cb8ff' text-anchor='start' font-family='Lexend, sans-serif'>vᵢᵧ = 10.0 m/s</text><line x1='40.0' y1='187.0' x2='102.0' y2='187.0' stroke='#6cb8ff' stroke-width='2.4' marker-end='url(#pm586cb8ff)'/><text x='106' y='193' font-size='12' fill='#6cb8ff' text-anchor='start' font-family='Lexend, sans-serif'>vᵢₓ = 10.0 m/s</text><text x='10' y='18' font-size='12' fill='#a3b2d2' text-anchor='start' font-family='Lexend, sans-serif'>Launch angle ?</text></svg></div>${work('', [['Equation', `<span class="v">θ</span> = tan⁻¹(${k('vi', viy)} ÷ ${k('vx', vix)})`], ['Plug in', `<span class="v">θ</span> = tan⁻¹(${k('vi', '10.0')} ÷ ${k('vx', '10.0')})`], ['Solve', `<span class="v">θ</span> = tan⁻¹(1) = <b>45.0°</b>`]])}${COLORNOTE}</div>
     </div><div>${vecFig()}</div></div></div>
   <div class="card"><span class="chip try">Try it</span><h3>The launcher</h3>
     <p>Set the sideways part and the up part, then launch. Watch how the arrow and the path change. Try at least 3 different launches.</p>
@@ -935,7 +937,7 @@ function build2() {
       <p>${vfy} = 0 at the top gives two answers: the <b>time to the top</b> (equation with ${t_}) and the <b>maximum height</b> (equation with ${Dy} and no ${t_}).</p>
       <div class="callout"><b>Example.</b> A ball is launched with ${viy} = 14.7 m/s. Find its time to the top and maximum height.
         ${KNOWN_TOP('14.7')}${UPWORK('14.7', '1.50')}
-        ${work('Maximum height', [['Equation', `${k('vf', vfy)}² = ${k('vi', viy)}² + 2${k('a', ay)}${Dy}`], ['Plug in', `${k('vf', '0')}² = ${k('vi', '14.7')}² + 2${k('a', '(−9.8)')}${Dy}`], ['Solve', `0 = 216.09 − 19.6${Dy}, so ${Dy} = 216.09 ÷ 19.6 = <b>11.0 m</b>`]])}${COLORNOTE}</div>
+        <div class='fig' style='margin:10px 0'><svg viewBox='0 0 360 220' role='img' aria-label='Diagram'><defs><marker id='pm596cb8ff' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='6' markerHeight='6' orient='auto'><path d='M0 0L10 5L0 10z' fill='#6cb8ff'/></marker></defs><line x1='10.0' y1='195.0' x2='350.0' y2='195.0' stroke='#5d6f96' stroke-width='2'/><path d='M40 195 Q180.0 -65.0 320 195' stroke='#6cb8ff' stroke-width='1.6' fill='none'/><circle cx='40.0' cy='187.0' r='8.0' fill='#ff9f5a' stroke='#ffd3b0' stroke-width='1.5'/><line x1='40.0' y1='187.0' x2='40.0' y2='125.0' stroke='#6cb8ff' stroke-width='2.4' marker-end='url(#pm596cb8ff)'/><text x='46' y='121' font-size='12' fill='#6cb8ff' text-anchor='start' font-family='Lexend, sans-serif'>vᵢᵧ = 14.7 m/s</text><line x1='180.0' y1='195.0' x2='180.0' y2='67.0' stroke='#ffcf5a' stroke-width='1.2' stroke-dasharray="4 3"/><text x='186' y='125' font-size='12' fill='#ffcf5a' text-anchor='start' font-family='Lexend, sans-serif'>max height ?</text><text x='10' y='18' font-size='12' fill='#a3b2d2' text-anchor='start' font-family='Lexend, sans-serif'>Time to the top and max height</text></svg></div>${work('Maximum height', [['Equation', `${k('vf', vfy)}² = ${k('vi', viy)}² + 2${k('a', ay)}${Dy}`], ['Plug in', `${k('vf', '0')}² = ${k('vi', '14.7')}² + 2${k('a', '(−9.8)')}${Dy}`], ['Solve', `0 = 216.09 − 19.6${Dy}, so ${Dy} = 216.09 ÷ 19.6 = <b>11.0 m</b>`]])}${COLORNOTE}</div>
     </div><div>${EQ_Y}</div></div></div>
   <div class="card"><span class="chip try">Try it</span><h3>Peak finder</h3>
     <p>Pick an up-speed and launch. The ball pauses at its peak and shows the time and height. Try 3 different up-speeds. What happens to the time and the height when you double ${viy}?</p>
@@ -972,7 +974,7 @@ function build3() {
       <p>The ${wh('time of flight')} is the total time in the air. On level ground the path has ${wh('symmetry')}: the trip down takes as long as the trip up, so <b>time of flight = 2 × time to the top</b>. Only ${viy} decides it; ${vix} changes how far, not how long.</p>
       <div class="callout"><b>Example.</b> A ball is launched with ${viy} = 14.7 m/s on a flat field. Find its time of flight.
         ${KNOWN_TOP('14.7')}${UPWORK('14.7', '1.50', 'Step 1: time to the top')}
-        ${work('Step 2: double it (level ground)', [['Solve', `time of flight = 2 × 1.50 = <b>3.00 s</b>`]])}${COLORNOTE}</div>
+        <div class='fig' style='margin:10px 0'><svg viewBox='0 0 360 220' role='img' aria-label='Diagram'><defs><marker id='pm606cb8ff' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='6' markerHeight='6' orient='auto'><path d='M0 0L10 5L0 10z' fill='#6cb8ff'/></marker></defs><line x1='10.0' y1='195.0' x2='350.0' y2='195.0' stroke='#5d6f96' stroke-width='2'/><path d='M40 195 Q180.0 -65.0 320 195' stroke='#6cb8ff' stroke-width='1.6' fill='none'/><circle cx='40.0' cy='187.0' r='8.0' fill='#ff9f5a' stroke='#ffd3b0' stroke-width='1.5'/><line x1='40.0' y1='187.0' x2='40.0' y2='125.0' stroke='#6cb8ff' stroke-width='2.4' marker-end='url(#pm606cb8ff)'/><text x='46' y='121' font-size='12' fill='#6cb8ff' text-anchor='start' font-family='Lexend, sans-serif'>vᵢᵧ = 14.7 m/s</text><text x='10' y='18' font-size='12' fill='#a3b2d2' text-anchor='start' font-family='Lexend, sans-serif'>Flat field: time of flight ?</text></svg></div>${work('Step 2: double it (level ground)', [['Solve', `time of flight = 2 × 1.50 = <b>3.00 s</b>`]])}${COLORNOTE}</div>
     </div><div>${EQ_Y}</div></div></div>
   <div class="card"><span class="chip try">Try it</span><h3>Same up-speed race</h3>
     <p>Both balls launch with ${viy} = 12.0 m/s. Give them different sideways speeds and race them. Which lands first? Race at least twice, with different sideways speeds.</p>
@@ -1014,7 +1016,7 @@ function build4() {
       <div class="callout"><b>Example.</b> A ball is launched on level ground with ${vix} = 8.0 m/s and ${viy} = 9.8 m/s. Find its range.
         ${KNOWN_TOP('9.8')}${UPWORK('9.8', '1.00', 'Step 1 (y side): time to the top')}
         <p style="margin:2px 0 6px;font-size:.92rem">Level ground, so time of flight = 2 × 1.00 = <b>2.00 s</b>.</p>
-        ${work('Step 2 (x side): range', [['Equation', `${Dx} = ${k('vx', vix)}${k('t', 'Δt')} + ½${k('a', ax)}${k('t', 'Δt')}²`], ['Plug in', `${Dx} = ${k('vx', '8.0')}${k('t', '(2.00)')} + ½${k('a', '(0)')}${k('t', '(2.00)')}²`], ['Solve', `${Dx} = 8.0 × 2.00 = <b>16.0 m</b>`]])}${COLORNOTE}</div>
+        <div class='fig' style='margin:10px 0'><svg viewBox='0 0 360 220' role='img' aria-label='Diagram'><defs><marker id='pm616cb8ff' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='6' markerHeight='6' orient='auto'><path d='M0 0L10 5L0 10z' fill='#6cb8ff'/></marker></defs><line x1='10.0' y1='195.0' x2='350.0' y2='195.0' stroke='#5d6f96' stroke-width='2'/><path d='M40 195 Q180.0 -65.0 320 195' stroke='#6cb8ff' stroke-width='1.6' fill='none'/><circle cx='40.0' cy='187.0' r='8.0' fill='#ff9f5a' stroke='#ffd3b0' stroke-width='1.5'/><line x1='40.0' y1='187.0' x2='40.0' y2='125.0' stroke='#6cb8ff' stroke-width='2.4' marker-end='url(#pm616cb8ff)'/><text x='46' y='121' font-size='12' fill='#6cb8ff' text-anchor='start' font-family='Lexend, sans-serif'>vᵢᵧ = 9.8 m/s</text><line x1='40.0' y1='187.0' x2='102.0' y2='187.0' stroke='#6cb8ff' stroke-width='2.4' marker-end='url(#pm616cb8ff)'/><text x='106' y='193' font-size='12' fill='#6cb8ff' text-anchor='start' font-family='Lexend, sans-serif'>vᵢₓ = 8.0 m/s</text><line x1='40.0' y1='207.0' x2='320.0' y2='207.0' stroke='#a3b2d2' stroke-width='1.2'/><text x='180' y='219' font-size='12' fill='#a3b2d2' text-anchor='middle' font-family='Lexend, sans-serif'>range ?</text><text x='10' y='18' font-size='12' fill='#a3b2d2' text-anchor='start' font-family='Lexend, sans-serif'>Level ground</text></svg></div>${work('Step 2 (x side): range', [['Equation', `${Dx} = ${k('vx', vix)}${k('t', 'Δt')} + ½${k('a', ax)}${k('t', 'Δt')}²`], ['Plug in', `${Dx} = ${k('vx', '8.0')}${k('t', '(2.00)')} + ½${k('a', '(0)')}${k('t', '(2.00)')}²`], ['Solve', `${Dx} = 8.0 × 2.00 = <b>16.0 m</b>`]])}${COLORNOTE}</div>
       <div class="callout teal"><b>What about the launch angle?</b> At the same launch speed, a steeper launch puts more into ${viy} (longer time in the air, higher peak) and less into ${vix}. On level ground, <b>45° goes the farthest</b>, and angles that add to 90° (like 30° and 60°) land at the same spot. That’s the phenomenon!</div>
     </div><div>${EQ_X}</div></div></div>
   <div class="card"><span class="chip try">Try it</span><h3>Target missions</h3>
@@ -1077,7 +1079,7 @@ function build5() {
       <p>From the top of a cliff, the ball lands lower than it started, so it is in the air <b>longer</b> than 2 × time to the top. Split the flight at the ${wh('peak')}: time up, then a fall <b>from rest</b> through the cliff height plus the rise. Add the two times, then multiply by ${vix}.</p>
       <div class="callout"><b>Example.</b> A ball is launched from a 20.0 m cliff with ${vix} = 6.0 m/s and ${viy} = 9.8 m/s.
         ${UPWORK('9.8', '1.00', 'Step 1: time up')}
-        ${work('Step 2: rise above the cliff', [['Equation', `${k('vf', vfy)}² = ${k('vi', viy)}² + 2${k('a', ay)}${Dy}`], ['Plug in', `${k('vf', '0')}² = ${k('vi', '9.8')}² + 2${k('a', '(−9.8)')}${Dy}`], ['Solve', `${Dy} = 96.04 ÷ 19.6 = <b>4.9 m</b>, so the peak is 20.0 + 4.9 = 24.9 m up`]])}
+        <div class='fig' style='margin:10px 0'><svg viewBox='0 0 360 220' role='img' aria-label='Diagram'><defs><marker id='pm626cb8ff' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='6' markerHeight='6' orient='auto'><path d='M0 0L10 5L0 10z' fill='#6cb8ff'/></marker></defs><path d='M10 135 L40 135 L40 195 L10 195 Z' stroke='#5d6f96' stroke-width='2' fill='#1e2c4d'/><line x1='40.0' y1='195.0' x2='350.0' y2='195.0' stroke='#5d6f96' stroke-width='2'/><path d='M40 135 Q180.0 -53.0 320 195' stroke='#6cb8ff' stroke-width='1.6' fill='none'/><circle cx='40.0' cy='127.0' r='8.0' fill='#ff9f5a' stroke='#ffd3b0' stroke-width='1.5'/><line x1='40.0' y1='127.0' x2='40.0' y2='65.0' stroke='#6cb8ff' stroke-width='2.4' marker-end='url(#pm626cb8ff)'/><text x='46' y='61' font-size='12' fill='#6cb8ff' text-anchor='start' font-family='Lexend, sans-serif'>vᵢᵧ = 9.8 m/s</text><line x1='40.0' y1='127.0' x2='102.0' y2='127.0' stroke='#6cb8ff' stroke-width='2.4' marker-end='url(#pm626cb8ff)'/><text x='106' y='133' font-size='12' fill='#6cb8ff' text-anchor='start' font-family='Lexend, sans-serif'>vᵢₓ = 6.0 m/s</text><line x1='40.0' y1='207.0' x2='320.0' y2='207.0' stroke='#a3b2d2' stroke-width='1.2'/><text x='180' y='219' font-size='12' fill='#a3b2d2' text-anchor='middle' font-family='Lexend, sans-serif'>Δx = ?</text><text x='10' y='18' font-size='12' fill='#a3b2d2' text-anchor='start' font-family='Lexend, sans-serif'>From a 20.0 m cliff</text></svg></div>${work('Step 2: rise above the cliff', [['Equation', `${k('vf', vfy)}² = ${k('vi', viy)}² + 2${k('a', ay)}${Dy}`], ['Plug in', `${k('vf', '0')}² = ${k('vi', '9.8')}² + 2${k('a', '(−9.8)')}${Dy}`], ['Solve', `${Dy} = 96.04 ÷ 19.6 = <b>4.9 m</b>, so the peak is 20.0 + 4.9 = 24.9 m up`]])}
         ${work('Step 3: fall from rest', [['Equation', `${k('D', Dy)} = ${k('vi', viy)}${k('t', 'Δt')} + ½${k('a', ay)}${k('t', 'Δt')}²`], ['Plug in', `${k('D', '−24.9')} = ${k('vi', '0')}${k('t', 'Δt')} + ½${k('a', '(−9.8)')}${k('t', 'Δt')}²`], ['Solve', `${t_}² = 24.9 ÷ 4.9 = 5.08, so ${t_} = <b>2.25 s</b>`]])}
         ${work('Step 4: add up, then go sideways', [['Solve', `time of flight = 1.00 + 2.25 = 3.25 s; ${Dx} = 6.0 × 3.25 = <b>19.5 m</b>`]])}${COLORNOTE}</div>
     </div><div>${EQ_Y}</div></div></div>
@@ -1467,6 +1469,14 @@ heroFig(); buildAll(); renderStart(); showNote();
 go(0);
 if (S.student && S.locked && lockLive()) showLock();
 })();
+</script>
+<script>/* sandbox-safe sign-in: works even where form submissions are blocked (e.g., previews) */
+(function () { document.querySelectorAll('#startForm, #signForm').forEach(f => {
+  const go = () => f.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+  f.requestSubmit = go;
+  f.querySelectorAll('button[type="submit"]').forEach(b => { b.type = 'button'; b.addEventListener('click', go); });
+  f.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName === 'INPUT') { e.preventDefault(); go(); } });
+}); })();
 </script>
 </body>
 </html>

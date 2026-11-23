@@ -243,6 +243,7 @@ body.key .keyonly{display:block!important}
 @media print{.top,#calc{display:none}}
 .phbox{width:100%;min-height:60px;border:1px solid var(--line2);border-radius:8px;padding:8px;background:var(--bg2);color:var(--ink);font-family:inherit;font-size:.92rem;resize:vertical;margin-top:3px}
 </style>
+<style id="nolock">#tEndLock,#endLockBtn,#unlockInfo{display:none!important}</style>
 </head>
 <body>
 <div class="preview-bar" id="previewBar" hidden>Preview mode: nothing is saved or sent. Reload the page to leave preview mode.</div>
@@ -391,6 +392,7 @@ body.key .keyonly{display:block!important}
    ========================================================= */
 const LESSON = "Circular Motion: Period, Frequency, and Speed";
 const LESSON_ID = 'phys-u5-circular-motion-period-frequency-speed';
+function __ord(seed, arr) { let h = 2166136261; for (const ch of String(seed)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } const idx = arr.map((_, i) => i); for (let i = idx.length - 1; i > 0; i--) { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; const j = (h >>> 0) % (i + 1); [idx[i], idx[j]] = [idx[j], idx[i]]; } return idx; }
 const KEY = 'fate_phys_u5_circular_motion_period_frequency_speed_v1';
 const RECS = KEY + '_records';
 const UNLOCK_CODE = 'speed';           // last word of the lesson title: unlocks the lockdown screen only
@@ -412,7 +414,7 @@ function saveURL() {
   return SAVE_URL_BUILTIN;
 }
 const CLOUD = () => !!saveURL() && /^https?:/.test(location.protocol);
-const LOCK_ON = /github\.io$/i.test(location.hostname) || new URLSearchParams(location.search).has('lockdown');
+const LOCK_ON = false; // lockdown is used on tests only
 const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* =========================================================
@@ -443,7 +445,7 @@ const subs = s => String(s).replace(/\b([vDa])_(ix|iy|fy|fx|x|y)\b/g, (m, b, s2)
 function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toast.T); toast.T = setTimeout(() => el.classList.remove('show'), 2600); }
 function parseNum(s) {
   s = String(s || '').trim().replace(/[−–—]/g, '-').replace(/,/g, '');
-  s = s.replace(/\s*[x×*·]\s*10\s*\^\s*\(?\s*([+-]?\d+)\s*\)?/i, 'e$1');
+  s = s.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺]+/g, m => '^' + [...m].map(ch => ch === '⁻' ? '-' : ch === '⁺' ? '+' : '⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(ch)).join('')).replace(/\s*[x×*·]\s*10\s*\^\s*\(?\s*([+-]?\d+)\s*\)?/i, 'e$1');
   const m = s.match(/-?\d*\.?\d+(e[+-]?\d+)?/i); if (!m) return NaN; return parseFloat(m[0]);
 }
 function close(ans, v, tol) { if (!isFinite(v)) return false; const t = tol != null ? tol : Math.max(0.051, Math.abs(ans) * 0.02); return Math.abs(v - ans) <= t + 1e-9; }
@@ -710,8 +712,8 @@ const QC = {};
 function qcHTML(n, k, q) {
   const id = `s${n}${k}`; QC[id] = Object.assign({ n, k }, q);
   return `<div class="qcwrap" id="qc-${id}"><p><b>${q.label || 'Quick check ' + (k === 'q1' ? 1 : 2)}.</b> ${q.q}</p>${q.fig || ''}
-    <div class="opts">${q.opts.map((o, i) => `<button type="button" class="opt" data-qc="${id}" data-i="${i}"><span class="L">${LET[i]}</span><span>${o}</span></button>`).join('')}</div>
-    <p class="fb" data-fb></p><div class="keyonly keytag">Answer: ${LET[q.a]}</div></div>`;
+    <div class="opts">${__ord(LESSON_ID + id, q.opts).map((i, pos) => `<button type="button" class="opt" data-qc="${id}" data-i="${i}"><span class="L">${LET[pos]}</span><span>${q.opts[i]}</span></button>`).join('')}</div>
+    <p class="fb" data-fb></p><div class="keyonly keytag">Answer: ${LET[__ord(LESSON_ID + id, q.opts).indexOf(q.a)]}</div></div>`;
 }
 function qcCard(n, a, b) { return `<div class="card"><span class="chip qc">Quick check</span>${qcHTML(n, 'q1', a)}${qcHTML(n, 'q2', b)}</div>`; }
 function paintQC(id) {
@@ -868,13 +870,13 @@ function build2() {
   $('#page2').innerHTML = secHead(2) + `
   <div class="card"><span class="chip read">Read</span><h3>How long per lap, how many laps per second</h3>
     <div class="cols"><div><p>The <b>period</b> T is the time for one full revolution, in seconds. The <b>frequency</b> f is the number of revolutions per second, in hertz (Hz). They are reciprocals: f = 1 ÷ T.</p>
-      <div class="callout"><b>Example.</b> A fan blade makes 10 revolutions in 5.0 s. ${work('', [['Period', `T = 5.0 ÷ 10 = <b>0.50 s</b>`], ['Frequency', `f = 10 ÷ 5.0 = <b>2.0 Hz</b>`], ['Check', `f = 1 ÷ 0.50 = 2.0 Hz ✓`]])}</div>
+      <div class="callout"><b>Example.</b> A fan blade makes 10 revolutions in 5.0 s. <div class='fig' style='margin:10px 0'><svg viewBox='0 0 320 240' role='img' aria-label='Diagram'><defs><marker id='pm186cb8ff' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='6' markerHeight='6' orient='auto'><path d='M0 0L10 5L0 10z' fill='#6cb8ff'/></marker></defs><circle cx='130' cy='138' r='80' fill='none' stroke='#34476f' stroke-width='2' stroke-dasharray='6 5'/><circle cx='130.0' cy='138.0' r='4.0' fill='#e9eefb' stroke='#e9eefb' stroke-width='1.5'/><text x='130' y='156' font-size='10' fill='#7385aa' text-anchor='middle' font-family='Lexend, sans-serif'>center</text><line x1='130.0' y1='138.0' x2='202.5' y2='104.2' stroke='#c9b38a' stroke-width='2'/><text x='173' y='140' font-size='12' fill='#ffcf5a' text-anchor='middle' font-family='Lexend, sans-serif'>r</text><circle cx='202.5' cy='104.2' r='10.0' fill='#ff9f5a' stroke='#ffd3b0' stroke-width='1.5'/><line x1='202.5' y1='104.2' x2='178.8' y2='53.4' stroke='#6cb8ff' stroke-width='2.6' marker-end='url(#pm186cb8ff)'/><text x='187' y='49' font-size='12' fill='#6cb8ff' text-anchor='start' font-family='Lexend, sans-serif'>v</text><text x='10' y='18' font-size='12' fill='#a3b2d2' text-anchor='start' font-family='Lexend, sans-serif'>Velocity is tangent to the circle</text></svg></div>${work('', [['Period', `T = 5.0 ÷ 10 = <b>0.50 s</b>`], ['Frequency', `f = 10 ÷ 5.0 = <b>2.0 Hz</b>`], ['Check', `f = 1 ÷ 0.50 = 2.0 Hz ✓`]])}</div>
     </div><div><div class="eqbox"><div class="eq">T = time ÷ revolutions</div><div class="eq">f = revolutions ÷ time</div><div class="eq">f = 1 ÷ T · T = 1 ÷ f</div></div></div></div></div>
   <div class="card"><span class="chip try">Try it</span><h3>Lap counter</h3><p>Set how many revolutions happen and how long they take. Complete all three missions.</p><div class="fig" id="g2fig"></div>
     <div class="ctrls">${[{"id": "n", "label": "Revolutions", "min": 1, "max": 20, "step": 1, "val": 10, "unit": ""}, {"id": "t", "label": "Time", "min": 1, "max": 20, "step": 1, "val": 5, "unit": "s"}].map(s => `<div class="ctrl"><label for="g2${s.id}"><span>${s.label}</span> <b id="g2${s.id}v"></b></label><input type="range" id="g2${s.id}" min="${s.min}" max="${s.max}" step="${s.step}" value="${s.val}"></div>`).join('')}</div>
     <div class="readouts" id="g2ro"></div><div class="row"><button class="btn primary" type="button" id="g2chk">Check against the missions</button></div>
     ${missionsHTML(2, ["Make the period exactly 0.50 s.", "Make the frequency exactly 4.0 Hz.", "Make the period and the frequency equal."])}</div>
-  ${pracCard(2, 'Practice (you solve it)', "A little different from the example: you start from a frequency.", [{ id: 'p2x', q: "A record spins at 0.75 revolutions per second (0.75 Hz). What is its period?", ans: 1.333, show: "1.33", unit: "s", tol: 0.01, hint: "T = 1 ÷ f.", sol: "T = 1 ÷ 0.75 = 1.33 s" }])}
+  ${pracCard(2, 'Practice (you solve it)', "A little different from the example: you start from a frequency.", [{ id: 'p2x', q: "A record spins at 0.75 revolutions per second (0.75 Hz). What is its period?" + `<div class='fig' style='margin:10px 0'><svg viewBox='0 0 320 240' role='img' aria-label='Diagram'><defs></defs><circle cx='130' cy='138' r='80' fill='none' stroke='#34476f' stroke-width='2' stroke-dasharray='6 5'/><circle cx='130.0' cy='138.0' r='4.0' fill='#e9eefb' stroke='#e9eefb' stroke-width='1.5'/><line x1='130.0' y1='138.0' x2='202.5' y2='104.2' stroke='#34476f' stroke-width='1.2' stroke-dasharray="4 3"/><text x='173' y='140' font-size='12' fill='#ffcf5a' text-anchor='middle' font-family='Lexend, sans-serif'>r</text><circle cx='202.5' cy='104.2' r='10.0' fill='#ff9f5a' stroke='#ffd3b0' stroke-width='1.5'/><text x='10' y='18' font-size='12' fill='#a3b2d2' text-anchor='start' font-family='Lexend, sans-serif'>Record at 0.75 Hz: period ?</text></svg></div>`, ans: 1.333, show: "1.33", unit: "s", tol: 0.01, hint: "T = 1 ÷ f.", sol: "T = 1 ÷ 0.75 = 1.33 s" }])}
   <div class="card"><span class="chip qc">Quick check</span>${qcHTML(2, 'q1', Object.assign({"q": "If the period of a spinning wheel gets shorter, its frequency…", "opts": ["increases", "decreases", "stays the same"], "a": 0, "why": "f = 1 ÷ T: less time per lap means more laps per second.", "hint": "They are reciprocals."}, { label: 'Quick check' }))}</div>
   
   ${unlockBox(2)}`;
@@ -893,13 +895,13 @@ function build3() {
   $('#page3').innerHTML = secHead(3) + `
   <div class="card"><span class="chip read">Read</span><h3>One lap = one circumference</h3>
     <div class="cols"><div><p>In one period the object travels once around the circle: a distance of one <b>circumference</b>, 2πr. So its speed is distance ÷ time: <b>v = 2πr ÷ T</b>. Use the <b>radius</b> (center to edge), not the diameter.</p><p>Bigger circle (same period) → faster. Shorter period (same circle) → faster.</p>
-      <div class="callout"><b>Example.</b> A ball on a 0.50 m string makes one lap every 0.25 s. ${work('', [['Equation', `v = 2πr ÷ T`], ['Plug in', `v = 2π(0.50) ÷ 0.25`], ['Solve', `v = <b>12.6 m/s</b>`]])}</div>
+      <div class="callout"><b>Example.</b> A ball on a 0.50 m string makes one lap every 0.25 s. <div class='fig' style='margin:10px 0'><svg viewBox='0 0 320 240' role='img' aria-label='Diagram'><defs><marker id='pm206cb8ff' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='6' markerHeight='6' orient='auto'><path d='M0 0L10 5L0 10z' fill='#6cb8ff'/></marker></defs><circle cx='130' cy='138' r='80' fill='none' stroke='#34476f' stroke-width='2' stroke-dasharray='6 5'/><circle cx='130.0' cy='138.0' r='4.0' fill='#e9eefb' stroke='#e9eefb' stroke-width='1.5'/><text x='130' y='156' font-size='10' fill='#7385aa' text-anchor='middle' font-family='Lexend, sans-serif'>center</text><line x1='130.0' y1='138.0' x2='202.5' y2='104.2' stroke='#c9b38a' stroke-width='2'/><text x='173' y='140' font-size='12' fill='#ffcf5a' text-anchor='middle' font-family='Lexend, sans-serif'>0.50 m</text><circle cx='202.5' cy='104.2' r='10.0' fill='#ff9f5a' stroke='#ffd3b0' stroke-width='1.5'/><line x1='202.5' y1='104.2' x2='178.8' y2='53.4' stroke='#6cb8ff' stroke-width='2.6' marker-end='url(#pm206cb8ff)'/><text x='187' y='49' font-size='12' fill='#6cb8ff' text-anchor='start' font-family='Lexend, sans-serif'>v ?</text><text x='10' y='18' font-size='12' fill='#a3b2d2' text-anchor='start' font-family='Lexend, sans-serif'>One lap every 0.25 s</text></svg></div>${work('', [['Equation', `v = 2πr ÷ T`], ['Plug in', `v = 2π(0.50) ÷ 0.25`], ['Solve', `v = <b>12.6 m/s</b>`]])}</div>
     </div><div><div class="eqbox"><div class="eq" style="font-size:1.2rem">v = 2πr ÷ T</div><div class="eq">r = radius (m) · T = period (s)</div><div class="eq">also v = 2πrf</div></div></div></div></div>
   <div class="card"><span class="chip try">Try it</span><h3>Spin speed</h3><p>Set the radius and the period. Watch the speed. Complete all three missions.</p><div class="fig" id="g3fig"></div>
     <div class="ctrls">${[{"id": "r", "label": "Radius", "min": 0.5, "max": 5, "step": 0.5, "val": 1, "unit": "m"}, {"id": "T", "label": "Period", "min": 0.5, "max": 5, "step": 0.5, "val": 2, "unit": "s"}].map(s => `<div class="ctrl"><label for="g3${s.id}"><span>${s.label}</span> <b id="g3${s.id}v"></b></label><input type="range" id="g3${s.id}" min="${s.min}" max="${s.max}" step="${s.step}" value="${s.val}"></div>`).join('')}</div>
     <div class="readouts" id="g3ro"></div><div class="row"><button class="btn primary" type="button" id="g3chk">Check against the missions</button></div>
     ${missionsHTML(3, ["Make the speed exactly π m/s (3.14 m/s).", "With a 1.0 s period, make the speed exactly 4π m/s (12.57 m/s).", "With a 2.0 m radius, make the speed exactly 2π m/s (6.28 m/s)."])}</div>
-  ${pracCard(3, 'Practice (you solve it)', "A little different from the example: a bigger, slower circle.", [{ id: 'p3x', q: "A child rides the edge of a merry-go-round with a 2.0 m radius. It makes one turn every 4.0 s. How fast is the child moving?", ans: 3.1416, show: "3.14", unit: "m/s", tol: 0.02, hint: "v = 2πr ÷ T.", sol: "v = 2π(2.0) ÷ 4.0 = 3.14 m/s" }])}
+  ${pracCard(3, 'Practice (you solve it)', "A little different from the example: a bigger, slower circle.", [{ id: 'p3x', q: "A child rides the edge of a merry-go-round with a 2.0 m radius. It makes one turn every 4.0 s. How fast is the child moving?" + `<div class='fig' style='margin:10px 0'><svg viewBox='0 0 320 240' role='img' aria-label='Diagram'><defs><marker id='pm216cb8ff' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='6' markerHeight='6' orient='auto'><path d='M0 0L10 5L0 10z' fill='#6cb8ff'/></marker></defs><circle cx='130' cy='138' r='80' fill='none' stroke='#34476f' stroke-width='2' stroke-dasharray='6 5'/><circle cx='130.0' cy='138.0' r='4.0' fill='#e9eefb' stroke='#e9eefb' stroke-width='1.5'/><text x='130' y='156' font-size='10' fill='#7385aa' text-anchor='middle' font-family='Lexend, sans-serif'>center</text><line x1='130.0' y1='138.0' x2='202.5' y2='104.2' stroke='#34476f' stroke-width='1.2' stroke-dasharray="4 3"/><text x='173' y='140' font-size='12' fill='#ffcf5a' text-anchor='middle' font-family='Lexend, sans-serif'>2.0 m</text><circle cx='202.5' cy='104.2' r='9.0' fill='#e9eefb' stroke='#e9eefb' stroke-width='1.5'/><line x1='202.5' y1='104.2' x2='178.8' y2='53.4' stroke='#6cb8ff' stroke-width='2.6' marker-end='url(#pm216cb8ff)'/><text x='187' y='49' font-size='12' fill='#6cb8ff' text-anchor='start' font-family='Lexend, sans-serif'>v ?</text><text x='10' y='18' font-size='12' fill='#a3b2d2' text-anchor='start' font-family='Lexend, sans-serif'>T = 4.0 s</text></svg></div>`, ans: 3.1416, show: "3.14", unit: "m/s", tol: 0.02, hint: "v = 2πr ÷ T.", sol: "v = 2π(2.0) ÷ 4.0 = 3.14 m/s" }])}
   <div class="card"><span class="chip qc">Quick check</span>${qcHTML(3, 'q1', Object.assign({"q": "Two horses are on the same merry-go-round, one near the center and one at the edge. Which moves faster?", "opts": ["The one near the center", "The one at the edge", "They move at the same speed"], "a": 1, "why": "Same period, but the edge horse travels a bigger circle (larger r).", "hint": "v = 2πr ÷ T with the same T."}, { label: 'Quick check' }))}</div>
   <div class="card"><span class="chip qc">What is wrong with this?</span><p>A merry-go-round is 3.0 m across and makes one turn every 6.0 s. A student finds the speed at the edge:</p><ol style="margin:4px 0 8px"><li>v = 2π(3.0) ÷ 6.0</li><li>v = 18.85 ÷ 6.0</li><li>v = 3.14 m/s</li></ol>
     ${qcHTML(3, 'q2', Object.assign({"opts": ["Step 1: 3.0 m is the diameter; use the radius, 1.5 m (v = 1.57 m/s)", "Step 2: they divided wrong", "Step 3: speed should be in km/h", "Nothing is wrong"], "a": 0, "why": "\"3.0 m across\" is the diameter. r = 1.5 m, so v = 2π(1.5) ÷ 6.0 = 1.57 m/s.", "hint": "Is 3.0 m the radius?"}, { label: 'Spot the mistake', q: 'Which step is wrong, and why?' }))}</div>
@@ -1238,6 +1240,14 @@ heroFig(); buildAll(); renderStart(); showNote();
 go(0);
 if (S.student && S.locked && lockLive()) showLock();
 })();
+</script>
+<script>/* sandbox-safe sign-in: works even where form submissions are blocked (e.g., previews) */
+(function () { document.querySelectorAll('#startForm, #signForm').forEach(f => {
+  const go = () => f.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+  f.requestSubmit = go;
+  f.querySelectorAll('button[type="submit"]').forEach(b => { b.type = 'button'; b.addEventListener('click', go); });
+  f.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName === 'INPUT') { e.preventDefault(); go(); } });
+}); })();
 </script>
 </body>
 </html>

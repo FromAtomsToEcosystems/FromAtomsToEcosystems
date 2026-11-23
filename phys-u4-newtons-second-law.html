@@ -243,6 +243,7 @@ body.key .keyonly{display:block!important}
 @media print{.top,#calc{display:none}}
 .phbox{width:100%;min-height:60px;border:1px solid var(--line2);border-radius:8px;padding:8px;background:var(--bg2);color:var(--ink);font-family:inherit;font-size:.92rem;resize:vertical;margin-top:3px}
 </style>
+<style id="nolock">#tEndLock,#endLockBtn,#unlockInfo{display:none!important}</style>
 </head>
 <body>
 <div class="preview-bar" id="previewBar" hidden>Preview mode: nothing is saved or sent. Reload the page to leave preview mode.</div>
@@ -391,6 +392,7 @@ body.key .keyonly{display:block!important}
    ========================================================= */
 const LESSON = 'Newton\u2019s Second Law';
 const LESSON_ID = 'phys-u4-newtons-second-law';
+function __ord(seed, arr) { let h = 2166136261; for (const ch of String(seed)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } const idx = arr.map((_, i) => i); for (let i = idx.length - 1; i > 0; i--) { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; const j = (h >>> 0) % (i + 1); [idx[i], idx[j]] = [idx[j], idx[i]]; } return idx; }
 const KEY = 'fate_phys_u4_newton2_v1';
 const RECS = KEY + '_records';
 const UNLOCK_CODE = 'law';           // last word of the lesson title: unlocks the lockdown screen only
@@ -412,7 +414,7 @@ function saveURL() {
   return SAVE_URL_BUILTIN;
 }
 const CLOUD = () => !!saveURL() && /^https?:/.test(location.protocol);
-const LOCK_ON = /github\.io$/i.test(location.hostname) || new URLSearchParams(location.search).has('lockdown');
+const LOCK_ON = false; // lockdown is used on tests only
 const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* =========================================================
@@ -443,7 +445,7 @@ const subs = s => String(s).replace(/\b([vDa])_(ix|iy|fy|fx|x|y)\b/g, (m, b, s2)
 function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toast.T); toast.T = setTimeout(() => el.classList.remove('show'), 2600); }
 function parseNum(s) {
   s = String(s || '').trim().replace(/[−–—]/g, '-').replace(/,/g, '');
-  s = s.replace(/\s*[x×*·]\s*10\s*\^\s*\(?\s*([+-]?\d+)\s*\)?/i, 'e$1');
+  s = s.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺]+/g, m => '^' + [...m].map(ch => ch === '⁻' ? '-' : ch === '⁺' ? '+' : '⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(ch)).join('')).replace(/\s*[x×*·]\s*10\s*\^\s*\(?\s*([+-]?\d+)\s*\)?/i, 'e$1');
   const m = s.match(/-?\d*\.?\d+(e[+-]?\d+)?/i); if (!m) return NaN; return parseFloat(m[0]);
 }
 function close(ans, v, tol) { if (!isFinite(v)) return false; const t = tol != null ? tol : Math.max(0.051, Math.abs(ans) * 0.02); return Math.abs(v - ans) <= t + 1e-9; }
@@ -702,8 +704,8 @@ const QC = {};
 function qcHTML(n, k, q) {
   const id = `s${n}${k}`; QC[id] = Object.assign({ n, k }, q);
   return `<div class="qcwrap" id="qc-${id}"><p><b>${q.label || 'Quick check ' + (k === 'q1' ? 1 : 2)}.</b> ${q.q}</p>${q.fig || ''}
-    <div class="opts">${q.opts.map((o, i) => `<button type="button" class="opt" data-qc="${id}" data-i="${i}"><span class="L">${LET[i]}</span><span>${o}</span></button>`).join('')}</div>
-    <p class="fb" data-fb></p><div class="keyonly keytag">Answer: ${LET[q.a]}</div></div>`;
+    <div class="opts">${__ord(LESSON_ID + id, q.opts).map((i, pos) => `<button type="button" class="opt" data-qc="${id}" data-i="${i}"><span class="L">${LET[pos]}</span><span>${q.opts[i]}</span></button>`).join('')}</div>
+    <p class="fb" data-fb></p><div class="keyonly keytag">Answer: ${LET[__ord(LESSON_ID + id, q.opts).indexOf(q.a)]}</div></div>`;
 }
 function qcCard(n, a, b) { return `<div class="card"><span class="chip qc">Quick check</span>${qcHTML(n, 'q1', a)}${qcHTML(n, 'q2', b)}</div>`; }
 function paintQC(id) {
@@ -872,7 +874,7 @@ function build1() {
       <p>Bigger net force, bigger acceleration. Bigger mass, smaller acceleration. The acceleration always points the <b>same way as the net force</b>.</p>
       <div class="callout"><b>Example.</b> A 2.0 kg cart has a net force of 10 N to the right. Find its acceleration.
         <p class="known">Known: ${k('vf', Fnet)} = ${k('vf', '10 N')}, ${k('vx', 'm')} = ${k('vx', '2.0 kg')}, ${k('a', '<span class="v">a</span>')} = ?</p>
-        ${work('', [['Equation', `${k('vf', Fnet)} = ${k('vx', 'm')}<span class="v">a</span>`], ['Plug in', `${k('vf', '10')} = ${k('vx', '2.0')}<span class="v">a</span>`], ['Solve', `<span class="v">a</span> = 10 ÷ 2.0 = <b>5.0 m/s²</b> to the right`]])}${COLORNOTE}</div>
+        <div class='fig' style='margin:10px 0'><svg viewBox='0 0 610 220' role='img' aria-label='Diagram'><defs></defs><line x1='10.0' y1='172.0' x2='320.0' y2='172.0' stroke='#5d6f96' stroke-width='2'/><line x1='16.0' y1='172.0' x2='9.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='30.0' y1='172.0' x2='23.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='44.0' y1='172.0' x2='37.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='58.0' y1='172.0' x2='51.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='72.0' y1='172.0' x2='65.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='86.0' y1='172.0' x2='79.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='100.0' y1='172.0' x2='93.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='114.0' y1='172.0' x2='107.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='128.0' y1='172.0' x2='121.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='142.0' y1='172.0' x2='135.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='156.0' y1='172.0' x2='149.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='170.0' y1='172.0' x2='163.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='184.0' y1='172.0' x2='177.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='198.0' y1='172.0' x2='191.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='212.0' y1='172.0' x2='205.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='226.0' y1='172.0' x2='219.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='240.0' y1='172.0' x2='233.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='254.0' y1='172.0' x2='247.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='268.0' y1='172.0' x2='261.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='282.0' y1='172.0' x2='275.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='296.0' y1='172.0' x2='289.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><line x1='310.0' y1='172.0' x2='303.0' y2='179.0' stroke='#34476f' stroke-width='1.2'/><rect x='132.0' y='132.0' width='70.0' height='30.0' rx='4' fill='#1a2746' stroke='#5d6f96' stroke-width='1.5' opacity='1'/><circle cx='146.0' cy='166.0' r='6.0' fill='#24345a' stroke='#5d6f96' stroke-width='1.5'/><circle cx='188.0' cy='166.0' r='6.0' fill='#24345a' stroke='#5d6f96' stroke-width='1.5'/><text x='167' y='152' font-size='12' fill='#e9eefb' text-anchor='middle' font-family='Lexend, sans-serif' font-weight="700">2.0 kg</text><line x1='334' y1='10' x2='334' y2='210' stroke='#2a3a60' stroke-dasharray='4 4'/><g transform='translate(340,0.0)'><defs><marker id='pm37ffcf5a' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='6' markerHeight='6' orient='auto'><path d='M0 0L10 5L0 10z' fill='#ffcf5a'/></marker></defs><text x='135' y='16' font-size='11' fill='#7385aa' text-anchor='middle' font-family='Lexend, sans-serif'>Free-body diagram</text><rect x='113.0' y='98.0' width='44.0' height='36.0' rx='4' fill='#1a2746' stroke='#5d6f96' stroke-width='1.5' opacity='1'/><line x1='135.0' y1='116.0' x2='201.0' y2='116.0' stroke='#ffcf5a' stroke-width='3.2' marker-end='url(#pm37ffcf5a)'/><text x='211.0' y='120.0' font-size='15' fill='#ffcf5a' text-anchor='start' font-family='Lexend, sans-serif'><tspan font-style='italic'>F</tspan><tspan baseline-shift='sub' font-size='10'>a</tspan><tspan baseline-shift='0'> </tspan><tspan fill='#a3b2d2' font-size='12.5' dx='4'>Fnet = 10 N</tspan></text><circle cx='135.0' cy='116.0' r='5.0' fill='#e9eefb' stroke='#e9eefb' stroke-width='1.5'/></g></svg></div>${work('', [['Equation', `${k('vf', Fnet)} = ${k('vx', 'm')}<span class="v">a</span>`], ['Plug in', `${k('vf', '10')} = ${k('vx', '2.0')}<span class="v">a</span>`], ['Solve', `<span class="v">a</span> = 10 ÷ 2.0 = <b>5.0 m/s²</b> to the right`]])}${COLORNOTE}</div>
     </div><div>${EQ_2ND}</div></div></div>
   <div class="card"><span class="chip try">Try it</span><h3>Push the cart</h3><p>Set the net force and the cart\u2019s mass, then push. Complete all three missions.</p>
     <div class="fig" id="c1fig"></div>
@@ -954,7 +956,7 @@ function build3() {
       <p><b>Units:</b> a newton is the force that gives 1 kg an acceleration of 1 m/s². So <b>1 N = 1 kg·m/s²</b>. Always use mass in <b>kilograms</b> (convert grams first: 500 g = 0.500 kg).</p>
       <p><b>Steps for any second-law problem:</b> (1) draw the free-body diagram, (2) add the forces to get ${Fnet}, (3) use ${Fnet} = ma.</p>
       <div class="callout"><b>Example.</b> A 4.0 kg box is pushed 30 N right; friction is 10 N left.
-        ${work('', [['Net force', `${SFx} = 30 + (−10) = <b>+20 N</b>`], ['Equation', `${Fnet} = m<span class="v">a</span>`], ['Plug in', `20 = 4.0<span class="v">a</span>`], ['Solve', `<span class="v">a</span> = <b>5.0 m/s²</b> to the right`]])}</div>
+        <div class='fig' style='margin:10px 0'><svg viewBox='0 0 360 170' role='img' aria-label='Diagram'><defs><marker id='pm38ffcf5a' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='6' markerHeight='6' orient='auto'><path d='M0 0L10 5L0 10z' fill='#ffcf5a'/></marker></defs><line x1='10.0' y1='140.0' x2='350.0' y2='140.0' stroke='#5d6f96' stroke-width='2'/><line x1='16.0' y1='140.0' x2='9.0' y2='147.0' stroke='#34476f' stroke-width='1.2'/><line x1='30.0' y1='140.0' x2='23.0' y2='147.0' stroke='#34476f' stroke-width='1.2'/><line x1='44.0' y1='140.0' x2='37.0' y2='147.0' stroke='#34476f' stroke-width='1.2'/><line x1='58.0' y1='140.0' x2='51.0' y2='147.0' stroke='#34476f' stroke-width='1.2'/><line x1='72.0' y1='140.0' x2='65.0' y2='147.0' stroke='#34476f' stroke-width='1.2'/><line x1='86.0' y1='140.0' x2='79.0' y2='147.0' stroke='#34476f' stroke-width='1.2'/><line x1='100.0' y1='140.0' x2='93.0' y2='147.0' stroke='#34476f' stroke-width='1.2'/><line x1='114.0' y1='140.0' x2='107.0' y2='147.0' stroke='#34476f' stroke-width='1.2'/><line x1='128.0' y1='140.0' x2='121.0' y2='147.0' stroke='#34476f' stroke-width='1.2'/><line x1='142.0' y1='140.0' x2='135.0' y2='147.0' stroke='#34476f' stroke-width='1.2'/><line x1='156.0' y1='140.0' x2='149.0' y2='147.0' stroke='#34476f' stroke-width='1.2'/><line x1='170.0' y1='140.0' x2='163.0' y2='147.0' stroke='#34476f' stroke-width='1.2'/><line x1='184.0' y1='140.0' x2='177.0' y2='147.0' stroke='#34476f' stroke-width='1.2'/><line x1='198.0' y1='140.0' x2='191.0' y2='147.0' stroke='#34476f' stroke-width='1.2'/><line x1='212.0' y1='140.0' x2='205.0' y2='147.0' stroke='#34476f' stroke-width='1.2'/><line x1='226.0' y1='140.0' x2='219.0' y2='147.0' stroke='#34476f' stroke-width='1.2'/><line x1='240.0' y1='140.0' x2='233.0' y2='147.0' stroke='#34476f' stroke-width='1.2'/><line x1='254.0' y1='140.0' x2='247.0' y2='147.0' stroke='#34476f' stroke-width='1.2'/><line x1='268.0' y1='140.0' x2='261.0' y2='147.0' stroke='#34476f' stroke-width='1.2'/><line x1='282.0' y1='140.0' x2='275.0' y2='147.0' stroke='#34476f' stroke-width='1.2'/><line x1='296.0' y1='140.0' x2='289.0' y2='147.0' stroke='#34476f' stroke-width='1.2'/><line x1='310.0' y1='140.0' x2='303.0' y2='147.0' stroke='#34476f' stroke-width='1.2'/><line x1='324.0' y1='140.0' x2='317.0' y2='147.0' stroke='#34476f' stroke-width='1.2'/><line x1='338.0' y1='140.0' x2='331.0' y2='147.0' stroke='#34476f' stroke-width='1.2'/><rect x='20.0' y='102.0' width='70.0' height='28.0' rx='4' fill='#1a2746' stroke='#5d6f96' stroke-width='1.5' opacity='1'/><circle cx='34.0' cy='134.0' r='6.0' fill='#24345a' stroke='#5d6f96' stroke-width='1.5'/><circle cx='76.0' cy='134.0' r='6.0' fill='#24345a' stroke='#5d6f96' stroke-width='1.5'/><text x='55' y='121' font-size='12' fill='#e9eefb' text-anchor='middle' font-family='Lexend, sans-serif' font-weight="700">10 kg</text><line x1='94.0' y1='118.0' x2='140.0' y2='118.0' stroke='#ffcf5a' stroke-width='3' marker-end='url(#pm38ffcf5a)'/><text x='152' y='122' font-size='12' fill='#ffcf5a' text-anchor='start' font-family='Lexend, sans-serif'>40 N</text><rect x='190.0' y='96.0' width='100.0' height='34.0' rx='4' fill='#1a2746' stroke='#5d6f96' stroke-width='1.5' opacity='1'/><circle cx='204.0' cy='134.0' r='6.0' fill='#24345a' stroke='#5d6f96' stroke-width='1.5'/><circle cx='276.0' cy='134.0' r='6.0' fill='#24345a' stroke='#5d6f96' stroke-width='1.5'/><text x='240' y='118' font-size='12' fill='#e9eefb' text-anchor='middle' font-family='Lexend, sans-serif' font-weight="700">40 kg</text><line x1='294.0' y1='118.0' x2='340.0' y2='118.0' stroke='#ffcf5a' stroke-width='3' marker-end='url(#pm38ffcf5a)'/><text x='340' y='108' font-size='12' fill='#ffcf5a' text-anchor='end' font-family='Lexend, sans-serif'>40 N</text><text x='10' y='18' font-size='12' fill='#a3b2d2' text-anchor='start' font-family='Lexend, sans-serif'>Same net force, different mass</text></svg></div>${work('', [['Net force', `${SFx} = 30 + (−10) = <b>+20 N</b>`], ['Equation', `${Fnet} = m<span class="v">a</span>`], ['Plug in', `20 = 4.0<span class="v">a</span>`], ['Solve', `<span class="v">a</span> = <b>5.0 m/s²</b> to the right`]])}</div>
     </div><div>${EQ_2ND}<div class="fig">${fbdSVG([{ dir: 'right', f: 'F_a', len: 75, label: '30 N' }, { dir: 'left', f: 'F_f', len: 30, label: '10 N' }, { dir: 'up', f: 'F_N', len: 50 }, { dir: 'down', f: 'F_g', len: 50 }], { box: 1, id: 'r3', W: 300, H: 200, label: 'Box: 30 N right, 10 N left' })}</div></div></div></div>
   ${pracCard(3, 'Practice (you solve it)', 'A little different from the example: you find the mass, from a diagram with two forces.', [
     { id: 'p3x', q: 'A sled is pulled 50 N to the right while friction pulls 14 N to the left. It accelerates at 3.0 m/s². What is its mass?', ans: 12, show: '12', unit: 'kg', tol: 0.05, hint: 'Find the net force first, then divide by the acceleration.', sol: 'F<sub>net</sub> = 50 − 14 = 36 N; m = 36 ÷ 3.0 = 12 kg' }])}
@@ -1296,6 +1298,14 @@ heroFig(); buildAll(); renderStart(); showNote();
 go(0);
 if (S.student && S.locked && lockLive()) showLock();
 })();
+</script>
+<script>/* sandbox-safe sign-in: works even where form submissions are blocked (e.g., previews) */
+(function () { document.querySelectorAll('#startForm, #signForm').forEach(f => {
+  const go = () => f.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+  f.requestSubmit = go;
+  f.querySelectorAll('button[type="submit"]').forEach(b => { b.type = 'button'; b.addEventListener('click', go); });
+  f.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName === 'INPUT') { e.preventDefault(); go(); } });
+}); })();
 </script>
 </body>
 </html>

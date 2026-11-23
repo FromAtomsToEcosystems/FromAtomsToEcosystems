@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Organelle Factory | Biology</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1220;--panel:#121c31;--panel2:#18243d;--line:#2b3a58;--text:#e8eefc;--muted:#9fb0cf;--gold:#facc15;--gold2:#fbbf24;--ok:#34d399;--bad:#f87171;--violet:#a78bfa}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 "Atkinson Hyperlegible",Arial,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:#0e172a}
+header .t{font-weight:800;font-size:17px}
+header .s{color:var(--muted);font-size:13px}
+header .sp{flex:1}
+.btn{font:inherit;font-weight:700;border-radius:10px;padding:9px 16px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--gold);color:#1a1300;border-color:var(--gold)}
+.btn:disabled{opacity:.5;cursor:default}
+main{max-width:1000px;margin:0 auto;padding:14px 16px 30px}
+.stage{position:relative;width:100%;aspect-ratio:16/10;background:#050a14;border:1px solid var(--line);border-radius:14px;overflow:hidden;touch-action:none}
+canvas{display:block;width:100%;height:100%}
+.ov{position:absolute;inset:0;display:flex;background:rgba(5,10,20,.78);padding:14px;overflow:auto}
+.ov>.card{margin:auto}
+#teachOv{position:fixed;z-index:60;background:rgba(5,10,20,.94)}
+.ov[hidden]{display:none}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;max-width:640px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.card h2{margin:0 0 6px;font-size:22px}
+.card h3{margin:12px 0 6px;font-size:15px;color:var(--gold)}
+.muted{color:var(--muted)} .small{font-size:13.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chip{font:inherit;font-size:14px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.chip.on{border-color:var(--gold);background:rgba(250,204,21,.16);font-weight:700}
+.qtag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--violet);margin-bottom:4px}
+.qtext{font-size:18px;margin:4px 0 12px}
+.opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:15.5px}
+.opt:hover:not(:disabled){border-color:var(--gold)}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:13px;font-weight:800}
+.opt.pick{border-color:var(--gold)}
+.fb{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:15.5px}
+.fb.ok{background:rgba(52,211,153,.14);border:1px solid rgba(52,211,153,.5)}
+.fb.no{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.45)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:14px;margin:6px 0}
+.keys b{color:var(--gold)}
+.ladder{display:flex;flex-wrap:wrap;gap:6px;font-size:13px;margin-top:6px}
+.ladder span{padding:3px 8px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}
+.touch{display:none;gap:10px;justify-content:space-between;margin-top:10px;user-select:none;-webkit-user-select:none}
+.touch .grp{display:flex;gap:10px}
+.tbtn{width:64px;height:58px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:22px;font-weight:800;touch-action:none}
+.tbtn.fire{width:110px;background:#3b2a07;border-color:var(--gold);color:var(--gold);font-size:17px}
+.tbtn.on{background:#334155}
+@media (pointer:coarse){.touch{display:flex}}
+@media (max-width:480px){.tbtn{width:52px;height:54px;font-size:20px}.tbtn.fire{width:86px}.touch .grp{gap:7px}.touch{gap:6px}}
+@media (max-width:760px),(max-height:560px){.ov{position:fixed;z-index:50;background:rgba(5,10,20,.92)}}
+body.showtouch .touch{display:flex}
+.info{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:14px;color:var(--muted)}
+.tpanel h3{margin-top:14px}
+.tq{margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font-size:14px}
+.tq ol{margin:4px 0 0;padding-left:22px}
+.tq li.right{color:var(--ok);font-weight:700}
+input.code{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0b1220;color:var(--text);width:180px}
+#printView{display:none}
+@media print{
+  body>*:not(#printView){display:none!important}
+  #printView{display:block!important;color:#000;background:#fff;font:12px/1.4 Arial,sans-serif}
+  #printView h1{font-size:18px;margin:0 0 4px} #printView .pq{break-inside:avoid;margin:8px 0}
+  #printView ol{margin:2px 0 0;padding-left:22px} #printView li.right{font-weight:700;text-decoration:underline}
+  html,body{background:#fff}
+}
+
+.stage{aspect-ratio:auto;min-height:600px;overflow:visible}.stage .ov{position:fixed;z-index:50}.app{padding:12px}.status{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14px;color:var(--muted);margin-bottom:8px}.status b{color:var(--text)}.ocard{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 14px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.grid2{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:12px;align-items:start}@media (max-width:820px){.grid2{grid-template-columns:1fr}}.btns{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin-top:8px}.gbtn{font:inherit;text-align:left;display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:14px;line-height:1.3}.gbtn:hover:not(:disabled){border-color:var(--gold)}.gbtn:disabled{opacity:.45;cursor:not-allowed}.gbtn.on{border-color:var(--gold);background:rgba(250,204,21,.14)}.gbtn .k{flex:none;min-width:22px;height:22px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:12px;font-weight:800;padding:0 4px}.meter{margin:6px 0}.meter .lab{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}.meter .lab b{color:var(--text)}.meter .tr{height:12px;border-radius:6px;background:#1e293b;overflow:hidden}.meter .fl{height:100%;border-radius:6px;transition:width .25s}.chipsrow{display:flex;flex-wrap:wrap;gap:6px}table.ktab{border-collapse:collapse;font-size:13px;width:100%}table.ktab td,table.ktab th{border:1px solid var(--line);padding:4px 6px;text-align:left;vertical-align:top}.log{font-size:13px;max-height:170px;overflow:auto}.log div{padding:3px 0;border-bottom:1px solid var(--line)}.big{font-size:22px;font-weight:800}.cellsvg{display:block;touch-action:manipulation}.og{cursor:pointer;outline:none}.og:hover,.og:focus-visible{filter:brightness(1.15) drop-shadow(0 0 4px #facc15)}.og.fl{filter:brightness(1.4) drop-shadow(0 0 8px #fff)}.olab{font-size:12px;font-weight:700;fill:#111827;pointer-events:none;paint-order:stroke;stroke:#fff;stroke-width:3px}.olist{display:grid;gap:6px;margin-top:6px}.ord{padding:6px 8px;border-radius:8px;background:var(--panel2);border:1px solid var(--line);font-size:14px}.ord.cur{border-color:var(--gold)}.stp2{display:inline-block;padding:1px 6px;border-radius:6px;background:#1e293b}.stp2.did{background:#14532d;color:#bbf7d0}.stp2.now{background:var(--gold);color:#0b1220;font-weight:800}</style>
+</head>
+<body>
+<header>
+  <div><div class="t">Organelle Factory</div><div class="s">Biology · Unit 2: Cell Transport, Photosynthesis, and Cellular Respiration · Review game</div></div>
+  <div class="sp"></div>
+  <button class="btn" id="teachBtn" type="button">Teacher</button>
+</header>
+<main>
+  <div class="stage" id="stage">
+    <div class="app" id="app"><p class="muted">Press Start.</p></div>
+    <div class="ov" id="startOv"><div class="card"><h2>Organelle Factory</h2><p class="small muted" style="margin:0 0 8px">A cell is a factory, and you are the manager. Orders come in: ship a protein, make lipids, recycle old parts, make sugar. Fill each order by clicking the right cell parts in the right order before time runs out. Every job uses ATP, so keep the power plant running. Level 1 has labels. After that, you are on your own.</p><div class="row"><button class="btn primary" id="startBtn" type="button">Start</button><span class="small muted" id="hiTxt"></span></div></div></div>
+    <div class="ov" id="overOv" hidden><div class="card"><h2 id="overTitle"></h2><div id="overBody"></div><div class="row"><button class="btn primary" id="againBtn" type="button">Play again</button></div></div></div>
+
+    <div class="ov" id="pauseOv" hidden><div class="card" style="max-width:380px;text-align:center"><h2>Paused</h2><p class="muted">Press P or the button to keep playing.</p><button class="btn primary" id="resumeBtn" type="button">Resume</button></div></div>
+  </div>
+
+</main>
+<div class="ov" id="teachOv" hidden>
+  <div class="card tpanel" style="max-width:780px">
+    <h2>Teacher tools</h2>
+    <div id="tLogin"><p class="small muted">Enter the teacher code.</p><div class="row" style="margin-top:4px"><input class="code" id="tCode" type="password" autocomplete="off" aria-label="Teacher code"><button class="btn primary" id="tGo" type="button">Open</button><button class="btn" id="tClose0" type="button">Close</button></div><div class="small" id="tMsg" style="color:var(--bad);margin-top:6px"></div></div>
+    <div id="tBody" hidden>
+      <div class="row"><button class="btn" id="tPrint" type="button">🖨 Print the reference sheet</button><button class="btn" id="tTouch" type="button">Show touch buttons</button><button class="btn" id="tClose" type="button">Close</button></div>
+      <div id="tInfo"></div>
+    </div>
+  </div>
+</div>
+<div id="printView"></div>
+<script>
+const META={"store": "bioU2OrganelleFactory"};
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const store={ get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+const shuffle=a=>{ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const rnd=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const GAME={onPause:()=>{}, onResume:()=>{}, teacherHTML:()=>'', printHTML:()=>''};
+/* teacher tools (code Teacher007) */
+function tShow(on){ $('#teachOv').hidden=!on; if(on){ GAME.onPause(); $('#tCode').value=''; $('#tMsg').textContent=''; setTimeout(()=>$('#tCode').focus(),30); } }
+$('#teachBtn').addEventListener('click',()=>tShow(true)); $('#tClose0').addEventListener('click',()=>tShow(false));
+$('#tClose').addEventListener('click',()=>{ tShow(false); $('#tBody').hidden=true; $('#tLogin').hidden=false; });
+function tOpen(){ if($('#tCode').value.trim().toLowerCase()!=='teacher007'){ $('#tMsg').textContent='Code not recognized.'; return; } $('#tLogin').hidden=true; $('#tBody').hidden=false; $('#tInfo').innerHTML=GAME.teacherHTML(); }
+$('#tGo').addEventListener('click',tOpen); $('#tCode').addEventListener('keydown',e=>{ if(e.key==='Enter') tOpen(); });
+$('#tTouch').addEventListener('click',()=>document.body.classList.toggle('showtouch'));
+$('#tPrint').addEventListener('click',()=>{ $('#printView').innerHTML=GAME.printHTML(); setTimeout(()=>window.print(),100); });
+$('#resumeBtn').addEventListener('click',()=>GAME.onResume());
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) GAME.onPause(); });
+
+const meter=(lab,v,max,col,txt)=>`<div class="meter"><div class="lab"><span>${lab}</span><b>${txt!=null?txt:Math.round(v)}</b></div><div class="tr"><div class="fl" style="width:${Math.max(0,Math.min(100,100*v/max))}%;background:${col}"></div></div></div>`;
+const HIKEY=META.store+'_hi'; function hiTxt(){ const h=+store.get(HIKEY)||0; const e=$('#hiTxt'); if(e) e.textContent=h?`High score on this Chromebook: ${h}`:''; } hiTxt();
+function saveHi(v){ const h=+store.get(HIKEY)||0; if(v>h){ store.set(HIKEY,v); return true; } return false; }
+function over(title,html){ $('#overTitle').textContent=title; $('#overBody').innerHTML=html; $('#overOv').hidden=false; hiTxt(); }
+/* ===================== ORGANELLE FACTORY ===================== */
+const ORGS={nucleus:{n:'Nucleus',d:'holds the DNA and makes mRNA copies of genes'},rer:{n:'Rough ER',d:'covered in ribosomes; builds proteins that will leave the cell or go into membranes'},
+ ser:{n:'Smooth ER',d:'makes lipids (fats) and breaks down toxins'},golgi:{n:'Golgi apparatus',d:'sorts, packages, and ships proteins and lipids in vesicles'},
+ mito:{n:'Mitochondrion',d:'releases energy from sugar (cellular respiration) to make ATP'},lyso:{n:'Lysosome',d:'digests and recycles worn-out parts and wastes'},
+ ribo:{n:'Free ribosomes',d:'build proteins that stay in the cytoplasm'},memb:{n:'Cell membrane',d:'controls what enters and leaves the cell'},
+ chloro:{n:'Chloroplast',d:'captures sunlight to make sugar (photosynthesis)'},vac:{n:'Central vacuole',d:'stores water and keeps the plant cell firm'},wall:{n:'Cell wall',d:'a stiff outer layer that supports and protects the plant cell'}};
+const ORD_A=[{t:'Ship insulin out of the cell',s:['nucleus','rer','golgi','memb']},{t:'Make an enzyme that works in the cytoplasm',s:['nucleus','ribo']},{t:'Make new lipids for the cell membrane',s:['ser','golgi','memb']},
+ {t:'Recycle a worn-out part',s:['lyso']},{t:'Copy the DNA before the cell divides',s:['nucleus']},{t:'Release energy from sugar',s:['mito']},{t:'Export a digestive enzyme',s:['nucleus','rer','golgi','memb']}];
+const ORD_P=[{t:'Make sugar from sunlight',s:['chloro']},{t:'Store water for a dry day',s:['vac']},{t:'Stay stiff when the wind blows',s:['wall']},{t:'Release energy from sugar',s:['mito']},
+ {t:'Make a protein that stays in the cytoplasm',s:['nucleus','ribo']},{t:'Ship a protein out of the cell',s:['nucleus','rer','golgi','memb']},{t:'Make sugar, then release its energy',s:['chloro','mito']}];
+const LV=[{t:'Level 1: Animal cell (labeled)',plant:false,labels:true,time:90},{t:'Level 2: Animal cell (no labels)',plant:false,labels:false,time:90},{t:'Level 3: Plant cell (no labels)',plant:true,labels:false,time:100}];
+let li, orders, pos, atp, tleft, timer, score, lvScore, msg, made, paused=false, running=false;
+function startGame(){ li=0; score=0; $('#startOv').hidden=true; $('#overOv').hidden=true; loadLv(); }
+function loadLv(){ const L=LV[li]; orders=[]; for(let i=0;i<3;i++) orders.push(newOrder()); pos=0; atp=6; tleft=L.time; lvScore=0; made=0; msg='Click the cell parts in order to fill the first order.'; running=true; drawAll(); clearInterval(timer); timer=setInterval(tick,250); }
+function newOrder(){ const pool=LV[li].plant?ORD_P:ORD_A; let o; do o=pool[Math.floor(Math.random()*pool.length)]; while(orders&&orders.length&&orders[orders.length-1].t===o.t); return {...o}; }
+function tick(){ if(paused||!running) return; tleft-=.25; if(tleft<=0){ tleft=0; endLv(); } const e=$('#tm'); if(e) e.textContent=Math.ceil(tleft); }
+function hit(k){ if(!running) return; const O=orders[0], need=O.s[pos];
+  if(k===need){ if(k!=='mito'){ if(atp<=0){ msg='<span style="color:#fca5a5">Out of ATP! Every job takes energy. Click the part that makes ATP.</span>'; return drawSide(); } atp--; } else atp=Math.min(10,atp+3);
+    pos++; if(pos>=O.s.length){ const p=O.s.length*10+10; lvScore+=p; score+=p; made++; msg=`<b>Order complete: ${O.t}! +${p}</b>`; orders.shift(); orders.push(newOrder()); pos=0; } else msg=`Good: ${LV[li].labels?ORGS[k].n:'that part'} done. Next step?`; }
+  else if(k==='mito'){ atp=Math.min(10,atp+4); msg='+4 ATP from the mitochondrion (cellular respiration).'; }
+  else { lvScore=Math.max(0,lvScore-5); score=Math.max(0,score-5); msg=`<span style="color:#fca5a5">Not that one (-5).</span> You clicked the <b>${ORGS[k].n}</b>: it ${ORGS[k].d}.`; }
+  drawSide(); flash(k); }
+function flash(k){ const g=$(`[data-o="${k}"]`); if(!g) return; g.classList.add('fl'); setTimeout(()=>g.classList.remove('fl'),250); }
+function lab(x,y,t){ return LV[li].labels?`<text x="${x}" y="${y}" class="olab" text-anchor="middle">${t}</text>`:''; }
+function mitoSVG(x,y,r){ return `<g transform="translate(${x} ${y}) rotate(${r})"><ellipse rx="34" ry="16" fill="#fb923c" stroke="#9a3412" stroke-width="2"/><path d="M-24 0 q5 -12 10 0 t10 0 t10 0 t10 0 t10 0" fill="none" stroke="#9a3412" stroke-width="2"/></g>`; }
+function cellSVG(){ const P=LV[li].plant; let s=`<svg viewBox="0 0 600 400" width="100%" class="cellsvg" role="img" aria-label="${P?'plant':'animal'} cell">`;
+  const G=(k,inner,hx)=>`<g class="og" data-o="${k}" tabindex="0" role="button" aria-label="${LV[li].labels?ORGS[k].n:'cell part'}">${inner}${hx||''}</g>`;
+  if(P){ s+=`<rect x="24" y="24" width="552" height="352" rx="12" fill="#ecfccb"/>`;
+    s+=G('wall',`<rect x="12" y="12" width="576" height="376" rx="16" fill="none" stroke="#84cc16" stroke-width="16" pointer-events="stroke"/>`)+lab(300,40,'cell wall');
+    s+=G('memb',`<rect x="25" y="25" width="550" height="350" rx="12" fill="none" stroke="#65a30d" stroke-width="5"/><rect x="25" y="25" width="550" height="350" rx="12" fill="none" stroke="transparent" stroke-width="12" pointer-events="stroke"/>`)+lab(510,368,'cell membrane');
+    s+=G('vac',`<ellipse cx="350" cy="250" rx="150" ry="90" fill="#bae6fd" stroke="#0369a1" stroke-width="2"/>`)+lab(350,254,'central vacuole');
+    s+=G('nucleus',`<circle cx="130" cy="130" r="48" fill="#c4b5fd" stroke="#5b21b6" stroke-width="3"/><circle cx="140" cy="125" r="14" fill="#7c3aed"/>`)+lab(130,195,'nucleus');
+    s+=G('rer',`<path d="M70 210 q30 -14 60 0 t60 0 M70 226 q30 -14 60 0 t60 0 M78 242 q30 -14 60 0 t50 0" fill="none" stroke="#60a5fa" stroke-width="7"/>${[80,100,120,140,160,180].map(x=>`<circle cx="${x}" cy="206" r="2.5" fill="#1e3a8a"/>`).join('')}`)+lab(130,265,'rough ER');
+    s+=G('ser',`<path d="M440 60 q20 20 40 0 t40 0 M440 80 q20 20 40 0 t40 0" fill="none" stroke="#f9a8d4" stroke-width="8" stroke-linecap="round"/>`)+lab(480,110,'smooth ER');
+    s+=G('golgi',`${[0,1,2,3].map(i=>`<path d="M${250-i*2} ${60+i*12} q50 -16 100 0" fill="none" stroke="#facc15" stroke-width="7" stroke-linecap="round"/>`).join('')}`)+lab(300,120,'Golgi');
+    s+=G('chloro',`${[[470,175,20],[90,330,-15],[250,120,10]].map(([x,y,r])=>`<g transform="translate(${x} ${y}) rotate(${r})"><ellipse rx="40" ry="20" fill="#22c55e" stroke="#14532d" stroke-width="2"/>${[-20,-6,8,22].map(dx=>`<rect x="${dx-4}" y="-9" width="8" height="18" rx="2" fill="#15803d"/>`).join('')}</g>`).join('')}`)+lab(470,212,'chloroplast');
+    s+=G('mito',mitoSVG(200,340,10)+mitoSVG(540,300,-30))+lab(200,370,'mitochondrion');
+    s+=G('ribo',`<rect x="510" y="200" width="50" height="40" fill="transparent"/>${[[520,210],[533,222],[546,212],[528,234],[550,232]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="3.5" fill="#1e3a8a"/>`).join('')}`)+lab(535,255,'ribosomes');
+  } else {
+    s+=`<ellipse cx="300" cy="200" rx="290" ry="190" fill="#fde7f3"/>`+G('memb',`<ellipse cx="300" cy="200" rx="290" ry="190" fill="none" stroke="#be185d" stroke-width="6"/><ellipse cx="300" cy="200" rx="290" ry="190" fill="none" stroke="transparent" stroke-width="22" pointer-events="stroke"/>`)+lab(300,30,'cell membrane');
+    s+=G('nucleus',`<circle cx="290" cy="190" r="60" fill="#c4b5fd" stroke="#5b21b6" stroke-width="3"/><circle cx="305" cy="180" r="17" fill="#7c3aed"/>`)+lab(290,268,'nucleus');
+    s+=G('rer',`<path d="M190 120 q-30 70 0 140 M172 130 q-30 60 0 120 M154 145 q-24 45 0 90" fill="none" stroke="#60a5fa" stroke-width="7"/>${[130,150,170,190,210,230,250].map(y=>`<circle cx="${y<190?186-(190-y)*.25:186-(y-190)*.25}" cy="${y}" r="2.5" fill="#1e3a8a"/>`).join('')}`)+lab(120,190,'rough ER');
+    s+=G('ser',`<path d="M390 300 q20 20 40 0 t40 0 M390 322 q20 20 40 0 t40 0" fill="none" stroke="#f9a8d4" stroke-width="8" stroke-linecap="round"/>`)+lab(430,355,'smooth ER');
+    s+=G('golgi',`${[0,1,2,3].map(i=>`<path d="M${420+i*3} ${150+i*12} q50 -16 100 0" fill="none" stroke="#facc15" stroke-width="7" stroke-linecap="round"/>`).join('')}<circle cx="535" cy="200" r="7" fill="#fde68a"/>`)+lab(470,140,'Golgi');
+    s+=G('mito',mitoSVG(150,320,15)+mitoSVG(430,80,-20))+lab(150,355,'mitochondrion');
+    s+=G('lyso',`${[[220,70],[245,52],[520,260]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="13" fill="#a78bfa" stroke="#4c1d95" stroke-width="2"/><circle cx="${x-3}" cy="${y-2}" r="3" fill="#4c1d95"/>`).join('')}`)+lab(232,100,'lysosome');
+    s+=G('ribo',`<rect x="270" y="290" width="70" height="50" fill="transparent"/>${[[280,300],[295,315],[312,302],[300,330],[325,322],[330,305]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="3.5" fill="#1e3a8a"/>`).join('')}`)+lab(305,352,'free ribosomes');
+  }
+  return s+'</svg>'; }
+function drawAll(){ const L=LV[li]; $('#app').innerHTML=`<div class="status"><span><b>${L.t}</b></span><span>Time <b id="tm">${Math.ceil(tleft)}</b> s</span><span>Score <b id="sc">${score}</b></span></div>
+  <div class="grid2"><div class="panel">${cellSVG()}</div><div id="side"></div></div>`;
+  $$('.og').forEach(g=>{ g.addEventListener('pointerdown',e=>{ e.preventDefault(); e.stopPropagation(); hit(g.dataset.o); }); g.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); hit(g.dataset.o); } }); }); drawSide(); }
+function drawSide(){ const O=orders[0]; $('#sc').textContent=score;
+  $('#side').innerHTML=`<div class="panel">${meter('ATP (energy)',atp,10,'#f97316',atp)}<b>Orders</b><div class="olist">${orders.map((o,i)=>`<div class="ord${i===0?' cur':''}"><b>${o.t}</b>${i===0?`<div class="small">Steps: ${o.s.map((k,j)=>`<span class="stp2 ${j<pos?'did':j===pos?'now':''}">${j<pos?(LV[li].labels?ORGS[k].n:'✔'):(j===pos?'?':'·')}</span>`).join(' → ')}</div>`:''}</div>`).join('')}</div></div>
+   <div class="ocard small" style="margin-top:8px">${msg}</div><p class="small muted">Orders done this level: <b>${made}</b>. Each step uses 1 ATP; the mitochondrion makes more.</p>`; }
+function endLv(){ running=false; clearInterval(timer); const L=LV[li];
+  $('#side').innerHTML=`<div class="fb ok"><b>Time! ${L.t}</b><br>${made} orders filled, ${lvScore} points.</div><div class="row"><button type="button" class="btn primary" id="nxL">${li+1<LV.length?'Next level':'See results'}</button></div>`;
+  $('#nxL').addEventListener('click',()=>{ li++; if(li>=LV.length) finish(); else loadLv(); }); }
+function finish(){ const nh=saveHi(score); over('Factory closed for the day!',`<p style="font-size:18px;margin:4px 0">Score: <b>${score}</b>${nh?' <span style="color:var(--gold)">New high score!</span>':''}</p><table class="ktab">${Object.values(ORGS).map(o=>`<tr><td><b>${o.n}</b></td><td>${o.d}</td></tr>`).join('')}</table><p class="small">A protein that leaves the cell travels: <b>nucleus</b> (gene copied to mRNA) → <b>ribosomes on the rough ER</b> (protein built) → <b>Golgi</b> (packaged) → <b>vesicle to the cell membrane</b> (shipped out). Plant cells also have a <b>cell wall</b>, <b>chloroplasts</b>, and a large <b>central vacuole</b>.</p>`); }
+$('#startBtn').addEventListener('click',startGame); $('#againBtn').addEventListener('click',startGame);
+GAME.onPause=()=>{ paused=true; }; GAME.onResume=()=>{ paused=false; };
+GAME.teacherHTML=()=>`<p class="small muted">Practice game, not graded.</p><h3>How it works</h3><p class="small">Timed levels (90, 90, 100 seconds). Students fill "orders" by clicking organelles in the right sequence. Each step uses 1 ATP; clicking the mitochondrion makes more. A wrong click costs 5 points and tells the student what that organelle actually does. Level 1 shows labels; levels 2 and 3 (plant cell) do not.</p><h3>Orders</h3><ul class="small">${[...ORD_A,...ORD_P].filter((o,i,a)=>a.findIndex(x=>x.t===o.t)===i).map(o=>`<li>${o.t}: ${o.s.map(k=>ORGS[k].n).join(' → ')}</li>`).join('')}</ul>`;
+GAME.printHTML=()=>`<h1>Organelle Factory notes</h1><table border="1" cellpadding="6" style="border-collapse:collapse;font-size:13px;width:100%"><tr><th>Organelle</th><th>Job in the factory</th><th>Plant, animal, or both?</th></tr>${Object.values(ORGS).map(o=>`<tr><td>${o.n}</td><td></td><td></td></tr>`).join('')}</table><p>List the path a protein takes from gene to outside the cell.</p>`;
+window.__org={hit,get orders(){return orders;},get pos(){return pos;},get atp(){return atp;},get score(){return score;},get li(){return li;},end:()=>{ tleft=.1; },get running(){return running;}};
+
+</script>
+
+
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

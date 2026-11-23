@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Keep Them Alive | Biology</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1220;--panel:#121c31;--panel2:#18243d;--line:#2b3a58;--text:#e8eefc;--muted:#9fb0cf;--gold:#facc15;--gold2:#fbbf24;--ok:#34d399;--bad:#f87171;--violet:#a78bfa}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 "Atkinson Hyperlegible",Arial,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:#0e172a}
+header .t{font-weight:800;font-size:17px}
+header .s{color:var(--muted);font-size:13px}
+header .sp{flex:1}
+.btn{font:inherit;font-weight:700;border-radius:10px;padding:9px 16px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--gold);color:#1a1300;border-color:var(--gold)}
+.btn:disabled{opacity:.5;cursor:default}
+main{max-width:1000px;margin:0 auto;padding:14px 16px 30px}
+.stage{position:relative;width:100%;aspect-ratio:16/10;background:#050a14;border:1px solid var(--line);border-radius:14px;overflow:hidden;touch-action:none}
+canvas{display:block;width:100%;height:100%}
+.ov{position:absolute;inset:0;display:flex;background:rgba(5,10,20,.78);padding:14px;overflow:auto}
+.ov>.card{margin:auto}
+#teachOv{position:fixed;z-index:60;background:rgba(5,10,20,.94)}
+.ov[hidden]{display:none}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;max-width:640px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.card h2{margin:0 0 6px;font-size:22px}
+.card h3{margin:12px 0 6px;font-size:15px;color:var(--gold)}
+.muted{color:var(--muted)} .small{font-size:13.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chip{font:inherit;font-size:14px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.chip.on{border-color:var(--gold);background:rgba(250,204,21,.16);font-weight:700}
+.qtag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--violet);margin-bottom:4px}
+.qtext{font-size:18px;margin:4px 0 12px}
+.opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:15.5px}
+.opt:hover:not(:disabled){border-color:var(--gold)}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:13px;font-weight:800}
+.opt.pick{border-color:var(--gold)}
+.fb{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:15.5px}
+.fb.ok{background:rgba(52,211,153,.14);border:1px solid rgba(52,211,153,.5)}
+.fb.no{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.45)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:14px;margin:6px 0}
+.keys b{color:var(--gold)}
+.ladder{display:flex;flex-wrap:wrap;gap:6px;font-size:13px;margin-top:6px}
+.ladder span{padding:3px 8px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}
+.touch{display:none;gap:10px;justify-content:space-between;margin-top:10px;user-select:none;-webkit-user-select:none}
+.touch .grp{display:flex;gap:10px}
+.tbtn{width:64px;height:58px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:22px;font-weight:800;touch-action:none}
+.tbtn.fire{width:110px;background:#3b2a07;border-color:var(--gold);color:var(--gold);font-size:17px}
+.tbtn.on{background:#334155}
+@media (pointer:coarse){.touch{display:flex}}
+@media (max-width:480px){.tbtn{width:52px;height:54px;font-size:20px}.tbtn.fire{width:86px}.touch .grp{gap:7px}.touch{gap:6px}}
+@media (max-width:760px),(max-height:560px){.ov{position:fixed;z-index:50;background:rgba(5,10,20,.92)}}
+body.showtouch .touch{display:flex}
+.info{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:14px;color:var(--muted)}
+.tpanel h3{margin-top:14px}
+.tq{margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font-size:14px}
+.tq ol{margin:4px 0 0;padding-left:22px}
+.tq li.right{color:var(--ok);font-weight:700}
+input.code{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0b1220;color:var(--text);width:180px}
+#printView{display:none}
+@media print{
+  body>*:not(#printView){display:none!important}
+  #printView{display:block!important;color:#000;background:#fff;font:12px/1.4 Arial,sans-serif}
+  #printView h1{font-size:18px;margin:0 0 4px} #printView .pq{break-inside:avoid;margin:8px 0}
+  #printView ol{margin:2px 0 0;padding-left:22px} #printView li.right{font-weight:700;text-decoration:underline}
+  html,body{background:#fff}
+}
+
+.resp{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}@media (max-width:820px){.resp{grid-template-columns:1fr 1fr}}.rbtn{font:inherit;text-align:left;display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:14px;line-height:1.3}.rbtn.on{border-color:var(--gold);background:rgba(250,204,21,.14)}.rbtn .k{flex:none;width:22px;height:22px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:12px;font-weight:800}.loopbox{margin-top:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.lp{display:flex;flex-wrap:wrap;align-items:center;gap:6px}.lpbox{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:13px;max-width:170px}.lpar{color:var(--gold);font-weight:800;font-size:18px}</style>
+</head>
+<body>
+<header>
+  <div><div class="t">Keep Them Alive</div><div class="s">Biology · Unit 1: Homeostasis, Macromolecules, and Enzymes · Review game</div></div>
+  <div class="sp"></div>
+  <button class="btn" id="teachBtn" type="button">Teacher</button>
+</header>
+<main>
+  <div class="stage" id="stage">
+    <canvas id="cv" width="960" height="600" aria-label="Keep Them Alive game."></canvas>
+    <div class="ov" id="startOv"><div class="card"><h2>Keep Them Alive</h2><p class="small muted" style="margin:0 0 8px">You are the <b>control center</b> of a hiker's body for one whole day: a cold morning, a hot trail, big meals, a long climb, and an icy river. Keep their <b>body temperature</b> near 37 °C and their <b>blood sugar</b> in the healthy range.</p><div class="keys"><b>1 / 2</b><span>sweat / shiver (on or off)</span><b>3 / 4</b><span>widen / narrow skin blood vessels</span><b>5 / 6</b><span>release insulin / glucagon</span><b>D / E</b><span>drink water / eat a snack</span><b>P</b><span>pause</span></div><p class="small muted">Responses take time to work, so plan ahead. Too much insulin can make blood sugar crash!</p><div class="row"><button class="btn primary" id="startBtn" type="button">Start the day</button><span class="small muted" id="hiTxt"></span></div></div></div>
+    <div class="ov" id="overOv" hidden><div class="card"><h2 id="overTitle"></h2><div id="overBody"></div><div class="row"><button class="btn primary" id="againBtn" type="button">Play again</button></div></div></div>
+
+    <div class="ov" id="pauseOv" hidden><div class="card" style="max-width:380px;text-align:center"><h2>Paused</h2><p class="muted">Press P or the button to keep playing.</p><button class="btn primary" id="resumeBtn" type="button">Resume</button></div></div>
+  </div>
+  <div class="resp" id="resp"></div>
+  <div class="loopbox" id="loop"><span class="small muted">Choose a response to see its feedback loop here.</span></div>
+  <div class="touch" id="touch"><div class="grp"><button class="tbtn" data-k="pause" type="button" aria-label="Pause">II</button></div></div>
+
+</main>
+<div class="ov" id="teachOv" hidden>
+  <div class="card tpanel" style="max-width:780px">
+    <h2>Teacher tools</h2>
+    <div id="tLogin"><p class="small muted">Enter the teacher code.</p><div class="row" style="margin-top:4px"><input class="code" id="tCode" type="password" autocomplete="off" aria-label="Teacher code"><button class="btn primary" id="tGo" type="button">Open</button><button class="btn" id="tClose0" type="button">Close</button></div><div class="small" id="tMsg" style="color:var(--bad);margin-top:6px"></div></div>
+    <div id="tBody" hidden>
+      <div class="row"><button class="btn" id="tPrint" type="button">🖨 Print the reference sheet</button><button class="btn" id="tTouch" type="button">Show touch buttons</button><button class="btn" id="tClose" type="button">Close</button></div>
+      <div id="tInfo"></div>
+    </div>
+  </div>
+</div>
+<div id="printView"></div>
+<script>
+const META={"store": "bioU1KeepAlive", "unit": 1};
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const store={ get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+const shuffle=a=>{ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const rnd=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const GAME={onPause:()=>{}, onResume:()=>{}, teacherHTML:()=>'', printHTML:()=>''};
+/* teacher tools (code Teacher007) */
+function tShow(on){ $('#teachOv').hidden=!on; if(on){ GAME.onPause(); $('#tCode').value=''; $('#tMsg').textContent=''; setTimeout(()=>$('#tCode').focus(),30); } }
+$('#teachBtn').addEventListener('click',()=>tShow(true)); $('#tClose0').addEventListener('click',()=>tShow(false));
+$('#tClose').addEventListener('click',()=>{ tShow(false); $('#tBody').hidden=true; $('#tLogin').hidden=false; });
+function tOpen(){ if($('#tCode').value.trim().toLowerCase()!=='teacher007'){ $('#tMsg').textContent='Code not recognized.'; return; } $('#tLogin').hidden=true; $('#tBody').hidden=false; $('#tInfo').innerHTML=GAME.teacherHTML(); }
+$('#tGo').addEventListener('click',tOpen); $('#tCode').addEventListener('keydown',e=>{ if(e.key==='Enter') tOpen(); });
+$('#tTouch').addEventListener('click',()=>document.body.classList.toggle('showtouch'));
+$('#tPrint').addEventListener('click',()=>{ $('#printView').innerHTML=GAME.printHTML(); setTimeout(()=>window.print(),100); });
+$('#resumeBtn').addEventListener('click',()=>GAME.onResume());
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) GAME.onPause(); });
+/* ===================== KEEP THEM ALIVE (homeostasis) ===================== */
+const cv=$('#cv'), ctx=cv.getContext('2d'); const W=960,H=600, DAY=150; // seconds of real time for the whole day
+/* timeline: [start s, air °C, activity, label, note] */
+const TL=[
+ [0,7,0,'6:00 am · Cold morning at camp','The air is only 7 °C. Your body loses heat fast.'],
+ [16,12,0,'7:30 am · Breakfast','Oatmeal and fruit. Glucose from the food enters the blood.',{meal:70}],
+ [30,22,1.5,'8:30 am · Start the hike','Walking uphill. Muscles use glucose and make heat.'],
+ [52,35,1.5,'11:00 am · Hot sun on the trail','35 °C and climbing. Watch your body temperature!'],
+ [74,30,0.2,'12:30 pm · Big lunch in the shade','A sandwich, chips, and a cookie. Lots of glucose is coming.',{meal:130}],
+ [90,27,2.2,'1:30 pm · Long steep climb','Hard work for a long time, and no snacks. Muscles burn through glucose.'],
+ [112,5,1.0,'4:00 pm · Crossing a cold river','The water is 5 °C. Water pulls heat away much faster than air.',{water:true}],
+ [124,14,0.2,'5:30 pm · Back at camp','Cool evening air.'],
+ [134,12,0,'6:30 pm · Dinner','Pasta for dinner.',{meal:100}],
+ [DAY,12,0,'8:00 pm · Bedtime','You made it through the day!']];
+const RESP={
+ sweat:{n:'Sweat',k:'1',type:'toggle',hint:'Sweat evaporates and carries heat away (uses water).',loop:['Body temperature rises above 37 °C','Temperature sensors in skin and brain','Hypothalamus (brain)','Sweat glands','Sweat evaporates, body cools down']},
+ shiver:{n:'Shiver',k:'2',type:'toggle',hint:'Muscles twitch fast and make heat (uses glucose).',loop:['Body temperature falls below 37 °C','Temperature sensors in skin and brain','Hypothalamus (brain)','Skeletal muscles','Shivering makes heat, body warms up']},
+ widen:{n:'Widen skin blood vessels',k:'3',type:'toggle',hint:'More blood near the skin lets heat escape (you look flushed).',loop:['Body temperature rises','Temperature sensors','Hypothalamus (brain)','Blood vessels in the skin widen','More heat leaves through the skin']},
+ narrow:{n:'Narrow skin blood vessels',k:'4',type:'toggle',hint:'Less blood near the skin keeps heat in the core (you look pale).',loop:['Body temperature falls','Temperature sensors','Hypothalamus (brain)','Blood vessels in the skin narrow','Less heat is lost']},
+ insulin:{n:'Release insulin',k:'5',type:'pulse',hint:'Insulin tells body cells to take in glucose and the liver to store it. Blood sugar goes down.',loop:['Blood sugar rises after eating','Cells in the pancreas sense it','Pancreas','Insulin goes to body cells and the liver','Cells take in glucose, blood sugar falls']},
+ glucagon:{n:'Release glucagon',k:'6',type:'pulse',hint:'Glucagon tells the liver to release stored glucose. Blood sugar goes up.',loop:['Blood sugar falls','Cells in the pancreas sense it','Pancreas','Glucagon goes to the liver','Liver releases glucose, blood sugar rises']}};
+const HIKEY=META.store+'_hi'; function hiTxt(){ const h=+store.get(HIKEY)||0; $('#hiTxt').textContent=h?`Best on this Chromebook: ${h}% of the day in range`:''; } hiTxt();
+let state='menu', t, T, G, hyd, liver, hp, on, ins, gcg, gut, seg, lastT, logT, logG, inRange, total, msg, drinks, snacks, loopKey, lastSeg;
+function startGame(){ t=0; T=37; G=90; hyd=100; liver=100; hp=100; on={sweat:false,shiver:false,widen:false,narrow:false}; ins=0; gcg=0; gut=0; logT=[]; logG=[]; inRange=0; total=0; drinks=3; snacks=2; loopKey=null; lastSeg=-1;
+  $('#startOv').hidden=true; $('#overOv').hidden=true; renderBtns(); state='play'; fit(); lastT=performance.now(); requestAnimationFrame(loop); }
+function segAt(t){ let i=0; while(i+1<TL.length&&TL[i+1][0]<=t) i++; return i; }
+function renderBtns(){ $('#resp').innerHTML=Object.entries(RESP).map(([k,r])=>`<button type="button" class="rbtn${on[k]?' on':''}" data-r="${k}"><span class="k">${r.k}</span><span><b>${r.n}</b>${r.type==='toggle'?` <span class="small muted">(${on[k]?'ON':'off'})</span>`:''}<br><span class="small muted">${r.hint}</span></span></button>`).join('')+
+  `<button type="button" class="rbtn" data-r="drink"><span class="k">D</span><span><b>Drink water</b> (${drinks} left)<br><span class="small muted">Refills water for sweating.</span></span></button><button type="button" class="rbtn" data-r="snack"><span class="k">E</span><span><b>Eat a snack</b> (${snacks} left)<br><span class="small muted">A granola bar adds glucose.</span></span></button>`;
+  $$('#resp .rbtn').forEach(b=>b.addEventListener('click',()=>act(b.dataset.r))); }
+function act(k){ if(state!=='play') return;
+  if(k==='drink'){ if(drinks>0){ drinks--; hyd=Math.min(100,hyd+45); msg={t:'Glug glug. Water refilled.',until:performance.now()+1500}; } renderBtns(); return; }
+  if(k==='snack'){ if(snacks>0){ snacks--; gut+=45; msg={t:'Granola bar: glucose will enter the blood soon.',until:performance.now()+1500}; } renderBtns(); return; }
+  const r=RESP[k]; if(r.type==='toggle'){ on[k]=!on[k]; if(on[k]){ if(k==='widen') on.narrow=false; if(k==='narrow') on.widen=false; } }
+  else { if(k==='insulin') ins+=1; else gcg+=1; }
+  loopKey=k; loopShow(k); renderBtns(); }
+function loopShow(k){ const L=RESP[k].loop, labels=['Stimulus','Receptor (sensor)','Control center','Effector','Response'];
+  $('#loop').innerHTML=`<div class="small" style="color:var(--gold);font-weight:700;margin-bottom:4px">Negative feedback loop: ${RESP[k].n.toLowerCase()}</div><div class="lp">${L.map((x,i)=>`<div class="lpbox"><span class="small muted">${labels[i]}</span><br>${x}</div>${i<4?'<span class="lpar">→</span>':''}`).join('')}<span class="lpar">↺</span></div><div class="small muted" style="margin-top:4px">The response pushes the body back toward its set point, the opposite of the change. That is negative feedback.</div>`; }
+document.addEventListener('keydown',e=>{ if(e.code==='KeyP'||e.code==='Escape'){ state==='play'?GAME.onPause():GAME.onResume(); return; } if(state!=='play') return;
+  const m={Digit1:'sweat',Digit2:'shiver',Digit3:'widen',Digit4:'narrow',Digit5:'insulin',Digit6:'glucagon',KeyD:'drink',KeyE:'snack'}[e.code]; if(m){ act(m); e.preventDefault(); } });
+GAME.onPause=()=>{ if(state==='play'){ state='paused'; $('#pauseOv').hidden=false; } };
+GAME.onResume=()=>{ if(state==='paused'){ state='play'; $('#pauseOv').hidden=true; lastT=performance.now(); requestAnimationFrame(loop); } };
+let hudK=1; function fit(){ const r=cv.getBoundingClientRect(); if(r.width) hudK=Math.min(2,Math.max(1,560/r.width)); const d=Math.min(2,window.devicePixelRatio||1); const w=Math.round(r.width*d), h=Math.round(r.height*d); if(w&&h&&(cv.width!==w||cv.height!==h)){ cv.width=w; cv.height=h; } }
+window.addEventListener('resize',()=>{ fit(); if(state!=='menu') draw(); });
+function loop(ts){ if(state!=='play') return; const dt=Math.min(0.05,(ts-lastT)/1000); lastT=ts; update(dt); draw(); if(state==='play') requestAnimationFrame(loop); }
+function zoneT(v){ return v>=36.3&&v<=37.7?'ok':v>=35.3&&v<=38.8?'warn':'bad'; }
+function zoneG(v){ return v>=70&&v<=140?'ok':v>=55&&v<=180?'warn':'bad'; }
+function update(dt){ t+=dt; if(t>=DAY) return finish(true);
+  seg=segAt(t); const S=TL[seg]; if(seg!==lastSeg){ lastSeg=seg; if(S[5]&&S[5].meal) gut+=S[5].meal; msg={t:S[3]+': '+S[4],until:performance.now()+4200,big:true}; }
+  const air=S[1], actv=S[2], water=S[5]&&S[5].water;
+  // temperature: heat made - heat lost
+  const sweatOK=on.sweat&&hyd>5; let prod=1+actv+(on.shiver?1.8:0); let k=(water?0.12:1/15)*(on.widen?1.5:on.narrow?0.55:1); let loss=k*(T-air)+(sweatOK?3.0*(hyd>30?1:0.5):0);
+  T+=(prod-loss)*0.075*dt; if(on.sweat) hyd=Math.max(0,hyd-1.4*dt); hyd=Math.max(0,hyd-0.08*dt);
+  // glucose: from the gut and liver in, used by cells out, moved by insulin and glucagon
+  const absorb=Math.min(gut,7*dt); gut-=absorb; const use=(0.35+actv*0.38+(on.shiver?0.5:0))*dt; const base=0.35*dt*(liver>0?1:0.3);
+  const insE=1.25*ins*(G/100)*dt; const gcgE=liver>0?2.4*gcg*dt:0; liver=Math.max(0,liver-gcgE*0.5); liver=Math.min(100,liver+insE*0.4);
+  G+=absorb+base+gcgE-use-insE; G=Math.max(20,G); ins*=Math.pow(0.5,dt/9); gcg*=Math.pow(0.5,dt/9);
+  // body
+  const zt=zoneT(T), zg=zoneG(G); total+=dt; if(zt==='ok'&&zg==='ok') inRange+=dt;
+  hp-=((zt==='bad'?7:zt==='warn'?1.2:0)+(zg==='bad'?7:zg==='warn'?1.2:0))*dt; hp=Math.min(100,hp+((zt==='ok'&&zg==='ok')?1.5*dt:0)); if(hp<=0) return finish(false);
+  if((logT.length===0)||t-logT[logT.length-1][0]>=0.5){ logT.push([t,T]); logG.push([t,G]); }
+}
+function finish(made){ state='over'; const pct=Math.round(100*inRange/Math.max(1,total)); const hi=+store.get(HIKEY)||0; if(made&&pct>hi) store.set(HIKEY,pct); draw();
+  $('#overTitle').textContent=made?'You made it through the day!':'Your hiker had to be rescued';
+  $('#overBody').innerHTML=`<p style="font-size:18px;margin:4px 0">Both in the healthy range: <b>${pct}%</b> of the day${made&&pct>hi?' <span style="color:var(--gold)">New best!</span>':''}</p>
+   <p class="small">${made?'Your body stayed close to its set points: about 37 °C and about 70 to 140 mg/dL of glucose.':`Their ${zoneT(T)!=='ok'?'body temperature':'blood sugar'} was out of the safe range for too long.`} The graph on the game screen shows the whole day. The green bands are the healthy ranges.</p>
+   <p class="small"><b>The big idea:</b> homeostasis uses <b>negative feedback</b>. When something rises, the body does something that brings it back down, and when it falls, the body brings it back up. You were the control center today: the hypothalamus for temperature and the pancreas for blood sugar.</p>`;
+  $('#overOv').hidden=false; hiTxt(); }
+/* ---------- drawing ---------- */
+function draw(){ const sx=cv.width/W, sy=cv.height/H; ctx.setTransform(sx,0,0,sy,0,0); const k=hudK; const S=TL[segAt(t||0)]; const air=S[1];
+  // sky and scene
+  const frac=(t||0)/DAY; const sky=frac<.1?['#1e3a5f','#f59e0b']:frac<.8?['#38bdf8','#bae6fd']:['#312e81','#f472b6'];
+  let g=ctx.createLinearGradient(0,0,0,250); g.addColorStop(0,sky[0]); g.addColorStop(1,sky[1]); ctx.fillStyle=g; ctx.fillRect(0,0,W,250);
+  const sunX=80+frac*800, sunY=200-Math.sin(frac*Math.PI)*170; ctx.beginPath(); ctx.arc(sunX,sunY,26,0,6.3); ctx.fillStyle='#fde047'; ctx.fill();
+  ctx.fillStyle='#4d7c0f'; ctx.beginPath(); ctx.moveTo(0,250); for(let x=0;x<=W;x+=40) ctx.lineTo(x,190+Math.sin(x/90)*18); ctx.lineTo(W,250); ctx.fill();
+  ctx.fillStyle='#365314'; ctx.fillRect(0,232,W,18);
+  if(S[5]&&S[5].water){ ctx.fillStyle='#0ea5e9'; ctx.fillRect(380,214,240,36); }
+  // hiker
+  const hx=480, hy=208, walk=S[2]>0.5; const ph=(t||0)*6; ctx.strokeStyle=on.widen?'#fb7185':on.narrow?'#e2e8f0':'#fde68a'; ctx.lineWidth=6; ctx.lineCap='round';
+  ctx.beginPath(); ctx.moveTo(hx,hy-40); ctx.lineTo(hx,hy-8); ctx.moveTo(hx,hy-8); ctx.lineTo(hx-(walk?Math.sin(ph)*10:6),hy+16); ctx.moveTo(hx,hy-8); ctx.lineTo(hx+(walk?Math.sin(ph)*10:6),hy+16); ctx.moveTo(hx,hy-32); ctx.lineTo(hx-14,hy-14+(on.shiver?Math.sin(ph*6)*3:0)); ctx.moveTo(hx,hy-32); ctx.lineTo(hx+14,hy-14); ctx.stroke();
+  ctx.beginPath(); ctx.arc(hx,hy-52,11,0,6.3); ctx.fillStyle=on.widen?'#fb7185':on.narrow?'#f1f5f9':'#fcd34d'; ctx.fill(); ctx.fillStyle='#b45309'; ctx.fillRect(hx-16,hy-38,10,22);
+  if(on.sweat&&hyd>5){ for(let i=0;i<4;i++){ ctx.fillStyle='#7dd3fc'; ctx.beginPath(); ctx.arc(hx-14+i*9,hy-60+((ph*8+i*20)%30),2.5,0,6.3); ctx.fill(); } }
+  if(on.shiver){ ctx.strokeStyle='#e2e8f0'; ctx.lineWidth=2; [-24,24].forEach(d=>{ ctx.beginPath(); ctx.moveTo(hx+d,hy-40); ctx.lineTo(hx+d*1.2,hy-34); ctx.lineTo(hx+d,hy-28); ctx.stroke(); }); }
+  ctx.fillStyle='rgba(5,10,20,.65)'; ctx.fillRect(8,8,330,48); ctx.fillStyle='#e8eefc'; ctx.font=`bold ${15*Math.min(k,1.3)}px Arial`; ctx.textAlign='left'; ctx.fillText(S[3],16,28); ctx.font='13px Arial'; ctx.fillStyle='#bfdbfe'; ctx.fillText(`Air: ${air} °C${S[5]&&S[5].water?' (cold water!)':''}   Activity: ${S[2]>=1.5?'hard':S[2]>=1?'moderate':'resting'}`,16,48);
+  // gauges
+  ctx.fillStyle='#0b1220'; ctx.fillRect(0,250,W,H-250);
+  gauge(20,268,'Body temperature',T,34,40.5,[[36.3,37.7],[35.3,38.8]],v=>v.toFixed(1)+' °C',37);
+  gauge(20,348,'Blood sugar (glucose)',G,30,240,[[70,140],[55,180]],v=>Math.round(v)+' mg/dL',90);
+  bar(20,430,'Health',hp,100,hp>60?'#34d399':hp>30?'#fbbf24':'#f87171'); bar(20,470,'Water (for sweat)',hyd,100,'#38bdf8'); bar(20,510,'Liver glucose stores',liver,100,'#a16207');
+  bar(20,550,'Insulin in blood',Math.min(100,ins*25),100,'#c084fc'); bar(250,550,'Glucagon in blood',Math.min(100,gcg*25),100,'#f472b6');
+  chart(470,268,470,312);
+  if(msg&&performance.now()<msg.until){ ctx.font=`bold ${14*Math.min(k,1.5)}px Arial`; ctx.textAlign='center'; const words=msg.t.split(' '), lines=[]; let cur=''; words.forEach(w=>{ if(ctx.measureText(cur+' '+w).width>W-200){ lines.push(cur); cur=w; } else cur=cur?cur+' '+w:w; }); lines.push(cur);
+    const lh=20*Math.min(k,1.5); ctx.fillStyle='rgba(5,10,20,.85)'; ctx.fillRect(100,70,W-200,lines.length*lh+14); ctx.fillStyle=msg.big?'#fde68a':'#bbf7d0'; ctx.textBaseline='middle'; lines.forEach((l,i)=>ctx.fillText(l,W/2,77+lh/2+i*lh)); ctx.textBaseline='alphabetic'; } }
+function gauge(x,y,label,v,lo,hi,zones,fmt,sp){ const w=420, X=q=>x+w*(Math.max(lo,Math.min(hi,q))-lo)/(hi-lo);
+  ctx.fillStyle='#9fb0cf'; ctx.font='13px Arial'; ctx.textAlign='left'; ctx.fillText(label,x,y+12); const z=label.startsWith('Body')?zoneT(v):zoneG(v);
+  ctx.fillStyle=z==='ok'?'#86efac':z==='warn'?'#fde047':'#f87171'; ctx.font='bold 18px Arial'; ctx.textAlign='right'; ctx.fillText(fmt(v)+(z==='bad'?'  DANGER':z==='warn'?'  warning':''),x+w,y+14);
+  ctx.fillStyle='rgba(248,113,113,.45)'; ctx.fillRect(x,y+22,w,22); ctx.fillStyle='rgba(253,224,71,.5)'; ctx.fillRect(X(zones[1][0]),y+22,X(zones[1][1])-X(zones[1][0]),22); ctx.fillStyle='rgba(52,211,153,.75)'; ctx.fillRect(X(zones[0][0]),y+22,X(zones[0][1])-X(zones[0][0]),22);
+  ctx.strokeStyle='#e2e8f0'; ctx.setLineDash([3,3]); ctx.beginPath(); ctx.moveTo(X(sp),y+20); ctx.lineTo(X(sp),y+46); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle='#e2e8f0'; ctx.font='10px Arial'; ctx.textAlign='center'; ctx.fillText('set point',X(sp),y+58);
+  ctx.fillStyle='#fff'; ctx.beginPath(); ctx.moveTo(X(v),y+20); ctx.lineTo(X(v)-8,y+8); ctx.lineTo(X(v)+8,y+8); ctx.fill(); ctx.fillRect(X(v)-2,y+20,4,26); }
+function bar(x,y,label,v,max,col){ const w=200; ctx.fillStyle='#9fb0cf'; ctx.font='12px Arial'; ctx.textAlign='left'; ctx.fillText(label,x,y+10); ctx.fillStyle='#1e293b'; ctx.fillRect(x,y+15,w,12); ctx.fillStyle=col; ctx.fillRect(x,y+15,w*Math.max(0,Math.min(1,v/max)),12); }
+function chart(x,y,w,h){ ctx.fillStyle='#0e1a33'; ctx.fillRect(x,y,w,h); ctx.fillStyle='#9fb0cf'; ctx.font='12px Arial'; ctx.textAlign='left'; ctx.fillText('Your day so far',x+8,y+16);
+  const half=(h-30)/2, X=s=>x+8+(w-16)*s/DAY;
+  [[logT,34,40.5,[36.3,37.7],'#fb923c','Temperature',y+24],[logG,30,240,[70,140],'#c084fc','Blood sugar',y+30+half]].forEach(([lg,lo,hi,z,col,lab,top])=>{ const Y=v=>top+half-6-(half-12)*(Math.max(lo,Math.min(hi,v))-lo)/(hi-lo);
+    ctx.fillStyle='rgba(52,211,153,.18)'; ctx.fillRect(x+8,Y(z[1]),w-16,Y(z[0])-Y(z[1])); ctx.strokeStyle=col; ctx.lineWidth=2; ctx.beginPath(); lg.forEach(([s,v],i)=>i?ctx.lineTo(X(s),Y(v)):ctx.moveTo(X(s),Y(v))); ctx.stroke(); ctx.fillStyle=col; ctx.fillText(lab,x+12,top+10); });
+  TL.forEach(s=>{ if(s[0]>0&&s[0]<DAY){ ctx.strokeStyle='rgba(148,163,184,.25)'; ctx.beginPath(); ctx.moveTo(X(s[0]),y+20); ctx.lineTo(X(s[0]),y+h-2); ctx.stroke(); } }); }
+(function idle(){ fit(); t=0; T=37; G=90; hyd=100; liver=100; hp=100; on={}; ins=0; gcg=0; logT=[]; logG=[]; draw(); })();
+$('#startBtn').addEventListener('click',startGame); $('#againBtn').addEventListener('click',startGame);
+GAME.teacherHTML=()=>`<p class="small muted">Practice game, not graded.</p><h3>How it works</h3><p class="small">A ${DAY}-second "day" on a hike. Events change the air temperature, the activity level, and add meals. The student is the control center: turning on sweating, shivering, or widening or narrowing skin blood vessels (hypothalamus), and releasing insulin or glucagon (pancreas). Effects build up and wear off, so students have to anticipate and can overcorrect. Health drops while temperature or blood sugar is outside the safe range. Every response shows its negative feedback loop (stimulus, receptor, control center, effector, response).</p>
+ <h3>Healthy ranges used</h3><p class="small">Temperature 36.3 to 37.7 °C (warning 35.3 to 38.8). Blood sugar 70 to 140 mg/dL (warning 55 to 180). These are simplified classroom values.</p>
+ <h3>Good strategy</h3><ul class="small"><li>Cold morning and river: shiver and narrow blood vessels.</li><li>Hot sun and hard climbing: sweat, widen blood vessels, and drink water.</li><li>After meals: release insulin (one or two pulses at a time).</li><li>During the long climb: glucagon or a snack keeps blood sugar up.</li></ul>`;
+GAME.printHTML=()=>`<h1>Keep Them Alive: feedback loop notes</h1><p>Name: ____________________ Period: ____</p><table border="1" cellpadding="6" style="border-collapse:collapse;font-size:13px;width:100%"><tr><th>Event</th><th>Stimulus</th><th>Control center</th><th>Effector and response</th></tr>${TL.slice(0,-1).map(s=>`<tr><td>${s[3]}</td><td></td><td></td><td style="width:40%"></td></tr>`).join('')}</table>`;
+window.__h={get state(){return state;}, get t(){return t;}, get T(){return T;}, get G(){return G;}, get hp(){return hp;}, get pct(){return Math.round(100*inRange/Math.max(1,total));}, act, skip:s=>{ t+=s; }};
+
+$$('.tbtn').forEach(b=>b.addEventListener('pointerdown',e=>{ e.preventDefault(); state==='play'?GAME.onPause():GAME.onResume(); }));
+</script>
+
+
+
+
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

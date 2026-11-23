@@ -869,6 +869,12 @@ const P = [
     model: 'Change 8.40 g of baking soda to moles: 8.40 ÷ 84.01 = 0.100 mol. The mole ratio is 1 : 1, so 0.100 mol of CO₂ forms, and 0.100 × 44.01 = 4.40 g. That 4.40 g is the predicted amount; the 3.90 g the scale measured is the actual amount.' }
 ];
 
+
+/* rotate correct-answer positions so the right choice isn't always first (fixed order, so saved work still matches) */
+(function () { let k = 0; P.forEach(p => {
+  if (p.type === 'mc' && Array.isArray(p.opts) && typeof p.a === 'number') { const n = p.opts.length, t = (k * 3 + 1) % n; k++; const o = p.opts.slice(); const c = o.splice(p.a, 1)[0]; o.splice(t, 0, c); p.opts = o; p.a = t; }
+  else if (p.type === 'ms' && Array.isArray(p.opts)) { const n = p.opts.length, r = (k * 2 + 1) % n; k++; p.opts = p.opts.slice(r).concat(p.opts.slice(0, r)); }
+}); })();
 const N = P.length, TOTAL = P.reduce((a, p) => a + p.pts, 0);
 
 /* ---------- state ---------- */

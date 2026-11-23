@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Enzyme Lab | Biology</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1220;--panel:#121c31;--panel2:#18243d;--line:#2b3a58;--text:#e8eefc;--muted:#9fb0cf;--gold:#facc15;--gold2:#fbbf24;--ok:#34d399;--bad:#f87171;--violet:#a78bfa}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 "Atkinson Hyperlegible",Arial,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:#0e172a}
+header .t{font-weight:800;font-size:17px}
+header .s{color:var(--muted);font-size:13px}
+header .sp{flex:1}
+.btn{font:inherit;font-weight:700;border-radius:10px;padding:9px 16px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--gold);color:#1a1300;border-color:var(--gold)}
+.btn:disabled{opacity:.5;cursor:default}
+main{max-width:1000px;margin:0 auto;padding:14px 16px 30px}
+.stage{position:relative;width:100%;aspect-ratio:16/10;background:#050a14;border:1px solid var(--line);border-radius:14px;overflow:hidden;touch-action:none}
+canvas{display:block;width:100%;height:100%}
+.ov{position:absolute;inset:0;display:flex;background:rgba(5,10,20,.78);padding:14px;overflow:auto}
+.ov>.card{margin:auto}
+#teachOv{position:fixed;z-index:60;background:rgba(5,10,20,.94)}
+.ov[hidden]{display:none}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;max-width:640px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.card h2{margin:0 0 6px;font-size:22px}
+.card h3{margin:12px 0 6px;font-size:15px;color:var(--gold)}
+.muted{color:var(--muted)} .small{font-size:13.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chip{font:inherit;font-size:14px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.chip.on{border-color:var(--gold);background:rgba(250,204,21,.16);font-weight:700}
+.qtag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--violet);margin-bottom:4px}
+.qtext{font-size:18px;margin:4px 0 12px}
+.opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:15.5px}
+.opt:hover:not(:disabled){border-color:var(--gold)}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:13px;font-weight:800}
+.opt.pick{border-color:var(--gold)}
+.fb{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:15.5px}
+.fb.ok{background:rgba(52,211,153,.14);border:1px solid rgba(52,211,153,.5)}
+.fb.no{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.45)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:14px;margin:6px 0}
+.keys b{color:var(--gold)}
+.ladder{display:flex;flex-wrap:wrap;gap:6px;font-size:13px;margin-top:6px}
+.ladder span{padding:3px 8px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}
+.touch{display:none;gap:10px;justify-content:space-between;margin-top:10px;user-select:none;-webkit-user-select:none}
+.touch .grp{display:flex;gap:10px}
+.tbtn{width:64px;height:58px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:22px;font-weight:800;touch-action:none}
+.tbtn.fire{width:110px;background:#3b2a07;border-color:var(--gold);color:var(--gold);font-size:17px}
+.tbtn.on{background:#334155}
+@media (pointer:coarse){.touch{display:flex}}
+@media (max-width:480px){.tbtn{width:52px;height:54px;font-size:20px}.tbtn.fire{width:86px}.touch .grp{gap:7px}.touch{gap:6px}}
+@media (max-width:760px),(max-height:560px){.ov{position:fixed;z-index:50;background:rgba(5,10,20,.92)}}
+body.showtouch .touch{display:flex}
+.info{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:14px;color:var(--muted)}
+.tpanel h3{margin-top:14px}
+.tq{margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font-size:14px}
+.tq ol{margin:4px 0 0;padding-left:22px}
+.tq li.right{color:var(--ok);font-weight:700}
+input.code{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0b1220;color:var(--text);width:180px}
+#printView{display:none}
+@media print{
+  body>*:not(#printView){display:none!important}
+  #printView{display:block!important;color:#000;background:#fff;font:12px/1.4 Arial,sans-serif}
+  #printView h1{font-size:18px;margin:0 0 4px} #printView .pq{break-inside:avoid;margin:8px 0}
+  #printView ol{margin:2px 0 0;padding-left:22px} #printView li.right{font-weight:700;text-decoration:underline}
+  html,body{background:#fff}
+}
+
+.ctrl{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.ctrl .grp{display:flex;gap:6px;align-items:center}.cbtn{font:inherit;font-weight:700;padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;touch-action:none;user-select:none}.cbtn.on{background:#334155}.ebtns{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:10px}@media (max-width:700px){.ebtns{grid-template-columns:1fr 1fr}}.ebtn{font:inherit;text-align:left;display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:14px;line-height:1.3}.ebtn:hover{border-color:var(--gold)}.ebtn .k{flex:none;width:22px;height:22px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:12px;font-weight:800}table.ktab{border-collapse:collapse;font-size:13px;width:100%}table.ktab td,table.ktab th{border:1px solid var(--line);padding:4px 6px;text-align:left;vertical-align:top}.ctrl .tbtn{width:auto;height:auto}</style>
+</head>
+<body>
+<header>
+  <div><div class="t">Enzyme Lab</div><div class="s">Biology · Unit 1: Homeostasis, Macromolecules, and Enzymes · Review game</div></div>
+  <div class="sp"></div>
+  <button class="btn" id="teachBtn" type="button">Teacher</button>
+</header>
+<main>
+  <div class="stage" id="stage">
+    <canvas id="cv" width="960" height="600" aria-label="Enzyme Lab game."></canvas>
+    <div class="ov" id="startOv"><div class="card"><h2>Enzyme Lab</h2><p class="small muted" style="margin:0 0 8px">Food and other molecules ride through the body. For each <b>substrate</b> that reaches the reaction zone, choose the <b>enzyme whose active site fits it</b> (lock and key). Then keep the <b>temperature</b> and <b>pH</b> near that enzyme's optimum so it works fast enough. Watch out: above about 50 °C, enzymes <b>denature</b>.</p><div class="keys"><b>1 to 5</b><span>choose an enzyme</span><b>← →</b><span>cool down / heat up</span><b>↓ ↑</b><span>lower / raise the pH</span><b>P</b><span>pause</span></div><p class="small muted">Four levels: mouth, stomach, small intestine, and a liver cell with a fever.</p><div class="row"><button class="btn primary" id="startBtn" type="button">Start</button><span class="small muted" id="hiTxt"></span></div></div></div>
+    <div class="ov" id="lvlOv" hidden><div class="card"><h2 id="lvlTitle"></h2><p id="lvlText"></p><div class="row"><button class="btn primary" id="lvlGo" type="button">Go</button></div></div></div>
+    <div class="ov" id="overOv" hidden><div class="card"><h2 id="overTitle">Game over</h2><div id="overBody"></div><div class="row"><button class="btn primary" id="againBtn" type="button">Play again</button><button class="btn" id="menuBtn" type="button">Main menu</button></div></div></div>
+
+    <div class="ov" id="pauseOv" hidden><div class="card" style="max-width:380px;text-align:center"><h2>Paused</h2><p class="muted">Press P or the button to keep playing.</p><button class="btn primary" id="resumeBtn" type="button">Resume</button></div></div>
+  </div>
+  <div class="ebtns" id="enzBtns"></div>
+  <div class="ctrl"><div class="grp"><button class="cbtn" id="tDown" type="button">❄ Cool</button><button class="cbtn" id="tUp" type="button">🔥 Heat</button></div><div class="grp"><button class="cbtn" id="pDown" type="button">pH ▼ (more acidic)</button><button class="cbtn" id="pUp" type="button">pH ▲ (less acidic)</button></div><div class="grp"><button class="cbtn tbtn" data-k="pause" type="button" aria-label="Pause">II</button></div></div>
+
+</main>
+<div class="ov" id="teachOv" hidden>
+  <div class="card tpanel" style="max-width:780px">
+    <h2>Teacher tools</h2>
+    <div id="tLogin"><p class="small muted">Enter the teacher code.</p><div class="row" style="margin-top:4px"><input class="code" id="tCode" type="password" autocomplete="off" aria-label="Teacher code"><button class="btn primary" id="tGo" type="button">Open</button><button class="btn" id="tClose0" type="button">Close</button></div><div class="small" id="tMsg" style="color:var(--bad);margin-top:6px"></div></div>
+    <div id="tBody" hidden>
+      <div class="row"><button class="btn" id="tPrint" type="button">🖨 Print the reference sheet</button><button class="btn" id="tTouch" type="button">Show touch buttons</button><button class="btn" id="tClose" type="button">Close</button></div>
+      <div id="tInfo"></div>
+    </div>
+  </div>
+</div>
+<div id="printView"></div>
+<script>
+const META={"store": "bioU1EnzymeLab", "unit": 1};
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const store={ get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+const shuffle=a=>{ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const rnd=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const GAME={onPause:()=>{}, onResume:()=>{}, teacherHTML:()=>'', printHTML:()=>''};
+/* teacher tools (code Teacher007) */
+function tShow(on){ $('#teachOv').hidden=!on; if(on){ GAME.onPause(); $('#tCode').value=''; $('#tMsg').textContent=''; setTimeout(()=>$('#tCode').focus(),30); } }
+$('#teachBtn').addEventListener('click',()=>tShow(true)); $('#tClose0').addEventListener('click',()=>tShow(false));
+$('#tClose').addEventListener('click',()=>{ tShow(false); $('#tBody').hidden=true; $('#tLogin').hidden=false; });
+function tOpen(){ if($('#tCode').value.trim().toLowerCase()!=='teacher007'){ $('#tMsg').textContent='Code not recognized.'; return; } $('#tLogin').hidden=true; $('#tBody').hidden=false; $('#tInfo').innerHTML=GAME.teacherHTML(); }
+$('#tGo').addEventListener('click',tOpen); $('#tCode').addEventListener('keydown',e=>{ if(e.key==='Enter') tOpen(); });
+$('#tTouch').addEventListener('click',()=>document.body.classList.toggle('showtouch'));
+$('#tPrint').addEventListener('click',()=>{ $('#printView').innerHTML=GAME.printHTML(); setTimeout(()=>window.print(),100); });
+$('#resumeBtn').addEventListener('click',()=>GAME.onResume());
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) GAME.onPause(); });
+/* ===================== ENZYME LAB ===================== */
+const cv=$('#cv'), ctx=cv.getContext('2d'); const W=960,H=600, GW=610, ZX=230, ZW=150, BY=330;
+const ENZ={
+ amylase:{n:'Amylase',key:'tri',col:'#60a5fa',T:37,pH:7,sub:'starch',prod:'maltose'},
+ lactase:{n:'Lactase',key:'half',col:'#f472b6',T:37,pH:6.5,sub:'lactose',prod:'glucose + galactose'},
+ pepsin:{n:'Pepsin',key:'zig',col:'#f59e0b',T:37,pH:2,sub:'protein',prod:'short amino acid chains'},
+ trypsin:{n:'Trypsin',key:'zig',col:'#a3e635',T:37,pH:8,sub:'protein',prod:'short amino acid chains'},
+ catalase:{n:'Catalase',key:'sq',col:'#c084fc',T:37,pH:7,sub:'hydrogen peroxide',prod:'water + oxygen'}};
+const SUB={starch:{n:'starch',key:'tri'},lactose:{n:'lactose (milk sugar)',key:'half'},protein:{n:'protein',key:'zig'},h2o2:{n:'hydrogen peroxide',key:'sq'}};
+const ORDER=['amylase','lactase','pepsin','trypsin','catalase'];
+const LEVELS=[
+ {n:'Mouth',d:'Saliva has amylase. Some cells also make hydrogen peroxide, which catalase breaks down. Keep things near body temperature.',subs:['starch','h2o2'],need:8,T:37,pH:7,ev:['cold','hot']},
+ {n:'Stomach',d:'Your stomach makes strong acid. Pepsin breaks down protein, but only at a low pH. Lower the pH!',subs:['protein'],need:8,T:37,pH:6,ev:['antacid','cold','hot']},
+ {n:'Small intestine',d:'The small intestine is not acidic (about pH 8). Three enzymes work here. Which protein enzyme works at this pH?',subs:['starch','lactose','protein'],need:12,T:37,pH:8,ev:['cold','hot','acid','antacid']},
+ {n:'Liver cell with a fever',d:'Liver cells make lots of hydrogen peroxide and use catalase to break it down. A fever is coming. Don\'t let the enzymes denature!',subs:['h2o2','h2o2','starch'],need:12,T:37,pH:7,ev:['fever','fever','cold']}];
+const EVENTS={cold:{t:'An ice-cold drink! Temperature dropped.',dT:-9},hot:{t:'Hot soup! Temperature rose.',dT:7},fever:{t:'Fever spike! Temperature rising fast.',dT:9},antacid:{t:'An antacid tablet raised the pH.',dpH:2.5},acid:{t:'A splash of stomach acid lowered the pH.',dpH:-2.5}};
+function act(e,T,pH){ const z=ENZ[e]; if(T>=55) return 0; const ft=T<=z.T?Math.exp(-(((T-z.T)/20)**2)):Math.exp(-(((T-z.T)/8)**2)); const fp=Math.exp(-(((pH-z.pH)/1.4)**2)); return ft*fp; }
+const HIKEY=META.store+'_hi'; function hiTxt(){ const h=+store.get(HIKEY)||0; $('#hiTxt').textContent=h?`High score on this Chromebook: ${h}`:''; } hiTxt();
+let state='menu', lv, L, T, pH, subs, hearts, score, done, spawnT, evT, msg, lastT, parts, prods, hot, dn, keys={}, avail, made, flash;
+function startLevel(i){ lv=i; L=LEVELS[i]; T=L.T; pH=L.pH; subs=[]; done=0; spawnT=0.6; evT=rnd(9,13); hot=0; prods=[]; parts=[]; avail=ORDER.filter(e=>L.subs.includes(ENZ[e].sub==='hydrogen peroxide'?'h2o2':ENZ[e].sub)||true);
+  $('#lvlTitle').textContent=`Level ${i+1}: ${L.n}`; $('#lvlText').textContent=L.d; $('#lvlOv').hidden=false; state='brief'; draw(); }
+function startGame(){ hearts=5; score=0; made={}; ['#startOv','#overOv','#pauseOv'].forEach(s=>$(s).hidden=true); fit(); startLevel(0); }
+$('#lvlGo').addEventListener('click',()=>{ $('#lvlOv').hidden=true; state='play'; lastT=performance.now(); requestAnimationFrame(loop); });
+function endGame(won){ state='over'; const hi=+store.get(HIKEY)||0; if(score>hi) store.set(HIKEY,score);
+  $('#overTitle').textContent=won?'All four levels done!':'Game over';
+  $('#overBody').innerHTML=`<p style="font-size:18px;margin:4px 0">Score: <b>${score}</b>${score>hi?' <span style="color:var(--gold)">New high score!</span>':''}</p><p class="muted" style="margin:2px 0">${won?'You kept every enzyme working in every part of the body.':`You reached level ${lv+1}: ${L.n}.`}</p>
+   <p class="small"><b>Remember:</b> each enzyme fits only its own substrate (lock and key). Each one has an <b>optimum</b> temperature and pH. Too hot, and the enzyme <b>denatures</b>: its active site changes shape and it stops working for good.</p>`;
+  $('#overOv').hidden=false; hiTxt(); }
+GAME.onPause=()=>{ if(state==='play'){ state='paused'; $('#pauseOv').hidden=false; } };
+GAME.onResume=()=>{ if(state==='paused'){ state='play'; $('#pauseOv').hidden=true; lastT=performance.now(); requestAnimationFrame(loop); } };
+$('#startBtn').addEventListener('click',startGame); $('#againBtn').addEventListener('click',startGame);
+$('#menuBtn').addEventListener('click',()=>{ $('#overOv').hidden=true; $('#startOv').hidden=false; state='menu'; });
+/* ---------- controls ---------- */
+$('#enzBtns').innerHTML=ORDER.map((e,i)=>`<button type="button" class="ebtn" data-e="${e}"><span class="k">${i+1}</span><span><b style="color:${ENZ[e].col}">${ENZ[e].n}</b><br><span class="small muted">best near pH ${ENZ[e].pH}</span></span></button>`).join('');
+$$('.ebtn').forEach(b=>b.addEventListener('click',()=>apply(b.dataset.e)));
+const hold=(id,k)=>{ const b=$(id); const on=e=>{ e.preventDefault(); keys[k]=true; b.classList.add('on'); }, off=()=>{ keys[k]=false; b.classList.remove('on'); };
+  b.addEventListener('pointerdown',on); b.addEventListener('pointerup',off); b.addEventListener('pointerleave',off); b.addEventListener('pointercancel',off); };
+hold('#tDown','tDown'); hold('#tUp','tUp'); hold('#pDown','pDown'); hold('#pUp','pUp');
+const KM={ArrowLeft:'tDown',ArrowRight:'tUp',ArrowDown:'pDown',ArrowUp:'pUp'};
+document.addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT') return; if(e.code==='KeyP'||e.code==='Escape'){ state==='play'?GAME.onPause():GAME.onResume(); return; }
+  if(state!=='play') return; if(KM[e.code]){ keys[KM[e.code]]=true; e.preventDefault(); } const n=+e.key; if(n>=1&&n<=5){ apply(ORDER[n-1]); e.preventDefault(); } });
+document.addEventListener('keyup',e=>{ if(KM[e.code]) keys[KM[e.code]]=false; });
+let hudK=1; function fit(){ const r=cv.getBoundingClientRect(); if(r.width) hudK=Math.min(2,Math.max(1,560/r.width)); const d=Math.min(2,window.devicePixelRatio||1); const w=Math.round(r.width*d), h=Math.round(r.height*d); if(w&&h&&(cv.width!==w||cv.height!==h)){ cv.width=w; cv.height=h; } }
+window.addEventListener('resize',fit);
+/* ---------- the game ---------- */
+const target=()=>subs.filter(s=>!s.gone&&!s.e).sort((a,b)=>a.x-b.x)[0];
+function apply(e){ if(state!=='play') return; if(subs.some(s=>s.e&&!s.gone)){ msg={t:'Wait: an enzyme is already working on a substrate in the reaction zone.',until:performance.now()+1500}; return; }
+  const s=target(); if(!s||s.x>ZX+ZW/2+60){ msg={t:'Nothing in the reaction zone yet. Wait for a substrate to arrive.',until:performance.now()+1300}; return; }
+  if(ENZ[e].key!==SUB[s.k].key){ hearts--; flash={c:'rgba(248,113,113,.22)',until:performance.now()+300}; msg={t:`${ENZ[e].n}'s active site does not fit ${SUB[s.k].n}. Each enzyme fits only its own substrate.`,until:performance.now()+2400}; if(hearts<=0) endGame(false); return; }
+  s.e=e; s.p=0; s.t=0; msg={t:`${ENZ[e].n} grabbed the ${SUB[s.k].n}. Keep the temperature and pH near its optimum!`,until:performance.now()+1800,ok:true}; }
+function loop(t){ if(state!=='play') return; const dt=Math.min(0.05,(t-lastT)/1000); lastT=t; update(dt); draw(); if(state==='play') requestAnimationFrame(loop); }
+function update(dt){
+  if(keys.tUp) T+=8*dt; if(keys.tDown) T-=8*dt; if(keys.pUp) pH+=2*dt; if(keys.pDown) pH-=2*dt; T=Math.max(0,Math.min(70,T)); pH=Math.max(0,Math.min(14,pH));
+  // slow body drift back toward normal temperature (homeostasis!) except during a fever
+  if(!L.ev.includes('fever')||Math.random()<.5) T+=(37-T)*0.02*dt;
+  evT-=dt; if(evT<=0){ const ev=EVENTS[pick(L.ev)]; if(ev.dT) T+=ev.dT; if(ev.dpH) pH=Math.max(0,Math.min(14,pH+ev.dpH)); msg={t:ev.t,until:performance.now()+2200}; evT=rnd(10,15); }
+  if(L.ev.includes('fever')&&Math.random()<dt*0.5) T+=0.6;
+  if(T>=50){ hot+=dt; if(hot>1.6){ hot=0; hearts--; T=37; subs.forEach(s=>{ if(s.e){ s.gone=true; } }); flash={c:'rgba(248,113,113,.3)',until:performance.now()+500}; msg={t:'Too hot! The enzymes denatured: their active sites changed shape. New enzymes were made, but you lost a heart.',until:performance.now()+3200}; if(hearts<=0) return endGame(false); } } else hot=Math.max(0,hot-dt);
+  spawnT-=dt; const waiting=subs.filter(s=>!s.gone&&!s.e).length; if(spawnT<=0&&waiting<4&&done+subs.filter(s=>!s.gone).length<L.need){ subs.push({k:pick(L.subs),x:GW+60,gone:false}); spawnT=rnd(3.2,4.6)-lv*0.3; }
+  const order=subs.filter(s=>!s.gone).sort((a,b)=>a.x-b.x); let front=ZX-ZW/2-40;
+  order.forEach(s=>{ if(s.e){ s.x+=((ZX+30)-s.x)*Math.min(1,dt*6); s.t+=dt; const a=act(s.e,T,pH); s.p+=a*dt/2.2; s.a=a;
+      if(s.p>=1){ s.gone=true; done++; score+=100+Math.round(a*50); made[s.e]=(made[s.e]||0)+1; burst(s); msg={t:`${ENZ[s.e].n} broke ${SUB[s.k].n} into ${ENZ[s.e].prod}.`,until:performance.now()+1600,ok:true}; }
+      else if(s.t>7){ s.gone=true; hearts--; flash={c:'rgba(248,113,113,.22)',until:performance.now()+300}; msg={t:`Too slow: ${ENZ[s.e].n} was barely working at ${T.toFixed(0)} °C and pH ${pH.toFixed(1)}. Check its optimum!`,until:performance.now()+2800}; if(hearts<=0) return endGame(false); }
+      front=ZX+ZW/2+46; }
+    else { const v=46+lv*6; s.x-=v*dt; if(s.x<front) s.x=front; if(s.x<ZX-ZW/2-30){ s.gone=true; hearts--; msg={t:`The ${SUB[s.k].n} passed by without an enzyme! −1 heart`,until:performance.now()+2000}; if(hearts<=0) return endGame(false); } front=s.x+92; } });
+  if(state!=='play') return;
+  subs=subs.filter(s=>!s.gone);
+  prods.forEach(p=>{ p.x+=p.vx*dt; p.y+=p.vy*dt; p.vy+=30*dt; p.life-=dt; }); prods=prods.filter(p=>p.life>0);
+  parts.forEach(p=>{ p.x+=p.vx*dt; p.y+=p.vy*dt; p.life-=dt; }); parts=parts.filter(p=>p.life>0);
+  if(done>=L.need){ score+=300; hearts=Math.min(5,hearts+1); if(lv+1<LEVELS.length) startLevel(lv+1); else endGame(true); }
+}
+function burst(s){ const k=s.k; const kinds=k==='starch'?['malt','malt']:k==='lactose'?['glu','gal']:k==='protein'?['aa','aa','aa']:['h2o','h2o','o2'];
+  kinds.forEach((kd,i)=>prods.push({kd,x:s.x+i*14,y:BY,vx:rnd(-40,60),vy:rnd(-90,-40),life:1.6})); for(let i=0;i<10;i++){ const a=rnd(0,6.3); parts.push({x:s.x,y:BY,vx:Math.cos(a)*90,vy:Math.sin(a)*90,life:.5}); } }
+/* ---------- drawing ---------- */
+function hex(x,y,r,f){ ctx.beginPath(); for(let i=0;i<6;i++){ const a=Math.PI/3*i+Math.PI/6; ctx.lineTo(x+Math.cos(a)*r,y+Math.sin(a)*r); } ctx.closePath(); ctx.fillStyle=f; ctx.fill(); ctx.strokeStyle='#14532d'; ctx.lineWidth=1.5; ctx.stroke(); }
+function keyShape(k,x,y,fill,stroke){ ctx.beginPath();
+  if(k==='tri'){ ctx.moveTo(x,y-14); ctx.lineTo(x-16,y); ctx.lineTo(x,y+14); }
+  else if(k==='half'){ ctx.arc(x,y,13,Math.PI/2,Math.PI*1.5); }
+  else if(k==='sq'){ ctx.rect(x-16,y-12,16,24); }
+  else { ctx.moveTo(x,y-14); ctx.lineTo(x-10,y-7); ctx.lineTo(x-2,y); ctx.lineTo(x-10,y+7); ctx.lineTo(x,y+14); }
+  ctx.closePath(); ctx.fillStyle=fill; ctx.fill(); if(stroke){ ctx.strokeStyle=stroke; ctx.lineWidth=2; ctx.stroke(); } }
+function substrate(s){ const x=s.x, y=BY; const k=SUB[s.k].key;
+  keyShape(k,x-24,y,'#fde68a','#92400e');
+  if(s.k==='starch'){ for(let i=0;i<4;i++) hex(x-10+i*20,y,10,'#bbf7d0'); }
+  else if(s.k==='lactose'){ hex(x-8,y,11,'#bbf7d0'); hex(x+14,y,11,'#fbcfe8'); }
+  else if(s.k==='protein'){ ['#f87171','#60a5fa','#fbbf24','#34d399','#c084fc'].forEach((c,i)=>{ ctx.beginPath(); ctx.arc(x-12+i*14,y+(i%2?5:-5),7,0,6.3); ctx.fillStyle=c; ctx.fill(); ctx.strokeStyle='#0b1220'; ctx.lineWidth=1; ctx.stroke(); }); }
+  else { [[-10,0,9,'#ef4444'],[8,0,9,'#ef4444'],[-20,-8,5,'#f8fafc'],[18,8,5,'#f8fafc']].forEach(([dx,dy,r,c])=>{ ctx.beginPath(); ctx.arc(x+dx,y+dy,r,0,6.3); ctx.fillStyle=c; ctx.fill(); ctx.strokeStyle='#334155'; ctx.lineWidth=1; ctx.stroke(); }); }
+  ctx.fillStyle='#e2e8f0'; ctx.font='bold 12px Arial'; ctx.textAlign='center'; ctx.fillText(SUB[s.k].n,x+10,y+36); }
+function enzyme(e,x,y,a){ const z=ENZ[e]; ctx.save(); ctx.globalAlpha=0.55+0.45*a;
+  ctx.beginPath(); ctx.ellipse(x-40,y,42,34,0,0,6.3); ctx.fillStyle=z.col; ctx.fill(); ctx.strokeStyle='#0b1220'; ctx.lineWidth=2; ctx.stroke();
+  keyShape(z.key,x+2,y,'#0e1a33'); ctx.globalAlpha=1; ctx.fillStyle='#0b1220'; ctx.font='bold 12px Arial'; ctx.textAlign='center'; ctx.fillText(z.n,x-44,y+4); ctx.restore(); }
+function prod(p){ ctx.globalAlpha=Math.min(1,p.life); if(p.kd==='malt'){ hex(p.x-6,p.y,6,'#bbf7d0'); hex(p.x+6,p.y,6,'#bbf7d0'); } else if(p.kd==='glu') hex(p.x,p.y,8,'#bbf7d0'); else if(p.kd==='gal') hex(p.x,p.y,8,'#fbcfe8');
+  else if(p.kd==='aa'){ ctx.beginPath(); ctx.arc(p.x,p.y,6,0,6.3); ctx.fillStyle=pick(['#f87171','#60a5fa','#fbbf24']); ctx.fill(); } else if(p.kd==='o2'){ ctx.beginPath(); ctx.arc(p.x,p.y,9,0,6.3); ctx.strokeStyle='#bae6fd'; ctx.lineWidth=2; ctx.stroke(); } else { ctx.beginPath(); ctx.arc(p.x,p.y,6,0,6.3); ctx.fillStyle='#ef4444'; ctx.fill(); } ctx.globalAlpha=1; }
+function graph(x0,y0,w,h){ // activity vs temperature for the enzymes in this level
+  ctx.fillStyle='#0e1a33'; ctx.fillRect(x0,y0,w,h); ctx.strokeStyle='#334155'; ctx.strokeRect(x0,y0,w,h);
+  const X=t=>x0+30+(w-40)*t/70, Y=a=>y0+h-24-(h-40)*a;
+  ctx.strokeStyle='#475569'; ctx.beginPath(); ctx.moveTo(X(0),Y(0)); ctx.lineTo(X(70),Y(0)); ctx.moveTo(X(0),Y(0)); ctx.lineTo(X(0),Y(1)); ctx.stroke();
+  ctx.fillStyle='#9fb0cf'; ctx.font='11px Arial'; ctx.textAlign='center'; [0,20,37,50,70].forEach(t=>ctx.fillText(t,X(t),Y(0)+13)); ctx.fillText('Temperature (°C)',x0+w/2,y0+h-1);
+  ctx.save(); ctx.translate(x0+10,Y(.5)); ctx.rotate(-Math.PI/2); ctx.fillText('Enzyme activity',0,0); ctx.restore();
+  ctx.fillStyle='rgba(248,113,113,.15)'; ctx.fillRect(X(50),Y(1),X(70)-X(50),Y(0)-Y(1)); ctx.fillStyle='#fca5a5'; ctx.fillText('denatures',X(60),Y(1)+10);
+  const es=[...new Set(L.subs.map(s=>ORDER.filter(e=>ENZ[e].key===SUB[s].key)).flat())];
+  es.forEach(e=>{ ctx.strokeStyle=ENZ[e].col; ctx.lineWidth=2; ctx.beginPath(); for(let t=0;t<=70;t+=1){ const a=act(e,t,pH); t?ctx.lineTo(X(t),Y(a)):ctx.moveTo(X(t),Y(a)); } ctx.stroke(); });
+  ctx.strokeStyle='#facc15'; ctx.setLineDash([4,4]); ctx.beginPath(); ctx.moveTo(X(T),Y(0)); ctx.lineTo(X(T),Y(1)); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle='#9fb0cf'; ctx.textAlign='left'; ctx.font='11px Arial'; ctx.fillText('Curves change with pH too',x0+34,y0+12); }
+function phBar(x0,y0,w){ ctx.fillStyle='#9fb0cf'; ctx.font='12px Arial'; ctx.textAlign='left'; ctx.fillText('pH',x0,y0-6);
+  const g=ctx.createLinearGradient(x0,0,x0+w,0); g.addColorStop(0,'#ef4444'); g.addColorStop(.5,'#22c55e'); g.addColorStop(1,'#6366f1'); ctx.fillStyle=g; ctx.fillRect(x0,y0,w,14);
+  const X=p=>x0+w*p/14; const es=[...new Set(L.subs.map(s=>ORDER.filter(e=>ENZ[e].key===SUB[s].key)).flat())];
+  es.forEach((e,i)=>{ ctx.fillStyle=ENZ[e].col; ctx.fillRect(X(ENZ[e].pH)-2,y0+16+i*12,4,9); ctx.font='10px Arial'; ctx.fillText(ENZ[e].n,X(ENZ[e].pH)+5,y0+24+i*12); });
+  ctx.fillStyle='#fff'; ctx.beginPath(); ctx.moveTo(X(pH),y0-2); ctx.lineTo(X(pH)-6,y0-10); ctx.lineTo(X(pH)+6,y0-10); ctx.fill();
+  ctx.fillStyle='#9fb0cf'; [0,7,14].forEach(p=>{ ctx.textAlign='center'; ctx.fillText(p,X(p),y0+70); }); }
+function draw(){ const sx=cv.width/W, sy=cv.height/H; ctx.setTransform(sx,0,0,sy,0,0); const k=hudK;
+  ctx.fillStyle='#120d16'; ctx.fillRect(0,0,W,H);
+  const g=ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#3b1d2b'); g.addColorStop(1,'#1f1220'); ctx.fillStyle=g; ctx.fillRect(0,0,GW,H);
+  if(!L) return;
+  // conveyor (the inside of the gut) and reaction zone
+  ctx.fillStyle='#2a1a24'; ctx.fillRect(0,BY-50,GW,100); ctx.strokeStyle='#7c2d4a'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(0,BY-50); ctx.lineTo(GW,BY-50); ctx.moveTo(0,BY+50); ctx.lineTo(GW,BY+50); ctx.stroke();
+  ctx.setLineDash([8,6]); ctx.strokeStyle='#facc15'; ctx.lineWidth=2; ctx.strokeRect(ZX-ZW/2,BY-62,ZW,124); ctx.setLineDash([]);
+  ctx.fillStyle='#fde68a'; ctx.font=`bold ${12*Math.min(k,1.4)}px Arial`; ctx.textAlign='center'; ctx.fillText('REACTION ZONE',ZX,BY-70);
+  subs.forEach(s=>{ substrate(s); if(s.e){ enzyme(s.e,s.x-26,BY,s.a||0); ctx.fillStyle='#1e293b'; ctx.fillRect(s.x-50,BY+52,110,9); ctx.fillStyle='#34d399'; ctx.fillRect(s.x-50,BY+52,110*Math.min(1,s.p),9);
+      ctx.fillStyle=(s.a||0)<.25?'#f87171':'#e2e8f0'; ctx.font='bold 12px Arial'; ctx.fillText(`working at ${Math.round((s.a||0)*100)}%`,s.x+5,BY+76); } });
+  const tg=target(); if(tg&&!subs.some(s=>s.e)){ ctx.strokeStyle='#facc15'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(tg.x+6,BY,48,0,6.3); ctx.stroke(); }
+  prods.forEach(prod); parts.forEach(p=>{ ctx.globalAlpha=Math.max(0,p.life*2); ctx.fillStyle='#fde68a'; ctx.fillRect(p.x-2,p.y-2,4,4); }); ctx.globalAlpha=1;
+  // side panel: thermometer, activity graph, pH
+  ctx.fillStyle='#0b1220'; ctx.fillRect(GW,0,W-GW,H);
+  ctx.textAlign='left'; ctx.fillStyle='#e8eefc'; ctx.font='bold 15px Arial'; ctx.fillText(`Level ${lv+1}: ${L.n}`,GW+16,26);
+  ctx.font='13px Arial'; ctx.fillStyle='#9fb0cf'; ctx.fillText(`Done ${done} of ${L.need}`,GW+16,46);
+  ctx.font='bold 26px Arial'; ctx.fillStyle=T>=50?'#f87171':T>42||T<28?'#fbbf24':'#86efac'; ctx.fillText(`${T.toFixed(1)} °C`,GW+16,86); ctx.fillStyle=pH<4?'#fca5a5':pH>9?'#a5b4fc':'#86efac'; ctx.fillText(`pH ${pH.toFixed(1)}`,GW+180,86);
+  graph(GW+12,104,W-GW-24,230); phBar(GW+20,372,W-GW-50);
+  ctx.textAlign='left'; ctx.font='12px Arial'; ctx.fillStyle='#9fb0cf'; ctx.fillText('← → temperature   ↑ ↓ pH   1 to 5 enzymes',GW+16,470);
+  if(hot>0){ ctx.textAlign='left'; ctx.fillStyle='#f87171'; ctx.font='bold 14px Arial'; ctx.fillText('DENATURING! Cool it down!',GW+16,500); }
+  // HUD
+  ctx.textAlign='left'; ctx.fillStyle='#e8eefc'; ctx.font=`bold ${17*k}px Arial`; ctx.fillText(`Score ${score}`,14,26*Math.min(k,1.3)); ctx.fillStyle='#f87171'; ctx.font=`${18*k}px Arial`; ctx.fillText('♥'.repeat(Math.max(0,hearts)),14,26*Math.min(k,1.3)+24*k);
+  if(flash&&performance.now()<flash.until){ ctx.fillStyle=flash.c; ctx.fillRect(0,0,GW,H); }
+  if(msg&&performance.now()<msg.until){ ctx.font=`bold ${14*Math.min(k,1.5)}px Arial`; ctx.textAlign='center'; const words=msg.t.split(' '), lines=[]; let cur=''; words.forEach(w=>{ if(ctx.measureText(cur+' '+w).width>GW-60){ lines.push(cur); cur=w; } else cur=cur?cur+' '+w:w; }); lines.push(cur);
+    const lh=20*Math.min(k,1.5), y0=H-30-lines.length*lh; ctx.fillStyle='rgba(5,10,20,.85)'; ctx.fillRect(16,y0-6,GW-32,lines.length*lh+12); ctx.fillStyle=msg.ok?'#86efac':'#fde68a'; ctx.textBaseline='middle'; lines.forEach((l,i)=>ctx.fillText(l,GW/2,y0+lh/2+i*lh)); ctx.textBaseline='alphabetic'; }
+}
+(function idle(){ fit(); const sx=cv.width/W, sy=cv.height/H; ctx.setTransform(sx,0,0,sy,0,0); ctx.fillStyle='#1f1220'; ctx.fillRect(0,0,W,H); })();
+GAME.teacherHTML=()=>`<p class="small muted">Practice game, not graded. Wrong choices cost a heart and explain the rule (shape doesn't fit, too slow at this temperature or pH), but never name the right enzyme.</p>
+ <h3>How it works</h3><p class="small">Substrates ride along the gut. Students pick the enzyme whose active site fits (keys 1 to 5), then keep the temperature and pH near that enzyme's optimum so the reaction finishes in time. Events (cold drink, hot soup, antacid, fever) push conditions away. Above 50 °C for more than a moment, the enzymes denature. The body slowly pulls temperature back toward 37 °C, like homeostasis.</p>
+ <h3>Answer key</h3><table class="ktab"><tr><th>Level</th><th>Substrate → enzyme</th><th>Best conditions</th></tr>
+ <tr><td>1 Mouth</td><td>starch → amylase; hydrogen peroxide → catalase</td><td>37 °C, pH 7</td></tr><tr><td>2 Stomach</td><td>protein → pepsin</td><td>37 °C, lower pH to about 2</td></tr>
+ <tr><td>3 Small intestine</td><td>starch → amylase; lactose → lactase; protein → trypsin (pepsin barely works at pH 8)</td><td>37 °C, pH about 7 to 8</td></tr><tr><td>4 Liver cell, fever</td><td>hydrogen peroxide → catalase; starch → amylase</td><td>keep cooling to 37 °C, pH 7</td></tr></table>`;
+GAME.printHTML=()=>`<h1>Enzyme Lab: reference</h1><table border="1" cellpadding="6" style="border-collapse:collapse;font-size:13px"><tr><th>Enzyme</th><th>Substrate</th><th>Products</th><th>Optimum temperature</th><th>Optimum pH</th></tr>${ORDER.map(e=>`<tr><td>${ENZ[e].n}</td><td>${ENZ[e].sub}</td><td>${ENZ[e].prod}</td><td>about 37 °C</td><td>about ${ENZ[e].pH}</td></tr>`).join('')}</table><p>Above about 50 °C, human enzymes denature: the active site changes shape and the enzyme stops working.</p>`;
+window.__enz={get msg(){return msg&&msg.t;}, get state(){return state;}, get hearts(){return hearts;}, get score(){return score;}, get lv(){return lv;}, get done(){return done;}, get T(){return T;}, get pH(){return pH;},
+  target:()=>{ const s=target(); return s&&{k:s.k,x:s.x}; }, working:()=>subs.some(s=>s.e), apply, setT:v=>{ T=v; }, setPH:v=>{ pH=v; }, rush:()=>{ subs.forEach(s=>{ if(!s.e) s.x=Math.min(s.x,ZX+40); }); spawnT=0; }, ENZ, SUB, act};
+
+$$('.tbtn').forEach(b=>b.addEventListener('pointerdown',e=>{ e.preventDefault(); state==='play'?GAME.onPause():GAME.onResume(); }));
+</script>
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

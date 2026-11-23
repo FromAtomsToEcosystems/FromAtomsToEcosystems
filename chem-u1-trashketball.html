@@ -1,0 +1,92 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unit 1 Trashketball | Chemistry Unit 1</title>
+<style>
+:root{--bg:#0b1322;--panel:#13203a;--ink:#e8eef8;--mut:#94a3b8;--acc:#f97316;--ok:#4ade80;--bad:#f87171;--gold:#f6b93b}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+header{display:flex;align-items:center;gap:14px;padding:12px 20px;background:#0f1a2e;border-bottom:1px solid #1e2c4a}header h1{margin:0;font-size:22px;flex:1}header .sub{color:var(--mut);font-size:14px}
+button{font:inherit;cursor:pointer;border-radius:12px;border:1px solid #2b3b5c;background:#1b2a48;color:var(--ink);padding:10px 16px;font-size:17px}button:hover{filter:brightness(1.15)}button.pri{background:var(--acc);border-color:var(--acc);color:#111;font-weight:800}button:disabled{opacity:.4;cursor:default}
+.wrap{max-width:1300px;margin:0 auto;padding:18px;display:grid;grid-template-columns:1fr 320px;gap:18px}
+.card{background:var(--panel);border:1px solid #1e2c4a;border-radius:18px;padding:22px}
+.turn{font-size:18px;color:var(--mut)}.turn b{color:var(--gold);font-size:24px}
+.topic{display:inline-block;background:#1e2c4a;border-radius:999px;padding:3px 12px;font-size:14px;color:var(--mut);margin:6px 0}
+.q{font-size:32px;font-weight:700;line-height:1.3;margin:10px 0 18px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}.opt{font-size:24px;text-align:left;padding:16px;border-radius:14px;background:#0f1a2e;border:2px solid #2b3b5c}.opt b{color:var(--gold);margin-right:8px}
+.opt.right{border-color:var(--ok);background:#12301f}.why{margin-top:14px;font-size:20px;color:var(--ok);min-height:28px}
+.row{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;align-items:center}
+.timer{font-size:44px;font-weight:800;font-variant-numeric:tabular-nums;min-width:110px;text-align:center}.timer.low{color:var(--bad)}
+.shot{margin-top:16px;padding:16px;border:2px dashed var(--acc);border-radius:14px}.shot h3{margin:0 0 8px;font-size:22px}
+.board h2{margin:0 0 10px;font-size:20px}.team{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;margin-bottom:6px;background:#0f1a2e}.team.now{outline:3px solid var(--gold)}
+.team .nm{flex:1;font-size:18px;font-weight:700}.team .pts{font-size:26px;font-weight:800;color:var(--gold);min-width:44px;text-align:right}.team .adj{padding:2px 9px;font-size:15px;border-radius:8px}
+.bar{height:6px;background:#1e2c4a;border-radius:4px;margin-top:3px}.bar i{display:block;height:100%;background:var(--acc);border-radius:4px}
+.setup{max-width:760px;margin:40px auto}.setup label{display:block;margin:10px 0 4px;color:var(--mut)}.setup input{font:inherit;font-size:18px;padding:8px 10px;border-radius:10px;border:1px solid #2b3b5c;background:#0f1a2e;color:var(--ink);width:100%}
+.names{display:grid;grid-template-columns:1fr 1fr;gap:8px}.rules{color:var(--mut);font-size:16px;line-height:1.5}
+.court{display:flex;gap:10px;justify-content:center;margin:6px 0 2px}.court span{padding:6px 14px;border-radius:999px;background:#1e2c4a;font-weight:700}
+.win{font-size:42px;font-weight:800;color:var(--gold);text-align:center;margin:20px 0}
+@media (max-width:900px){.wrap{grid-template-columns:1fr}.q{font-size:24px}.opt{font-size:19px}}
+</style></head><body>
+<header><h1>🏀 Unit 1 Trashketball</h1><span class="sub">Atomic Structure</span><button id="bNew">New game</button></header>
+<div id="app"></div>
+<script>
+const Q = [{"t": "Parts of an Atom", "q": "Which particle has a negative charge?", "o": ["Electron", "Proton", "Neutron", "Nucleus"], "why": "Electrons are −1."}, {"t": "Parts of an Atom", "q": "The atomic number tells the number of…", "o": ["protons", "neutrons", "electrons only in ions", "nucleons"], "why": "Protons decide the element."}, {"t": "Parts of an Atom", "q": "How many neutrons are in sodium-23 (atomic number 11)?", "o": ["12", "11", "23", "34"], "why": "23 − 11."}, {"t": "Parts of an Atom", "q": "A neutral atom has 17 protons. How many electrons?", "o": ["17", "18", "35", "0"], "why": "Neutral: equal."}, {"t": "Parts of an Atom", "q": "Most alpha particles went straight through gold foil. This shows atoms are…", "o": ["mostly empty space", "solid", "negative", "made of gold"], "why": "Rutherford."}, {"t": "Parts of an Atom", "q": "Where is almost all of an atom’s mass?", "o": ["In the nucleus", "In the electron cloud", "Spread evenly", "In the electrons"], "why": "Protons and neutrons."}, {"t": "Isotopes", "q": "Isotopes of an element have different numbers of…", "o": ["neutrons", "protons", "electrons", "elements"], "why": "Same protons."}, {"t": "Isotopes", "q": "In uranium-235, the 235 is the…", "o": ["mass number", "atomic number", "number of protons", "number of electrons"], "why": "Protons + neutrons."}, {"t": "Isotopes", "q": "How many neutrons are in carbon-14 (atomic number 6)?", "o": ["8", "14", "6", "20"], "why": "14 − 6."}, {"t": "Isotopes", "q": "Which pair are isotopes?", "o": ["Oxygen-16 and oxygen-18", "Carbon-14 and nitrogen-14", "Helium-4 and lithium-7", "Sodium-23 and magnesium-24"], "why": "Same element."}, {"t": "Isotopes", "q": "Why do isotopes of an element react the same way?", "o": ["They have the same number of electrons", "They have the same mass", "They are radioactive", "They have no neutrons"], "why": "Electrons decide chemistry."}, {"t": "Isotopes", "q": "Which isotope is used to date ancient wood and bones?", "o": ["Carbon-14", "Carbon-12", "Iodine-131", "Uranium-238"], "why": "Radiocarbon dating."}, {"t": "Average Atomic Mass", "q": "The mass on the periodic table is the…", "o": ["weighted average of the element’s isotopes", "mass of the heaviest isotope", "number of protons", "mass of one atom"], "why": "Weighted average."}, {"t": "Average Atomic Mass", "q": "Write 24.2% as a decimal.", "o": ["0.242", "2.42", "24.2", "0.0242"], "why": "Divide by 100."}, {"t": "Average Atomic Mass", "q": "Boron-10 (10.01, 19.9%) and boron-11 (11.01, 80.1%). Average atomic mass?", "o": ["10.81 amu", "10.51 amu", "10.20 amu", "21.02 amu"], "why": "1.99 + 8.82."}, {"t": "Average Atomic Mass", "q": "Lithium’s average atomic mass is 6.94. Which isotope is most common?", "o": ["Lithium-7", "Lithium-6", "They are equal", "Lithium-8"], "why": "Closest to 7."}, {"t": "Average Atomic Mass", "q": "An element has isotopes of mass 40 and 42. Its average atomic mass could be…", "o": ["40.08", "39.50", "43.00", "82.00"], "why": "Must be between 40 and 42."}, {"t": "Average Atomic Mass", "q": "On a mass spectrometer graph, the tallest bar shows the…", "o": ["most abundant isotope", "heaviest isotope", "lightest isotope", "radioactive isotope"], "why": "Height = abundance."}, {"t": "Radioactive Decay", "q": "Which radiation is stopped by a sheet of paper?", "o": ["Alpha", "Beta", "Gamma", "None"], "why": "Alpha is big and slow."}, {"t": "Radioactive Decay", "q": "Which radiation is pure energy with no mass or charge?", "o": ["Gamma", "Alpha", "Beta", "Neutron"], "why": "Gamma rays."}, {"t": "Radioactive Decay", "q": "Uranium-238 (92) gives off an alpha particle. What forms?", "o": ["Thorium-234 (90)", "Uranium-234 (92)", "Protactinium-238 (91)", "Radium-238 (88)"], "why": "238 − 4; 92 − 2."}, {"t": "Radioactive Decay", "q": "Iodine-131 (53) undergoes beta decay. What forms?", "o": ["Xenon-131 (54)", "Tellurium-131 (52)", "Iodine-127 (53)", "Xenon-127 (54)"], "why": "Mass same; +1."}, {"t": "Radioactive Decay", "q": "In a balanced nuclear equation, what must match on both sides?", "o": ["The total mass numbers and total atomic numbers", "The number of elements", "The number of electrons", "The number of particles"], "why": "Top and bottom numbers."}, {"t": "Radioactive Decay", "q": "Which is a good way to stay safe around radiation?", "o": ["Keep your distance and use shielding", "Hold the source close", "Use paper to block gamma", "Stay near it a long time"], "why": "Time, distance, shielding."}, {"t": "Half-Life", "q": "Half-life is the time it takes for…", "o": ["half of a radioactive sample to decay", "all of a sample to decay", "an atom to split in half", "half an electron to leave"], "why": "Definition."}, {"t": "Half-Life", "q": "What fraction of a sample is left after 3 half-lives?", "o": ["1/8", "1/3", "1/6", "0"], "why": "½ × ½ × ½."}, {"t": "Half-Life", "q": "A 120 g sample has a half-life of 5 years. How much is left after 10 years?", "o": ["30 g", "60 g", "12 g", "0 g"], "why": "2 half-lives."}, {"t": "Half-Life", "q": "A bone has 1/4 of its carbon-14 left (half-life 5,730 years). How old is it?", "o": ["11,460 years", "5,730 years", "22,920 years", "1,433 years"], "why": "2 half-lives."}, {"t": "Half-Life", "q": "A sample drops from 200 g to 25 g in 15 days. What is its half-life?", "o": ["5 days", "15 days", "3 days", "7.5 days"], "why": "3 half-lives in 15 days."}, {"t": "Half-Life", "q": "Why does a half-life graph never quite reach zero?", "o": ["Each half-life only removes half of what is left", "Atoms come back", "Decay speeds up", "The graph is wrong"], "why": "Halving forever."}, {"t": "Fission and Fusion", "q": "Fission is when…", "o": ["a heavy nucleus splits into smaller nuclei", "light nuclei join", "atoms share electrons", "a fuel burns"], "why": "Split."}, {"t": "Fission and Fusion", "q": "What powers the Sun?", "o": ["Fusion of hydrogen into helium", "Fission of uranium", "Burning coal", "Chemical reactions"], "why": "Stars fuse hydrogen."}, {"t": "Fission and Fusion", "q": "What do control rods do?", "o": ["Absorb neutrons to control the chain reaction", "Provide the fuel", "Turn the turbine", "Release steam"], "why": "They soak up neutrons."}, {"t": "Fission and Fusion", "q": "U-235 (92) + n → Ba-141 (56) + Kr-? + 3n. What is the krypton mass number?", "o": ["92", "94", "95", "89"], "why": "236 − 141 − 3."}, {"t": "Fission and Fusion", "q": "Why do nuclear reactions release so much energy?", "o": ["A small amount of mass turns into energy", "They use more oxygen", "They happen faster", "They make more electrons"], "why": "E = mc²."}, {"t": "Fission and Fusion", "q": "One drawback of nuclear fission power is…", "o": ["radioactive waste that lasts thousands of years", "large CO₂ emissions", "it needs coal", "it only runs at night"], "why": "Waste storage."}];
+const KEY = 'fate_chem_u1_trashketball_v1';
+let S = load() || null, tick = null;
+function load() { try { return JSON.parse(localStorage.getItem(KEY)); } catch (e) { return null; } }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+const $ = s => document.querySelector(s);
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function setup() {
+  clearInterval(tick);
+  $('#app').innerHTML = `<div class="setup card"><h2>Set up the game</h2>
+    <p class="rules"><b>How to play:</b> Teams take turns. Read the question aloud and start the timer. If the team answers correctly, they earn <b>1 point</b> and one shot at the trash can: tape lines on the floor for <b>1, 2, and 3 points</b>. A wrong answer passes the turn. Highest score wins.</p>
+    <label>How many teams?</label><input id="nT" type="number" min="2" max="8" value="8">
+    <label>Seconds per question</label><input id="nS" type="number" min="10" max="180" value="45">
+    <label>Team names (optional)</label><div class="names" id="names"></div>
+    <div class="row"><button class="pri" id="go">Start game</button></div></div>`;
+  const names = () => { const n = Math.max(2, Math.min(8, +$('#nT').value || 8)); $('#names').innerHTML = Array.from({ length: n }, (_, i) => `<input data-i="${i}" placeholder="Group ${i + 1}">`).join(''); };
+  names(); $('#nT').addEventListener('input', names);
+  $('#go').addEventListener('click', () => {
+    const n = Math.max(2, Math.min(8, +$('#nT').value || 8));
+    const teams = Array.from({ length: n }, (_, i) => ({ name: (document.querySelector(`#names input[data-i="${i}"]`).value || '').trim() || `Group ${i + 1}`, pts: 0 }));
+    S = { teams, turn: 0, order: shuffle(Q.map((_, i) => i)), qi: 0, phase: 'ask', secs: Math.max(10, +$('#nS').value || 45), left: null, asked: 0 };
+    save(); play();
+  });
+}
+function cur() { return Q[S.order[S.qi % S.order.length]]; }
+function play() {
+  clearInterval(tick);
+  const q = cur(), t = S.teams[S.turn], shown = S.phase !== 'ask', max = Math.max(1, ...S.teams.map(x => x.pts));
+  $('#app').innerHTML = `<div class="wrap"><div class="card">
+    <div class="turn">Up now: <b>${t.name}</b> · Question ${S.asked + 1}</div><span class="topic">${q.t}</span>
+    <div class="q">${q.q}</div>
+    <div class="opts">${q.o.map((o, k) => `<div class="opt ${shown && k === 0 ? 'right' : ''}"><b>${'ABCD'[k]}</b>${o}</div>`).join('')}</div>
+    <div class="why">${shown ? '✓ ' + q.o[0] + ' · ' + q.why : ''}</div>
+    <div class="row"><span class="timer" id="tm">${S.left ?? S.secs}</span><button id="tGo">Start timer</button><button id="show" ${shown ? 'disabled' : ''}>Show answer</button>
+      ${S.phase === 'shown' ? `<button class="pri" id="ok">✓ Correct (+1)</button><button id="no">✗ Wrong (pass)</button>` : ''}</div>
+    ${S.phase === 'shoot' ? `<div class="shot"><h3>🏀 ${t.name} takes a shot!</h3><div class="court"><span>1-pt line</span><span>2-pt line</span><span>3-pt line</span></div>
+      <div class="row"><button data-s="0">Missed</button><button class="pri" data-s="1">Made 1-pt</button><button class="pri" data-s="2">Made 2-pt</button><button class="pri" data-s="3">Made 3-pt</button></div></div>` : ''}
+    </div>
+    <div class="card board"><h2>Scoreboard</h2>${S.teams.map((x, i) => `<div class="team ${i === S.turn ? 'now' : ''}"><div style="flex:1"><div class="nm">${x.name}</div><div class="bar"><i style="width:${x.pts / max * 100}%"></i></div></div><button class="adj" data-a="${i}" data-d="-1">−</button><button class="adj" data-a="${i}" data-d="1">+</button><span class="pts">${x.pts}</span></div>`).join('')}
+      <div class="row"><button id="skip">Skip question</button><button id="end">End game</button></div></div></div>`;
+  // ---- order the options so the correct one is not always A: shuffle positions per question but keep the "right" index
+  const optEls = [...document.querySelectorAll('.opt')], perm = permFor(S.order[S.qi % S.order.length]);
+  const box = document.querySelector('.opts'); perm.forEach((k, pos) => { const el = optEls[k]; el.querySelector('b').textContent = 'ABCD'[pos]; box.appendChild(el); });
+  if (shown) $('.why').textContent = '✓ ' + 'ABCD'[perm.indexOf(0)] + '. ' + q.o[0] + ' · ' + q.why;
+  $('#tGo').addEventListener('click', () => { clearInterval(tick); if (S.left == null || S.left <= 0) S.left = S.secs; tick = setInterval(() => { S.left--; const e = $('#tm'); if (!e) return clearInterval(tick); e.textContent = Math.max(0, S.left); e.classList.toggle('low', S.left <= 10); if (S.left <= 0) clearInterval(tick); }, 1000); });
+  $('#show').addEventListener('click', () => { clearInterval(tick); S.phase = 'shown'; save(); play(); });
+  const okb = $('#ok'); if (okb) okb.addEventListener('click', () => { t.pts += 1; S.phase = 'shoot'; save(); play(); });
+  const nob = $('#no'); if (nob) nob.addEventListener('click', () => next());
+  document.querySelectorAll('[data-s]').forEach(b => b.addEventListener('click', () => { t.pts += +b.dataset.s; next(); }));
+  document.querySelectorAll('[data-a]').forEach(b => b.addEventListener('click', () => { const x = S.teams[+b.dataset.a]; x.pts = Math.max(0, x.pts + +b.dataset.d); save(); play(); }));
+  $('#skip').addEventListener('click', () => { S.qi++; S.phase = 'ask'; S.left = null; save(); play(); });
+  $('#end').addEventListener('click', () => { if (confirm('End the game and show the winner?')) finish(); });
+}
+function permFor(i) { const p = [0, 1, 2, 3].slice(0, Q[i].o.length); let r = (i * 7 + 3) % p.length; const a = p.slice(1); a.splice(r, 0, 0); return a; }
+function next() { S.turn = (S.turn + 1) % S.teams.length; S.qi++; S.asked++; S.phase = 'ask'; S.left = null; save(); play(); }
+function finish() {
+  clearInterval(tick); const rank = S.teams.slice().sort((a, b) => b.pts - a.pts), top = rank[0].pts, winners = rank.filter(x => x.pts === top).map(x => x.name);
+  $('#app').innerHTML = `<div class="setup card"><div class="win">🏆 ${winners.join(' & ')} ${winners.length > 1 ? 'tie' : 'wins'}!</div>${rank.map((x, i) => `<div class="team"><span class="nm">${i + 1}. ${x.name}</span><span class="pts">${x.pts}</span></div>`).join('')}<div class="row"><button class="pri" id="again">New game</button><button id="back">Back to the game</button></div></div>`;
+  $('#again').addEventListener('click', () => { S = null; save(); setup(); }); $('#back').addEventListener('click', play);
+}
+document.getElementById('bNew').addEventListener('click', () => { if (!S || confirm('Start a new game? The current scores will be cleared.')) { S = null; localStorage.removeItem(KEY); setup(); } });
+S ? play() : setup();
+</script></body></html>

@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Replication Fork | Biology</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1220;--panel:#121c31;--panel2:#18243d;--line:#2b3a58;--text:#e8eefc;--muted:#9fb0cf;--gold:#facc15;--gold2:#fbbf24;--ok:#34d399;--bad:#f87171;--violet:#a78bfa}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 "Atkinson Hyperlegible",Arial,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:#0e172a}
+header .t{font-weight:800;font-size:17px}
+header .s{color:var(--muted);font-size:13px}
+header .sp{flex:1}
+.btn{font:inherit;font-weight:700;border-radius:10px;padding:9px 16px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--gold);color:#1a1300;border-color:var(--gold)}
+.btn:disabled{opacity:.5;cursor:default}
+main{max-width:1000px;margin:0 auto;padding:14px 16px 30px}
+.stage{position:relative;width:100%;aspect-ratio:16/10;background:#050a14;border:1px solid var(--line);border-radius:14px;overflow:hidden;touch-action:none}
+canvas{display:block;width:100%;height:100%}
+.ov{position:absolute;inset:0;display:flex;background:rgba(5,10,20,.78);padding:14px;overflow:auto}
+.ov>.card{margin:auto}
+#teachOv{position:fixed;z-index:60;background:rgba(5,10,20,.94)}
+.ov[hidden]{display:none}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;max-width:640px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.card h2{margin:0 0 6px;font-size:22px}
+.card h3{margin:12px 0 6px;font-size:15px;color:var(--gold)}
+.muted{color:var(--muted)} .small{font-size:13.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chip{font:inherit;font-size:14px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer}
+.chip.on{border-color:var(--gold);background:rgba(250,204,21,.16);font-weight:700}
+.qtag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--violet);margin-bottom:4px}
+.qtext{font-size:18px;margin:4px 0 12px}
+.opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;font-size:15.5px}
+.opt:hover:not(:disabled){border-color:var(--gold)}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;background:#0b1220;display:grid;place-items:center;font-size:13px;font-weight:800}
+.opt.pick{border-color:var(--gold)}
+.fb{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:15.5px}
+.fb.ok{background:rgba(52,211,153,.14);border:1px solid rgba(52,211,153,.5)}
+.fb.no{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.45)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:14px;margin:6px 0}
+.keys b{color:var(--gold)}
+.ladder{display:flex;flex-wrap:wrap;gap:6px;font-size:13px;margin-top:6px}
+.ladder span{padding:3px 8px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}
+.touch{display:none;gap:10px;justify-content:space-between;margin-top:10px;user-select:none;-webkit-user-select:none}
+.touch .grp{display:flex;gap:10px}
+.tbtn{width:64px;height:58px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:22px;font-weight:800;touch-action:none}
+.tbtn.fire{width:110px;background:#3b2a07;border-color:var(--gold);color:var(--gold);font-size:17px}
+.tbtn.on{background:#334155}
+@media (pointer:coarse){.touch{display:flex}}
+@media (max-width:480px){.tbtn{width:52px;height:54px;font-size:20px}.tbtn.fire{width:86px}.touch .grp{gap:7px}.touch{gap:6px}}
+@media (max-width:760px),(max-height:560px){.ov{position:fixed;z-index:50;background:rgba(5,10,20,.92)}}
+body.showtouch .touch{display:flex}
+.info{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:14px;color:var(--muted)}
+.tpanel h3{margin-top:14px}
+.tq{margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font-size:14px}
+.tq ol{margin:4px 0 0;padding-left:22px}
+.tq li.right{color:var(--ok);font-weight:700}
+input.code{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0b1220;color:var(--text);width:180px}
+#printView{display:none}
+@media print{
+  body>*:not(#printView){display:none!important}
+  #printView{display:block!important;color:#000;background:#fff;font:12px/1.4 Arial,sans-serif}
+  #printView h1{font-size:18px;margin:0 0 4px} #printView .pq{break-inside:avoid;margin:8px 0}
+  #printView ol{margin:2px 0 0;padding-left:22px} #printView li.right{font-weight:700;text-decoration:underline}
+  html,body{background:#fff}
+}
+
+.bases{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;align-items:center}.bbtn{font:inherit;font-weight:800;font-size:22px;width:64px;height:56px;border-radius:12px;border:2px solid #0b1220;color:#fff;cursor:pointer;touch-action:none}.bbtn.proof{width:auto;padding:0 14px;font-size:15px;background:var(--panel2);color:var(--text);border-color:var(--line)}.padhint{margin-left:8px}</style>
+</head>
+<body>
+<header>
+  <div><div class="t">Replication Fork</div><div class="s">Biology · Unit 3: DNA and Protein Synthesis · Review game</div></div>
+  <div class="sp"></div>
+  <button class="btn" id="teachBtn" type="button">Teacher</button>
+</header>
+<main>
+  <div class="stage" id="stage">
+    <canvas id="cv" width="960" height="600" aria-label="Replication Fork game"></canvas>
+    <div class="ov" id="startOv"><div class="card"><h2>Replication Fork</h2><p class="small muted" style="margin:0 0 8px">Helicase unzips the DNA, and you are <b>DNA polymerase</b>. Add the matching base to the old strand as fast as helicase unzips it: <b>A–T</b> and <b>C–G</b>. Fix mistakes before they become mutations!</p><div class="keys"><b>A T C G</b><span>add a base (or tap the buttons)</span><b>Backspace</b><span>proofread: remove a wrong base</span><b>P</b><span>pause</span></div><div class="row"><button class="btn primary" id="startBtn" type="button">Start</button><span class="small muted" id="hiTxt"></span></div></div></div>
+    <div class="ov" id="roundOv" hidden><div class="card"><h2 id="roundTitle"></h2><p id="roundText"></p><div class="row"><button class="btn primary" id="roundGo" type="button">Go</button></div></div></div>
+    <div class="ov" id="overOv" hidden><div class="card"><h2 id="overTitle"></h2><div id="overBody"></div><div class="row"><button class="btn primary" id="againBtn" type="button">Play again</button></div></div></div>
+
+    <div class="ov" id="pauseOv" hidden><div class="card" style="max-width:380px;text-align:center"><h2>Paused</h2><p class="muted">Press P or the button to keep playing.</p><button class="btn primary" id="resumeBtn" type="button">Resume</button></div></div>
+  </div>
+  <div class="bases" id="bases"></div>
+
+</main>
+<div class="ov" id="teachOv" hidden>
+  <div class="card tpanel" style="max-width:780px">
+    <h2>Teacher tools</h2>
+    <div id="tLogin"><p class="small muted">Enter the teacher code.</p><div class="row" style="margin-top:4px"><input class="code" id="tCode" type="password" autocomplete="off" aria-label="Teacher code"><button class="btn primary" id="tGo" type="button">Open</button><button class="btn" id="tClose0" type="button">Close</button></div><div class="small" id="tMsg" style="color:var(--bad);margin-top:6px"></div></div>
+    <div id="tBody" hidden>
+      <div class="row"><button class="btn" id="tPrint" type="button">🖨 Print the reference sheet</button><button class="btn" id="tTouch" type="button">Show touch buttons</button><button class="btn" id="tClose" type="button">Close</button></div>
+      <div id="tInfo"></div>
+    </div>
+  </div>
+</div>
+<div id="printView"></div>
+<script>
+const META={"store": "bioU3Fork"};
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const store={ get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+const shuffle=a=>{ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const rnd=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const GAME={onPause:()=>{}, onResume:()=>{}, teacherHTML:()=>'', printHTML:()=>''};
+/* teacher tools (code Teacher007) */
+function tShow(on){ $('#teachOv').hidden=!on; if(on){ GAME.onPause(); $('#tCode').value=''; $('#tMsg').textContent=''; setTimeout(()=>$('#tCode').focus(),30); } }
+$('#teachBtn').addEventListener('click',()=>tShow(true)); $('#tClose0').addEventListener('click',()=>tShow(false));
+$('#tClose').addEventListener('click',()=>{ tShow(false); $('#tBody').hidden=true; $('#tLogin').hidden=false; });
+function tOpen(){ if($('#tCode').value.trim().toLowerCase()!=='teacher007'){ $('#tMsg').textContent='Code not recognized.'; return; } $('#tLogin').hidden=true; $('#tBody').hidden=false; $('#tInfo').innerHTML=GAME.teacherHTML(); }
+$('#tGo').addEventListener('click',tOpen); $('#tCode').addEventListener('keydown',e=>{ if(e.key==='Enter') tOpen(); });
+$('#tTouch').addEventListener('click',()=>document.body.classList.toggle('showtouch'));
+$('#tPrint').addEventListener('click',()=>{ $('#printView').innerHTML=GAME.printHTML(); setTimeout(()=>window.print(),100); });
+$('#resumeBtn').addEventListener('click',()=>GAME.onResume());
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) GAME.onPause(); });
+window.FORK_CFG={letters:['A','T','C','G'],proof:true,maxGap:10,rna:false,pore:false,winTitle:'DNA copied!',gapMsg:'Helicase got too far ahead! Unpaired DNA is easy to damage. −1 heart',
+ rounds:[{title:'Round 1 of 3',n:24,speed:0.9,text:'Helicase is unzipping the DNA. You are <b>DNA polymerase</b>: add the matching base to each old strand base. <b>A pairs with T, C pairs with G.</b> Type A, T, C, or G (or tap the buttons).'},
+  {title:'Round 2 of 3',n:30,speed:1.35,text:'Faster now! If you add a wrong base, press <b>Backspace</b> (Proofread) to fix it. DNA polymerase checks its work.'},
+  {title:'Round 3 of 3',n:36,speed:1.8,text:'The cell is about to divide. Copy fast and accurately!'}],
+ endText:'<p class="small"><b>The big idea:</b> helicase unzips DNA, and DNA polymerase adds matching nucleotides to each old strand (A–T, C–G), checking for mistakes. Each new DNA molecule has <b>one old strand and one new strand</b>: replication is <b>semi-conservative</b>. Mistakes left in become <b>mutations</b>.</p>',
+ teacher:'<p class="small muted">Practice game, not graded.</p><h3>How it works</h3><p class="small">Helicase unzips the template at a steady speed. Students type the complementary base (A–T, C–G). If they fall more than 10 bases behind helicase, they lose a heart. Wrong bases show in red; Backspace "proofreads" (removes) the last wrong base. Uncorrected errors count as mutations. 3 rounds of 24, 30, and 36 bases at increasing speed. No Okazaki fragments, primers, or leading/lagging strands (per the course content rules).</p>',
+ print:'<h1>Replication Fork notes</h1><p>Base pairing in DNA: A with ___ and C with ___.</p><p>Helicase: ______________________. DNA polymerase: ______________________.</p><p>Why is replication called semi-conservative? ______________________________</p>'};
+
+const meter=(lab,v,max,col,txt)=>`<div class="meter"><div class="lab"><span>${lab}</span><b>${txt!=null?txt:Math.round(v)}</b></div><div class="tr"><div class="fl" style="width:${Math.max(0,Math.min(100,100*v/max))}%;background:${col}"></div></div></div>`;
+const HIKEY=META.store+'_hi'; function hiTxt(){ const h=+store.get(HIKEY)||0; const e=$('#hiTxt'); if(e) e.textContent=h?`High score on this Chromebook: ${h}`:''; } hiTxt();
+function saveHi(v){ const h=+store.get(HIKEY)||0; if(v>h){ store.set(HIKEY,v); return true; } return false; }
+function over(title,html){ $('#overTitle').textContent=title; $('#overBody').innerHTML=html; $('#overOv').hidden=false; hiTxt(); }
+/* ===================== REPLICATION FORK / mRNA EXPRESS (shared typing engine) ===================== */
+const cv=$('#cv'), ctx=cv.getContext('2d'); const W=960,H=600;
+const CFG=window.FORK_CFG; // set by each game
+const COL={A:'#ef4444',T:'#3b82f6',C:'#f59e0b',G:'#22c55e',U:'#a855f7'};
+const DP={A:'T',T:'A',C:'G',G:'C'}, RP={A:'U',T:'A',C:'G',G:'C'};
+let st, lastT;
+function randSeq(n){ let s=''; for(let i=0;i<n;i++) s+=pick('ATCG'.split('')); return s; }
+function startGame(){ st={round:0,hearts:5,score:0,mut:0,fixed:0,typed:0,right:0,phase:'type',msgs:[]}; $('#startOv').hidden=true; $('#overOv').hidden=true; newRound(); }
+function newRound(){ const R=CFG.rounds[st.round]; st.tmpl=R.seq||randSeq(R.n); st.pos=0; st.made=[]; st.heli=3; st.speed=R.speed; st.phase='type'; st.pore=null;
+  $('#roundTitle').textContent=R.title; $('#roundText').innerHTML=R.text; $('#roundOv').hidden=false; st.wait=true; fit(); draw(); }
+$('#roundGo').addEventListener('click',()=>{ $('#roundOv').hidden=true; st.wait=false; lastT=performance.now(); requestAnimationFrame(loop); });
+function want(i){ return CFG.rna?RP[st.tmpl[i]]:DP[st.tmpl[i]]; }
+function press(b){ if(!st||st.wait||st.over||st.paused||st.phase!=='type') return; if(!CFG.letters.includes(b)) return;
+  if(st.pos>=st.tmpl.length) return; if(st.pos>=Math.floor(st.heli)){ note(CFG.rna?'Wait: RNA polymerase has not unzipped the next base yet.':'Wait: helicase has not unzipped the next base yet.'); return; } const ok=b===want(st.pos); st.made.push({b,ok}); st.pos++; st.typed++; if(ok){ st.right++; st.score+=10; } else { flash('rgba(248,113,113,.18)'); note(CFG.rna&&b==='T'?'RNA has no T! Use U across from A.':`Mismatch: ${b} does not pair with ${st.tmpl[st.pos-1]}.${CFG.proof?' Press Backspace to proofread and fix it.':''}`); }
+  if(st.pos>=st.tmpl.length) roundDone(); }
+function proof(){ if(!st||st.phase!=='type'||!CFG.proof||!st.made.length) return; const last=st.made[st.made.length-1]; if(last.ok){ note('The last base is already correct.'); return; } st.made.pop(); st.pos--; st.fixed++; st.score+=5; note('Proofreading: DNA polymerase removed the wrong base. Now add the right one.'); }
+let fl=null; function flash(c){ fl={c,until:performance.now()+250}; } function note(t){ st.msgs.unshift({t,until:performance.now()+2600}); }
+function roundDone(){ const bad=st.made.filter(m=>!m.ok).length; st.mut+=bad; st.score+=bad?0:150; if(bad) note(`${bad} mismatch${bad>1?'es':''} left in the new strand. ${CFG.rna?'The mRNA has errors.':'Those become mutations!'}`); else note(CFG.rna?'Perfect mRNA copy!':'Perfect copy! +150');
+  if(CFG.pore){ st.phase='pore'; st.pore={x:150,y:300,vx:0,vy:0,t:22}; note('Now steer the mRNA out of the nucleus through a nuclear pore! (arrow keys or tap)'); }
+  else nextRound(); }
+function nextRound(){ st.round++; if(st.round>=CFG.rounds.length) return finish(true); newRound(); }
+function finish(won){ st.over=true; draw(); const nh=saveHi(st.score);
+  over(won?CFG.winTitle:'Game over',`<p style="font-size:18px;margin:4px 0">Score: <b>${st.score}</b>${nh?' <span style="color:var(--gold)">New high score!</span>':''}</p><p class="small">Bases added: <b>${st.typed}</b>, correct: <b>${st.right}</b>${CFG.proof?`, fixed by proofreading: <b>${st.fixed}</b>`:''}, errors left in: <b>${st.mut}</b>.</p>${CFG.endText}`); }
+function loop(ts){ if(!st||st.over||st.paused||st.wait) return; const dt=Math.min(.05,(ts-lastT)/1000); lastT=ts;
+  if(st.phase==='type'){ st.heli+=st.speed*dt; st.heli=Math.min(st.heli,st.tmpl.length); const gap=st.heli-st.pos; if(gap>CFG.maxGap){ st.hearts--; st.heli=st.pos+3; flash('rgba(248,113,113,.3)'); note(CFG.gapMsg); if(st.hearts<=0) return finish(false); } }
+  else if(st.phase==='pore') porePhys(dt);
+  draw(); requestAnimationFrame(loop); }
+/* ---------- nuclear pore steering (mRNA Express) ---------- */
+const PORES=[[880,170],[880,430]]; const BLOBS=[[420,220,70],[560,400,60],[690,250,50],[330,430,45],[760,330,35]];
+const keys={};
+function porePhys(dt){ const p=st.pore, a=900; if(keys.l) p.vx-=a*dt; if(keys.r) p.vx+=a*dt; if(keys.u) p.vy-=a*dt; if(keys.d) p.vy+=a*dt; p.vx*=Math.pow(.15,dt); p.vy*=Math.pow(.15,dt);
+  p.x+=p.vx*dt; p.y+=p.vy*dt; p.t-=dt; const cx=480, cy=300, rx=430, ry=260; const e=((p.x-cx)/rx)**2+((p.y-cy)/ry)**2;
+  if(PORES.some(([x,y])=>Math.hypot(p.x-x,p.y-y)<38)){ st.score+=100+Math.round(p.t*5); note('The mRNA left the nucleus through a nuclear pore! On to a ribosome.'); return nextRound(); }
+  if(e>0.97){ const k=Math.sqrt(0.97/e); p.x=cx+(p.x-cx)*k; p.y=cy+(p.y-cy)*k; p.vx*=-0.4; p.vy*=-0.4; }
+  BLOBS.forEach(([x,y,r])=>{ const d=Math.hypot(p.x-x,p.y-y); if(d<r+14){ const nx=(p.x-x)/d, ny=(p.y-y)/d; p.x=x+nx*(r+14); p.y=y+ny*(r+14); p.vx*=-.3; p.vy*=-.3; } });
+  if(p.t<=0){ st.hearts--; note('Too slow: the mRNA was broken down before it got out. −1 heart'); if(st.hearts<=0) return finish(false); return nextRound(); } }
+const KM={ArrowLeft:'l',ArrowRight:'r',ArrowUp:'u',ArrowDown:'d',KeyA:'l',KeyD:'r',KeyW:'u',KeyS:'d'};
+document.addEventListener('keydown',e=>{ if(!st||st.over) return; if(e.code==='KeyP'||e.code==='Escape'){ st.paused?GAME.onResume():GAME.onPause(); return; }
+  if(st.phase==='pore'&&KM[e.code]){ keys[KM[e.code]]=true; e.preventDefault(); return; }
+  if(e.code==='Backspace'){ proof(); e.preventDefault(); return; } const k=e.key.toUpperCase(); if('ATCGU'.includes(k)&&k.length===1){ press(k); e.preventDefault(); } });
+document.addEventListener('keyup',e=>{ if(KM[e.code]) keys[KM[e.code]]=false; });
+$('#bases').innerHTML=CFG.letters.map(b=>`<button type="button" class="bbtn" data-b="${b}" style="background:${COL[b]}">${b}</button>`).join('')+(CFG.proof?'<button type="button" class="bbtn proof" data-b="proof">⌫ Proofread</button>':'')+(CFG.pore?'<span class="padhint small muted">During the pore stage, tap where you want the mRNA to go.</span>':'');
+$$('.bbtn').forEach(b=>b.addEventListener('pointerdown',e=>{ e.preventDefault(); b.dataset.b==='proof'?proof():press(b.dataset.b); }));
+cv.addEventListener('pointerdown',e=>{ if(!st||st.phase!=='pore') return; const r=cv.getBoundingClientRect(); const x=(e.clientX-r.left)/r.width*W, y=(e.clientY-r.top)/r.height*H; const p=st.pore, d=Math.hypot(x-p.x,y-p.y)||1; p.vx+=(x-p.x)/d*260; p.vy+=(y-p.y)/d*260; });
+GAME.onPause=()=>{ if(st&&!st.over&&!st.paused&&!st.wait){ st.paused=true; $('#pauseOv').hidden=false; } };
+GAME.onResume=()=>{ if(st&&st.paused){ st.paused=false; $('#pauseOv').hidden=true; lastT=performance.now(); requestAnimationFrame(loop); } };
+let hudK=1; function fit(){ const r=cv.getBoundingClientRect(); if(r.width) hudK=Math.min(2,Math.max(1,560/r.width)); const d=Math.min(2,window.devicePixelRatio||1); const w=Math.round(r.width*d), h=Math.round(r.height*d); if(w&&h&&(cv.width!==w||cv.height!==h)){ cv.width=w; cv.height=h; } }
+window.addEventListener('resize',()=>{ fit(); if(st) draw(); });
+function tile(x,y,b,s,alpha,stroke){ ctx.globalAlpha=alpha==null?1:alpha; ctx.fillStyle=COL[b]||'#475569'; ctx.fillRect(x-s/2,y-s/2,s,s); ctx.strokeStyle=stroke||'#0b1220'; ctx.lineWidth=2; ctx.strokeRect(x-s/2,y-s/2,s,s); ctx.fillStyle='#fff'; ctx.font=`bold ${s*.55}px Arial`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(b,x,y+1); ctx.globalAlpha=1; }
+function draw(){ const sx=cv.width/W, sy=cv.height/H; ctx.setTransform(sx,0,0,sy,0,0); const k=hudK; ctx.textBaseline='alphabetic';
+  ctx.fillStyle=CFG.rna?'#1a1530':'#0b1426'; ctx.fillRect(0,0,W,H); if(!st) return;
+  if(st.phase==='pore'){ drawPore(); } else {
+  const S=40, cx=W/2, off=st.pos; const X=i=>cx+(i-off)*S;
+  // old strand(s)
+  ctx.fillStyle='#9fb0cf'; ctx.font=`bold ${13*Math.min(k,1.4)}px Arial`; ctx.textAlign='left';
+  if(CFG.rna){ ctx.fillText('Coding strand (not read)',14,150); ctx.fillText('TEMPLATE strand: RNA polymerase reads this one',14,250); ctx.fillText('New mRNA (you build it)',14,350); }
+  else { ctx.fillText('Old (template) strand',14,190); ctx.fillText('New strand (you build it as DNA polymerase)',14,300); }
+  for(let i=Math.max(0,off-12);i<Math.min(st.tmpl.length,off+12);i++){ const x=X(i); if(x<-S||x>W+S) continue; const open=i<st.heli;
+    if(CFG.rna){ tile(x,open?170:215,DP[st.tmpl[i]],32,i<st.pos||!open?0.55:0.9); tile(x,open?272:240,st.tmpl[i],32,1,'#e2e8f0'); }
+    else { tile(x,open?212:250,st.tmpl[i],32,1,'#e2e8f0'); if(!open){ tile(x,286,DP[st.tmpl[i]],32,.45); } }
+    if(i<st.pos){ const m=st.made[i]; tile(x,CFG.rna?320:268+(open?0:0)+50,m.b,32,1,m.ok?'#bbf7d0':'#f87171'); if(!m.ok){ ctx.strokeStyle='#f87171'; ctx.lineWidth=3; ctx.strokeRect(x-19,(CFG.rna?320:318)-19,38,38); } } }
+  // enzymes
+  const hx=X(st.heli)-S/2; ctx.fillStyle='rgba(34,197,94,.45)'; ctx.beginPath(); ctx.ellipse(hx+14,CFG.rna?245:250,26,62,0,0,6.3); ctx.fill(); ctx.fillStyle='#bbf7d0'; ctx.font='bold 12px Arial'; ctx.textAlign='center'; ctx.fillText(CFG.rna?'RNA polymerase (unzips)':'helicase',hx+14,CFG.rna?170+120:180);
+  const px=X(st.pos); ctx.strokeStyle='#facc15'; ctx.lineWidth=3; ctx.setLineDash([6,4]); ctx.strokeRect(px-22,(CFG.rna?320:318)-22,44,44); ctx.setLineDash([]);
+  if(st.pos<st.tmpl.length){ ctx.fillStyle='#fde68a'; ctx.font=`bold ${16*Math.min(k,1.3)}px Arial`; ctx.fillText(`Add the base that pairs with ${st.tmpl[st.pos]}`,cx,(CFG.rna?320:318)+52); }
+  const gap=st.heli-st.pos; ctx.fillStyle=gap>CFG.maxGap-3?'#f87171':'#9fb0cf'; ctx.font='13px Arial'; ctx.fillText(`Unpaired bases ahead of you: ${Math.floor(gap)} (keep it under ${CFG.maxGap})`,cx,470);
+  ctx.fillStyle='#64748b'; ctx.fillRect(140,500,680,8); ctx.fillStyle='#38bdf8'; ctx.fillRect(140,500,680*st.pos/st.tmpl.length,8); ctx.fillStyle='#9fb0cf'; ctx.fillText(`${st.pos} of ${st.tmpl.length} bases`,cx,530); }
+  // HUD
+  ctx.textAlign='left'; ctx.fillStyle='#e8eefc'; ctx.font=`bold ${16*k}px Arial`; ctx.fillText(`${CFG.rounds[Math.min(st.round,CFG.rounds.length-1)].title}   Score ${st.score}`,14,28*Math.min(k,1.2)); ctx.fillStyle='#f87171'; ctx.font=`${18*k}px Arial`; ctx.fillText('♥'.repeat(Math.max(0,st.hearts)),14,28*Math.min(k,1.2)+24*k);
+  const m=st.msgs.find(m=>performance.now()<m.until); if(m){ ctx.font=`bold ${14*Math.min(k,1.5)}px Arial`; ctx.textAlign='center'; const w=Math.min(W-40,ctx.measureText(m.t).width+30); ctx.fillStyle='rgba(5,10,20,.88)'; ctx.fillRect(W/2-w/2,H-50,w,34); ctx.fillStyle='#fde68a'; ctx.fillText(m.t,W/2,H-27); }
+  if(fl&&performance.now()<fl.until){ ctx.fillStyle=fl.c; ctx.fillRect(0,0,W,H); } }
+function drawPore(){ const p=st.pore; ctx.fillStyle='#120d1f'; ctx.fillRect(0,0,W,H); ctx.fillStyle='rgba(185,150,255,.12)'; ctx.beginPath(); ctx.ellipse(480,300,440,270,0,0,6.3); ctx.fill();
+  ctx.strokeStyle='#b996ff'; ctx.lineWidth=8; ctx.setLineDash([26,10]); ctx.beginPath(); ctx.ellipse(480,300,440,270,0,0,6.3); ctx.stroke(); ctx.setLineDash([]);
+  PORES.forEach(([x,y])=>{ ctx.fillStyle='#0b1220'; ctx.beginPath(); ctx.arc(x,y,26,0,6.3); ctx.fill(); ctx.strokeStyle='#facc15'; ctx.lineWidth=4; ctx.stroke(); ctx.fillStyle='#fde68a'; ctx.font='bold 12px Arial'; ctx.textAlign='center'; ctx.fillText('nuclear pore',x-10,y-34); });
+  BLOBS.forEach(([x,y,r])=>{ ctx.fillStyle='rgba(96,165,250,.35)'; ctx.beginPath(); ctx.arc(x,y,r,0,6.3); ctx.fill(); ctx.strokeStyle='#60a5fa'; ctx.lineWidth=2; ctx.stroke(); });
+  ctx.fillStyle='#93c5fd'; ctx.font='11px Arial'; ctx.fillText('DNA (chromatin): stays in the nucleus',420,220);
+  ctx.strokeStyle='#a855f7'; ctx.lineWidth=7; ctx.beginPath(); ctx.moveTo(p.x-30,p.y); for(let i=0;i<=6;i++) ctx.lineTo(p.x-30+i*10,p.y+Math.sin(i+performance.now()/200)*5); ctx.stroke(); ctx.fillStyle='#e9d5ff'; ctx.font='bold 12px Arial'; ctx.fillText('mRNA',p.x,p.y-14);
+  ctx.fillStyle='#fde68a'; ctx.font='bold 15px Arial'; ctx.fillText(`Steer out through a pore! ${p.t.toFixed(1)} s`,480,560); }
+(function(){ fit(); draw(); })();
+$('#startBtn').addEventListener('click',startGame); $('#againBtn').addEventListener('click',startGame);
+GAME.teacherHTML=()=>CFG.teacher; GAME.printHTML=()=>CFG.print;
+window.__fork={get st(){return st;}, press, proof, want, go:()=>$('#roundGo').click()};
+
+</script>
+
+
+
+
+<script id="print-addon">/* PRINT-ADDON v1: adds Print buttons to the teacher menu (next to Close). Injected by kit/add_print.py. */
+(function(){
+  if(window.__printAddon) return; window.__printAddon=true;
+  var css=document.createElement('style');
+  css.textContent='@media print{body.pa-printing #top,body.pa-printing header.top,body.pa-printing #nav,body.pa-printing .overlay,body.pa-printing #teachOv,body.pa-printing .navbar,body.pa-printing .btnrow,body.pa-printing .actions,body.pa-printing #lockOv{display:none!important}'+
+   'body.pa-printing section.page,body.pa-printing .part{break-inside:auto}'+
+   'body.pa-printing{--bg:#fff;--panel:#fff;--panel2:#f1f5f9;--line:#94a3b8;--line2:#64748b;--text:#111827;--muted:#374151;--dim:#4b5563;--leaf:#047857;--sun:#92400e;--r:#92400e;--sky:#0369a1;--ok:#15803d;--bad:#b91c1c;--pink:#be185d;--x:#c2410c;--y:#0369a1;--a:#6d28d9;--b:#047857;--amber:#b45309;background:#fff!important;color:#111827!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+   'body.pa-printing.pa-cast > *:not(#paView){display:none!important} body.pa-printing.pa-cast #paView{display:block!important}}'+
+   '#paView{display:none;background:#fff;color:#111;font:14px/1.45 Arial,sans-serif;padding:0 6px} #paView h1{font-size:20px;margin:0 0 4px} #paView h2{font-size:16px;margin:16px 0 6px;border-bottom:1px solid #999}'+
+   '#paView .q{break-inside:avoid;margin:10px 0 14px} #paView .opt{margin:2px 0 2px 18px} #paView .lines{border-bottom:1px solid #999;height:22px} #paView .key{color:#0a5;font-weight:bold;margin-top:4px}'+
+   '#paView table{border-collapse:collapse} #paView td,#paView th{border:1px solid #999;padding:3px 6px} #paView svg{max-width:100%;height:auto} #paView .box{display:inline-block;min-width:110px;border-bottom:1px solid #333;margin:0 6px}'+
+   '.pa-btn{margin-left:6px}';
+  document.head.appendChild(css);
+  var strip=function(s){ var d=document.createElement('div'); d.innerHTML=String(s==null?'':s); return d.innerHTML; };
+  function castView(withKey){
+    var F=window.FX||{}, h='<h1>'+(document.title||'')+'</h1><div>Name: ________________________ &nbsp; Period: ____ &nbsp; Date: __________</div>';
+    (F.stimulus||[]).forEach(function(t){ h+='<h2>'+t.tab+'</h2><div>'+t.html+'</div>'; });
+    h+='<h2>Questions</h2>';
+    (F.questions||[]).forEach(function(q,i){
+      h+='<div class="q"><b>'+(i+1)+'. </b>'+(q.q||'')+' <i>('+(q.pts||'')+' pts)</i>';
+      var L='ABCDEFGH';
+      if(q.type==='match'){ h+='<table style="margin-top:6px"><tr><th>'+(q.left||'')+'</th><th>'+(q.right||'')+'</th></tr>'+q.rows.map(function(r){return '<tr><td>'+r.t+'</td><td style="width:180px"></td></tr>';}).join('')+'</table><div>Word bank: '+(q.chips||[]).join(' · ')+'</div>'; }
+      else if(q.type==='two'){ [q.a,q.b].forEach(function(p){ h+='<div style="margin-top:6px">'+p.q+'</div>'+p.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }); }
+      else if(q.type==='sel'){ h+='<div><i>Select all that apply.</i></div>'+q.opts.map(function(o,j){return '<div class="opt">☐ '+o+'</div>';}).join(''); }
+      else if(q.type==='sort'){ h+='<div>Sort into: '+q.bins.map(function(b){return '<b>'+b.label+'</b>';}).join(' / ')+'</div>'+q.items.map(function(it){return '<div class="opt">'+it.t+' → <span class="box"></span></div>';}).join(''); }
+      else if(q.type==='cer'){ h+='<div style="margin-top:6px"><b>Claim:</b> '+(q.claimQ||'')+'</div>'+(q.claims||[]).map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join('')+
+        '<div style="margin-top:6px"><b>Evidence:</b> '+(q.evPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'+
+        '<div style="margin-top:6px"><b>Reasoning:</b> '+(q.rsPrompt||'')+'</div><div class="lines"></div><div class="lines"></div><div class="lines"></div><div class="lines"></div>'; }
+      else if(q.opts){ h+=q.opts.map(function(o,j){return '<div class="opt">'+L[j]+'. '+o+'</div>';}).join(''); }
+      if(withKey&&q.key) h+='<div class="key">Key: '+q.key+'</div>';
+      h+='</div>'; });
+    var v=document.getElementById('paView'); if(!v){ v=document.createElement('div'); v.id='paView'; document.body.appendChild(v); }
+    v.innerHTML=h; return v;
+  }
+  function closeTeacher(){ var c=document.getElementById('tClose'); if(c) try{ c.click(); }catch(e){} }
+  function doPrint(withKey){
+    var ws=document.getElementById('ws'), prev=document.getElementById('tPrev');
+    if(ws&&ws.hidden&&prev&&!window.FX){ prev.click(); return setTimeout(function(){ doPrint(withKey); },400); }
+    var body=document.body, restore=[];
+    closeTeacher();
+    if(window.FX&&document.getElementById('qBody')){ castView(withKey); body.classList.add('pa-cast'); }
+    else { document.querySelectorAll('section.page,[id^="part"]').forEach(function(el){ if(!/^part\d+$/.test(el.id)&&!el.matches('section.page')) return; restore.push([el,el.hidden,el.style.display]); el.hidden=false; if(getComputedStyle(el).display==='none') el.style.display='block'; }); }
+    body.classList.add('pa-printing');
+    var done=false, undo=function(){ if(done) return; done=true; body.classList.remove('pa-printing','pa-cast'); restore.forEach(function(r){ r[0].hidden=r[1]; r[0].style.display=r[2]; }); };
+    window.addEventListener('afterprint',undo,{once:true});
+    setTimeout(function(){ window.print(); },150);
+  }
+  window.paPrint=doPrint;
+  function addButtons(){
+    var close=document.getElementById('tClose'); if(!close||document.getElementById('paPrint')) return;
+    var b=document.createElement('button'); b.id='paPrint'; b.type='button'; b.className=(close.className||'btn')+' pa-btn'; b.textContent='🖨 Print this page';
+    b.title='Prints every section. Turn on the answer key first if you want a key copy.';
+    b.addEventListener('click',function(){ doPrint(false); });
+    close.parentNode.insertBefore(b,close);
+    if(window.FX&&document.getElementById('qBody')){ var k=document.createElement('button'); k.id='paPrintKey'; k.type='button'; k.className=b.className; k.textContent='🖨 Print answer key'; k.addEventListener('click',function(){ doPrint(true); }); close.parentNode.insertBefore(k,close); }
+  }
+  new MutationObserver(addButtons).observe(document.documentElement,{childList:true,subtree:true});
+  addButtons();
+})();
+</script><!--/print-addon-->
+</body>
+</html>

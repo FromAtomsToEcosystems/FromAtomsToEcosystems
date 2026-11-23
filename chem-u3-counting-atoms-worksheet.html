@@ -961,6 +961,12 @@ const P = [
     model: 'Each SO₄ group has 4 oxygen atoms (the subscript 4). The subscript 3 outside the parentheses means 3 SO₄ groups, so one Al₂(SO₄)₃ has 4 × 3 = 12 O. The coefficient 3 in front means 3 units, so multiply again: 12 × 3 = 36 oxygen atoms.' }
 ];
 
+
+/* rotate correct-answer positions so the right choice isn't always first (fixed order, so saved work still matches) */
+(function () { let k = 0; P.forEach(p => {
+  if (p.type === 'mc' && Array.isArray(p.opts) && typeof p.a === 'number') { const n = p.opts.length, t = (k * 3 + 1) % n; k++; const o = p.opts.slice(); const c = o.splice(p.a, 1)[0]; o.splice(t, 0, c); p.opts = o; p.a = t; }
+  else if (p.type === 'ms' && Array.isArray(p.opts)) { const n = p.opts.length, r = (k * 2 + 1) % n; k++; p.opts = p.opts.slice(r).concat(p.opts.slice(0, r)); }
+}); })();
 const N = P.length, TOTAL = P.reduce((a, p) => a + p.pts, 0);
 
 /* ---------- state ---------- */

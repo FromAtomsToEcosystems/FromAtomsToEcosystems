@@ -243,6 +243,7 @@ body.key .keyonly{display:block!important}
 @media print{.top,#calc{display:none}}
 .phbox{width:100%;min-height:60px;border:1px solid var(--line2);border-radius:8px;padding:8px;background:var(--bg2);color:var(--ink);font-family:inherit;font-size:.92rem;resize:vertical;margin-top:3px}
 </style>
+<style id="nolock">#tEndLock,#endLockBtn,#unlockInfo{display:none!important}</style>
 </head>
 <body>
 <div class="preview-bar" id="previewBar" hidden>Preview mode: nothing is saved or sent. Reload the page to leave preview mode.</div>
@@ -391,6 +392,7 @@ body.key .keyonly{display:block!important}
    ========================================================= */
 const LESSON = "Collision Time and Safety Design";
 const LESSON_ID = 'phys-u6-collision-time-safety';
+function __ord(seed, arr) { let h = 2166136261; for (const ch of String(seed)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } const idx = arr.map((_, i) => i); for (let i = idx.length - 1; i > 0; i--) { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; const j = (h >>> 0) % (i + 1); [idx[i], idx[j]] = [idx[j], idx[i]]; } return idx; }
 const KEY = 'fate_phys_u6_collision_time_safety_v1';
 const RECS = KEY + '_records';
 const UNLOCK_CODE = 'design';           // last word of the lesson title: unlocks the lockdown screen only
@@ -412,7 +414,7 @@ function saveURL() {
   return SAVE_URL_BUILTIN;
 }
 const CLOUD = () => !!saveURL() && /^https?:/.test(location.protocol);
-const LOCK_ON = /github\.io$/i.test(location.hostname) || new URLSearchParams(location.search).has('lockdown');
+const LOCK_ON = false; // lockdown is used on tests only
 const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* =========================================================
@@ -443,7 +445,7 @@ const subs = s => String(s).replace(/\b([vDa])_(ix|iy|fy|fx|x|y)\b/g, (m, b, s2)
 function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toast.T); toast.T = setTimeout(() => el.classList.remove('show'), 2600); }
 function parseNum(s) {
   s = String(s || '').trim().replace(/[−–—]/g, '-').replace(/,/g, '');
-  s = s.replace(/\s*[x×*·]\s*10\s*\^\s*\(?\s*([+-]?\d+)\s*\)?/i, 'e$1');
+  s = s.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺]+/g, m => '^' + [...m].map(ch => ch === '⁻' ? '-' : ch === '⁺' ? '+' : '⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(ch)).join('')).replace(/\s*[x×*·]\s*10\s*\^\s*\(?\s*([+-]?\d+)\s*\)?/i, 'e$1');
   const m = s.match(/-?\d*\.?\d+(e[+-]?\d+)?/i); if (!m) return NaN; return parseFloat(m[0]);
 }
 function close(ans, v, tol) { if (!isFinite(v)) return false; const t = tol != null ? tol : Math.max(0.051, Math.abs(ans) * 0.02); return Math.abs(v - ans) <= t + 1e-9; }
@@ -710,8 +712,8 @@ const QC = {};
 function qcHTML(n, k, q) {
   const id = `s${n}${k}`; QC[id] = Object.assign({ n, k }, q);
   return `<div class="qcwrap" id="qc-${id}"><p><b>${q.label || 'Quick check ' + (k === 'q1' ? 1 : 2)}.</b> ${q.q}</p>${q.fig || ''}
-    <div class="opts">${q.opts.map((o, i) => `<button type="button" class="opt" data-qc="${id}" data-i="${i}"><span class="L">${LET[i]}</span><span>${o}</span></button>`).join('')}</div>
-    <p class="fb" data-fb></p><div class="keyonly keytag">Answer: ${LET[q.a]}</div></div>`;
+    <div class="opts">${__ord(LESSON_ID + id, q.opts).map((i, pos) => `<button type="button" class="opt" data-qc="${id}" data-i="${i}"><span class="L">${LET[pos]}</span><span>${q.opts[i]}</span></button>`).join('')}</div>
+    <p class="fb" data-fb></p><div class="keyonly keytag">Answer: ${LET[__ord(LESSON_ID + id, q.opts).indexOf(q.a)]}</div></div>`;
 }
 function qcCard(n, a, b) { return `<div class="card"><span class="chip qc">Quick check</span>${qcHTML(n, 'q1', a)}${qcHTML(n, 'q2', b)}</div>`; }
 function paintQC(id) {
@@ -847,13 +849,13 @@ function build1() {
   $('#page1').innerHTML = secHead(1) + phenomenonCard() + `
   <div class="card"><span class="chip read">Read</span><h3>Same Δp, different time</h3>
     <div class="cols"><div><p>To stop an object, you must remove all of its momentum: the change in momentum (Δp) is set by its mass and speed. But you <b>can</b> choose how long the stop takes. Since <b>F = Δp ÷ Δt</b>, a <b>longer stopping time means a smaller force</b>.</p>
-      <div class="callout"><b>Example.</b> A 70 kg driver stops from 20 m/s (Δp = 1,400 kg·m/s). ${work('', [['Hitting the steering wheel', `Δt = 0.010 s → F = 1400 ÷ 0.010 = <b>140,000 N</b>`], ['Hitting an airbag', `Δt = 0.20 s → F = 1400 ÷ 0.20 = <b>7,000 N</b>`], ['Same impulse', `but 20 times less force`]])}</div>
+      <div class="callout"><b>Example.</b> A 70 kg driver stops from 20 m/s (Δp = 1,400 kg·m/s). <div class='fig' style='margin:10px 0'><svg viewBox='0 0 360 200' role='img' aria-label='Diagram'><defs><marker id='pm296cb8ff' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='6' markerHeight='6' orient='auto'><path d='M0 0L10 5L0 10z' fill='#6cb8ff'/></marker><marker id='pm29ffcf5a' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='6' markerHeight='6' orient='auto'><path d='M0 0L10 5L0 10z' fill='#ffcf5a'/></marker></defs><line x1='10.0' y1='165.0' x2='350.0' y2='165.0' stroke='#5d6f96' stroke-width='2'/><path d='M40 153 L40 135 L65.0 133 L78.0 115 L115.0 115 L128.0 133 L140 137 L140 153 Z' stroke='#8fb3ff' stroke-width='1.5' fill='#4f7ed8'/><circle cx='62.0' cy='155.0' r='10.0' fill='#24345a' stroke='#e9eefb' stroke-width='1.5'/><circle cx='118.0' cy='155.0' r='10.0' fill='#24345a' stroke='#e9eefb' stroke-width='1.5'/><g opacity='0.55'><path d='M220 153 L220 135 L245.0 133 L258.0 115 L295.0 115 L308.0 133 L320 137 L320 153 Z' stroke='#8fb3ff' stroke-width='1.5' fill='#4f7ed8'/><circle cx='242.0' cy='155.0' r='10.0' fill='#24345a' stroke='#e9eefb' stroke-width='1.5'/><circle cx='298.0' cy='155.0' r='10.0' fill='#24345a' stroke='#e9eefb' stroke-width='1.5'/></g><line x1='60.0' y1='70.0' x2='120.0' y2='70.0' stroke='#6cb8ff' stroke-width='2.4' marker-end='url(#pm296cb8ff)' stroke-dasharray="5 3"/><text x='90' y='60' font-size='12' fill='#6cb8ff' text-anchor='middle' font-family='Lexend, sans-serif'>vᵢ = 20 m/s</text><text x='270' y='60' font-size='12' fill='#6cb8ff' text-anchor='middle' font-family='Lexend, sans-serif'>v<tspan baseline-shift="sub" font-size="9">f</tspan> = 0</text><line x1='195.0' y1='100.0' x2='165.0' y2='100.0' stroke='#ffcf5a' stroke-width='2.4' marker-end='url(#pm29ffcf5a)'/><text x='180' y='90' font-size='12' fill='#ffcf5a' text-anchor='middle' font-family='Lexend, sans-serif'>a = ?</text><text x='10' y='20' font-size='12' fill='#a3b2d2' text-anchor='start' font-family='Lexend, sans-serif'>70 kg driver stops</text></svg></div>${work('', [['Hitting the steering wheel', `Δt = 0.010 s → F = 1400 ÷ 0.010 = <b>140,000 N</b>`], ['Hitting an airbag', `Δt = 0.20 s → F = 1400 ÷ 0.20 = <b>7,000 N</b>`], ['Same impulse', `but 20 times less force`]])}</div>
     </div><div><div class="eqbox"><div class="eq" style="font-size:1.2rem">F = Δp ÷ Δt</div><div class="eq">same Δp, longer Δt → smaller F</div></div></div></div></div>
   <div class="card"><span class="chip try">Try it</span><h3>Egg-drop tester</h3><p>A 0.060 kg egg cracks if the stopping force is more than 25 N. Pick the landing surface and impact speed. Complete all three missions.</p><div class="fig" id="g1fig"></div>
     <div class="ctrls">${[{"id": "s", "label": "Surface", "min": 0, "max": 4, "step": 1, "val": 0, "unit": "", "labels": ["concrete (stops in 0.002 s)", "wood (0.005 s)", "grass (0.020 s)", "towel (0.050 s)", "pillow (0.10 s)"]}, {"id": "v", "label": "Impact speed", "min": 2, "max": 6, "step": 1, "val": 5, "unit": "m/s"}].map(s => `<div class="ctrl"><label for="g1${s.id}"><span>${s.label}</span> <b id="g1${s.id}v"></b></label><input type="range" id="g1${s.id}" min="${s.min}" max="${s.max}" step="${s.step}" value="${s.val}"></div>`).join('')}</div>
     <div class="readouts" id="g1ro"></div><div class="row"><button class="btn primary" type="button" id="g1chk">Check against the missions</button></div>
     ${missionsHTML(1, ["At 5 m/s, find a surface where the egg survives.", "At only 3 m/s, find a surface where the egg still cracks.", "At the fastest speed (6 m/s), save the egg."])}</div>
-  ${pracCard(1, 'Practice (you solve it)', "A little different from the example: the pillow.", [{ id: 'p1x', q: "A 0.060 kg egg hits a pillow at 5.0 m/s and stops in 0.10 s. What average force acts on it?", ans: 3, show: "3.0", unit: "N", tol: 0.03, hint: "Δp = 0.30 kg·m/s; F = Δp ÷ Δt.", sol: "F = 0.30 ÷ 0.10 = 3.0 N" }])}
+  ${pracCard(1, 'Practice (you solve it)', "A little different from the example: the pillow.", [{ id: 'p1x', q: "A 0.060 kg egg hits a pillow at 5.0 m/s and stops in 0.10 s. What average force acts on it?" + `<div class='fig' style='margin:10px 0'><svg viewBox='0 0 330 170' role='img' aria-label='Diagram'><defs><marker id='pm316cb8ff' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='6' markerHeight='6' orient='auto'><path d='M0 0L10 5L0 10z' fill='#6cb8ff'/></marker></defs><rect x='150.0' y='120.0' width='120.0' height='30.0' rx='12' fill='#cdd6ea' stroke='#8fa0c0' stroke-width='1.5' opacity='1'/><ellipse cx='210' cy='80' rx='12' ry='16' fill='#f5e9d0' stroke='#c9b38a'/><line x1='240.0' y1='50.0' x2='240.0' y2='90.0' stroke='#6cb8ff' stroke-width='2.4' marker-end='url(#pm316cb8ff)'/><text x='250' y='70' font-size='12' fill='#6cb8ff' text-anchor='start' font-family='Lexend, sans-serif'>5.0 m/s</text><text x='120' y='60' font-size='11' fill='#a3b2d2' text-anchor='end' font-family='Lexend, sans-serif'>0.060 kg egg</text><text x='120' y='140' font-size='11' fill='#a3b2d2' text-anchor='end' font-family='Lexend, sans-serif'>stops in 0.10 s</text></svg></div>`, ans: 3, show: "3.0", unit: "N", tol: 0.03, hint: "Δp = 0.30 kg·m/s; F = Δp ÷ Δt.", sol: "F = 0.30 ÷ 0.10 = 3.0 N" }])}
   <div class="card"><span class="chip qc">Quick check</span>${qcHTML(1, 'q1', Object.assign({"q": "An airbag protects a driver because it…", "opts": ["reduces the driver’s change in momentum", "increases the stopping time, so the force is smaller", "makes the car stop faster"], "a": 1, "why": "Same Δp, longer Δt → smaller force.", "hint": "F = Δp ÷ Δt."}, { label: 'Quick check' }))}</div>
   
   ${unlockBox(1)}`;
@@ -893,13 +895,13 @@ function build3() {
   $('#page3').innerHTML = secHead(3) + `
   <div class="card"><span class="chip read">Read</span><h3>Use the time on purpose</h3>
     <div class="cols"><div><p>In sports, the goal is often the opposite: give the ball as much momentum as possible. With a strong swing, the force is limited, so athletes <b>follow through</b>: keeping the bat, racket, or foot in contact longer increases <b>Δt</b>, so the impulse (FΔt) and the ball’s Δp get bigger.</p>
-      <div class="callout"><b>Example.</b> A bat pushes a 0.145 kg baseball with 2,000 N. ${work('', [['Contact 0.0020 s', `J = 2000 × 0.0020 = 4.0 N·s → Δv = 4.0 ÷ 0.145 = 27.6 m/s`], ['Contact 0.0030 s', `J = 6.0 N·s → Δv = <b>41.4 m/s</b>`], ['Follow-through', `50% more speed from the same force`]])}</div>
+      <div class="callout"><b>Example.</b> A bat pushes a 0.145 kg baseball with 2,000 N. <div class='fig' style='margin:10px 0'><svg viewBox='0 0 340 160' role='img' aria-label='Diagram'><defs></defs><path d='M30 128 L30 110 L62.5 108 L79.4 90 L127.5 90 L144.4 108 L160 112 L160 128 Z' stroke='#8fb3ff' stroke-width='1.5' fill='#4f7ed8'/><circle cx='58.6' cy='130.0' r='10.0' fill='#24345a' stroke='#e9eefb' stroke-width='1.5'/><circle cx='131.4' cy='130.0' r='10.0' fill='#24345a' stroke='#e9eefb' stroke-width='1.5'/><rect x='160.0' y='100.0' width='40.0' height='36.0' rx='4' fill='#3b4d78' stroke='#8fa0c0' stroke-width='1.5' opacity='1'/><path d='M162 104 L170 112 L162 120 L170 128' stroke='#e9eefb' stroke-width='1.5' fill='none'/><text x='180' y='152' font-size='10' fill='#a3b2d2' text-anchor='middle' font-family='Lexend, sans-serif'>crumple zone</text><text x='270' y='70' font-size='12' fill='#ffcf5a' text-anchor='middle' font-family='Lexend, sans-serif'>0.01 s → 0.1 s</text></svg></div>${work('', [['Contact 0.0020 s', `J = 2000 × 0.0020 = 4.0 N·s → Δv = 4.0 ÷ 0.145 = 27.6 m/s`], ['Contact 0.0030 s', `J = 6.0 N·s → Δv = <b>41.4 m/s</b>`], ['Follow-through', `50% more speed from the same force`]])}</div>
     </div><div><div class="eqbox"><div class="eq">J = FΔt = Δp</div><div class="eq">longer contact → bigger impulse</div><div class="eq">Δv = FΔt ÷ m</div></div></div></div></div>
   <div class="card"><span class="chip try">Try it</span><h3>Follow-through kicker</h3><p>Kick a 0.45 kg soccer ball from rest. Set the force and the contact time. Complete all three missions.</p><div class="fig" id="g3fig"></div>
     <div class="ctrls">${[{"id": "F", "label": "Kick force", "min": 150, "max": 600, "step": 150, "val": 300, "unit": "N"}, {"id": "t", "label": "Contact time", "min": 0.005, "max": 0.03, "step": 0.005, "val": 0.01, "unit": "s"}].map(s => `<div class="ctrl"><label for="g3${s.id}"><span>${s.label}</span> <b id="g3${s.id}v"></b></label><input type="range" id="g3${s.id}" min="${s.min}" max="${s.max}" step="${s.step}" value="${s.val}"></div>`).join('')}</div>
     <div class="readouts" id="g3ro"></div><div class="row"><button class="btn primary" type="button" id="g3chk">Check against the missions</button></div>
     ${missionsHTML(3, ["Kick the ball to exactly 10 m/s.", "Kick the ball to at least 25 m/s.", "With only a 150 N kick, still reach 10 m/s (follow through!)."])}</div>
-  ${pracCard(3, 'Practice (you solve it)', "A little different from the example: a tennis serve.", [{ id: 'p3x', q: "A racket pushes a 0.057 kg tennis ball with 300 N for 0.010 s. How fast does the ball leave (starting from rest)?", ans: 52.6, show: "52.6", unit: "m/s", tol: 0.3, hint: "J = FΔt; v = J ÷ m.", sol: "J = 3.0 N·s; v = 3.0 ÷ 0.057 = 52.6 m/s" }])}
+  ${pracCard(3, 'Practice (you solve it)', "A little different from the example: a tennis serve.", [{ id: 'p3x', q: "A racket pushes a 0.057 kg tennis ball with 300 N for 0.010 s. How fast does the ball leave (starting from rest)?" + `<div class='fig' style='margin:10px 0'><svg viewBox='0 0 610 220' role='img' aria-label='Diagram'><defs><marker id='pm33ffcf5a' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='6' markerHeight='6' orient='auto'><path d='M0 0L10 5L0 10z' fill='#ffcf5a'/></marker></defs><circle cx='200.0' cy='90.0' r='9.0' fill='#ff9f5a' stroke='#ffd3b0' stroke-width='1.5'/><ellipse cx='175' cy='90' rx='14' ry='22' fill='none' stroke='#cdd6ea' stroke-width='3'/><line x1='175.0' y1='112.0' x2='150.0' y2='160.0' stroke='#cdd6ea' stroke-width='4'/><line x1='214.0' y1='90.0' x2='270.0' y2='90.0' stroke='#ffcf5a' stroke-width='3' marker-end='url(#pm33ffcf5a)'/><text x='282' y='94' font-size='12' fill='#ffcf5a' text-anchor='start' font-family='Lexend, sans-serif'>300 N</text><text x='200' y='120' font-size='11' fill='#a3b2d2' text-anchor='middle' font-family='Lexend, sans-serif'>0.057 kg, 0.010 s</text><line x1='334' y1='10' x2='334' y2='210' stroke='#2a3a60' stroke-dasharray='4 4'/><g transform='translate(340,0.0)'><defs><marker id='pm34ffcf5a' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='6' markerHeight='6' orient='auto'><path d='M0 0L10 5L0 10z' fill='#ffcf5a'/></marker></defs><text x='135' y='16' font-size='11' fill='#7385aa' text-anchor='middle' font-family='Lexend, sans-serif'>Tennis ball</text><line x1='135.0' y1='116.0' x2='201.0' y2='116.0' stroke='#ffcf5a' stroke-width='3.2' marker-end='url(#pm34ffcf5a)'/><text x='211.0' y='120.0' font-size='15' fill='#ffcf5a' text-anchor='start' font-family='Lexend, sans-serif'><tspan font-style='italic'>F</tspan><tspan baseline-shift='sub' font-size='10'>a</tspan><tspan baseline-shift='0'> </tspan><tspan fill='#a3b2d2' font-size='12.5' dx='4'>300 N</tspan></text><circle cx='135.0' cy='116.0' r='5.0' fill='#e9eefb' stroke='#e9eefb' stroke-width='1.5'/></g></svg></div>`, ans: 52.6, show: "52.6", unit: "m/s", tol: 0.3, hint: "J = FΔt; v = J ÷ m.", sol: "J = 3.0 N·s; v = 3.0 ÷ 0.057 = 52.6 m/s" }])}
   <div class="card"><span class="chip qc">Quick check</span>${qcHTML(3, 'q1', Object.assign({"q": "Why do coaches tell batters to \"swing through the ball\"?", "opts": ["It makes the bat lighter", "Longer contact time gives a bigger impulse and more speed", "It reduces the force on the ball"], "a": 1, "why": "Bigger Δt → bigger J.", "hint": "J = FΔt."}, { label: 'Quick check' }))}</div>
   <div class="card"><span class="chip qc">What is wrong with this?</span><p>A student explains how an airbag protects a driver:</p><ol style="margin:4px 0 8px"><li>In a crash, the driver must stop.</li><li>The airbag reduces the impulse on the driver.</li><li>Less impulse means less injury.</li></ol>
     ${qcHTML(3, 'q2', Object.assign({"opts": ["Step 1: the driver doesn’t stop", "Step 2: the impulse (Δp) is the same either way; the airbag makes the stop take longer, so the force is smaller", "Step 3: injuries don’t depend on force", "Nothing is wrong"], "a": 1, "why": "The driver loses the same momentum; only the time (and so the force) changes.", "hint": "Does the airbag change how much momentum the driver loses?"}, { label: 'Spot the mistake', q: 'Which step is wrong, and why?' }))}</div>
@@ -1238,6 +1240,14 @@ heroFig(); buildAll(); renderStart(); showNote();
 go(0);
 if (S.student && S.locked && lockLive()) showLock();
 })();
+</script>
+<script>/* sandbox-safe sign-in: works even where form submissions are blocked (e.g., previews) */
+(function () { document.querySelectorAll('#startForm, #signForm').forEach(f => {
+  const go = () => f.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+  f.requestSubmit = go;
+  f.querySelectorAll('button[type="submit"]').forEach(b => { b.type = 'button'; b.addEventListener('click', go); });
+  f.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName === 'INPUT') { e.preventDefault(); go(); } });
+}); })();
 </script>
 </body>
 </html>
